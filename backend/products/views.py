@@ -1,0 +1,96 @@
+"""
+Londom Imports - Product Views
+"""
+from rest_framework import generics, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .models import Product, Category
+from .serializers import (
+    ProductListSerializer,
+    ProductDetailSerializer,
+    ProductCreateSerializer,
+    CategorySerializer
+)
+from vendors.views import IsVendor
+
+
+class CategoryListView(generics.ListAPIView):
+    """List all active categories"""
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = Category.objects.filter(is_active=True)
+
+
+class ProductListView(generics.ListAPIView):
+    """
+    Public product listing with filtering.
+    Supports category, preorder_status, and search filters.
+    """
+    serializer_class = ProductListSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['price', 'created_at', 'reservations_count']
+    ordering = ['-created_at']
+    
+    def get_queryset(self):
+        queryset = Product.objects.filter(
+            is_active=True,
+            vendor__is_active=True
+        ).select_related('category', 'vendor')
+        
+        # Filter by category
+        category_slug = self.request.query_params.get('category')
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+        
+        # Filter by preorder status
+        status = self.request.query_params.get('status')
+        if status:
+            queryset = queryset.filter(preorder_status=status)
+        
+        # Featured only
+        featured = self.request.query_params.get('featured')
+        if featured == 'true':
+            queryset = queryset.filter(is_featured=True)
+        
+        return queryset
+
+
+class ProductDetailView(generics.RetrieveAPIView):
+    """Public product detail by slug"""
+    serializer_class = ProductDetailSerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = Product.objects.filter(is_active=True)
+    lookup_field = 'slug'
+
+
+# Vendor product management
+class VendorProductListView(generics.ListCreateAPIView):
+    """Vendor's own products - list and create"""
+    permission_classes = [IsVendor]
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ProductCreateSerializer
+        return ProductListSerializer
+    
+    def get_queryset(self):
+        return Product.objects.filter(
+            vendor=self.request.user.vendor_profile
+        )
+
+
+class VendorProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Vendor's own product - retrieve, update, delete"""
+    permission_classes = [IsVendor]
+    
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return ProductCreateSerializer
+        return ProductDetailSerializer
+    
+    def get_queryset(self):
+        return Product.objects.filter(
+            vendor=self.request.user.vendor_profile
+        )
