@@ -9,10 +9,15 @@ from .views import (
     OrderDetailView,
     OrderTrackingView,
     CancelOrderView,
-    VendorOrderListView
+    CancelOrderView,
+    VendorOrderListView,
+    PublicPlatformStatsView
 )
 
 urlpatterns = [
+    # Public Stats
+    path('stats/', PublicPlatformStatsView.as_view(), name='platform-stats'),
+    
     # Customer cart & checkout
     path('cart/', CartView.as_view(), name='cart'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),

@@ -150,7 +150,7 @@ export default function StatsBar() {
     return (
         <section className="bg-gradient-to-b from-slate-50 to-white border-y border-slate-100/80 py-8 sm:py-10 md:py-12 overflow-hidden">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
                     {statItems.map((stat, i) => (
                         <div
                             key={i}
