@@ -75,32 +75,34 @@ function StatItem({
 export default function StatsBar() {
     const [stats, setStats] = useState<PlatformStats | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [error, setError] = useState(false);
+    const [debugError, setDebugError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
+                // Remove hardcoded delay to test speed
                 const response = await api.get('/orders/stats/');
                 setStats(response.data);
-                // Slight delay before triggering animations
-                setTimeout(() => setIsLoaded(true), 100);
-            } catch (err) {
-                console.error('Failed to fetch platform stats:', err);
-                setError(true);
-                // Fallback to static values on error
-                setStats({
-                    orders_fulfilled: 500,
-                    on_time_rate: 92,
-                    total_orders: 500,
-                    secure_payments: true,
-                    whatsapp_support: true
-                });
-                setTimeout(() => setIsLoaded(true), 100);
+                setIsLoaded(true);
+            } catch (error: any) {
+                console.error('Failed to fetch stats:', error);
+                // DEBUG: Show validation error on screen
+                setDebugError(error.message || 'Unknown Error');
+                // Don't fallback to fake data - let's see the error
             }
         };
 
         fetchStats();
     }, []);
+
+    if (debugError) {
+        return (
+            <div className="bg-red-50 p-4 text-center text-red-600 border-y border-red-200">
+                <p className="font-bold">Debug Error: {debugError}</p>
+                <p className="text-sm">API: {process.env.NEXT_PUBLIC_API_URL}</p>
+            </div>
+        );
+    }
 
     // Show skeleton while loading
     if (!stats) {
