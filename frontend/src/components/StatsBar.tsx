@@ -107,9 +107,9 @@ export default function StatsBar() {
         return (
             <section className="bg-gradient-to-b from-slate-50 to-white border-y border-slate-100/80 py-8 sm:py-10 md:py-12">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y divide-slate-200/60 sm:divide-y-0">
                         {[...Array(4)].map((_, i) => (
-                            <div key={i} className="flex flex-col items-center px-4 py-3 animate-pulse">
+                            <div key={i} className="flex flex-col items-center justify-center py-6 sm:py-0 animate-pulse">
                                 <div className="h-10 w-24 bg-slate-200 rounded mb-2"></div>
                                 <div className="h-4 w-20 bg-slate-100 rounded"></div>
                             </div>
