@@ -9,8 +9,7 @@ import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
-import PlatformPrinciples from '@/components/PlatformPrinciples';
-import StatsBar from '@/components/StatsBar';
+
 import Reviews from '@/components/Reviews';
 import RecentOrdersFeed from '@/components/RecentOrdersFeed';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -77,7 +76,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <PlatformPrinciples />
+
 
 
 
@@ -111,7 +110,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <StatsBar />
+
 
       {/* Reviews */}
       <Reviews />
