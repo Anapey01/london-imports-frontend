@@ -75,34 +75,33 @@ function StatItem({
 export default function StatsBar() {
     const [stats, setStats] = useState<PlatformStats | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [debugError, setDebugError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Remove hardcoded delay to test speed
-                const response = await api.get('/orders/stats/');
+                // Minimum loading time for animation
+                const [response] = await Promise.all([
+                    api.get('/orders/stats/'),
+                    new Promise(resolve => setTimeout(resolve, 800))
+                ]);
                 setStats(response.data);
                 setIsLoaded(true);
-            } catch (error: any) {
+            } catch (error) {
                 console.error('Failed to fetch stats:', error);
-                // DEBUG: Show validation error on screen
-                setDebugError(error.message || 'Unknown Error');
-                // Don't fallback to fake data - let's see the error
+                // Keep default null state to show skeleton or static fallback
+                setStats({
+                    orders_fulfilled: 0,
+                    on_time_rate: 98,
+                    total_orders: 0,
+                    secure_payments: true,
+                    whatsapp_support: true
+                });
+                setIsLoaded(true);
             }
         };
 
         fetchStats();
     }, []);
-
-    if (debugError) {
-        return (
-            <div className="bg-red-50 p-4 text-center text-red-600 border-y border-red-200">
-                <p className="font-bold">Debug Error: {debugError}</p>
-                <p className="text-sm">API: {process.env.NEXT_PUBLIC_API_URL}</p>
-            </div>
-        );
-    }
 
     // Show skeleton while loading
     if (!stats) {
@@ -124,28 +123,28 @@ export default function StatsBar() {
 
     const statItems = [
         {
-            value: stats.orders_fulfilled || stats.total_orders,
+            value: stats?.orders_fulfilled || 0,
             label: 'Orders Fulfilled',
             icon: Package,
-            suffix: '+'
+            suffix: ''
         },
         {
-            value: stats.on_time_rate,
-            label: 'On-time Delivery',
+            value: stats?.on_time_rate || 98,
+            label: 'On-Time Delivery',
             icon: Clock,
             suffix: '%'
         },
         {
-            value: 100,
-            label: 'Secure Payments',
-            icon: ShieldCheck,
-            suffix: '%'
+            value: stats?.total_orders || 0,
+            label: 'Total Orders',
+            icon: TrendingUp,
+            suffix: ''
         },
         {
-            value: 24,
+            value: '24/7',
             label: 'WhatsApp Support',
-            icon: MessageCircle,
-            suffix: '/7'
+            icon: Users,
+            suffix: '' // No suffix for text
         }
     ];
 
