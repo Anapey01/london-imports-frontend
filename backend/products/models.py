@@ -84,6 +84,10 @@ class Product(models.Model):
     # Demand tracking (social proof)
     reservations_count = models.PositiveIntegerField(default=0)
     
+    # Ratings (Manual for now, can be aggregated later)
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=5.0, help_text="Product rating (0.0 - 5.0)")
+    rating_count = models.PositiveIntegerField(default=0, help_text="Number of ratings/reviews")
+    
     # Images
     image = models.ImageField(upload_to='products/', blank=True)
     
