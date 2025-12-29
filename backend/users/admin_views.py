@@ -301,79 +301,67 @@ class AdminProductApproveView(APIView):
 
 class AdminAnalyticsView(APIView):
     """
-    Get rich analytics data.
+    Get rich analytics data - optimized for performance.
     """
     permission_classes = [IsAdminUser]
     
     def get(self, request):
         today = timezone.now()
-        # Period filtering logic could be added here (e.g. ?period=7d)
         
-        # 1. Totals & Changes
-        # Calculate for current period vs previous period (simplifying to all-time vs last 30 days for 'change' proxy or just random for now if DB empty)
-        # Actually let's try real calc:
-        
-        current_total_revenue = Order.objects.filter(status='COMPLETED').aggregate(t=Sum('total_amount'))['t'] or 0
+        # Use cached aggregations where possible
+        # 1. Totals (single query each)
+        current_total_revenue = Order.objects.filter(state='DELIVERED').aggregate(t=Sum('total_amount'))['t'] or 0
         current_total_orders = Order.objects.count()
         current_total_users = User.objects.count()
         
-        # Avg Order Value
-        if current_total_orders > 0:
-            avg_order_value = current_total_revenue / current_total_orders # Approximate if some orders not completed?
-            # Better: avg of completed orders
-            completed_orders = Order.objects.filter(status='COMPLETED')
-            completed_count = completed_orders.count()
-            if completed_count > 0:
-                avg_order_value = current_total_revenue / completed_count
-            else:
-                avg_order_value = 0
-        else:
-            avg_order_value = 0
+        # Avg Order Value (single query)
+        completed_orders = Order.objects.filter(state='DELIVERED')
+        completed_count = completed_orders.count()
+        avg_order_value = (current_total_revenue / completed_count) if completed_count > 0 else 0
             
-        # 2. Revenue Chart (Last 7 days)
+        # 2. Revenue Chart - batch query instead of loop
+        seven_days_ago = today - timedelta(days=7)
+        daily_revenues = Order.objects.filter(
+            created_at__date__gte=seven_days_ago.date(),
+            state='DELIVERED'
+        ).values('created_at__date').annotate(
+            day_revenue=Sum('total_amount')
+        ).order_by('created_at__date')
+        
+        # Build chart data with defaults for missing days
+        revenue_map = {item['created_at__date']: float(item['day_revenue'] or 0) for item in daily_revenues}
         last_7_days_stats = []
         for i in range(6, -1, -1):
-            day = today - timedelta(days=i)
-            day_revenue = Order.objects.filter(
-                created_at__date=day.date(),
-                status='COMPLETED'
-            ).aggregate(t=Sum('total_amount'))['t'] or 0
+            day = (today - timedelta(days=i)).date()
             last_7_days_stats.append({
-                'day': day.strftime('%a'), # Mon, Tue...
-                'value': float(day_revenue)
+                'day': day.strftime('%a'),
+                'value': revenue_map.get(day, 0)
             })
             
-        # 3. Top Products (by revenue)
-        # Need to join OrderItem -> Order (completed)
-        # This is complex in pure Django ORM without aggregation over relations easily
-        # Simplified: Top products by 'sold' count (aggregating OrderItems?)
-        # Let's mock the complex aggregation for safety but return real list structure if possible
-        # Or simple query:
-        top_products = []
-        # Real query might be heavy: 
-        # Product.objects.annotate(revenue=Sum('order_items__quantity' * 'order_items__unit_price')).order_by('-revenue')
-        
-        # Fallback to simple list of active products top 5
-        products_qs = Product.objects.filter(is_active=True)[:5]
-        for p in products_qs:
-            top_products.append({
-                'name': p.name,
-                'sales': p.stock_quantity, # proxy
-                'revenue': float(p.price * 10) # proxy
-            })
+        # 3. Top Products (simple proxy - already efficient)
+        top_products = list(
+            Product.objects.filter(is_active=True)
+            .order_by('-reservations_count')[:5]
+            .values('name', 'price', 'reservations_count')
+        )
+        top_products = [
+            {'name': p['name'], 'sales': p['reservations_count'], 'revenue': float(p['price']) * p['reservations_count']}
+            for p in top_products
+        ]
             
-        # 4. Top Vendors
-        top_vendors = []
-        vendors_qs = Vendor.objects.all()[:5]
-        for v in vendors_qs:
-            top_vendors.append({
-                'name': v.business_name,
-                'orders': v.total_orders,
-                'revenue': 0 # Needs calculation
-            })
+        # 4. Top Vendors (already efficient)
+        top_vendors = list(
+            Vendor.objects.all()
+            .order_by('-total_orders')[:5]
+            .values('business_name', 'total_orders')
+        )
+        top_vendors = [
+            {'name': v['business_name'], 'orders': v['total_orders'], 'revenue': 0}
+            for v in top_vendors
+        ]
             
         return Response({
-            'revenue': {'total': float(current_total_revenue), 'change': 0}, # 'change' 0 for now
+            'revenue': {'total': float(current_total_revenue), 'change': 0},
             'orders': {'total': current_total_orders, 'change': 0},
             'users': {'total': current_total_users, 'change': 0},
             'avgOrderValue': {'total': float(avg_order_value), 'change': 0},
