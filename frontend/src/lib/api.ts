@@ -68,6 +68,9 @@ export const authAPI = {
   profile: () => api.get('/auth/profile/'),
   updateProfile: (data: any) => api.patch('/auth/profile/', data),
   changePassword: (data: any) => api.post('/auth/change-password/', data),
+  registerAdmin: (data: any) => api.post('/auth/register/admin/', data),
+  requestPasswordReset: (data: any) => api.post('/auth/password/reset/', data),
+  confirmPasswordReset: (data: any) => api.post('/auth/password/reset/confirm/', data),
 };
 
 export const productsAPI = {
@@ -125,6 +128,7 @@ export const adminAPI = {
 
   // Products management
   products: (params?: any) => api.get('/admin/products/', { params }),
+  createProduct: (data: any) => api.post('/admin/products/', data),
   updateProduct: (id: string, data: any) => api.patch(`/admin/products/${id}/`, data),
   approveProduct: (id: string) => api.post(`/admin/products/${id}/approve/`),
   featureProduct: (id: string, featured: boolean) => api.post(`/admin/products/${id}/feature/`, { featured }),

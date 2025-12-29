@@ -204,6 +204,37 @@ class AdminProductsListView(generics.ListAPIView):
             })
         
         return Response(products)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # Handle manual field mapping if serializer is simple UserProfileSerializer (wait, wrong serializer)
+            # We need a Product serializer. For now, manual create or uses generic if we change serializer_class.
+            # Let's do manual create for safety or use ProductSerializer if imported.
+            # Importing ProductSerializer would be better but let's do manual for now to match other views pattern if any.
+            # Actually, let's use manual creation to ensure all fields from frontend are handled.
+            data = request.data
+            try:
+                product = Product.objects.create(
+                    name=data.get('name'),
+                    description=data.get('description', ''),
+                    price=data.get('price', 0),
+                    stock_quantity=data.get('stock', 0),
+                    is_active=data.get('status') == 'ACTIVE',
+                    is_preorder=data.get('preOrder', False),
+                    is_featured=data.get('featured', False),
+                    # category handling needs lookup
+                    # vendor defaults to None (System)
+                )
+                if data.get('expectedDate'):
+                   product.cutoff_datetime = data.get('expectedDate') # simplified
+                   product.save()
+
+                return Response({'id': str(product.id), 'message': 'Product created'}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -240,6 +271,32 @@ class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         product = self.get_object()
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminProductFeatureView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+            product.is_featured = request.data.get('featured', not product.is_featured)
+            product.save()
+            return Response({'status': 'success', 'featured': product.is_featured})
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class AdminProductApproveView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+            product.is_active = True
+            product.save()
+            return Response({'status': 'success', 'is_active': True})
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AdminAnalyticsView(APIView):

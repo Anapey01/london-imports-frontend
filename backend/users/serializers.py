@@ -156,3 +156,53 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not user.check_password(value):
             raise serializers.ValidationError("Current password is incorrect")
         return value
+
+
+class AdminRegistrationSerializer(serializers.ModelSerializer):
+    """Register new admin user (requires secret key)"""
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password_confirm = serializers.CharField(write_only=True)
+    secret_key = serializers.CharField(write_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'password_confirm', 'secret_key']
+        extra_kwargs = {
+            'email': {'required': True}
+        }
+        
+    def validate(self, attrs):
+        if attrs['password'] != attrs.pop('password_confirm'):
+            raise serializers.ValidationError({"password_confirm": "Passwords do not match"})
+        return attrs
+
+    def create(self, validated_data):
+        # Secret key validation happens in the view
+        validated_data.pop('secret_key', None)
+        
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            role=User.Role.ADMIN,
+            is_staff=True,
+            is_superuser=True
+        )
+        return user
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """Request password reset"""
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Confirm password reset"""
+    token = serializers.CharField()
+    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs.pop('confirm_password'):
+            raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
+        return attrs

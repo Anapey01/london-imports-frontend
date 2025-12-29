@@ -7,14 +7,37 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
+import { Search, Filter, ChevronRight, Eye, MoreVertical, X } from 'lucide-react';
+
+interface Order {
+    id: string;
+    order_number?: string; // Optional if not always present
+    customer: {
+        name: string;
+        email: string;
+        avatar?: string;
+    };
+    items_count: number;
+    total_amount: number;
+    status: string;
+    payment_status: string;
+    created_at: string;
+    items?: Array<{
+        id: number;
+        product_name: string;
+        quantity: number;
+        price: number;
+    }>;
+}
 
 export default function AdminOrdersPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
-    const [orders, setOrders] = useState<any[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const [statusFilter, setStatusFilter] = useState('ALL');
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -26,14 +49,16 @@ export default function AdminOrdersPage() {
                     id: order.id,
                     order_number: order.order_number,
                     customer: {
-                        name: order.customer || order.customer_name || 'Unknown',
-                        email: order.customer_email || ''
+                        name: order.customer.name,
+                        email: order.customer.email,
+                        avatar: order.customer.avatar
                     },
-                    items: order.items_count || order.items?.length || 0,
-                    total: parseFloat(order.total) || 0,
+                    items_count: order.items_count || order.items?.length || 0,
+                    total_amount: parseFloat(order.total) || 0,
                     status: order.status || 'PENDING',
                     payment_status: order.payment_status || 'PENDING',
                     created_at: order.created_at,
+                    items: order.items || []
                 })));
             } catch (err: any) {
                 console.error('Failed to load orders:', err);
@@ -45,8 +70,11 @@ export default function AdminOrdersPage() {
         loadOrders();
     }, []);
 
-    const filteredOrders = orders.filter(order => {
-        return statusFilter === 'ALL' || order.status === statusFilter;
+    const filteredOrders = orders.filter((order: Order) => {
+        const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            order.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
+        return matchesSearch && matchesStatus;
     });
 
     const getStatusColor = (status: string) => {
@@ -92,7 +120,7 @@ export default function AdminOrdersPage() {
             <div className="flex items-center justify-between">
                 <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Order Management</h2>
                 <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                    {orders.length} orders • GHS {orders.reduce((sum, o) => sum + o.total, 0).toLocaleString()}
+                    {orders.length} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
                 </span>
             </div>
 
@@ -130,10 +158,10 @@ export default function AdminOrdersPage() {
                         </tr>
                     </thead>
                     <tbody className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
-                        {filteredOrders.map((order) => (
+                        {filteredOrders.map((order: Order) => (
                             <tr key={order.id} className={`${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'} transition-colors`}>
                                 <td className="px-6 py-4">
-                                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>#{order.order_number}</p>
+                                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>#{order.id}</p>
                                     <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                                         {new Date(order.created_at).toLocaleString()}
                                     </p>
@@ -143,10 +171,10 @@ export default function AdminOrdersPage() {
                                     <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{order.customer.email}</p>
                                 </td>
                                 <td className={`px-6 py-4 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                    {order.items} items
+                                    {order.items_count} items
                                 </td>
                                 <td className={`px-6 py-4 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                    GHS {order.total.toFixed(2)}
+                                    GHS {order.total_amount.toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(order.status)}`}>
@@ -204,11 +232,11 @@ export default function AdminOrdersPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Total Amount</p>
-                                    <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>GHS {selectedOrder.total.toFixed(2)}</p>
+                                    <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>GHS {selectedOrder.total_amount.toFixed(2)}</p>
                                 </div>
                                 <div>
                                     <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Items</p>
-                                    <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedOrder.items}</p>
+                                    <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedOrder.items?.length || 0} items</p>
                                 </div>
                             </div>
 

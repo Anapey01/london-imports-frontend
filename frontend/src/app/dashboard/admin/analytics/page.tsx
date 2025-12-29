@@ -8,12 +8,22 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 
+interface AnalyticsData {
+    revenue: { total: number; change: number };
+    orders: { total: number; change: number };
+    users: { total: number; change: number };
+    avgOrderValue: { total: number; change: number };
+    revenueChart: Array<{ day: string; value: number }>;
+    topProducts: Array<{ name: string; sales: number; revenue: number }>;
+    topVendors: Array<{ name: string; orders: number; revenue: number }>;
+}
+
 export default function AdminAnalyticsPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
-    const [period, setPeriod] = useState('7d');
+    const [period, setPeriod] = useState('This Week');
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<AnalyticsData | null>(null);
 
     useEffect(() => {
         const loadAnalytics = async () => {
@@ -63,7 +73,7 @@ export default function AdminAnalyticsPage() {
         );
     };
 
-    if (loading) {
+    if (loading || !data) {
         return (
             <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -124,7 +134,7 @@ export default function AdminAnalyticsPage() {
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Products</h3>
                     </div>
                     <div className="divide-y divide-slate-700">
-                        {data.topProducts.map((product: any, index: number) => (
+                        {data.topProducts.map((product, index: number) => (
                             <div key={index} className={`px-6 py-4 flex items-center justify-between ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
                                 <div className="flex items-center gap-3">
                                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index < 3 ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-600'
@@ -148,7 +158,7 @@ export default function AdminAnalyticsPage() {
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Vendors</h3>
                     </div>
                     <div className="divide-y divide-slate-700">
-                        {data.topVendors.map((vendor: any, index: number) => (
+                        {data.topVendors.map((vendor, index: number) => (
                             <div key={index} className={`px-6 py-4 flex items-center justify-between ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
                                 <div className="flex items-center gap-3">
                                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index < 3 ? 'bg-purple-500 text-white' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-600'

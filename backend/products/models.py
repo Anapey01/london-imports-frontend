@@ -50,7 +50,7 @@ class Product(models.Model):
     
     # Categorization
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
-    vendor = models.ForeignKey('vendors.Vendor', on_delete=models.PROTECT, related_name='products')
+    vendor = models.ForeignKey('vendors.Vendor', on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     
     # Pricing
     price = models.DecimalField(max_digits=10, decimal_places=2)

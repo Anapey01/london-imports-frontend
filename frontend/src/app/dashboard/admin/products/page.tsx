@@ -7,20 +7,22 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
+import { Search, Plus, Filter, MoreVertical, Edit, Trash2, Eye, Star, Clock } from 'lucide-react';
 
 interface Product {
-    id: string;
+    id: number;
     name: string;
-    description: string;
     category: string;
     price: number;
     stock: number;
-    status: 'ACTIVE' | 'PENDING' | 'OUT_OF_STOCK' | 'DRAFT';
+    status: string;
+    image: string;
+    vendor: string;
     featured: boolean;
     preOrder: boolean;
-    expectedDate: string;
-    vendor: string;
-    createdAt: string;
+    description: string;
+    createdAt?: string;
+    expectedDate?: string;
 }
 
 const CATEGORIES = [
@@ -89,11 +91,12 @@ export default function AdminProductsPage() {
         loadProducts();
     }, []);
 
-    const filteredProducts = products.filter(product => {
-        const matchesStatus = statusFilter === 'ALL' || product.status === statusFilter;
-        const matchesCategory = categoryFilter === 'ALL' || product.category === categoryFilter;
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesStatus && matchesCategory && matchesSearch;
+    const filteredProducts = products.filter((product: Product) => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.vendor.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = categoryFilter === 'All' || product.category === categoryFilter;
+        const matchesStatus = statusFilter === 'ALL' || product.status === statusFilter; // Keep status filter
+        return matchesSearch && matchesCategory && matchesStatus;
     });
 
     const getStatusStyle = (status: string) => {
@@ -106,40 +109,50 @@ export default function AdminProductsPage() {
         return styles[status] || styles.DRAFT;
     };
 
-    const handleAddProduct = () => {
-        const product: Product = {
-            id: Date.now().toString(),
-            ...newProduct,
-            vendor: 'Admin',
-            createdAt: new Date().toISOString().split('T')[0],
-        };
-        setProducts([product, ...products]);
-        setShowAddModal(false);
-        setNewProduct({
-            name: '',
-            description: '',
-            category: 'Electronics',
-            price: 0,
-            stock: 0,
-            status: 'DRAFT',
-            featured: false,
-            preOrder: true,
-            expectedDate: '',
-        });
+    const handleAddProduct = async () => {
+        try {
+            await adminAPI.createProduct(newProduct);
+            const response = await adminAPI.products();
+            setProducts(response.data.results || response.data || []);
+            setShowAddModal(false);
+            setNewProduct({
+                name: '',
+                description: '',
+                category: 'Electronics',
+                price: 0,
+                stock: 0,
+                status: 'DRAFT',
+                featured: false,
+                preOrder: true,
+                expectedDate: '',
+            });
+            alert('Product added successfully');
+        } catch (err) {
+            console.error('Failed to add product:', err);
+            alert('Failed to add product');
+        }
     };
 
-    const handleEditProduct = () => {
+    const handleEditProduct = async () => {
         if (!selectedProduct) return;
-        setProducts(products.map(p => p.id === selectedProduct.id ? selectedProduct : p));
-        setShowEditModal(false);
-        setSelectedProduct(null);
+        try {
+            await adminAPI.updateProduct(String(selectedProduct.id), selectedProduct);
+            const response = await adminAPI.products();
+            setProducts(response.data.results || response.data || []);
+            setShowEditModal(false);
+            setSelectedProduct(null);
+            alert('Product updated successfully');
+        } catch (err) {
+            console.error('Failed to update product:', err);
+            alert('Failed to update product');
+        }
     };
 
-    const handleDeleteProduct = async (id: string) => {
+    const handleDeleteProduct = async (id: number) => {
         if (confirm('Remove this product from the catalog?')) {
             try {
-                await adminAPI.deleteProduct(id);
-                setProducts(products.filter(p => p.id !== id));
+                await adminAPI.deleteProduct(String(id));
+                setProducts(products.filter((p: Product) => p.id !== id));
             } catch (err) {
                 console.error('Failed to delete product:', err);
                 alert('Failed to delete product');
@@ -147,12 +160,30 @@ export default function AdminProductsPage() {
         }
     };
 
-    const toggleFeatured = (id: string) => {
-        setProducts(products.map(p => p.id === id ? { ...p, featured: !p.featured } : p));
+    const toggleFeatured = async (id: number) => {
+        const product = products.find((p: Product) => p.id === id);
+        if (!product) return;
+        try {
+            await adminAPI.featureProduct(String(id), !product.featured);
+            // Optimistic update
+            setProducts(products.map((p: Product) => p.id === id ? { ...p, featured: !p.featured } : p));
+        } catch (err) {
+            console.error('Failed to toggle featured:', err);
+            alert('Failed to update featured status');
+        }
     };
 
-    const togglePreOrder = (id: string) => {
-        setProducts(products.map(p => p.id === id ? { ...p, preOrder: !p.preOrder } : p));
+    const togglePreOrder = async (id: number) => {
+        const product = products.find((p: Product) => p.id === id);
+        if (!product) return;
+        try {
+            await adminAPI.updateProduct(String(id), { preOrder: !product.preOrder });
+            // Optimistic update
+            setProducts(products.map((p: Product) => p.id === id ? { ...p, preOrder: !p.preOrder } : p));
+        } catch (err) {
+            console.error('Failed to toggle pre-order:', err);
+            alert('Failed to update pre-order status');
+        }
     };
 
     // Product Icon Component
@@ -201,9 +232,9 @@ export default function AdminProductsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                     { label: 'Total Products', value: products.length, color: 'text-blue-500' },
-                    { label: 'Pre-Orders', value: products.filter(p => p.preOrder).length, color: 'text-purple-500' },
-                    { label: 'Active', value: products.filter(p => p.status === 'ACTIVE').length, color: 'text-emerald-500' },
-                    { label: 'Pending Review', value: products.filter(p => p.status === 'PENDING').length, color: 'text-amber-500' },
+                    { label: 'Pre-Orders', value: products.filter((p: Product) => p.preOrder).length, color: 'text-purple-500' },
+                    { label: 'Active', value: products.filter((p: Product) => p.status === 'ACTIVE').length, color: 'text-emerald-500' },
+                    { label: 'Pending Review', value: products.filter((p: Product) => p.status === 'PENDING').length, color: 'text-amber-500' },
                 ].map((stat, i) => (
                     <div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/30 border-slate-700/50' : 'bg-white border-gray-100'}`}>
                         <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
@@ -223,7 +254,7 @@ export default function AdminProductsPage() {
                             type="text"
                             placeholder="Search products..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                             className={`w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm ${isDark
                                 ? 'bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500'
                                 : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
@@ -232,7 +263,7 @@ export default function AdminProductsPage() {
                     </div>
                     <select
                         value={categoryFilter}
-                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategoryFilter(e.target.value)}
                         className={`px-4 py-2.5 rounded-lg border text-sm ${isDark ? 'bg-slate-900/50 border-slate-700 text-white' : 'bg-gray-50 border-gray-200'}`}
                     >
                         <option value="ALL">All Categories</option>
@@ -240,7 +271,7 @@ export default function AdminProductsPage() {
                     </select>
                     <select
                         value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
                         className={`px-4 py-2.5 rounded-lg border text-sm ${isDark ? 'bg-slate-900/50 border-slate-700 text-white' : 'bg-gray-50 border-gray-200'}`}
                     >
                         <option value="ALL">All Status</option>
@@ -285,7 +316,7 @@ export default function AdminProductsPage() {
                             </tr>
                         </thead>
                         <tbody className={`divide-y ${isDark ? 'divide-slate-700/50' : 'divide-gray-100'}`}>
-                            {filteredProducts.map((product) => {
+                            {filteredProducts.map((product: Product) => {
                                 const statusStyle = getStatusStyle(product.status);
                                 return (
                                     <tr key={product.id} className={`${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-gray-50/50'} transition-colors`}>
@@ -361,7 +392,7 @@ export default function AdminProductsPage() {
             {/* Grid View */}
             {viewMode === 'grid' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filteredProducts.map((product) => {
+                    {filteredProducts.map((product: Product) => {
                         const statusStyle = getStatusStyle(product.status);
                         return (
                             <div key={product.id} className={`rounded-xl border overflow-hidden transition-shadow hover:shadow-lg ${isDark ? 'bg-slate-800/30 border-slate-700/50' : 'bg-white border-gray-100'}`}>
@@ -434,32 +465,32 @@ export default function AdminProductsPage() {
                         <div className="space-y-4">
                             <div>
                                 <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Product Name</label>
-                                <input type="text" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="e.g., iPhone 16 Pro Max" />
+                                <input type="text" value={newProduct.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="e.g., iPhone 16 Pro Max" />
                             </div>
                             <div>
                                 <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Description</label>
-                                <textarea value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="Brief product description" />
+                                <textarea value={newProduct.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewProduct({ ...newProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="Brief product description" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
-                                    <select value={newProduct.category} onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <select value={newProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                 </div>
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Price (GHS)</label>
-                                    <input type="number" value={newProduct.price || ''} onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} placeholder="0.00" />
+                                    <input type="number" value={newProduct.price || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} placeholder="0.00" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
-                                    <input type="date" value={newProduct.expectedDate} onChange={(e) => setNewProduct({ ...newProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                    <input type="date" value={newProduct.expectedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                                 </div>
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
-                                    <select value={newProduct.status} onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value as any })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <select value={newProduct.status} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, status: e.target.value as any })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         <option value="DRAFT">Draft</option>
                                         <option value="PENDING">Pending Review</option>
                                         <option value="ACTIVE">Active</option>
@@ -468,11 +499,11 @@ export default function AdminProductsPage() {
                             </div>
                             <div className={`flex items-center gap-6 py-2 px-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={newProduct.preOrder} onChange={(e) => setNewProduct({ ...newProduct, preOrder: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
+                                    <input type="checkbox" checked={newProduct.preOrder} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, preOrder: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
                                     <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Pre-Order Item</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={newProduct.featured} onChange={(e) => setNewProduct({ ...newProduct, featured: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
+                                    <input type="checkbox" checked={newProduct.featured} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, featured: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
                                     <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Featured Product</span>
                                 </label>
                             </div>
@@ -509,32 +540,32 @@ export default function AdminProductsPage() {
                         <div className="space-y-4">
                             <div>
                                 <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Product Name</label>
-                                <input type="text" value={selectedProduct.name} onChange={(e) => setSelectedProduct({ ...selectedProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                <input type="text" value={selectedProduct.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                             </div>
                             <div>
                                 <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Description</label>
-                                <textarea value={selectedProduct.description} onChange={(e) => setSelectedProduct({ ...selectedProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                <textarea value={selectedProduct.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSelectedProduct({ ...selectedProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
-                                    <select value={selectedProduct.category} onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <select value={selectedProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                 </div>
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Price (GHS)</label>
-                                    <input type="number" value={selectedProduct.price} onChange={(e) => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                    <input type="number" value={selectedProduct.price} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Stock</label>
-                                    <input type="number" value={selectedProduct.stock} onChange={(e) => setSelectedProduct({ ...selectedProduct, stock: parseInt(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                    <input type="number" value={selectedProduct.stock} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, stock: parseInt(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                                 </div>
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
-                                    <select value={selectedProduct.status} onChange={(e) => setSelectedProduct({ ...selectedProduct, status: e.target.value as any })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <select value={selectedProduct.status} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, status: e.target.value as any })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         <option value="DRAFT">Draft</option>
                                         <option value="PENDING">Pending</option>
                                         <option value="ACTIVE">Active</option>
@@ -544,15 +575,15 @@ export default function AdminProductsPage() {
                             </div>
                             <div>
                                 <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
-                                <input type="date" value={selectedProduct.expectedDate} onChange={(e) => setSelectedProduct({ ...selectedProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                <input type="date" value={selectedProduct.expectedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                             </div>
                             <div className={`flex items-center gap-6 py-2 px-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={selectedProduct.preOrder} onChange={(e) => setSelectedProduct({ ...selectedProduct, preOrder: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
+                                    <input type="checkbox" checked={selectedProduct.preOrder} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, preOrder: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
                                     <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Pre-Order</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={selectedProduct.featured} onChange={(e) => setSelectedProduct({ ...selectedProduct, featured: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
+                                    <input type="checkbox" checked={selectedProduct.featured} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, featured: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
                                     <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Featured</span>
                                 </label>
                             </div>

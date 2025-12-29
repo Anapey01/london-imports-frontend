@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 
@@ -33,7 +33,7 @@ export default function AdminSettingsPage() {
     useEffect(() => {
         const loadSettings = async () => {
             try {
-                const response = await adminAPI.settings.get();
+                const response = await adminAPI.settings();
                 setSettings(response.data);
             } catch (err) {
                 console.error('Failed to load settings:', err);
@@ -45,7 +45,7 @@ export default function AdminSettingsPage() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await adminAPI.settings.update(settings);
+            await adminAPI.updateSettings(settings);
             alert('Settings saved successfully!');
         } catch (error) {
             console.error('Failed to save settings:', error);
@@ -62,7 +62,15 @@ export default function AdminSettingsPage() {
         </div>
     );
 
-    const InputField = ({ label, value, onChange, type = 'text', placeholder = '' }: any) => (
+    interface InputFieldProps {
+        label: string;
+        value: string | number;
+        onChange: (value: string) => void;
+        type?: string;
+        placeholder?: string;
+    }
+
+    const InputField = ({ label, value, onChange, type = 'text', placeholder = '' }: InputFieldProps) => (
         <div>
             <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{label}</label>
             <input
@@ -78,7 +86,14 @@ export default function AdminSettingsPage() {
         </div>
     );
 
-    const Toggle = ({ label, description, checked, onChange }: any) => (
+    interface ToggleProps {
+        label: string;
+        description?: string;
+        checked: boolean;
+        onChange: (checked: boolean) => void;
+    }
+
+    const Toggle = ({ label, description, checked, onChange }: ToggleProps) => (
         <div className="flex items-center justify-between py-2">
             <div>
                 <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{label}</p>

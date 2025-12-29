@@ -2,6 +2,7 @@
 Londom Imports - Product Views
 """
 from rest_framework import generics, permissions, filters
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Product, Category
@@ -35,8 +36,8 @@ class ProductListView(generics.ListAPIView):
     
     def get_queryset(self):
         queryset = Product.objects.filter(
-            is_active=True,
-            vendor__is_active=True
+            Q(vendor__is_active=True) | Q(vendor__isnull=True),
+            is_active=True
         ).select_related('category', 'vendor')
         
         # Filter by category

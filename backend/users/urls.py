@@ -10,7 +10,10 @@ from .views import (
     UserProfileView,
     ChangePasswordView,
     LogoutView,
-    CurrentUserView
+    CurrentUserView,
+    AdminRegistrationView,
+    RequestPasswordResetView,
+    PasswordResetConfirmView
 )
 
 urlpatterns = [
@@ -27,4 +30,9 @@ urlpatterns = [
     path('me/', CurrentUserView.as_view(), name='current-user'),
     path('profile/', UserProfileView.as_view(), name='user-profile'),
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
+    
+    # Admin & Password Reset
+    path('register/admin/', AdminRegistrationView.as_view(), name='admin-register'),
+    path('password/reset/', RequestPasswordResetView.as_view(), name='password-reset-request'),
+    path('password/reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 ]

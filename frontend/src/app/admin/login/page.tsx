@@ -122,6 +122,15 @@ export default function AdminLoginPage() {
                             />
                         </div>
 
+                        <div className="flex items-center justify-between">
+                            <Link
+                                href="/admin/forgot-password"
+                                className="text-sm text-pink-500 hover:text-pink-600 font-medium transition-colors"
+                            >
+                                Forgot Password?
+                            </Link>
+                        </div>
+
                         <button
                             type="submit"
                             disabled={loading}
@@ -150,10 +159,19 @@ export default function AdminLoginPage() {
                 </div>
 
                 {/* Back to Main Site */}
-                <div className="text-center mt-6">
+                <div className="text-center mt-6 space-y-2">
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        Need an admin account?{' '}
+                        <Link
+                            href="/admin/signup"
+                            className="text-pink-500 hover:text-pink-600 font-medium transition-colors"
+                        >
+                            Create one (Secret key required)
+                        </Link>
+                    </p>
                     <Link
                         href="/"
-                        className={`text-sm ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'} transition-colors`}
+                        className={`block text-sm ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'} transition-colors`}
                     >
                         ← Back to main site
                     </Link>
