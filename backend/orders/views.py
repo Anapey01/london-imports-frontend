@@ -298,7 +298,7 @@ class PublicPlatformStatsView(APIView):
     permission_classes = [permissions.AllowAny]
     
     def get(self, request):
-        total_orders = Order.objects.filter(status='COMPLETED').count()
+        total_orders = Order.objects.filter(state=OrderState.DELIVERED).count()
         # Fallback to a base number if low for social proof
         if total_orders < 500:
             display_orders = 500 + total_orders
