@@ -150,25 +150,29 @@ export default function StatsBar() {
     return (
         <section className="bg-gradient-to-b from-slate-50 to-white border-y border-slate-100/80 py-8 sm:py-10 md:py-12 overflow-hidden">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-                    {statItems.map((stat, i) => (
-                        <div
-                            key={i}
-                            className={`
-                                ${i > 0 ? 'md:border-l md:border-slate-200/60' : ''}
-                                ${i === 2 ? 'border-t border-slate-200/60 pt-4 md:border-t-0 md:pt-0' : ''}
-                                ${i === 3 ? 'border-t border-slate-200/60 pt-4 md:border-t-0 md:pt-0' : ''}
-                            `}
-                        >
-                            <StatItem
-                                value={stat.value}
-                                label={stat.label}
-                                icon={stat.icon}
-                                suffix={stat.suffix}
-                                isLoaded={isLoaded}
-                            />
-                        </div>
-                    ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y divide-slate-200/60 sm:divide-y-0">
+                    {statItems.map((stat, i) => {
+                        // Responsive border logic
+                        let borderClass = 'border-slate-200/60';
+                        if (i === 0) borderClass += ' sm:border-r sm:border-b lg:border-b-0';
+                        if (i === 1) borderClass += ' sm:border-b lg:border-b-0 lg:border-r';
+                        if (i === 2) borderClass += ' sm:border-r lg:border-r'; // sm:border-r persists to lg
+
+                        return (
+                            <div
+                                key={i}
+                                className={`flex flex-col items-center justify-center py-6 sm:py-0 ${borderClass}`}
+                            >
+                                <StatItem
+                                    value={stat.value}
+                                    label={stat.label}
+                                    icon={stat.icon}
+                                    suffix={stat.suffix}
+                                    isLoaded={isLoaded}
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </section>
