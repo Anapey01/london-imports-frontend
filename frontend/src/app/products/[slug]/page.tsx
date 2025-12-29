@@ -155,11 +155,10 @@ export default function ProductDetailPage() {
                                 size="md"
                             />
                             <span className="text-sm text-gray-600 font-medium">
-                                <span className="text-sm text-gray-600 font-medium">
-                                    {product.rating || '5.0'}
-                                    <span className="mx-1.5 text-gray-300">|</span>
-                                    {product.reservations_count || 0} Pre-orders
-                                </span>
+                                {product.rating || '5.0'}
+                                <span className="mx-1.5 text-gray-300">|</span>
+                                {product.reservations_count || 0} Pre-orders
+                            </span>
                         </div>
 
                         {/* Price */}
