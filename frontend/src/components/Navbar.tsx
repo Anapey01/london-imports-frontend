@@ -13,6 +13,7 @@ import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
 import MobileMenuDrawer from './MobileMenuDrawer';
 import { useTheme } from '@/providers/ThemeProvider';
+import { Search, Menu } from 'lucide-react';
 
 export default function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
@@ -34,7 +35,8 @@ export default function Navbar() {
     return (
         <>
             <nav className="border-b sticky top-0 z-40" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Desktop Navbar */}
+                <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         {/* Logo */}
                         <div className="flex items-center">
@@ -57,7 +59,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Center: Desktop Navigation Links */}
-                        <div className="hidden md:flex items-center justify-center flex-1 mx-8">
+                        <div className="flex items-center justify-center flex-1 mx-8">
                             <div className="flex items-center space-x-8">
                                 <Link href="/products" className="text-gray-900 hover:text-pink-600 font-bold transition-colors">
                                     Pre-orders
@@ -72,7 +74,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Right: Icons (Theme, Search, User, Cart) */}
-                        <div className="hidden md:flex items-center space-x-4">
+                        <div className="flex items-center space-x-4">
                             {/* Theme Toggle */}
                             <ThemeToggle />
 
@@ -126,25 +128,50 @@ export default function Navbar() {
                                 )}
                             </Link>
                         </div>
+                    </div>
+                </div>
 
-                        {/* Mobile menu button */}
-                        <div className="md:hidden flex items-center space-x-4">
-                            <Link href="/cart" className="relative">
-                                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                                {itemCount > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                        {itemCount}
-                                    </span>
-                                )}
-                            </Link>
-                            <button onClick={() => setMobileMenuOpen(true)} className="text-gray-600 p-1">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                            </button>
-                        </div>
+                {/* Mobile Navbar - Jumia Style */}
+                <div className="md:hidden">
+                    {/* Top Row: Menu + Logo */}
+                    <div className="flex items-center justify-between px-4 h-14">
+                        {/* Hamburger Menu */}
+                        <button
+                            onClick={() => setMobileMenuOpen(true)}
+                            className="p-2 -ml-2 text-gray-700"
+                        >
+                            <Menu className="w-7 h-7" />
+                        </button>
+
+                        {/* Centered Logo */}
+                        <Link href="/" className="flex items-center gap-1.5">
+                            <Image
+                                src="/logo.jpg"
+                                alt="London's Imports"
+                                width={36}
+                                height={36}
+                                className="rounded-lg"
+                                priority
+                            />
+                            <span className="text-lg font-bold">
+                                <span className="text-pink-500">London&apos;s</span>
+                                <span className="text-gray-800"> Imports</span>
+                            </span>
+                        </Link>
+
+                        {/* Empty div for spacing balance */}
+                        <div className="w-10" />
+                    </div>
+
+                    {/* Search Bar Row */}
+                    <div className="px-4 pb-3">
+                        <button
+                            onClick={() => setSearchOpen(true)}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors"
+                        >
+                            <Search className="w-5 h-5" />
+                            <span className="text-sm">Search products, brands and categories</span>
+                        </button>
                     </div>
                 </div>
 
