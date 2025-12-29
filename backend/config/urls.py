@@ -5,8 +5,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+
+def api_root(request):
+    return JsonResponse({
+        "status": "online",
+        "message": "London Imports API is running",
+        "version": "1.0.0"
+    })
 
 urlpatterns = [
+    # Root
+    path('', api_root, name='api-root'),
+
     # Admin
     path('admin/', admin.site.urls),
     
