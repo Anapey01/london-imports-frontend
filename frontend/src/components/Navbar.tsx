@@ -131,9 +131,9 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Mobile Navbar - Jumia Style */}
+                {/* Mobile Navbar - Clean Style */}
                 <div className="md:hidden">
-                    {/* Top Row: Menu + Logo */}
+                    {/* Single Row: Menu + Logo + Search */}
                     <div className="flex items-center justify-between px-4 h-14">
                         {/* Hamburger Menu */}
                         <button
@@ -159,18 +159,12 @@ export default function Navbar() {
                             </span>
                         </Link>
 
-                        {/* Empty div for spacing balance */}
-                        <div className="w-10" />
-                    </div>
-
-                    {/* Search Bar Row */}
-                    <div className="px-4 pb-3">
+                        {/* Search Icon */}
                         <button
                             onClick={() => setSearchOpen(true)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors"
+                            className="p-2 -mr-2 text-gray-700"
                         >
-                            <Search className="w-5 h-5" />
-                            <span className="text-sm">Search products, brands and categories</span>
+                            <Search className="w-6 h-6" />
                         </button>
                     </div>
                 </div>
