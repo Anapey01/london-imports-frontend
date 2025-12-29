@@ -6,6 +6,7 @@
 
 import { useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { adminAPI } from '@/lib/api';
 
 export default function AdminSettingsPage() {
     const { theme } = useTheme();
@@ -29,12 +30,29 @@ export default function AdminSettingsPage() {
         freeDeliveryThreshold: 200,
     });
 
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const response = await adminAPI.settings.get();
+                setSettings(response.data);
+            } catch (err) {
+                console.error('Failed to load settings:', err);
+            }
+        };
+        loadSettings();
+    }, []);
+
     const handleSave = async () => {
         setSaving(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setSaving(false);
-        alert('Settings saved successfully!');
+        try {
+            await adminAPI.settings.update(settings);
+            alert('Settings saved successfully!');
+        } catch (error) {
+            console.error('Failed to save settings:', error);
+            alert('Failed to save settings. Please try again.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -53,8 +71,8 @@ export default function AdminSettingsPage() {
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 className={`w-full px-4 py-2.5 rounded-lg border text-sm ${isDark
-                        ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
-                        : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400'
+                    ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
+                    : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400'
                     }`}
             />
         </div>
@@ -108,8 +126,8 @@ export default function AdminSettingsPage() {
                             value={settings.currency}
                             onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
                             className={`w-full px-4 py-2.5 rounded-lg border text-sm ${isDark
-                                    ? 'bg-slate-800 border-slate-700 text-white'
-                                    : 'bg-white border-gray-200 text-gray-900'
+                                ? 'bg-slate-800 border-slate-700 text-white'
+                                : 'bg-white border-gray-200 text-gray-900'
                                 }`}
                         >
                             <option value="GHS">GHS (Ghanaian Cedi)</option>

@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { adminAPI } from '@/lib/api';
 
 interface Product {
     id: string;
@@ -73,17 +74,19 @@ export default function AdminProductsPage() {
     });
 
     useEffect(() => {
-        setTimeout(() => {
-            setProducts([
-                { id: '1', name: 'iPhone 15 Pro Max', description: 'Latest Apple flagship with titanium design', category: 'Phones & Tablets', price: 1299.00, stock: 0, status: 'PENDING', featured: true, preOrder: true, expectedDate: '2024-01-15', vendor: 'Admin', createdAt: '2024-12-27' },
-                { id: '2', name: 'Samsung Galaxy S24 Ultra', description: 'Premium Android with AI features', category: 'Phones & Tablets', price: 1199.00, stock: 0, status: 'ACTIVE', featured: true, preOrder: true, expectedDate: '2024-01-20', vendor: 'Admin', createdAt: '2024-12-26' },
-                { id: '3', name: 'MacBook Pro 16"', description: 'M3 Pro chip, 18hr battery life', category: 'Computers', price: 2499.00, stock: 5, status: 'ACTIVE', featured: false, preOrder: false, expectedDate: '', vendor: 'Admin', createdAt: '2024-12-25' },
-                { id: '4', name: 'Sony WH-1000XM5', description: 'Industry-leading noise cancellation', category: 'Electronics', price: 349.00, stock: 20, status: 'ACTIVE', featured: false, preOrder: false, expectedDate: '', vendor: 'Tech Hub', createdAt: '2024-12-24' },
-                { id: '5', name: 'PlayStation 5 Pro', description: '8K gaming, ray tracing enhanced', category: 'Gaming', price: 699.00, stock: 0, status: 'PENDING', featured: true, preOrder: true, expectedDate: '2024-02-01', vendor: 'Admin', createdAt: '2024-12-23' },
-                { id: '6', name: 'Nike Air Max 2024', description: 'Limited edition, comfort technology', category: 'Fashion', price: 189.00, stock: 15, status: 'ACTIVE', featured: false, preOrder: false, expectedDate: '', vendor: 'Nike Store', createdAt: '2024-12-22' },
-            ]);
-            setLoading(false);
-        }, 300);
+        const loadProducts = async () => {
+            try {
+                const response = await adminAPI.products();
+                // Map API response if necessary or use directly if matches interface
+                // API returns list of objects matching Product interface mostly
+                setProducts(response.data.results || response.data || []);
+            } catch (err) {
+                console.error('Failed to load products:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadProducts();
     }, []);
 
     const filteredProducts = products.filter(product => {
@@ -132,9 +135,15 @@ export default function AdminProductsPage() {
         setSelectedProduct(null);
     };
 
-    const handleDeleteProduct = (id: string) => {
+    const handleDeleteProduct = async (id: string) => {
         if (confirm('Remove this product from the catalog?')) {
-            setProducts(products.filter(p => p.id !== id));
+            try {
+                await adminAPI.deleteProduct(id);
+                setProducts(products.filter(p => p.id !== id));
+            } catch (err) {
+                console.error('Failed to delete product:', err);
+                alert('Failed to delete product');
+            }
         }
     };
 
@@ -216,8 +225,8 @@ export default function AdminProductsPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className={`w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm ${isDark
-                                    ? 'bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500'
-                                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+                                ? 'bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500'
+                                : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
                                 } focus:outline-none focus:ring-2 focus:ring-pink-500/20`}
                         />
                     </div>

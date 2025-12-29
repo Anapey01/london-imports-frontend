@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { adminAPI } from '@/lib/api';
 
 export default function AdminAnalyticsPage() {
     const { theme } = useTheme();
@@ -15,38 +16,18 @@ export default function AdminAnalyticsPage() {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
-        // Mock data - replace with API call
-        setTimeout(() => {
-            setData({
-                revenue: { total: 45678.50, change: 12.5 },
-                orders: { total: 423, change: 8.3 },
-                users: { total: 156, change: 15.2 },
-                avgOrderValue: { total: 108.00, change: 4.1 },
-                revenueChart: [
-                    { day: 'Mon', value: 4200 },
-                    { day: 'Tue', value: 5100 },
-                    { day: 'Wed', value: 4800 },
-                    { day: 'Thu', value: 6200 },
-                    { day: 'Fri', value: 7500 },
-                    { day: 'Sat', value: 8900 },
-                    { day: 'Sun', value: 6300 },
-                ],
-                topProducts: [
-                    { name: 'Premium Sneakers', sales: 45, revenue: 6750 },
-                    { name: 'Wireless Earbuds', sales: 38, revenue: 3420 },
-                    { name: 'Designer Handbag', sales: 25, revenue: 7475 },
-                    { name: 'Smart Watch', sales: 22, revenue: 4400 },
-                    { name: 'Running Shoes', sales: 20, revenue: 2400 },
-                ],
-                topVendors: [
-                    { name: 'Tech Hub', orders: 85, revenue: 12500 },
-                    { name: 'Nike Store', orders: 72, revenue: 10800 },
-                    { name: 'Fashion Co', orders: 58, revenue: 15400 },
-                    { name: 'Home Essentials', orders: 45, revenue: 5600 },
-                ],
-            });
-            setLoading(false);
-        }, 500);
+        const loadAnalytics = async () => {
+            setLoading(true);
+            try {
+                const response = await adminAPI.analytics({ period });
+                setData(response.data);
+            } catch (err) {
+                console.error('Failed to load analytics:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadAnalytics();
     }, [period]);
 
     const StatCard = ({ label, value, change, prefix = '' }: { label: string; value: number | string; change: number; prefix?: string }) => (
@@ -109,10 +90,10 @@ export default function AdminAnalyticsPage() {
                             key={option.value}
                             onClick={() => setPeriod(option.value)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${period === option.value
-                                    ? 'bg-pink-500 text-white'
-                                    : isDark
-                                        ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-pink-500 text-white'
+                                : isDark
+                                    ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {option.label}
