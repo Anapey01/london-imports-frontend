@@ -64,13 +64,13 @@ function StatItem({
 
     return (
         <div className="group flex flex-col items-center px-4 py-3 sm:py-0 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center gap-2 mb-1">
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 opacity-80 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center gap-3 mb-2">
+                <Icon strokeWidth={1.5} className="w-6 h-6 sm:w-8 sm:h-8 text-slate-800 opacity-80 group-hover:opacity-100 transition-opacity" />
                 <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight tabular-nums">
                     {prefix}{animatedValue.toLocaleString()}{suffix}
                 </span>
             </div>
-            <span className="text-slate-500 font-medium text-xs sm:text-sm text-center leading-tight">
+            <span className="text-slate-500 font-medium text-xs sm:text-sm text-center leading-tight uppercase tracking-wide">
                 {label}
             </span>
         </div>
