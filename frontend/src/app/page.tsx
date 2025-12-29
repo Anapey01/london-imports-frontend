@@ -79,7 +79,7 @@ export default function HomePage() {
 
       <PlatformPrinciples />
 
-      <StatsBar />
+
 
       {/* Featured Products / Upcoming Drops */}
       <section className="py-24 bg-white overflow-hidden">
@@ -110,6 +110,8 @@ export default function HomePage() {
           )}
         </div>
       </section>
+
+      <StatsBar />
 
       {/* Reviews */}
       <Reviews />
