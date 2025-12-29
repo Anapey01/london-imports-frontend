@@ -147,8 +147,8 @@ export default function ProductDetailPage() {
                         </div>
 
                         {/* Rating */}
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="flex text-[#F5A623]">
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                            <div className="flex text-[#F5A623] shrink-0">
                                 {[1, 2, 3, 4, 5].map((star) => {
                                     const rating = parseFloat(product.rating || '5.0');
                                     // Full star
