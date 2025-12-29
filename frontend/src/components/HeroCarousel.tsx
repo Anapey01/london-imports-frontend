@@ -1,6 +1,6 @@
 /**
  * London's Imports - Hero Carousel
- * Amazon-style animated slideshow with left/right navigation
+ * Amazon-style animated slideshow with product images on pastel backgrounds
  */
 'use client';
 
@@ -15,46 +15,46 @@ interface Slide {
     subtitle: string;
     ctaText: string;
     ctaLink: string;
-    bgColor: string;
-    bgImage?: string;
+    bgColor: string; // Light pastel color
+    textColor: string; // Dark text for contrast on light bg
 }
 
 const slides: Slide[] = [
     {
         id: 1,
         title: "New Year, New Drops",
-        subtitle: "Pre-order the latest gadgets before they land in Ghana",
+        subtitle: "Pre-order the latest before they land in Ghana",
         ctaText: "Shop Pre-orders",
         ctaLink: "/products",
-        bgColor: "#a3e635", // Lime green like Amazon
-        bgImage: "/banners/banner-1.jpg",
+        bgColor: "#d1fae5", // Mint green (like Amazon toys slide)
+        textColor: "#064e3b", // Dark green text
     },
     {
         id: 2,
-        title: "Fashion Week Deals",
-        subtitle: "Reserve trendy clothing & accessories at amazing prices",
+        title: "Fashion for less",
+        subtitle: "Trendy clothing & accessories at amazing prices",
         ctaText: "Shop Fashion",
         ctaLink: "/products?category=fashion",
-        bgColor: "#f472b6", // Pink
-        bgImage: "/banners/banner-2.jpg",
+        bgColor: "#fce7f3", // Light pink
+        textColor: "#9d174d", // Dark pink text
     },
     {
         id: 3,
         title: "Tech Essentials",
-        subtitle: "Phones, laptops & gadgets - shipped straight to your door",
+        subtitle: "Phones, laptops & gadgets delivered to you",
         ctaText: "Shop Electronics",
         ctaLink: "/products?category=electronics",
-        bgColor: "#818cf8", // Indigo
-        bgImage: "/banners/banner-3.jpg",
+        bgColor: "#e0e7ff", // Light indigo
+        textColor: "#3730a3", // Dark indigo text
     },
     {
         id: 4,
         title: "Home & Living",
-        subtitle: "Transform your space with quality home products",
+        subtitle: "Quality home products for your space",
         ctaText: "Shop Home",
         ctaLink: "/products?category=home",
-        bgColor: "#fb923c", // Orange
-        bgImage: "/banners/banner-4.jpg",
+        bgColor: "#fef3c7", // Light amber
+        textColor: "#92400e", // Dark amber text
     },
 ];
 
@@ -116,13 +116,9 @@ export default function HeroCarousel() {
 
     return (
         <div className="relative w-full overflow-hidden">
-            {/* Gradient fade edges - Amazon style */}
-            <div className="absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-black/20 to-transparent z-[5] pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-black/20 to-transparent z-[5] pointer-events-none" />
-
-            {/* Slides Container - Taller like Amazon */}
+            {/* Slides Container - Amazon style */}
             <div
-                className="relative h-[220px] sm:h-[300px] md:h-[380px] lg:h-[420px]"
+                className="relative h-[200px] sm:h-[280px] md:h-[350px] lg:h-[400px]"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -141,23 +137,30 @@ export default function HeroCarousel() {
                             className="h-full w-full flex items-center relative overflow-hidden"
                             style={{ backgroundColor: slide.bgColor }}
                         >
-                            {/* Background pattern/decoration */}
-                            <div className="absolute inset-0 opacity-20">
-                                <div className="absolute top-4 right-4 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-white/30 rounded-full blur-3xl" />
-                                <div className="absolute bottom-4 right-24 w-24 h-24 sm:w-32 sm:h-32 bg-white/20 rounded-full blur-2xl" />
+                            {/* Decorative shapes for visual interest */}
+                            <div className="absolute inset-0">
+                                <div className="absolute top-8 right-8 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-white/20 rounded-full" />
+                                <div className="absolute top-20 right-32 w-12 h-12 sm:w-20 sm:h-20 bg-white/15 rounded-full" />
+                                <div className="absolute bottom-12 right-16 w-16 h-16 sm:w-24 sm:h-24 bg-white/10 rounded-full" />
                             </div>
 
-                            <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full relative z-10">
-                                <div className="max-w-lg">
-                                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2 sm:mb-4 drop-shadow-lg leading-tight">
+                            <div className="max-w-7xl mx-auto px-8 lg:px-16 w-full relative z-10">
+                                <div className="max-w-md">
+                                    <h2
+                                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 leading-tight"
+                                        style={{ color: slide.textColor }}
+                                    >
                                         {slide.title}
                                     </h2>
-                                    <p className="text-sm sm:text-base md:text-lg text-white/90 mb-4 sm:mb-6 drop-shadow max-w-md">
+                                    <p
+                                        className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 max-w-sm opacity-80"
+                                        style={{ color: slide.textColor }}
+                                    >
                                         {slide.subtitle}
                                     </p>
                                     <Link
                                         href={slide.ctaLink}
-                                        className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-all text-sm sm:text-base shadow-lg"
+                                        className="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-white text-gray-900 font-medium rounded hover:bg-gray-100 transition-all text-sm shadow-sm"
                                     >
                                         {slide.ctaText}
                                     </Link>
@@ -168,17 +171,17 @@ export default function HeroCarousel() {
                 ))}
             </div>
 
-            {/* Navigation Arrows - Amazon style */}
+            {/* Subtle Navigation Arrows - Amazon style (semi-transparent) */}
             <button
                 onClick={() => {
                     prevSlide();
                     setIsAutoPlaying(false);
                     setTimeout(() => setIsAutoPlaying(true), 5000);
                 }}
-                className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 flex items-center justify-center bg-transparent hover:bg-black/10 transition-colors z-10 group"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-20 flex items-center justify-center bg-white/80 hover:bg-white rounded shadow-sm transition-all z-10"
                 aria-label="Previous slide"
             >
-                <ChevronLeft className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-lg opacity-70 group-hover:opacity-100 transition-opacity" />
+                <ChevronLeft className="w-6 h-6 text-gray-600" />
             </button>
             <button
                 onClick={() => {
@@ -186,21 +189,21 @@ export default function HeroCarousel() {
                     setIsAutoPlaying(false);
                     setTimeout(() => setIsAutoPlaying(true), 5000);
                 }}
-                className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 flex items-center justify-center bg-transparent hover:bg-black/10 transition-colors z-10 group"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-20 flex items-center justify-center bg-white/80 hover:bg-white rounded shadow-sm transition-all z-10"
                 aria-label="Next slide"
             >
-                <ChevronRight className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-lg opacity-70 group-hover:opacity-100 transition-opacity" />
+                <ChevronRight className="w-6 h-6 text-gray-600" />
             </button>
 
             {/* Dot Indicators */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                 {slides.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`h-2 rounded-full transition-all ${index === currentSlide
-                            ? 'bg-white w-5'
-                            : 'bg-white/50 w-2 hover:bg-white/75'
+                                ? 'bg-gray-600 w-5'
+                                : 'bg-gray-400 w-2 hover:bg-gray-500'
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />
