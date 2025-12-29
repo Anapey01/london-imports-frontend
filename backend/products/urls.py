@@ -7,7 +7,8 @@ from .views import (
     ProductListView,
     ProductDetailView,
     VendorProductListView,
-    VendorProductDetailView
+    VendorProductDetailView,
+    ReviewCreateView
 )
 
 urlpatterns = [
@@ -15,6 +16,7 @@ urlpatterns = [
     path('categories/', CategoryListView.as_view(), name='category-list'),
     path('', ProductListView.as_view(), name='product-list'),
     path('<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+    path('<slug:slug>/reviews/', ReviewCreateView.as_view(), name='product-review-create'),
     
     # Vendor management
     path('vendor/products/', VendorProductListView.as_view(), name='vendor-product-list'),

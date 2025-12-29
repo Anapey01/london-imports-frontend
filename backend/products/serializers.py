@@ -3,7 +3,7 @@ Londom Imports - Product Serializers
 Pre-order focused with delivery windows and demand signals
 """
 from rest_framework import serializers
-from .models import Product, Category, ProductImage
+from .models import Product, Category, ProductImage, Review
 from vendors.serializers import VendorPublicSerializer
 
 
@@ -25,6 +25,16 @@ class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ['id', 'image', 'alt_text', 'order']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Review serializer with user info"""
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    
+    class Meta:
+        model = Review
+        fields = ['id', 'user_name', 'rating', 'comment', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -59,6 +69,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     vendor = VendorPublicSerializer(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
     delivery_window_text = serializers.ReadOnlyField()
     is_preorder = serializers.ReadOnlyField()
     allows_deposit = serializers.ReadOnlyField()

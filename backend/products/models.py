@@ -85,7 +85,7 @@ class Product(models.Model):
     reservations_count = models.PositiveIntegerField(default=0)
     
     # Ratings (Manual for now, can be aggregated later)
-    rating = models.DecimalField(max_digits=3, decimal_places=1, default=5.0, help_text="Product rating (0.0 - 5.0)")
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=0.0, help_text="Product rating (0.0 - 5.0)")
     rating_count = models.PositiveIntegerField(default=0, help_text="Number of ratings/reviews")
     
     # Images
@@ -140,3 +140,25 @@ class ProductImage(models.Model):
     class Meta:
         db_table = 'product_images'
         ordering = ['order']
+
+
+class Review(models.Model):
+    """Product reviews from users"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
+    rating = models.PositiveSmallIntegerField(help_text="Rating from 1 to 5")
+    comment = models.TextField(blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'reviews'
+        ordering = ['-created_at']
+        unique_together = ['product', 'user']  # One review per product per user
+    
+    def __str__(self):
+        return f"{self.rating}★ - {self.user} on {self.product.name}"

@@ -10,9 +10,12 @@ from .serializers import (
     ProductListSerializer,
     ProductDetailSerializer,
     ProductCreateSerializer,
-    CategorySerializer
+    CategorySerializer,
+    ReviewSerializer
 )
 from vendors.views import IsVendor
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class CategoryListView(generics.ListAPIView):
@@ -64,6 +67,19 @@ class ProductDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
     queryset = Product.objects.filter(is_active=True)
     lookup_field = 'slug'
+
+
+class ReviewCreateView(generics.CreateAPIView):
+    """Create a review for a product"""
+    serializer_class = ReviewSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        slug = self.kwargs.get('slug')
+        product = generics.get_object_or_404(Product, slug=slug)
+        
+        # Unique constraint check is handled by model, but we associate user/product here
+        serializer.save(user=self.request.user, product=product)
 
 
 # Vendor product management
