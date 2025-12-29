@@ -150,12 +150,12 @@ export default function ProductDetailPage() {
                         {/* Rating */}
                         <div className="flex flex-wrap items-center gap-2 mb-4">
                             <StarRating
-                                initialRating={parseFloat(product.rating || '5.0')}
+                                initialRating={Number(product.rating ?? 0)}
                                 readOnly={true}
                                 size="md"
                             />
                             <span className="text-sm text-gray-600 font-medium">
-                                {product.rating || '5.0'}
+                                {Number(product.rating ?? 0).toFixed(1)}
                                 <span className="mx-1.5 text-gray-300">|</span>
                                 {product.reservations_count || 0} Pre-orders
                             </span>
