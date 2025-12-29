@@ -151,6 +151,11 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['state']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['state', 'created_at']),
+        ]
     
     def __str__(self):
         return f"Order {self.order_number} - {self.get_state_display()}"
