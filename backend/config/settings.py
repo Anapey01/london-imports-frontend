@@ -135,15 +135,21 @@ SIMPLE_JWT = {
 }
 
 # CORS Settings - Allow frontend
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS', 
-    'http://localhost:3000,http://127.0.0.1:3000,https://london-import-frontend.vercel.app,https://london-import-frontend-fa1li6kld-gabriel-anapeys-projects.vercel.app'
-).split(',')
+# CORS Settings - Robust Regex for Vercel
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://london-import-frontend.*\.vercel\.app$",
+]
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS', 
-    'http://localhost:3000,https://london-imports-api.onrender.com,https://london-import-frontend.vercel.app,https://london-import-frontend-fa1li6kld-gabriel-anapeys-projects.vercel.app'
+    'http://localhost:3000,https://london-imports-api.onrender.com'
 ).split(',')
+# Extending CSRF trusted origins dynamically isn't supported via regex easily in standard settings without custom middleware,
+# but usually CORS regex handles the fetch. For CSRF (POST requests), we might need to be explicit or use a wildcard if supported in Django 4+
+# Django 4+ CSRF_TRUSTED_ORIGINS supports subdomains if headers matching.
+# Let's keep the explicit list for CSRF main domains but rely on CORS for the frontend interaction.
+
 
 # Celery Settings
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
