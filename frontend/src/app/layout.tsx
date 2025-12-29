@@ -7,6 +7,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import QueryProvider from "@/providers/QueryProvider";
 import { ToastProvider } from "@/components/Toast";
 import { ThemeProvider } from "@/providers/ThemeProvider";
@@ -30,8 +31,9 @@ export default function RootLayout({
           <QueryProvider>
             <ToastProvider>
               <Navbar />
-              <main>{children}</main>
+              <main className="pb-20 md:pb-0">{children}</main>
               <Footer />
+              <MobileBottomNav />
             </ToastProvider>
           </QueryProvider>
         </ThemeProvider>
