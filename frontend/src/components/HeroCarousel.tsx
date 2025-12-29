@@ -1,12 +1,14 @@
 /**
  * London's Imports - Hero Carousel
- * Amazon-style animated slideshow with product images on pastel backgrounds
+ * Amazon-style animated slideshow with DYNAMIC product images from database
  */
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '@/lib/api';
 
 interface Slide {
     id: number;
@@ -14,17 +16,21 @@ interface Slide {
     subtitle: string;
     ctaText: string;
     ctaLink: string;
-    bgImage: string;
+    bgColor: string;
+    textColor: string;
+    categorySlug?: string;
 }
 
-const slides: Slide[] = [
+const slideTemplates: Slide[] = [
     {
         id: 1,
         title: "New Year, New Drops",
         subtitle: "Pre-order the latest fashion before they land",
         ctaText: "Shop now",
         ctaLink: "/products",
-        bgImage: "/banners/banner-1.png",
+        bgColor: "#d1fae5", // Mint green
+        textColor: "#064e3b",
+        categorySlug: "new-arrivals", // Example category slug
     },
     {
         id: 2,
@@ -32,7 +38,9 @@ const slides: Slide[] = [
         subtitle: "Trendy dresses & shoes at amazing prices",
         ctaText: "See all deals",
         ctaLink: "/products?category=fashion",
-        bgImage: "/banners/banner-2.png",
+        bgColor: "#fce7f3", // Light pink
+        textColor: "#9d174d",
+        categorySlug: "fashion",
     },
     {
         id: 3,
@@ -40,15 +48,19 @@ const slides: Slide[] = [
         subtitle: "Phones, laptops & gadgets delivered to you",
         ctaText: "Shop electronics",
         ctaLink: "/products?category=electronics",
-        bgImage: "/banners/banner-3.png",
+        bgColor: "#e0e7ff", // Light indigo
+        textColor: "#3730a3",
+        categorySlug: "electronics",
     },
     {
         id: 4,
         title: "Home & Living",
-        subtitle: "Quality cooking utensils for your kitchen",
+        subtitle: "Quality home products for your space",
         ctaText: "Shop home",
         ctaLink: "/products?category=home",
-        bgImage: "/banners/banner-4.png",
+        bgColor: "#fef3c7", // Light amber
+        textColor: "#92400e",
+        categorySlug: "home",
     },
 ];
 
@@ -56,8 +68,36 @@ const slides: Slide[] = [
 export default function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
 
+    // Fetch products dynamically
+    const { data: productsData } = useQuery({
+        queryKey: ['hero-products'],
+        queryFn: () => productsAPI.list({ limit: 20 }),
+    });
+
+    const products = productsData?.data?.results || productsData?.data || [];
+
+    // Get random products for displaying on slides
+    const getProductsForSlide = (slideIndex: number, count: number = 4) => {
+        if (products.length === 0) return [];
+
+        const template = slideTemplates[slideIndex];
+        let slideProducts = products;
+
+        // Filter by category if available
+        if (template.categorySlug) {
+            const filtered = products.filter((p: any) =>
+                p.category?.slug === template.categorySlug
+            );
+            if (filtered.length > 0) slideProducts = filtered;
+        }
+
+        // Shuffle and take first N products
+        const shuffled = [...slideProducts].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    };
+
     const nextSlide = useCallback(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentSlide((prev) => (prev + 1) % slideTemplates.length);
     }, []);
 
     const goToSlide = (index: number) => {
@@ -90,9 +130,9 @@ export default function HeroCarousel() {
 
         if (Math.abs(distance) > minSwipeDistance) {
             if (distance > 0) {
-                setCurrentSlide((prev) => (prev + 1) % slides.length);
+                setCurrentSlide((prev) => (prev + 1) % slideTemplates.length);
             } else {
-                setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+                setCurrentSlide((prev) => (prev - 1 + slideTemplates.length) % slideTemplates.length);
             }
         }
     };
@@ -101,56 +141,85 @@ export default function HeroCarousel() {
         <div className="relative w-full overflow-hidden">
             {/* Slides Container */}
             <div
-                className="relative h-[200px] sm:h-[280px] md:h-[350px] lg:h-[400px]"
+                className="relative h-[200px] sm:h-[260px] md:h-[320px] lg:h-[380px]"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
-                {slides.map((slide, index) => (
-                    <Link
-                        key={slide.id}
-                        href={slide.ctaLink}
-                        className={`absolute inset-0 transition-transform duration-700 ease-in-out cursor-pointer ${index === currentSlide
-                                ? 'translate-x-0'
-                                : index < currentSlide
-                                    ? '-translate-x-full'
-                                    : 'translate-x-full'
-                            }`}
-                    >
-                        {/* Background Image */}
-                        <div className="relative h-full w-full">
-                            <Image
-                                src={slide.bgImage}
-                                alt={slide.title}
-                                fill
-                                className="object-cover"
-                                priority={index === 0}
-                            />
+                {slideTemplates.map((slide, index) => {
+                    const slideProducts = getProductsForSlide(index);
 
-                            {/* Text Overlay on Left */}
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full">
-                                    <div className="max-w-sm">
-                                        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight">
+                    return (
+                        <Link
+                            key={slide.id}
+                            href={slide.ctaLink}
+                            className={`absolute inset-0 transition-transform duration-700 ease-in-out cursor-pointer ${index === currentSlide
+                                    ? 'translate-x-0'
+                                    : index < currentSlide
+                                        ? '-translate-x-full'
+                                        : 'translate-x-full'
+                                }`}
+                        >
+                            <div
+                                className="h-full w-full flex items-center relative overflow-hidden"
+                                style={{ backgroundColor: slide.bgColor }}
+                            >
+                                {/* Text Content - Left Side */}
+                                <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full relative z-10">
+                                    <div className="max-w-sm md:max-w-md">
+                                        <h2
+                                            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 leading-tight"
+                                            style={{ color: slide.textColor }}
+                                        >
                                             {slide.title}
                                         </h2>
-                                        <p className="text-xs sm:text-sm md:text-base text-gray-700 mb-2 sm:mb-3">
+                                        <p
+                                            className="text-xs sm:text-sm md:text-base mb-3 sm:mb-4 opacity-80"
+                                            style={{ color: slide.textColor }}
+                                        >
                                             {slide.subtitle}
                                         </p>
-                                        <span className="text-xs sm:text-sm text-teal-600 hover:text-teal-700 hover:underline font-medium">
+                                        <span className="text-xs sm:text-sm text-teal-600 hover:underline font-medium">
                                             {slide.ctaText}
                                         </span>
                                     </div>
                                 </div>
+
+                                {/* Dynamic Product Images - Right Side */}
+                                <div className="absolute right-4 sm:right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-2 md:gap-4">
+                                    {slideProducts.slice(0, 3).map((product: any, pIndex: number) => (
+                                        <div
+                                            key={product.id || pIndex}
+                                            className={`relative bg-white rounded-lg shadow-lg overflow-hidden transform 
+                                                ${pIndex === 0 ? 'w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rotate-[-5deg]' : ''}
+                                                ${pIndex === 1 ? 'w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 z-10' : ''}
+                                                ${pIndex === 2 ? 'w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rotate-[5deg]' : ''}
+                                            `}
+                                        >
+                                            {product.primary_image ? (
+                                                <Image
+                                                    src={product.primary_image}
+                                                    alt={product.name}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                                    <span className="text-2xl">📦</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    </Link>
-                ))}
+                        </Link>
+                    );
+                })}
             </div>
 
-            {/* Dot Indicators - No arrows, Amazon style */}
+            {/* Dot Indicators */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                {slides.map((_, index) => (
+                {slideTemplates.map((_, index) => (
                     <button
                         key={index}
                         onClick={(e) => {

@@ -234,14 +234,16 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <Info className="w-5 h-5 text-gray-600" />
                             <span className="text-gray-800">About Us</span>
                         </Link>
-                        <Link
-                            href="/contact"
+                        <a
+                            href="https://wa.me/233XXXXXXXXX?text=Hello%20London's%20Imports"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             onClick={onClose}
                             className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
                         >
                             <Phone className="w-5 h-5 text-gray-600" />
                             <span className="text-gray-800">Contact Us</span>
-                        </Link>
+                        </a>
                         <Link
                             href="/faq"
                             onClick={onClose}

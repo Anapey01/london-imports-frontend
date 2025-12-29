@@ -13,7 +13,6 @@ import CategoryCards from '@/components/CategoryCards';
 import PreorderCarousel from '@/components/PreorderCarousel';
 import Reviews from '@/components/Reviews';
 import RecentOrdersFeed from '@/components/RecentOrdersFeed';
-import WhatsAppButton from '@/components/WhatsAppButton';
 
 export default function HomePage() {
   const { data: productsData, isLoading } = useQuery({
@@ -25,10 +24,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-200">
-      {/* Hero Carousel - Large with product images */}
+      {/* Hero Carousel */}
       <HeroCarousel />
 
-      {/* Category Cards - Sitting BELOW hero (not overlapping) */}
+      {/* Category Cards */}
       <CategoryCards />
 
       {/* Featured Products / Upcoming Drops */}
@@ -92,9 +91,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* WhatsApp Button */}
-      <WhatsAppButton />
     </div>
   );
 }
