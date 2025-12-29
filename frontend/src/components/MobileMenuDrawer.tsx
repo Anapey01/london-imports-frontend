@@ -253,6 +253,24 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     </div>
                 </div>
 
+                {/* Sell on London's Imports */}
+                <Link
+                    href="/register/vendor"
+                    onClick={onClose}
+                    className="block px-4 py-4 text-lg font-medium text-gray-800 hover:bg-gray-50 transition-colors border-b border-gray-100"
+                >
+                    Sell on London&apos;s Imports
+                </Link>
+
+                {/* Help Center */}
+                <Link
+                    href="/faq"
+                    onClick={onClose}
+                    className="block px-4 py-4 text-lg font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+                >
+                    Help Center
+                </Link>
+
                 {/* Bottom Spacing for Safe Area */}
                 <div className="h-20" />
             </div>
