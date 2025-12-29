@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Package, Clock, ShieldCheck, MessageCircle } from 'lucide-react';
+import { Package, Clock, TrendingUp, Users } from 'lucide-react';
 
 interface PlatformStats {
     orders_fulfilled: number;
@@ -13,10 +13,15 @@ interface PlatformStats {
 }
 
 // Animated counter hook
-function useAnimatedCounter(end: number, duration: number = 1500, start: boolean = true) {
-    const [count, setCount] = useState(0);
+function useAnimatedCounter(end: number | string, duration: number = 1500, start: boolean = true) {
+    const [count, setCount] = useState<number | string>(0);
 
     useEffect(() => {
+        if (typeof end === 'string') {
+            setCount(end);
+            return;
+        }
+
         if (!start || end === 0) {
             setCount(end);
             return;
@@ -48,7 +53,7 @@ function StatItem({
     prefix = '',
     isLoaded = false
 }: {
-    value: number;
+    value: number | string;
     label: string;
     icon: React.ElementType;
     suffix?: string;
