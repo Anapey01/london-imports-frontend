@@ -25,20 +25,11 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-200">
-      {/* Hero Section with Gradient Fade */}
-      <div className="relative">
-        {/* Hero Carousel */}
-        <HeroCarousel />
+      {/* Hero Carousel - Large with product images */}
+      <HeroCarousel />
 
-        {/* Gradient fade at bottom - Amazon style transition */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 sm:h-32 bg-gradient-to-t from-gray-200 to-transparent pointer-events-none" />
-      </div>
-
-      {/* Category Cards - Overlapping Hero (Amazon signature effect) */}
-      <div className="relative -mt-16 sm:-mt-20 z-10">
-        <CategoryCards />
-      </div>
-
+      {/* Category Cards - Sitting BELOW hero (not overlapping) */}
+      <CategoryCards />
 
       {/* Featured Products / Upcoming Drops */}
       <section className="py-8 bg-white">

@@ -15,8 +15,8 @@ interface Slide {
     subtitle: string;
     ctaText: string;
     ctaLink: string;
-    bgGradient: string;
-    image?: string;
+    bgColor: string;
+    bgImage?: string;
 }
 
 const slides: Slide[] = [
@@ -26,7 +26,8 @@ const slides: Slide[] = [
         subtitle: "Pre-order the latest gadgets before they land in Ghana",
         ctaText: "Shop Pre-orders",
         ctaLink: "/products",
-        bgGradient: "from-emerald-400 via-teal-500 to-cyan-600",
+        bgColor: "#a3e635", // Lime green like Amazon
+        bgImage: "/banners/banner-1.jpg",
     },
     {
         id: 2,
@@ -34,7 +35,8 @@ const slides: Slide[] = [
         subtitle: "Reserve trendy clothing & accessories at amazing prices",
         ctaText: "Shop Fashion",
         ctaLink: "/products?category=fashion",
-        bgGradient: "from-pink-400 via-rose-500 to-red-500",
+        bgColor: "#f472b6", // Pink
+        bgImage: "/banners/banner-2.jpg",
     },
     {
         id: 3,
@@ -42,7 +44,8 @@ const slides: Slide[] = [
         subtitle: "Phones, laptops & gadgets - shipped straight to your door",
         ctaText: "Shop Electronics",
         ctaLink: "/products?category=electronics",
-        bgGradient: "from-indigo-500 via-purple-500 to-pink-500",
+        bgColor: "#818cf8", // Indigo
+        bgImage: "/banners/banner-3.jpg",
     },
     {
         id: 4,
@@ -50,9 +53,11 @@ const slides: Slide[] = [
         subtitle: "Transform your space with quality home products",
         ctaText: "Shop Home",
         ctaLink: "/products?category=home",
-        bgGradient: "from-amber-400 via-orange-500 to-red-500",
+        bgColor: "#fb923c", // Orange
+        bgImage: "/banners/banner-4.jpg",
     },
 ];
+
 
 export default function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -115,9 +120,9 @@ export default function HeroCarousel() {
             <div className="absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-black/20 to-transparent z-[5] pointer-events-none" />
             <div className="absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-black/20 to-transparent z-[5] pointer-events-none" />
 
-            {/* Slides Container */}
+            {/* Slides Container - Taller like Amazon */}
             <div
-                className="relative h-[180px] sm:h-[260px] md:h-[320px] lg:h-[380px]"
+                className="relative h-[220px] sm:h-[300px] md:h-[380px] lg:h-[420px]"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -133,19 +138,26 @@ export default function HeroCarousel() {
                             }`}
                     >
                         <div
-                            className={`h-full w-full bg-gradient-to-r ${slide.bgGradient} flex items-center`}
+                            className="h-full w-full flex items-center relative overflow-hidden"
+                            style={{ backgroundColor: slide.bgColor }}
                         >
-                            <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+                            {/* Background pattern/decoration */}
+                            <div className="absolute inset-0 opacity-20">
+                                <div className="absolute top-4 right-4 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-white/30 rounded-full blur-3xl" />
+                                <div className="absolute bottom-4 right-24 w-24 h-24 sm:w-32 sm:h-32 bg-white/20 rounded-full blur-2xl" />
+                            </div>
+
+                            <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full relative z-10">
                                 <div className="max-w-lg">
-                                    <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black text-white mb-2 sm:mb-3 drop-shadow-lg leading-tight">
+                                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2 sm:mb-4 drop-shadow-lg leading-tight">
                                         {slide.title}
                                     </h2>
-                                    <p className="text-xs sm:text-sm md:text-base text-white/90 mb-3 sm:mb-5 drop-shadow max-w-md">
+                                    <p className="text-sm sm:text-base md:text-lg text-white/90 mb-4 sm:mb-6 drop-shadow max-w-md">
                                         {slide.subtitle}
                                     </p>
                                     <Link
                                         href={slide.ctaLink}
-                                        className="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-all text-xs sm:text-sm shadow-lg"
+                                        className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-all text-sm sm:text-base shadow-lg"
                                     >
                                         {slide.ctaText}
                                     </Link>
@@ -187,8 +199,8 @@ export default function HeroCarousel() {
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`h-2 rounded-full transition-all ${index === currentSlide
-                                ? 'bg-white w-5'
-                                : 'bg-white/50 w-2 hover:bg-white/75'
+                            ? 'bg-white w-5'
+                            : 'bg-white/50 w-2 hover:bg-white/75'
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />
