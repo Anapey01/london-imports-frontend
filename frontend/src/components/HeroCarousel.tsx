@@ -7,7 +7,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Slide {
     id: number;
@@ -15,75 +14,61 @@ interface Slide {
     subtitle: string;
     ctaText: string;
     ctaLink: string;
-    bgColor: string; // Light pastel color
-    textColor: string; // Dark text for contrast on light bg
+    bgImage: string;
 }
 
 const slides: Slide[] = [
     {
         id: 1,
         title: "New Year, New Drops",
-        subtitle: "Pre-order the latest before they land in Ghana",
-        ctaText: "Shop Pre-orders",
+        subtitle: "Pre-order the latest fashion before they land",
+        ctaText: "Shop now",
         ctaLink: "/products",
-        bgColor: "#d1fae5", // Mint green (like Amazon toys slide)
-        textColor: "#064e3b", // Dark green text
+        bgImage: "/banners/banner-1.png",
     },
     {
         id: 2,
         title: "Fashion for less",
-        subtitle: "Trendy clothing & accessories at amazing prices",
-        ctaText: "Shop Fashion",
+        subtitle: "Trendy dresses & shoes at amazing prices",
+        ctaText: "See all deals",
         ctaLink: "/products?category=fashion",
-        bgColor: "#fce7f3", // Light pink
-        textColor: "#9d174d", // Dark pink text
+        bgImage: "/banners/banner-2.png",
     },
     {
         id: 3,
         title: "Tech Essentials",
         subtitle: "Phones, laptops & gadgets delivered to you",
-        ctaText: "Shop Electronics",
+        ctaText: "Shop electronics",
         ctaLink: "/products?category=electronics",
-        bgColor: "#e0e7ff", // Light indigo
-        textColor: "#3730a3", // Dark indigo text
+        bgImage: "/banners/banner-3.png",
     },
     {
         id: 4,
         title: "Home & Living",
-        subtitle: "Quality home products for your space",
-        ctaText: "Shop Home",
+        subtitle: "Quality cooking utensils for your kitchen",
+        ctaText: "Shop home",
         ctaLink: "/products?category=home",
-        bgColor: "#fef3c7", // Light amber
-        textColor: "#92400e", // Dark amber text
+        bgImage: "/banners/banner-4.png",
     },
 ];
 
 
 export default function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
     const nextSlide = useCallback(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, []);
 
-    const prevSlide = useCallback(() => {
-        setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    }, []);
-
     const goToSlide = (index: number) => {
         setCurrentSlide(index);
-        setIsAutoPlaying(false);
-        // Resume auto-play after 5 seconds of inactivity
-        setTimeout(() => setIsAutoPlaying(true), 5000);
     };
 
-    // Auto-play
+    // Auto-play every 5 seconds
     useEffect(() => {
-        if (!isAutoPlaying) return;
-        const interval = setInterval(nextSlide, 4000);
+        const interval = setInterval(nextSlide, 5000);
         return () => clearInterval(interval);
-    }, [isAutoPlaying, nextSlide]);
+    }, [nextSlide]);
 
     // Touch/swipe support
     const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -105,18 +90,16 @@ export default function HeroCarousel() {
 
         if (Math.abs(distance) > minSwipeDistance) {
             if (distance > 0) {
-                nextSlide();
+                setCurrentSlide((prev) => (prev + 1) % slides.length);
             } else {
-                prevSlide();
+                setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
             }
-            setIsAutoPlaying(false);
-            setTimeout(() => setIsAutoPlaying(true), 5000);
         }
     };
 
     return (
         <div className="relative w-full overflow-hidden">
-            {/* Slides Container - Amazon style */}
+            {/* Slides Container */}
             <div
                 className="relative h-[200px] sm:h-[280px] md:h-[350px] lg:h-[400px]"
                 onTouchStart={handleTouchStart}
@@ -124,86 +107,59 @@ export default function HeroCarousel() {
                 onTouchEnd={handleTouchEnd}
             >
                 {slides.map((slide, index) => (
-                    <div
+                    <Link
                         key={slide.id}
-                        className={`absolute inset-0 transition-transform duration-700 ease-in-out ${index === currentSlide
+                        href={slide.ctaLink}
+                        className={`absolute inset-0 transition-transform duration-700 ease-in-out cursor-pointer ${index === currentSlide
                                 ? 'translate-x-0'
                                 : index < currentSlide
                                     ? '-translate-x-full'
                                     : 'translate-x-full'
                             }`}
                     >
-                        <div
-                            className="h-full w-full flex items-center relative overflow-hidden"
-                            style={{ backgroundColor: slide.bgColor }}
-                        >
-                            {/* Decorative shapes for visual interest */}
-                            <div className="absolute inset-0">
-                                <div className="absolute top-8 right-8 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-white/20 rounded-full" />
-                                <div className="absolute top-20 right-32 w-12 h-12 sm:w-20 sm:h-20 bg-white/15 rounded-full" />
-                                <div className="absolute bottom-12 right-16 w-16 h-16 sm:w-24 sm:h-24 bg-white/10 rounded-full" />
-                            </div>
+                        {/* Background Image */}
+                        <div className="relative h-full w-full">
+                            <Image
+                                src={slide.bgImage}
+                                alt={slide.title}
+                                fill
+                                className="object-cover"
+                                priority={index === 0}
+                            />
 
-                            <div className="max-w-7xl mx-auto px-8 lg:px-16 w-full relative z-10">
-                                <div className="max-w-md">
-                                    <h2
-                                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 leading-tight"
-                                        style={{ color: slide.textColor }}
-                                    >
-                                        {slide.title}
-                                    </h2>
-                                    <p
-                                        className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 max-w-sm opacity-80"
-                                        style={{ color: slide.textColor }}
-                                    >
-                                        {slide.subtitle}
-                                    </p>
-                                    <Link
-                                        href={slide.ctaLink}
-                                        className="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-white text-gray-900 font-medium rounded hover:bg-gray-100 transition-all text-sm shadow-sm"
-                                    >
-                                        {slide.ctaText}
-                                    </Link>
+                            {/* Text Overlay on Left */}
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full">
+                                    <div className="max-w-sm">
+                                        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight">
+                                            {slide.title}
+                                        </h2>
+                                        <p className="text-xs sm:text-sm md:text-base text-gray-700 mb-2 sm:mb-3">
+                                            {slide.subtitle}
+                                        </p>
+                                        <span className="text-xs sm:text-sm text-teal-600 hover:text-teal-700 hover:underline font-medium">
+                                            {slide.ctaText}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
-            {/* Subtle Navigation Arrows - Amazon style (semi-transparent) */}
-            <button
-                onClick={() => {
-                    prevSlide();
-                    setIsAutoPlaying(false);
-                    setTimeout(() => setIsAutoPlaying(true), 5000);
-                }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-20 flex items-center justify-center bg-white/80 hover:bg-white rounded shadow-sm transition-all z-10"
-                aria-label="Previous slide"
-            >
-                <ChevronLeft className="w-6 h-6 text-gray-600" />
-            </button>
-            <button
-                onClick={() => {
-                    nextSlide();
-                    setIsAutoPlaying(false);
-                    setTimeout(() => setIsAutoPlaying(true), 5000);
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-20 flex items-center justify-center bg-white/80 hover:bg-white rounded shadow-sm transition-all z-10"
-                aria-label="Next slide"
-            >
-                <ChevronRight className="w-6 h-6 text-gray-600" />
-            </button>
-
-            {/* Dot Indicators */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {/* Dot Indicators - No arrows, Amazon style */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {slides.map((_, index) => (
                     <button
                         key={index}
-                        onClick={() => goToSlide(index)}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            goToSlide(index);
+                        }}
                         className={`h-2 rounded-full transition-all ${index === currentSlide
-                                ? 'bg-gray-600 w-5'
-                                : 'bg-gray-400 w-2 hover:bg-gray-500'
+                                ? 'bg-gray-800 w-6'
+                                : 'bg-gray-400 w-2 hover:bg-gray-600'
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />
