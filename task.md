@@ -31,6 +31,18 @@
 - [x] Implement shopping cart (Zustand)
 - [x] Create order placement flow
 - [x] Build order tracking with real-time updates
+- [x] **Dynamic Product Ratings** <!-- id: 4 -->
+    - [x] Add `rating` and `rating_count` to Product model <!-- id: 5 -->
+    - [x] Update Product Serializers <!-- id: 6 -->
+    - [x] Calculate and display stars on Product Detail Page <!-- id: 7 -->
+    - [x] Fix default rating value (0.0 instead of 5.0) <!-- id: 13 -->
+    - [x] Data migration to reset existing products <!-- id: 15 -->
+    - [x] Implement Review model and submission API <!-- id: 14 -->
+- [x] **Dynamic Homepage Stats** <!-- id: 8 -->
+    - [x] Create API endpoint for stats <!-- id: 9 -->
+    - [x] Connect StatsBar to API <!-- id: 10 -->
+    - [x] Fix responsiveness and layout <!-- id: 11 -->
+    - [x] Refine aesthetics (Icons) <!-- id: 12 -->
 - [ ] Create vendor dashboard
 - [ ] Build admin dashboard
 
