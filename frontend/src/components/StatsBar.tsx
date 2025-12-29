@@ -150,7 +150,8 @@ export default function StatsBar() {
     return (
         <section className="bg-gradient-to-b from-slate-50 to-white border-y border-slate-100/80 py-8 sm:py-10 md:py-12 overflow-hidden">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y divide-slate-200/60 sm:divide-y-0">
+                {/* Mobile: Flex Column, Desktop: Grid */}
+                <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 divide-y divide-slate-200/60 sm:divide-y-0">
                     {statItems.map((stat, i) => {
                         // Responsive border logic
                         let borderClass = 'border-slate-200/60';
