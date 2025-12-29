@@ -137,10 +137,13 @@ SIMPLE_JWT = {
 # CORS Settings - Allow frontend
 CORS_ALLOWED_ORIGINS = os.getenv(
     'CORS_ALLOWED_ORIGINS', 
-    'http://localhost:3000,http://127.0.0.1:3000'
+    'http://localhost:3000,http://127.0.0.1:3000,https://london-import-frontend.vercel.app,https://london-import-frontend-fa1li6kld-gabriel-anapeys-projects.vercel.app'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:3000,https://london-imports-api.onrender.com').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    'CSRF_TRUSTED_ORIGINS', 
+    'http://localhost:3000,https://london-imports-api.onrender.com,https://london-import-frontend.vercel.app,https://london-import-frontend-fa1li6kld-gabriel-anapeys-projects.vercel.app'
+).split(',')
 
 # Celery Settings
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
