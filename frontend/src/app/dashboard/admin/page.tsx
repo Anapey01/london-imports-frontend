@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { adminAPI } from '@/lib/api';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
@@ -22,33 +23,38 @@ export default function AdminDashboardPage() {
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        // Simulate loading stats - replace with actual API call
         const loadData = async () => {
-            // Mock data for demonstration
-            setStats({
-                totalUsers: 156,
-                totalOrders: 423,
-                totalProducts: 89,
-                totalRevenue: 45678.50,
-                pendingOrders: 12,
-                newUsersToday: 5,
-            });
-            setRecentOrders([
-                { id: '1', order_number: 'ORD-2024-001', customer: 'John Doe', total: 125.00, status: 'PENDING', date: '2024-12-27' },
-                { id: '2', order_number: 'ORD-2024-002', customer: 'Jane Smith', total: 89.50, status: 'COMPLETED', date: '2024-12-26' },
-                { id: '3', order_number: 'ORD-2024-003', customer: 'Mike Johnson', total: 234.00, status: 'PROCESSING', date: '2024-12-26' },
-                { id: '4', order_number: 'ORD-2024-004', customer: 'Sarah Wilson', total: 67.25, status: 'COMPLETED', date: '2024-12-25' },
-                { id: '5', order_number: 'ORD-2024-005', customer: 'Tom Brown', total: 156.75, status: 'PENDING', date: '2024-12-25' },
-            ]);
-            setRecentUsers([
-                { id: '1', name: 'Alice Cooper', email: 'alice@example.com', role: 'CUSTOMER', joined: '2024-12-27' },
-                { id: '2', name: 'Bob Wilson', email: 'bob@example.com', role: 'VENDOR', joined: '2024-12-26' },
-                { id: '3', name: 'Carol Davis', email: 'carol@example.com', role: 'CUSTOMER', joined: '2024-12-26' },
-                { id: '4', name: 'David Lee', email: 'david@example.com', role: 'CUSTOMER', joined: '2024-12-25' },
-            ]);
-            setLoading(false);
+            try {
+                // Fetch real stats from backend
+                const statsResponse = await adminAPI.stats();
+                const statsData = statsResponse.data;
+
+                setStats({
+                    totalUsers: statsData.total_users || 0,
+                    totalOrders: statsData.total_orders || 0,
+                    totalProducts: statsData.total_products || 0,
+                    totalRevenue: statsData.total_revenue || 0,
+                    pendingOrders: statsData.pending_orders || 0,
+                    newUsersToday: statsData.new_users_today || 0,
+                });
+
+                // Fetch recent orders
+                const ordersResponse = await adminAPI.orders({ limit: 5 });
+                setRecentOrders(ordersResponse.data.results || ordersResponse.data || []);
+
+                // Fetch recent users
+                const usersResponse = await adminAPI.users({ limit: 5, ordering: '-date_joined' });
+                setRecentUsers(usersResponse.data.results || usersResponse.data || []);
+
+            } catch (err: any) {
+                console.error('Failed to load admin stats:', err);
+                setError('Failed to load dashboard data. Please check your connection.');
+            } finally {
+                setLoading(false);
+            }
         };
         loadData();
     }, []);
@@ -160,8 +166,8 @@ export default function AdminDashboardPage() {
                                     </div>
                                 </div>
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${user.role === 'VENDOR'
-                                        ? isDark ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-600'
-                                        : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-600'
+                                    ? isDark ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-600'
+                                    : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-600'
                                     }`}>
                                     {user.role}
                                 </span>

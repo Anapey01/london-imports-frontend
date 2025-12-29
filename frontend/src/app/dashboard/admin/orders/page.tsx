@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { adminAPI } from '@/lib/api';
 
 export default function AdminOrdersPage() {
     const { theme } = useTheme();
@@ -14,18 +15,34 @@ export default function AdminOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        // Mock data - replace with API call
-        setOrders([
-            { id: '1', order_number: 'ORD-2024-001', customer: { name: 'John Doe', email: 'john@example.com' }, items: 3, total: 125.00, status: 'PENDING', payment_status: 'PAID', created_at: '2024-12-27T10:30:00' },
-            { id: '2', order_number: 'ORD-2024-002', customer: { name: 'Jane Smith', email: 'jane@example.com' }, items: 1, total: 89.50, status: 'COMPLETED', payment_status: 'PAID', created_at: '2024-12-26T15:45:00' },
-            { id: '3', order_number: 'ORD-2024-003', customer: { name: 'Mike Johnson', email: 'mike@example.com' }, items: 5, total: 234.00, status: 'PROCESSING', payment_status: 'PAID', created_at: '2024-12-26T09:20:00' },
-            { id: '4', order_number: 'ORD-2024-004', customer: { name: 'Sarah Wilson', email: 'sarah@example.com' }, items: 2, total: 67.25, status: 'COMPLETED', payment_status: 'PAID', created_at: '2024-12-25T14:10:00' },
-            { id: '5', order_number: 'ORD-2024-005', customer: { name: 'Tom Brown', email: 'tom@example.com' }, items: 4, total: 156.75, status: 'CANCELLED', payment_status: 'REFUNDED', created_at: '2024-12-25T11:30:00' },
-            { id: '6', order_number: 'ORD-2024-006', customer: { name: 'Alice Cooper', email: 'alice@example.com' }, items: 2, total: 98.00, status: 'PENDING', payment_status: 'PENDING', created_at: '2024-12-24T16:45:00' },
-        ]);
-        setLoading(false);
+        const loadOrders = async () => {
+            try {
+                const response = await adminAPI.orders();
+                const ordersData = response.data.results || response.data || [];
+                setOrders(ordersData.map((order: any) => ({
+                    id: order.id,
+                    order_number: order.order_number,
+                    customer: {
+                        name: order.customer || order.customer_name || 'Unknown',
+                        email: order.customer_email || ''
+                    },
+                    items: order.items_count || order.items?.length || 0,
+                    total: parseFloat(order.total) || 0,
+                    status: order.status || 'PENDING',
+                    payment_status: order.payment_status || 'PENDING',
+                    created_at: order.created_at,
+                })));
+            } catch (err: any) {
+                console.error('Failed to load orders:', err);
+                setError('Failed to load orders');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadOrders();
     }, []);
 
     const filteredOrders = orders.filter(order => {
@@ -86,10 +103,10 @@ export default function AdminOrdersPage() {
                         key={status}
                         onClick={() => setStatusFilter(status)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === status
-                                ? 'bg-pink-500 text-white'
-                                : isDark
-                                    ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-pink-500 text-white'
+                            : isDark
+                                ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         {status === 'ALL' ? 'All' : status.charAt(0) + status.slice(1).toLowerCase()}

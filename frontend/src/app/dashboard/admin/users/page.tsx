@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { adminAPI } from '@/lib/api';
 
 export default function AdminUsersPage() {
     const { theme } = useTheme();
@@ -15,18 +16,31 @@ export default function AdminUsersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('ALL');
     const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        // Mock data - replace with API call
-        setUsers([
-            { id: '1', username: 'johndoe', email: 'john@example.com', first_name: 'John', last_name: 'Doe', role: 'CUSTOMER', is_active: true, date_joined: '2024-01-15' },
-            { id: '2', username: 'janesmith', email: 'jane@example.com', first_name: 'Jane', last_name: 'Smith', role: 'VENDOR', is_active: true, date_joined: '2024-02-20' },
-            { id: '3', username: 'mikejohn', email: 'mike@example.com', first_name: 'Mike', last_name: 'Johnson', role: 'CUSTOMER', is_active: false, date_joined: '2024-03-10' },
-            { id: '4', username: 'sarahwilson', email: 'sarah@example.com', first_name: 'Sarah', last_name: 'Wilson', role: 'VENDOR', is_active: true, date_joined: '2024-04-05' },
-            { id: '5', username: 'tombrown', email: 'tom@example.com', first_name: 'Tom', last_name: 'Brown', role: 'ADMIN', is_active: true, date_joined: '2024-05-12' },
-            { id: '6', username: 'alicecooper', email: 'alice@example.com', first_name: 'Alice', last_name: 'Cooper', role: 'CUSTOMER', is_active: true, date_joined: '2024-06-18' },
-        ]);
-        setLoading(false);
+        const loadUsers = async () => {
+            try {
+                const response = await adminAPI.users();
+                const usersData = response.data.results || response.data || [];
+                setUsers(usersData.map((user: any) => ({
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    role: user.role || 'CUSTOMER',
+                    is_active: user.is_active !== false,
+                    date_joined: user.date_joined,
+                })));
+            } catch (err: any) {
+                console.error('Failed to load users:', err);
+                setError('Failed to load users');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadUsers();
     }, []);
 
     const filteredUsers = users.filter(user => {
@@ -73,8 +87,8 @@ export default function AdminUsersPage() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className={`w-full px-4 py-2.5 rounded-lg border text-sm ${isDark
-                                ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
-                                : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400'
+                            ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
+                            : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400'
                             }`}
                     />
                 </div>
@@ -84,10 +98,10 @@ export default function AdminUsersPage() {
                             key={role}
                             onClick={() => setRoleFilter(role)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${roleFilter === role
-                                    ? 'bg-pink-500 text-white'
-                                    : isDark
-                                        ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-pink-500 text-white'
+                                : isDark
+                                    ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {role === 'ALL' ? 'All' : role.charAt(0) + role.slice(1).toLowerCase()}
@@ -131,8 +145,8 @@ export default function AdminUsersPage() {
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${user.is_active
-                                            ? isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'
-                                            : isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600'
+                                        ? isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600'
+                                        : isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600'
                                         }`}>
                                         {user.is_active ? 'Active' : 'Suspended'}
                                     </span>

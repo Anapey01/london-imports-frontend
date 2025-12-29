@@ -12,6 +12,7 @@ urlpatterns = [
     
     # API v1
     path('api/v1/auth/', include('users.urls')),
+    path('api/v1/admin/', include('users.admin_urls')),  # Admin dashboard API
     path('api/v1/vendors/', include('vendors.urls')),
     path('api/v1/products/', include('products.urls')),
     path('api/v1/orders/', include('orders.urls')),

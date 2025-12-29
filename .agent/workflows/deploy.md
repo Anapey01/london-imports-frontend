@@ -41,9 +41,8 @@ Use this workflow when you need to deploy frontend changes to Vercel.
 
 ## Important Notes
 
-- **DO NOT** push `feature/next-sprint` or `master` to `frontend_repo/main` - these branches have a broken frontend submodule
-- **ALWAYS** use the `split-frontend` branch or the `frontend-deploy` worktree for Vercel deployments
 - The `frontend-deploy` worktree is located at `c:\Users\user\Desktop\frontend-deploy`
+- You can also work on frontend directly in `c:\Users\user\Desktop\Naa\frontend` (now fixed)
 
 ## Syncing Frontend Changes
 
