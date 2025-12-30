@@ -11,8 +11,7 @@ import { productsAPI } from '@/lib/api';
 import HeroCarousel from '@/components/HeroCarousel';
 import CategoryCards from '@/components/CategoryCards';
 import PreorderCarousel from '@/components/PreorderCarousel';
-import Reviews from '@/components/Reviews';
-import RecentOrdersFeed from '@/components/RecentOrdersFeed';
+
 
 export default function HomePage() {
   const { data: productsData, isLoading } = useQuery({
@@ -59,12 +58,6 @@ export default function HomePage() {
           )}
         </div>
       </section>
-
-      {/* Reviews */}
-      <Reviews />
-
-      {/* Recent Orders Feed */}
-      <RecentOrdersFeed />
 
       {/* CTA Banner */}
       <section className="py-12 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-center">

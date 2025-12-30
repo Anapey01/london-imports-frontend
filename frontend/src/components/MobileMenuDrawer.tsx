@@ -235,7 +235,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <span className="text-gray-800">About Us</span>
                         </Link>
                         <a
-                            href="https://wa.me/233XXXXXXXXX?text=Hello%20London's%20Imports"
+                            href="https://wa.me/233541096372?text=Hi%20I%20have%20a%20question%20about%20London's%20Imports"
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={onClose}
@@ -244,6 +244,14 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <Phone className="w-5 h-5 text-gray-600" />
                             <span className="text-gray-800">Contact Us</span>
                         </a>
+                        <Link
+                            href="/reviews"
+                            onClick={onClose}
+                            className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                            <Star className="w-5 h-5 text-gray-600" />
+                            <span className="text-gray-800">Reviews</span>
+                        </Link>
                         <Link
                             href="/faq"
                             onClick={onClose}
