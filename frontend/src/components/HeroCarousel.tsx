@@ -154,10 +154,10 @@ export default function HeroCarousel() {
                             key={slide.id}
                             href={slide.ctaLink}
                             className={`absolute inset-0 transition-transform duration-700 ease-in-out cursor-pointer ${index === currentSlide
-                                    ? 'translate-x-0'
-                                    : index < currentSlide
-                                        ? '-translate-x-full'
-                                        : 'translate-x-full'
+                                ? 'translate-x-0'
+                                : index < currentSlide
+                                    ? '-translate-x-full'
+                                    : 'translate-x-full'
                                 }`}
                         >
                             <div
@@ -202,6 +202,11 @@ export default function HeroCarousel() {
                                                     alt={product.name}
                                                     fill
                                                     className="object-cover"
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                        target.parentElement!.innerHTML = '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400"><span class="text-2xl">📦</span></div>';
+                                                    }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
@@ -227,8 +232,8 @@ export default function HeroCarousel() {
                             goToSlide(index);
                         }}
                         className={`h-2 rounded-full transition-all ${index === currentSlide
-                                ? 'bg-gray-800 w-6'
-                                : 'bg-gray-400 w-2 hover:bg-gray-600'
+                            ? 'bg-gray-800 w-6'
+                            : 'bg-gray-400 w-2 hover:bg-gray-600'
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />

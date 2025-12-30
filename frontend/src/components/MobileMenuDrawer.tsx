@@ -25,6 +25,7 @@ import {
     MapPin,
     LogOut,
     LogIn,
+    Truck,
 } from 'lucide-react';
 
 interface MobileMenuDrawerProps {
@@ -217,6 +218,14 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         >
                             <HelpCircle className="w-5 h-5 text-gray-600" />
                             <span className="text-gray-800">How It Works</span>
+                        </Link>
+                        <Link
+                            href="/delivery-returns"
+                            onClick={onClose}
+                            className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                            <Truck className="w-5 h-5 text-gray-600" />
+                            <span className="text-gray-800">Delivery & Returns</span>
                         </Link>
                         <Link
                             href="/track"

@@ -64,6 +64,9 @@ export default function Navbar() {
                                 <Link href="/products" className="text-gray-900 hover:text-pink-600 font-bold transition-colors">
                                     Pre-orders
                                 </Link>
+                                <Link href="/delivery-returns" className="text-gray-900 hover:text-pink-600 font-bold transition-colors">
+                                    Delivery & Returns
+                                </Link>
                                 <Link href="/how-it-works" className="text-gray-900 hover:text-pink-600 font-bold transition-colors">
                                     How It Works
                                 </Link>

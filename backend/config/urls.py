@@ -14,6 +14,11 @@ def api_root(request):
         "version": "1.0.0"
     })
 
+# Admin Customization
+admin.site.site_header = "London's Imports Admin"
+admin.site.site_title = "London's Imports Portal"
+admin.site.index_title = "Welcome to London's Imports Management"
+
 urlpatterns = [
     # Root
     path('', api_root, name='api-root'),

@@ -1,6 +1,6 @@
 /**
  * London's Imports - Homepage
- * Amazon-style design with animated carousel and category cards
+ * Refactored to "Preorder Feed" style as requested
  */
 'use client';
 
@@ -9,80 +9,43 @@ import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 
 import HeroCarousel from '@/components/HeroCarousel';
-import CategoryCards from '@/components/CategoryCards';
 import PreorderCarousel from '@/components/PreorderCarousel';
-
+import ProductGrid from '@/components/ProductGrid';
 
 export default function HomePage() {
-  const { data: productsData, isLoading } = useQuery({
-    queryKey: ['upcoming-drops'],
-    queryFn: () => productsAPI.list({ limit: 20 }),
+  // Fetch FEATURED products for the "Upcoming Drops" horizontal slide
+  // These are admin-set items (is_featured=true)
+  const { data: featuredData, isLoading: featuredLoading } = useQuery({
+    queryKey: ['featured-products'],
+    queryFn: () => productsAPI.list({ limit: 10, featured: 'true', ordering: '-created_at' }),
   });
 
-  const products = productsData?.data?.results || productsData?.data || [];
+  const featuredProducts = featuredData?.data?.results || featuredData?.data || [];
 
   return (
-    <div className="min-h-screen bg-gray-200">
-      {/* Hero Carousel */}
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* 1. Hero Carousel (Landing visuals) */}
       <HeroCarousel />
 
-      {/* Category Cards */}
-      <CategoryCards />
+      {/* 2. "Just For You" - Feed of 10 items (Limit handled in ProductGrid) */}
+      <ProductGrid />
 
-      {/* Featured Products / Upcoming Drops */}
-      <section className="py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                Upcoming Drops
-              </h2>
-              <p className="text-gray-500">Pre-order before they sell out</p>
-            </div>
-            <Link href="/products" className="mt-2 md:mt-0 text-pink-500 hover:text-pink-600 font-semibold flex items-center gap-1">
-              View all
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+      {/* 3. "Upcoming Drops" - Admin Curated Horizontal Carousel */}
+      <section className="py-4 bg-white mt-4 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
+            </svg>
+            <h2 className="text-xl font-bold text-gray-900">Upcoming Drops</h2>
+            <span className="bg-purple-100 text-purple-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Featured</span>
           </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-64 rounded-xl skeleton"></div>
-              ))}
-            </div>
-          ) : (
-            <PreorderCarousel products={products} />
-          )}
+          <Link href="/products?featured=true" className="text-sm font-medium text-pink-600 hover:text-pink-700">
+            View All
+          </Link>
         </div>
-      </section>
 
-      {/* CTA Banner */}
-      <section className="py-12 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-center">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to start?
-          </h2>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            Join hundreds of Ghanaians who trust London&apos;s Imports for their international pre-orders.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center px-6 py-3 bg-white text-pink-600 font-semibold rounded-full hover:bg-gray-100 transition-all"
-            >
-              Create free account
-            </Link>
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center px-6 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white/10 transition-all"
-            >
-              Browse products
-            </Link>
-          </div>
-        </div>
+        <PreorderCarousel products={featuredProducts} />
       </section>
     </div>
   );

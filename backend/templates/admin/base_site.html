@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block branding %}
+<h1 id="site-name" style="padding: 10px 0;">
+    <a href="{% url 'admin:index' %}"
+        style="display: flex; align-items: center; gap: 15px; text-decoration: none; color: #f5dd5d;">
+        <img src="{% static 'logo.jpg' %}" alt="London's Imports" height="50"
+            style="border-radius: 8px; background: white; padding: 2px;">
+        <span style="font-weight: bold; font-size: 24px; letter-spacing: 0.5px;">London's Imports Admin</span>
+    </a>
+</h1>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    /* Custom polished admin styles */
+    #header {
+        background: #1f2937;
+        /* Dark Gray */
+        color: white;
+        padding: 15px 40px;
+        align-items: center;
+    }
+
+    #site-name a {
+        color: #ec4899 !important;
+        /* Pink 500 */
+    }
+
+    #branding h1 {
+        margin: 0;
+    }
+
+    div.breadcrumbs {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .module h2,
+    .module caption,
+    .inline-group h2 {
+        background: #fce7f3;
+        /* Pink 100 */
+        color: #be185d;
+        /* Pink 700 */
+    }
+
+    .button.default,
+    input[type=submit].default,
+    .submit-row input.default {
+        background: #ec4899;
+        transition: background 0.2s;
+    }
+
+    .button.default:hover,
+    input[type=submit].default:hover,
+    .submit-row input.default:hover {
+        background: #db2777;
+    }
+
+    /* Login Page Logo */
+    .login #header {
+        padding: 20px;
+    }
+</style>
+{% endblock %}

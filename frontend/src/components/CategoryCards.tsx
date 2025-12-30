@@ -114,55 +114,72 @@ export default function CategoryCards() {
     const categories = dynamicCategories.length > 0 ? dynamicCategories : fallbackCategories;
 
     return (
-        <section className="py-6 px-4 bg-gray-100">
+        <section className="py-6 px-2 sm:px-4 bg-white">
             <div className="max-w-7xl mx-auto">
-                {/* Grid - 1 col on mobile, 2 on tablet, 4 on desktop */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {categories.map((category) => (
-                        <div
-                            key={category.slug}
-                            className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-                        >
-                            {/* Card Title */}
-                            <h3 className="text-lg font-bold text-gray-900 mb-3">
-                                {category.title}
-                            </h3>
+                <div className="flex items-center justify-between mb-4 px-2">
+                    <h2 className="text-lg font-bold text-gray-900">Categories</h2>
+                    <Link href="/products" className="text-sm text-pink-500 hover:text-pink-600 font-medium flex items-center gap-1">
+                        See All <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </Link>
+                </div>
 
-                            {/* 2x2 Product Grid */}
-                            <div className="grid grid-cols-2 gap-2 mb-4">
-                                {category.items.map((item, index) => (
-                                    <Link
-                                        key={index}
-                                        href={item.link}
-                                        className="group"
-                                    >
-                                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-1">
-                                            <Image
-                                                src={item.image}
-                                                alt={item.name}
-                                                width={150}
-                                                height={150}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                            />
-                                        </div>
-                                        <p className="text-xs text-gray-600 truncate">
-                                            {item.name}
-                                        </p>
-                                    </Link>
-                                ))}
+                {/* Jumia-style Circular Row - Horizontal Scroll */}
+                <div
+                    className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-hide snap-x"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {/* Hardcoded "Happy New Deal" Item */}
+                    <Link href="/products?sort=newest" className="flex flex-col items-center group min-w-[70px] sm:min-w-[80px] snap-start">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-red-600 flex flex-col items-center justify-center text-white p-2 shadow-sm group-hover:scale-105 transition-transform mb-2 overflow-hidden border-2 border-red-100 flex-shrink-0">
+                            <div className="text-xs font-bold text-center leading-tight">
+                                <span className="block text-[10px] opacity-90">UP TO</span>
+                                <span className="text-lg sm:text-xl font-extrabold">75%</span>
+                                <span className="block text-[10px] font-bold">OFF</span>
                             </div>
-
-                            {/* CTA Link */}
-                            <Link
-                                href={category.ctaLink}
-                                className="text-sm font-medium text-pink-500 hover:text-pink-600 hover:underline"
-                            >
-                                {category.ctaText}
-                            </Link>
                         </div>
-                    ))}
+                        <span className="text-xs font-medium text-gray-700 text-center line-clamp-2 px-1 w-full truncate">Happy New Deal!</span>
+                    </Link>
+
+                    {/* Dynamic Categories */}
+                    {categories.map((category) => {
+                        const catImage = category.items[0]?.image || '/placeholder-product.jpg';
+
+                        return (
+                            <Link
+                                key={category.slug}
+                                href={category.ctaLink}
+                                className="flex flex-col items-center group min-w-[70px] sm:min-w-[80px] snap-start"
+                            >
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-gray-100 p-0.5 shadow-sm group-hover:scale-105 transition-transform mb-2 overflow-hidden border border-gray-100 flex-shrink-0">
+                                    <div className="relative w-full h-full rounded-full overflow-hidden bg-white">
+                                        {catImage && catImage !== '/placeholder-product.jpg' ? (
+                                            <Image
+                                                src={catImage}
+                                                alt={category.title}
+                                                fill
+                                                className="object-cover"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.style.display = 'none';
+                                                    target.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-2xl">📦</div>';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
+                                                📦
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                <span className="text-xs font-medium text-gray-700 text-center line-clamp-2 px-1 leading-tight group-hover:text-pink-600 transition-colors w-full">
+                                    {category.title}
+                                </span>
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
         </section>
     );
 }
+
