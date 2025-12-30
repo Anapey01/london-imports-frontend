@@ -82,7 +82,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'price', 'deposit_amount', 'allows_deposit',
             'preorder_status', 'estimated_weeks', 'delivery_window_text',
             'cutoff_datetime', 'reservations_count',
-            'rating', 'rating_count',
+            'rating', 'rating_count', 'reviews',
             'is_preorder', 'is_featured', 'stock_quantity',
             'created_at', 'updated_at'
         ]
