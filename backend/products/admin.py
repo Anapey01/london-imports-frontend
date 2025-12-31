@@ -1,5 +1,5 @@
 """
-Londom Imports - Product Admin
+Londom Imports - Product Admin (Simplified for Easy Upload)
 """
 from django.contrib import admin
 from .models import Category, Product, ProductImage
@@ -21,32 +21,42 @@ class ProductImageInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'vendor', 'category', 'price',
-        'preorder_status', 'reservations_count', 'is_active', 'is_featured'
+        'name', 'category', 'price', 'preorder_status', 'is_active'
     ]
-    list_filter = ['preorder_status', 'category', 'is_active', 'is_featured']
-    search_fields = ['name', 'sku', 'vendor__business_name']
+    list_filter = ['preorder_status', 'category', 'is_active']
+    search_fields = ['name', 'sku']
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ['reservations_count', 'created_at', 'updated_at']
     inlines = [ProductImageInline]
     
+    # Simplified fieldsets - Essential fields first, advanced options collapsed
     fieldsets = (
-        ('Basic Info', {
-            'fields': ('name', 'slug', 'sku', 'description', 'image')
-        }),
-        ('Categorization', {
-            'fields': ('category', 'vendor')
-        }),
-        ('Pricing', {
-            'fields': ('price', 'deposit_amount')
+        ('Product Details', {
+            'description': 'Fill in the basic product information',
+            'fields': ('name', 'slug', 'image', 'category', 'price', 'description')
         }),
         ('Pre-order Settings', {
-            'fields': ('preorder_status', 'estimated_weeks', 'cutoff_datetime')
+            'description': 'Set delivery timeline',
+            'fields': ('estimated_weeks', 'cutoff_datetime')
         }),
-        ('Inventory', {
-            'fields': ('stock_quantity', 'reservations_count')
-        }),
-        ('Status', {
-            'fields': ('is_active', 'is_featured', 'created_at', 'updated_at')
+        ('Advanced Options', {
+            'classes': ('collapse',),  # Collapsed by default!
+            'description': 'Optional settings (click to expand)',
+            'fields': (
+                'sku', 'vendor', 'deposit_amount', 'preorder_status',
+                'stock_quantity', 'is_active', 'is_featured',
+                'rating', 'rating_count', 'reservations_count',
+                'created_at', 'updated_at'
+            )
         }),
     )
+    
+    # Set sensible defaults for new products
+    def get_changeform_initial_data(self, request):
+        return {
+            'preorder_status': 'PREORDER',
+            'is_active': True,
+            'estimated_weeks': 3,
+            'deposit_amount': 0,
+        }
+
