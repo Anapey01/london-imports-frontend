@@ -8,9 +8,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 import Image from 'next/image';
 
 export default function AdminSidebar() {
+    const { logout } = useAuthStore();
     const { theme } = useTheme();
     const pathname = usePathname();
     const router = useRouter();
@@ -56,12 +58,11 @@ export default function AdminSidebar() {
 
     const handleLogout = async () => {
         try {
-            const refresh = localStorage.getItem('refresh_token');
-            if (refresh) await authAPI.logout(refresh);
-        } finally {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            router.push('/login');
+            await authAPI.logout();
+            logout();
+            router.push('/admin/login');
+        } catch (error) {
+            console.error('Logout failed', error);
         }
     };
 

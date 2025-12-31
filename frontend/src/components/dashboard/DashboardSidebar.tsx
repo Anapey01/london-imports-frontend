@@ -8,8 +8,10 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function DashboardSidebar() {
+    const { logout } = useAuthStore();
     const { theme } = useTheme();
     const pathname = usePathname();
     const router = useRouter();
@@ -55,12 +57,11 @@ export default function DashboardSidebar() {
 
     const handleLogout = async () => {
         try {
-            const refresh = localStorage.getItem('refresh_token');
-            if (refresh) await authAPI.logout(refresh);
-        } finally {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            await authAPI.logout();
+            logout();
             router.push('/login');
+        } catch (error) {
+            console.error('Logout failed', error);
         }
     };
 

@@ -100,31 +100,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database - Use DATABASE_URL for production (Render/Supabase), fallback to SQLite for development
+import dj_database_url
+
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 if DATABASE_URL:
-    # Production: Use PostgreSQL via individual env vars (Neon/Supabase)
+    # Production: PostgreSQL via DATABASE_URL
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'postgres'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', ''),
-            'PORT': os.getenv('DB_PORT', '5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-            },
-        }
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
 else:
-    # Development: Use SQLite
+    # Development: SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -175,6 +168,7 @@ if os.getenv('RENDER') or os.getenv('CLOUDINARY_URL'):
         'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME') or config.cloud_name,
         'API_KEY': os.getenv('CLOUDINARY_API_KEY') or config.api_key,
         'API_SECRET': os.getenv('CLOUDINARY_API_SECRET') or config.api_secret,
+        'SECURE': True,
     }
     MEDIA_URL = '/media/'
 else:
