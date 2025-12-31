@@ -19,6 +19,7 @@ interface Slide {
     bgColor: string;
     textColor: string;
     categorySlug?: string;
+    heroImage?: string; // Static promotional image for the slide
 }
 
 const slideTemplates: Slide[] = [
@@ -30,7 +31,7 @@ const slideTemplates: Slide[] = [
         ctaLink: "/products",
         bgColor: "#d1fae5", // Mint green
         textColor: "#064e3b",
-        // categorySlug: "new-arrivals", // REMOVED: Show all/any preorders here
+        heroImage: "/assets/images/newyear-drop.jpg", // Featured model image
     },
     {
         id: 2,
@@ -167,28 +168,50 @@ export default function HeroCarousel() {
                                 className="h-full w-full flex items-center relative overflow-hidden"
                                 style={{ backgroundColor: slide.bgColor }}
                             >
-                                {/* Text Content - Left Side - Adjusted for overlap */}
-                                <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full relative z-10 h-full flex items-center lg:items-start lg:pt-20">
-                                    <div className="max-w-sm md:max-w-md">
+                                {/* Text Content - Left Side - Premium Styling */}
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10 h-full flex items-center lg:items-start lg:pt-20">
+                                    <div className="max-w-[50%] sm:max-w-xs md:max-w-sm">
                                         <h2
-                                            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 leading-tight"
+                                            className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-extrabold mb-1 sm:mb-2 leading-tight tracking-tight drop-shadow-sm"
                                             style={{ color: slide.textColor }}
                                         >
                                             {slide.title}
                                         </h2>
                                         <p
-                                            className="text-xs sm:text-sm md:text-base mb-3 sm:mb-4 opacity-80"
+                                            className="text-[10px] sm:text-xs md:text-sm mb-3 sm:mb-4 opacity-70 font-medium"
                                             style={{ color: slide.textColor }}
                                         >
                                             {slide.subtitle}
                                         </p>
-                                        <span className="text-xs sm:text-sm text-teal-600 hover:underline font-medium">
+                                        <span
+                                            className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105"
+                                            style={{
+                                                backgroundColor: slide.textColor,
+                                                color: slide.bgColor
+                                            }}
+                                        >
                                             {slide.ctaText}
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
                                         </span>
                                     </div>
                                 </div>
 
-                                {/* Dynamic Product Images - Right Side */}
+                                {/* Hero Image - Right Side (Blends with background) */}
+                                {slide.heroImage && (
+                                    <div className="absolute right-0 top-0 h-full w-[50%] sm:w-[45%] md:w-[40%] overflow-hidden">
+                                        <Image
+                                            src={slide.heroImage}
+                                            alt={slide.title}
+                                            fill
+                                            className="object-contain object-right-bottom mix-blend-multiply"
+                                            priority={index === 0}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Dynamic Product Images - Right Side (Only when no heroImage) */}
                                 <div className="absolute right-4 sm:right-8 md:right-16 lg:right-24 top-1/2 lg:top-[40%] -translate-y-1/2 hidden sm:flex items-center gap-2 md:gap-4">
                                     {slideProducts.slice(0, 3).map((product: any, pIndex: number) => (
                                         <div
