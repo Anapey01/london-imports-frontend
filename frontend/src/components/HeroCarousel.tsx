@@ -201,6 +201,7 @@ export default function HeroCarousel() {
                                 {/* Hero Image - Right Side (Blends with background) */}
                                 {slide.heroImage && (
                                     <div className="absolute right-0 top-0 h-full w-[50%] sm:w-[45%] md:w-[40%] overflow-hidden">
+                                        {/* Use mix-blend-multiply to hide white background */}
                                         <Image
                                             src={slide.heroImage}
                                             alt={slide.title}
