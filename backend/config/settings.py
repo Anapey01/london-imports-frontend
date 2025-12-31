@@ -14,12 +14,34 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+# Critical: Raise error in production if SECRET_KEY is missing
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY and os.getenv('RENDER'):
+    raise ValueError("SECRET_KEY environment variable is missing in Production!")
+if not SECRET_KEY:
+    SECRET_KEY = 'dev-secret-key-change-in-production'
+
+# Default to False for security
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com').split(',')
 
-# Render Security Settings
+# Render / Production Security Settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+if not DEBUG:
+    # Strict Security Headers for Production
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    # HSTS (HTTP Strict Transport Security)
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -121,23 +143,42 @@ TIME_ZONE = 'Africa/Accra'
 USE_I18N = True
 USE_TZ = True
 
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
 # Media files - Use Cloudinary in production, local storage in development
-if os.getenv('CLOUDINARY_URL'):
-    # Production: Use Cloudinary
+from django.core.exceptions import ImproperlyConfigured
+import cloudinary
+
+if os.getenv('RENDER') or os.getenv('CLOUDINARY_URL'):
+    # Production (Render) - STRICT ENFORCEMENT or Local with Cloud Keys
+    if not os.getenv('CLOUDINARY_URL'):
+        if os.getenv('RENDER'):
+            raise ImproperlyConfigured(
+                "CRITICAL SECURITY ERROR: Cloudinary URL is missing in Production! "
+                "Please add CLOUDINARY_URL to Render Environment Variables."
+            )
+    
+    # Auto-configure from URL if individual keys are missing
+    if os.getenv('CLOUDINARY_URL'):
+        # This parses the URL and sets the config globally
+        cloudinary.config() 
+    
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    
+    # explicitly pull from cloudinary config if env vars are missing
+    config = cloudinary.config()
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME') or config.cloud_name,
+        'API_KEY': os.getenv('CLOUDINARY_API_KEY') or config.api_key,
+        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET') or config.api_secret,
     }
     MEDIA_URL = '/media/'
 else:
-    # Development: Use local storage
+    # Local Development default
     MEDIA_URL = 'media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 

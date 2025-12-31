@@ -2,18 +2,20 @@
 Londom Imports - User URLs
 """
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+# Use Cookie-based Auth Views
 from .views import (
     CustomerRegistrationView,
     VendorRegistrationView,
     UserProfileView,
     ChangePasswordView,
-    LogoutView,
     CurrentUserView,
     AdminRegistrationView,
     RequestPasswordResetView,
-    PasswordResetConfirmView
+    PasswordResetConfirmView,
+    CookieTokenObtainPairView, 
+    CookieTokenRefreshView,
+    CookieLogoutView
 )
 
 urlpatterns = [
@@ -21,10 +23,10 @@ urlpatterns = [
     path('register/', CustomerRegistrationView.as_view(), name='customer-register'),
     path('register/vendor/', VendorRegistrationView.as_view(), name='vendor-register'),
     
-    # JWT Auth
-    path('login/', TokenObtainPairView.as_view(), name='token-obtain'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    # Cookie-Based JWT Auth
+    path('login/', CookieTokenObtainPairView.as_view(), name='token-obtain'),
+    path('token/refresh/', CookieTokenRefreshView.as_view(), name='token-refresh'),
+    path('logout/', CookieLogoutView.as_view(), name='logout'),
     
     # Profile
     path('me/', CurrentUserView.as_view(), name='current-user'),
@@ -36,3 +38,4 @@ urlpatterns = [
     path('password/reset/', RequestPasswordResetView.as_view(), name='password-reset-request'),
     path('password/reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 ]
+

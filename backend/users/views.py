@@ -158,7 +158,10 @@ class AdminRegistrationView(generics.CreateAPIView):
         # Verify secret key
         secret_key = request.data.get('secret_key')
         # Default secret for development if not in settings
-        expected_secret = getattr(settings, 'ADMIN_REGISTRATION_SECRET', 'admin_secret_key_123')
+        # SECURITY: Fail if env var is missing, do not use fallback
+        expected_secret = getattr(settings, 'ADMIN_REGISTRATION_SECRET', None)
+        if not expected_secret:
+             return Response({"error": "Admin registration disabled or misconfigured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         
         if secret_key != expected_secret:
             return Response(
@@ -252,3 +255,113 @@ class PasswordResetConfirmView(APIView):
         user.save()
         
         return Response({'message': 'Password has been reset successfully'})
+
+# Cookie-based Token View
+class CookieTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            access_token = response.data.get('access')
+            refresh_token = response.data.get('refresh')
+            
+            # Helper to set cookie safely
+            secure = not settings.DEBUG
+            samesite = 'Lax' if settings.DEBUG else 'None' # Cross-site needs None + Secure if domains differ, but Lax is safer for same-site
+            
+            # If frontend/backend on different domains (e.g. Vercel vs Render), likely need "None"
+            # Since we are using credentials: 'include', SameSite='None' Secure=True is typically best for cross-origin.
+            # However, if on subdomain, Lax is fine. Let's assume cross-origin for now.
+            if not settings.DEBUG:
+                samesite = 'None'
+            
+            response.set_cookie(
+                'access_token',
+                access_token,
+                httponly=True,
+                secure=secure,
+                samesite=samesite,
+                max_age=3600 # 1 hour
+            )
+            response.set_cookie(
+                'refresh_token',
+                refresh_token,
+                httponly=True,
+                secure=secure,
+                samesite=samesite,
+                max_age=3600 * 24 * 7 # 7 days
+            )
+            
+            # Remove tokens from body to prevent localStorage usage
+            del response.data['access']
+            del response.data['refresh']
+            
+        return response
+
+class CookieLogoutView(APIView):
+    permission_classes = [permissions.AllowAny] # Allow anyone to call logout to clear cookies
+    
+    def post(self, request):
+        response = Response({'message': 'Logged out successfully'})
+        
+        # Invalidate/Blacklist logic if we have the refresh token (difficult since it's in a cookie)
+        # Typically we just clear the cookie.
+        refresh_token = request.COOKIES.get('refresh_token')
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception:
+                pass
+
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
+
+
+from rest_framework_simplejwt.views import TokenRefreshView
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        # In Cookie auth, the refresh token is in the cookie, not the body.
+        # SimpleJWT expects 'refresh' in data. We must inject it.
+        refresh_token = request.COOKIES.get('refresh_token')
+        if refresh_token:
+            request.data['refresh'] = refresh_token
+            
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            access_token = response.data.get('access')
+            
+            # Helper to set cookie safely
+            secure = not settings.DEBUG
+            samesite = 'None' if not settings.DEBUG else 'Lax'
+            
+            response.set_cookie(
+                'access_token',
+                access_token,
+                httponly=True,
+                secure=secure,
+                samesite=samesite,
+                max_age=3600 # 1 hour
+            )
+            
+            # Remove access from body
+            del response.data['access']
+            
+            # Note: Refresh token might strictly rotate. If so, we need to set the new refresh cookie too.
+            if 'refresh' in response.data:
+                 refresh_token = response.data.get('refresh')
+                 response.set_cookie(
+                    'refresh_token',
+                    refresh_token,
+                    httponly=True,
+                    secure=secure,
+                    samesite=samesite,
+                    max_age=3600 * 24 * 7
+                )
+                 del response.data['refresh']
+            
+        return response
+
