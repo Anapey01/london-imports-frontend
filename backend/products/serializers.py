@@ -63,7 +63,15 @@ class ProductListSerializer(serializers.ModelSerializer):
     
     def get_image(self, obj):
         """Return full Cloudinary HTTPS URL for the image"""
-        if obj.image:
+        if obj.image and obj.image.name:
+            # Explicitly build Cloudinary URL
+            from django.conf import settings
+            cloud_name = getattr(settings, 'CLOUDINARY_STORAGE', {}).get('CLOUD_NAME', '')
+            if cloud_name:
+                # Build full Cloudinary URL
+                image_path = obj.image.name
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{image_path}"
+            # Fallback to .url method
             return obj.image.url
         return None
 
@@ -97,7 +105,15 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     
     def get_image(self, obj):
         """Return full Cloudinary HTTPS URL for the image"""
-        if obj.image:
+        if obj.image and obj.image.name:
+            # Explicitly build Cloudinary URL
+            from django.conf import settings
+            cloud_name = getattr(settings, 'CLOUDINARY_STORAGE', {}).get('CLOUD_NAME', '')
+            if cloud_name:
+                # Build full Cloudinary URL
+                image_path = obj.image.name
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{image_path}"
+            # Fallback to .url method
             return obj.image.url
         return None
 
