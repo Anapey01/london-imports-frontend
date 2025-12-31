@@ -88,8 +88,9 @@ class Product(models.Model):
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=0.0, help_text="Product rating (0.0 - 5.0)")
     rating_count = models.PositiveIntegerField(default=0, help_text="Number of ratings/reviews")
     
-    # Images
-    image = models.ImageField(upload_to='products/', blank=True)
+    # Images - Using CloudinaryField for direct cloud upload
+    from cloudinary.models import CloudinaryField
+    image = CloudinaryField('image', folder='products', blank=True, null=True)
     
     # Stock (for ready-to-ship items)
     stock_quantity = models.PositiveIntegerField(default=0)
@@ -133,7 +134,8 @@ class ProductImage(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/')
+    from cloudinary.models import CloudinaryField
+    image = CloudinaryField('image', folder='products')
     alt_text = models.CharField(max_length=200, blank=True)
     order = models.PositiveIntegerField(default=0)
     
