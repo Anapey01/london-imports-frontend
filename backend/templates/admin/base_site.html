@@ -35,7 +35,6 @@
     a:link,
     a:visited {
         color: #be185d;
-        /* Pink 700 */
     }
 
     div.breadcrumbs {
@@ -50,7 +49,6 @@
     .module h2 a {
         background: #fce7f3;
         color: #be185d !important;
-        /* Force dark text */
     }
 
     /* Sidebar specific fixes */
@@ -83,6 +81,88 @@
     /* Login Page Logo */
     .login #header {
         padding: 20px;
+    }
+
+    /* ========================================= */
+    /* PROFESSIONAL ICON STYLING (Pink Theme)   */
+    /* ========================================= */
+
+    /* Related object icons (pencil, plus, X, view) */
+    .related-widget-wrapper .related-lookup,
+    .related-widget-wrapper .change-related,
+    .related-widget-wrapper .add-related,
+    .related-widget-wrapper .delete-related,
+    .related-widget-wrapper .view-related {
+        opacity: 0.7;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .related-widget-wrapper .related-lookup:hover,
+    .related-widget-wrapper .change-related:hover,
+    .related-widget-wrapper .add-related:hover,
+    .related-widget-wrapper .delete-related:hover,
+    .related-widget-wrapper .view-related:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    /* Style the SVG icons with pink filter */
+    .related-widget-wrapper a img,
+    .related-widget-wrapper a svg {
+        filter: hue-rotate(280deg) saturate(1.5);
+    }
+
+    /* Calendar/Clock date-time picker icons */
+    .datetimeshortcuts a,
+    .timezonewarning {
+        color: #be185d !important;
+    }
+
+    .datetimeshortcuts a img,
+    .calendarbox .calendarnav a,
+    .calendar td a,
+    .clockbox h2 {
+        filter: hue-rotate(280deg) saturate(1.5);
+    }
+
+    /* Calendar popup styling */
+    .calendarbox,
+    .clockbox {
+        border: 2px solid #ec4899;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
+    }
+
+    .calendar caption {
+        background: #ec4899 !important;
+        color: white !important;
+    }
+
+    .calendar td.today a {
+        background: #fce7f3 !important;
+        color: #be185d !important;
+    }
+
+    .calendar td.selected a {
+        background: #ec4899 !important;
+        color: white !important;
+    }
+
+    /* Hide raw related icons for cleaner look, show on hover */
+    .related-widget-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Add subtle tooltip styling */
+    .related-widget-wrapper a[title] {
+        position: relative;
+    }
+
+    /* Clean up inline editing links */
+    .inline-group .tabular td.original p {
+        color: #6b7280;
     }
 </style>
 {% endblock %}
