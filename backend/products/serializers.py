@@ -46,6 +46,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     vendor_name = serializers.CharField(source='vendor.business_name', read_only=True)
     delivery_window_text = serializers.ReadOnlyField()
     is_preorder = serializers.ReadOnlyField()
+    image = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -59,6 +60,12 @@ class ProductListSerializer(serializers.ModelSerializer):
             'rating', 'rating_count',
             'is_preorder', 'is_featured'
         ]
+    
+    def get_image(self, obj):
+        """Return full Cloudinary HTTPS URL for the image"""
+        if obj.image:
+            return obj.image.url
+        return None
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -73,6 +80,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     delivery_window_text = serializers.ReadOnlyField()
     is_preorder = serializers.ReadOnlyField()
     allows_deposit = serializers.ReadOnlyField()
+    image = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -86,6 +94,12 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'is_preorder', 'is_featured', 'stock_quantity',
             'created_at', 'updated_at'
         ]
+    
+    def get_image(self, obj):
+        """Return full Cloudinary HTTPS URL for the image"""
+        if obj.image:
+            return obj.image.url
+        return None
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
