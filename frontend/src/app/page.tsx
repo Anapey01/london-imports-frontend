@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 
 import HeroCarousel from '@/components/HeroCarousel';
+import HeroOverlayProducts from '@/components/HeroOverlayProducts';
 import PreorderCarousel from '@/components/PreorderCarousel';
 import ProductGrid from '@/components/ProductGrid';
 
@@ -27,8 +28,8 @@ export default function HomePage() {
       {/* 1. Hero Carousel (Landing visuals) */}
       <HeroCarousel />
 
-      {/* 2. "Just For You" - Feed of 10 items (Limit handled in ProductGrid) */}
-      <ProductGrid />
+      {/* 2. Products Overlay & Main Feed (20 items, Amazon-style grid) */}
+      <HeroOverlayProducts />
 
       {/* 3. "Upcoming Drops" - Admin Curated Horizontal Carousel */}
       <section className="py-4 bg-white mt-4 border-t border-gray-100">

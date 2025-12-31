@@ -8,21 +8,13 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/a
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true, // Send cookies with requests
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
+// Remove request interceptor (Cookies handle auth automatically)
 
 // Handle token refresh on 401
 api.interceptors.response.use(
@@ -34,23 +26,18 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {
-            refresh: refreshToken,
-          });
+        // Attempt refresh (cookies handled automatically)
+        await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
 
-          const { access } = response.data;
-          localStorage.setItem('access_token', access);
-
-          originalRequest.headers.Authorization = `Bearer ${access}`;
-          return api(originalRequest);
-        }
+        // Retry original request
+        return api(originalRequest);
       } catch (refreshError) {
-        // Clear tokens and redirect to login
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        // Refresh failed - User must login
+        if (typeof window !== 'undefined') {
+          // Optional: Call logout endpoint to clear cookies server-side
+          // window.location.href = '/login'; 
+        }
+        return Promise.reject(refreshError);
       }
     }
 
@@ -63,7 +50,7 @@ export const authAPI = {
   register: (data: any) => api.post('/auth/register/', data),
   registerVendor: (data: any) => api.post('/auth/register/vendor/', data),
   login: (data: { username: string; password: string }) => api.post('/auth/login/', data),
-  logout: (refresh: string) => api.post('/auth/logout/', { refresh }),
+  logout: () => api.post('/auth/logout/', {}), // No refresh token needed in body
   me: () => api.get('/auth/me/'),
   profile: () => api.get('/auth/profile/'),
   updateProfile: (data: any) => api.patch('/auth/profile/', data),

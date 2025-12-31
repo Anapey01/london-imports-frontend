@@ -10,6 +10,7 @@ from django.db.models import Count, Sum, F
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models.functions import TruncDate
+from django.conf import settings
 
 from orders.models import Order
 from products.models import Product
@@ -55,6 +56,11 @@ class AdminStatsView(APIView):
         
         # Product stats
         total_products = Product.objects.filter(is_active=True).count()
+
+        # Check storage backend
+        storage_backend = getattr(settings, 'DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
+        is_cloud = 'cloudinary' in storage_backend.lower()
+        storage_provider = 'Cloudinary (Safe)' if is_cloud else 'Local (Ephemeral)'
         
         return Response({
             'total_users': total_users,
@@ -63,6 +69,7 @@ class AdminStatsView(APIView):
             'pending_orders': pending_orders,
             'total_revenue': float(total_revenue),
             'total_products': total_products,
+            'storage_provider': storage_provider,
         })
 
 

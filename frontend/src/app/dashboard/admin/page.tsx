@@ -19,6 +19,7 @@ export default function AdminDashboardPage() {
         totalRevenue: 0,
         pendingOrders: 0,
         newUsersToday: 0,
+        storageProvider: '',
     });
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
@@ -39,6 +40,7 @@ export default function AdminDashboardPage() {
                     totalRevenue: statsData.total_revenue || 0,
                     pendingOrders: statsData.pending_orders || 0,
                     newUsersToday: statsData.new_users_today || 0,
+                    storageProvider: statsData.storage_provider || 'Unknown',
                 });
 
                 // Fetch recent orders
@@ -100,6 +102,27 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="space-y-8">
+            {/* System Status Alert */}
+            {stats.storageProvider && (
+                <div className={`p-4 rounded-lg flex items-center justify-between ${stats.storageProvider.includes('Cloudinary')
+                        ? (isDark ? 'bg-green-900/20 text-green-400 border border-green-900/50' : 'bg-green-50 text-green-700 border border-green-100')
+                        : (isDark ? 'bg-red-900/20 text-red-400 border border-red-900/50' : 'bg-red-50 text-red-700 border border-red-100')
+                    }`}>
+                    <div className="flex items-center gap-3">
+                        <span className="text-xl">{stats.storageProvider.includes('Cloudinary') ? '☁️' : '⚠️'}</span>
+                        <div>
+                            <p className="font-semibold">Image Storage System</p>
+                            <p className="text-sm opacity-90">{stats.storageProvider}</p>
+                        </div>
+                    </div>
+                    {!stats.storageProvider.includes('Cloudinary') && (
+                        <span className="text-xs bg-red-600 text-white px-3 py-1 rounded-full animate-pulse">
+                            Action Required in Render Env
+                        </span>
+                    )}
+                </div>
+            )}
+
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {statCards.map((stat, index) => (

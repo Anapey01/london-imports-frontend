@@ -42,13 +42,10 @@ export const useAuthStore = create<AuthState>()(
             login: async (username: string, password: string) => {
                 set({ isLoading: true });
                 try {
-                    const response = await authAPI.login({ username, password });
-                    const { access, refresh } = response.data;
+                    await authAPI.login({ username, password });
+                    // No manual token storage
 
-                    localStorage.setItem('access_token', access);
-                    localStorage.setItem('refresh_token', refresh);
-
-                    // Fetch user info
+                    // Fetch user info to confirm auth
                     await get().fetchUser();
                 } finally {
                     set({ isLoading: false });
@@ -59,10 +56,9 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.register(data);
-                    const { tokens, user } = response.data;
+                    const { user } = response.data;
 
-                    localStorage.setItem('access_token', tokens.access);
-                    localStorage.setItem('refresh_token', tokens.refresh);
+                    // No manual token storage
 
                     set({ user, isAuthenticated: true });
                 } finally {
@@ -70,15 +66,13 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            logout: () => {
-                const refreshToken = localStorage.getItem('refresh_token');
-                if (refreshToken) {
-                    authAPI.logout(refreshToken).catch(() => { });
-                }
+            logout: async () => {
+                try {
+                    await authAPI.logout();
+                } catch { }
 
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
                 set({ user: null, isAuthenticated: false });
+                // No manual token removal (cookies cleared by server)
             },
 
             fetchUser: async () => {

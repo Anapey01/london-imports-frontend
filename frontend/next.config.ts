@@ -15,6 +15,16 @@ const nextConfig: NextConfig = {
         port: '8000',
         pathname: '/media/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'london-imports-api.onrender.com',
+        pathname: '/media/**',
+      },
     ],
   },
 };

@@ -30,7 +30,7 @@ const slideTemplates: Slide[] = [
         ctaLink: "/products",
         bgColor: "#d1fae5", // Mint green
         textColor: "#064e3b",
-        categorySlug: "new-arrivals", // Example category slug
+        // categorySlug: "new-arrivals", // REMOVED: Show all/any preorders here
     },
     {
         id: 2,
@@ -68,11 +68,14 @@ const slideTemplates: Slide[] = [
 export default function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // Fetch products dynamically
+    // Fetch products dynamically - Focus on PREORDERS
     const { data: productsData } = useQuery({
         queryKey: ['hero-products'],
-        queryFn: () => productsAPI.list({ limit: 20 }),
+        queryFn: () => productsAPI.list({ status: 'preorder', limit: 20, ordering: '-created_at' }),
     });
+
+    // ... (rest of code)
+
 
     const products = productsData?.data?.results || productsData?.data || [];
 
@@ -138,10 +141,10 @@ export default function HeroCarousel() {
     };
 
     return (
-        <div className="relative w-full overflow-hidden">
+        <div className="relative w-full max-w-7xl mx-auto overflow-hidden sm:rounded-xl shadow-2xl mt-4">
             {/* Slides Container */}
             <div
-                className="relative h-[200px] sm:h-[260px] md:h-[320px] lg:h-[380px]"
+                className="relative h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px]"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -164,8 +167,8 @@ export default function HeroCarousel() {
                                 className="h-full w-full flex items-center relative overflow-hidden"
                                 style={{ backgroundColor: slide.bgColor }}
                             >
-                                {/* Text Content - Left Side */}
-                                <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full relative z-10">
+                                {/* Text Content - Left Side - Adjusted for overlap */}
+                                <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full relative z-10 h-full flex items-center lg:items-start lg:pt-20">
                                     <div className="max-w-sm md:max-w-md">
                                         <h2
                                             className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 leading-tight"
@@ -186,7 +189,7 @@ export default function HeroCarousel() {
                                 </div>
 
                                 {/* Dynamic Product Images - Right Side */}
-                                <div className="absolute right-4 sm:right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-2 md:gap-4">
+                                <div className="absolute right-4 sm:right-8 md:right-16 lg:right-24 top-1/2 lg:top-[40%] -translate-y-1/2 hidden sm:flex items-center gap-2 md:gap-4">
                                     {slideProducts.slice(0, 3).map((product: any, pIndex: number) => (
                                         <div
                                             key={product.id || pIndex}
@@ -222,8 +225,8 @@ export default function HeroCarousel() {
                 })}
             </div>
 
-            {/* Dot Indicators */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {/* Dot Indicators - Hidden on Mobile, Visible on Desktop */}
+            <div className="absolute bottom-36 left-1/2 -translate-x-1/2 hidden lg:flex gap-2 z-10">
                 {slideTemplates.map((_, index) => (
                     <button
                         key={index}

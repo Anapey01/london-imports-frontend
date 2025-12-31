@@ -44,23 +44,8 @@ export default function ProductGrid() {
     return (
         <section className="py-8 bg-gray-50 min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header / Filter Bar */}
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 className="text-2xl font-bold text-gray-900">Just For You</h2>
-
-                    <div className="flex items-center gap-2">
-                        <label className="text-sm text-gray-600">Sort by:</label>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-white border border-gray-300 rounded-md text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                        >
-                            <option value="newest">Newest Arrivals</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                        </select>
-                    </div>
-                </div>
+                {/* Header removed as per user request to 'remove Just For You' and show pure grid */}
+                <div className="mt-4"></div>
 
                 {/* Product Grid - 2 cols mobile */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">

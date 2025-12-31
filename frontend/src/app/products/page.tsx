@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
-import PlatformPrinciples from '@/components/PlatformPrinciples';
 import StatsBar from '@/components/StatsBar';
 
 export default function ProductsPage() {
@@ -114,7 +113,6 @@ export default function ProductsPage() {
             </div>
 
             {/* Trust Badges & Stats - Below Products */}
-            <PlatformPrinciples />
             <StatsBar />
         </div>
     );

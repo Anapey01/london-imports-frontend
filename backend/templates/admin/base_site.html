@@ -18,7 +18,6 @@
     /* Custom polished admin styles */
     #header {
         background: #1f2937;
-        /* Dark Gray */
         color: white;
         padding: 15px 40px;
         align-items: center;
@@ -26,11 +25,17 @@
 
     #site-name a {
         color: #ec4899 !important;
-        /* Pink 500 */
     }
 
     #branding h1 {
         margin: 0;
+    }
+
+    /* Fix visibility issues */
+    a:link,
+    a:visited {
+        color: #be185d;
+        /* Pink 700 */
     }
 
     div.breadcrumbs {
@@ -40,11 +45,26 @@
 
     .module h2,
     .module caption,
-    .inline-group h2 {
+    .inline-group h2,
+    .module caption a,
+    .module h2 a {
         background: #fce7f3;
-        /* Pink 100 */
-        color: #be185d;
-        /* Pink 700 */
+        color: #be185d !important;
+        /* Force dark text */
+    }
+
+    /* Sidebar specific fixes */
+    .module ul li a {
+        color: #374151 !important;
+    }
+
+    /* Form row contrast */
+    .form-row {
+        border-bottom: 1px solid #eee;
+    }
+
+    label {
+        color: #374151;
     }
 
     .button.default,

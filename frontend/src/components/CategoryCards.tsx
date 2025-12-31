@@ -1,6 +1,6 @@
 /**
  * London's Imports - Category Cards
- * Amazon-style category grid with product images
+ * Responsive: Amazon Grid (Desktop) / Jumia Scroll (Mobile)
  */
 'use client';
 
@@ -9,177 +9,143 @@ import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 
+interface GridItem {
+    name: string;
+    image: string;
+    link: string;
+}
+
 interface CategoryCard {
     title: string;
     slug: string;
-    items: {
-        name: string;
-        image: string;
-        link: string;
-    }[];
+    type: 'single' | 'quad';
+    items: GridItem[];
     ctaText: string;
     ctaLink: string;
 }
 
-// Fallback categories when no products exist yet
-const fallbackCategories: CategoryCard[] = [
+// Configuration for the Amazon Grid (Desktop)
+const amazonGridConfig: CategoryCard[] = [
     {
-        title: "Fashion Deals",
-        slug: "fashion",
-        items: [
-            { name: "Dresses", image: "/placeholder-product.jpg", link: "/products?category=fashion" },
-            { name: "Tops", image: "/placeholder-product.jpg", link: "/products?category=fashion" },
-            { name: "Shoes", image: "/placeholder-product.jpg", link: "/products?category=fashion" },
-            { name: "Accessories", image: "/placeholder-product.jpg", link: "/products?category=fashion" },
-        ],
-        ctaText: "Shop Fashion",
-        ctaLink: "/products?category=fashion",
-    },
-    {
-        title: "Electronics",
+        title: "Get your game on",
         slug: "electronics",
+        type: "single",
         items: [
-            { name: "Phones", image: "/placeholder-product.jpg", link: "/products?category=electronics" },
-            { name: "Laptops", image: "/placeholder-product.jpg", link: "/products?category=electronics" },
-            { name: "Accessories", image: "/placeholder-product.jpg", link: "/products?category=electronics" },
-            { name: "Gadgets", image: "/placeholder-product.jpg", link: "/products?category=electronics" },
+            { name: "Gaming", image: "/assets/cards/gadgets.png", link: "/products?category=electronics" }
         ],
-        ctaText: "Shop Electronics",
-        ctaLink: "/products?category=electronics",
+        ctaText: "Shop gaming",
+        ctaLink: "/products?category=electronics"
     },
     {
-        title: "Home & Living",
+        title: "New home arrivals under $50",
         slug: "home",
+        type: "quad",
         items: [
-            { name: "Decor", image: "/placeholder-product.jpg", link: "/products?category=home" },
-            { name: "Kitchen", image: "/placeholder-product.jpg", link: "/products?category=home" },
-            { name: "Bedding", image: "/placeholder-product.jpg", link: "/products?category=home" },
-            { name: "Storage", image: "/placeholder-product.jpg", link: "/products?category=home" },
+            { name: "Kitchen & Dining", image: "/assets/cards/home.png", link: "/products?category=home&q=kitchen" },
+            { name: "Home Improvement", image: "/assets/cards/home.png", link: "/products?category=home&q=improvement" }, // Duplicate for now or use placeholders if distinct
+            { name: "Decor", image: "/assets/cards/home.png", link: "/products?category=home&q=decor" },
+            { name: "Bedding & Bath", image: "/assets/cards/home.png", link: "/products?category=home&q=bedding" }
         ],
-        ctaText: "Shop Home",
-        ctaLink: "/products?category=home",
+        ctaText: "Shop the latest from Home",
+        ctaLink: "/products?category=home"
     },
     {
-        title: "Beauty & Health",
-        slug: "beauty",
+        title: "Shop Fashion for less",
+        slug: "fashion",
+        type: "quad",
         items: [
-            { name: "Skincare", image: "/placeholder-product.jpg", link: "/products?category=beauty" },
-            { name: "Makeup", image: "/placeholder-product.jpg", link: "/products?category=beauty" },
-            { name: "Hair Care", image: "/placeholder-product.jpg", link: "/products?category=beauty" },
-            { name: "Fragrance", image: "/placeholder-product.jpg", link: "/products?category=beauty" },
+            { name: "Jeans under $50", image: "/assets/cards/fashion.png", link: "/products?category=fashion&q=jeans" },
+            { name: "Tops under $25", image: "/assets/cards/dresses.png", link: "/products?category=fashion&q=tops" },
+            { name: "Dresses under $30", image: "/assets/cards/dresses.png", link: "/products?category=fashion&q=dresses" },
+            { name: "Shoes under $50", image: "/assets/cards/fashion.png", link: "/products?category=fashion&q=shoes" }
         ],
-        ctaText: "Shop Beauty",
-        ctaLink: "/products?category=beauty",
+        ctaText: "See all deals",
+        ctaLink: "/products?category=fashion"
     },
+    {
+        title: "Refresh your space",
+        slug: "home-refresh",
+        type: "single", // Changed to Single based on available good images
+        items: [
+            { name: "Health and Beauty", image: "/assets/cards/dresses.png", link: "/products?category=beauty" }
+        ],
+        ctaText: "See more",
+        ctaLink: "/products"
+    }
 ];
 
 export default function CategoryCards() {
-    // Fetch categories from backend
-    const { data: categoriesData } = useQuery({
-        queryKey: ['categories'],
-        queryFn: () => productsAPI.categories(),
-    });
+    // Fetch products to populate images - REMOVED
+    // const { data: productsData } = useQuery({
+    //     queryKey: ['amazon-grid-products'],
+    //     queryFn: () => productsAPI.list({ limit: 50 }),
+    // });
 
-    // Fetch products to get images
-    const { data: productsData } = useQuery({
-        queryKey: ['products-for-cards'],
-        queryFn: () => productsAPI.list({ limit: 20 }),
-    });
+    // const products = productsData?.data?.results || productsData?.data || [];
 
-    const backendCategories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
-    const products = productsData?.data?.results || productsData?.data || [];
-
-    // Build dynamic categories from backend data
-    const dynamicCategories: CategoryCard[] = backendCategories.slice(0, 4).map((cat: any) => {
-        const categoryProducts = products.filter((p: any) =>
-            p.category?.slug === cat.slug || p.category?.id === cat.id
-        ).slice(0, 4);
-
-        return {
-            title: cat.name,
-            slug: cat.slug,
-            items: categoryProducts.length > 0
-                ? categoryProducts.map((p: any) => ({
-                    name: p.name,
-                    image: p.primary_image || '/placeholder-product.jpg',
-                    link: `/products/${p.slug}`,
-                }))
-                : fallbackCategories[0].items,
-            ctaText: `Shop ${cat.name}`,
-            ctaLink: `/products?category=${cat.slug}`,
-        };
-    });
-
-    // Use dynamic categories if available, otherwise fallback
-    const categories = dynamicCategories.length > 0 ? dynamicCategories : fallbackCategories;
+    // Helper to find images for categories - REMOVED
+    // const getImagesForCategory = (slug: string, count: number) => {
+    //     const catProducts = products.filter((p: any) => p.category?.slug === slug || p.category?.name?.toLowerCase().includes(slug));
+    //     // Fallbacks if not enough products
+    //     const result = catProducts.map((p: any) => p.primary_image).slice(0, count);
+    //     while (result.length < count) {
+    //         result.push(null); // Will trigger UI fallback
+    //     }
+    //     return result;
+    // }
 
     return (
-        <section className="py-6 px-2 sm:px-4 bg-white">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-4 px-2">
-                    <h2 className="text-lg font-bold text-gray-900">Categories</h2>
-                    <Link href="/products" className="text-sm text-pink-500 hover:text-pink-600 font-medium flex items-center gap-1">
-                        See All <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </Link>
-                </div>
+        <section className="relative z-20 px-4 max-w-7xl mx-auto">
 
-                {/* Jumia-style Circular Row - Horizontal Scroll */}
-                <div
-                    className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-hide snap-x"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    {/* Hardcoded "Happy New Deal" Item */}
-                    <Link href="/products?sort=newest" className="flex flex-col items-center group min-w-[70px] sm:min-w-[80px] snap-start">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-red-600 flex flex-col items-center justify-center text-white p-2 shadow-sm group-hover:scale-105 transition-transform mb-2 overflow-hidden border-2 border-red-100 flex-shrink-0">
-                            <div className="text-xs font-bold text-center leading-tight">
-                                <span className="block text-[10px] opacity-90">UP TO</span>
-                                <span className="text-lg sm:text-xl font-extrabold">75%</span>
-                                <span className="block text-[10px] font-bold">OFF</span>
-                            </div>
-                        </div>
-                        <span className="text-xs font-medium text-gray-700 text-center line-clamp-2 px-1 w-full truncate">Happy New Deal!</span>
-                    </Link>
+            {/* DESKTOP & MOBILE: Amazon Card Style */}
+            {/* Desktop: Grid | Mobile: Horizontal Scroll */}
+            <div className="flex lg:grid lg:grid-cols-4 gap-4 lg:gap-6 -mt-10 lg:-mt-32 mb-12 overflow-x-auto pb-6 lg:pb-0 px-2 lg:px-0 scrollbar-hide snap-x">
+                {amazonGridConfig.map((card, idx) => {
+                    // Populate images dynamically - REMOVED
+                    // const dynamicImages = getImagesForCategory(card.slug === 'home-refresh' ? 'home' : card.slug, 4);
 
-                    {/* Dynamic Categories */}
-                    {categories.map((category) => {
-                        const catImage = category.items[0]?.image || '/placeholder-product.jpg';
+                    return (
+                        <div key={idx} className="bg-white p-4 lg:p-5 shadow-md rounded-lg flex flex-col h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 snap-center border border-gray-100 lg:border-none">
+                            <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2">{card.title}</h3>
 
-                        return (
-                            <Link
-                                key={category.slug}
-                                href={category.ctaLink}
-                                className="flex flex-col items-center group min-w-[70px] sm:min-w-[80px] snap-start"
-                            >
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-gray-100 p-0.5 shadow-sm group-hover:scale-105 transition-transform mb-2 overflow-hidden border border-gray-100 flex-shrink-0">
-                                    <div className="relative w-full h-full rounded-full overflow-hidden bg-white">
-                                        {catImage && catImage !== '/placeholder-product.jpg' ? (
-                                            <Image
-                                                src={catImage}
-                                                alt={category.title}
-                                                fill
-                                                className="object-cover"
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement;
-                                                    target.style.display = 'none';
-                                                    target.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-2xl">📦</div>';
-                                                }}
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
-                                                📦
-                                            </div>
-                                        )}
+                            <div className="flex-1">
+                                {card.type === 'single' ? (
+                                    <Link href={card.ctaLink} className="block relative w-full h-full max-h-[260px] lg:max-h-[300px] overflow-hidden rounded-md">
+                                        <Image
+                                            src={card.items[0].image}
+                                            alt={card.title}
+                                            fill
+                                            className="object-cover object-center transform hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </Link>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-3 lg:gap-4 h-full max-h-[260px] lg:max-h-[300px]">
+                                        {card.items.map((item, i) => (
+                                            <Link key={i} href={item.link} className="block group">
+                                                <div className="relative aspect-square mb-1 bg-gray-50 overflow-hidden rounded-md border border-gray-100">
+                                                    <Image
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        fill
+                                                        className="object-cover p-0 hover:scale-110 transition-transform"
+                                                    />
+                                                </div>
+                                                <span className="text-xs text-gray-700 block truncate font-medium">{item.name}</span>
+                                            </Link>
+                                        ))}
                                     </div>
-                                </div>
-                                <span className="text-xs font-medium text-gray-700 text-center line-clamp-2 px-1 leading-tight group-hover:text-pink-600 transition-colors w-full">
-                                    {category.title}
-                                </span>
+                                )}
+                            </div>
+
+                            <Link href={card.ctaLink} className="text-sm font-medium text-teal-700 hover:text-orange-700 hover:underline mt-4 block">
+                                {card.ctaText}
                             </Link>
-                        );
-                    })}
-                </div>
+                        </div>
+                    );
+                })}
             </div>
+
+            {/* Replaced Jumia Circles with the layout above */}
         </section>
     );
 }
-
