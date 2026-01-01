@@ -69,7 +69,7 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
                             {product.image ? (
                                 <img
                                     src={product.image}
-                                    alt={product.name}
+                                    alt={`${product.name} - China Import to Ghana`}
                                     className="w-full h-full object-contain drop-shadow-2xl"
                                 />
                             ) : (
@@ -241,8 +241,8 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
                                 onClick={isAuthenticated ? handleAddToCart : () => router.push('/login')}
                                 disabled={isAdding || (isAuthenticated && product.preorder_status === 'SOLD_OUT')}
                                 className={`flex-1 py-4 px-8 font-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${isAuthenticated
-                                        ? "bg-[#F5A623] text-[#006B5A] hover:bg-[#E09000]"
-                                        : "bg-pink-600 text-white hover:bg-pink-700"
+                                    ? "bg-[#F5A623] text-[#006B5A] hover:bg-[#E09000]"
+                                    : "bg-pink-600 text-white hover:bg-pink-700"
                                     }`}
                             >
                                 {isAdding ? 'Adding...' :

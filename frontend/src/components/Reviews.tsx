@@ -40,8 +40,8 @@ const reviews = [
         name: "Jessica A.",
         role: "Fashion Haul",
         item: "Zara & ASOS Order",
-        saving: "Direct UK Prices",
-        text: "Finally I can shop UK brands without begging relatives to bring them home. Shipping fees are very reasonable.",
+        saving: "Direct Factory Prices",
+        text: "Finally I can shop global brands without begging relatives to bring them home. Shipping fees are very reasonable.",
         rating: 4
     },
     {

@@ -14,6 +14,7 @@ import ThemeToggle from './ThemeToggle';
 import SidebarMenu from './SidebarMenu';
 import MobileMenuDrawer from './MobileMenuDrawer';
 import { useTheme } from '@/providers/ThemeProvider';
+import { productsAPI } from '@/lib/api';
 import { Search, Menu } from 'lucide-react';
 
 export default function Navbar() {
@@ -24,10 +25,19 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false); // Desktop Sidebar
     const [searchOpen, setSearchOpen] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
 
     useEffect(() => {
         setMounted(true);
         fetchCart();
+
+        // Fetch categories dynamically
+        productsAPI.categories()
+            .then((res) => {
+                const results = res.data.results || (Array.isArray(res.data) ? res.data : []);
+                setCategories(results);
+            })
+            .catch(err => console.error("Failed to fetch categories for navbar:", err));
     }, [fetchCart]);
 
     if (!mounted) return null;
@@ -88,11 +98,17 @@ export default function Navbar() {
                             </div>
                         </div>
 
-                        {/* MID-RIGHT: Simple Category Links (Visible to all) */}
+                        {/* MID-RIGHT: Dynamic Category Links */}
                         <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
-                            <Link href="/products?category=women" className="hover:text-pink-600 transition-colors">Women</Link>
-                            <Link href="/products?category=men" className="hover:text-pink-600 transition-colors">Men</Link>
-                            <Link href="/products?category=children" className="hover:text-pink-600 transition-colors">Children</Link>
+                            {categories.slice(0, 5).map((category) => (
+                                <Link
+                                    key={category.id}
+                                    href={`/products?category=${category.slug}`}
+                                    className="hover:text-pink-600 transition-colors uppercase tracking-wide"
+                                >
+                                    {category.name}
+                                </Link>
+                            ))}
                         </div>
 
                         {/* RIGHT: User Actions (No Nav Links here anymore) */}

@@ -25,6 +25,9 @@ if not SECRET_KEY:
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com').split(',')
+# CRITICAL: Force add the Render domain even if ALLOWED_HOSTS env var is set to something else
+if 'london-imports-api.onrender.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('london-imports-api.onrender.com')
 
 # Render / Production Security Settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -106,8 +109,10 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 if DATABASE_URL:
     # Production: PostgreSQL via DATABASE_URL
+    # CRITICAL: Set conn_max_age to 0 to prevent "SSL connection has been closed unexpectedly" errros
+    # Render/PaaS often kill idle connections silently. forcing fresh connections is safer.
     DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=0, ssl_require=True)
     }
 else:
     # Development: SQLite
@@ -218,10 +223,15 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS', 
     'http://localhost:3000,https://london-imports-api.onrender.com'
 ).split(',')
-# Extending CSRF trusted origins dynamically isn't supported via regex easily in standard settings without custom middleware,
-# but usually CORS regex handles the fetch. For CSRF (POST requests), we might need to be explicit or use a wildcard if supported in Django 4+
-# Django 4+ CSRF_TRUSTED_ORIGINS supports subdomains if headers matching.
-# Let's keep the explicit list for CSRF main domains but rely on CORS for the frontend interaction.
+
+# CRITICAL: Force add the Render domain to Trusted Origins
+# This fixes "CSRF verification failed" errors when uploading files in Admin
+if 'https://london-imports-api.onrender.com' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://london-imports-api.onrender.com')
+
+# Also add the frontend Vercel app to be safe for API calls
+if 'https://london-import-frontend.vercel.app' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://london-import-frontend.vercel.app')
 
 
 # Celery Settings

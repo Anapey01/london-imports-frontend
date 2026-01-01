@@ -4,7 +4,7 @@ import Image from 'next/image';
 const principles = [
     {
         title: "Direct Import",
-        desc: "UK/US to Ghana",
+        desc: "China/Global to Ghana",
         image: "/principles/truck.png"
     },
     {

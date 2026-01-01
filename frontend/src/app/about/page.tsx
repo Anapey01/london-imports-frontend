@@ -27,7 +27,7 @@ export default function AboutPage() {
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Choose Us?</h2>
                         <ul className="space-y-3 text-gray-600">
                             <li className="flex items-center gap-2">
-                                <span className="text-pink-500 font-bold">✓</span> Direct from UK/US Suppliers
+                                <span className="text-pink-500 font-bold">✓</span> Direct from Global Suppliers
                             </li>
                             <li className="flex items-center gap-2">
                                 <span className="text-pink-500 font-bold">✓</span> Handle All Customs & Shipping

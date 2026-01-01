@@ -280,6 +280,7 @@ export default function HeroCarousel() {
                                                             : 'opacity-0'
                                                             }`}
                                                         priority={index === 0}
+                                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
                                                     />
                                                 ))}
                                             </div>
@@ -293,6 +294,7 @@ export default function HeroCarousel() {
                                                     fill
                                                     className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'}`}
                                                     priority={index === 0}
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
                                                 />
                                             </div>
                                         )}
@@ -316,6 +318,7 @@ export default function HeroCarousel() {
                                                     alt={product.name}
                                                     fill
                                                     className="object-cover"
+                                                    sizes="(max-width: 640px) 33vw, 150px"
                                                     onError={(e) => {
                                                         const target = e.target as HTMLImageElement;
                                                         target.style.display = 'none';

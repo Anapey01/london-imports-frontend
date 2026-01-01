@@ -16,12 +16,17 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://london-import-frontend.vercel.app'), // Update with actual domain if custom
-  title: "London's Imports - Pre-order Platform",
-  description: "Reserve before stock arrives. Pay securely. Receive on schedule. Ghana's trusted pre-order platform for China goods.",
-  keywords: ["China to Ghana pre-order", "London's Imports", "Buy from China in Ghana", "Cheap electronics Ghana", "Online shopping Ghana", "Pre-order fashion Ghana"],
+  title: "London's Imports - Premier Mini-Importation & Consolidation",
+  description: "The trusted bridge for shipping from China to Ghana. Buy from 1688/Alibaba, pay with Momo, and get door-to-door delivery. Experts in air freight and customs clearance.",
+  keywords: [
+    "Shipping from China to Ghana", "Buy from 1688 to Ghana", "China to Ghana consolidation", // Primary
+    "Ghana Customs duty for electronics", "Air freight rates Guangzhou to Accra", "Door to door shipping Ghana", // Secondary
+    "How to pay 1688 with Momo", "Clearance agents in Tema Port", "Buy from Alibaba ship to Ghana", // Transactional
+    "Mini-Importation Ghana", "London's Imports"
+  ],
   openGraph: {
-    title: "London's Imports - Premium Pre-orders",
-    description: "Direct from China to your doorstep in Ghana. Reserve now, pay later.",
+    title: "London's Imports - China to Ghana Consolidation",
+    description: "Start your mini-importation business today. We handle shipping, customs, and delivery from Guangzhou to Accra. Pay in Cedis.",
     url: 'https://london-import-frontend.vercel.app',
     siteName: "London's Imports",
     images: [
@@ -29,7 +34,7 @@ export const metadata: Metadata = {
         url: '/og-image.jpg', // Must be in public folder
         width: 1200,
         height: 630,
-        alt: "London's Imports Hero",
+        alt: "London's Imports - China to Ghana Shipping",
       },
     ],
     locale: 'en_GH',

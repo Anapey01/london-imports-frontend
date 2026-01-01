@@ -28,10 +28,13 @@ interface ProductCardProps {
 
 import { useAuthStore } from '@/stores/authStore';
 
+import Image from 'next/image';
+
 export default function ProductCard({ product }: ProductCardProps) {
     const router = useRouter();
     const { isAuthenticated } = useAuthStore();
     const [isAdding, setIsAdding] = useState(false);
+    const [imageError, setImageError] = useState(false);
     const addToCart = useCartStore(state => state.addToCart);
 
     const handleAddToCart = async (e: React.MouseEvent) => {
@@ -65,22 +68,14 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </div>
                     )}
 
-                    {product.image ? (
-                        <img
+                    {product.image && !imageError ? (
+                        <Image
                             src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-contain hover:scale-105 transition-transform"
-                            onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                target.parentElement!.innerHTML = `
-                                    <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                        </svg>
-                                    </div>
-                                `;
-                            }}
+                            alt={`${product.name} - China Import to Ghana`}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                            className="object-contain hover:scale-105 transition-transform duration-300"
+                            onError={() => setImageError(true)}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300">

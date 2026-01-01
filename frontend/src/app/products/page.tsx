@@ -4,6 +4,9 @@ import ProductGrid from '@/components/ProductGrid';
 import StatsBar from '@/components/StatsBar';
 import { Metadata, ResolvingMetadata } from 'next';
 
+// ISR: Revalidate this page every hour
+export const revalidate = 3600;
+
 type Props = {
     searchParams: { [key: string]: string | string[] | undefined }
 }
@@ -17,7 +20,7 @@ export async function generateMetadata(
     // Default Metadata
     const defaultMeta = {
         title: 'Pre-order Products | London\'s Imports',
-        description: 'Browse our latest pre-order deals from China. Authentic products, guaranteed delivery.',
+        description: 'Browse our latest pre-order collections. Authentic fashion and tech delivered to Ghana.',
     };
 
     if (!category) return defaultMeta;
@@ -31,10 +34,10 @@ export async function generateMetadata(
 
     return {
         title: `${categoryTitle} Imports | London Pre-order Platform`,
-        description: `Latest ${categoryTitle} arrivals from the UK. Pre-order now for the next shipment.`,
+        description: `Latest ${categoryTitle} arrivals from China. Pre-order now for the next shipment.`,
         openGraph: {
             title: `${categoryTitle} Imports - Pre-order Now`,
-            description: `Latest ${categoryTitle} arrivals from the UK. Pre-order now for the next shipment.`,
+            description: `Latest ${categoryTitle} arrivals from China. Pre-order now for the next shipment.`,
             images: firstProduct?.image ? [firstProduct.image] : [],
         },
     };

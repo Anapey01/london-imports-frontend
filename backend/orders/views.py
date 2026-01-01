@@ -48,43 +48,49 @@ class CartView(APIView):
         serializer = CartAddSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        cart = self.get_cart(request.user)
+        from django.db import transaction
+        from django.db.models import F
         
-        try:
-            product = Product.objects.get(
-                id=serializer.validated_data['product_id'],
-                is_active=True
-            )
-        except Product.DoesNotExist:
-            return Response(
-                {'error': 'Product not found'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        
-        quantity = serializer.validated_data['quantity']
-        
-        # Check if item already in cart
-        existing_item = cart.items.filter(product=product).first()
-        if existing_item:
-            existing_item.quantity += quantity
-            existing_item.save()
-        else:
-            OrderItem.objects.create(
-                order=cart,
-                product=product,
-                quantity=quantity,
-                unit_price=product.price,
-                product_name=product.name,
-                product_sku=product.sku
-            )
-        
-        # Update cart totals
-        self._update_cart_totals(cart)
-        
-        # Increment product reservation count
-        product.reservations_count += quantity
-        product.save()
-        
+        # Atomic transaction ensures we don't have partial updates if something fails
+        with transaction.atomic():
+            cart = self.get_cart(request.user)
+            
+            try:
+                # Lock the product row to prevent race conditions during read-check-write
+                product = Product.objects.select_for_update().get(
+                    id=serializer.validated_data['product_id'],
+                    is_active=True
+                )
+            except Product.DoesNotExist:
+                return Response(
+                    {'error': 'Product not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            quantity = serializer.validated_data['quantity']
+            
+            # Check if item already in cart
+            existing_item = cart.items.filter(product=product).first()
+            if existing_item:
+                existing_item.quantity += quantity
+                existing_item.save()
+            else:
+                OrderItem.objects.create(
+                    order=cart,
+                    product=product,
+                    quantity=quantity,
+                    unit_price=product.price,
+                    product_name=product.name,
+                    product_sku=product.sku
+                )
+            
+            # Update cart totals
+            self._update_cart_totals(cart)
+            
+            # Increment product reservation count SAFELY using F expression
+            product.reservations_count = F('reservations_count') + quantity
+            product.save(update_fields=['reservations_count'])
+            
         return Response(OrderDetailSerializer(cart).data)
     
     def delete(self, request):
@@ -96,20 +102,28 @@ class CartView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        cart = self.get_cart(request.user)
+        from django.db import transaction
         
-        try:
-            item = cart.items.get(id=item_id)
-            item.delete()
-            self._update_cart_totals(cart)
-        except OrderItem.DoesNotExist:
-            pass
+        with transaction.atomic():
+            cart = self.get_cart(request.user)
+            
+            try:
+                item = cart.items.select_related('product').get(id=item_id)
+                
+                # Decrement reservation on remove logic could go here if we wanted to be strict
+                # For now, just removing the item
+                item.delete()
+                self._update_cart_totals(cart)
+            except OrderItem.DoesNotExist:
+                pass
         
         return Response(OrderDetailSerializer(cart).data)
     
     def _update_cart_totals(self, cart):
         """Recalculate cart totals"""
-        subtotal = sum(item.total_price for item in cart.items.all())
+        # Prefetch to avoid N+1 queries
+        items = cart.items.all().select_related('product')
+        subtotal = sum(item.total_price for item in items)
         delivery_fee = Decimal('15.00')  # Fixed delivery fee for now
         platform_fee = subtotal * Decimal(str(settings.PLATFORM_FEE_PERCENTAGE / 100))
         
@@ -131,64 +145,67 @@ class CheckoutView(APIView):
         serializer = CheckoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        # Get cart
-        try:
-            cart = Order.objects.get(
-                customer=request.user,
-                state=OrderState.DRAFT
-            )
-        except Order.DoesNotExist:
-            return Response(
-                {'error': 'No cart found'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        from django.db import transaction
         
-        if cart.items.count() == 0:
-            return Response(
-                {'error': 'Cart is empty'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        # Update delivery info
-        cart.delivery_address = serializer.validated_data['delivery_address']
-        cart.delivery_city = serializer.validated_data['delivery_city']
-        cart.delivery_region = serializer.validated_data['delivery_region']
-        cart.customer_notes = serializer.validated_data.get('customer_notes', '')
-        
-        # Handle deposit vs full payment
-        payment_type = serializer.validated_data['payment_type']
-        if payment_type == 'DEPOSIT':
-            # Calculate deposit (sum of product deposits or 30% of total)
-            deposit = sum(
-                item.product.deposit_amount * item.quantity
-                for item in cart.items.all()
-                if item.product.deposit_amount > 0
-            )
-            if deposit == 0:
-                deposit = cart.total * Decimal('0.30')
+        with transaction.atomic():
+            # Get cart
+            try:
+                cart = Order.objects.select_for_update().get(
+                    customer=request.user,
+                    state=OrderState.DRAFT
+                )
+            except Order.DoesNotExist:
+                return Response(
+                    {'error': 'No cart found'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
-            cart.deposit_amount = deposit
-            cart.balance_due = cart.total - deposit
-        else:
-            cart.deposit_amount = cart.total
-            cart.balance_due = Decimal('0')
-        
-        # Set estimated delivery window
-        max_weeks = max(
-            item.product.estimated_weeks 
-            for item in cart.items.all()
-        )
-        cart.estimated_delivery_start = timezone.now().date() + timezone.timedelta(weeks=max_weeks)
-        cart.estimated_delivery_end = timezone.now().date() + timezone.timedelta(weeks=max_weeks + 1)
-        
-        # Transition to pending payment
-        cart.transition_to(OrderState.PENDING_PAYMENT, request.user, 'Checkout initiated')
-        
-        return Response({
-            'order': OrderDetailSerializer(cart).data,
-            'payment_amount': float(cart.deposit_amount if payment_type == 'DEPOSIT' else cart.total),
-            'message': 'Proceed to payment'
-        })
+            if cart.items.count() == 0:
+                return Response(
+                    {'error': 'Cart is empty'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Update delivery info
+            cart.delivery_address = serializer.validated_data['delivery_address']
+            cart.delivery_city = serializer.validated_data['delivery_city']
+            cart.delivery_region = serializer.validated_data['delivery_region']
+            cart.customer_notes = serializer.validated_data.get('customer_notes', '')
+            
+            # Handle deposit vs full payment
+            payment_type = serializer.validated_data['payment_type']
+            if payment_type == 'DEPOSIT':
+                # Calculate deposit (sum of product deposits or 30% of total)
+                deposit = sum(
+                    item.product.deposit_amount * item.quantity
+                    for item in cart.items.select_related('product').all()
+                    if item.product.deposit_amount > 0
+                )
+                if deposit == 0:
+                    deposit = cart.total * Decimal('0.30')
+                
+                cart.deposit_amount = deposit
+                cart.balance_due = cart.total - deposit
+            else:
+                cart.deposit_amount = cart.total
+                cart.balance_due = Decimal('0')
+            
+            # Set estimated delivery window
+            max_weeks = max(
+                item.product.estimated_weeks 
+                for item in cart.items.select_related('product').all()
+            )
+            cart.estimated_delivery_start = timezone.now().date() + timezone.timedelta(weeks=max_weeks)
+            cart.estimated_delivery_end = timezone.now().date() + timezone.timedelta(weeks=max_weeks + 1)
+            
+            # Transition to pending payment
+            cart.transition_to(OrderState.PENDING_PAYMENT, request.user, 'Checkout initiated')
+            
+            return Response({
+                'order': OrderDetailSerializer(cart).data,
+                'payment_amount': float(cart.deposit_amount if payment_type == 'DEPOSIT' else cart.total),
+                'message': 'Proceed to payment'
+            })
 
 
 class OrderListView(generics.ListAPIView):

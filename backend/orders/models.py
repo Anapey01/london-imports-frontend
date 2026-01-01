@@ -167,12 +167,17 @@ class Order(models.Model):
         super().save(*args, **kwargs)
     
     def _generate_order_number(self):
-        """Generate a unique order number"""
+        """Generate a unique order number with collision check"""
         from django.utils import timezone
         import random
-        prefix = timezone.now().strftime('%Y%m%d')
-        suffix = str(random.randint(1000, 9999))
-        return f"LI-{prefix}-{suffix}"
+        
+        while True:
+            prefix = timezone.now().strftime('%Y%m%d')
+            suffix = str(random.randint(1000, 9999))
+            order_number = f"LI-{prefix}-{suffix}"
+            
+            if not Order.objects.filter(order_number=order_number).exists():
+                return order_number
     
     def transition_to(self, new_state: str, user=None, reason: str = ""):
         """
