@@ -15,6 +15,14 @@ interface GridItem {
     link: string;
 }
 
+interface PreviewProduct {
+    id: number;
+    name: string;
+    slug: string;
+    image: string | null;
+    category_name: string;
+}
+
 interface CategoryCard {
     title: string;
     slug: string;
@@ -75,13 +83,13 @@ const amazonGridConfig: CategoryCard[] = [
 ];
 
 export default function CategoryCards() {
-    // Fetch products to populate images - REMOVED
-    // const { data: productsData } = useQuery({
-    //     queryKey: ['amazon-grid-products'],
-    //     queryFn: () => productsAPI.list({ limit: 50 }),
-    // });
+    // Fetch preview products
+    const { data: previewData } = useQuery({
+        queryKey: ['preview-products'],
+        queryFn: () => productsAPI.preview(),
+    });
 
-    // const products = productsData?.data?.results || productsData?.data || [];
+    const previewProducts = (previewData?.data?.results || previewData?.data || []) as PreviewProduct[];
 
     // Helper to find images for categories - REMOVED
     // const getImagesForCategory = (slug: string, count: number) => {
@@ -101,8 +109,21 @@ export default function CategoryCards() {
             {/* Desktop: Grid | Mobile: Horizontal Scroll */}
             <div className="flex lg:grid lg:grid-cols-4 gap-4 lg:gap-6 -mt-10 lg:-mt-32 mb-12 overflow-x-auto pb-6 lg:pb-0 px-2 lg:px-0 scrollbar-hide snap-x">
                 {amazonGridConfig.map((card, idx) => {
-                    // Populate images dynamically - REMOVED
-                    // const dynamicImages = getImagesForCategory(card.slug === 'home-refresh' ? 'home' : card.slug, 4);
+                    // Filter products for this category
+                    const categoryProducts = previewProducts.filter((p) =>
+                        p.category_name?.toLowerCase().includes(card.slug) ||
+                        (card.slug === 'home' && p.category_name?.toLowerCase().includes('home')) ||
+                        (card.slug === 'fashion' && p.category_name?.toLowerCase().includes('fashion'))
+                    );
+
+                    // Use real products if available, otherwise fall back to config items
+                    const displayItems = categoryProducts.length > 0
+                        ? categoryProducts.slice(0, 4).map((p: PreviewProduct) => ({
+                            name: p.name,
+                            image: p.image || card.items[0].image, // Fallback image if null
+                            link: `/products/${p.slug}`
+                        }))
+                        : card.items;
 
                     return (
                         <div key={idx} className="bg-white p-4 lg:p-5 shadow-md rounded-lg flex flex-col h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 snap-center border border-gray-100 lg:border-none">
@@ -112,7 +133,7 @@ export default function CategoryCards() {
                                 {card.type === 'single' ? (
                                     <Link href={card.ctaLink} className="block relative w-full h-full max-h-[260px] lg:max-h-[300px] overflow-hidden rounded-md">
                                         <Image
-                                            src={card.items[0].image}
+                                            src={displayItems[0].image}
                                             alt={card.title}
                                             fill
                                             className="object-cover object-center transform hover:scale-105 transition-transform duration-500"
@@ -120,7 +141,7 @@ export default function CategoryCards() {
                                     </Link>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-3 lg:gap-4 h-full max-h-[260px] lg:max-h-[300px]">
-                                        {card.items.map((item, i) => (
+                                        {displayItems.slice(0, 4).map((item: any, i: number) => (
                                             <Link key={i} href={item.link} className="block group">
                                                 <div className="relative aspect-square mb-1 bg-gray-50 overflow-hidden rounded-md border border-gray-100">
                                                     <Image
@@ -137,9 +158,18 @@ export default function CategoryCards() {
                                 )}
                             </div>
 
-                            <Link href={card.ctaLink} className="text-sm font-medium text-teal-700 hover:text-orange-700 hover:underline mt-4 block">
-                                {card.ctaText}
-                            </Link>
+                            <div className="mt-4 flex justify-between items-center">
+                                <Link href={card.ctaLink} className="text-sm font-medium text-teal-700 hover:text-orange-700 hover:underline">
+                                    {card.ctaText}
+                                </Link>
+                                {/* Conversion Trigger */}
+                                <Link
+                                    href="/register"
+                                    className="text-xs font-bold text-white bg-pink-600 px-3 py-1.5 rounded-full hover:bg-pink-700 transition shadow-sm"
+                                >
+                                    Sign Up
+                                </Link>
+                            </div>
                         </div>
                     );
                 })}

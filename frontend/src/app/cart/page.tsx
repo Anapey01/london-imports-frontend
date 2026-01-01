@@ -12,30 +12,24 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function CartPage() {
     const router = useRouter();
-    const { cart, isLoading, fetchCart, removeFromCart } = useCartStore();
+    const { cart, guestItems, isLoading, fetchCart, removeFromCart } = useCartStore();
     const { isAuthenticated } = useAuthStore();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchCart();
+        // Always try to fetch cart (store handles token check)
+        fetchCart();
+    }, [fetchCart]);
+
+    // Unified items list
+    const items = isAuthenticated ? (cart?.items || []) : guestItems;
+
+    const handleCheckout = () => {
+        if (!isAuthenticated) {
+            router.push('/login?redirect=/checkout');
+        } else {
+            router.push('/checkout');
         }
-    }, [isAuthenticated, fetchCart]);
-
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Login</h1>
-                    <p className="text-gray-600 mb-6">You need to be logged in to view your cart</p>
-                    <Link href="/login?redirect=/cart" className="btn-primary">
-                        Login
-                    </Link>
-                </div>
-            </div>
-        );
-    }
-
-    const items = cart?.items || [];
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -63,10 +57,14 @@ export default function CartPage() {
                                 <div key={item.id} className="bg-white rounded-xl p-4 flex gap-4">
                                     {/* Product Image */}
                                     <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                                        {item.product?.image ? (
+                                        {/* Handle both server 'item.product' and guest 'item.product' structure */}
+                                        {(item.product?.image || item.image) ? (
                                             <Image
-                                                src={item.product.image}
-                                                alt={item.product_name}
+                                                src={item.product?.image || item.image}
+                                                // Note: Server item has product.image. Guest item has product.image.
+                                                // Wait, guest item structure in store: product: { image: ... }
+                                                // So item.product.image is correct for both!
+                                                alt={item.product?.name || item.name}
                                                 width={96}
                                                 height={96}
                                                 className="object-cover w-full h-full"
@@ -82,7 +80,7 @@ export default function CartPage() {
 
                                     {/* Product Details */}
                                     <div className="flex-1">
-                                        <h3 className="font-semibold text-gray-900">{item.product_name}</h3>
+                                        <h3 className="font-semibold text-gray-900">{item.product?.name || item.name}</h3>
                                         {item.product?.delivery_window_text && (
                                             <p className="text-sm text-gray-500">Est. delivery: {item.product.delivery_window_text}</p>
                                         )}
@@ -111,20 +109,27 @@ export default function CartPage() {
                                 <div className="space-y-3 text-sm">
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Subtotal</span>
-                                        <span className="font-medium">GHS {cart?.subtotal?.toLocaleString()}</span>
+                                        <span className="font-medium">
+                                            GHS {isAuthenticated ? cart?.subtotal?.toLocaleString() : items.reduce((sum: number, i: any) => sum + i.total_price, 0).toLocaleString()}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Delivery</span>
-                                        <span className="font-medium">GHS {cart?.delivery_fee?.toLocaleString()}</span>
+                                        <span className="font-medium">
+                                            {/* Delivery logic might be server side only. Show TBD for guest? */}
+                                            {isAuthenticated ? `GHS ${cart?.delivery_fee?.toLocaleString()}` : 'Calculated at checkout'}
+                                        </span>
                                     </div>
                                     <div className="border-t pt-3 flex justify-between text-base">
                                         <span className="font-semibold">Total</span>
-                                        <span className="font-bold text-purple-600">GHS {cart?.total?.toLocaleString()}</span>
+                                        <span className="font-bold text-purple-600">
+                                            GHS {isAuthenticated ? cart?.total?.toLocaleString() : items.reduce((sum: number, i: any) => sum + i.total_price, 0).toLocaleString()}
+                                        </span>
                                     </div>
                                 </div>
 
                                 <button
-                                    onClick={() => router.push('/checkout')}
+                                    onClick={handleCheckout}
                                     className="w-full btn-primary mt-6"
                                 >
                                     Proceed to Checkout

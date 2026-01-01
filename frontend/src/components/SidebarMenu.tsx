@@ -8,12 +8,23 @@ import { X, Package, Truck, Info, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '@/lib/api';
+
 interface SidebarMenuProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
 export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
+    // Fetch categories dynamically
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => productsAPI.categories(),
+    });
+
+    const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
+
     if (!isOpen) return null;
 
     return (
@@ -73,8 +84,29 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                         />
                     </nav>
 
+                    {/* Categories Section */}
+                    <div className="mt-6 mb-4">
+                        <h4 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Categories</h4>
+                        <nav className="flex flex-col gap-1">
+                            {categories.map((category: any) => (
+                                <Link
+                                    key={category.id}
+                                    href={`/products?category=${category.slug}`}
+                                    onClick={onClose}
+                                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 rounded-lg transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-pink-500"></span>
+                                    {category.name}
+                                </Link>
+                            ))}
+                            {categories.length === 0 && (
+                                <div className="px-4 py-2 text-sm text-gray-400 italic">No categories found</div>
+                            )}
+                        </nav>
+                    </div>
+
                     {/* Footer / Extra Info */}
-                    <div className="mt-10 p-4 bg-pink-50 rounded-xl">
+                    <div className="mt-auto p-4 bg-pink-50 rounded-xl">
                         <h4 className="font-bold text-pink-700 mb-1">Need Help?</h4>
                         <p className="text-sm text-pink-600 mb-3">Contact our support team anytime.</p>
                         <Link href="/contact" onClick={onClose} className="text-xs font-bold uppercase tracking-wide text-pink-800 hover:underline">

@@ -10,14 +10,19 @@ import { productsAPI } from '@/lib/api';
 import ProductCard from './ProductCard';
 import Link from 'next/link';
 
-export default function HeroOverlayProducts() {
+interface HeroOverlayProductsProps {
+    initialProducts?: any[];
+}
+
+export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverlayProductsProps) {
     // Fetch 20 products for the main feed (Overlap + List)
     const { data: productsData } = useQuery({
         queryKey: ['hero-overlay-products'],
         queryFn: () => productsAPI.list({ limit: 20, ordering: '-created_at' }),
+        enabled: initialProducts.length === 0, // Only fetch if no initial data
     });
 
-    const products = productsData?.data?.results || productsData?.data || [];
+    const products = initialProducts.length > 0 ? initialProducts : (productsData?.data?.results || productsData?.data || []);
 
     return (
         <section className="relative z-20 px-2 lg:px-4 max-w-7xl mx-auto pb-12">
@@ -27,7 +32,7 @@ export default function HeroOverlayProducts() {
                 - 2 Cols Mobile, 4 Cols Desktop
                 - Vertical Flow (no scroll)
             */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-6 -mt-20 lg:-mt-32 mb-12">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-6 mt-4 lg:-mt-32 mb-12">
                 {products.map((product: any) => (
                     <div key={product.id} className="h-full">
                         <ProductCard product={product} />

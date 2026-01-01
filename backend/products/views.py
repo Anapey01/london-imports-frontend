@@ -9,6 +9,7 @@ from .models import Product, Category
 from .serializers import (
     ProductListSerializer,
     ProductDetailSerializer,
+    ProductPreviewSerializer,
     ProductCreateSerializer,
     CategorySerializer,
     ReviewSerializer
@@ -58,6 +59,26 @@ class ProductListView(generics.ListAPIView):
         if featured == 'true':
             queryset = queryset.filter(is_featured=True)
         
+        return queryset
+
+
+class ProductPreviewView(generics.ListAPIView):
+    """
+    Public preview listing.
+    Safe for guests/crawlers - no sensitive data.
+    """
+    serializer_class = ProductPreviewSerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = Product.objects.filter(is_active=True).select_related('category')
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'category__name']
+
+    def get_queryset(self):
+        # Allow category filtering
+        queryset = super().get_queryset()
+        category_slug = self.request.query_params.get('category')
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
         return queryset
 
 

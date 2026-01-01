@@ -2,26 +2,22 @@
  * London's Imports - Homepage
  * Refactored to "Preorder Feed" style as requested
  */
-'use client';
-
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
-import { productsAPI } from '@/lib/api';
+import { getFeaturedProducts, getRecentProducts } from '@/lib/fetchers';
 
 import HeroCarousel from '@/components/HeroCarousel';
 import HeroOverlayProducts from '@/components/HeroOverlayProducts';
 import PreorderCarousel from '@/components/PreorderCarousel';
-import ProductGrid from '@/components/ProductGrid';
 
-export default function HomePage() {
-  // Fetch FEATURED products for the "Upcoming Drops" horizontal slide
-  // These are admin-set items (is_featured=true)
-  const { data: featuredData, isLoading: featuredLoading } = useQuery({
-    queryKey: ['featured-products'],
-    queryFn: () => productsAPI.list({ limit: 10, featured: 'true', ordering: '-created_at' }),
-  });
+export default async function HomePage() {
+  // Fetch data on the server (SSG/ISR)
+  const [featuredData, recentData] = await Promise.all([
+    getFeaturedProducts(),
+    getRecentProducts(20)
+  ]);
 
-  const featuredProducts = featuredData?.data?.results || featuredData?.data || [];
+  const featuredProducts = featuredData?.results || [];
+  const recentProducts = recentData?.results || [];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -29,7 +25,7 @@ export default function HomePage() {
       <HeroCarousel />
 
       {/* 2. Products Overlay & Main Feed (20 items, Amazon-style grid) */}
-      <HeroOverlayProducts />
+      <HeroOverlayProducts initialProducts={recentProducts} />
 
       {/* 3. "Upcoming Drops" - Admin Curated Horizontal Carousel */}
       <section className="py-4 bg-white mt-4 border-t border-gray-100">
