@@ -67,3 +67,35 @@ export async function getProduct(slug: string) {
         return null;
     }
 }
+
+export async function getProductMetadata(slug: string) {
+    // 1. Try fetching full product (Public or Auth handled by permissions)
+    const fullProduct = await getProduct(slug);
+    if (fullProduct) return fullProduct;
+
+    // 2. Fallback: Fetch from public preview endpoint
+    const url = `${API_BASE_URL}/products/preview/?slug=${slug}`;
+    try {
+        console.log(`[SSR] Fetching preview fallback for: ${url}`);
+        const res = await fetch(url, { next: { revalidate: 60 } });
+        if (!res.ok) return null;
+
+        const data = await res.json();
+        const previewItem = data.results && data.results.length > 0 ? data.results[0] : null;
+
+        if (previewItem) {
+            return {
+                id: previewItem.id,
+                name: previewItem.name,
+                slug: previewItem.slug,
+                image: previewItem.image,
+                description: "Log in to see full product details, pricing, and availability.",
+                is_preview: true
+            };
+        }
+    } catch (e) {
+        console.error(`[SSR] Exception fetching preview fallback for ${slug}:`, e);
+    }
+
+    return null;
+}

@@ -2,10 +2,45 @@ import { getCategories, getRecentProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import StatsBar from '@/components/StatsBar';
 
-export const metadata = {
-    title: 'Pre-order Products | London\'s Imports',
-    description: 'Browse our latest pre-order deals from China. Authentic products, guaranteed delivery.',
-};
+import { Metadata, ResolvingMetadata } from 'next';
+import { getProducts } from '@/lib/fetchers';
+
+type Props = {
+    searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata(
+    { searchParams }: Props,
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
+
+    // Default Metadata
+    const defaultMeta = {
+        title: 'Pre-order Products | London\'s Imports',
+        description: 'Browse our latest pre-order deals from China. Authentic products, guaranteed delivery.',
+    };
+
+    if (!category) return defaultMeta;
+
+    // Fetch category specific products for imagery
+    // Uses the existing API to get products for this category
+    const productsData = await getProducts({ category, limit: '1' });
+    const firstProduct = productsData?.results?.[0];
+
+    // Capitalize category for title
+    const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
+
+    return {
+        title: `${categoryTitle} Deals | London's Imports`,
+        description: `Explore the best ${categoryTitle} pre-orders. ${firstProduct ? `Featuring ${firstProduct.name} and more.` : ''}`,
+        openGraph: {
+            title: `${categoryTitle} Collection - Pre-order Now`,
+            description: `Get the best prices on imported ${categoryTitle}. Click to browse the full collection.`,
+            images: firstProduct?.image ? [firstProduct.image] : [],
+        },
+    };
+}
 
 export default async function ProductsPage() {
     // Fetch initial data on server (SSG/ISR)

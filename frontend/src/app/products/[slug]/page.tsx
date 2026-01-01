@@ -1,5 +1,5 @@
 
-import { getProduct } from '@/lib/fetchers';
+import { getProduct, getProductMetadata } from '@/lib/fetchers';
 import ProductDetailClient from './ProductDetailClient';
 import { Metadata, ResolvingMetadata } from 'next';
 
@@ -13,12 +13,12 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const slug = params.slug;
-    const product = await getProduct(slug);
+    const product = await getProductMetadata(slug);
 
     if (!product) {
         return {
             title: 'Private Product | London\'s Imports',
-            description: 'This item may be exclusive to members. Join London\'s Imports to view details.',
+            description: 'Join London\'s Imports to view exclusive products and pre-order pricing.',
         };
     }
 

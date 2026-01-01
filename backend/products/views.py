@@ -70,8 +70,9 @@ class ProductPreviewView(generics.ListAPIView):
     serializer_class = ProductPreviewSerializer
     permission_classes = [permissions.AllowAny]
     queryset = Product.objects.filter(is_active=True).select_related('category')
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['name', 'category__name']
+    filterset_fields = ['slug']
 
     def get_queryset(self):
         # Allow category filtering
