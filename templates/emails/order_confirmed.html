@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #7c3aed; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9fafb; }
+        .order-box { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #7c3aed; color: white; text-decoration: none; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Londom Imports</h1>
+        </div>
+        <div class="content">
+            <h2>Order Confirmed! 🎉</h2>
+            <p>Hi {{ customer.first_name }},</p>
+            <p>Your order has been confirmed and payment received. Here are your order details:</p>
+            
+            <div class="order-box">
+                <p><strong>Order Number:</strong> #{{ order.order_number }}</p>
+                <p><strong>Total:</strong> GHS {{ order.total }}</p>
+                <p><strong>Expected Delivery:</strong> {{ order.estimated_delivery_start|date:"d M" }} - {{ order.estimated_delivery_end|date:"d M Y" }}</p>
+            </div>
+            
+            <h3>Items Ordered</h3>
+            <div class="order-box">
+                {% for item in items %}
+                <p>{{ item.product_name }} × {{ item.quantity }} - GHS {{ item.total_price }}</p>
+                {% endfor %}
+            </div>
+            
+            <p>You can track your order status at any time:</p>
+            <p><a href="https://londomimports.com/orders/{{ order.order_number }}" class="btn">Track Order</a></p>
+            
+            <p>Thank you for choosing Londom Imports!</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 Londom Imports | Ghana's Trusted Pre-order Platform</p>
+        </div>
+    </div>
+</body>
+</html>
