@@ -62,6 +62,7 @@ export const authAPI = {
 
 export const productsAPI = {
   list: (params?: any) => api.get('/products/', { params }),
+  preview: (params?: any) => api.get('/products/preview/', { params }),
   categories: () => api.get('/products/categories/'),
   detail: (slug: string) => api.get(`/products/${slug}/`),
 };

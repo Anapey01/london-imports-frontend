@@ -27,10 +27,8 @@ export default function Navbar() {
 
     useEffect(() => {
         setMounted(true);
-        if (isAuthenticated) {
-            fetchCart();
-        }
-    }, [isAuthenticated, fetchCart]);
+        fetchCart();
+    }, [fetchCart]);
 
     if (!mounted) return null;
 

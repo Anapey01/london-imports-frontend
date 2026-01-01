@@ -20,6 +20,10 @@ interface Slide {
     textColor: string;
     categorySlug?: string;
     heroImage?: string; // Static promotional image for the slide
+    heroImages?: string[]; // Array of images to alternate
+    blendMode?: string; // Optional CSS blend mode
+    objectFit?: "object-cover" | "object-contain"; // Optional object fit style
+    enableGradientMask?: boolean; // Enable fading mask for seamless blending
 }
 
 const slideTemplates: Slide[] = [
@@ -32,42 +36,99 @@ const slideTemplates: Slide[] = [
         bgColor: "#d1fae5", // Mint green
         textColor: "#064e3b",
         heroImage: "/assets/images/newyear-drop.jpg", // Featured model image
+        blendMode: "mix-blend-multiply"
     },
     {
         id: 2,
-        title: "Fashion for less",
-        subtitle: "Trendy dresses & shoes at amazing prices",
-        ctaText: "See all deals",
-        ctaLink: "/products?category=fashion",
-        bgColor: "#fce7f3", // Light pink
-        textColor: "#9d174d",
-        categorySlug: "fashion",
-    },
-    {
-        id: 3,
-        title: "Tech Essentials",
-        subtitle: "Phones, laptops & gadgets delivered to you",
-        ctaText: "Shop electronics",
-        ctaLink: "/products?category=electronics",
-        bgColor: "#e0e7ff", // Light indigo
-        textColor: "#3730a3",
-        categorySlug: "electronics",
-    },
-    {
-        id: 4,
         title: "Home & Living",
         subtitle: "Quality home products for your space",
         ctaText: "Shop home",
         ctaLink: "/products?category=home",
-        bgColor: "#fef3c7", // Light amber
-        textColor: "#92400e",
+        bgColor: "#af8c6d", // Warm brown/taupe
+        textColor: "#ffffff",
         categorySlug: "home",
+        heroImages: [
+            "/assets/images/home-living-1.jpg",
+            "/assets/images/home-living-2.jpg"
+        ],
+        blendMode: "mix-blend-multiply",
+        objectFit: "object-contain"
+    },
+    {
+        id: 3,
+        title: "Fashion for less",
+        subtitle: "Trendy dresses & shoes at amazing prices",
+        ctaText: "See all deals",
+        ctaLink: "/products?category=fashion",
+        bgColor: "#c1c1c1", // Exact match from image (193,193,193)
+        textColor: "#ffffff",
+        categorySlug: "fashion",
+        heroImage: "/assets/images/fashion-for-less.png",
+        blendMode: "mix-blend-normal",
+        objectFit: "object-cover",
+        enableGradientMask: true
+    },
+    {
+        id: 4,
+        title: "Tech Essentials",
+        subtitle: "Phones, laptops & gadgets delivered to you",
+        ctaText: "Shop electronics",
+        ctaLink: "/products?category=electronics",
+        bgColor: "#0f2b9e", // Vibrant Blue
+        textColor: "#ffffff",
+        categorySlug: "electronics",
+        heroImages: [
+            "/assets/images/tech-essentials.png"
+        ],
+        blendMode: "mix-blend-normal", // Normal blend for dark image on dark bg
+        objectFit: "object-cover",
+        enableGradientMask: true
     },
 ];
 
 
 export default function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    // UseEffect for rotating hero images used in slides
+    const [heroImageIndexes, setHeroImageIndexes] = useState<Record<number, number>>({});
+
+    // We only change the image when the slide actually changes
+    useEffect(() => {
+        setHeroImageIndexes(prev => {
+            const next = { ...prev };
+            slideTemplates.forEach(slide => {
+                if (slide.heroImages && slide.heroImages.length > 1) {
+                    // Start with the first image
+                    // Logic to alternate images on slide revisit could go here if tracking visits
+                    // For now, we'll keep it simple or user might want the image to switch ONLY when coming back to the slide?
+                    // "when the first whole animation is complete before the second image comes"
+                    // implies the carousel should slide out, then slide back in with the second image?
+                    // OR 
+                    // it implies the image should stay static for the full duration of the slide.
+                    // Let's assume static per slide view for now, or tie it to currentSlide index?
+                }
+            });
+            return next;
+        });
+    }, [currentSlide]);
+
+    // Actually, to achieve "wait for animation to complete", we can just toggle the image index
+    // whenever the currentSlide changes back to this slide.
+    // Let's simplify: Depend on `currentSlide` to cycle the image index.
+
+    useEffect(() => {
+        const slide = slideTemplates[currentSlide];
+        if (slide && slide.heroImages && slide.heroImages.length > 1) {
+            setHeroImageIndexes(prev => {
+                const currentIndex = prev[slide.id] || 0;
+                return {
+                    ...prev,
+                    [slide.id]: (currentIndex + 1) % slide.heroImages!.length
+                };
+            });
+        }
+    }, [currentSlide]);
 
     // Fetch products dynamically - Focus on PREORDERS
     const { data: productsData } = useQuery({
@@ -198,18 +259,44 @@ export default function HeroCarousel() {
                                     </div>
                                 </div>
 
-                                {/* Hero Image - Right Side (Blends with background) */}
-                                {slide.heroImage && (
-                                    <div className="absolute right-0 top-0 h-full w-[50%] sm:w-[45%] md:w-[40%] overflow-hidden">
-                                        {/* Use mix-blend-multiply to hide white background */}
-                                        <Image
-                                            src={slide.heroImage}
-                                            alt={slide.title}
-                                            fill
-                                            className="object-contain object-right-bottom mix-blend-multiply"
-                                            priority={index === 0}
-                                        />
-                                    </div>
+
+
+
+                                {/* Hero Image - Right Side */}
+                                {(slide.heroImage || slide.heroImages) && (
+                                    <>
+                                        {/* CASE 1: Multiple Images (Home & Living) - Seamless Background */}
+                                        {slide.heroImages ? (
+                                            <div className={`absolute right-0 top-0 h-full w-[50%] sm:w-[45%] md:w-[40%] overflow-hidden ${slide.enableGradientMask ? '[mask-image:linear-gradient(to_right,transparent,black_20%)]' : ''
+                                                }`}>
+                                                {slide.heroImages.map((img, imgIndex) => (
+                                                    <Image
+                                                        key={img}
+                                                        src={img}
+                                                        alt={slide.title}
+                                                        fill
+                                                        className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'} transition-opacity duration-1000 ${imgIndex === (heroImageIndexes[slide.id] || 0)
+                                                            ? 'opacity-100' // Opacity 100 for clear visibility
+                                                            : 'opacity-0'
+                                                            }`}
+                                                        priority={index === 0}
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            /* CASE 2: Single Image (New Year Drop) - Model at Bottom */
+                                            <div className={`absolute right-0 top-0 h-full w-[50%] sm:w-[45%] md:w-[40%] overflow-hidden pb-0 ${slide.enableGradientMask ? '[mask-image:linear-gradient(to_right,transparent,black)]' : ''
+                                                }`}>
+                                                <Image
+                                                    src={slide.heroImage!}
+                                                    alt={slide.title}
+                                                    fill
+                                                    className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'}`}
+                                                    priority={index === 0}
+                                                />
+                                            </div>
+                                        )}
+                                    </>
                                 )}
 
                                 {/* Dynamic Product Images - Right Side (Only when no heroImage) */}

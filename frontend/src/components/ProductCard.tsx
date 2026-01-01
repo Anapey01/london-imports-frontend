@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import StarRating from '@/components/StarRating';
-import { ordersAPI } from '@/lib/api';
+import { useCartStore } from '@/stores/cartStore';
 import { useState } from 'react';
 
 interface ProductCardProps {
@@ -29,27 +29,21 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const router = useRouter();
     const [isAdding, setIsAdding] = useState(false);
+    const addToCart = useCartStore(state => state.addToCart);
 
     const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent navigation to details page
         e.stopPropagation();
 
-        // Check auth
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-            const confirmLogin = window.confirm("You need to login or sign up to pre-order this item.\n\nGo to login page?");
-            if (confirmLogin) {
-                router.push('/login');
-            }
-            return;
-        }
+        // Lazy Auth: No token check needed here. 
+        // Store handles guest vs server cart.
 
         // Add to cart logic
         try {
             setIsAdding(true);
-            await ordersAPI.addToCart(product.id, 1);
+            await addToCart(product);
             // In a real app, we'd update global cart state here
-            alert("Added to cart!"); // Simple feedback for now
+            // alert("Added to cart!"); // Removed alert for smoother UX, maybe toast later
         } catch (error) {
             console.error(error);
             alert("Failed to add to cart. Please try again.");

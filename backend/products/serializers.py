@@ -69,6 +69,28 @@ class ProductListSerializer(serializers.ModelSerializer):
         return None
 
 
+class ProductPreviewSerializer(serializers.ModelSerializer):
+    """
+    Safe preview serializer for guests/crawlers.
+    Excludes price and sensitive data.
+    """
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    image = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'slug', 'image',
+            'category_name', 'is_featured',
+            'preorder_status'
+        ]
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+        return None
+
+
 class ProductDetailSerializer(serializers.ModelSerializer):
     """
     Product detail serializer - matches website_specification.md product page
