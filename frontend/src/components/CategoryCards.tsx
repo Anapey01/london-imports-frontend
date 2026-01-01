@@ -84,7 +84,7 @@ const amazonGridConfig: CategoryCard[] = [
 
 export default function CategoryCards() {
     // Fetch preview products
-    const { data: previewData } = useQuery({
+    const { data: previewData, isLoading } = useQuery({
         queryKey: ['preview-products'],
         queryFn: () => productsAPI.preview(),
     });
@@ -108,71 +108,82 @@ export default function CategoryCards() {
             {/* DESKTOP & MOBILE: Amazon Card Style */}
             {/* Desktop: Grid | Mobile: Horizontal Scroll */}
             <div className="flex lg:grid lg:grid-cols-4 gap-4 lg:gap-6 -mt-10 lg:-mt-32 mb-12 overflow-x-auto pb-6 lg:pb-0 px-2 lg:px-0 scrollbar-hide snap-x">
-                {amazonGridConfig.map((card, idx) => {
-                    // Filter products for this category
-                    const categoryProducts = previewProducts.filter((p) =>
-                        p.category_name?.toLowerCase().includes(card.slug) ||
-                        (card.slug === 'home' && p.category_name?.toLowerCase().includes('home')) ||
-                        (card.slug === 'fashion' && p.category_name?.toLowerCase().includes('fashion'))
-                    );
-
-                    // Use real products if available, otherwise fall back to config items
-                    const displayItems = categoryProducts.length > 0
-                        ? categoryProducts.slice(0, 4).map((p: PreviewProduct) => ({
-                            name: p.name,
-                            image: p.image || card.items[0].image, // Fallback image if null
-                            link: `/products/${p.slug}`
-                        }))
-                        : card.items;
-
-                    return (
-                        <div key={idx} className="bg-white p-4 lg:p-5 shadow-md rounded-lg flex flex-col h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 snap-center border border-gray-100 lg:border-none">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2">{card.title}</h3>
-
-                            <div className="flex-1">
-                                {card.type === 'single' ? (
-                                    <Link href={card.ctaLink} className="block relative w-full h-full max-h-[260px] lg:max-h-[300px] overflow-hidden rounded-md">
-                                        <Image
-                                            src={displayItems[0].image}
-                                            alt={card.title}
-                                            fill
-                                            className="object-cover object-center transform hover:scale-105 transition-transform duration-500"
-                                        />
-                                    </Link>
-                                ) : (
-                                    <div className="grid grid-cols-2 gap-3 lg:gap-4 h-full max-h-[260px] lg:max-h-[300px]">
-                                        {displayItems.slice(0, 4).map((item: any, i: number) => (
-                                            <Link key={i} href={item.link} className="block group">
-                                                <div className="relative aspect-square mb-1 bg-gray-50 overflow-hidden rounded-md border border-gray-100">
-                                                    <Image
-                                                        src={item.image}
-                                                        alt={item.name}
-                                                        fill
-                                                        className="object-cover p-0 hover:scale-110 transition-transform"
-                                                    />
-                                                </div>
-                                                <span className="text-xs text-gray-700 block truncate font-medium">{item.name}</span>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="mt-4 flex justify-between items-center">
-                                <Link href={card.ctaLink} className="text-sm font-medium text-teal-700 hover:text-orange-700 hover:underline">
-                                    {card.ctaText}
-                                </Link>
-                                {/* Conversion Trigger */}
-                                <Link
-                                    href="/register"
-                                    className="text-xs font-bold text-white bg-pink-600 px-3 py-1.5 rounded-full hover:bg-pink-700 transition shadow-sm"
-                                >
-                                    Sign Up
-                                </Link>
-                            </div>
+                {isLoading ? (
+                    // Skeleton Loading State
+                    [...Array(4)].map((_, i) => (
+                        <div key={i} className="bg-white p-4 lg:p-5 shadow-md rounded-lg h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 flex flex-col animate-pulse border border-gray-100 lg:border-none snap-center">
+                            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+                            <div className="flex-1 bg-gray-200 rounded-md mb-4 w-full"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                         </div>
-                    );
-                })}
+                    ))
+                ) : (
+                    amazonGridConfig.map((card, idx) => {
+                        // Filter products for this category
+                        const categoryProducts = previewProducts.filter((p) =>
+                            p.category_name?.toLowerCase().includes(card.slug) ||
+                            (card.slug === 'home' && p.category_name?.toLowerCase().includes('home')) ||
+                            (card.slug === 'fashion' && p.category_name?.toLowerCase().includes('fashion'))
+                        );
+
+                        // Use real products if available, otherwise fall back to config items
+                        const displayItems = categoryProducts.length > 0
+                            ? categoryProducts.slice(0, 4).map((p: PreviewProduct) => ({
+                                name: p.name,
+                                image: p.image || card.items[0].image, // Fallback image if null
+                                link: `/products/${p.slug}`
+                            }))
+                            : card.items;
+
+                        return (
+                            <div key={idx} className="bg-white p-4 lg:p-5 shadow-md rounded-lg flex flex-col h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 snap-center border border-gray-100 lg:border-none">
+                                <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2">{card.title}</h3>
+
+                                <div className="flex-1">
+                                    {card.type === 'single' ? (
+                                        <Link href={card.ctaLink} className="block relative w-full h-full max-h-[260px] lg:max-h-[300px] overflow-hidden rounded-md">
+                                            <Image
+                                                src={displayItems[0].image}
+                                                alt={card.title}
+                                                fill
+                                                className="object-cover object-center transform hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </Link>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-3 lg:gap-4 h-full max-h-[260px] lg:max-h-[300px]">
+                                            {displayItems.slice(0, 4).map((item: any, i: number) => (
+                                                <Link key={i} href={item.link} className="block group">
+                                                    <div className="relative aspect-square mb-1 bg-gray-50 overflow-hidden rounded-md border border-gray-100">
+                                                        <Image
+                                                            src={item.image}
+                                                            alt={item.name}
+                                                            fill
+                                                            className="object-cover p-0 hover:scale-110 transition-transform"
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs text-gray-700 block truncate font-medium">{item.name}</span>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="mt-4 flex justify-between items-center">
+                                    <Link href={card.ctaLink} className="text-sm font-medium text-teal-700 hover:text-orange-700 hover:underline">
+                                        {card.ctaText}
+                                    </Link>
+                                    {/* Conversion Trigger */}
+                                    <Link
+                                        href="/register"
+                                        className="text-xs font-bold text-white bg-pink-600 px-3 py-1.5 rounded-full hover:bg-pink-700 transition shadow-sm"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
             </div>
 
             {/* Replaced Jumia Circles with the layout above */}

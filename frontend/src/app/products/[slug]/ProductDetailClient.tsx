@@ -138,11 +138,24 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
                             </span>
                         </div>
 
-                        {/* Price */}
-                        <div className="mb-6">
-                            <span className="text-4xl font-bold text-gray-900">
-                                GHS {product.price?.toLocaleString()}
-                            </span>
+                        {/* Price - Teaser for Guests */}
+                        <div className="mb-6 relative">
+                            {isAuthenticated ? (
+                                <span className="text-4xl font-bold text-gray-900">
+                                    GHS {product.price?.toLocaleString()}
+                                </span>
+                            ) : (
+                                <div className="group relative inline-block cursor-pointer" onClick={() => router.push('/login')}>
+                                    <span className="text-4xl font-bold text-gray-900 blur-sm select-none opacity-50">
+                                        GHS 9,999
+                                    </span>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="bg-pink-100 text-pink-700 text-xs font-bold px-2 py-1 rounded-full shadow-sm hover:bg-pink-200 transition">
+                                            Login to View
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Description */}
@@ -225,13 +238,17 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
 
                             {/* Pre-order Button */}
                             <button
-                                onClick={handleAddToCart}
-                                disabled={isAdding || product.preorder_status === 'SOLD_OUT'}
-                                className="flex-1 py-4 px-8 bg-[#F5A623] text-[#006B5A] font-bold text-lg rounded-full hover:bg-[#E09000] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={isAuthenticated ? handleAddToCart : () => router.push('/login')}
+                                disabled={isAdding || (isAuthenticated && product.preorder_status === 'SOLD_OUT')}
+                                className={`flex-1 py-4 px-8 font-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${isAuthenticated
+                                        ? "bg-[#F5A623] text-[#006B5A] hover:bg-[#E09000]"
+                                        : "bg-pink-600 text-white hover:bg-pink-700"
+                                    }`}
                             >
                                 {isAdding ? 'Adding...' :
-                                    product.preorder_status === 'SOLD_OUT' ? 'Sold Out' :
-                                        `Pre-order Now`}
+                                    !isAuthenticated ? 'Sign In to Pre-order' :
+                                        product.preorder_status === 'SOLD_OUT' ? 'Sold Out' :
+                                            `Pre-order Now`}
                             </button>
                         </div>
 
