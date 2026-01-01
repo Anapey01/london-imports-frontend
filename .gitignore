@@ -1,1 +1,36 @@
+# Defaults
+.DS_Store
+*.log
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.venv
+env/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Vercel
 .vercel
+
+# Editor
+.vscode/
+.idea/
+
+# Backend specific
+db.sqlite3
+*.pkl

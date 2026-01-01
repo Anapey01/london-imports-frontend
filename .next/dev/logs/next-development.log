@@ -1,8 +1,0 @@
-[00:00:10.612] Server  LOG     ✓ Ready in 7.1s
-[00:01:22.657] Server  ERROR   Error: ENOENT: no such file or directory, scandir 'C:\Users\user\Desktop\Naa\src\app'
-[00:01:22.666] Server  ERROR   ⨯ "unhandledRejection:" Error: ENOENT: no such file or directory, scandir 'C:\Users\user\Desktop\Naa\src\app'
-[00:01:22.671] Server  ERROR   ⨯ "unhandledRejection: " Error: ENOENT: no such file or directory, scandir 'C:\Users\user\Desktop\Naa\src\app'
-[00:01:22.761] Server  ERROR   Error: ENOENT: no such file or directory, scandir 'C:\Users\user\Desktop\Naa\src\app'
-[00:01:22.773] Server  ERROR   ⨯ "unhandledRejection:" Error: ENOENT: no such file or directory, scandir 'C:\Users\user\Desktop\Naa\src\app'
-[00:01:22.789] Server  ERROR   ⨯ "unhandledRejection: " Error: ENOENT: no such file or directory, scandir 'C:\Users\user\Desktop\Naa\src\app'
-[03:37:06.982] Server  LOG       Reload env: .env
