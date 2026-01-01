@@ -78,7 +78,7 @@ const slideTemplates: Slide[] = [
         textColor: "#ffffff",
         categorySlug: "electronics",
         heroImages: [
-            "/assets/images/tech-essentials.png"
+            "/assets/images/tech-essentials.jpg"
         ],
         blendMode: "mix-blend-normal", // Normal blend for dark image on dark bg
         objectFit: "object-cover",
