@@ -88,6 +88,13 @@ export default function Navbar() {
                             </div>
                         </div>
 
+                        {/* MID-RIGHT: Simple Category Links (Visible to all) */}
+                        <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
+                            <Link href="/products?category=women" className="hover:text-pink-600 transition-colors">Women</Link>
+                            <Link href="/products?category=men" className="hover:text-pink-600 transition-colors">Men</Link>
+                            <Link href="/products?category=children" className="hover:text-pink-600 transition-colors">Children</Link>
+                        </div>
+
                         {/* RIGHT: User Actions (No Nav Links here anymore) */}
                         <div className="flex items-center gap-6">
                             {/* Nav Links Removed - Moved to Sidebar */}

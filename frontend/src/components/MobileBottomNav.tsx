@@ -46,49 +46,61 @@ export default function MobileBottomNav() {
     }
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
-            <div className="flex justify-around items-center h-16 px-2">
-                {navItems.map((item) => {
-                    const isActive =
-                        item.href === '/'
-                            ? pathname === '/'
-                            : pathname?.startsWith(item.href);
+        <>
+            {!isAuthenticated && (
+                <div className="md:hidden fixed bottom-20 left-4 right-4 z-50">
+                    <Link
+                        href="/register"
+                        className="block w-full bg-pink-600 text-white text-center py-3 rounded-full font-bold shadow-lg hover:bg-pink-700 transition-colors"
+                    >
+                        Start Pre-ordering
+                    </Link>
+                </div>
+            )}
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
+                <div className="flex justify-around items-center h-16 px-2">
+                    {navItems.map((item) => {
+                        const isActive =
+                            item.href === '/'
+                                ? pathname === '/'
+                                : pathname?.startsWith(item.href);
 
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className="flex flex-col items-center justify-center flex-1 py-2 relative"
-                        >
-                            {/* Icon container */}
-                            <div className="relative">
-                                <item.icon
-                                    className={`w-6 h-6 transition-colors ${isActive
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className="flex flex-col items-center justify-center flex-1 py-2 relative"
+                            >
+                                {/* Icon container */}
+                                <div className="relative">
+                                    <item.icon
+                                        className={`w-6 h-6 transition-colors ${isActive
                                             ? 'text-rose-500 stroke-[2.5]'
                                             : 'text-gray-600 stroke-2'
+                                            }`}
+                                        fill={isActive && item.name === 'Home' ? 'currentColor' : 'none'}
+                                    />
+
+                                    {/* Badge for cart */}
+                                    {item.badge !== undefined && (
+                                        <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Label */}
+                                <span
+                                    className={`text-xs mt-1 font-medium transition-colors ${isActive ? 'text-rose-500' : 'text-gray-600'
                                         }`}
-                                    fill={isActive && item.name === 'Home' ? 'currentColor' : 'none'}
-                                />
-
-                                {/* Badge for cart */}
-                                {item.badge !== undefined && (
-                                    <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1">
-                                        {item.badge}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Label */}
-                            <span
-                                className={`text-xs mt-1 font-medium transition-colors ${isActive ? 'text-rose-500' : 'text-gray-600'
-                                    }`}
-                            >
-                                {item.name}
-                            </span>
-                        </Link>
-                    );
-                })}
-            </div>
-        </nav>
+                                >
+                                    {item.name}
+                                </span>
+                            </Link>
+                        );
+                    })}
+                </div>
+            </nav>
+        </>
     );
 }

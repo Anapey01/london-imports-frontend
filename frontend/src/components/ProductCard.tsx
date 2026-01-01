@@ -26,24 +26,26 @@ interface ProductCardProps {
     };
 }
 
+import { useAuthStore } from '@/stores/authStore';
+
 export default function ProductCard({ product }: ProductCardProps) {
     const router = useRouter();
+    const { isAuthenticated } = useAuthStore();
     const [isAdding, setIsAdding] = useState(false);
     const addToCart = useCartStore(state => state.addToCart);
 
     const handleAddToCart = async (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent navigation to details page
+        e.preventDefault();
         e.stopPropagation();
 
-        // Lazy Auth: No token check needed here. 
-        // Store handles guest vs server cart.
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
 
-        // Add to cart logic
         try {
             setIsAdding(true);
             await addToCart(product);
-            // In a real app, we'd update global cart state here
-            // alert("Added to cart!"); // Removed alert for smoother UX, maybe toast later
         } catch (error) {
             console.error(error);
             alert("Failed to add to cart. Please try again.");
@@ -57,11 +59,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col">
                 {/* Image Section */}
                 <div className="relative aspect-square p-4 bg-white flex items-center justify-center">
-                    {/* Discount Badge (Mockup logic based on price diff if available, else static for now) */}
-                    {/* <div className="absolute top-2 right-2 bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-xs font-bold">
-                        -40%
-                    </div> */}
-
                     {product.reservations_count > 0 && (
                         <div className="absolute top-2 right-2 bg-yellow-50 text-orange-600 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100">
                             {product.reservations_count} reserved
@@ -101,9 +98,20 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </h3>
 
                     <div className="mt-1">
-                        <span className="text-black font-bold text-lg">
-                            GH₵ {product.price.toLocaleString()}.00
-                        </span>
+                        {isAuthenticated ? (
+                            <span className="text-black font-bold text-lg">
+                                GH₵ {product.price.toLocaleString()}.00
+                            </span>
+                        ) : (
+                            <div className="relative inline-block">
+                                <span className="text-black font-bold text-lg blur-[4px] select-none opacity-50">
+                                    GH₵ 000.00
+                                </span>
+                                <span className="absolute inset-0 flex items-center justify-start text-[10px] text-pink-600 font-bold whitespace-nowrap">
+                                    Login to view
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="text-xs text-yellow-500 flex items-center gap-1 mb-2">
@@ -113,15 +121,24 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </div>
             </Link>
 
-            {/* Faint Pink "Add to cart" button */}
+            {/* Faint Pink "Add to cart" or Login button */}
             <div className="px-3 pb-3">
-                <button
-                    onClick={handleAddToCart}
-                    disabled={isAdding}
-                    className="w-full bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 font-bold py-2 rounded text-sm transition-colors shadow-sm disabled:opacity-50"
-                >
-                    {isAdding ? 'Adding...' : 'Add to cart'}
-                </button>
+                {isAuthenticated ? (
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={isAdding}
+                        className="w-full bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 font-bold py-2 rounded text-sm transition-colors shadow-sm disabled:opacity-50"
+                    >
+                        {isAdding ? 'Adding...' : 'Add to cart'}
+                    </button>
+                ) : (
+                    <Link
+                        href="/login"
+                        className="block w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 rounded text-sm transition-colors shadow-sm text-center"
+                    >
+                        Login to Pre-order
+                    </Link>
+                )}
             </div>
         </div>
     );

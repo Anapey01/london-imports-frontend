@@ -1,9 +1,8 @@
-import { getCategories, getRecentProducts } from '@/lib/fetchers';
+import HowItWorksBar from '@/components/HowItWorksBar';
+import { getCategories, getRecentProducts, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import StatsBar from '@/components/StatsBar';
-
 import { Metadata, ResolvingMetadata } from 'next';
-import { getProducts } from '@/lib/fetchers';
 
 type Props = {
     searchParams: { [key: string]: string | string[] | undefined }
@@ -24,7 +23,6 @@ export async function generateMetadata(
     if (!category) return defaultMeta;
 
     // Fetch category specific products for imagery
-    // Uses the existing API to get products for this category
     const productsData = await getProducts({ category, limit: '1' });
     const firstProduct = productsData?.results?.[0];
 
@@ -32,11 +30,11 @@ export async function generateMetadata(
     const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
     return {
-        title: `${categoryTitle} Deals | London's Imports`,
-        description: `Explore the best ${categoryTitle} pre-orders. ${firstProduct ? `Featuring ${firstProduct.name} and more.` : ''}`,
+        title: `${categoryTitle} Imports | London Pre-order Platform`,
+        description: `Latest ${categoryTitle} arrivals from the UK. Pre-order now for the next shipment.`,
         openGraph: {
-            title: `${categoryTitle} Collection - Pre-order Now`,
-            description: `Get the best prices on imported ${categoryTitle}. Click to browse the full collection.`,
+            title: `${categoryTitle} Imports - Pre-order Now`,
+            description: `Latest ${categoryTitle} arrivals from the UK. Pre-order now for the next shipment.`,
             images: firstProduct?.image ? [firstProduct.image] : [],
         },
     };
@@ -60,6 +58,9 @@ export default async function ProductsPage() {
                     <p className="text-gray-600">Browse upcoming products and reserve yours before stock arrives</p>
                 </div>
             </div>
+
+            {/* Trust Signal: How it Works */}
+            <HowItWorksBar />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Client Side Search/Filter Component which takes initial data */}
