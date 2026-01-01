@@ -1,0 +1,12 @@
+Order Confirmed! 
+
+Hi {{ customer.first_name }},
+
+Your order #{{ order.order_number }} has been confirmed.
+
+Order Total: GHS {{ order.total }}
+Expected Delivery: {{ order.estimated_delivery_start|date:"d M" }} - {{ order.estimated_delivery_end|date:"d M Y" }}
+
+Track your order: https://londomimports.com/orders/{{ order.order_number }}
+
+Thank you for choosing Londom Imports!

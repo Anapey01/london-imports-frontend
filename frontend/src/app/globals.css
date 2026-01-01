@@ -1,0 +1,558 @@
+@import "tailwindcss";
+
+/* ===== DARK MODE VARIABLES ===== */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-color: #e2e8f0;
+  --accent-primary: #f472b6;
+  --accent-secondary: #f9a8d4;
+}
+
+[data-theme='dark'] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --accent-primary: #f472b6;
+  --accent-secondary: #ec4899;
+}
+
+/* Dark mode body */
+[data-theme='dark'] body {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* Dark mode backgrounds */
+[data-theme='dark'] .bg-white {
+  background-color: #1e293b !important;
+}
+
+[data-theme='dark'] .bg-gray-50 {
+  background-color: #0f172a !important;
+}
+
+[data-theme='dark'] .bg-gray-100 {
+  background-color: #1e293b !important;
+}
+
+/* Dark mode text */
+[data-theme='dark'] .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+
+[data-theme='dark'] .text-gray-700 {
+  color: #e2e8f0 !important;
+}
+
+[data-theme='dark'] .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+[data-theme='dark'] .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+[data-theme='dark'] .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* Dark mode borders */
+[data-theme='dark'] .border-gray-100,
+[data-theme='dark'] .border-gray-200,
+[data-theme='dark'] .border-gray-300 {
+  border-color: #334155 !important;
+}
+
+/* Dark mode navbar */
+[data-theme='dark'] nav {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+/* Dark mode cards */
+[data-theme='dark'] .rounded-2xl.bg-white,
+[data-theme='dark'] .bg-white.rounded-xl,
+[data-theme='dark'] .bg-white.rounded-lg {
+  background-color: #1e293b !important;
+}
+
+/* Dark mode inputs */
+[data-theme='dark'] input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Dark mode hover states */
+[data-theme='dark'] .hover\:bg-gray-50:hover {
+  background-color: #334155 !important;
+}
+
+[data-theme='dark'] .hover\:bg-gray-100:hover {
+  background-color: #334155 !important;
+}
+
+/* Catch-all for gray backgrounds */
+[data-theme='dark'] [class*='bg-gray'] {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Ensure all text is readable */
+[data-theme='dark'] [class*='text-gray'] {
+  color: var(--text-secondary) !important;
+}
+
+/* Dark mode emerald color overrides */
+[data-theme='dark'] .text-emerald-900 {
+  color: #6ee7b7 !important;
+  /* emerald-300 */
+}
+
+[data-theme='dark'] .text-emerald-800 {
+  color: #6ee7b7 !important;
+  /* emerald-300 */
+}
+
+[data-theme='dark'] .text-emerald-700 {
+  color: #a7f3d0 !important;
+  /* emerald-200 */
+}
+
+[data-theme='dark'] .border-emerald-900 {
+  border-color: #34d399 !important;
+  /* emerald-400 */
+}
+
+[data-theme='dark'] .bg-emerald-900 {
+  background-color: #064e3b !important;
+}
+
+/* Dark mode - Reviews section gradient masks */
+[data-theme='dark'] .from-white {
+  --tw-gradient-from: #0f172a !important;
+}
+
+[data-theme='dark'] .to-transparent {
+  --tw-gradient-to: transparent !important;
+}
+
+/* Phone mockup - always keep light theme for realistic phone UI */
+.phone-mockup {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.phone-mockup * {
+  color: #111827 !important;
+}
+
+.phone-mockup .bg-white,
+.phone-mockup [class*="bg-white"] {
+  background-color: #ffffff !important;
+}
+
+.phone-mockup .bg-gray-100,
+.phone-mockup [class*="bg-gray-100"] {
+  background-color: #f3f4f6 !important;
+}
+
+.phone-mockup .bg-gray-50,
+.phone-mockup [class*="bg-gray-50"] {
+  background-color: #f9fafb !important;
+}
+
+.phone-mockup .bg-yellow-50 {
+  background-color: #fefce8 !important;
+}
+
+.phone-mockup .bg-yellow-400 {
+  background-color: #facc15 !important;
+}
+
+.phone-mockup .bg-green-100 {
+  background-color: #dcfce7 !important;
+}
+
+.phone-mockup .bg-pink-50 {
+  background-color: #fdf2f8 !important;
+}
+
+.phone-mockup .text-gray-900 {
+  color: #111827 !important;
+}
+
+.phone-mockup .text-gray-800 {
+  color: #1f2937 !important;
+}
+
+.phone-mockup .text-gray-700 {
+  color: #374151 !important;
+}
+
+.phone-mockup .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.phone-mockup .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+.phone-mockup .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+.phone-mockup .text-gray-300 {
+  color: #d1d5db !important;
+}
+
+.phone-mockup .text-pink-500 {
+  color: #ec4899 !important;
+}
+
+.phone-mockup .text-pink-700 {
+  color: #be185d !important;
+}
+
+.phone-mockup .text-green-500 {
+  color: #22c55e !important;
+}
+
+.phone-mockup .border-pink-200 {
+  border-color: #fbcfe8 !important;
+}
+
+.phone-mockup .border-pink-500 {
+  border-color: #ec4899 !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles - only show on keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #e91e8c;
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ===== ANIMATIONS ===== */
+
+/* Fade in up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide in from left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide in from right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Float animation for hero image */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Shimmer for loading skeletons */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== ANIMATION UTILITIES ===== */
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Staggered delays for children */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Start with opacity 0 for animation elements */
+.animate-on-scroll {
+  opacity: 0;
+}
+
+/* ===== 3D CARD EFFECTS ===== */
+
+.card-3d {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.card-3d:hover {
+  transform: translateY(-12px) rotateX(5deg) rotateY(-5deg);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 12px 24px -12px rgba(233, 30, 140, 0.2);
+}
+
+/* Premium hover effect */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon bounce on hover */
+.icon-bounce:hover {
+  animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ===== SKELETON LOADING ===== */
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ===== BUTTONS ===== */
+
+.btn-primary {
+  background-color: #f472b6;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px -4px rgba(244, 114, 182, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #ec4899;
+  box-shadow: 0 6px 20px -4px rgba(244, 114, 182, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: #f472b6;
+  border: 1.5px solid #f472b6;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #f472b6;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* ===== GLASSMORPHISM ===== */
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ===== GRADIENT TEXT ===== */
+
+.gradient-text {
+  background: linear-gradient(135deg, #f43f5e, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== MARQUEE ANIMATION ===== */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  min-width: fit-content;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ===== SLIDE UP ANIMATION (for toasts) ===== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
