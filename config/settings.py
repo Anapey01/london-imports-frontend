@@ -213,10 +213,11 @@ SIMPLE_JWT = {
 }
 
 # CORS Settings - Allow frontend
-# CORS Settings - Robust Regex for Vercel
+# CORS Settings - Robust Regex for Vercel + Custom Domain
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://london-import-frontend.*\.vercel\.app$",
+    r"^https://(www\.)?londonsimports\.com$",  # Custom domain
 ]
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = os.getenv(
@@ -232,6 +233,12 @@ if 'https://london-imports-api.onrender.com' not in CSRF_TRUSTED_ORIGINS:
 # Also add the frontend Vercel app to be safe for API calls
 if 'https://london-import-frontend.vercel.app' not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS.append('https://london-import-frontend.vercel.app')
+
+# Add custom domain to CSRF trusted origins
+if 'https://londonsimports.com' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://londonsimports.com')
+if 'https://www.londonsimports.com' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://www.londonsimports.com')
 
 
 # Celery Settings
