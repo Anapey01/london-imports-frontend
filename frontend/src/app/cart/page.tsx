@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
+import { getImageUrl } from '@/lib/image';
 
 export default function CartPage() {
     const router = useRouter();
@@ -60,10 +61,7 @@ export default function CartPage() {
                                         {/* Handle both server 'item.product' and guest 'item.product' structure */}
                                         {(item.product?.image || item.image) ? (
                                             <Image
-                                                src={item.product?.image || item.image}
-                                                // Note: Server item has product.image. Guest item has product.image.
-                                                // Wait, guest item structure in store: product: { image: ... }
-                                                // So item.product.image is correct for both!
+                                                src={getImageUrl(item.product?.image || item.image)}
                                                 alt={item.product?.name || item.name}
                                                 width={96}
                                                 height={96}

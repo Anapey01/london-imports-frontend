@@ -134,6 +134,11 @@ export default function Navbar() {
                                             <div className="p-2">
                                                 <Link href="/orders" className="block px-4 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600">My Orders</Link>
                                                 <Link href="/profile" className="block px-4 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-pink-600">Profile</Link>
+                                                {(user?.role === 'ADMIN' || user?.is_superuser || user?.is_staff) && (
+                                                    <Link href="/dashboard/admin" className="block px-4 py-2 rounded-lg text-sm font-semibold text-pink-600 bg-pink-50 hover:bg-pink-100">
+                                                        Admin Dashboard
+                                                    </Link>
+                                                )}
                                                 <button onClick={logout} className="block w-full text-left px-4 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50">
                                                     Logout
                                                 </button>

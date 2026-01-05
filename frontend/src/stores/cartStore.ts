@@ -43,6 +43,8 @@ interface CartState {
     clearCart: () => void;
 }
 
+import { useAuthStore } from './authStore';
+
 export const useCartStore = create<CartState>()((set, get) => ({
     cart: null,
     guestItems: [], // Local offline items
@@ -50,10 +52,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
     itemCount: 0,
 
     fetchCart: async () => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+        // Fix: Check auth store state, not missing access_token
+        const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         // If logged in, fetch server cart
-        if (token) {
+        if (isAuthenticated) {
             set({ isLoading: true });
 
             // MERGE LOGIC: Check for guest items to sync
@@ -101,9 +104,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
     },
 
     addToCart: async (product: any, quantity = 1) => {
-        const token = localStorage.getItem('access_token');
+        const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-        if (token) {
+        if (isAuthenticated) {
             // Server Side
             set({ isLoading: true });
             try {
@@ -160,9 +163,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
     },
 
     removeFromCart: async (itemId: string) => {
-        const token = localStorage.getItem('access_token');
+        const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-        if (token) {
+        if (isAuthenticated) {
             set({ isLoading: true });
             try {
                 const response = await ordersAPI.removeFromCart(itemId);
@@ -186,9 +189,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
     },
 
     updateQuantity: async (itemId: string, quantity: number) => {
-        const token = localStorage.getItem('access_token');
+        const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-        if (token) {
+        if (isAuthenticated) {
             // For server, we currently remove/re-add in this codebase's logic
             // Ideally backend supports patch, but following existing pattern:
             const cart = get().cart;

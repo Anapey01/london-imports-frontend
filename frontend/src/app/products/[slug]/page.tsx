@@ -15,15 +15,15 @@ export async function generateStaticParams() {
 }
 
 type Props = {
-    params: { slug: string }
-    searchParams: { [key: string]: string | string[] | undefined }
+    params: Promise<{ slug: string }>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
     { params, searchParams }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const slug = params.slug;
+    const { slug } = await params;
     const product = await getProductMetadata(slug);
 
     if (!product) {
@@ -47,36 +47,15 @@ export async function generateMetadata(
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-    const product = await getProduct(params.slug);
+    const { slug } = await params;
+    const product = await getProduct(slug);
 
-    if (!product) {
-        return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-                <div className="bg-gray-50 p-8 rounded-2xl max-w-md w-full border border-gray-100 shadow-sm">
-                    <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Private or Unavailable</h2>
-                    <p className="text-gray-600 mb-6">
-                        This product might be restricted to members or is currently out of stock.
-                        Sign in to view full details and available pre-orders.
-                    </p>
-                    <div className="space-y-3">
-                        <a href="/login" className="block w-full bg-pink-600 text-white font-bold py-3 rounded-xl hover:bg-pink-700 transition shadow-lg shadow-pink-200">
-                            Sign In to View
-                        </a>
-                        <a href="/products" className="block w-full bg-white text-gray-700 font-bold py-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition">
-                            Browse All Products
-                        </a>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    // If product is null, we pass null to client component
+    // The client component will attempt a CSR fetch (Hybrid Resilience)
+    // This avoids blocking the user if SSR fails due to timeouts/network
 
-    const jsonLd = {
+
+    const jsonLd = product ? {
         "@context": "https://schema.org",
         "@type": "Product",
         "name": product.name,
@@ -106,15 +85,17 @@ export default async function ProductDetailPage({ params }: Props) {
                 }
             }
         }
-    };
+    } : null;
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
-            <ProductDetailClient initialProduct={product} />
+            {jsonLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
+            )}
+            <ProductDetailClient initialProduct={product} slug={slug} />
         </>
     );
 }

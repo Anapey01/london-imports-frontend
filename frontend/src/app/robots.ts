@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/admin/', '/dashboard/', '/profile/', '/orders/', '/cart/'],
         },
-        sitemap: 'https://london-import-frontend.vercel.app/sitemap.xml',
+        sitemap: 'https://londonsimports.com/sitemap.xml',
     };
 }

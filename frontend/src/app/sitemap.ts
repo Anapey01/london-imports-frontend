@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getProducts } from '@/lib/fetchers';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://london-import-frontend.vercel.app'; // Replace with actual production domain if different
+    const baseUrl = 'https://londonsimports.com';
 
     // Fetch all products (limit to 1000 for now)
     const productsData = await getProducts({ limit: '1000' });

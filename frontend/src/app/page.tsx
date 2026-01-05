@@ -8,6 +8,7 @@ import { getFeaturedProducts, getRecentProducts } from '@/lib/fetchers';
 import HeroCarousel from '@/components/HeroCarousel';
 import HeroOverlayProducts from '@/components/HeroOverlayProducts';
 import PreorderCarousel from '@/components/PreorderCarousel';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 export default async function HomePage() {
   // Fetch data on the server (SSG/ISR)
@@ -21,6 +22,9 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      {/* WhatsApp Floating Button - Homepage Only */}
+      <WhatsAppButton />
+
       {/* 1. Hero Carousel (Landing visuals) */}
       <HeroCarousel />
 

@@ -18,6 +18,8 @@ interface User {
     city: string;
     region: string;
     vendor_profile?: any;
+    is_staff?: boolean;
+    is_superuser?: boolean;
 }
 
 interface AuthState {
@@ -42,8 +44,14 @@ export const useAuthStore = create<AuthState>()(
             login: async (username: string, password: string) => {
                 set({ isLoading: true });
                 try {
-                    await authAPI.login({ username, password });
-                    // No manual token storage
+                    const response = await authAPI.login({ username, password });
+
+                    // Save tokens if returned (New robust flow)
+                    const { access, refresh } = response.data.tokens || response.data;
+                    if (access) {
+                        localStorage.setItem('access_token', access);
+                        localStorage.setItem('refresh_token', refresh);
+                    }
 
                     // Fetch user info to confirm auth
                     await get().fetchUser();
@@ -56,9 +64,12 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.register(data);
-                    const { user } = response.data;
+                    const { user, tokens } = response.data;
 
-                    // No manual token storage
+                    if (tokens?.access) {
+                        localStorage.setItem('access_token', tokens.access);
+                        localStorage.setItem('refresh_token', tokens.refresh);
+                    }
 
                     set({ user, isAuthenticated: true });
                 } finally {
@@ -71,8 +82,9 @@ export const useAuthStore = create<AuthState>()(
                     await authAPI.logout();
                 } catch { }
 
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
                 set({ user: null, isAuthenticated: false });
-                // No manual token removal (cookies cleared by server)
             },
 
             fetchUser: async () => {

@@ -29,6 +29,7 @@ interface ProductCardProps {
 import { useAuthStore } from '@/stores/authStore';
 
 import Image from 'next/image';
+import { getImageUrl } from '@/lib/image';
 
 export default function ProductCard({ product }: ProductCardProps) {
     const router = useRouter();
@@ -41,10 +42,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!isAuthenticated) {
-            router.push('/login');
-            return;
-        }
+        // Guest Checkout: Allow adding to cart without login
+        // if (!isAuthenticated) { ... } REMOVED
 
         try {
             setIsAdding(true);
@@ -57,20 +56,22 @@ export default function ProductCard({ product }: ProductCardProps) {
         }
     };
 
+    const imageUrl = getImageUrl(product.image);
+
     return (
         <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 flex flex-col h-full overflow-hidden">
             <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col">
                 {/* Image Section */}
                 <div className="relative aspect-square p-4 bg-white flex items-center justify-center">
                     {product.reservations_count > 0 && (
-                        <div className="absolute top-2 right-2 bg-yellow-50 text-orange-600 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100">
+                        <div className="absolute top-2 right-2 bg-yellow-50 text-orange-600 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100 z-10">
                             {product.reservations_count} reserved
                         </div>
                     )}
 
-                    {product.image && !imageError ? (
+                    {!imageError ? (
                         <Image
-                            src={product.image}
+                            src={imageUrl}
                             alt={`${product.name} - China Import to Ghana`}
                             fill
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
@@ -93,20 +94,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </h3>
 
                     <div className="mt-1">
-                        {isAuthenticated ? (
-                            <span className="text-black font-bold text-lg">
-                                GH₵ {product.price.toLocaleString()}.00
-                            </span>
-                        ) : (
-                            <div className="relative inline-block">
-                                <span className="text-black font-bold text-lg blur-[4px] select-none opacity-50">
-                                    GH₵ 000.00
-                                </span>
-                                <span className="absolute inset-0 flex items-center justify-start text-[10px] text-pink-600 font-bold whitespace-nowrap">
-                                    Login to view
-                                </span>
-                            </div>
-                        )}
+                        {/* Price - Always Visible for Guests */}
+                        <span className="text-black font-bold text-lg">
+                            GH₵ {product.price.toLocaleString()}.00
+                        </span>
                     </div>
 
                     <div className="text-xs text-yellow-500 flex items-center gap-1 mb-2">
@@ -116,24 +107,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </div>
             </Link>
 
-            {/* Faint Pink "Add to cart" or Login button */}
+            {/* Faint Pink "Add to cart" - Enabled for Guests too */}
             <div className="px-3 pb-3">
-                {isAuthenticated ? (
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={isAdding}
-                        className="w-full bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 font-bold py-2 rounded text-sm transition-colors shadow-sm disabled:opacity-50"
-                    >
-                        {isAdding ? 'Adding...' : 'Add to cart'}
-                    </button>
-                ) : (
-                    <Link
-                        href="/login"
-                        className="block w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 rounded text-sm transition-colors shadow-sm text-center"
-                    >
-                        Login to Pre-order
-                    </Link>
-                )}
+                <button
+                    onClick={handleAddToCart}
+                    disabled={isAdding}
+                    className="w-full bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 font-bold py-2 rounded text-sm transition-colors shadow-sm disabled:opacity-50"
+                >
+                    {isAdding ? 'Adding...' : 'Add to cart'}
+                </button>
             </div>
         </div>
     );

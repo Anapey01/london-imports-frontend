@@ -121,9 +121,9 @@ export default function CategoryCards() {
                     amazonGridConfig.map((card, idx) => {
                         // Filter products for this category
                         const categoryProducts = previewProducts.filter((p) =>
-                            p.category_name?.toLowerCase().includes(card.slug) ||
-                            (card.slug === 'home' && p.category_name?.toLowerCase().includes('home')) ||
-                            (card.slug === 'fashion' && p.category_name?.toLowerCase().includes('fashion'))
+                            (p.category_name || '').toLowerCase().includes(card.slug) ||
+                            (card.slug === 'home' && (p.category_name || '').toLowerCase().includes('home')) ||
+                            (card.slug === 'fashion' && (p.category_name || '').toLowerCase().includes('fashion'))
                         );
 
                         // Use real products if available, otherwise fall back to config items

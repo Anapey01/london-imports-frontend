@@ -4,7 +4,7 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'https://london-imports-api.onrender.com/api/v1';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,7 +14,16 @@ export const api = axios.create({
   },
 });
 
-// Remove request interceptor (Cookies handle auth automatically)
+// Request interceptor to add Auth token
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
 
 // Handle token refresh on 401
 api.interceptors.response.use(

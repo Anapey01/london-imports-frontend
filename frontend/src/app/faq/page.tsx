@@ -46,6 +46,23 @@ const faqs = [
     {
         question: "What happens if there's a delay?",
         answer: "We'll notify you immediately via SMS and WhatsApp. If the delay exceeds the promised window, you can choose to wait for a discount or receive a full refund."
+    },
+    // SEO: Ghanaian Search Intent Keywords
+    {
+        question: "How do I find cheap shipping agents from China to Accra?",
+        answer: "London's Imports handles all shipping for you! We work with trusted freight partners to get the best rates from Guangzhou and Yiwu to Accra. No need to find agents yourself – just pre-order your items and we handle pickup, consolidation, customs, and doorstep delivery in Ghana."
+    },
+    {
+        question: "Is there mini-importation training available in Ghana for 2026?",
+        answer: "While we don't offer formal training courses, London's Imports makes mini-importation easy for beginners. Our platform lets you start importing from China to Ghana without any experience. Browse products, pay via Momo, and we handle sourcing, shipping, and customs. It's the easiest way to start your import business in 2026."
+    },
+    {
+        question: "What are the clearance costs at Tema Port for small goods?",
+        answer: "Customs duties at Tema Port typically range from 0-20% depending on the item category (electronics ~10%, clothing ~20%, general goods ~5%). London's Imports includes customs clearance in our pricing, so you pay one transparent price with no hidden Tema Port fees. Use our Customs Duty Estimator for specific calculations."
+    },
+    {
+        question: "Can I buy from 1688 or Taobao and ship to Kumasi?",
+        answer: "Yes! We ship to all major cities in Ghana including Accra, Kumasi, Tema, Takoradi, and Cape Coast. Whether you're buying from 1688, Taobao, or Alibaba, we consolidate your orders in China and deliver door-to-door anywhere in Ghana. Kumasi deliveries typically take 2-4 weeks."
     }
 ];
 

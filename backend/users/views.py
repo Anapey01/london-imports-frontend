@@ -293,8 +293,10 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             )
             
             # Remove tokens from body to prevent localStorage usage
-            del response.data['access']
-            del response.data['refresh']
+            # REVERTING STRATEGY: Return tokens in body to enable LocalStorage flow. 
+            # Cross-site cookies are too fragile for Vercel/Render separate domains.
+            # del response.data['access']
+            # del response.data['refresh']
             
         return response
 

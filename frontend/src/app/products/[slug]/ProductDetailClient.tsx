@@ -4,48 +4,79 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
+import { getImageUrl } from '@/lib/image';
 
 interface ProductDetailClientProps {
     initialProduct: any;
+    slug: string;
 }
 
-export default function ProductDetailClient({ initialProduct }: ProductDetailClientProps) {
+export default function ProductDetailClient({ initialProduct, slug }: ProductDetailClientProps) {
     const router = useRouter();
     const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
 
+    // CSR State
+    const [product, setProduct] = useState(initialProduct);
+    const [isLoading, setIsLoading] = useState(!initialProduct);
+    const [error, setError] = useState(false);
+
     const { addToCart } = useCartStore();
     const { isAuthenticated } = useAuthStore();
 
-    // Use initial product passed from server
-    const product = initialProduct;
+    // Client-side fetch if SSR failed
+    useEffect(() => {
+        if (!initialProduct && slug) {
+            setIsLoading(true);
+            const fetchProduct = async () => {
+                try {
+                    // Use the same hardcoded URL logic as fetchers.ts but for client
+                    const API_BASE = 'https://london-imports-api.onrender.com/api/v1';
+                    const res = await fetch(`${API_BASE}/products/${slug}/`);
+                    if (!res.ok) throw new Error('Failed to fetch');
+                    const data = await res.json();
+                    setProduct(data);
+                } catch (e) {
+                    console.error("CSR Fetch Error", e);
+                    setError(true);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchProduct();
+        }
+    }, [initialProduct, slug]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            </div>
+        );
+    }
+
+    if (error || !product) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+                <p className="text-gray-600 mb-6">Could not load product details. Please try again.</p>
+                <button onClick={() => window.location.reload()} className="bg-pink-600 text-white px-6 py-2 rounded-full">Retry</button>
+            </div>
+        );
+    }
+
+    const imageUrl = getImageUrl(product.image);
 
     const handleAddToCart = async () => {
-        // Lazy Auth: Directly add to cart (store handles guest/auth logic)
-        // Check if we want to force login for specific items? No, goal is Lazy Auth.
-        // But the previous logic had a redirect. Implementation plan says "Remove check".
-
-        // Wait, the previous file had:
-        /*
-        if (!isAuthenticated) {
-            router.push('/login?redirect=/products/' + slug);
-            return;
-        }
-        */
-        // I should REMOVE this per the Lazy Auth plan.
-
         setIsAdding(true);
         try {
-            await addToCart(product.id, quantity);
-
-            // Optional: Redirect to cart or show toast?
-            // Previous code redirected to /cart
+            await addToCart(product, quantity);
             router.push('/cart');
         } catch (e) {
             console.error(e);
@@ -54,31 +85,21 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
         }
     };
 
-    if (!product) return null;
-
     return (
-        <div className="min-h-screen bg-[#FFF8E7]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white min-h-screen pb-20">
+            <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                 {/* Two Column Grid: Image Left, Details Right */}
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
                     {/* LEFT COLUMN: Product Image */}
-                    <div className="relative">
+                    <div className="space-y-6">
                         {/* Main Image - directly on cream background */}
-                        <div className="aspect-square relative overflow-hidden">
-                            {product.image ? (
-                                <img
-                                    src={product.image}
-                                    alt={`${product.name} - China Import to Ghana`}
-                                    className="w-full h-full object-contain drop-shadow-2xl"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <svg className="w-32 h-32 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                    </svg>
-                                </div>
-                            )}
+                        <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                            <img
+                                src={imageUrl}
+                                alt={`${product.name} - China Import to Ghana`}
+                                className="w-full h-full object-contain drop-shadow-2xl"
+                            />
                         </div>
 
                         {/* Product Specs Row - below image */}
@@ -138,24 +159,11 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
                             </span>
                         </div>
 
-                        {/* Price - Teaser for Guests */}
+                        {/* Price - Always Visible */}
                         <div className="mb-6 relative">
-                            {isAuthenticated ? (
-                                <span className="text-4xl font-bold text-gray-900">
-                                    GHS {product.price?.toLocaleString()}
-                                </span>
-                            ) : (
-                                <div className="group relative inline-block cursor-pointer" onClick={() => router.push('/login')}>
-                                    <span className="text-4xl font-bold text-gray-900 blur-sm select-none opacity-50">
-                                        GHS 9,999
-                                    </span>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="bg-pink-100 text-pink-700 text-xs font-bold px-2 py-1 rounded-full shadow-sm hover:bg-pink-200 transition">
-                                            Login to View
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
+                            <span className="text-4xl font-bold text-gray-900">
+                                GHS {product.price?.toLocaleString()}
+                            </span>
                         </div>
 
                         {/* Description */}
@@ -238,17 +246,16 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
 
                             {/* Pre-order Button */}
                             <button
-                                onClick={isAuthenticated ? handleAddToCart : () => router.push('/login')}
-                                disabled={isAdding || (isAuthenticated && product.preorder_status === 'SOLD_OUT')}
+                                onClick={handleAddToCart}
+                                disabled={isAdding || (product.preorder_status === 'SOLD_OUT')}
                                 className={`flex-1 py-4 px-8 font-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${isAuthenticated
                                     ? "bg-[#F5A623] text-[#006B5A] hover:bg-[#E09000]"
                                     : "bg-pink-600 text-white hover:bg-pink-700"
                                     }`}
                             >
-                                {isAdding ? 'Adding...' :
-                                    !isAuthenticated ? 'Sign In to Pre-order' :
-                                        product.preorder_status === 'SOLD_OUT' ? 'Sold Out' :
-                                            `Pre-order Now`}
+                                {isAdding ? 'Adding to Basket...' :
+                                    product.preorder_status === 'SOLD_OUT' ? 'Sold Out' :
+                                        `Pre-order Now`}
                             </button>
                         </div>
 
@@ -260,7 +267,7 @@ export default function ProductDetailClient({ initialProduct }: ProductDetailCli
                         </div>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

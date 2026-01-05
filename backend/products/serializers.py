@@ -64,8 +64,27 @@ class ProductListSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         """Return Cloudinary URL for the image"""
         if obj.image:
-            # CloudinaryField has a .url property that returns the full URL
-            return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+            try:
+                # Try standard library way
+                return obj.image.url
+            except Exception:
+                # Fallback: Manual construction if library fails but env var exists
+                image_path = str(obj.image)
+                if image_path.startswith('http'):
+                    return image_path
+                    
+                import os
+                cloudinary_url = os.getenv('CLOUDINARY_URL')
+                if cloudinary_url and '@' in cloudinary_url:
+                    try:
+                        # Parse cloudinary://key:secret@cloud_name
+                        base = cloudinary_url.split('@')[1]
+                        return f"https://res.cloudinary.com/{base}/image/upload/{image_path}"
+                    except:
+                        pass
+                
+                # Ultimate fallback - return path but frontend might fail if remote
+                return image_path
         return None
 
 
@@ -87,7 +106,25 @@ class ProductPreviewSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         if obj.image:
-            return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+            try:
+                # Try standard library way
+                return obj.image.url
+            except Exception:
+                # Fallback: Manual construction if library fails but env var exists
+                image_path = str(obj.image)
+                if image_path.startswith('http'):
+                    return image_path
+                    
+                import os
+                cloudinary_url = os.getenv('CLOUDINARY_URL')
+                if cloudinary_url and '@' in cloudinary_url:
+                    try:
+                        # Parse cloudinary://key:secret@cloud_name
+                        base = cloudinary_url.split('@')[1]
+                        return f"https://res.cloudinary.com/{base}/image/upload/{image_path}"
+                    except:
+                        pass
+                return image_path
         return None
 
 
@@ -121,8 +158,27 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         """Return Cloudinary URL for the image"""
         if obj.image:
-            # CloudinaryField has a .url property that returns the full URL
-            return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+            try:
+                # Try standard library way
+                return obj.image.url
+            except Exception:
+                # Fallback: Manual construction if library fails but env var exists
+                image_path = str(obj.image)
+                if image_path.startswith('http'):
+                    return image_path
+                    
+                import os
+                cloudinary_url = os.getenv('CLOUDINARY_URL')
+                if cloudinary_url and '@' in cloudinary_url:
+                    try:
+                        # Parse cloudinary://key:secret@cloud_name
+                        base = cloudinary_url.split('@')[1]
+                        return f"https://res.cloudinary.com/{base}/image/upload/{image_path}"
+                    except:
+                        pass
+                
+                # Ultimate fallback - return path but frontend might fail if remote
+                return image_path
         return None
 
 

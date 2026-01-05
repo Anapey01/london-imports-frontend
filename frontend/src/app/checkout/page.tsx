@@ -85,27 +85,27 @@ export default function CheckoutPage() {
         : cart.total;
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
             <div className="max-w-4xl mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Checkout</h1>
 
                 <form onSubmit={handleSubmit}>
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Checkout Form */}
                         <div className="lg:col-span-2 space-y-6">
                             {error && (
-                                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg">
+                                <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg">
                                     {error}
                                 </div>
                             )}
 
                             {/* Delivery Information */}
-                            <div className="bg-white rounded-xl p-6">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4">Delivery Information</h2>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-6">
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Delivery Information</h2>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                                             Delivery Address
                                         </label>
                                         <textarea
@@ -113,14 +113,14 @@ export default function CheckoutPage() {
                                             onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
                                             required
                                             rows={2}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                             placeholder="Enter your full address"
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                                                 City
                                             </label>
                                             <input
@@ -128,19 +128,19 @@ export default function CheckoutPage() {
                                                 value={delivery.city}
                                                 onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                                 placeholder="e.g., Accra"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                                                 Region
                                             </label>
                                             <select
                                                 value={delivery.region}
                                                 onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                             >
                                                 <option value="">Select Region</option>
                                                 <option value="Greater Accra">Greater Accra</option>
@@ -158,14 +158,14 @@ export default function CheckoutPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                                             Order Notes (Optional)
                                         </label>
                                         <textarea
                                             value={delivery.notes}
                                             onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
                                             rows={2}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                             placeholder="Any special instructions..."
                                         />
                                     </div>
@@ -173,11 +173,11 @@ export default function CheckoutPage() {
                             </div>
 
                             {/* Payment Option */}
-                            <div className="bg-white rounded-xl p-6">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Option</h2>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-6">
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Option</h2>
 
                                 <div className="space-y-3">
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${paymentType === 'FULL' ? 'border-purple-600 bg-purple-50' : 'border-gray-300'}`}>
+                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${paymentType === 'FULL' ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/30' : 'border-gray-300 dark:border-slate-600'}`}>
                                         <input
                                             type="radio"
                                             name="payment_type"
@@ -187,12 +187,12 @@ export default function CheckoutPage() {
                                             className="text-purple-600"
                                         />
                                         <div className="ml-3">
-                                            <span className="font-medium text-gray-900">Full Payment</span>
-                                            <p className="text-sm text-gray-500">Pay GHS {cart.total?.toLocaleString()} now</p>
+                                            <span className="font-medium text-gray-900 dark:text-white">Full Payment</span>
+                                            <p className="text-sm text-gray-500 dark:text-slate-400">Pay GHS {cart.total?.toLocaleString()} now</p>
                                         </div>
                                     </label>
 
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${paymentType === 'DEPOSIT' ? 'border-purple-600 bg-purple-50' : 'border-gray-300'}`}>
+                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${paymentType === 'DEPOSIT' ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/30' : 'border-gray-300 dark:border-slate-600'}`}>
                                         <input
                                             type="radio"
                                             name="payment_type"
@@ -202,8 +202,8 @@ export default function CheckoutPage() {
                                             className="text-purple-600"
                                         />
                                         <div className="ml-3">
-                                            <span className="font-medium text-gray-900">Deposit Only</span>
-                                            <p className="text-sm text-gray-500">Pay GHS {(cart.total * 0.3).toLocaleString()} now, rest on delivery</p>
+                                            <span className="font-medium text-gray-900 dark:text-white">Deposit Only</span>
+                                            <p className="text-sm text-gray-500 dark:text-slate-400">Pay GHS {(cart.total * 0.3).toLocaleString()} now, rest on delivery</p>
                                         </div>
                                     </label>
                                 </div>
@@ -212,40 +212,40 @@ export default function CheckoutPage() {
 
                         {/* Order Summary */}
                         <div className="lg:col-span-1">
-                            <div className="bg-white rounded-xl p-6 sticky top-24">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 sticky top-24">
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h2>
 
                                 {/* Items */}
                                 <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
                                     {cart.items?.map((item: any) => (
                                         <div key={item.id} className="flex justify-between text-sm">
-                                            <span className="text-gray-600">{item.product_name} × {item.quantity}</span>
-                                            <span className="font-medium">GHS {item.total_price?.toLocaleString()}</span>
+                                            <span className="text-gray-600 dark:text-slate-400">{item.product_name} × {item.quantity}</span>
+                                            <span className="font-medium text-gray-900 dark:text-white">GHS {item.total_price?.toLocaleString()}</span>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="border-t pt-4 space-y-3 text-sm">
+                                <div className="border-t dark:border-slate-700 pt-4 space-y-3 text-sm">
                                     <div className="flex justify-between">
-                                        <span className="text-gray-600">Subtotal</span>
-                                        <span className="font-medium">GHS {cart.subtotal?.toLocaleString()}</span>
+                                        <span className="text-gray-600 dark:text-slate-400">Subtotal</span>
+                                        <span className="font-medium text-gray-900 dark:text-white">GHS {cart.subtotal?.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-gray-600">Delivery</span>
-                                        <span className="font-medium">GHS {cart.delivery_fee?.toLocaleString()}</span>
+                                        <span className="text-gray-600 dark:text-slate-400">Delivery</span>
+                                        <span className="font-medium text-gray-900 dark:text-white">GHS {cart.delivery_fee?.toLocaleString()}</span>
                                     </div>
-                                    <div className="border-t pt-3 flex justify-between text-base">
-                                        <span className="font-semibold">Order Total</span>
-                                        <span className="font-bold">GHS {cart.total?.toLocaleString()}</span>
+                                    <div className="border-t dark:border-slate-700 pt-3 flex justify-between text-base">
+                                        <span className="font-semibold text-gray-900 dark:text-white">Order Total</span>
+                                        <span className="font-bold text-gray-900 dark:text-white">GHS {cart.total?.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between text-purple-600">
+                                    <div className="flex justify-between text-purple-600 dark:text-purple-400">
                                         <span className="font-semibold">Pay Now</span>
                                         <span className="font-bold">GHS {paymentAmount?.toLocaleString()}</span>
                                     </div>
                                 </div>
 
                                 {/* Terms */}
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+                                <div className="mt-4 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg text-xs text-gray-600 dark:text-slate-300">
                                     <p>✓ Cancel before cutoff for full refund</p>
                                     <p>✓ Payment secured until delivery</p>
                                     <p>✓ Delivery in 2-4 weeks</p>

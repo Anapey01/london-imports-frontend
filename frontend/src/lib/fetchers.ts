@@ -3,7 +3,7 @@
  * Uses native fetch for Next.js caching and revalidation
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'https://london-imports-api.onrender.com/api/v1';
 
 export async function getProducts(params: Record<string, string> = {}) {
     try {
