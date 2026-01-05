@@ -72,12 +72,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             <div
                 className="w-full h-full sm:h-auto sm:max-w-2xl bg-white sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200"
                 onClick={e => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Search products"
             >
                 {/* Search Header */}
                 <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-white">
                     <button
                         onClick={onClose}
                         className="sm:hidden -ml-2 p-2 text-gray-500 hover:text-gray-900"
+                        aria-label="Close search"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -97,7 +101,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             className="flex-1 bg-transparent border-none outline-none text-gray-900 placeholder-gray-500 text-base"
                         />
                         {query && (
-                            <button onClick={() => setQuery('')} className="p-1 text-gray-400 hover:text-gray-600">
+                            <button onClick={() => setQuery('')} className="p-1 text-gray-400 hover:text-gray-600" aria-label="Clear search">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>

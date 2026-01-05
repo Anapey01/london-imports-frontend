@@ -239,7 +239,7 @@ export default function HeroCarousel() {
                                             {slide.title}
                                         </h2>
                                         <p
-                                            className="text-[10px] sm:text-xs md:text-sm mb-3 sm:mb-4 opacity-70 font-medium"
+                                            className="text-[10px] sm:text-xs md:text-sm mb-3 sm:mb-4 opacity-90 font-medium"
                                             style={{ color: slide.textColor }}
                                         >
                                             {slide.subtitle}

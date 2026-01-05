@@ -93,20 +93,20 @@ export default function CountdownTimer({
                 {timeLeft.days > 0 && (
                     <div className={`flex flex-col items-center justify-center bg-emerald-900 text-white rounded-lg ${unitClasses[size]}`}>
                         <span className="font-bold leading-none">{timeLeft.days}</span>
-                        <span className="text-[8px] uppercase opacity-70">d</span>
+                        <span className="text-[8px] uppercase opacity-90">d</span>
                     </div>
                 )}
                 <div className={`flex flex-col items-center justify-center bg-emerald-900 text-white rounded-lg ${unitClasses[size]}`}>
                     <span className="font-bold leading-none">{String(timeLeft.hours).padStart(2, '0')}</span>
-                    <span className="text-[8px] uppercase opacity-70">h</span>
+                    <span className="text-[8px] uppercase opacity-90">h</span>
                 </div>
                 <div className={`flex flex-col items-center justify-center bg-emerald-900 text-white rounded-lg ${unitClasses[size]}`}>
                     <span className="font-bold leading-none">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                    <span className="text-[8px] uppercase opacity-70">m</span>
+                    <span className="text-[8px] uppercase opacity-90">m</span>
                 </div>
                 <div className={`flex flex-col items-center justify-center bg-pink-500 text-white rounded-lg ${unitClasses[size]} animate-pulse`}>
                     <span className="font-bold leading-none">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                    <span className="text-[8px] uppercase opacity-70">s</span>
+                    <span className="text-[8px] uppercase opacity-90">s</span>
                 </div>
             </div>
         </div>

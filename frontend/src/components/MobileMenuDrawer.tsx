@@ -69,10 +69,16 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
             <div
                 className="fixed inset-0 bg-black/50 z-50 transition-opacity"
                 onClick={onClose}
+                aria-hidden="true"
             />
 
             {/* Drawer */}
-            <div className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white z-50 shadow-2xl overflow-y-auto animate-slide-in-left">
+            <div
+                className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white z-50 shadow-2xl overflow-y-auto animate-slide-in-left"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Mobile navigation menu"
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
                     <Link href="/" onClick={onClose} className="flex items-center gap-2">
@@ -91,6 +97,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        aria-label="Close menu"
                     >
                         <X className="w-6 h-6 text-gray-600" />
                     </button>

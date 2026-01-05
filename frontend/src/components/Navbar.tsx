@@ -54,6 +54,7 @@ export default function Navbar() {
                             <button
                                 onClick={() => setSidebarOpen(true)}
                                 className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 text-gray-700 hover:text-pink-600"
+                                aria-label="Open menu"
                             >
                                 <Menu className="w-7 h-7" />
                                 <span className="text-sm font-bold hidden xl:inline">Menu</span>
@@ -91,7 +92,7 @@ export default function Navbar() {
                                         placeholder="Search products..."
                                         className="w-full h-11 pl-5 pr-12 rounded-full border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-sm outline-none text-gray-900 placeholder-gray-500"
                                     />
-                                    <button type="submit" className="absolute right-1 top-1 h-9 w-9 bg-pink-500 rounded-full flex items-center justify-center text-white hover:bg-pink-600 transition-colors">
+                                    <button type="submit" className="absolute right-1 top-1 h-9 w-9 bg-pink-500 rounded-full flex items-center justify-center text-white hover:bg-pink-600 transition-colors" aria-label="Search">
                                         <Search className="w-5 h-5" />
                                     </button>
                                 </form>
@@ -122,7 +123,7 @@ export default function Navbar() {
                                 {/* User / Auth */}
                                 {isAuthenticated ? (
                                     <div className="relative group">
-                                        <Link href="/profile" className="flex items-center gap-2 text-gray-900 hover:text-pink-600 transition-colors">
+                                        <Link href="/profile" className="flex items-center gap-2 text-gray-900 hover:text-pink-600 transition-colors" aria-label="View profile">
                                             <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -146,7 +147,7 @@ export default function Navbar() {
                                         </div>
                                     </div>
                                 ) : (
-                                    <Link href="/login" className="flex items-center gap-2 text-gray-900 hover:text-pink-600 transition-colors font-semibold text-sm">
+                                    <Link href="/login" className="flex items-center gap-2 text-gray-900 hover:text-pink-600 transition-colors font-semibold text-sm" aria-label="Login">
                                         <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -157,7 +158,7 @@ export default function Navbar() {
                                 )}
 
                                 {/* Cart Icon */}
-                                <Link href="/cart" className="relative group p-1">
+                                <Link href="/cart" className="relative group p-1" aria-label="View cart">
                                     <div className="text-gray-900 group-hover:text-pink-600 transition-colors">
                                         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -182,6 +183,7 @@ export default function Navbar() {
                         <button
                             onClick={() => setMobileMenuOpen(true)}
                             className="p-2 -ml-2 text-gray-700"
+                            aria-label="Open menu"
                         >
                             <Menu className="w-7 h-7" />
                         </button>
@@ -206,6 +208,7 @@ export default function Navbar() {
                         <button
                             onClick={() => setSearchOpen(true)}
                             className="p-2 -mr-2 text-gray-700"
+                            aria-label="Open search"
                         >
                             <Search className="w-6 h-6" />
                         </button>

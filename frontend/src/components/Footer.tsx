@@ -21,11 +21,11 @@ const Footer = () => {
                             <Image src="/logo.jpg" alt="London's Imports" width={40} height={40} className="rounded-lg shadow-lg" />
                             <span className="text-white font-bold text-lg tracking-tight">London&apos;s Imports</span>
                         </div>
-                        <p className="text-sm leading-relaxed text-slate-400 mb-4 max-w-xs">
+                        <p className="text-sm leading-relaxed text-slate-200 mb-4 max-w-xs">
                             Ghana&apos;s premier pre-order platform. We connect you directly with international suppliers for authentic products at better prices.
                         </p>
                         {/* Physical Address for SEO */}
-                        <address className="text-xs text-slate-500 not-italic mb-6">
+                        <address className="text-xs text-slate-300 not-italic mb-6">
                             <svg className="w-3 h-3 inline-block mr-1 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
                             GM-1739 Felchris Estate 2, Danfa, Accra, Ghana
                         </address>
@@ -67,7 +67,7 @@ const Footer = () => {
 
                     <div>
                         <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Stay Updated</h4>
-                        <p className="text-xs text-slate-400 mb-4">
+                        <p className="text-xs text-slate-200 mb-4">
                             Subscribe for new drop alerts and exclusive offers.
                         </p>
                         <div className="flex gap-2">
@@ -76,7 +76,7 @@ const Footer = () => {
                                 placeholder="Email address"
                                 className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:border-slate-500 transition-colors"
                             />
-                            <button className="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors">
+                            <button className="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors" aria-label="Subscribe to newsletter">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                             </button>
                         </div>
@@ -84,15 +84,15 @@ const Footer = () => {
                 </div>
 
                 <div className="pt-8 border-t border-slate-700/50 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-300">
                         © {new Date().getFullYear()} London&apos;s Imports. All rights reserved.
                     </p>
 
                     {/* Payment Trust Signals (Visual only) */}
-                    <div className="flex items-center gap-3 opacity-60 grayscale hover:grayscale-0 transition-all">
-                        <div className="h-6 w-10 bg-slate-700 rounded flex items-center justify-center text-[8px] font-bold text-slate-300">VISA</div>
-                        <div className="h-6 w-10 bg-slate-700 rounded flex items-center justify-center text-[8px] font-bold text-slate-300">MC</div>
-                        <div className="h-6 w-10 bg-slate-700 rounded flex items-center justify-center text-[8px] font-bold text-slate-300">MOMO</div>
+                    <div className="flex items-center gap-3 grayscale hover:grayscale-0 transition-all">
+                        <div className="h-6 w-10 bg-slate-700 rounded flex items-center justify-center text-[8px] font-bold text-white">VISA</div>
+                        <div className="h-6 w-10 bg-slate-700 rounded flex items-center justify-center text-[8px] font-bold text-white">MC</div>
+                        <div className="h-6 w-10 bg-slate-700 rounded flex items-center justify-center text-[8px] font-bold text-white">MOMO</div>
                     </div>
                 </div>
             </div>

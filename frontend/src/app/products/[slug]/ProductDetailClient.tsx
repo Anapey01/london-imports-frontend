@@ -232,6 +232,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                     className="px-4 py-3 text-gray-600 hover:text-gray-900 font-bold text-lg"
+                                    aria-label="Decrease quantity"
                                 >
                                     −
                                 </button>
@@ -239,6 +240,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 <button
                                     onClick={() => setQuantity(quantity + 1)}
                                     className="px-4 py-3 text-gray-600 hover:text-gray-900 font-bold text-lg"
+                                    aria-label="Increase quantity"
                                 >
                                     +
                                 </button>

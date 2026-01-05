@@ -58,6 +58,8 @@ export default function StarRating({
                         }}
                         onMouseEnter={() => !readOnly && setHover(starValue)}
                         onMouseLeave={() => !readOnly && setHover(0)}
+                        aria-label={readOnly ? `${starValue} star${starValue > 1 ? 's' : ''}` : `Rate ${starValue} star${starValue > 1 ? 's' : ''}`}
+                        tabIndex={readOnly ? -1 : 0}
                     >
                         <svg
                             className={`

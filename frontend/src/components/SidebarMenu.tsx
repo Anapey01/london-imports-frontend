@@ -33,10 +33,16 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             <div
                 className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
+                aria-hidden="true"
             ></div>
 
             {/* Drawer */}
-            <div className="relative w-80 bg-white h-full shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out animation-slide-in-left">
+            <div
+                className="relative w-80 bg-white h-full shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out animation-slide-in-left"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Navigation menu"
+            >
                 {/* Header */}
                 <div className="p-5 border-b flex items-center justify-between bg-gray-50">
                     <div className="flex items-center gap-3">
@@ -46,6 +52,7 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                        aria-label="Close menu"
                     >
                         <X className="w-6 h-6 text-gray-600" />
                     </button>
