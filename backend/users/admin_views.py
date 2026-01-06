@@ -408,3 +408,136 @@ class AdminSettingsView(APIView):
         # We accept the update but don't persist it effectively yet.
         # Ideally we'd save to a model.
         return Response({'message': 'Settings updated successfully'})
+
+
+# ============================================
+# VENDOR MANAGEMENT ENDPOINTS
+# ============================================
+
+class AdminVendorsListView(APIView):
+    """
+    List all vendors with their verification status.
+    """
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request):
+        vendors = Vendor.objects.select_related('user').all().order_by('-created_at')
+        
+        # Optional status filter
+        status_filter = request.query_params.get('status')
+        if status_filter == 'pending':
+            vendors = vendors.filter(is_verified=False, is_active=True)
+        elif status_filter == 'verified':
+            vendors = vendors.filter(is_verified=True)
+        elif status_filter == 'rejected':
+            vendors = vendors.filter(is_active=False)
+        
+        vendor_data = []
+        for vendor in vendors[:100]:
+            # Determine status label
+            if not vendor.is_active:
+                status = 'REJECTED'
+            elif vendor.is_verified:
+                status = 'VERIFIED'
+            else:
+                status = 'PENDING'
+            
+            vendor_data.append({
+                'id': str(vendor.id),
+                'business_name': vendor.business_name,
+                'slug': vendor.slug,
+                'owner_name': vendor.user.get_full_name() or vendor.user.username,
+                'owner_email': vendor.user.email,
+                'business_email': vendor.business_email,
+                'business_phone': vendor.business_phone,
+                'city': vendor.city,
+                'region': vendor.region,
+                'total_orders': vendor.total_orders,
+                'fulfillment_rate': float(vendor.fulfillment_rate),
+                'status': status,
+                'is_verified': vendor.is_verified,
+                'is_active': vendor.is_active,
+                'created_at': vendor.created_at.isoformat(),
+            })
+        
+        return Response(vendor_data)
+
+
+class AdminVendorDetailView(APIView):
+    """
+    Get vendor details or update vendor.
+    """
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request, pk):
+        try:
+            vendor = Vendor.objects.select_related('user').get(pk=pk)
+            return Response({
+                'id': str(vendor.id),
+                'business_name': vendor.business_name,
+                'slug': vendor.slug,
+                'description': vendor.description,
+                'owner_name': vendor.user.get_full_name() or vendor.user.username,
+                'owner_email': vendor.user.email,
+                'business_email': vendor.business_email,
+                'business_phone': vendor.business_phone,
+                'whatsapp': vendor.whatsapp,
+                'address': vendor.address,
+                'city': vendor.city,
+                'region': vendor.region,
+                'bank_name': vendor.bank_name,
+                'bank_account_number': vendor.bank_account_number,
+                'bank_account_name': vendor.bank_account_name,
+                'total_orders': vendor.total_orders,
+                'fulfilled_orders': vendor.fulfilled_orders,
+                'fulfillment_rate': float(vendor.fulfillment_rate),
+                'on_time_rate': float(vendor.on_time_rate),
+                'is_verified': vendor.is_verified,
+                'is_active': vendor.is_active,
+                'created_at': vendor.created_at.isoformat(),
+            })
+        except Vendor.DoesNotExist:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class AdminVendorVerifyView(APIView):
+    """
+    Verify a vendor (approve their application).
+    """
+    permission_classes = [IsAdminUser]
+    
+    def post(self, request, pk):
+        try:
+            vendor = Vendor.objects.get(pk=pk)
+            vendor.is_verified = True
+            vendor.is_active = True
+            vendor.save()
+            return Response({
+                'status': 'success',
+                'message': f'{vendor.business_name} has been verified',
+                'is_verified': True
+            })
+        except Vendor.DoesNotExist:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class AdminVendorRejectView(APIView):
+    """
+    Reject/suspend a vendor.
+    """
+    permission_classes = [IsAdminUser]
+    
+    def post(self, request, pk):
+        try:
+            vendor = Vendor.objects.get(pk=pk)
+            vendor.is_verified = False
+            vendor.is_active = False
+            vendor.save()
+            return Response({
+                'status': 'success',
+                'message': f'{vendor.business_name} has been rejected',
+                'is_active': False
+            })
+        except Vendor.DoesNotExist:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+

@@ -10,11 +10,15 @@ from .admin_views import (
     AdminOrderDetailView,
     AdminProductsListView,
     AdminProductDetailView,
-    AdminProductDetailView,
     AdminProductFeatureView,
     AdminProductApproveView,
     AdminAnalyticsView,
     AdminSettingsView,
+    # Vendor management
+    AdminVendorsListView,
+    AdminVendorDetailView,
+    AdminVendorVerifyView,
+    AdminVendorRejectView,
 )
 
 urlpatterns = [
@@ -35,9 +39,16 @@ urlpatterns = [
     path('products/<uuid:pk>/feature/', AdminProductFeatureView.as_view(), name='admin-product-feature'),
     path('products/<uuid:pk>/approve/', AdminProductApproveView.as_view(), name='admin-product-approve'),
     
+    # Vendors management
+    path('vendors/', AdminVendorsListView.as_view(), name='admin-vendors'),
+    path('vendors/<uuid:pk>/', AdminVendorDetailView.as_view(), name='admin-vendor-detail'),
+    path('vendors/<uuid:pk>/verify/', AdminVendorVerifyView.as_view(), name='admin-vendor-verify'),
+    path('vendors/<uuid:pk>/reject/', AdminVendorRejectView.as_view(), name='admin-vendor-reject'),
+    
     # Analytics
     path('analytics/', AdminAnalyticsView.as_view(), name='admin-analytics'),
     
     # Settings
     path('settings/', AdminSettingsView.as_view(), name='admin-settings'),
 ]
+

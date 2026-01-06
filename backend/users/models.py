@@ -17,6 +17,7 @@ class User(AbstractUser):
         RIDER = 'RIDER', 'Rider'
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(unique=True)  # Enforce unique emails
     role = models.CharField(
         max_length=20, 
         choices=Role.choices, 
