@@ -47,16 +47,7 @@ export default function MobileBottomNav() {
 
     return (
         <>
-            {!isAuthenticated && (
-                <div className="md:hidden fixed bottom-20 left-4 right-4 z-50">
-                    <Link
-                        href="/register"
-                        className="block w-full bg-pink-600 text-white text-center py-3 rounded-full font-bold shadow-lg hover:bg-pink-700 transition-colors"
-                    >
-                        Start Pre-ordering
-                    </Link>
-                </div>
-            )}
+
             <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
                 <div className="flex justify-around items-center h-16 px-2">
                     {navItems.map((item) => {
