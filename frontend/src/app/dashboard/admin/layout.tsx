@@ -19,6 +19,7 @@ export default function AdminDashboardLayout({
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const isDark = theme === 'dark';
 
     useEffect(() => {
@@ -65,19 +66,34 @@ export default function AdminDashboardLayout({
 
     return (
         <div className="min-h-screen pt-16" style={{ backgroundColor: isDark ? '#0f172a' : '#f8fafc' }}>
-            <AdminSidebar />
+            <AdminSidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
 
             {/* Main Content Area */}
-            <main className="ml-64 p-8">
+            <main className="ml-0 md:ml-64 p-4 md:p-8 transition-all duration-300">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            Admin Dashboard
-                        </h1>
-                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            Welcome back, {user.first_name || user.username}
-                        </p>
+                    <div className="flex items-center gap-3">
+                        {/* Mobile Menu Button */}
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className={`md:hidden p-2 rounded-lg -ml-2 ${isDark ? 'text-white hover:bg-slate-800' : 'text-gray-900 hover:bg-gray-100'}`}
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+
+                        <div>
+                            <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Admin Dashboard
+                            </h1>
+                            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                Welcome back, {user.first_name || user.username}
+                            </p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${isDark ? 'bg-slate-800 text-white' : 'bg-gray-100 text-gray-700'}`}>

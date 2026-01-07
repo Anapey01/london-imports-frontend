@@ -11,7 +11,12 @@ import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Image from 'next/image';
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
+}
+
+export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
     const { logout } = useAuthStore();
     const { theme } = useTheme();
     const pathname = usePathname();
@@ -72,63 +77,87 @@ export default function AdminSidebar() {
     };
 
     return (
-        <aside
-            className={`w-64 min-h-screen border-r flex flex-col fixed left-0 top-0 pt-16 z-40 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'
-                }`}
-        >
-            {/* Logo Area */}
-            <div className={`px-6 py-4 border-b ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        <>
+            {/* Backdrop for mobile */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                    onClick={onClose}
+                    aria-hidden="true"
+                />
+            )}
+
+            <aside
+                className={`w-64 min-h-screen border-r flex flex-col fixed left-0 top-0 pt-16 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    } md:translate-x-0 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}
+            >
+                {/* Close Button for Mobile */}
+                <div className="md:hidden absolute top-4 right-4">
+                    <button
+                        onClick={onClose}
+                        className={`p-2 rounded-lg ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                    </div>
-                    <div>
-                        <p className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Admin Panel</p>
-                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>London's Imports</p>
+                    </button>
+                </div>
+
+                {/* Logo Area */}
+                <div className={`px-6 py-4 border-b ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Admin Panel</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>London's Imports</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 py-4 px-3 space-y-1">
-                {links.map((link) => {
-                    const isActive = pathname === link.href || (link.href !== '/dashboard/admin' && pathname.startsWith(link.href));
-                    return (
-                        <Link
-                            key={link.name}
-                            href={link.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${isActive
-                                ? isDark
-                                    ? 'bg-pink-500/10 text-pink-400'
-                                    : 'bg-pink-50 text-pink-600'
-                                : isDark
-                                    ? 'text-slate-400 hover:text-white hover:bg-slate-800'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                                }`}
-                        >
-                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={link.icon} />
-                            </svg>
-                            {link.name}
-                        </Link>
-                    );
-                })}
-            </nav>
+                {/* Navigation */}
+                <nav className="flex-1 py-4 px-3 space-y-1">
+                    {links.map((link) => {
+                        const isActive = pathname === link.href || (link.href !== '/dashboard/admin' && pathname.startsWith(link.href));
+                        return (
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                onClick={() => onClose && onClose()}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${isActive
+                                    ? isDark
+                                        ? 'bg-pink-500/10 text-pink-400'
+                                        : 'bg-pink-50 text-pink-600'
+                                    : isDark
+                                        ? 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={link.icon} />
+                                </svg>
+                                {link.name}
+                            </Link>
+                        );
+                    })}
+                </nav>
 
-            {/* Logout */}
-            <div className={`p-3 border-t ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-colors text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sign Out
-                </button>
-            </div>
-        </aside>
+                {/* Logout */}
+                <div className={`p-3 border-t ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-colors text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sign Out
+                    </button>
+                </div>
+            </aside>
+        </>
     );
 }
