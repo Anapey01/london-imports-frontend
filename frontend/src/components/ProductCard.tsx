@@ -24,6 +24,7 @@ interface ProductCardProps {
         vendor_name: string;
         cutoff_date?: string;
     };
+    priority?: boolean;
 }
 
 import { useAuthStore } from '@/stores/authStore';
@@ -31,7 +32,7 @@ import { useAuthStore } from '@/stores/authStore';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, priority = false }: ProductCardProps) {
     const router = useRouter();
     const { isAuthenticated } = useAuthStore();
     const [isAdding, setIsAdding] = useState(false);
@@ -74,6 +75,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             src={imageUrl}
                             alt={`${product.name} - China Import to Ghana`}
                             fill
+                            priority={priority}
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                             className="object-contain hover:scale-105 transition-transform duration-300"
                             onError={() => setImageError(true)}

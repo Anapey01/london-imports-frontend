@@ -33,9 +33,9 @@ export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverla
                 - Vertical Flow (no scroll)
             */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-6 mt-4 lg:-mt-32 mb-12">
-                {products.map((product: any) => (
+                {products.map((product: any, index: number) => (
                     <div key={product.id} className="h-full">
-                        <ProductCard product={product} />
+                        <ProductCard product={product} priority={index < 4} />
                     </div>
                 ))}
             </div>
