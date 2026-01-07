@@ -146,6 +146,7 @@ export default function CategoryCards() {
                                                 src={displayItems[0].image}
                                                 alt={card.title}
                                                 fill
+                                                sizes="(max-width: 768px) 80vw, 30vw"
                                                 className="object-cover object-center transform hover:scale-105 transition-transform duration-500"
                                             />
                                         </Link>
@@ -158,6 +159,7 @@ export default function CategoryCards() {
                                                             src={item.image}
                                                             alt={item.name}
                                                             fill
+                                                            sizes="(max-width: 768px) 40vw, 15vw"
                                                             className="object-cover p-0 hover:scale-110 transition-transform"
                                                         />
                                                     </div>

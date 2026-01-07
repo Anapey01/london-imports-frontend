@@ -280,7 +280,7 @@ export default function HeroCarousel() {
                                                             : 'opacity-0'
                                                             }`}
                                                         priority={index === 0}
-                                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 45vw, 40vw"
                                                     />
                                                 ))}
                                             </div>
@@ -294,7 +294,7 @@ export default function HeroCarousel() {
                                                     fill
                                                     className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'}`}
                                                     priority={index === 0}
-                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 45vw, 40vw"
                                                 />
                                             </div>
                                         )}
