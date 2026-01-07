@@ -37,7 +37,7 @@ export default function StarRating({
     };
 
     return (
-        <div className="flex items-center gap-1 group/rating">
+        <div className="flex items-center group/rating">
             {[...Array(5)].map((_, index) => {
                 const starValue = index + 1;
                 const isFilled = (hover || rating) >= starValue;
@@ -49,7 +49,7 @@ export default function StarRating({
                         className={`
                             ${readOnly ? 'cursor-default' : 'cursor-pointer hover:scale-110'} 
                             transition-all duration-200 focus:outline-none 
-                            relative
+                            relative p-1.5 sm:p-2 -ml-1 first:ml-0
                         `}
                         onClick={(e) => {
                             e.preventDefault(); // Prevent navigating if inside a link
