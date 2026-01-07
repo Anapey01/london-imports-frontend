@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     "London's Imports Ghana"
   ],
   openGraph: {
-    title: "Mini Importation Ghana - Ship from China to Accra",
+    title: "Mini Importation Ghana - Ship from China to Accra & Kumasi",
     description: "Ghana's trusted platform for importing goods from China. We handle shipping, customs, and doorstep delivery in Accra, Kumasi, Tema. Pay in Cedis via Momo.",
     url: 'https://londonsimports.com',
     siteName: "London's Imports",
