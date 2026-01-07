@@ -14,7 +14,7 @@ import HeroOverlayProducts from '@/components/HeroOverlayProducts';
 const PreorderCarousel = dynamic(() => import('@/components/PreorderCarousel'), {
   loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg" />
 });
-const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'), { ssr: false });
+const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 
 export default async function HomePage() {
   // Fetch data on the server (SSG/ISR)
