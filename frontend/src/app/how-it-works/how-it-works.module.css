@@ -1,0 +1,88 @@
+/* Phone Mockup extracted from globals.css */
+.phoneMockup {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.phoneMockup * {
+  color: #111827 !important;
+}
+
+.phoneMockup :global(.bg-white),
+.phoneMockup :global([class*="bg-white"]) {
+  background-color: #ffffff !important;
+}
+
+.phoneMockup :global(.bg-gray-100),
+.phoneMockup :global([class*="bg-gray-100"]) {
+  background-color: #f3f4f6 !important;
+}
+
+.phoneMockup :global(.bg-gray-50),
+.phoneMockup :global([class*="bg-gray-50"]) {
+  background-color: #f9fafb !important;
+}
+
+.phoneMockup :global(.bg-yellow-50) {
+  background-color: #fefce8 !important;
+}
+
+.phoneMockup :global(.bg-yellow-400) {
+  background-color: #facc15 !important;
+}
+
+.phoneMockup :global(.bg-green-100) {
+  background-color: #dcfce7 !important;
+}
+
+.phoneMockup :global(.bg-pink-50) {
+  background-color: #fdf2f8 !important;
+}
+
+.phoneMockup :global(.text-gray-900) {
+  color: #111827 !important;
+}
+
+.phoneMockup :global(.text-gray-800) {
+  color: #1f2937 !important;
+}
+
+.phoneMockup :global(.text-gray-700) {
+  color: #374151 !important;
+}
+
+.phoneMockup :global(.text-gray-600) {
+  color: #4b5563 !important;
+}
+
+.phoneMockup :global(.text-gray-500) {
+  color: #6b7280 !important;
+}
+
+.phoneMockup :global(.text-gray-400) {
+  color: #9ca3af !important;
+}
+
+.phoneMockup :global(.text-gray-300) {
+  color: #d1d5db !important;
+}
+
+.phoneMockup :global(.text-pink-500) {
+  color: #ec4899 !important;
+}
+
+.phoneMockup :global(.text-pink-700) {
+  color: #be185d !important;
+}
+
+.phoneMockup :global(.text-green-500) {
+  color: #22c55e !important;
+}
+
+.phoneMockup :global(.border-pink-200) {
+  border-color: #fbcfe8 !important;
+}
+
+.phoneMockup :global(.border-pink-500) {
+  border-color: #ec4899 !important;
+}

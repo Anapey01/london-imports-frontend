@@ -420,47 +420,6 @@ html {
   opacity: 0;
 }
 
-/* ===== 3D CARD EFFECTS ===== */
-
-.card-3d {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform-style: preserve-3d;
-}
-
-.card-3d:hover {
-  transform: translateY(-12px) rotateX(5deg) rotateY(-5deg);
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.15),
-    0 12px 24px -12px rgba(233, 30, 140, 0.2);
-}
-
-/* Premium hover effect */
-.hover-lift {
-  transition: all 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-}
-
-/* Icon bounce on hover */
-.icon-bounce:hover {
-  animation: bounce 0.5s ease;
-}
-
-@keyframes bounce {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
 /* ===== SKELETON LOADING ===== */
 
 .skeleton {
@@ -501,14 +460,6 @@ html {
   background-color: #f472b6;
   color: white;
   transform: translateY(-1px);
-}
-
-/* ===== GLASSMORPHISM ===== */
-
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* ===== GRADIENT TEXT ===== */

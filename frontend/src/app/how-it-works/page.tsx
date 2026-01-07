@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import { sounds } from '@/lib/sounds';
 import FAQAccordion from '@/components/FAQAccordion';
+import styles from './how-it-works.module.css';
 
 // Reserve Screen with MoMo Payment Animation
 function ReserveScreen({ activeStep }: { activeStep: number }) {
@@ -327,8 +328,10 @@ function PhoneMockup({ activeStep }: { activeStep: number }) {
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-6 bg-gray-900 rounded-full z-10"></div>
 
                 {/* Screen - inline styles force light theme regardless of dark mode */}
+
+
                 <div
-                    className="w-full h-full rounded-[2.2rem] overflow-hidden relative phone-mockup"
+                    className={`w-full h-full rounded-[2.2rem] overflow-hidden relative ${styles.phoneMockup}`}
                     style={{ backgroundColor: '#f3f4f6', color: '#111827' }}
                 >
                     {/* Status Bar */}
