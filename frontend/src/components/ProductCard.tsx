@@ -96,25 +96,34 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className="mt-1">
                         {/* Price - Always Visible for Guests */}
                         <span className="text-black font-bold text-lg">
-                            GH₵ {product.price.toLocaleString()}.00
+                            GH₵ {Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                     </div>
 
                     <div className="text-xs text-yellow-500 flex items-center gap-1 mb-2">
                         <StarRating size="sm" />
-                        <span className="text-gray-400">({Math.floor(Math.random() * 50) + 1})</span>
+                        <span className="text-gray-500">({Math.floor(Math.random() * 50) + 1})</span>
                     </div>
                 </div>
             </Link>
 
-            {/* Faint Pink "Add to cart" - Enabled for Guests too */}
-            <div className="px-3 pb-3">
+            {/* Add to cart icon button */}
+            <div className="px-3 pb-3 flex justify-center">
                 <button
                     onClick={handleAddToCart}
                     disabled={isAdding}
-                    className="w-full bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 font-bold py-2 rounded text-sm transition-colors shadow-sm disabled:opacity-50"
+                    className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-600 hover:text-pink-600 transition-colors"
+                    aria-label="Add to cart"
                 >
-                    {isAdding ? 'Adding...' : 'Add to cart'}
+                    <div className="relative">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-700 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                            +
+                        </span>
+                    </div>
+                    <span className="text-[10px] whitespace-nowrap">Add to cart</span>
                 </button>
             </div>
         </div>

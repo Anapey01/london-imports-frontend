@@ -127,7 +127,7 @@ function TrackScreen({ activeStep }: { activeStep: number }) {
 
     const steps = [
         { label: 'Order Confirmed', icon: 'check' },
-        { label: 'Shipped from UK', icon: 'plane' },
+        { label: 'Shipped from China', icon: 'plane' },
         { label: 'Arrived in Ghana', icon: 'box' },
         { label: 'Out for Delivery', icon: 'truck' },
     ];

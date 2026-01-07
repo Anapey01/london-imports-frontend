@@ -13,7 +13,7 @@ const faqs = [
     },
     {
         question: "How long does delivery take?",
-        answer: "Delivery windows are shown on each product (typically 2-4 weeks). We use date ranges, not exact dates, to ensure honest timelines. You'll receive updates at each milestone."
+        answer: "Delivery windows are shown on each product (typically 8-9 weeks). We use date ranges, not exact dates, to ensure honest timelines. You'll receive updates at each milestone."
     },
     {
         question: "Is my payment secure?",
@@ -62,7 +62,7 @@ const faqs = [
     },
     {
         question: "Can I buy from 1688 or Taobao and ship to Kumasi?",
-        answer: "Yes! We ship to all major cities in Ghana including Accra, Kumasi, Tema, Takoradi, and Cape Coast. Whether you're buying from 1688, Taobao, or Alibaba, we consolidate your orders in China and deliver door-to-door anywhere in Ghana. Kumasi deliveries typically take 2-4 weeks."
+        answer: "Yes! We ship to all major cities in Ghana including Accra, Kumasi, Tema, Takoradi, and Cape Coast. Whether you're buying from 1688, Taobao, or Alibaba, we consolidate your orders in China and deliver door-to-door anywhere in Ghana. Deliveries typically take 8-9 weeks."
     }
 ];
 

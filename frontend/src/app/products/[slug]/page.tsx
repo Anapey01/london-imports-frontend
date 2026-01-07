@@ -1,7 +1,7 @@
-
 import { getProduct, getProductMetadata, getProducts } from '@/lib/fetchers';
 import ProductDetailClient from './ProductDetailClient';
 import { Metadata, ResolvingMetadata } from 'next';
+import { getImageUrl } from '@/lib/image';
 
 // ISR: Revalidate product pages every hour
 export const revalidate = 3600;
@@ -19,29 +19,87 @@ type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
+// Helper to ensure absolute URL
+function getAbsoluteImageUrl(imageUrl: string | null | undefined): string {
+    if (!imageUrl) return 'https://londonsimports.com/og-image.jpg';
+
+    const processedUrl = getImageUrl(imageUrl);
+
+    // If already absolute, return as-is
+    if (processedUrl.startsWith('https://')) return processedUrl;
+    if (processedUrl.startsWith('http://')) return processedUrl.replace('http://', 'https://');
+
+    // If relative, make absolute
+    if (processedUrl.startsWith('/')) {
+        return `https://londonsimports.com${processedUrl}`;
+    }
+
+    return `https://londonsimports.com/${processedUrl}`;
+}
+
+
 export async function generateMetadata(
     { params, searchParams }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
+    // 1. Resolve Params (Next.js 15 requirement)
     const { slug } = await params;
-    const product = await getProductMetadata(slug);
 
+    // 2. Fetch Product Data
+    let product = null;
+    try {
+        product = await getProductMetadata(slug);
+    } catch (e) {
+        console.error('Metadata fetch failed:', e);
+    }
+
+    // 3. Fallback if product not found or API fails
     if (!product) {
         return {
-            title: 'Private Product | London\'s Imports',
-            description: 'Join London\'s Imports to view exclusive products and pre-order pricing.',
+            title: 'View Product | London\'s Imports',
+            description: 'Check out this product on London\'s Imports.',
+            robots: { index: false, follow: true },
         };
     }
 
-    const previousImages = (await parent).openGraph?.images || [];
+    // 4. Construct Metadata
+    const productImageUrl = getAbsoluteImageUrl(product.image);
+    const productTitle = `${product.name} - London's Imports`;
+    const productDescription = product.description?.substring(0, 160) || `Pre-order ${product.name} from London's Imports. Authentic products delivered to Ghana.`;
+    const pageUrl = `https://londonsimports.com/products/${slug}`;
 
     return {
-        title: `${product.name} - Pre-order from China to Ghana | London's Imports`,
-        description: product.description?.substring(0, 160) || `Pre-order ${product.name} from London's Imports. Authentic products delivered to Ghana.`,
+        metadataBase: new URL('https://londonsimports.com'),
+        title: productTitle,
+        description: productDescription,
+
         openGraph: {
-            title: `Pre-order ${product.name}`,
-            description: `Get ${product.name} delivered to you in Ghana. Reserve now.`,
-            images: product.image ? [product.image, ...previousImages] : previousImages,
+            title: productTitle,
+            description: productDescription,
+            url: pageUrl,
+            siteName: "London's Imports",
+            images: [
+                {
+                    url: productImageUrl,
+                    width: 1200,
+                    height: 630,
+                    alt: productTitle,
+                },
+            ],
+            locale: 'en_GH',
+            type: 'website',
+        },
+
+        twitter: {
+            card: 'summary_large_image',
+            title: productTitle,
+            description: productDescription,
+            images: [productImageUrl],
+            creator: '@londonsimports',
+        },
+
+        alternates: {
+            canonical: pageUrl,
         },
     };
 }
@@ -78,8 +136,8 @@ export default async function ProductDetailPage({ params }: Props) {
                     "@type": "ShippingDeliveryTime",
                     "handlingTime": {
                         "@type": "QuantitativeValue",
-                        "minValue": 14,
-                        "maxValue": 21,
+                        "minValue": 56,
+                        "maxValue": 63,
                         "unitCode": "DAY"
                     }
                 }

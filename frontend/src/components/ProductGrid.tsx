@@ -81,7 +81,7 @@ export default function ProductGrid({ initialProducts = [], categories = [] }: P
 
             {/* Products Grid */}
             {isLoading && !products.length ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                         <div key={i} className="bg-white rounded-2xl overflow-hidden">
                             <div className="aspect-square skeleton"></div>
@@ -94,7 +94,7 @@ export default function ProductGrid({ initialProducts = [], categories = [] }: P
                     ))}
                 </div>
             ) : products.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                     {products.map((product: any) => (
                         <ProductCard key={product.id} product={product} />
                     ))}

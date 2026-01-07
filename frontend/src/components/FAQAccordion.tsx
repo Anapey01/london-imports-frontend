@@ -13,7 +13,7 @@ const faqs = [
     },
     {
         question: "How long does delivery take?",
-        answer: "Delivery windows are shown on each product (typically 2-4 weeks). We use date ranges, not exact dates, to ensure honest timelines. You'll receive updates at each milestone."
+        answer: "Delivery windows are shown on each product (typically 8-9 weeks). We use date ranges, not exact dates, to ensure honest timelines. You'll receive updates at each milestone."
     },
     {
         question: "Is my payment secure?",

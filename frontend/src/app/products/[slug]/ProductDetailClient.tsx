@@ -225,39 +225,42 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </div>
                         </div>
 
-                        {/* CTA Section */}
-                        <div className="flex gap-4 items-center">
-                            {/* Quantity Selector */}
-                            <div className="flex items-center border-2 border-gray-200 rounded-full bg-white">
-                                <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="px-4 py-3 text-gray-600 hover:text-gray-900 font-bold text-lg"
-                                    aria-label="Decrease quantity"
-                                >
-                                    −
-                                </button>
-                                <span className="px-4 py-3 font-bold text-lg min-w-[50px] text-center">{quantity}</span>
-                                <button
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="px-4 py-3 text-gray-600 hover:text-gray-900 font-bold text-lg"
-                                    aria-label="Increase quantity"
-                                >
-                                    +
-                                </button>
-                            </div>
+                        {/* CTA Section - Responsive */}
+                        <div className="flex items-center gap-2 sm:gap-4">
+                            {/* Add to cart icon button */}
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isAdding}
+                                className="flex flex-col items-center gap-1 px-3 sm:px-4 py-2 text-gray-600 hover:text-pink-600 transition-colors min-w-[60px]"
+                                aria-label="Add to cart"
+                            >
+                                <div className="relative">
+                                    <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    {/* Plus badge */}
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                        +
+                                    </span>
+                                </div>
+                                <span className="text-[10px] sm:text-xs whitespace-nowrap">Add to cart</span>
+                            </button>
 
-                            {/* Pre-order Button */}
+                            {/* Chat now button */}
+                            <a
+                                href="/contact"
+                                className="flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base border-2 border-gray-800 text-gray-800 rounded-full hover:bg-gray-100 transition-colors"
+                            >
+                                Chat now
+                            </a>
+
+                            {/* Start order button */}
                             <button
                                 onClick={handleAddToCart}
                                 disabled={isAdding || (product.preorder_status === 'SOLD_OUT')}
-                                className={`flex-1 py-4 px-8 font-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${isAuthenticated
-                                    ? "bg-[#F5A623] text-[#006B5A] hover:bg-[#E09000]"
-                                    : "bg-pink-600 text-white hover:bg-pink-700"
-                                    }`}
+                                className="flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors disabled:opacity-50"
                             >
-                                {isAdding ? 'Adding to Basket...' :
-                                    product.preorder_status === 'SOLD_OUT' ? 'Sold Out' :
-                                        `Pre-order Now`}
+                                Start order
                             </button>
                         </div>
 

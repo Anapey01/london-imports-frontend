@@ -134,6 +134,12 @@ export const adminAPI = {
   // Analytics
   analytics: (params?: any) => api.get('/admin/analytics/', { params }),
 
+  // Vendors management
+  vendors: (params?: any) => api.get('/admin/vendors/', { params }),
+  getVendor: (id: string) => api.get(`/admin/vendors/${id}/`),
+  verifyVendor: (id: string) => api.post(`/admin/vendors/${id}/verify/`),
+  rejectVendor: (id: string) => api.post(`/admin/vendors/${id}/reject/`),
+
   // Settings
   settings: () => api.get('/admin/settings/'),
   updateSettings: (data: any) => api.patch('/admin/settings/', data),
