@@ -27,6 +27,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Link',
+            value: '<https://london-imports-api.onrender.com>; rel=preconnect'
+          }
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;
