@@ -68,7 +68,7 @@ export default function Navbar({ initialCategories = [] }: NavbarProps) {
                             {/* Desktop Menu Button */}
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 text-gray-700 hover:text-pink-600"
+                                className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 text-gray-700 hover:text-pink-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500"
                                 aria-label="Open menu"
                             >
                                 <Menu className="w-7 h-7" />
@@ -107,7 +107,7 @@ export default function Navbar({ initialCategories = [] }: NavbarProps) {
                                         placeholder="Search products..."
                                         className="w-full h-11 pl-5 pr-12 rounded-full border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-sm outline-none text-gray-900 placeholder-gray-500"
                                     />
-                                    <button type="submit" className="absolute right-1 top-1 h-9 w-9 bg-pink-500 rounded-full flex items-center justify-center text-white hover:bg-pink-600 transition-colors" aria-label="Search">
+                                    <button type="submit" className="absolute right-1 top-1 h-9 w-9 bg-pink-500 rounded-full flex items-center justify-center text-white hover:bg-pink-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-500" aria-label="Search">
                                         <Search className="w-5 h-5" />
                                     </button>
                                 </form>

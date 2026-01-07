@@ -354,7 +354,7 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
                             e.preventDefault();
                             goToSlide(index);
                         }}
-                        className={`h-2 rounded-full transition-all ${index === currentSlide
+                        className={`h-2 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-800 ${index === currentSlide
                             ? 'bg-gray-800 w-6'
                             : 'bg-gray-400 w-2 hover:bg-gray-600'
                             }`}

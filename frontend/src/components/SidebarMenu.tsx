@@ -51,10 +51,10 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                        className="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500"
                         aria-label="Close menu"
                     >
-                        <X className="w-6 h-6 text-gray-600" />
+                        <X className="w-6 h-6 text-gray-500" />
                     </button>
                 </div>
 
