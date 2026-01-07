@@ -7,8 +7,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useQuery } from '@tanstack/react-query';
-import { productsAPI } from '@/lib/api';
+// import { useQuery } from '@tanstack/react-query'; // Removed for optimization
+// import { productsAPI } from '@/lib/api'; // Removed for optimization
 
 interface Slide {
     id: number;
@@ -134,17 +134,9 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
         }
     }, [currentSlide]);
 
-    // Fetch products dynamically - Focus on PREORDERS
-    const { data: productsData } = useQuery({
-        queryKey: ['hero-products'],
-        queryFn: () => productsAPI.list({ status: 'preorder', limit: 20, ordering: '-created_at' }),
-        initialData: initialProducts.length > 0 ? { data: { results: initialProducts } } as any : undefined,
-    });
-
-    // ... (rest of code)
-
-
-    const products = productsData?.data?.results || productsData?.data || [];
+    // Use initialProducts passed from server (SSG/ISR)
+    // We remove the client-side fetch to save bundle size since 20 items are plenty for a carousel
+    const products = initialProducts;
 
     // Get random products for displaying on slides
     const getProductsForSlide = (slideIndex: number, count: number = 4) => {
