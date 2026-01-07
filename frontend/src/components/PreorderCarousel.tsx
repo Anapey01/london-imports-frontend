@@ -78,8 +78,8 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
     if (products.length === 0) {
         return (
             <div className="text-center py-16 bg-slate-50 rounded-2xl">
-                <p className="text-slate-500 mb-4">No upcoming drops at the moment.</p>
-                <p className="text-slate-400 text-sm">Check back soon!</p>
+                <p className="text-slate-600 mb-4">No upcoming drops at the moment.</p>
+                <p className="text-slate-500 text-sm">Check back soon!</p>
             </div>
         );
     }

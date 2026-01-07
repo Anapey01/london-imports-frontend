@@ -65,7 +65,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                 {/* Image Section */}
                 <div className="relative aspect-square p-4 bg-white flex items-center justify-center">
                     {product.reservations_count > 0 && (
-                        <div className="absolute top-2 right-2 bg-yellow-50 text-orange-600 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100 z-10">
+                        <div className="absolute top-2 right-2 bg-yellow-50 text-orange-800 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100 z-10">
                             {product.reservations_count} reserved
                         </div>
                     )}

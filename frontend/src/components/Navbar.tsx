@@ -85,7 +85,7 @@ export default function Navbar({ initialCategories = [] }: NavbarProps) {
                                     priority
                                 />
                                 <div>
-                                    <span className="text-base sm:text-2xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
+                                    <span className="text-base sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
                                         London&apos;s
                                     </span>
                                     <span className="text-base sm:text-2xl font-bold ml-1" style={{ color: theme === 'dark' ? '#f8fafc' : '#1f2937' }}>Imports</span>
@@ -214,7 +214,7 @@ export default function Navbar({ initialCategories = [] }: NavbarProps) {
                                 priority
                             />
                             <span className="text-lg font-bold">
-                                <span className="text-pink-500">London&apos;s</span>
+                                <span className="text-pink-600">London&apos;s</span>
                                 <span className="text-gray-800"> Imports</span>
                             </span>
                         </Link>
@@ -232,10 +232,11 @@ export default function Navbar({ initialCategories = [] }: NavbarProps) {
 
                 {/* Search Modal */}
                 <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
-            </nav>
+            </nav >
 
             {/* Desktop Sidebar Menu */}
-            <SidebarMenu isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            < SidebarMenu isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)
+            } />
 
             {/* Mobile Menu Drawer */}
             <MobileMenuDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />

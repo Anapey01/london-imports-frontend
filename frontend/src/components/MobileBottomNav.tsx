@@ -66,7 +66,7 @@ export default function MobileBottomNav() {
                                 <div className="relative">
                                     <item.icon
                                         className={`w-6 h-6 transition-colors ${isActive
-                                            ? 'text-rose-500 stroke-[2.5]'
+                                            ? 'text-pink-600 stroke-[2.5]'
                                             : 'text-gray-600 stroke-2'
                                             }`}
                                         fill={isActive && item.name === 'Home' ? 'currentColor' : 'none'}
@@ -82,7 +82,7 @@ export default function MobileBottomNav() {
 
                                 {/* Label */}
                                 <span
-                                    className={`text-xs mt-1 font-medium transition-colors ${isActive ? 'text-rose-500' : 'text-gray-600'
+                                    className={`text-xs mt-1 font-medium transition-colors ${isActive ? 'text-pink-600' : 'text-gray-600'
                                         }`}
                                 >
                                     {item.name}

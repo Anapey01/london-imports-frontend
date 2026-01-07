@@ -44,7 +44,7 @@ const slideTemplates: Slide[] = [
         subtitle: "Quality home products for your space",
         ctaText: "Shop home",
         ctaLink: "/products?category=home",
-        bgColor: "#af8c6d", // Warm brown/taupe
+        bgColor: "#795c3e", // Darker brown for better contrast with white text
         textColor: "#ffffff",
         categorySlug: "home",
         heroImages: [
