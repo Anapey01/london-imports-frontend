@@ -92,6 +92,10 @@ class Product(models.Model):
     from cloudinary.models import CloudinaryField
     image = CloudinaryField('image', folder='products', blank=True, null=True)
     
+    # Video - Direct upload (product demo) or External Link (Youtube/TikTok)
+    video = CloudinaryField('video', folder='products/videos', resource_type='video', blank=True, null=True)
+    video_url = models.URLField(blank=True, help_text="YouTube/Vimeo link (recommended for SEO)")
+    
     # Stock (for ready-to-ship items)
     stock_quantity = models.PositiveIntegerField(default=0)
     

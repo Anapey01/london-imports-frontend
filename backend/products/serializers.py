@@ -74,6 +74,11 @@ class ProductListSerializer(serializers.ModelSerializer):
                     return image_path
                     
                 import os
+                # Try explicit cloud name first
+                cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+                if cloud_name:
+                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{image_path}"
+
                 cloudinary_url = os.getenv('CLOUDINARY_URL')
                 if cloudinary_url and '@' in cloudinary_url:
                     try:
@@ -116,6 +121,11 @@ class ProductPreviewSerializer(serializers.ModelSerializer):
                     return image_path
                     
                 import os
+                # Try explicit cloud name first
+                cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+                if cloud_name:
+                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{image_path}"
+
                 cloudinary_url = os.getenv('CLOUDINARY_URL')
                 if cloudinary_url and '@' in cloudinary_url:
                     try:
@@ -141,11 +151,13 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     is_preorder = serializers.ReadOnlyField()
     allows_deposit = serializers.ReadOnlyField()
     image = serializers.SerializerMethodField()
+    video = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
         fields = [
             'id', 'name', 'slug', 'sku', 'description', 'image', 'images',
+            'video', 'video_url',
             'category', 'vendor',
             'price', 'deposit_amount', 'allows_deposit',
             'preorder_status', 'estimated_weeks', 'delivery_window_text',
@@ -168,6 +180,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
                     return image_path
                     
                 import os
+                # Try explicit cloud name first
+                cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+                if cloud_name:
+                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{image_path}"
+
                 cloudinary_url = os.getenv('CLOUDINARY_URL')
                 if cloudinary_url and '@' in cloudinary_url:
                     try:
@@ -181,6 +198,25 @@ class ProductDetailSerializer(serializers.ModelSerializer):
                 return image_path
         return None
 
+    def get_video(self, obj):
+        """Return Cloudinary URL for the video"""
+        if obj.video:
+            try:
+                return obj.video.url
+            except Exception:
+                video_path = str(obj.video)
+                if video_path.startswith('http'):
+                    return video_path
+                    
+                import os
+                cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+                if cloud_name:
+                     # Note: Video uses /video/upload/ instead of /image/upload/
+                     return f"https://res.cloudinary.com/{cloud_name}/video/upload/{video_path}"
+
+                return video_path
+        return None
+
 
 class ProductCreateSerializer(serializers.ModelSerializer):
     """Create/update product - for vendors"""
@@ -189,6 +225,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'name', 'slug', 'sku', 'description', 'image',
+            'video', 'video_url',
             'category', 'price', 'deposit_amount',
             'preorder_status', 'estimated_weeks', 'cutoff_datetime',
             'stock_quantity', 'is_active', 'is_featured'

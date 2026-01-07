@@ -120,6 +120,15 @@ export default async function ProductDetailPage({ params }: Props) {
         "image": product.image,
         "description": product.description,
         "sku": product.id,
+        "subjectOf": (product.video || product.video_url) ? {
+            "@type": "VideoObject",
+            "name": product.name,
+            "description": product.description,
+            "thumbnailUrl": getAbsoluteImageUrl(product.image),
+            "uploadDate": product.created_at,
+            "contentUrl": product.video || undefined,
+            "embedUrl": product.video_url || undefined
+        } : undefined,
         "offers": {
             "@type": "Offer",
             "priceCurrency": "GHS",

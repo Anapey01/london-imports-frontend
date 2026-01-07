@@ -130,6 +130,33 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 </div>
                             )}
                         </div>
+
+                        {/* Video Section */}
+                        {(product.video || product.video_url) && (
+                            <div className="mt-8">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4">Product Video</h3>
+                                <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-lg">
+                                    {product.video ? (
+                                        <video
+                                            controls
+                                            className="w-full h-full object-cover"
+                                            poster={imageUrl}
+                                        >
+                                            <source src={product.video} type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    ) : product.video_url ? (
+                                        <iframe
+                                            src={product.video_url.replace('watch?v=', 'embed/').split('&')[0]}
+                                            title={product.name}
+                                            className="w-full h-full"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    ) : null}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* RIGHT COLUMN: Product Info */}

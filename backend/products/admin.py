@@ -33,7 +33,7 @@ class ProductAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Product Details', {
             'description': 'Fill in the basic product information',
-            'fields': ('name', 'slug', 'image', 'category', 'price', 'description')
+            'fields': ('name', 'slug', 'image', 'video', 'video_url', 'category', 'price', 'description')
         }),
         ('Pre-order Settings', {
             'description': 'Set delivery timeline',
