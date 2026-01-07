@@ -40,7 +40,16 @@ export default function Navbar() {
             .catch(err => console.error("Failed to fetch categories for navbar:", err));
     }, [fetchCart]);
 
-    if (!mounted) return null;
+    // Prevent hydration mismatch but reserve space to avoid CLS
+    if (!mounted) {
+        return (
+            <nav className="border-b sticky top-0 z-40 bg-white border-gray-200">
+                <div className="h-14 md:h-20 w-full flex items-center px-4 max-w-7xl mx-auto">
+                    {/* Placeholder content to hold height */}
+                </div>
+            </nav>
+        );
+    }
 
     return (
         <>
