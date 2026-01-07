@@ -206,7 +206,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     <div>
                         {/* Title */}
                         <div className="flex items-start justify-between gap-4 mb-4">
-                            <h1 className="text-4xl lg:text-5xl font-bold text-[#006B5A] leading-tight">
+                            <h1 className="text-3xl lg:text-5xl font-bold text-[#006B5A] leading-tight">
                                 {product.name}
                             </h1>
                             <ShareButton
@@ -231,14 +231,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                         {/* Price - Always Visible */}
                         <div className="mb-6 relative">
-                            <span className="text-4xl font-bold text-gray-900">
+                            <span className="text-3xl lg:text-4xl font-bold text-gray-900">
                                 GHS {product.price?.toLocaleString()}
                             </span>
                         </div>
 
                         {/* Description */}
                         <div className="mb-8">
-                            <p className="text-gray-700 leading-relaxed text-lg">
+                            <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
                                 {product.description}
                             </p>
                         </div>
