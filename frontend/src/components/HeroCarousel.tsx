@@ -61,7 +61,7 @@ const slideTemplates: Slide[] = [
         ctaText: "See all deals",
         ctaLink: "/products?category=fashion",
         bgColor: "#c1c1c1", // Exact match from image (193,193,193)
-        textColor: "#ffffff",
+        textColor: "#1f2937", // Dark gray for legibility on light background
         categorySlug: "fashion",
         heroImage: "/assets/images/fashion-for-less.png",
         blendMode: "mix-blend-normal",
