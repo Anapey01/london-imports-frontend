@@ -317,6 +317,7 @@ export default function HeroCarousel() {
                                                     src={product.primary_image}
                                                     alt={product.name}
                                                     fill
+                                                    priority={index === 0}
                                                     className="object-cover"
                                                     sizes="(max-width: 640px) 33vw, 150px"
                                                     onError={(e) => {
