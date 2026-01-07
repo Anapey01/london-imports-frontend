@@ -5,10 +5,16 @@
 import Link from 'next/link';
 import { getFeaturedProducts, getRecentProducts, getProducts } from '@/lib/fetchers';
 
+import dynamic from 'next/dynamic';
+
 import HeroCarousel from '@/components/HeroCarousel';
 import HeroOverlayProducts from '@/components/HeroOverlayProducts';
-import PreorderCarousel from '@/components/PreorderCarousel';
-import WhatsAppButton from '@/components/WhatsAppButton';
+
+// Lazy load interactive/below-the-fold components
+const PreorderCarousel = dynamic(() => import('@/components/PreorderCarousel'), {
+  loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg" />
+});
+const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'), { ssr: false });
 
 export default async function HomePage() {
   // Fetch data on the server (SSG/ISR)
