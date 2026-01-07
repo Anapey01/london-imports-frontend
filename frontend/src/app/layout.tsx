@@ -35,14 +35,14 @@ export const metadata: Metadata = {
     description: "Ghana's trusted platform for importing goods from China. We handle shipping, customs, and doorstep delivery in Accra, Kumasi, Tema. Pay in Cedis via Momo.",
     url: 'https://londonsimports.com',
     siteName: "London's Imports - Ghana",
-    images: [
+    /* images: [
       {
         url: '/og-image.jpg', // Must be in public folder
         width: 1200,
         height: 630,
         alt: "London's Imports Ghana - China to Accra Shipping",
       },
-    ],
+    ], */
     locale: 'en_GH',
     type: 'website',
   },
