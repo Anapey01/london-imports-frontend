@@ -41,7 +41,7 @@ export default async function Image() {
         (
             <div
                 style={{
-                    background: 'linear-gradient(to bottom right, #fbfaf9, #f0f0f0)',
+                    background: 'white',
                     width: '100%',
                     height: '100%',
                     display: 'flex',
@@ -52,33 +52,34 @@ export default async function Image() {
                 }}
             >
                 {/* Left Side: Branding */}
-                <div style={{ display: 'flex', flexDirection: 'column', width: '50%' }}>
-                    <img
-                        src="https://londonsimports.com/logo.jpg"
-                        alt="Logo"
-                        width="150"
-                        height="150"
-                        style={{ borderRadius: '50%', marginBottom: '30px' }}
-                    />
-                    <h1 style={{ fontSize: '64px', fontWeight: 'bold', color: '#1a1a1a', margin: 0, lineHeight: 1.1 }}>
-                        London's Imports
-                    </h1>
-                    <p style={{ fontSize: '30px', color: '#666', marginTop: '20px', lineHeight: 1.4 }}>
-                        Mini Importation Ghana.<br />
-                        Ship from China to Accra.
+                <div style={{ display: 'flex', flexDirection: 'column', width: '55%', height: '100%', justifyContent: 'center' }}>
+                    <p style={{ fontSize: '24px', color: '#666', fontFamily: 'monospace', margin: '0 0 30px 0' }}>
+                        londonsimports.com
                     </p>
-                    <div style={{ display: 'flex', marginTop: '40px', alignItems: 'center' }}>
-                        <div style={{ background: '#7c3aed', color: 'white', padding: '10px 24px', borderRadius: '30px', fontSize: '24px' }}>
-                            Start Pre-ordering
-                        </div>
+
+                    <h1 style={{ fontSize: '56px', fontWeight: 'bold', color: '#1a1a1a', margin: 0, lineHeight: 1.2, display: 'flex', flexDirection: 'column' }}>
+                        <span>Mini Importation Ghana |</span>
+                        <span>Ship from China to Accra |</span>
+                        <span style={{ color: '#7c3aed' }}>London's Imports</span>
+                    </h1>
+
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '40px' }}>
+                        <img
+                            src="https://londonsimports.com/logo.jpg"
+                            alt="Logo"
+                            width="60"
+                            height="60"
+                            style={{ borderRadius: '50%', marginRight: '20px' }}
+                        />
+                        <span style={{ fontSize: '24px', color: '#444' }}>Trusted by 1000+ businesses</span>
                     </div>
                 </div>
 
                 {/* Right Side: Product Collage */}
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '50%', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '45%', justifyContent: 'center' }}>
                     {products.map((img, i) => (
-                        <div key={i} style={{ display: 'flex', width: '240px', height: '320px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
-                            <img src={img} width="240" height="320" style={{ objectFit: 'cover' }} />
+                        <div key={i} style={{ display: 'flex', width: '220px', height: '380px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+                            <img src={img} width="220" height="380" style={{ objectFit: 'cover' }} />
                         </div>
                     )).slice(0, 2)}
                 </div>
