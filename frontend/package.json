@@ -29,10 +29,10 @@
     "typescript": "^5"
   },
   "browserslist": [
-    "chrome >= 80",
-    "firefox >= 78",
-    "safari >= 14",
-    "edge >= 88",
-    "ios >= 14"
+    "chrome >= 100",
+    "firefox >= 100",
+    "safari >= 15",
+    "edge >= 100",
+    "ios >= 15"
   ]
 }
