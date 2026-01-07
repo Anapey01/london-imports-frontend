@@ -87,7 +87,11 @@ const slideTemplates: Slide[] = [
 ];
 
 
-export default function HeroCarousel() {
+interface HeroCarouselProps {
+    initialProducts?: any[];
+}
+
+export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps) {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     // UseEffect for rotating hero images used in slides
@@ -134,6 +138,7 @@ export default function HeroCarousel() {
     const { data: productsData } = useQuery({
         queryKey: ['hero-products'],
         queryFn: () => productsAPI.list({ status: 'preorder', limit: 20, ordering: '-created_at' }),
+        initialData: initialProducts.length > 0 ? { data: { results: initialProducts } } as any : undefined,
     });
 
     // ... (rest of code)

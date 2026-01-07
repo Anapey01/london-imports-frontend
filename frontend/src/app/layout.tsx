@@ -55,11 +55,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { getCategories } from "@/lib/fetchers";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await getCategories();
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
@@ -95,7 +99,7 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <ToastProvider>
-              <Navbar />
+              <Navbar initialCategories={categories} />
               <main className="pb-20 md:pb-0">{children}</main>
               <Footer />
               <MobileBottomNav />

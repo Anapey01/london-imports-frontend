@@ -3,7 +3,7 @@
  * Refactored to "Preorder Feed" style as requested
  */
 import Link from 'next/link';
-import { getFeaturedProducts, getRecentProducts } from '@/lib/fetchers';
+import { getFeaturedProducts, getRecentProducts, getProducts } from '@/lib/fetchers';
 
 import HeroCarousel from '@/components/HeroCarousel';
 import HeroOverlayProducts from '@/components/HeroOverlayProducts';
@@ -12,13 +12,15 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 
 export default async function HomePage() {
   // Fetch data on the server (SSG/ISR)
-  const [featuredData, recentData] = await Promise.all([
+  const [featuredData, recentData, preorderData] = await Promise.all([
     getFeaturedProducts(),
-    getRecentProducts(20)
+    getRecentProducts(20),
+    getProducts({ status: 'preorder', limit: '20', ordering: '-created_at' })
   ]);
 
   const featuredProducts = featuredData?.results || [];
   const recentProducts = recentData?.results || [];
+  const preorderProducts = preorderData?.results || [];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -26,7 +28,7 @@ export default async function HomePage() {
       <WhatsAppButton />
 
       {/* 1. Hero Carousel (Landing visuals) */}
-      <HeroCarousel />
+      <HeroCarousel initialProducts={preorderProducts} />
 
       {/* 2. Products Overlay & Main Feed (20 items, Amazon-style grid) */}
       <HeroOverlayProducts initialProducts={recentProducts} />

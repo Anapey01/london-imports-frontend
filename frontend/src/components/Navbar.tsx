@@ -17,7 +17,11 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { productsAPI } from '@/lib/api';
 import { Search, Menu } from 'lucide-react';
 
-export default function Navbar() {
+interface NavbarProps {
+    initialCategories?: any[];
+}
+
+export default function Navbar({ initialCategories = [] }: NavbarProps) {
     const { isAuthenticated, user, logout } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
     const { theme } = useTheme();
@@ -25,19 +29,21 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false); // Desktop Sidebar
     const [searchOpen, setSearchOpen] = useState(false);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>(initialCategories);
 
     useEffect(() => {
         setMounted(true);
         fetchCart();
 
-        // Fetch categories dynamically
-        productsAPI.categories()
-            .then((res) => {
-                const results = res.data.results || (Array.isArray(res.data) ? res.data : []);
-                setCategories(results);
-            })
-            .catch(err => console.error("Failed to fetch categories for navbar:", err));
+        // Fetch categories dynamically only if not provided initially
+        if (categories.length === 0) {
+            productsAPI.categories()
+                .then((res) => {
+                    const results = res.data.results || (Array.isArray(res.data) ? res.data : []);
+                    setCategories(results);
+                })
+                .catch(err => console.error("Failed to fetch categories for navbar:", err));
+        }
     }, [fetchCart]);
 
     // Prevent hydration mismatch but reserve space to avoid CLS
