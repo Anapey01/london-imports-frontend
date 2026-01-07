@@ -71,7 +71,25 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         );
     }
 
-    const imageUrl = getImageUrl(product.image);
+    const [displayedImage, setDisplayedImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (product) {
+            setDisplayedImage(getImageUrl(product.image));
+        }
+    }, [product]);
+
+    // Gather all images: Main + Extras
+    const allImages = product ? [
+        { id: 'main', image: product.image, alt: product.name },
+        ...(product.images || []).map((img: any) => ({
+            id: img.id,
+            image: img.image,
+            alt: img.alt_text || product.name
+        }))
+    ].filter(img => img.image) : [];
+
+    const currentImage = displayedImage || getImageUrl(product?.image);
 
     const handleAddToCart = async () => {
         setIsAdding(true);
@@ -94,16 +112,41 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     {/* LEFT COLUMN: Product Image */}
                     <div className="space-y-6">
                         {/* Main Image - directly on cream background */}
-                        <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                        <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm transition-all duration-300">
                             <img
-                                src={imageUrl}
+                                src={currentImage}
                                 alt={`${product.name} - China Import to Ghana`}
                                 className="w-full h-full object-contain drop-shadow-2xl"
                             />
                         </div>
 
+                        {/* Gallery Thumbnails */}
+                        {allImages.length > 1 && (
+                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                                {allImages.map((img: any) => {
+                                    const imgUrl = getImageUrl(img.image);
+                                    const isSelected = currentImage === imgUrl;
+                                    return (
+                                        <button
+                                            key={img.id}
+                                            onClick={() => setDisplayedImage(imgUrl)}
+                                            className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 snap-start
+                                                ${isSelected ? 'border-pink-600 ring-2 ring-pink-100 scale-105' : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'}
+                                            `}
+                                        >
+                                            <img
+                                                src={imgUrl}
+                                                alt={img.alt}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+
                         {/* Product Specs Row - below image */}
-                        <div className="flex justify-center gap-8 mt-8">
+                        <div className="flex justify-center gap-8 mt-4 pt-4 border-t border-gray-100">
                             <div className="flex flex-col items-center text-center">
                                 <svg className="w-7 h-7 text-[#006B5A] mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -140,7 +183,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                         <video
                                             controls
                                             className="w-full h-full object-cover"
-                                            poster={imageUrl}
+                                            poster={currentImage} // Use current displayed image as poster
                                         >
                                             <source src={product.video} type="video/mp4" />
                                             Your browser does not support the video tag.
