@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
+import StickyMobileCart from '@/components/StickyMobileCart';
 
 interface ProductDetailClientProps {
     initialProduct: any;
