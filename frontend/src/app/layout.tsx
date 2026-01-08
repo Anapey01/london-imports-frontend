@@ -4,6 +4,7 @@
  */
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,6 +12,9 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import QueryProvider from "@/providers/QueryProvider";
 import { ToastProvider } from "@/components/Toast";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+
+// Google Analytics ID
+const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -236,6 +240,21 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
+
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
+
         <ThemeProvider>
           <QueryProvider>
             <ToastProvider>
