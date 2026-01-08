@@ -22,13 +22,26 @@ export const metadata: Metadata = {
     // Primary - Ghana Geographic Focus
     "Mini Importation Ghana", "Buy from China to Ghana", "Shipping from China to Accra",
     "Import goods to Kumasi", "China to Tema shipping", "Ghana importation services",
+    // Location-Specific - Greater Accra
+    "Buy from China to Tema", "Buy from China to Madina", "Buy from China to Ashaiman",
+    "Ship to East Legon from China", "China shipping to Spintex", "Import to Teshie",
+    "Ship from China to Nungua", "China to Lashibi delivery", "Buy from China to Dansoman",
+    "Mini importation Tema", "Mini importation Madina", "Mini importation Ashaiman",
+    "Mini importation East Legon", "Mini importation Spintex", "Import goods to Tema",
+    // Other Regions
+    "Buy from China to Kumasi", "Ship to Takoradi from China", "Mini importation Kumasi",
+    "Import to Cape Coast", "China shipping to Koforidua", "Buy from China to Sunyani",
     // Secondary - Service Keywords  
     "Buy from 1688 to Ghana", "China to Ghana consolidation", "Air freight Guangzhou to Accra",
     "Ghana Customs duty for electronics", "Door to door shipping Ghana", "Clearance agents Tema Port",
     // Transactional
     "How to pay 1688 with Momo", "Buy from Alibaba ship to Ghana", "Pre-order from China Ghana",
+    "Order from Taobao to Ghana", "1688 agent Ghana", "Alibaba shipping Ghana",
+    // Long-tail
+    "How to import phones from China to Ghana", "Best mini importation company Ghana",
+    "Cheap shipping from China to Accra", "Importation service near me Ghana",
     // Brand
-    "London's Imports Ghana"
+    "London's Imports Ghana", "Londons Imports"
   ],
   openGraph: {
     title: "Mini Importation Ghana - Ship from China to Accra & Kumasi",
