@@ -1,6 +1,6 @@
 /**
  * London's Imports - Data Science Grade Analytics Dashboard
- * Executive-level analytics with proper data visualizations
+ * Executive-level analytics with real backend data
  */
 'use client';
 
@@ -14,8 +14,18 @@ interface AnalyticsData {
     users: { total: number; change: number };
     avgOrderValue: { total: number; change: number };
     revenueChart: Array<{ day: string; value: number }>;
+    orderStatusCounts: {
+        completed: number;
+        processing: number;
+        pending: number;
+        cancelled: number;
+    };
     topProducts: Array<{ name: string; sales: number; revenue: number }>;
     topVendors: Array<{ name: string; orders: number; revenue: number }>;
+    quickStats: {
+        conversionRate: number;
+        repeatCustomerRate: number;
+    };
 }
 
 export default function AdminAnalyticsPage() {
@@ -24,6 +34,7 @@ export default function AdminAnalyticsPage() {
     const [period, setPeriod] = useState('7d');
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<AnalyticsData | null>(null);
+    const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
     useEffect(() => {
         const loadAnalytics = async () => {
@@ -31,6 +42,7 @@ export default function AdminAnalyticsPage() {
             try {
                 const response = await adminAPI.analytics({ period });
                 setData(response.data);
+                setLastUpdated(new Date());
             } catch (err) {
                 console.error('Failed to load analytics:', err);
             } finally {
@@ -40,44 +52,16 @@ export default function AdminAnalyticsPage() {
         loadAnalytics();
     }, [period]);
 
-    // Realistic sample data for demo
-    const safeData = data || {
-        revenue: { total: 45280, change: 12.5 },
-        orders: { total: 156, change: 8.2 },
-        users: { total: 2847, change: 15.3 },
-        avgOrderValue: { total: 290, change: -2.1 },
-        revenueChart: [
-            { day: 'Mon', value: 4200 },
-            { day: 'Tue', value: 5800 },
-            { day: 'Wed', value: 4400 },
-            { day: 'Thu', value: 7200 },
-            { day: 'Fri', value: 6900 },
-            { day: 'Sat', value: 9800 },
-            { day: 'Sun', value: 6980 },
-        ],
-        topProducts: [
-            { name: 'iPhone 15 Pro Max', sales: 24, revenue: 48000 },
-            { name: 'Samsung S24 Ultra', sales: 18, revenue: 32400 },
-            { name: 'MacBook Pro M3', sales: 8, revenue: 24000 },
-            { name: 'AirPods Pro 2', sales: 45, revenue: 11250 },
-            { name: 'PS5 Console', sales: 12, revenue: 9600 },
-        ],
-        topVendors: [
-            { name: 'TechHub Ghana', orders: 67, revenue: 89500 },
-            { name: 'Global Electronics', orders: 45, revenue: 56200 },
-            { name: 'Prime Imports', orders: 34, revenue: 42100 },
-        ],
-    };
-
     // Sparkline component - mini line chart
-    const Sparkline = ({ data, color = '#ec4899' }: { data: number[]; color?: string }) => {
-        const max = Math.max(...data);
-        const min = Math.min(...data);
+    const Sparkline = ({ data: chartData, color = '#ec4899' }: { data: number[]; color?: string }) => {
+        if (!chartData || chartData.length === 0) return null;
+        const max = Math.max(...chartData);
+        const min = Math.min(...chartData);
         const range = max - min || 1;
         const width = 80;
         const height = 24;
-        const points = data.map((v, i) => {
-            const x = (i / (data.length - 1)) * width;
+        const points = chartData.map((v, i) => {
+            const x = (i / (chartData.length - 1)) * width;
             const y = height - ((v - min) / range) * height;
             return `${x},${y}`;
         }).join(' ');
@@ -98,15 +82,18 @@ export default function AdminAnalyticsPage() {
 
     // Area Chart Component
     const AreaChart = ({ chartData }: { chartData: { day: string; value: number }[] }) => {
+        if (!chartData || chartData.length === 0) {
+            return <div className={`h-64 flex items-center justify-center ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No data available</div>;
+        }
+
         const values = chartData.map(d => d.value);
-        const max = Math.max(...values);
-        const min = 0;
+        const max = Math.max(...values) || 1;
         const width = 100;
         const height = 100;
 
         const points = values.map((v, i) => {
             const x = (i / (values.length - 1)) * width;
-            const y = height - ((v - min) / (max - min)) * height;
+            const y = height - (v / max) * height;
             return { x, y, value: v };
         });
 
@@ -115,17 +102,14 @@ export default function AdminAnalyticsPage() {
 
         return (
             <div className="relative h-64">
-                {/* Y-axis labels */}
                 <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-right pr-3">
                     <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>₵{max.toLocaleString()}</span>
                     <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>₵{Math.round(max / 2).toLocaleString()}</span>
                     <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>₵0</span>
                 </div>
 
-                {/* Chart area */}
                 <div className="ml-12 h-full">
                     <svg viewBox={`0 0 ${width} ${height + 10}`} className="w-full h-56" preserveAspectRatio="none">
-                        {/* Grid lines */}
                         <defs>
                             <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
@@ -133,18 +117,13 @@ export default function AdminAnalyticsPage() {
                             </linearGradient>
                         </defs>
 
-                        {/* Horizontal grid lines */}
                         {[0, 25, 50, 75, 100].map((y) => (
                             <line key={y} x1="0" y1={y} x2={width} y2={y} stroke={isDark ? '#334155' : '#e5e7eb'} strokeWidth="0.5" />
                         ))}
 
-                        {/* Area fill */}
                         <path d={areaPath} fill="url(#areaGradient)" />
-
-                        {/* Line */}
                         <path d={linePath} fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 
-                        {/* Data points */}
                         {points.map((p, i) => (
                             <g key={i}>
                                 <circle cx={p.x} cy={p.y} r="4" fill="#ec4899" />
@@ -153,7 +132,6 @@ export default function AdminAnalyticsPage() {
                         ))}
                     </svg>
 
-                    {/* X-axis labels */}
                     <div className="flex justify-between mt-2">
                         {chartData.map((d, i) => (
                             <span key={i} className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{d.day}</span>
@@ -164,12 +142,22 @@ export default function AdminAnalyticsPage() {
         );
     };
 
-    // Donut Chart Component
-    const DonutChart = ({ data }: { data: { label: string; value: number; color: string }[] }) => {
-        const total = data.reduce((sum, d) => sum + d.value, 0);
-        let currentAngle = -90;
+    // Donut Chart Component - uses real data
+    const DonutChart = ({ statusCounts }: { statusCounts: AnalyticsData['orderStatusCounts'] | undefined }) => {
+        const chartData = [
+            { label: 'Completed', value: statusCounts?.completed || 0, color: '#10b981' },
+            { label: 'Processing', value: statusCounts?.processing || 0, color: '#3b82f6' },
+            { label: 'Pending', value: statusCounts?.pending || 0, color: '#f59e0b' },
+            { label: 'Cancelled', value: statusCounts?.cancelled || 0, color: '#ef4444' },
+        ];
 
-        const segments = data.map(d => {
+        const total = chartData.reduce((sum, d) => sum + d.value, 0);
+        if (total === 0) {
+            return <div className={`h-32 flex items-center justify-center ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No orders yet</div>;
+        }
+
+        let currentAngle = -90;
+        const segments = chartData.map(d => {
             const angle = (d.value / total) * 360;
             const startAngle = currentAngle;
             currentAngle += angle;
@@ -186,6 +174,7 @@ export default function AdminAnalyticsPage() {
                 <div className="relative w-32 h-32">
                     <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                         {segments.map((seg, i) => {
+                            if (seg.value === 0) return null;
                             const start = polarToCartesian(seg.startAngle, 40);
                             const end = polarToCartesian(seg.startAngle + seg.angle, 40);
                             const largeArc = seg.angle > 180 ? 1 : 0;
@@ -200,7 +189,7 @@ export default function AdminAnalyticsPage() {
                     </div>
                 </div>
                 <div className="space-y-2">
-                    {data.map((d, i) => (
+                    {chartData.map((d, i) => (
                         <div key={i} className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }}></div>
                             <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{d.label}</span>
@@ -212,45 +201,11 @@ export default function AdminAnalyticsPage() {
         );
     };
 
-    // Order status data for donut chart
-    const orderStatusData = [
-        { label: 'Completed', value: 89, color: '#10b981' },
-        { label: 'Processing', value: 34, color: '#3b82f6' },
-        { label: 'Pending', value: 23, color: '#f59e0b' },
-        { label: 'Cancelled', value: 10, color: '#ef4444' },
-    ];
-
-    // Stat cards with sparklines
-    const statCards = [
-        {
-            label: 'Total Revenue',
-            value: `₵${safeData.revenue.total.toLocaleString()}`,
-            change: safeData.revenue.change,
-            sparklineData: [3200, 4100, 3800, 5200, 4800, 6200, 5800],
-            color: '#8b5cf6'
-        },
-        {
-            label: 'Orders',
-            value: safeData.orders.total.toLocaleString(),
-            change: safeData.orders.change,
-            sparklineData: [12, 18, 15, 22, 19, 28, 24],
-            color: '#10b981'
-        },
-        {
-            label: 'Customers',
-            value: safeData.users.total.toLocaleString(),
-            change: safeData.users.change,
-            sparklineData: [180, 220, 195, 280, 310, 350, 420],
-            color: '#3b82f6'
-        },
-        {
-            label: 'Avg. Order',
-            value: `₵${safeData.avgOrderValue.total.toLocaleString()}`,
-            change: safeData.avgOrderValue.change,
-            sparklineData: [310, 290, 320, 280, 295, 285, 290],
-            color: '#ec4899'
-        },
-    ];
+    // Generate sparkline data from revenue chart
+    const getSparklineData = (chartData: { day: string; value: number }[] | undefined) => {
+        if (!chartData || chartData.length === 0) return [0, 0, 0, 0, 0, 0, 0];
+        return chartData.map(d => d.value);
+    };
 
     if (loading) {
         return (
@@ -265,6 +220,38 @@ export default function AdminAnalyticsPage() {
         );
     }
 
+    // Use real data from API
+    const statCards = [
+        {
+            label: 'Total Revenue',
+            value: `₵${(data?.revenue?.total || 0).toLocaleString()}`,
+            change: data?.revenue?.change || 0,
+            sparklineData: getSparklineData(data?.revenueChart),
+            color: '#8b5cf6'
+        },
+        {
+            label: 'Orders',
+            value: (data?.orders?.total || 0).toLocaleString(),
+            change: data?.orders?.change || 0,
+            sparklineData: getSparklineData(data?.revenueChart),
+            color: '#10b981'
+        },
+        {
+            label: 'New Users',
+            value: (data?.users?.total || 0).toLocaleString(),
+            change: data?.users?.change || 0,
+            sparklineData: getSparklineData(data?.revenueChart),
+            color: '#3b82f6'
+        },
+        {
+            label: 'Avg. Order',
+            value: `₵${(data?.avgOrderValue?.total || 0).toLocaleString()}`,
+            change: data?.avgOrderValue?.change || 0,
+            sparklineData: getSparklineData(data?.revenueChart),
+            color: '#ec4899'
+        },
+    ];
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -272,7 +259,7 @@ export default function AdminAnalyticsPage() {
                 <div>
                     <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Analytics Dashboard</h1>
                     <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Real-time business intelligence • Last updated: {new Date().toLocaleTimeString()}
+                        Real-time data • Updated: {lastUpdated.toLocaleTimeString()}
                     </p>
                 </div>
                 <div className={`flex items-center gap-2 p-1 rounded-xl ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
@@ -320,20 +307,25 @@ export default function AdminAnalyticsPage() {
                     <div className="flex items-center justify-between mb-6">
                         <div>
                             <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Revenue Trend</h3>
-                            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Daily revenue over time</p>
+                            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Daily revenue for selected period</p>
                         </div>
-                        <div className={`px-3 py-1.5 rounded-full text-xs font-semibold ${isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600'}`}>
-                            ↑ 12.5% vs last period
-                        </div>
+                        {(data?.revenue?.change || 0) !== 0 && (
+                            <div className={`px-3 py-1.5 rounded-full text-xs font-semibold ${(data?.revenue?.change || 0) >= 0
+                                    ? isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
+                                    : isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600'
+                                }`}>
+                                {(data?.revenue?.change || 0) >= 0 ? '↑' : '↓'} {Math.abs(data?.revenue?.change || 0)}% vs last period
+                            </div>
+                        )}
                     </div>
-                    <AreaChart chartData={safeData.revenueChart} />
+                    <AreaChart chartData={data?.revenueChart || []} />
                 </div>
 
                 {/* Order Status Breakdown */}
                 <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-100'}`}>
                     <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Order Status</h3>
                     <p className={`text-sm mb-6 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Current order breakdown</p>
-                    <DonutChart data={orderStatusData} />
+                    <DonutChart statusCounts={data?.orderStatusCounts} />
                 </div>
             </div>
 
@@ -355,22 +347,30 @@ export default function AdminAnalyticsPage() {
                                 </tr>
                             </thead>
                             <tbody className={`divide-y ${isDark ? 'divide-slate-700/50' : 'divide-gray-100'}`}>
-                                {safeData.topProducts.map((product, i) => (
-                                    <tr key={i} className={`${isDark ? 'hover:bg-slate-700/30' : 'hover:bg-gray-50'} transition-colors`}>
-                                        <td className={`px-6 py-3 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                            <div className="flex items-center gap-3">
-                                                <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-500 text-white' :
-                                                        i === 1 ? 'bg-slate-400 text-white' :
-                                                            i === 2 ? 'bg-amber-700 text-white' :
-                                                                isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
-                                                    }`}>{i + 1}</span>
-                                                {product.name}
-                                            </div>
+                                {(!data?.topProducts || data.topProducts.length === 0) ? (
+                                    <tr>
+                                        <td colSpan={3} className={`px-6 py-8 text-center ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                                            No products yet
                                         </td>
-                                        <td className={`px-6 py-3 text-sm text-right ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>{product.sales}</td>
-                                        <td className={`px-6 py-3 text-sm font-semibold text-right ${isDark ? 'text-white' : 'text-gray-900'}`}>₵{product.revenue.toLocaleString()}</td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    data.topProducts.map((product, i) => (
+                                        <tr key={i} className={`${isDark ? 'hover:bg-slate-700/30' : 'hover:bg-gray-50'} transition-colors`}>
+                                            <td className={`px-6 py-3 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-500 text-white' :
+                                                            i === 1 ? 'bg-slate-400 text-white' :
+                                                                i === 2 ? 'bg-amber-700 text-white' :
+                                                                    isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
+                                                        }`}>{i + 1}</span>
+                                                    {product.name}
+                                                </div>
+                                            </td>
+                                            <td className={`px-6 py-3 text-sm text-right ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>{product.sales}</td>
+                                            <td className={`px-6 py-3 text-sm font-semibold text-right ${isDark ? 'text-white' : 'text-gray-900'}`}>₵{product.revenue.toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -384,43 +384,53 @@ export default function AdminAnalyticsPage() {
                             <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Vendors</h3>
                         </div>
                         <div className={`divide-y ${isDark ? 'divide-slate-700/50' : 'divide-gray-100'}`}>
-                            {safeData.topVendors.map((vendor, i) => (
-                                <div key={i} className="px-6 py-3 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-gradient-to-br from-violet-400 to-purple-500'
-                                            } text-white`}>
-                                            {vendor.name.charAt(0)}
-                                        </div>
-                                        <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{vendor.name}</span>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>₵{vendor.revenue.toLocaleString()}</p>
-                                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{vendor.orders} orders</p>
-                                    </div>
+                            {(!data?.topVendors || data.topVendors.length === 0) ? (
+                                <div className={`px-6 py-8 text-center ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                                    No vendors yet
                                 </div>
-                            ))}
+                            ) : (
+                                data.topVendors.map((vendor, i) => (
+                                    <div key={i} className="px-6 py-3 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-gradient-to-br from-violet-400 to-purple-500'
+                                                } text-white`}>
+                                                {vendor.name.charAt(0)}
+                                            </div>
+                                            <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{vendor.name}</span>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{vendor.orders} orders</p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
 
-                    {/* Quick Stats */}
+                    {/* Quick Stats - Now uses real data */}
                     <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-100'}`}>
                         <h3 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Insights</h3>
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Conversion Rate</span>
-                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>3.2%</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Cart Abandonment</span>
-                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>68%</span>
+                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {data?.quickStats?.conversionRate || 0}%
+                                </span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Repeat Customer Rate</span>
-                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>24%</span>
+                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {data?.quickStats?.repeatCustomerRate || 0}%
+                                </span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Avg. Session Time</span>
-                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>4m 32s</span>
+                                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Total Orders (All Time)</span>
+                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {(data?.orderStatusCounts?.completed || 0) +
+                                        (data?.orderStatusCounts?.processing || 0) +
+                                        (data?.orderStatusCounts?.pending || 0) +
+                                        (data?.orderStatusCounts?.cancelled || 0)}
+                                </span>
                             </div>
                         </div>
                     </div>
