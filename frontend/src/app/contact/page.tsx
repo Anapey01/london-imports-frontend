@@ -72,7 +72,7 @@ export default function ContactPage() {
                 <div className="grid grid-cols-2 gap-4">
                     {/* Email */}
                     <a
-                        href="mailto:support@londonsimports.com"
+                        href="mailto:Atsweilondon@gmail.com"
                         className={`p-4 rounded-2xl shadow-sm hover:shadow-md transition-all ${isDark ? 'bg-slate-800' : 'bg-white'}`}
                     >
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-3 shadow-lg shadow-pink-500/20">
