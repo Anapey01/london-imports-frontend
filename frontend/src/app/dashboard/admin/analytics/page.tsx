@@ -41,13 +41,13 @@ export default function AdminAnalyticsPage() {
     }, [period]);
 
     const StatCard = ({ label, value, change, prefix = '' }: { label: string; value: number | string; change: number; prefix?: string }) => (
-        <div className={`p-6 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
-            <p className={`text-sm font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{label}</p>
-            <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <div className={`p-4 sm:p-6 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
+            <p className={`text-xs sm:text-sm font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{label}</p>
+            <p className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 {prefix}{typeof value === 'number' ? value.toLocaleString() : value}
             </p>
-            <div className={`flex items-center gap-1 mt-1 text-sm ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`flex items-center gap-1 mt-1 text-xs sm:text-sm ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={change >= 0 ? 'M5 10l7-7m0 0l7 7m-7-7v18' : 'M19 14l-7 7m0 0l-7-7m7 7V3'} />
                 </svg>
                 {Math.abs(change)}%
@@ -88,18 +88,18 @@ export default function AdminAnalyticsPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Analytics</h2>
-                <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className={`text-lg sm:text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Analytics</h2>
+                <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
                     {[
-                        { value: '7d', label: '7 Days' },
-                        { value: '30d', label: '30 Days' },
-                        { value: '90d', label: '90 Days' },
+                        { value: '7d', label: '7D' },
+                        { value: '30d', label: '30D' },
+                        { value: '90d', label: '90D' },
                     ].map((option) => (
                         <button
                             key={option.value}
                             onClick={() => setPeriod(option.value)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${period === option.value
+                            className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${period === option.value
                                 ? 'bg-pink-500 text-white'
                                 : isDark
                                     ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
@@ -108,12 +108,13 @@ export default function AdminAnalyticsPage() {
                         >
                             {option.label}
                         </button>
-                    ))}
+                    ))
+                    }
                 </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 <StatCard label="Total Revenue" value={data.revenue.total} change={data.revenue.change} prefix="GHS " />
                 <StatCard label="Total Orders" value={data.orders.total} change={data.orders.change} />
                 <StatCard label="New Users" value={data.users.total} change={data.users.change} />

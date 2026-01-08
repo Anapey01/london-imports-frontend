@@ -91,9 +91,9 @@ export default function AdminDashboardPage() {
     if (loading) {
         return (
             <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className={`h-32 rounded-xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
+                        <div key={i} className={`h-28 sm:h-32 rounded-xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
                     ))}
                 </div>
             </div>
@@ -105,8 +105,8 @@ export default function AdminDashboardPage() {
             {/* System Status Alert */}
             {stats.storageProvider && (
                 <div className={`p-4 rounded-lg flex items-center justify-between ${stats.storageProvider.includes('Cloudinary')
-                        ? (isDark ? 'bg-green-900/20 text-green-400 border border-green-900/50' : 'bg-green-50 text-green-700 border border-green-100')
-                        : (isDark ? 'bg-red-900/20 text-red-400 border border-red-900/50' : 'bg-red-50 text-red-700 border border-red-100')
+                    ? (isDark ? 'bg-green-900/20 text-green-400 border border-green-900/50' : 'bg-green-50 text-green-700 border border-green-100')
+                    : (isDark ? 'bg-red-900/20 text-red-400 border border-red-900/50' : 'bg-red-50 text-red-700 border border-red-100')
                     }`}>
                     <div className="flex items-center gap-3">
                         <span className="text-xl">{stats.storageProvider.includes('Cloudinary') ? '☁️' : '⚠️'}</span>
@@ -124,22 +124,22 @@ export default function AdminDashboardPage() {
             )}
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 {statCards.map((stat, index) => (
                     <div
                         key={index}
-                        className={`p-6 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'} shadow-sm`}
+                        className={`p-4 sm:p-6 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'} shadow-sm`}
                     >
-                        <div className="flex items-center justify-between mb-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getColorClass(stat.color)}`}>
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center justify-between mb-3 sm:mb-4">
+                            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${getColorClass(stat.color)}`}>
+                                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
                                 </svg>
                             </div>
                         </div>
-                        <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{stat.value}</p>
-                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{stat.label}</p>
-                        <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{stat.change}</p>
+                        <p className={`text-lg sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{stat.value}</p>
+                        <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{stat.label}</p>
+                        <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'} hidden sm:block`}>{stat.change}</p>
                     </div>
                 ))}
             </div>
