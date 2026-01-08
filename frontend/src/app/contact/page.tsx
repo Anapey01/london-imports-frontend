@@ -25,23 +25,22 @@ export default function ContactPage() {
 
     return (
         <div className={`min-h-screen ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            {/* Hero Header */}
+            {/* Compact Hero Header */}
             <div className="relative overflow-hidden">
                 <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-pink-900/40 to-violet-900/40' : 'bg-gradient-to-br from-pink-100 to-violet-100'}`}></div>
-                <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-pink-500/20 blur-3xl"></div>
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-violet-500/20 blur-3xl"></div>
+                <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-pink-500/20 blur-2xl"></div>
 
-                <div className="relative px-4 py-16 text-center">
-                    <h1 className={`text-3xl sm:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <div className="relative px-4 py-8 text-center">
+                    <h1 className={`text-2xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         Contact Us
                     </h1>
-                    <p className={`text-base ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                        Have a question? We&apos;d love to hear from you.
+                    <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        We&apos;d love to hear from you
                     </p>
                 </div>
             </div>
 
-            <div className="max-w-lg mx-auto px-4 -mt-6 pb-8 space-y-4">
+            <div className="max-w-lg mx-auto px-4 -mt-2 pb-8 space-y-4">
                 {/* WhatsApp Card - Primary CTA */}
                 <a
                     href="https://wa.me/233541096372?text=Hi%20London's%20Imports!%20I%20have%20a%20question."
@@ -156,8 +155,8 @@ export default function ContactPage() {
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     required
                                     className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all ${isDark
-                                            ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                                        ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                                         }`}
                                     placeholder="John Doe"
                                 />
@@ -173,8 +172,8 @@ export default function ContactPage() {
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     required
                                     className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all ${isDark
-                                            ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                                        ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                                         }`}
                                     placeholder="john@example.com"
                                 />
@@ -190,8 +189,8 @@ export default function ContactPage() {
                                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                     required
                                     className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all ${isDark
-                                            ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                                        ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                                         }`}
                                     placeholder="Order inquiry"
                                 />
@@ -207,8 +206,8 @@ export default function ContactPage() {
                                     required
                                     rows={4}
                                     className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all resize-none ${isDark
-                                            ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                                        ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                                         }`}
                                     placeholder="How can we help you?"
                                 />
