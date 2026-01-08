@@ -15,6 +15,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }));
 
+    // Blog articles for SEO
+    const blogArticles = [
+        'how-to-buy-from-1688-in-ghana',
+        'mini-importation-beginners-guide',
+        'customs-duty-calculator-ghana',
+        'alibaba-vs-1688-which-is-better',
+        'best-products-to-import-from-china-to-ghana',
+        'shipping-time-china-to-ghana',
+    ];
+
+    const blogUrls = blogArticles.map((slug) => ({
+        url: `${baseUrl}/blog/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+    }));
+
     return [
         {
             url: baseUrl,
@@ -29,6 +46,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
         },
         {
+            url: `${baseUrl}/blog`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/contact`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
             url: `${baseUrl}/how-it-works`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
@@ -40,6 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'monthly',
             priority: 0.6,
         },
+        ...blogUrls,
         ...productUrls,
     ];
 }

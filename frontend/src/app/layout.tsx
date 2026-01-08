@@ -161,12 +161,80 @@ export default async function RootLayout({
     }
   };
 
+  // FAQ Schema for Google's "People Also Ask"
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I buy from China to Ghana?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "With London's Imports, you can easily buy from China (1688, Alibaba, Taobao) and have it shipped to Ghana. Simply browse our products, place your order, pay with Mobile Money, and we handle shipping, customs clearance, and doorstep delivery to Accra, Tema, Kumasi, and anywhere in Ghana."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is mini importation in Ghana?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Mini importation is the process of buying goods in small quantities from overseas suppliers (mainly China) and having them shipped to Ghana. It's popular for electronics, fashion, gadgets, and wholesale goods. London's Imports makes this easy by handling all logistics."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does shipping from China to Ghana cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Shipping costs vary based on weight, size, and shipping method (air or sea). Air freight from China to Ghana typically costs GHS 50-150 per kg. London's Imports offers transparent pricing with no hidden fees. Use our customs estimator for accurate quotes."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I pay with Mobile Money for China imports?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! London's Imports accepts MTN Mobile Money, AirtelTigo Money, and Vodafone Cash. You can pay in Ghana Cedis (GHS) for all your orders from China. No need for international cards or foreign currency."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How long does shipping from China to Accra take?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Air freight from China to Accra typically takes 7-14 days. Sea freight takes 30-45 days but is more affordable for heavy items. London's Imports provides real-time tracking so you always know where your package is."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you handle customs clearance in Ghana?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, London's Imports handles all customs duties and clearance at Tema Port and Kotoka International Airport. The price you see includes customs fees - no surprises. We're licensed clearance agents with years of experience."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you deliver to Tema, Ashaiman, and Madina?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! We offer door-to-door delivery across Greater Accra including Tema, Ashaiman, Madina, East Legon, Spintex, Teshie, Nungua, Dansoman, and more. We also deliver to Kumasi, Takoradi, Cape Coast, and all major cities in Ghana."
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en-GH" suppressHydrationWarning>
       <body className={`${inter.className} bg-gray-50 min-h-screen`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
         <ThemeProvider>
           <QueryProvider>
