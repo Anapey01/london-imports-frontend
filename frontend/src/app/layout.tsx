@@ -104,10 +104,18 @@ export default async function RootLayout({
       }
     ],
     "areaServed": [
-      { "@type": "City", "name": "Accra", "containedInPlace": { "@type": "Country", "name": "Ghana" } },
-      { "@type": "City", "name": "Kumasi" },
+      { "@type": "City", "name": "Accra", "containedInPlace": { "@type": "AdministrativeArea", "name": "Greater Accra Region" } },
       { "@type": "City", "name": "Tema" },
+      { "@type": "City", "name": "Ashaiman" },
+      { "@type": "City", "name": "Madina" },
+      { "@type": "City", "name": "East Legon" },
+      { "@type": "City", "name": "Spintex" },
+      { "@type": "City", "name": "Teshie" },
+      { "@type": "City", "name": "Nungua" },
+      { "@type": "City", "name": "Lashibi" },
+      { "@type": "City", "name": "Kumasi" },
       { "@type": "City", "name": "Takoradi" },
+      { "@type": "AdministrativeArea", "name": "Greater Accra Region" },
       { "@type": "Country", "name": "Ghana" }
     ],
     "priceRange": "GHS 50 - GHS 10000",
