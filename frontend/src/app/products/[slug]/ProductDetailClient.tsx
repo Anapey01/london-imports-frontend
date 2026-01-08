@@ -74,6 +74,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const [displayedImage, setDisplayedImage] = useState<string | null>(null);
 
+    // Ref for the main CTA section to trigger the sticky bar
+    const [ctaRef, setCtaRef] = useState<HTMLDivElement | null>(null);
+
     useEffect(() => {
         if (product) {
             setDisplayedImage(getImageUrl(product.image));
@@ -297,7 +300,10 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         </div>
 
                         {/* CTA Section - Responsive */}
-                        <div className="flex items-center gap-2 sm:gap-4">
+                        <div
+                            ref={setCtaRef}
+                            className="flex items-center gap-2 sm:gap-4"
+                        >
                             {/* Add to cart icon button */}
                             <button
                                 onClick={handleAddToCart}
@@ -344,6 +350,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     </div>
                 </div>
             </main>
+
+            {/* Sticky Mobile Cart - Renders only when main CTA is scrolled past */}
+            <StickyMobileCart
+                product={product}
+                isAdding={isAdding}
+                onAddToCart={handleAddToCart}
+                triggerRef={{ current: ctaRef }}
+            />
         </div>
     );
 }
