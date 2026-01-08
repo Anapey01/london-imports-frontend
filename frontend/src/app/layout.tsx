@@ -66,11 +66,16 @@ export default async function RootLayout({
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "OnlineStore",
+    "@type": ["LocalBusiness", "Store"],
+    "@id": "https://londonsimports.com/#business",
     "name": "London's Imports Ghana",
+    "alternateName": "London's Imports - Mini Importation Ghana",
     "url": "https://londonsimports.com",
-    "description": "Ghana's #1 mini-importation platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery.",
-    "logo": "https://londonsimports.com/logo.jpg",
+    "description": "Ghana's #1 mini-importation platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Trusted by 10,000+ Ghanaians.",
+    "logo": "https://londonsimports.com/logo.png",
+    "image": "https://londonsimports.com/og-image.jpg",
+    "telephone": "+233541096372",
+    "email": "support@londonsimports.com",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "GM-1739 Felchris Estate 2, Danfa",
@@ -79,14 +84,60 @@ export default async function RootLayout({
       "postalCode": "GM-1739",
       "addressCountry": "GH"
     },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 5.6771,
+      "longitude": -0.2113
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "18:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "10:00",
+        "closes": "16:00"
+      }
+    ],
     "areaServed": [
-      { "@type": "City", "name": "Accra" },
+      { "@type": "City", "name": "Accra", "containedInPlace": { "@type": "Country", "name": "Ghana" } },
       { "@type": "City", "name": "Kumasi" },
       { "@type": "City", "name": "Tema" },
+      { "@type": "City", "name": "Takoradi" },
       { "@type": "Country", "name": "Ghana" }
     ],
-    "priceRange": "GHS",
-    // Add "potentialAction" for Search Action if needed
+    "priceRange": "GHS 50 - GHS 10000",
+    "currenciesAccepted": "GHS",
+    "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
+    "sameAs": [
+      "https://wa.me/233541096372"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Mini Importation Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "China to Ghana Shipping",
+            "description": "Door-to-door shipping from China to Accra, Kumasi, Tema"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Customs Clearance",
+            "description": "We handle all Ghana customs duties and clearance"
+          }
+        }
+      ]
+    }
   };
 
   return (
