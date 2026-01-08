@@ -73,17 +73,36 @@ export default function AdminAnalyticsPage() {
         );
     };
 
-    if (loading || !data) {
+    if (loading) {
         return (
             <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className={`h-32 rounded-xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
+                        <div key={i} className={`h-24 rounded-2xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
                     ))}
                 </div>
             </div>
         );
     }
+
+    // Fallback data if API fails
+    const safeData = data || {
+        revenue: { total: 0, change: 0 },
+        orders: { total: 0, change: 0 },
+        users: { total: 0, change: 0 },
+        avgOrderValue: { total: 0, change: 0 },
+        revenueChart: [
+            { day: 'Mon', value: 0 },
+            { day: 'Tue', value: 0 },
+            { day: 'Wed', value: 0 },
+            { day: 'Thu', value: 0 },
+            { day: 'Fri', value: 0 },
+            { day: 'Sat', value: 0 },
+            { day: 'Sun', value: 0 },
+        ],
+        topProducts: [],
+        topVendors: [],
+    };
 
     return (
         <div className="space-y-8">
@@ -115,16 +134,16 @@ export default function AdminAnalyticsPage() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                <StatCard label="Total Revenue" value={data.revenue.total} change={data.revenue.change} prefix="GHS " />
-                <StatCard label="Total Orders" value={data.orders.total} change={data.orders.change} />
-                <StatCard label="New Users" value={data.users.total} change={data.users.change} />
-                <StatCard label="Avg. Order Value" value={data.avgOrderValue.total} change={data.avgOrderValue.change} prefix="GHS " />
+                <StatCard label="Total Revenue" value={safeData.revenue.total} change={safeData.revenue.change} prefix="GHS " />
+                <StatCard label="Total Orders" value={safeData.orders.total} change={safeData.orders.change} />
+                <StatCard label="New Users" value={safeData.users.total} change={safeData.users.change} />
+                <StatCard label="Avg. Order Value" value={safeData.avgOrderValue.total} change={safeData.avgOrderValue.change} prefix="GHS " />
             </div>
 
             {/* Revenue Chart */}
             <div className={`rounded-xl border p-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
                 <h3 className={`font-semibold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Revenue Overview</h3>
-                <BarChart data={data.revenueChart} />
+                <BarChart data={safeData.revenueChart} />
             </div>
 
             {/* Two Column Tables */}
@@ -135,7 +154,7 @@ export default function AdminAnalyticsPage() {
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Products</h3>
                     </div>
                     <div className="divide-y divide-slate-700">
-                        {data.topProducts.map((product, index: number) => (
+                        {safeData.topProducts.map((product, index: number) => (
                             <div key={index} className={`px-6 py-4 flex items-center justify-between ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
                                 <div className="flex items-center gap-3">
                                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index < 3 ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-600'
@@ -159,7 +178,7 @@ export default function AdminAnalyticsPage() {
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Vendors</h3>
                     </div>
                     <div className="divide-y divide-slate-700">
-                        {data.topVendors.map((vendor, index: number) => (
+                        {safeData.topVendors.map((vendor, index: number) => (
                             <div key={index} className={`px-6 py-4 flex items-center justify-between ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
                                 <div className="flex items-center gap-3">
                                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index < 3 ? 'bg-purple-500 text-white' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-600'
