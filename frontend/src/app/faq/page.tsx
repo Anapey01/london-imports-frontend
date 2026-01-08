@@ -117,7 +117,7 @@ export default function FAQPage() {
                             </button>
 
                             <div
-                                className={`overflow-hidden transition-all duration-200 ${openIndex === index ? 'max-h-48' : 'max-h-0'}`}
+                                className={`overflow-hidden transition-all duration-200 ${openIndex === index ? 'max-h-[500px]' : 'max-h-0'}`}
                             >
                                 <p className="px-6 pb-4 leading-relaxed" style={{ color: theme === 'dark' ? '#cbd5e1' : '#6b7280' }}>
                                     {faq.answer}
