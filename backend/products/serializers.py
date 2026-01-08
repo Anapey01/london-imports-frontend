@@ -22,9 +22,42 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     """Product image serializer"""
     
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ['id', 'image', 'alt_text', 'order']
+
+    def get_image(self, obj):
+        """Return Cloudinary URL for the image"""
+        if obj.image:
+            try:
+                # Try standard library way
+                return obj.image.url
+            except Exception:
+                # Fallback: Manual construction if library fails but env var exists
+                image_path = str(obj.image)
+                if image_path.startswith('http'):
+                    return image_path
+                    
+                import os
+                # Try explicit cloud name first
+                cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+                if cloud_name:
+                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{image_path}"
+
+                cloudinary_url = os.getenv('CLOUDINARY_URL')
+                if cloudinary_url and '@' in cloudinary_url:
+                    try:
+                        # Parse cloudinary://key:secret@cloud_name
+                        base = cloudinary_url.split('@')[1]
+                        return f"https://res.cloudinary.com/{base}/image/upload/{image_path}"
+                    except:
+                        pass
+                
+                # Ultimate fallback
+                return image_path
+        return None
 
 
 class ReviewSerializer(serializers.ModelSerializer):
