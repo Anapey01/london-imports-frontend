@@ -21,7 +21,8 @@ from .serializers import (
     ChangePasswordSerializer,
     AdminRegistrationSerializer,
     PasswordResetSerializer,
-    PasswordResetConfirmSerializer
+    PasswordResetConfirmSerializer,
+    CustomTokenObtainPairSerializer
 )
 
 User = get_user_model()
@@ -258,6 +259,8 @@ class PasswordResetConfirmView(APIView):
 
 # Cookie-based Token View
 class CookieTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         

@@ -309,43 +309,105 @@ class AdminProductApproveView(APIView):
 class AdminAnalyticsView(APIView):
     """
     Get rich analytics data - optimized for performance.
+    Returns percentage changes vs previous period and order status breakdown.
     """
     permission_classes = [IsAdminUser]
     
     def get(self, request):
         today = timezone.now()
+        period = request.query_params.get('period', '7d')
         
-        # Use cached aggregations where possible
-        # 1. Totals (single query each)
-        current_total_revenue = Order.objects.filter(state='DELIVERED').aggregate(t=Sum('total_amount'))['t'] or 0
-        current_total_orders = Order.objects.count()
-        current_total_users = User.objects.count()
+        # Determine date ranges based on period
+        if period == '30d':
+            days = 30
+        elif period == '90d':
+            days = 90
+        elif period == '1y':
+            days = 365
+        else:
+            days = 7
         
-        # Avg Order Value (single query)
-        completed_orders = Order.objects.filter(state='DELIVERED')
+        current_start = today - timedelta(days=days)
+        previous_start = current_start - timedelta(days=days)
+        
+        # Current period totals
+        current_revenue = Order.objects.filter(
+            created_at__gte=current_start,
+            state='DELIVERED'
+        ).aggregate(t=Sum('total_amount'))['t'] or 0
+        
+        current_orders = Order.objects.filter(created_at__gte=current_start).count()
+        current_users = User.objects.filter(date_joined__gte=current_start).count()
+        
+        # Previous period totals for comparison
+        previous_revenue = Order.objects.filter(
+            created_at__gte=previous_start,
+            created_at__lt=current_start,
+            state='DELIVERED'
+        ).aggregate(t=Sum('total_amount'))['t'] or 0
+        
+        previous_orders = Order.objects.filter(
+            created_at__gte=previous_start,
+            created_at__lt=current_start
+        ).count()
+        
+        previous_users = User.objects.filter(
+            date_joined__gte=previous_start,
+            date_joined__lt=current_start
+        ).count()
+        
+        # Calculate percentage changes
+        def calc_change(current, previous):
+            if previous == 0:
+                return 100 if current > 0 else 0
+            return round(((current - previous) / previous) * 100, 1)
+        
+        revenue_change = calc_change(float(current_revenue), float(previous_revenue))
+        orders_change = calc_change(current_orders, previous_orders)
+        users_change = calc_change(current_users, previous_users)
+        
+        # Avg Order Value
+        completed_orders = Order.objects.filter(state='DELIVERED', created_at__gte=current_start)
         completed_count = completed_orders.count()
-        avg_order_value = (current_total_revenue / completed_count) if completed_count > 0 else 0
-            
-        # 2. Revenue Chart - batch query instead of loop
-        seven_days_ago = today - timedelta(days=7)
+        avg_order_value = (float(current_revenue) / completed_count) if completed_count > 0 else 0
+        
+        prev_completed = Order.objects.filter(
+            state='DELIVERED',
+            created_at__gte=previous_start,
+            created_at__lt=current_start
+        )
+        prev_completed_count = prev_completed.count()
+        prev_avg = (float(previous_revenue) / prev_completed_count) if prev_completed_count > 0 else 0
+        avg_change = calc_change(avg_order_value, prev_avg)
+        
+        # Revenue Chart - daily breakdown for current period (max 7 days shown)
+        chart_days = min(days, 7)
+        chart_start = today - timedelta(days=chart_days)
         daily_revenues = Order.objects.filter(
-            created_at__date__gte=seven_days_ago.date(),
+            created_at__date__gte=chart_start.date(),
             state='DELIVERED'
         ).values('created_at__date').annotate(
             day_revenue=Sum('total_amount')
         ).order_by('created_at__date')
         
-        # Build chart data with defaults for missing days
         revenue_map = {item['created_at__date']: float(item['day_revenue'] or 0) for item in daily_revenues}
-        last_7_days_stats = []
-        for i in range(6, -1, -1):
+        revenue_chart = []
+        for i in range(chart_days - 1, -1, -1):
             day = (today - timedelta(days=i)).date()
-            last_7_days_stats.append({
+            revenue_chart.append({
                 'day': day.strftime('%a'),
                 'value': revenue_map.get(day, 0)
             })
-            
-        # 3. Top Products (simple proxy - already efficient)
+        
+        # Order Status Counts (for donut chart)
+        order_status_counts = {
+            'completed': Order.objects.filter(state='DELIVERED').count(),
+            'processing': Order.objects.filter(state__in=['CONFIRMED', 'PROCESSING', 'SHIPPED']).count(),
+            'pending': Order.objects.filter(state='PENDING').count(),
+            'cancelled': Order.objects.filter(state='CANCELLED').count(),
+        }
+        
+        # Top Products
         top_products = list(
             Product.objects.filter(is_active=True)
             .order_by('-reservations_count')[:5]
@@ -355,8 +417,8 @@ class AdminAnalyticsView(APIView):
             {'name': p['name'], 'sales': p['reservations_count'], 'revenue': float(p['price']) * p['reservations_count']}
             for p in top_products
         ]
-            
-        # 4. Top Vendors (already efficient)
+        
+        # Top Vendors
         top_vendors = list(
             Vendor.objects.all()
             .order_by('-total_orders')[:5]
@@ -366,15 +428,27 @@ class AdminAnalyticsView(APIView):
             {'name': v['business_name'], 'orders': v['total_orders'], 'revenue': 0}
             for v in top_vendors
         ]
-            
+        
+        # Quick Stats (conversion metrics)
+        total_all_time_orders = Order.objects.count()
+        total_all_time_users = User.objects.count()
+        repeat_customers = Order.objects.values('customer').annotate(
+            order_count=Count('id')
+        ).filter(order_count__gt=1).count()
+        
         return Response({
-            'revenue': {'total': float(current_total_revenue), 'change': 0},
-            'orders': {'total': current_total_orders, 'change': 0},
-            'users': {'total': current_total_users, 'change': 0},
-            'avgOrderValue': {'total': float(avg_order_value), 'change': 0},
-            'revenueChart': last_7_days_stats,
+            'revenue': {'total': float(current_revenue), 'change': revenue_change},
+            'orders': {'total': current_orders, 'change': orders_change},
+            'users': {'total': current_users, 'change': users_change},
+            'avgOrderValue': {'total': round(avg_order_value, 2), 'change': avg_change},
+            'revenueChart': revenue_chart,
+            'orderStatusCounts': order_status_counts,
             'topProducts': top_products,
-            'topVendors': top_vendors
+            'topVendors': top_vendors,
+            'quickStats': {
+                'conversionRate': round((total_all_time_orders / max(total_all_time_users, 1)) * 100, 1),
+                'repeatCustomerRate': round((repeat_customers / max(total_all_time_orders, 1)) * 100, 1),
+            }
         })
 
 

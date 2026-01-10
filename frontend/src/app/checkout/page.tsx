@@ -8,11 +8,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
-import { ordersAPI, paymentsAPI } from '@/lib/api';
+import { ordersAPI } from '@/lib/api';
 
 export default function CheckoutPage() {
     const router = useRouter();
-    const { cart, fetchCart, clearCart } = useCartStore();
+    const { cart, fetchCart } = useCartStore();
     const { user, isAuthenticated } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -68,11 +68,19 @@ export default function CheckoutPage() {
 
             const { order } = checkoutResponse.data;
 
-            // 2. Initiate payment
-            const paymentResponse = await paymentsAPI.initiate(order.order_number, paymentType);
+            // 2. Initiate payment or redirect to WhatsApp (Temporary)
+            const WHATSAPP_NUMBER = '233541096372';
+            const message = encodeURIComponent(
+                `Hello London's Imports, I have placed Order #${order.order_number} for ${order.items?.length || 'several'} items.\n` +
+                `Total Amount: GHS ${paymentAmount?.toLocaleString()}\n` +
+                `Please provide your Momo number so I can complete payment.`
+            );
 
-            // 3. Redirect to Paystack
-            window.location.href = paymentResponse.data.authorization_url;
+            // Redirect to WhatsApp
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_self');
+
+            // Clear cart from local state
+            fetchCart();
 
         } catch (err: any) {
             setError(err.response?.data?.error || 'Checkout failed. Please try again.');
@@ -256,7 +264,7 @@ export default function CheckoutPage() {
                                     disabled={isLoading}
                                     className="w-full btn-primary mt-6 disabled:opacity-50"
                                 >
-                                    {isLoading ? 'Processing...' : `Pay GHS ${paymentAmount?.toLocaleString()}`}
+                                    {isLoading ? 'Processing...' : `Complete Order on WhatsApp`}
                                 </button>
                             </div>
                         </div>

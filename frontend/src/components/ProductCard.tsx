@@ -46,9 +46,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         try {
             setIsAdding(true);
             await addToCart(product);
-        } catch (error) {
-            console.error(error);
-            alert("Failed to add to cart. Please try again.");
+        } catch (error: any) {
+            console.error("Add to cart error:", error);
+            const errorMessage = error?.response?.data?.detail || error?.response?.data?.error || "Failed to add to cart. Please try again.";
+            alert(errorMessage);
         } finally {
             setIsAdding(false);
         }

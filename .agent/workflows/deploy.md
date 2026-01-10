@@ -1,54 +1,80 @@
 ---
-description: Deploy frontend to Vercel production
+description: Deploy frontend to Vercel and backend to Render
 ---
 
-# Deploy Frontend to Vercel
+# Deployment Workflow
 
-Use this workflow when you need to deploy frontend changes to Vercel.
+## ⚠️ CRITICAL: Separate Repositories
 
-## Prerequisites
-- Ensure you have the Vercel CLI installed (`vercel --version`)
-- Ensure you're linked to the correct project
+This project uses **TWO SEPARATE GitHub repositories**:
 
-## Steps
+| Repository | URL | Deployment |
+|------------|-----|------------|
+| **Frontend** | `github.com/Anapey01/london-imports-frontend` | Vercel |
+| **Backend** | `github.com/Anapey01/london-imports-backend` | Render |
 
-1. Navigate to the frontend-deploy worktree (if it exists) or create it:
-   ```powershell
-   # If worktree doesn't exist:
-   git worktree add ../frontend-deploy split-frontend
-   
-   # If it exists, update it:
-   cd ../frontend-deploy && git pull origin split-frontend
+> [!CAUTION]
+> The local `Naa` folder is a **monorepo for development only**. It is NOT connected to a single GitHub repo. Never push the entire `Naa` folder to either repo - this causes code mixing!
+
+---
+
+## Frontend Deployment (Vercel)
+
+// turbo-all
+
+1. Navigate to frontend folder:
+   ```bash
+   cd c:\Users\user\Desktop\Naa\frontend
    ```
 
-// turbo
-2. Install dependencies in the worktree:
-   ```powershell
-   cd ../frontend-deploy && npm install
+2. Deploy via Vercel CLI:
+   ```bash
+   vercel --prod
    ```
 
-// turbo  
-3. Test the build locally (optional but recommended):
-   ```powershell
-   cd ../frontend-deploy && npm run build
+That's it! Vercel handles the build automatically.
+
+---
+
+## Backend Deployment (Render)
+
+1. Copy backend changes to the deploy folder:
+   ```bash
+   xcopy /E /Y "c:\Users\user\Desktop\Naa\backend\*" "c:\Users\user\Desktop\backend-deploy\"
    ```
 
-// turbo
-4. Deploy to Vercel production:
-   ```powershell
-   cd ../frontend-deploy && vercel --prod
+2. Navigate to backend-deploy:
+   ```bash
+   cd c:\Users\user\Desktop\backend-deploy
    ```
 
-## Important Notes
+3. Commit and push:
+   ```bash
+   git add -A
+   git commit -m "your commit message"
+   git push backend_repo master:main
+   ```
 
-- The `frontend-deploy` worktree is located at `c:\Users\user\Desktop\frontend-deploy`
-- You can also work on frontend directly in `c:\Users\user\Desktop\Naa\frontend` (now fixed)
+Render will auto-detect the push and deploy.
 
-## Syncing Frontend Changes
+---
 
-If you make frontend changes on `feature/next-sprint`, you need to cherry-pick or recreate them on `split-frontend`:
+## Folder Structure
 
-1. Checkout split-frontend: `git checkout split-frontend`
-2. Make your frontend changes there
-3. Commit and push: `git push frontend_repo split-frontend:main`
-4. Or use the worktree and deploy via CLI as above
+| Path | Purpose |
+|------|---------|
+| `c:\Users\user\Desktop\Naa` | Local development monorepo |
+| `c:\Users\user\Desktop\Naa\frontend` | Frontend source code |
+| `c:\Users\user\Desktop\Naa\backend` | Backend source code |
+| `c:\Users\user\Desktop\backend-deploy` | Backend deploy folder (connected to GitHub) |
+
+---
+
+## Remotes Configuration
+
+In `backend-deploy`, ensure this remote exists:
+```bash
+git remote add backend_repo https://github.com/Anapey01/london-imports-backend.git
+```
+
+In `Naa/frontend`, the Vercel CLI handles deployment directly (no git push needed).

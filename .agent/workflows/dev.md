@@ -1,63 +1,73 @@
 ---
-description: Development workflow for split branch organization
+description: Development workflow for separate frontend/backend repositories
 ---
 
 # Development Workflow
 
-This project uses a split-branch organization for frontend and backend code.
+## ⚠️ CRITICAL: Separate Repositories
 
-## Branch Structure
+> [!CAUTION]
+> **DO NOT** push from `c:\Users\user\Desktop\Naa` to any remote!
+> The `Naa` folder is a local monorepo for development convenience only.
 
-| Branch | Purpose | Deployment |
-|--------|---------|------------|
-| `split-frontend` | Frontend code | Vercel |
-| `split-backend` | Backend code | Render |
-| `feature/next-sprint` | Backend development | - |
+| Repository | GitHub URL | Deploy Target |
+|------------|------------|---------------|
+| Frontend | `Anapey01/london-imports-frontend` | Vercel |
+| Backend | `Anapey01/london-imports-backend` | Render |
+
+---
 
 ## Frontend Development
 
-// turbo-all
-
-1. Navigate to frontend worktree:
-   ```powershell
-   cd c:\Users\user\Desktop\frontend-deploy
+1. Work in the frontend folder:
+   ```bash
+   cd c:\Users\user\Desktop\Naa\frontend
    ```
 
-2. Make your changes to the frontend code
-
-3. Test locally:
-   ```powershell
+2. Run dev server:
+   ```bash
    npm run dev
    ```
 
-4. Commit and push:
-   ```powershell
-   git add -A && git commit -m "your message" && git push frontend_repo split-frontend:main
+3. Deploy when ready (no git push needed):
+   ```bash
+   vercel --prod
    ```
+
+---
 
 ## Backend Development
 
-1. Work in the main repo:
-   ```powershell
+1. Work in the backend folder:
+   ```bash
    cd c:\Users\user\Desktop\Naa\backend
    ```
 
-2. Make your changes to the backend code
-
-3. Test locally:
-   ```powershell
+2. Run dev server:
+   ```bash
    python manage.py runserver
    ```
 
-4. Sync to split-backend and push:
-   ```powershell
-   cd ..\backend-deploy
-   xcopy /E /Y ..\Naa\backend\* .
-   git add -A && git commit -m "your message" && git push backend_repo split-backend:main
+3. When ready to deploy, sync to deploy folder:
+   ```bash
+   xcopy /E /Y "c:\Users\user\Desktop\Naa\backend\*" "c:\Users\user\Desktop\backend-deploy\"
    ```
 
-## Quick Reference
+4. Commit and push from deploy folder:
+   ```bash
+   cd c:\Users\user\Desktop\backend-deploy
+   git add -A
+   git commit -m "your message"
+   git push backend_repo master:main
+   ```
 
-- **Frontend worktree**: `c:\Users\user\Desktop\frontend-deploy`
-- **Backend worktree**: `c:\Users\user\Desktop\backend-deploy`
-- **Main repo**: `c:\Users\user\Desktop\Naa`
+---
+
+## Key Folders
+
+| Folder | Purpose | Git Status |
+|--------|---------|------------|
+| `Naa/` | Local dev monorepo | NOT connected to remote |
+| `Naa/frontend/` | Frontend code | Deploy via Vercel CLI |
+| `Naa/backend/` | Backend code | Copy to backend-deploy |
+| `backend-deploy/` | Backend git repo | Connected to GitHub |

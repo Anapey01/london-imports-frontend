@@ -3,10 +3,30 @@ Londom Imports - User Serializers
 Registration, login, and profile management
 """
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
+
 from django.contrib.auth.password_validation import validate_password
 
 User = get_user_model()
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Custom serializer to allow login with email or username.
+    """
+    def validate(self, attrs):
+        username = attrs.get('username')
+        
+        if username and '@' in username:
+            try:
+                user = User.objects.get(email=username)
+                attrs['username'] = user.username
+            except User.DoesNotExist:
+                # Let the parent class handle the failure
+                pass
+                
+        return super().validate(attrs)
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
