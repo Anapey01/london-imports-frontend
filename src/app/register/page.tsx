@@ -15,6 +15,7 @@ export default function RegisterPage() {
     const { register, isLoading } = useAuthStore();
 
     const [formData, setFormData] = useState({
+        username: '', // Initialize to avoid controlled/uncontrolled issues
         email: '',
         password: '',
         password_confirm: '',
