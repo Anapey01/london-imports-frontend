@@ -43,27 +43,21 @@ function ResetForm() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${API_URL}/auth/password/reset/confirm/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    uid,
-                    token,
-                    new_password: password,
-                    confirm_password: confirmPassword
-                }),
+            // Using centralized API client to ensure correct Base URL and Headers
+            await authAPI.confirmPasswordReset({
+                uid,
+                token,
+                new_password: password,
+                confirm_password: confirmPassword
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setSuccess(true);
-                setTimeout(() => router.push('/login'), 3000);
-            } else {
-                setError(data.error || 'Invalid or expired reset link. Please request a new one.');
-            }
-        } catch {
-            setError('Failed to connect. Please check your internet connection.');
+            setSuccess(true);
+            setTimeout(() => router.push('/login'), 3000);
+        } catch (err: any) {
+            console.error('Password Reset Error:', err);
+            const errorMessage = err.response?.data?.error ||
+                'Failed to reset password. Please try again.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
