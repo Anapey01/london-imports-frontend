@@ -15,7 +15,6 @@ export default function RegisterPage() {
     const { register, isLoading } = useAuthStore();
 
     const [formData, setFormData] = useState({
-        username: '',
         email: '',
         password: '',
         password_confirm: '',
@@ -39,7 +38,11 @@ export default function RegisterPage() {
         }
 
         try {
-            await register(formData);
+            // Auto-set username to email
+            await register({
+                ...formData,
+                username: formData.email
+            });
             router.push('/');
         } catch (error: unknown) {
             console.error('Registration Error:', error);
@@ -101,20 +104,7 @@ export default function RegisterPage() {
                         </div>
                     </div>
 
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <User className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
-                        </div>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
-                            placeholder="Username"
-                        />
-                    </div>
+
 
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
