@@ -46,18 +46,26 @@ export default function RegisterPage() {
             });
             router.push('/');
         } catch (error: unknown) {
-            console.error('Registration Error:', error);
+            console.error('Registration Error Full Object:', JSON.stringify(error, null, 2));
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
             const errors = err.response?.data;
-            if (errors) {
+
+            if (errors && typeof errors === 'object') {
                 const firstKey = Object.keys(errors)[0];
                 const firstError = errors[firstKey];
                 const message = Array.isArray(firstError) ? firstError[0] : String(firstError);
+
+                if (firstKey === 'refresh') {
+                    // Ignore refresh token errors in registration context
+                    setError('Registration failed. Please checking your details.');
+                    return;
+                }
+
                 // capitalization
                 const fieldName = firstKey.charAt(0).toUpperCase() + firstKey.slice(1).replace('_', ' ');
                 setError(`${fieldName}: ${message}`);
             } else {
-                setError(err.message || 'Registration failed. Please try again.');
+                setError(err.message || 'Registration failed. Please check your connection and try again.');
             }
         }
     };
