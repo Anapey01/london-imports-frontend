@@ -50,9 +50,12 @@ export default function RegisterPage() {
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
             const errors = err.response?.data;
             if (errors) {
-                const firstError = Object.values(errors)[0];
+                const firstKey = Object.keys(errors)[0];
+                const firstError = errors[firstKey];
                 const message = Array.isArray(firstError) ? firstError[0] : String(firstError);
-                setError(message);
+                // capitalization
+                const fieldName = firstKey.charAt(0).toUpperCase() + firstKey.slice(1).replace('_', ' ');
+                setError(`${fieldName}: ${message}`);
             } else {
                 setError(err.message || 'Registration failed. Please try again.');
             }
