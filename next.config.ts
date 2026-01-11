@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: 'http',
@@ -26,6 +28,9 @@ const nextConfig: NextConfig = {
         pathname: '/media/**',
       },
     ],
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'date-fns', 'lodash', 'recharts'],
   },
   async headers() {
     return [

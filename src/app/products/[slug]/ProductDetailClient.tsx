@@ -20,8 +20,16 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ initialProduct, slug }: ProductDetailClientProps) {
     const router = useRouter();
-    const [quantity, setQuantity] = useState(1);
+    const [quantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
+    const [selectedSize, setSelectedSize] = useState<string>('');
+    const [selectedColor, setSelectedColor] = useState<string>('');
+
+    // Reset selection when product changes
+    useEffect(() => {
+        setSelectedSize('');
+        setSelectedColor('');
+    }, [initialProduct]);
 
     // CSR State
     const [product, setProduct] = useState(initialProduct);
@@ -29,7 +37,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [error, setError] = useState(false);
 
     const { addToCart } = useCartStore();
-    const { isAuthenticated } = useAuthStore();
 
     // Client-side fetch if SSR failed
     useEffect(() => {
@@ -54,24 +61,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         }
     }, [initialProduct, slug]);
 
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
-            </div>
-        );
-    }
-
-    if (error || !product) {
-        return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
-                <p className="text-gray-600 mb-6">Could not load product details. Please try again.</p>
-                <button onClick={() => window.location.reload()} className="bg-pink-600 text-white px-6 py-2 rounded-full">Retry</button>
-            </div>
-        );
-    }
-
     const [displayedImage, setDisplayedImage] = useState<string | null>(null);
 
     // Ref for the main CTA section to trigger the sticky bar
@@ -95,10 +84,38 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const currentImage = displayedImage || getImageUrl(product?.image);
 
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            </div>
+        );
+    }
+
+    if (error || !product) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+                <p className="text-gray-600 mb-6">Could not load product details. Please try again.</p>
+                <button onClick={() => window.location.reload()} className="bg-pink-600 text-white px-6 py-2 rounded-full">Retry</button>
+            </div>
+        );
+    }
+
     const handleAddToCart = async () => {
+        // Validation for variants
+        if (product.available_sizes?.length > 0 && !selectedSize) {
+            alert('Please select a size');
+            return;
+        }
+        if (product.available_colors?.length > 0 && !selectedColor) {
+            alert('Please select a color');
+            return;
+        }
+
         setIsAdding(true);
         try {
-            await addToCart(product, quantity);
+            await addToCart(product, quantity, selectedSize, selectedColor);
             router.push('/cart');
         } catch (e) {
             console.error(e);
@@ -238,6 +255,55 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <span className="text-3xl lg:text-4xl font-bold text-gray-900">
                                 GHS {product.price?.toLocaleString()}
                             </span>
+                        </div>
+
+                        {/* Variant Selectors */}
+                        <div className="space-y-6 mb-8">
+                            {product.available_colors && product.available_colors.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Select Color: <span className="text-gray-900 font-bold">{selectedColor}</span>
+                                    </label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {product.available_colors.map((color: string) => (
+                                            <button
+                                                key={color}
+                                                onClick={() => setSelectedColor(color)}
+                                                className={`px-4 py-2 rounded-full border text-sm font-medium transition-all
+                                                    ${selectedColor === color
+                                                        ? 'border-gray-900 bg-gray-900 text-white'
+                                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                                    }`}
+                                            >
+                                                {color}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {product.available_sizes && product.available_sizes.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Select Size: <span className="text-gray-900 font-bold">{selectedSize}</span>
+                                    </label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {product.available_sizes.map((size: string) => (
+                                            <button
+                                                key={size}
+                                                onClick={() => setSelectedSize(size)}
+                                                className={`min-w-[3rem] px-3 py-2 rounded-lg border text-sm font-medium transition-all
+                                                    ${selectedSize === size
+                                                        ? 'border-gray-900 bg-gray-900 text-white'
+                                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                                    }`}
+                                            >
+                                                {size}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Description */}

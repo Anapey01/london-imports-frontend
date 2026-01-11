@@ -3,26 +3,16 @@
  * A grid of 4 product cards that overlaps the HeroCarousel.
  * Replaces the previous "CategoryCards" to match the user's "Add to Cart" sketch.
  */
-'use client';
-
-import { useQuery } from '@tanstack/react-query';
-import { productsAPI } from '@/lib/api';
 import ProductCard from './ProductCard';
 import Link from 'next/link';
+import { Product } from '@/stores/cartStore';
 
 interface HeroOverlayProductsProps {
-    initialProducts?: any[];
+    initialProducts?: Product[];
 }
 
 export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverlayProductsProps) {
-    // Fetch 20 products for the main feed (Overlap + List)
-    const { data: productsData } = useQuery({
-        queryKey: ['hero-overlay-products'],
-        queryFn: () => productsAPI.list({ limit: 20, ordering: '-created_at' }),
-        enabled: initialProducts.length === 0, // Only fetch if no initial data
-    });
-
-    const products = initialProducts.length > 0 ? initialProducts : (productsData?.data?.results || productsData?.data || []);
+    const products: Product[] = initialProducts;
 
     return (
         <section className="relative z-20 px-2 lg:px-4 max-w-7xl mx-auto pb-12">
@@ -33,9 +23,9 @@ export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverla
                 - Vertical Flow (no scroll)
             */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-6 mt-4 lg:-mt-32 mb-12">
-                {products.map((product: any, index: number) => (
+                {products.map((product: Product, index: number) => (
                     <div key={product.id} className="h-full">
-                        <ProductCard product={product} priority={index < 4} />
+                        <ProductCard product={product} priority={index < 6} />
                     </div>
                 ))}
             </div>

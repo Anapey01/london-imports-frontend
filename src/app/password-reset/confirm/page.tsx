@@ -55,9 +55,21 @@ function ResetForm() {
             setTimeout(() => router.push('/login'), 3000);
         } catch (err: any) {
             console.error('Password Reset Error:', err);
-            const errorMessage = err.response?.data?.error ||
-                'Failed to reset password. Please try again.';
-            setError(errorMessage);
+
+            // Try to extract specific error message
+            let errorMessage = err.response?.data?.error;
+
+            // Handle DRF field errors (e.g. { password: ["Too common"] })
+            if (!errorMessage && err.response?.data) {
+                const data = err.response.data;
+                const firstKey = Object.keys(data)[0];
+                if (firstKey) {
+                    const firstError = Array.isArray(data[firstKey]) ? data[firstKey][0] : data[firstKey];
+                    errorMessage = `${firstKey.charAt(0).toUpperCase() + firstKey.slice(1)}: ${firstError}`;
+                }
+            }
+
+            setError(errorMessage || 'Failed to reset password. Please try again.');
         } finally {
             setIsLoading(false);
         }

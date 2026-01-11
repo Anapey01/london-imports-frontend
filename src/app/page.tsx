@@ -1,43 +1,30 @@
-/**
- * London's Imports - Homepage
- * Refactored to "Preorder Feed" style as requested
- */
 import Link from 'next/link';
-import { getFeaturedProducts, getRecentProducts, getProducts } from '@/lib/fetchers';
-
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 
-import HeroCarousel from '@/components/HeroCarousel';
-import HeroOverlayProducts from '@/components/HeroOverlayProducts';
+import HeroSection from '@/components/home/HeroSection';
+import ProductGridSection from '@/components/home/ProductGridSection';
+import FeaturedSection from '@/components/home/FeaturedSection';
+import { HeroSkeleton, ProductGridSkeleton } from '@/components/skeletons/HomeSkeletons';
 
 // Lazy load interactive/below-the-fold components
-const PreorderCarousel = dynamic(() => import('@/components/PreorderCarousel'), {
-  loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg" />
-});
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 
-export default async function HomePage() {
-  // Fetch data on the server (SSG/ISR)
-  const [featuredData, recentData, preorderData] = await Promise.all([
-    getFeaturedProducts(),
-    getRecentProducts(20),
-    getProducts({ status: 'preorder', limit: '20', ordering: '-created_at' })
-  ]);
-
-  const featuredProducts = featuredData?.results || [];
-  const recentProducts = recentData?.results || [];
-  const preorderProducts = preorderData?.results || [];
-
+export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* WhatsApp Floating Button - Homepage Only */}
       <WhatsAppButton />
 
-      {/* 1. Hero Carousel (Landing visuals) */}
-      <HeroCarousel initialProducts={preorderProducts} />
+      {/* 1. Hero Carousel (Landing visuals) - Suspense for Immediate Shell Paint */}
+      <Suspense fallback={<HeroSkeleton />}>
+        <HeroSection />
+      </Suspense>
 
       {/* 2. Products Overlay & Main Feed (20 items, Amazon-style grid) */}
-      <HeroOverlayProducts initialProducts={recentProducts} />
+      <Suspense fallback={<ProductGridSkeleton />}>
+        <ProductGridSection />
+      </Suspense>
 
       {/* 3. "Upcoming Drops" - Admin Curated Horizontal Carousel */}
       <section className="py-4 bg-white mt-4 border-t border-gray-100">
@@ -54,7 +41,9 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <PreorderCarousel products={featuredProducts} />
+        <Suspense fallback={<div className="h-64 bg-gray-50 animate-pulse rounded-lg mx-4" />}>
+          <FeaturedSection />
+        </Suspense>
       </section>
 
       {/* 4. SEO Content - Mini-Importation & Consolidation Keywords */}
@@ -93,3 +82,4 @@ export default async function HomePage() {
     </div>
   );
 }
+

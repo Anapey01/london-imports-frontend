@@ -17,6 +17,8 @@ export interface Product {
     deposit_amount?: number;
     vendor_name?: string;
     cutoff_date?: string;
+    available_sizes?: string[];
+    available_colors?: string[];
 }
 
 export interface CartItem {
@@ -25,6 +27,8 @@ export interface CartItem {
     quantity: number;
     unit_price: number;
     total_price: number;
+    selected_size?: string;
+    selected_color?: string;
 }
 
 interface Cart {
@@ -43,7 +47,7 @@ interface CartState {
     itemCount: number;
 
     fetchCart: () => Promise<void>;
-    addToCart: (product: Product, quantity?: number) => Promise<void>;
+    addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     clearCart: () => void;
@@ -72,7 +76,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     const guestItems: CartItem[] = JSON.parse(savedGuest);
                     // Add each guest item to server cart
                     await Promise.all(guestItems.map(item =>
-                        ordersAPI.addToCart(item.product.id, item.quantity)
+                        ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color)
                     ));
                     // Clear guest state
                     localStorage.removeItem('guest_cart');
@@ -109,14 +113,15 @@ export const useCartStore = create<CartState>()((set, get) => ({
         }
     },
 
-    addToCart: async (product: Product, quantity = 1) => {
+    addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         if (isAuthenticated) {
             // Server Side
             set({ isLoading: true });
             try {
-                const response = await ordersAPI.addToCart(product.id, quantity);
+                // Pass variants to API
+                const response = await ordersAPI.addToCart(product.id, quantity, selectedSize, selectedColor);
                 const cart = response.data;
                 set({
                     cart,
@@ -128,7 +133,13 @@ export const useCartStore = create<CartState>()((set, get) => ({
         } else {
             // Guest Side
             const currentGuest = get().guestItems;
-            const existingIndex = currentGuest.findIndex(i => i.product.id === product.id);
+
+            // Check existence based on ID AND variants
+            const existingIndex = currentGuest.findIndex(i =>
+                i.product.id === product.id &&
+                i.selected_size === selectedSize &&
+                i.selected_color === selectedColor
+            );
 
             const newGuest = [...currentGuest];
 
@@ -151,7 +162,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     },
                     quantity,
                     unit_price: product.price,
-                    total_price: product.price * quantity
+                    total_price: product.price * quantity,
+                    selected_size: selectedSize,
+                    selected_color: selectedColor
                 });
             }
 

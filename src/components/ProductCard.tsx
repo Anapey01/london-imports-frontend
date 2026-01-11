@@ -51,9 +51,11 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                 ...product,
                 image: product.image || ""
             });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Add to cart error:", error);
-            const errorMessage = error?.response?.data?.detail || error?.response?.data?.error || "Failed to add to cart. Please try again.";
+            // Safe alignment with potentially complex error objects
+            const anyError = error as any;
+            const errorMessage = anyError?.response?.data?.detail || anyError?.response?.data?.error || "Failed to add to cart. Please try again.";
             alert(errorMessage);
         } finally {
             setIsAdding(false);

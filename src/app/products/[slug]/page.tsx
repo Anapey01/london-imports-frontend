@@ -1,6 +1,6 @@
 import { getProduct, getProductMetadata, getProducts } from '@/lib/fetchers';
 import ProductDetailClient from './ProductDetailClient';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
 
 // ISR: Revalidate product pages every hour
@@ -9,14 +9,13 @@ export const revalidate = 3600;
 // Pre-render all products at build time
 export async function generateStaticParams() {
     const products = await getProducts({ limit: '1000' });
-    return products.results.map((product: any) => ({
+    return products.results.map((product: { slug: string }) => ({
         slug: product.slug,
     }));
 }
 
 type Props = {
     params: Promise<{ slug: string }>
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 // Helper to ensure absolute URL
@@ -39,8 +38,7 @@ function getAbsoluteImageUrl(imageUrl: string | null | undefined): string {
 
 
 export async function generateMetadata(
-    { params, searchParams }: Props,
-    parent: ResolvingMetadata
+    { params }: Props
 ): Promise<Metadata> {
     // 1. Resolve Params (Next.js 15 requirement)
     const { slug } = await params;
@@ -117,9 +115,31 @@ export default async function ProductDetailPage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "Product",
         "name": product.name,
-        "image": product.image,
+        "image": product.image ? getAbsoluteImageUrl(product.image) : undefined,
         "description": product.description,
         "sku": product.id,
+        "brand": {
+            "@type": "Brand",
+            "name": product.vendor?.business_name || "London's Imports"
+        },
+        "aggregateRating": (product.rating && product.rating_count) ? {
+            "@type": "AggregateRating",
+            "ratingValue": product.rating,
+            "reviewCount": product.rating_count
+        } : undefined,
+        "review": product.reviews?.map((review: { user_name: string; created_at: string; rating: number; comment: string }) => ({
+            "@type": "Review",
+            "author": {
+                "@type": "Person",
+                "name": review.user_name || "Anonymous"
+            },
+            "datePublished": review.created_at,
+            "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": review.rating
+            },
+            "reviewBody": review.comment
+        })),
         "subjectOf": (product.video || product.video_url) ? {
             "@type": "VideoObject",
             "name": product.name,
@@ -133,7 +153,9 @@ export default async function ProductDetailPage({ params }: Props) {
             "@type": "Offer",
             "priceCurrency": "GHS",
             "price": product.price,
+            "priceValidUntil": product.cutoff_datetime || new Date(new Date().getFullYear() + 1, 0, 1).toISOString(),
             "availability": "https://schema.org/PreOrder",
+            "url": `https://www.londonsimports.com/products/${slug}`,
             "shippingDetails": {
                 "@type": "OfferShippingDetails",
                 "shippingDestination": {

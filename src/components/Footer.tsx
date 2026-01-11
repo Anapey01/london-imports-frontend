@@ -85,7 +85,7 @@ const Footer = () => {
 
                 <div className="pt-8 border-t border-slate-700/50 flex flex-col md:flex-row items-center justify-between gap-6">
                     <p className="text-xs text-slate-300">
-                        © {new Date().getFullYear()} London&apos;s Imports. All rights reserved.
+                        © {new Date().getFullYear()} London&apos;s Imports. All rights reserved. <span className="opacity-50 ml-1">v.2026.01.11.2200</span>
                     </p>
 
                     {/* Payment Trust Signals (Visual only) */}
