@@ -9,7 +9,9 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+import { authAPI } from '@/lib/api';
+
+// API_URL is handled internally by authAPI
 
 function ResetForm() {
     const searchParams = useSearchParams();
