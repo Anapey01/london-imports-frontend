@@ -18,7 +18,21 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('access_token');
-    if (token) {
+
+    // List of public endpoints where we should NOT send the token
+    // This prevents 401 errors if the stored token is invalid/expired
+    const publicEndpoints = [
+      '/auth/register/',
+      '/auth/login/',
+      '/auth/register/vendor/',
+      '/auth/password/reset/', // Covers request and confirm
+    ];
+
+    const isPublicEndpoint = publicEndpoints.some(endpoint =>
+      config.url && config.url.includes(endpoint)
+    );
+
+    if (token && !isPublicEndpoint) {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
