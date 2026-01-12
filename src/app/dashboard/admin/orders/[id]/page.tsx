@@ -9,13 +9,10 @@ import Link from 'next/link';
 import {
     ChevronLeft,
     Package,
-    Truck,
     CheckCircle,
     XCircle,
     MapPin,
     Phone,
-    Mail,
-    User,
     CreditCard,
     MessageCircle,
     Clock
