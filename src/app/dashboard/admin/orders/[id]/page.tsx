@@ -15,7 +15,8 @@ import {
     Phone,
     Mail,
     User,
-    CreditCard
+    CreditCard,
+    MessageCircle
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -185,6 +186,16 @@ export default function AdminOrderDetailPage() {
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">
+                    {/* WhatsApp Button */}
+                    <a
+                        href={`https://wa.me/${order.phone?.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${order.customer}, regarding your order #${order.order_number} from London's Imports: `)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-colors"
+                    >
+                        <MessageCircle className="w-4 h-4" />
+                        Message
+                    </a>
                     {/* Mark as Paid Button */}
                     {order.payment_status !== 'PAID' && order.status !== 'CANCELLED' && (
                         <button
