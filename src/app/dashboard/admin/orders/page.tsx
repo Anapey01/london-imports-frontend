@@ -7,11 +7,11 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
-import { Search, Filter, ChevronRight, Eye, MoreVertical, X, Trash2 } from 'lucide-react';
+import { ChevronRight, Eye, X, Trash2 } from 'lucide-react';
 
 interface Order {
     id: string;
-    order_number?: string; // Optional if not always present
+    order_number?: string;
     customer: {
         name: string;
         email: string;
@@ -30,22 +30,35 @@ interface Order {
     }>;
 }
 
+interface APIOrder {
+    id: string;
+    order_number?: string;
+    customer: {
+        name: string;
+        email: string;
+        avatar?: string;
+    };
+    items_count?: number;
+    items?: unknown[];
+    total: number | string;
+    status?: string;
+    payment_status?: string;
+    created_at: string;
+}
+
 export default function AdminOrdersPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const [error, setError] = useState('');
 
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this order?')) return;
         try {
             await adminAPI.deleteOrder(id);
             setOrders(prev => prev.filter(o => o.id !== id));
-        } catch (err) {
+        } catch {
             alert('Failed to delete order');
         }
     };
@@ -69,7 +82,7 @@ export default function AdminOrdersPage() {
             // Reload
             const response = await adminAPI.orders();
             const ordersData = response.data.results || response.data || [];
-            setOrders(ordersData.map((order: any) => ({
+            setOrders(ordersData.map((order: APIOrder) => ({
                 id: order.id,
                 order_number: order.order_number,
                 customer: {
@@ -78,7 +91,7 @@ export default function AdminOrdersPage() {
                     avatar: order.customer.avatar
                 },
                 items_count: order.items_count || order.items?.length || 0,
-                total_amount: parseFloat(order.total) || 0,
+                total_amount: typeof order.total === 'string' ? parseFloat(order.total) : (order.total || 0),
                 status: order.status || 'PENDING',
                 payment_status: order.payment_status || 'PENDING',
                 created_at: order.created_at,
@@ -98,7 +111,7 @@ export default function AdminOrdersPage() {
             try {
                 const response = await adminAPI.orders();
                 const ordersData = response.data.results || response.data || [];
-                setOrders(ordersData.map((order: any) => ({
+                setOrders(ordersData.map((order: APIOrder) => ({
                     id: order.id,
                     order_number: order.order_number,
                     customer: {
@@ -107,15 +120,14 @@ export default function AdminOrdersPage() {
                         avatar: order.customer.avatar
                     },
                     items_count: order.items_count || order.items?.length || 0,
-                    total_amount: parseFloat(order.total) || 0,
+                    total_amount: typeof order.total === 'string' ? parseFloat(order.total) : (order.total || 0),
                     status: order.status || 'PENDING',
                     payment_status: order.payment_status || 'PENDING',
                     created_at: order.created_at,
                     items: order.items || []
                 })));
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('Failed to load orders:', err);
-                setError('Failed to load orders');
             } finally {
                 setLoading(false);
             }
@@ -124,10 +136,8 @@ export default function AdminOrdersPage() {
     }, []);
 
     const filteredOrders = orders.filter((order: Order) => {
-        const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
-        return matchesSearch && matchesStatus;
+        return matchesStatus;
     });
 
     const getStatusColor = (status: string) => {
