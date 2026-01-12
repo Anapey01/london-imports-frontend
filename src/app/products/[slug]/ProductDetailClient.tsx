@@ -7,15 +7,42 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
-import { useAuthStore } from '@/stores/authStore';
+import Image from 'next/image';
 import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
 import { ChevronDown } from 'lucide-react';
 
+interface ProductImage {
+    id: string;
+    image: string;
+    alt_text?: string;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    description: string;
+    image: string;
+    images?: ProductImage[];
+    rating?: number;
+    reservations_count: number;
+    available_colors?: string[];
+    available_sizes?: string[];
+    category?: { name: string };
+    origin_country?: string;
+    delivery_window_text?: string;
+    video?: string;
+    video_url?: string;
+    vendor?: { business_name: string };
+    preorder_status?: string;
+}
+
 interface ProductDetailClientProps {
-    initialProduct: any;
+    initialProduct: Product | null;
     slug: string;
 }
 
@@ -76,7 +103,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     // Gather all images: Main + Extras
     const allImages = product ? [
         { id: 'main', image: product.image, alt: product.name },
-        ...(product.images || []).map((img: any) => ({
+        ...(product.images || []).map((img: ProductImage) => ({
             id: img.id,
             image: img.image,
             alt: img.alt_text || product.name
@@ -105,11 +132,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const handleAddToCart = async () => {
         // Validation for variants
-        if (product.available_sizes?.length > 0 && !selectedSize) {
+        if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
             alert('Please select a size');
             return;
         }
-        if (product.available_colors?.length > 0 && !selectedColor) {
+        if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
             alert('Please select a color');
             return;
         }
@@ -135,17 +162,20 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     <div className="space-y-6">
                         {/* Main Image - directly on cream background */}
                         <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm transition-all duration-300">
-                            <img
+                            <Image
                                 src={currentImage}
                                 alt={`${product.name} - China Import to Ghana`}
-                                className="w-full h-full object-contain drop-shadow-2xl"
+                                fill
+                                className="object-contain drop-shadow-2xl"
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                priority
                             />
                         </div>
 
                         {/* Gallery Thumbnails */}
                         {allImages.length > 1 && (
                             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                                {allImages.map((img: any) => {
+                                {allImages.map((img) => {
                                     const imgUrl = getImageUrl(img.image);
                                     const isSelected = currentImage === imgUrl;
                                     return (
@@ -156,10 +186,12 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                                 ${isSelected ? 'border-pink-600 ring-2 ring-pink-100 scale-105' : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'}
                                             `}
                                         >
-                                            <img
+                                            <Image
                                                 src={imgUrl}
                                                 alt={img.alt}
-                                                className="w-full h-full object-cover"
+                                                fill
+                                                className="object-cover"
+                                                sizes="80px"
                                             />
                                         </button>
                                     );
