@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { adminAPI } from '@/lib/api';
+import { getImageUrl } from '@/lib/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
 import {
@@ -257,7 +258,7 @@ export default function AdminOrderDetailPage() {
                                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                                         {item.image ? (
                                             <Image
-                                                src={item.image}
+                                                src={getImageUrl(item.image)}
                                                 alt={item.product_name}
                                                 fill
                                                 className="object-cover"
