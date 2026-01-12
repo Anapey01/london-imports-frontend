@@ -2,7 +2,7 @@ import HowItWorksBar from '@/components/HowItWorksBar';
 import { getCategories, getRecentProducts, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import StatsBar from '@/components/StatsBar';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 
 // ISR: Revalidate this page every hour
 export const revalidate = 3600;
@@ -12,8 +12,7 @@ type Props = {
 }
 
 export async function generateMetadata(
-    { searchParams }: Props,
-    parent: ResolvingMetadata
+    { searchParams }: Props
 ): Promise<Metadata> {
     const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
 

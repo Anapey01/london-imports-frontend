@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
         hostname: 'london-imports-api.onrender.com',
         pathname: '/media/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '/**',
+      },
     ],
   },
   experimental: {

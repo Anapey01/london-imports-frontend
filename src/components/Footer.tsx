@@ -145,10 +145,10 @@ const Footer = () => {
                             <span className="text-[#FFCC00] text-[10px] font-black tracking-tight">MTN<span className="text-[8px]">MoMo</span></span>
                         </div>
                         <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="Visa">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3 w-auto" />
+                            <Image src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" width={30} height={10} className="h-3 w-auto" />
                         </div>
                         <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="Mastercard">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4 w-auto" />
+                            <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={40} height={24} className="h-4 w-auto" />
                         </div>
                         <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="Paystack">
                             <span className="text-cyan-400 text-xs font-bold">Paystack</span>

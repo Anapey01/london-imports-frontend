@@ -5,9 +5,25 @@ import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    image: string;
+    category?: Category;
+    status?: string;
+}
+
 interface ProductGridProps {
-    initialProducts?: any[];
-    categories?: any[];
+    initialProducts?: Product[];
+    categories?: Category[];
     initialSearch?: string;
     initialCategory?: string;
 }
@@ -68,7 +84,7 @@ export default function ProductGrid({
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white"
                 >
                     <option value="">All Categories</option>
-                    {displayCategories.map((cat: any) => (
+                    {displayCategories.map((cat: Category) => (
                         <option key={cat.id} value={cat.slug}>{cat.name}</option>
                     ))}
                 </select>
@@ -102,7 +118,7 @@ export default function ProductGrid({
                 </div>
             ) : products.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
-                    {products.map((product: any) => (
+                    {products.map((product: Product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
