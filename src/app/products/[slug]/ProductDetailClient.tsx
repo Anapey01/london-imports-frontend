@@ -12,6 +12,7 @@ import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
+import { ChevronDown } from 'lucide-react';
 
 interface ProductDetailClientProps {
     initialProduct: any;
@@ -257,52 +258,24 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </span>
                         </div>
 
-                        {/* Variant Selectors */}
+                        {/* Variant Selectors: Premium Dropdowns */}
                         <div className="space-y-6 mb-8">
                             {product.available_colors && product.available_colors.length > 0 && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Select Color: <span className="text-gray-900 font-bold">{selectedColor}</span>
-                                    </label>
-                                    <div className="flex flex-wrap gap-3">
-                                        {product.available_colors.map((color: string) => (
-                                            <button
-                                                key={color}
-                                                onClick={() => setSelectedColor(color)}
-                                                className={`px-4 py-2 rounded-full border text-sm font-medium transition-all
-                                                    ${selectedColor === color
-                                                        ? 'border-gray-900 bg-gray-900 text-white'
-                                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                                    }`}
-                                            >
-                                                {color}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                <VariantDropdown
+                                    label="Color"
+                                    options={product.available_colors}
+                                    selected={selectedColor}
+                                    onSelect={setSelectedColor}
+                                />
                             )}
 
                             {product.available_sizes && product.available_sizes.length > 0 && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Select Size: <span className="text-gray-900 font-bold">{selectedSize}</span>
-                                    </label>
-                                    <div className="flex flex-wrap gap-3">
-                                        {product.available_sizes.map((size: string) => (
-                                            <button
-                                                key={size}
-                                                onClick={() => setSelectedSize(size)}
-                                                className={`min-w-[3rem] px-3 py-2 rounded-lg border text-sm font-medium transition-all
-                                                    ${selectedSize === size
-                                                        ? 'border-gray-900 bg-gray-900 text-white'
-                                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                                    }`}
-                                            >
-                                                {size}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                <VariantDropdown
+                                    label="Size"
+                                    options={product.available_sizes}
+                                    selected={selectedSize}
+                                    onSelect={setSelectedSize}
+                                />
                             )}
                         </div>
 
@@ -424,6 +397,54 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 onAddToCart={handleAddToCart}
                 triggerRef={{ current: ctaRef }}
             />
+        </div>
+    );
+}
+
+function VariantDropdown({ label, options, selected, onSelect }: { label: string, options: string[], selected: string, onSelect: (val: string) => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+    // Helper to clean accidental parentheses from user input (e.g. "( Green")
+    const clean = (text: string) => text.replace(/[()]/g, '').trim();
+
+    return (
+        <div className="relative w-full sm:max-w-xs">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                {label}
+            </label>
+            <div className="relative">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all hover:border-gray-300 shadow-sm"
+                >
+                    <span className={`block truncate ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                        {selected ? clean(selected) : `Select ${label}`}
+                    </span>
+                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isOpen && (
+                    <>
+                        <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+                        <div className="absolute z-20 mt-2 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100 border border-gray-100">
+                            {options.map((option) => (
+                                <button
+                                    key={option}
+                                    onClick={() => {
+                                        onSelect(option);
+                                        setIsOpen(false);
+                                    }}
+                                    className={`w-full text-left cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0
+                                        ${selected === option ? 'bg-pink-50 text-pink-700 font-semibold' : 'text-gray-700'}
+                                    `}
+                                >
+                                    {clean(option)}
+                                </button>
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
 }
