@@ -73,7 +73,7 @@ const Footer = () => {
 
                             {/* Trustpilot */}
                             <a
-                                href="https://www.trustpilot.com/review/londonimports.com"
+                                href="https://www.trustpilot.com/review/londonsimports.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-[#00b67a] hover:text-white hover:border-[#00b67a] transition-all duration-300 group"
