@@ -16,7 +16,10 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 // Google Analytics ID
 const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap", // Prevents invisible text during font loading (improves FCP)
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://londonsimports.com'), // Update with actual domain if custom
@@ -139,7 +142,10 @@ export default async function RootLayout({
     "currenciesAccepted": "GHS",
     "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
     "sameAs": [
-      "https://wa.me/233541096372"
+      "https://wa.me/233541096372",
+      "https://www.instagram.com/londonimportsghana",
+      "https://www.tiktok.com/@londons_imports1",
+      "https://www.snapchat.com/add/londons_imports"
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
@@ -231,6 +237,19 @@ export default async function RootLayout({
 
   return (
     <html lang="en-GH" suppressHydrationWarning>
+      <head>
+        {/* Preload LCP image for faster hero rendering */}
+        <link
+          rel="preload"
+          href="/assets/images/newyear-drop.webp"
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
+        {/* Preconnect to external resources */}
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://london-imports-api.onrender.com" />
+      </head>
       <body className={`${inter.className} bg-gray-50 min-h-screen`} suppressHydrationWarning>
         <script
           type="application/ld+json"

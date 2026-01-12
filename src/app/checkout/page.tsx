@@ -129,7 +129,9 @@ export default function CheckoutPage() {
                 metadata: {
                     custom_fields: [
                         { display_name: "Order Number", variable_name: "order_number", value: order.order_number },
-                        { display_name: "Customer Name", variable_name: "customer_name", value: user ? `${user.first_name} ${user.last_name}` : 'Guest' }
+                        { display_name: "Customer Name", variable_name: "customer_name", value: user ? `${user.first_name} ${user.last_name}` : 'Guest' },
+                        { display_name: "Phone Number", variable_name: "phone_number", value: user?.phone || 'Not provided' },
+                        { display_name: "Delivery Address", variable_name: "delivery_address", value: `${delivery.address}, ${delivery.city}` }
                     ]
                 },
                 callback: function (response: PaystackResponse) {
@@ -203,7 +205,7 @@ export default function CheckoutPage() {
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
+                                    <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
                                         Address
                                     </label>
                                     <textarea
@@ -211,14 +213,14 @@ export default function CheckoutPage() {
                                         onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
                                         required
                                         rows={2}
-                                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:border-black focus:ring-0 focus:outline-none transition-all font-light resize-none placeholder-gray-300"
+                                        className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
                                         placeholder="Enter your full street address"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                     <div>
-                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
+                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
                                             City
                                         </label>
                                         <input
@@ -226,12 +228,12 @@ export default function CheckoutPage() {
                                             value={delivery.city}
                                             onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
                                             required
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:border-black focus:ring-0 focus:outline-none transition-all font-light placeholder-gray-300"
+                                            className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light placeholder-gray-400 px-0"
                                             placeholder="Accra"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
+                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
                                             Region
                                         </label>
                                         <div className="relative">
@@ -239,7 +241,7 @@ export default function CheckoutPage() {
                                                 value={delivery.region}
                                                 onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
                                                 required
-                                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:border-black focus:ring-0 focus:outline-none transition-all font-light appearance-none"
+                                                className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light appearance-none px-0 cursor-pointer"
                                             >
                                                 <option value="">Select Region</option>
                                                 <option value="Greater Accra">Greater Accra</option>
@@ -253,7 +255,7 @@ export default function CheckoutPage() {
                                                 <option value="Upper West">Upper West</option>
                                                 <option value="Bono">Bono</option>
                                             </select>
-                                            <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                            <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none">
                                                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
                                                 </svg>
@@ -263,14 +265,14 @@ export default function CheckoutPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
+                                    <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
                                         Notes (Optional)
                                     </label>
                                     <textarea
                                         value={delivery.notes}
                                         onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
                                         rows={2}
-                                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:border-black focus:ring-0 focus:outline-none transition-all font-light resize-none placeholder-gray-300"
+                                        className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
                                         placeholder="Special delivery instructions..."
                                     />
                                 </div>
@@ -331,15 +333,15 @@ export default function CheckoutPage() {
                             <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                                 {cart.items?.map((item: CartItem) => (
                                     <div key={item.id} className="flex justify-between items-center text-sm group">
-                                        <div className="flex items-center gap-3">
-                                            <span className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded-full text-xs font-medium text-gray-600">
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            <span className="w-6 h-6 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-full text-xs font-medium text-gray-600">
                                                 {item.quantity}
                                             </span>
-                                            <span className="text-gray-600 group-hover:text-gray-900 transition-colors line-clamp-1 max-w-[180px]">
+                                            <span className="text-gray-600 group-hover:text-gray-900 transition-colors truncate p-1">
                                                 {item.product.name}
                                             </span>
                                         </div>
-                                        <span className="font-medium text-gray-900 whitespace-nowrap">GHS {item.total_price?.toLocaleString()}</span>
+                                        <span className="font-medium text-gray-900 whitespace-nowrap ml-4">GHS {item.total_price?.toLocaleString()}</span>
                                     </div>
                                 ))}
                             </div>
@@ -356,13 +358,13 @@ export default function CheckoutPage() {
                                     </span>
                                 </div>
                                 <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
-                                    <span className="text-lg text-gray-900 font-medium">Total</span>
-                                    <span className="text-3xl font-light text-gray-900">GHS {cart.total?.toLocaleString()}</span>
+                                    <span className="text-lg text-gray-900 font-medium pb-1">Total</span>
+                                    <span className="text-2xl sm:text-3xl font-light text-gray-900">GHS {cart.total?.toLocaleString()}</span>
                                 </div>
 
                                 <div className="bg-gray-50 rounded-xl p-4 mt-4 flex justify-between items-center text-gray-900">
                                     <span className="font-medium">Due Now</span>
-                                    <span className="font-bold text-xl">GHS {paymentAmount?.toLocaleString()}</span>
+                                    <span className="font-bold text-lg sm:text-xl">GHS {paymentAmount?.toLocaleString()}</span>
                                 </div>
                             </div>
 

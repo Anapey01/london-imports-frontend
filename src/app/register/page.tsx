@@ -87,8 +87,8 @@ export default function RegisterPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <User className="h-4 w-4 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                            <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                                <User className="h-4 w-4 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                             </div>
                             <input
                                 type="text"
@@ -96,13 +96,13 @@ export default function RegisterPage() {
                                 value={formData.first_name}
                                 onChange={handleChange}
                                 required
-                                className="block w-full pl-9 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light text-sm"
+                                className="block w-full pl-7 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light text-sm text-gray-900"
                                 placeholder="First Name"
                             />
                         </div>
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <User className="h-4 w-4 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                            <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                                <User className="h-4 w-4 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                             </div>
                             <input
                                 type="text"
@@ -110,7 +110,7 @@ export default function RegisterPage() {
                                 value={formData.last_name}
                                 onChange={handleChange}
                                 required
-                                className="block w-full pl-9 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light text-sm"
+                                className="block w-full pl-7 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light text-sm text-gray-900"
                                 placeholder="Last Name"
                             />
                         </div>
@@ -119,8 +119,8 @@ export default function RegisterPage() {
 
 
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                        <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                            <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                         </div>
                         <input
                             type="email"
@@ -128,14 +128,14 @@ export default function RegisterPage() {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
+                            className="block w-full pl-8 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light text-gray-900"
                             placeholder="Email Address"
                         />
                     </div>
 
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Phone className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                        <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                            <Phone className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                         </div>
                         <input
                             type="tel"
@@ -143,15 +143,15 @@ export default function RegisterPage() {
                             value={formData.phone}
                             onChange={handleChange}
                             required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
+                            className="block w-full pl-8 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light text-gray-900"
                             placeholder="Phone Number (0XX XXX XXXX)"
                         />
                     </div>
 
                     <div className="space-y-4">
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                            <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                                <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                             </div>
                             <input
                                 type="password"
@@ -160,14 +160,14 @@ export default function RegisterPage() {
                                 onChange={handleChange}
                                 required
                                 minLength={8}
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
+                                className="block w-full pl-8 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light text-gray-900"
                                 placeholder="Password (min. 8 chars)"
                             />
                         </div>
 
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                            <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                                <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                             </div>
                             <input
                                 type="password"
@@ -175,7 +175,7 @@ export default function RegisterPage() {
                                 value={formData.password_confirm}
                                 onChange={handleChange}
                                 required
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
+                                className="block w-full pl-8 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light text-gray-900"
                                 placeholder="Confirm Password"
                             />
                         </div>

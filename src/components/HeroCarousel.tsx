@@ -35,7 +35,7 @@ const slideTemplates: Slide[] = [
         ctaLink: "/products",
         bgColor: "#d1fae5", // Mint green
         textColor: "#064e3b",
-        heroImage: "/assets/images/newyear-drop.jpg", // Featured model image
+        heroImage: "/assets/images/newyear-drop.webp", // Optimized WebP
         blendMode: "mix-blend-multiply"
     },
     {
@@ -48,8 +48,8 @@ const slideTemplates: Slide[] = [
         textColor: "#ffffff",
         categorySlug: "home",
         heroImages: [
-            "/assets/images/home-living-1.jpg",
-            "/assets/images/home-living-2.jpg"
+            "/assets/images/home-living-1.webp",
+            "/assets/images/home-living-2.webp"
         ],
         blendMode: "mix-blend-multiply",
         objectFit: "object-contain"
@@ -63,7 +63,7 @@ const slideTemplates: Slide[] = [
         bgColor: "#c1c1c1", // Exact match from image (193,193,193)
         textColor: "#1f2937", // Dark gray for legibility on light background
         categorySlug: "fashion",
-        heroImage: "/assets/images/fashion-for-less.png",
+        heroImage: "/assets/images/fashion-for-less.webp", // Now 30KB instead of 668KB!
         blendMode: "mix-blend-normal",
         objectFit: "object-cover",
         enableGradientMask: true
@@ -78,7 +78,7 @@ const slideTemplates: Slide[] = [
         textColor: "#ffffff",
         categorySlug: "electronics",
         heroImages: [
-            "/assets/images/tech-essentials.jpg"
+            "/assets/images/tech-essentials.webp"
         ],
         blendMode: "mix-blend-normal", // Normal blend for dark image on dark bg
         objectFit: "object-cover",
@@ -86,53 +86,23 @@ const slideTemplates: Slide[] = [
     },
 ];
 
+// Product type for proper typing
+interface Product {
+    id: string | number;
+    name: string;
+    primary_image?: string;
+    category?: { slug: string };
+}
 
 interface HeroCarouselProps {
-    initialProducts?: any[];
+    initialProducts?: Product[];
 }
 
 export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps) {
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // UseEffect for rotating hero images used in slides
-    const [heroImageIndexes, setHeroImageIndexes] = useState<Record<number, number>>({});
-
-    // We only change the image when the slide actually changes
-    useEffect(() => {
-        setHeroImageIndexes(prev => {
-            const next = { ...prev };
-            slideTemplates.forEach(slide => {
-                if (slide.heroImages && slide.heroImages.length > 1) {
-                    // Start with the first image
-                    // Logic to alternate images on slide revisit could go here if tracking visits
-                    // For now, we'll keep it simple or user might want the image to switch ONLY when coming back to the slide?
-                    // "when the first whole animation is complete before the second image comes"
-                    // implies the carousel should slide out, then slide back in with the second image?
-                    // OR 
-                    // it implies the image should stay static for the full duration of the slide.
-                    // Let's assume static per slide view for now, or tie it to currentSlide index?
-                }
-            });
-            return next;
-        });
-    }, [currentSlide]);
-
-    // Actually, to achieve "wait for animation to complete", we can just toggle the image index
-    // whenever the currentSlide changes back to this slide.
-    // Let's simplify: Depend on `currentSlide` to cycle the image index.
-
-    useEffect(() => {
-        const slide = slideTemplates[currentSlide];
-        if (slide && slide.heroImages && slide.heroImages.length > 1) {
-            setHeroImageIndexes(prev => {
-                const currentIndex = prev[slide.id] || 0;
-                return {
-                    ...prev,
-                    [slide.id]: (currentIndex + 1) % slide.heroImages!.length
-                };
-            });
-        }
-    }, [currentSlide]);
+    // Track slide visit count to alternate images on multi-image slides
+    const [slideVisits, setSlideVisits] = useState<Record<number, number>>({});
 
     // Use initialProducts passed from server (SSG/ISR)
     // We remove the client-side fetch to save bundle size since 20 items are plenty for a carousel
@@ -147,7 +117,7 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
 
         // Filter by category if available
         if (template.categorySlug) {
-            const filtered = products.filter((p: any) =>
+            const filtered = products.filter((p: Product) =>
                 p.category?.slug === template.categorySlug
             );
             if (filtered.length > 0) slideProducts = filtered;
@@ -159,11 +129,23 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
     };
 
     const nextSlide = useCallback(() => {
-        setCurrentSlide((prev) => (prev + 1) % slideTemplates.length);
+        setCurrentSlide((prev) => {
+            const next = (prev + 1) % slideTemplates.length;
+            // Update visit count for the new slide
+            setSlideVisits(visits => ({
+                ...visits,
+                [slideTemplates[next].id]: (visits[slideTemplates[next].id] || 0) + 1
+            }));
+            return next;
+        });
     }, []);
 
     const goToSlide = (index: number) => {
         setCurrentSlide(index);
+        setSlideVisits(visits => ({
+            ...visits,
+            [slideTemplates[index].id]: (visits[slideTemplates[index].id] || 0) + 1
+        }));
     };
 
     // Auto-play every 5 seconds
@@ -272,7 +254,7 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
                                                         src={img}
                                                         alt={slide.title}
                                                         fill
-                                                        className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'} transition-opacity duration-1000 ${imgIndex === (heroImageIndexes[slide.id] || 0)
+                                                        className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'} transition-opacity duration-1000 ${imgIndex === ((slideVisits[slide.id] || 0) % slide.heroImages!.length)
                                                             ? 'opacity-100' // Opacity 100 for clear visibility
                                                             : 'opacity-0'
                                                             }`}
@@ -300,7 +282,7 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
 
                                 {/* Dynamic Product Images - Right Side (Only when no heroImage) */}
                                 <div className="absolute right-4 sm:right-8 md:right-16 lg:right-24 top-1/2 lg:top-[40%] -translate-y-1/2 hidden sm:flex items-center gap-2 md:gap-4">
-                                    {slideProducts.slice(0, 3).map((product: any, pIndex: number) => (
+                                    {slideProducts.slice(0, 3).map((product: Product, pIndex: number) => (
                                         <div
                                             key={product.id || pIndex}
                                             className={`relative bg-white rounded-lg shadow-lg overflow-hidden transform 

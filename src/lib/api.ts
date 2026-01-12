@@ -57,8 +57,14 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // Refresh failed - User must login
         if (typeof window !== 'undefined') {
-          // Optional: Call logout endpoint to clear cookies server-side
-          // window.location.href = '/login'; 
+          // Clear any local auth state
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+
+          // Force logout ONLY if not already on login page to avoid loops
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login?expired=true';
+          }
         }
         return Promise.reject(refreshError);
       }
@@ -70,22 +76,22 @@ api.interceptors.response.use(
 
 // API endpoints
 export const authAPI = {
-  register: (data: any) => api.post('/auth/register/', data),
-  registerVendor: (data: any) => api.post('/auth/register/vendor/', data),
+  register: (data: unknown) => api.post('/auth/register/', data),
+  registerVendor: (data: unknown) => api.post('/auth/register/vendor/', data),
   login: (data: { username: string; password: string }) => api.post('/auth/login/', data),
   logout: () => api.post('/auth/logout/', {}), // No refresh token needed in body
   me: () => api.get('/auth/me/'),
   profile: () => api.get('/auth/profile/'),
-  updateProfile: (data: any) => api.patch('/auth/profile/', data),
-  changePassword: (data: any) => api.post('/auth/change-password/', data),
-  registerAdmin: (data: any) => api.post('/auth/register/admin/', data),
-  requestPasswordReset: (data: any) => api.post('/auth/password/reset/', data),
-  confirmPasswordReset: (data: any) => api.post('/auth/password/reset/confirm/', data),
+  updateProfile: (data: unknown) => api.patch('/auth/profile/', data),
+  changePassword: (data: unknown) => api.post('/auth/change-password/', data),
+  registerAdmin: (data: unknown) => api.post('/auth/register/admin/', data),
+  requestPasswordReset: (data: unknown) => api.post('/auth/password/reset/', data),
+  confirmPasswordReset: (data: unknown) => api.post('/auth/password/reset/confirm/', data),
 };
 
 export const productsAPI = {
-  list: (params?: any) => api.get('/products/', { params }),
-  preview: (params?: any) => api.get('/products/preview/', { params }),
+  list: (params?: unknown) => api.get('/products/', { params }),
+  preview: (params?: unknown) => api.get('/products/preview/', { params }),
   categories: () => api.get('/products/categories/'),
   detail: (slug: string) => api.get(`/products/${slug}/`),
 };
@@ -96,7 +102,7 @@ export const ordersAPI = {
     api.post('/orders/cart/', { product_id: productId, quantity, selected_size: selectedSize, selected_color: selectedColor }),
   removeFromCart: (itemId: string) =>
     api.delete('/orders/cart/', { params: { item_id: itemId } }),
-  checkout: (data: any) => api.post('/orders/checkout/', data),
+  checkout: (data: unknown) => api.post('/orders/checkout/', data),
   list: () => api.get('/orders/'),
   detail: (orderNumber: string) => api.get(`/orders/${orderNumber}/`),
   track: (orderNumber: string) => api.get(`/orders/${orderNumber}/track/`),
@@ -113,11 +119,11 @@ export const paymentsAPI = {
 
 export const vendorsAPI = {
   dashboard: () => api.get('/vendors/dashboard/'),
-  updateProfile: (data: any) => api.patch('/vendors/profile/', data),
+  updateProfile: (data: unknown) => api.patch('/vendors/profile/', data),
   payouts: () => api.get('/vendors/payouts/'),
   products: () => api.get('/products/vendor/products/'),
-  createProduct: (data: any) => api.post('/products/vendor/products/', data),
-  updateProduct: (id: string, data: any) => api.patch(`/products/vendor/products/${id}/`, data),
+  createProduct: (data: unknown) => api.post('/products/vendor/products/', data),
+  updateProduct: (id: string, data: unknown) => api.patch(`/products/vendor/products/${id}/`, data),
   orders: () => api.get('/orders/vendor/orders/'),
 };
 
@@ -127,36 +133,37 @@ export const adminAPI = {
   stats: () => api.get('/admin/stats/'),
 
   // Users management
-  users: (params?: any) => api.get('/admin/users/', { params }),
+  users: (params?: unknown) => api.get('/admin/users/', { params }),
   getUser: (id: string) => api.get(`/admin/users/${id}/`),
-  updateUser: (id: string, data: any) => api.patch(`/admin/users/${id}/`, data),
+  updateUser: (id: string, data: unknown) => api.patch(`/admin/users/${id}/`, data),
   deleteUser: (id: string) => api.delete(`/admin/users/${id}/`),
 
   // Orders management  
-  orders: (params?: any) => api.get('/admin/orders/', { params }),
+  orders: (params?: unknown) => api.get('/admin/orders/', { params }),
   getOrder: (id: string) => api.get(`/admin/orders/${id}/`),
-  updateOrder: (id: string, data: any) => api.patch(`/admin/orders/${id}/`, data),
+  updateOrder: (id: string, data: unknown) => api.patch(`/admin/orders/${id}/`, data),
+  deleteOrder: (id: string) => api.delete(`/admin/orders/${id}/`),
 
   // Products management
-  products: (params?: any) => api.get('/admin/products/', { params }),
-  createProduct: (data: any) => api.post('/admin/products/', data),
-  updateProduct: (id: string, data: any) => api.patch(`/admin/products/${id}/`, data),
+  products: (params?: unknown) => api.get('/admin/products/', { params }),
+  createProduct: (data: unknown) => api.post('/admin/products/', data),
+  updateProduct: (id: string, data: unknown) => api.patch(`/admin/products/${id}/`, data),
   approveProduct: (id: string) => api.post(`/admin/products/${id}/approve/`),
   featureProduct: (id: string, featured: boolean) => api.post(`/admin/products/${id}/feature/`, { featured }),
   deleteProduct: (id: string) => api.delete(`/admin/products/${id}/`),
 
   // Analytics
-  analytics: (params?: any) => api.get('/admin/analytics/', { params }),
+  analytics: (params?: unknown) => api.get('/admin/analytics/', { params }),
 
   // Vendors management
-  vendors: (params?: any) => api.get('/admin/vendors/', { params }),
+  vendors: (params?: unknown) => api.get('/admin/vendors/', { params }),
   getVendor: (id: string) => api.get(`/admin/vendors/${id}/`),
   verifyVendor: (id: string) => api.post(`/admin/vendors/${id}/verify/`),
   rejectVendor: (id: string) => api.post(`/admin/vendors/${id}/reject/`),
 
   // Settings
   settings: () => api.get('/admin/settings/'),
-  updateSettings: (data: any) => api.patch('/admin/settings/', data),
+  updateSettings: (data: unknown) => api.patch('/admin/settings/', data),
 };
 
 export default api;

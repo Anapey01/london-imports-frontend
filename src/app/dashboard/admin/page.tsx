@@ -8,6 +8,40 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import Link from 'next/link';
+import {
+    Users,
+    ShoppingBag,
+    Package,
+    BadgeDollarSign,
+    ArrowUpRight,
+    Clock,
+    CheckCircle2,
+    XCircle,
+    AlertCircle,
+    ChevronRight,
+    TrendingUp,
+    BarChart3,
+    Trash2
+} from 'lucide-react';
+
+interface DashboardStats {
+    total_users: number;
+    total_orders: number;
+    total_products: number;
+    total_revenue: number;
+    pending_orders: number;
+    new_users_today: number;
+    storage_provider: string;
+}
+
+interface RecentOrder {
+    id: string;
+    order_number: string;
+    customer: string;
+    total: string;
+    status: string;
+    created_at: string;
+}
 
 export default function AdminDashboardPage() {
     const { theme } = useTheme();
@@ -21,189 +55,296 @@ export default function AdminDashboardPage() {
         newUsersToday: 0,
         storageProvider: '',
     });
-    const [recentOrders, setRecentOrders] = useState<any[]>([]);
+    const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const loadData = async () => {
+        try {
+            const statsResponse = await adminAPI.stats();
+            const statsData = statsResponse.data as DashboardStats;
+
+            setStats({
+                totalUsers: statsData.total_users || 0,
+                totalOrders: statsData.total_orders || 0,
+                totalProducts: statsData.total_products || 0,
+                totalRevenue: statsData.total_revenue || 0,
+                pendingOrders: statsData.pending_orders || 0,
+                newUsersToday: statsData.new_users_today || 0,
+                storageProvider: statsData.storage_provider || 'Unknown',
+            });
+
+            const ordersResponse = await adminAPI.orders({ limit: 10 });
+            setRecentOrders((ordersResponse.data.results || ordersResponse.data || []) as RecentOrder[]);
+        } catch (err) {
+            console.error('Failed to load admin stats:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const statsResponse = await adminAPI.stats();
-                const statsData = statsResponse.data;
-
-                setStats({
-                    totalUsers: statsData.total_users || 0,
-                    totalOrders: statsData.total_orders || 0,
-                    totalProducts: statsData.total_products || 0,
-                    totalRevenue: statsData.total_revenue || 0,
-                    pendingOrders: statsData.pending_orders || 0,
-                    newUsersToday: statsData.new_users_today || 0,
-                    storageProvider: statsData.storage_provider || 'Unknown',
-                });
-
-                const ordersResponse = await adminAPI.orders({ limit: 5 });
-                setRecentOrders(ordersResponse.data.results || ordersResponse.data || []);
-            } catch (err: any) {
-                console.error('Failed to load admin stats:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
         loadData();
     }, []);
 
+    const handleDeleteOrder = async (orderId: string) => {
+        if (!window.confirm('Are you sure you want to delete this order?')) return;
+
+        try {
+            await adminAPI.deleteOrder(orderId);
+            // Reload data
+            loadData();
+        } catch (error) {
+            console.error('Failed to delete order:', error);
+            alert('Failed to delete order');
+        }
+    };
+
     const statCards = [
         {
-            label: 'Users',
+            label: 'Total Users',
             value: stats.totalUsers,
             subtitle: `+${stats.newUsersToday} today`,
-            bgColor: isDark ? 'bg-blue-900/20' : 'bg-blue-50',
-            textColor: 'text-blue-500',
-            circleColor: isDark ? 'bg-blue-400/30' : 'bg-blue-200'
+            icon: Users,
+            color: 'blue',
+            trend: stats.newUsersToday > 0 ? 'up' : 'neutral'
         },
         {
-            label: 'Orders',
+            label: 'Total Orders',
             value: stats.totalOrders,
             subtitle: `${stats.pendingOrders} pending`,
-            bgColor: isDark ? 'bg-emerald-900/20' : 'bg-emerald-50',
-            textColor: 'text-emerald-500',
-            circleColor: isDark ? 'bg-emerald-400/30' : 'bg-emerald-200'
+            icon: ShoppingBag,
+            color: 'emerald',
+            trend: 'up'
         },
         {
-            label: 'Products',
+            label: 'Active Products',
             value: stats.totalProducts,
-            subtitle: 'Active',
-            bgColor: isDark ? 'bg-violet-900/20' : 'bg-violet-50',
-            textColor: 'text-violet-500',
-            circleColor: isDark ? 'bg-violet-400/30' : 'bg-violet-200'
+            subtitle: 'In catalog',
+            icon: Package,
+            color: 'violet',
+            trend: 'neutral'
         },
         {
             label: 'Revenue',
             value: `₵${stats.totalRevenue.toLocaleString()}`,
-            subtitle: 'This month',
-            bgColor: isDark ? 'bg-pink-900/20' : 'bg-pink-50',
-            textColor: 'text-pink-500',
-            circleColor: isDark ? 'bg-pink-400/30' : 'bg-pink-200'
+            subtitle: 'Lifetime',
+            icon: BadgeDollarSign,
+            color: 'pink',
+            trend: 'up'
         },
     ];
 
     const quickActions = [
         {
-            label: 'Users',
+            label: 'Manage Users',
             href: '/dashboard/admin/users',
-            icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
-            bgColor: isDark ? 'bg-pink-900/30' : 'bg-pink-100'
+            icon: Users,
+            color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
         },
         {
-            label: 'Orders',
+            label: 'View Orders',
             href: '/dashboard/admin/orders',
-            icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
-            bgColor: isDark ? 'bg-pink-900/30' : 'bg-pink-100'
+            icon: ShoppingBag,
+            color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
         },
         {
             label: 'Products',
             href: '/dashboard/admin/products',
-            icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-            bgColor: isDark ? 'bg-pink-900/30' : 'bg-pink-100'
+            icon: Package,
+            color: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400'
         },
         {
             label: 'Analytics',
             href: '/dashboard/admin/analytics',
-            icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
-            bgColor: isDark ? 'bg-pink-900/30' : 'bg-pink-100'
+            icon: BarChart3,
+            color: 'bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400'
         },
     ];
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'COMPLETED': return 'text-green-500';
-            case 'PENDING': return 'text-amber-500';
-            case 'PROCESSING': return 'text-blue-500';
-            case 'CANCELLED': return 'text-red-500';
-            default: return 'text-gray-500';
+            case 'COMPLETED': return 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/20';
+            case 'PENDING': return 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20';
+            case 'PROCESSING': return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
+            case 'CANCELLED': return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
+            default: return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-800';
         }
     };
 
     if (loading) {
         return (
-            <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-8 animate-pulse">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className={`h-24 rounded-2xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
+                        <div key={i} className={`h-32 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}></div>
                     ))}
                 </div>
+                <div className={`h-64 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}></div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* Stats Grid - 2x2 with decorative circles */}
-            <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-8 pb-20">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, index) => (
                     <div
                         key={index}
-                        className={`relative overflow-hidden p-4 rounded-2xl ${stat.bgColor}`}
+                        className={`p-5 rounded-2xl border transition-all hover:shadow-md ${isDark
+                            ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                            : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
+                            }`}
                     >
-                        {/* Decorative circle */}
-                        <div className={`absolute -right-4 -top-4 w-20 h-20 rounded-full ${stat.circleColor}`}></div>
-                        <div className={`absolute right-6 top-6 w-8 h-8 rounded-full ${stat.circleColor}`}></div>
+                        <div className="flex items-start justify-between mb-4">
+                            <div className={`p-2.5 rounded-xl ${stat.color === 'blue' ? (isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600') :
+                                stat.color === 'emerald' ? (isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-50 text-emerald-600') :
+                                    stat.color === 'violet' ? (isDark ? 'bg-violet-900/30 text-violet-400' : 'bg-violet-50 text-violet-600') :
+                                        (isDark ? 'bg-pink-900/30 text-pink-400' : 'bg-pink-50 text-pink-600')
+                                }`}>
+                                <stat.icon className="w-5 h-5" strokeWidth={2} />
+                            </div>
+                            {stat.trend === 'up' && (
+                                <div className="flex items-center gap-1 text-xs font-medium text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">
+                                    <TrendingUp className="w-3 h-3" />
+                                    <span>Growing</span>
+                                </div>
+                            )}
+                        </div>
 
-                        {/* Content */}
-                        <div className="relative z-10">
-                            <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
-                            <p className={`text-sm font-medium mt-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{stat.label}</p>
-                            <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{stat.subtitle}</p>
+                        <div>
+                            <p className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                {stat.value}
+                            </p>
+                            <p className={`text-sm font-medium mt-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                {stat.label}
+                            </p>
+                            <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                {stat.subtitle}
+                            </p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Quick Actions - Circular buttons */}
-            <div className={`rounded-2xl p-5 ${isDark ? 'bg-slate-800/50' : 'bg-white'} shadow-sm`}>
-                <h3 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h3>
-                <div className="flex justify-between px-2">
+            {/* Quick Actions */}
+            <div>
+                <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {quickActions.map((action, index) => (
                         <Link
                             key={index}
                             href={action.href}
-                            className="flex flex-col items-center gap-2 group"
+                            className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] ${isDark
+                                ? 'bg-slate-800 border-slate-700 hover:bg-slate-750'
+                                : 'bg-white border-gray-100 hover:shadow-md'
+                                }`}
                         >
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${action.bgColor} group-hover:scale-105 transition-transform`}>
-                                <svg className="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={action.icon} />
-                                </svg>
+                            <div className={`p-3 rounded-full mb-3 ${action.color}`}>
+                                <action.icon className="w-6 h-6" strokeWidth={2} />
                             </div>
-                            <span className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{action.label}</span>
+                            <span className={`font-medium text-sm ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
+                                {action.label}
+                            </span>
                         </Link>
                     ))}
                 </div>
             </div>
 
             {/* Recent Orders */}
-            <div className={`rounded-2xl overflow-hidden ${isDark ? 'bg-slate-800/50' : 'bg-white'} shadow-sm`}>
-                <div className={`px-5 py-4 flex items-center justify-between border-b ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
-                    <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Recent Orders</h3>
-                    <Link href="/dashboard/admin/orders" className="text-sm text-pink-500 hover:text-pink-600">View all →</Link>
+            <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
+                <div className={`p-6 border-b flex items-center justify-between ${isDark ? 'border-slate-700' : 'border-gray-50'}`}>
+                    <div>
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Recent Orders</h3>
+                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Latest customer transactions</p>
+                    </div>
+                    <Link
+                        href="/dashboard/admin/orders"
+                        className="flex items-center gap-1 text-sm font-semibold text-pink-600 hover:text-pink-700 transition-colors"
+                    >
+                        View All <ArrowUpRight className="w-4 h-4" />
+                    </Link>
                 </div>
-                <div className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
-                    {recentOrders.length === 0 ? (
-                        <div className={`px-5 py-8 text-center ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
-                            No orders yet
-                        </div>
-                    ) : (
-                        recentOrders.slice(0, 3).map((order) => (
-                            <div key={order.id} className="px-5 py-3 flex items-center justify-between">
-                                <div>
-                                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>#{order.order_number}</p>
-                                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{order.customer}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>GHS {order.total}</p>
-                                    <p className={`text-xs ${getStatusColor(order.status)}`}>{order.status}</p>
-                                </div>
-                            </div>
-                        ))
-                    )}
+
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'bg-slate-900/50 text-slate-400' : 'bg-gray-50/50 text-gray-500'}`}>
+                            <tr>
+                                <th className="px-6 py-4 text-left">Order ID</th>
+                                <th className="px-6 py-4 text-left">Customer</th>
+                                <th className="px-6 py-4 text-left">Date</th>
+                                <th className="px-6 py-4 text-left">Status</th>
+                                <th className="px-6 py-4 text-right">Amount</th>
+                                <th className="px-6 py-4"></th>
+                            </tr>
+                        </thead>
+                        <tbody className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-50'}`}>
+                            {recentOrders.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                        No orders found
+                                    </td>
+                                </tr>
+                            ) : (
+                                recentOrders.map((order) => (
+                                    <tr key={order.id} className={`group transition-colors ${isDark ? 'hover:bg-slate-700/30' : 'hover:bg-gray-50/50'}`}>
+                                        <td className="px-6 py-4">
+                                            <span className={`font-mono text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                                                #{order.order_number}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
+                                                    {order.customer?.[0] || 'G'}
+                                                </div>
+                                                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                    {order.customer || 'Guest'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                {new Date(order.created_at).toLocaleDateString()}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status).replace('text-', 'border-').replace('bg-', 'border-opacity-20 ')} ${getStatusColor(order.status)}`}>
+                                                {order.status === 'COMPLETED' && <CheckCircle2 className="w-3 h-3" />}
+                                                {order.status === 'PENDING' && <Clock className="w-3 h-3" />}
+                                                {order.status === 'CANCELLED' && <XCircle className="w-3 h-3" />}
+                                                {order.status === 'PROCESSING' && <AlertCircle className="w-3 h-3" />}
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                ₵{parseFloat(order.total).toLocaleString()}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleDeleteOrder(order.id)}
+                                                    className={`p-2 rounded-lg transition-colors ${isDark ? 'text-red-400 hover:bg-red-400/10' : 'text-red-400 hover:bg-red-50'}`}
+                                                    title="Delete Order"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                                <Link
+                                                    href={`/dashboard/admin/orders/${order.id}`}
+                                                    className={`p-2 rounded-lg inline-flex transition-colors ${isDark ? 'text-slate-400 hover:text-pink-400 hover:bg-pink-400/10' : 'text-gray-400 hover:text-pink-600 hover:bg-pink-50'}`}
+                                                >
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -65,7 +65,7 @@ export default function AdminDashboardLayout({
     if (!user) return null;
 
     return (
-        <div className="min-h-screen pt-16" style={{ backgroundColor: isDark ? '#0f172a' : '#f8fafc' }}>
+        <div className={`min-h-screen pt-16 transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
             <AdminSidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}

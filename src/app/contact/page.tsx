@@ -7,6 +7,8 @@
 import { useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com/api/v1';
+
 export default function ContactPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
@@ -17,10 +19,35 @@ export default function ContactPage() {
         message: ''
     });
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch(`${API_URL}/users/contact/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to send message');
+            }
+
+            setSubmitted(true);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Something went wrong. Please try WhatsApp instead.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -40,7 +67,7 @@ export default function ContactPage() {
                 </div>
             </div>
 
-            <div className="max-w-lg mx-auto px-4 -mt-2 pb-8 space-y-4">
+            <div className="max-w-lg mx-auto px-4 mt-6 pb-8 space-y-4">
                 {/* WhatsApp Card - Primary CTA */}
                 <a
                     href="https://wa.me/233541096372?text=Hi%20London's%20Imports!%20I%20have%20a%20question."
@@ -72,7 +99,7 @@ export default function ContactPage() {
                 <div className="grid grid-cols-2 gap-4">
                     {/* Email */}
                     <a
-                        href="mailto:Atsweilondon@gmail.com"
+                        href="mailto:londonimportsghana@gmail.com"
                         className={`p-4 rounded-2xl shadow-sm hover:shadow-md transition-all ${isDark ? 'bg-slate-800' : 'bg-white'}`}
                     >
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-3 shadow-lg shadow-pink-500/20">
@@ -81,7 +108,7 @@ export default function ContactPage() {
                             </svg>
                         </div>
                         <h3 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Email</h3>
-                        <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>support@londons...</p>
+                        <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>londonimportsghana@gmail.com</p>
                     </a>
 
                     {/* Location */}
@@ -213,11 +240,19 @@ export default function ContactPage() {
                                 />
                             </div>
 
+                            {/* Error Message */}
+                            {error && (
+                                <div className="p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                                    {error}
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
-                                className="w-full py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all"
+                                disabled={loading}
+                                className={`w-full py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:scale-[1.02] transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
-                                Send Message
+                                {loading ? 'Sending...' : 'Send Message'}
                             </button>
                         </form>
                     )}

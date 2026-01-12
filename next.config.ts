@@ -30,7 +30,21 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'date-fns', 'lodash', 'recharts'],
+    // Tree-shake unused exports from these packages
+    optimizePackageImports: [
+      'lucide-react',
+      '@tanstack/react-query',
+      'date-fns',
+      'lodash',
+      'react-hot-toast'
+    ],
+  },
+  // Modularize icon imports for smaller bundles
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+      preventFullImport: true, // Error if someone imports the whole package
+    },
   },
   async headers() {
     return [

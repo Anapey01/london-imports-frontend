@@ -4,10 +4,12 @@ import dynamic from 'next/dynamic';
 
 import HeroSection from '@/components/home/HeroSection';
 import ProductGridSection from '@/components/home/ProductGridSection';
-import FeaturedSection from '@/components/home/FeaturedSection';
 import { HeroSkeleton, ProductGridSkeleton } from '@/components/skeletons/HomeSkeletons';
 
-// Lazy load interactive/below-the-fold components
+// Lazy load below-the-fold components to reduce initial bundle
+const FeaturedSection = dynamic(() => import('@/components/home/FeaturedSection'), {
+  loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg mx-4" />,
+});
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 
 export default function HomePage() {

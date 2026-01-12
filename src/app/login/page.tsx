@@ -48,29 +48,29 @@ function LoginForm() {
 
                 <div className="space-y-4">
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <User className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                        <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                            <User className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                         </div>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
+                            className="block w-full pl-8 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light"
                             placeholder="Username or Email"
                         />
                     </div>
 
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1} />
+                        <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
+                            <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" strokeWidth={1} />
                         </div>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-900 transition-colors bg-white placeholder-gray-400 font-light"
+                            className="block w-full pl-8 pr-3 py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all placeholder-gray-400 font-light"
                             placeholder="Password"
                         />
                     </div>
