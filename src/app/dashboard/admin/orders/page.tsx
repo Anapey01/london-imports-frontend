@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
-import { Search, Filter, ChevronRight, Eye, MoreVertical, X } from 'lucide-react';
+import { Search, Filter, ChevronRight, Eye, MoreVertical, X, Trash2 } from 'lucide-react';
 
 interface Order {
     id: string;
@@ -39,6 +39,59 @@ export default function AdminOrdersPage() {
     const [statusFilter, setStatusFilter] = useState('All');
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [error, setError] = useState('');
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this order?')) return;
+        try {
+            await adminAPI.deleteOrder(id);
+            setOrders(prev => prev.filter(o => o.id !== id));
+        } catch (err) {
+            alert('Failed to delete order');
+        }
+    };
+
+    const handleClearPending = async () => {
+        const pendingOrders = orders.filter(o => o.status === 'PENDING' || o.status === 'Pending');
+        if (pendingOrders.length === 0) {
+            alert('No pending orders to clear');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete ${pendingOrders.length} pending orders? This cannot be undone.`)) return;
+
+        setLoading(true);
+        try {
+            // Delete sequentially
+            for (const order of pendingOrders) {
+                await adminAPI.deleteOrder(order.id);
+            }
+
+            // Reload
+            const response = await adminAPI.orders();
+            const ordersData = response.data.results || response.data || [];
+            setOrders(ordersData.map((order: any) => ({
+                id: order.id,
+                order_number: order.order_number,
+                customer: {
+                    name: order.customer.name,
+                    email: order.customer.email,
+                    avatar: order.customer.avatar
+                },
+                items_count: order.items_count || order.items?.length || 0,
+                total_amount: parseFloat(order.total) || 0,
+                status: order.status || 'PENDING',
+                payment_status: order.payment_status || 'PENDING',
+                created_at: order.created_at,
+                items: order.items || []
+            })));
+            alert('Pending orders cleared');
+        } catch (err) {
+            console.error(err);
+            alert('Failed to clear some orders');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const loadOrders = async () => {
@@ -117,11 +170,20 @@ export default function AdminOrdersPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Order Management</h2>
-                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                    {orders.length} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
-                </span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Order Management</h2>
+                    <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        {orders.length} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
+                    </span>
+                </div>
+                <button
+                    onClick={handleClearPending}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors"
+                >
+                    <X className="w-4 h-4" />
+                    Clear Pending ({statusCounts.PENDING})
+                </button>
             </div>
 
             {/* Status Filters */}
@@ -189,14 +251,19 @@ export default function AdminOrdersPage() {
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
                                         <button
-                                            onClick={() => setSelectedOrder(order)}
-                                            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                                            onClick={() => handleDelete(order.id)}
+                                            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-red-900/30 text-red-400' : 'hover:bg-red-50 text-red-500'}`}
+                                            title="Delete Order"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
+                                        <a
+                                            href={`/dashboard/admin/orders/${order.id}`}
+                                            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                                            title="View Details"
+                                        >
+                                            <ChevronRight className="w-4 h-4" />
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -205,72 +272,7 @@ export default function AdminOrdersPage() {
                 </table>
             </div>
 
-            {/* Order Detail Modal */}
-            {selectedOrder && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedOrder(null)}>
-                    <div
-                        className={`w-full max-w-lg rounded-xl p-6 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                Order #{selectedOrder.order_number}
-                            </h3>
-                            <button onClick={() => setSelectedOrder(null)} className={`p-1 rounded ${isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100'}`}>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
 
-                        <div className="space-y-4">
-                            <div className={`p-4 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gray-50'}`}>
-                                <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedOrder.customer.name}</p>
-                                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{selectedOrder.customer.email}</p>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Total Amount</p>
-                                    <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>GHS {selectedOrder.total_amount.toFixed(2)}</p>
-                                </div>
-                                <div>
-                                    <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Items</p>
-                                    <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedOrder.items?.length || 0} items</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Update Status</label>
-                                <select
-                                    defaultValue={selectedOrder.status}
-                                    className={`w-full px-4 py-2 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
-                                >
-                                    <option value="PENDING">Pending</option>
-                                    <option value="PROCESSING">Processing</option>
-                                    <option value="COMPLETED">Completed</option>
-                                    <option value="CANCELLED">Cancelled</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                onClick={() => setSelectedOrder(null)}
-                                className={`flex-1 py-2 rounded-lg border font-medium ${isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => setSelectedOrder(null)}
-                                className="flex-1 py-2 rounded-lg bg-pink-500 text-white font-medium hover:bg-pink-600"
-                            >
-                                Update Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

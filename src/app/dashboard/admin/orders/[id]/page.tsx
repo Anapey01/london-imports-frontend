@@ -41,6 +41,7 @@ interface OrderDetail {
     subtotal: string;
     delivery_fee: string;
     status: string; // Backend 'state' mapped to 'status'
+    payment_status?: string;
     created_at: string;
     delivery_address: string;
     delivery_city: string;
@@ -97,6 +98,25 @@ export default function AdminOrderDetailPage() {
         } catch (error) {
             console.error('Failed to update status:', error);
             alert('Failed to update order status');
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const handleMarkAsPaid = async () => {
+        if (!confirm('Mark this order as PAID? This will also set status to PROCESSING.')) return;
+        setUpdating(true);
+        try {
+            // Update both payment status and order state
+            await adminAPI.updateOrder(orderId, {
+                payment_status: 'PAID',
+                state: 'PROCESSING'
+            });
+            await loadOrder();
+            alert('Order marked as PAID');
+        } catch (error) {
+            console.error('Failed to update payment status:', error);
+            alert('Failed to mark as paid');
         } finally {
             setUpdating(false);
         }
@@ -168,6 +188,18 @@ export default function AdminOrderDetailPage() {
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">
+                    {/* Mark as Paid Button */}
+                    {order.payment_status !== 'PAID' && order.status !== 'CANCELLED' && (
+                        <button
+                            onClick={handleMarkAsPaid}
+                            disabled={updating}
+                            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                        >
+                            <CreditCard className="w-4 h-4" />
+                            Mark as Paid
+                        </button>
+                    )}
+
                     {order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && (
                         <>
                             {order.status !== 'OUT_FOR_DELIVERY' && (
