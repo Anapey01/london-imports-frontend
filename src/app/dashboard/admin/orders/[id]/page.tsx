@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { adminAPI } from '@/lib/api';
 import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
@@ -11,12 +11,10 @@ import {
     Truck,
     CheckCircle,
     XCircle,
-    Clock,
     MapPin,
     Phone,
     Mail,
     User,
-    Calendar,
     CreditCard
 } from 'lucide-react';
 import Image from 'next/image';
@@ -52,7 +50,6 @@ interface OrderDetail {
 
 export default function AdminOrderDetailPage() {
     const params = useParams();
-    const router = useRouter();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     const [order, setOrder] = useState<OrderDetail | null>(null);
@@ -61,13 +58,7 @@ export default function AdminOrderDetailPage() {
 
     const orderId = params.id as string;
 
-    useEffect(() => {
-        if (orderId) {
-            loadOrder();
-        }
-    }, [orderId]);
-
-    const loadOrder = async () => {
+    const loadOrder = useCallback(async () => {
         try {
             const response = await adminAPI.getOrder(orderId);
             setOrder(response.data);
@@ -77,7 +68,13 @@ export default function AdminOrderDetailPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [orderId]);
+
+    useEffect(() => {
+        if (orderId) {
+            loadOrder();
+        }
+    }, [orderId, loadOrder]);
 
     const handleUpdateStatus = async (newStatus: string) => {
         if (!confirm(`Are you sure you want to change status to ${newStatus}?`)) return;
