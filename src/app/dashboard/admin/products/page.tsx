@@ -547,7 +547,7 @@ export default function AdminProductsPage() {
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
                                     <select value={selectedProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
-                                        {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                 </div>
                                 <div>
