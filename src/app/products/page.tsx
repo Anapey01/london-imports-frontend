@@ -43,7 +43,7 @@ export async function generateMetadata(
     };
 }
 
-export default async function ProductsPage() {
+export default async function ProductsPage({ searchParams }: Props) {
     // Fetch initial data on server (SSG/ISR)
     const [categories, productsData] = await Promise.all([
         getCategories(),
@@ -51,6 +51,10 @@ export default async function ProductsPage() {
     ]);
 
     const initialProducts = productsData?.results || [];
+
+    // Extract filters from URL
+    const search = typeof searchParams?.search === 'string' ? searchParams.search : undefined;
+    const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -70,6 +74,8 @@ export default async function ProductsPage() {
                 <ProductGrid
                     initialProducts={initialProducts}
                     categories={categories}
+                    initialSearch={search}
+                    initialCategory={category}
                 />
             </div>
 

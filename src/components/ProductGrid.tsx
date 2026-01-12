@@ -8,12 +8,19 @@ import ProductCard from '@/components/ProductCard';
 interface ProductGridProps {
     initialProducts?: any[];
     categories?: any[];
+    initialSearch?: string;
+    initialCategory?: string;
 }
 
-export default function ProductGrid({ initialProducts = [], categories = [] }: ProductGridProps) {
-    const [category, setCategory] = useState('');
+export default function ProductGrid({
+    initialProducts = [],
+    categories = [],
+    initialSearch = '',
+    initialCategory = ''
+}: ProductGridProps) {
+    const [category, setCategory] = useState(initialCategory);
     const [status, setStatus] = useState('');
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(initialSearch);
 
     // Fetch categories dynamically (fallback to initial if simple, but here we might just re-use)
     // Actually, if we pass categories, we might not need to fetch immediately.
