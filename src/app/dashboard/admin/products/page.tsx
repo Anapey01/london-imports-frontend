@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { adminAPI } from '@/lib/api';
+import { adminAPI, productsAPI } from '@/lib/api';
 import { Search, Plus, Filter, MoreVertical, Edit, Trash2, Eye, Star, Clock } from 'lucide-react';
 
 interface Product {
@@ -25,16 +25,7 @@ interface Product {
     expectedDate?: string;
 }
 
-const CATEGORIES = [
-    'Electronics',
-    'Fashion',
-    'Phones & Tablets',
-    'Computers',
-    'Home & Living',
-    'Beauty & Health',
-    'Gaming',
-    'Accessories'
-];
+// Categories will be fetched from API
 
 // Category icons as SVG paths
 const getCategoryIcon = (category: string) => {
@@ -63,6 +54,7 @@ export default function AdminProductsPage() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [categories, setCategories] = useState<string[]>([]);
     const [newProduct, setNewProduct] = useState({
         name: '',
         description: '',
@@ -76,25 +68,30 @@ export default function AdminProductsPage() {
     });
 
     useEffect(() => {
-        const loadProducts = async () => {
+        const loadData = async () => {
             try {
-                const response = await adminAPI.products();
-                // Map API response if necessary or use directly if matches interface
-                // API returns list of objects matching Product interface mostly
-                setProducts(response.data.results || response.data || []);
+                // Load products and categories in parallel
+                const [productsRes, categoriesRes] = await Promise.all([
+                    adminAPI.products(),
+                    productsAPI.categories()
+                ]);
+                setProducts(productsRes.data.results || productsRes.data || []);
+                // Extract category names from API response
+                const catData = categoriesRes.data.results || categoriesRes.data || [];
+                setCategories(catData.map((c: { name: string }) => c.name));
             } catch (err) {
-                console.error('Failed to load products:', err);
+                console.error('Failed to load data:', err);
             } finally {
                 setLoading(false);
             }
         };
-        loadProducts();
+        loadData();
     }, []);
 
     const filteredProducts = products.filter((product: Product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.vendor.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = categoryFilter === 'All' || product.category === categoryFilter;
+        const matchesCategory = categoryFilter === 'ALL' || product.category === categoryFilter;
         const matchesStatus = statusFilter === 'ALL' || product.status === statusFilter; // Keep status filter
         return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -267,7 +264,7 @@ export default function AdminProductsPage() {
                         className={`px-4 py-2.5 rounded-lg border text-sm ${isDark ? 'bg-slate-900/50 border-slate-700 text-white' : 'bg-gray-50 border-gray-200'}`}
                     >
                         <option value="ALL">All Categories</option>
-                        {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </select>
                     <select
                         value={statusFilter}
@@ -475,7 +472,7 @@ export default function AdminProductsPage() {
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
                                     <select value={newProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
-                                        {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                 </div>
                                 <div>
