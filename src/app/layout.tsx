@@ -16,9 +16,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 const Footer = dynamic(() => import("@/components/Footer"), {
   loading: () => <div className="h-64 bg-gray-100" />,
 });
-const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"), {
-  ssr: false, // Mobile-only, no SSR needed
-});
+const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 
 // Google Analytics ID
 const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
