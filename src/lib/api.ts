@@ -55,9 +55,10 @@ api.interceptors.response.use(
 
         // Retry original request
         return api(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed - User must login
-        if (typeof window !== 'undefined') {
+      } catch (refreshError: any) {
+        // Refresh failed - User must login ONLY if it's an auth error (401/403)
+        // We do NOT logout on network errors (status 0/undefined/500) to prevent instability
+        if (typeof window !== 'undefined' && refreshError.response && (refreshError.response.status === 401 || refreshError.response.status === 403)) {
           // Clear any local auth state
           localStorage.removeItem('access_token');
           localStorage.removeItem('user');

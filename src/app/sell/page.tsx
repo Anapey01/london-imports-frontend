@@ -73,7 +73,7 @@ export default function SellPage() {
                                 <ArrowRight className="w-5 h-5" />
                             </Link>
                             <Link
-                                href="/login"
+                                href="/login?role=vendor&redirect=/dashboard/vendor"
                                 className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-medium border transition-all active:scale-[0.98] ${isDark
                                     ? 'border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
                                     : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -127,7 +127,7 @@ export default function SellPage() {
                                 <ArrowRight className="w-5 h-5" />
                             </Link>
                             <Link
-                                href="/login"
+                                href="/login?role=partner&redirect=/dashboard/vendor"
                                 className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-medium border transition-all active:scale-[0.98] ${isDark
                                     ? 'border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
                                     : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900'

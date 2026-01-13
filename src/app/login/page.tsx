@@ -13,11 +13,21 @@ function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/profile';
+    const role = searchParams.get('role'); // 'vendor' | 'partner' | 'admin'
 
     const { login, isLoading } = useAuthStore();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    const getTitle = () => {
+        switch (role) {
+            case 'vendor': return 'Seller Portal';
+            case 'partner': return 'Partner Portal';
+            case 'admin': return 'Admin Dashboard';
+            default: return 'Welcome Back';
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,8 +45,10 @@ function LoginForm() {
     return (
         <div className="w-full max-w-sm mx-auto">
             <div className="text-center mb-10">
-                <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">Welcome Back</h1>
-                <p className="text-gray-500 font-light text-sm">Please sign in to your account</p>
+                <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">{getTitle()}</h1>
+                <p className="text-gray-500 font-light text-sm">
+                    {role ? `Sign in to manage your ${role} account` : 'Please sign in to your account'}
+                </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

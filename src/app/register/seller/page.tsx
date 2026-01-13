@@ -523,7 +523,7 @@ export default function VendorRegisterPage() {
                     </div>
 
                     <div className={`mt-8 text-center text-sm ${theme === 'dark' ? 'text-slate-500' : 'text-gray-400'}`}>
-                        Already have an account? <Link href="/login" className="text-pink-600 hover:underline">Log in</Link>
+                        Already have an account? <Link href="/login?role=vendor&redirect=/dashboard/vendor" className="text-pink-600 hover:underline">Log in</Link>
                     </div>
                 </div>
             </div>

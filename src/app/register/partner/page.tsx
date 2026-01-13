@@ -226,7 +226,7 @@ export default function PartnerRegisterPage() {
                                 </button>
                             </div>
                             <div className="text-center">
-                                <Link href="/login" className="text-indigo-500 hover:text-indigo-400 text-sm font-medium hover:underline">
+                                <Link href="/login?role=partner&redirect=/dashboard/vendor" className="text-indigo-500 hover:text-indigo-400 text-sm font-medium hover:underline">
                                     Already have an account? Log in
                                 </Link>
                             </div>
