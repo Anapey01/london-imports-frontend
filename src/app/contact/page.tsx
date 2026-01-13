@@ -99,7 +99,7 @@ export default function ContactPage() {
                 <div className="grid grid-cols-2 gap-4">
                     {/* Email */}
                     <a
-                        href="mailto:londonimportsghana@gmail.com"
+                        href="mailto:info@londonsimports.com"
                         className={`p-4 rounded-2xl shadow-sm hover:shadow-md transition-all ${isDark ? 'bg-slate-800' : 'bg-white'}`}
                     >
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-3 shadow-lg shadow-pink-500/20">
@@ -108,7 +108,7 @@ export default function ContactPage() {
                             </svg>
                         </div>
                         <h3 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Email</h3>
-                        <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>londonimportsghana@gmail.com</p>
+                        <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>info@londonsimports.com</p>
                     </a>
 
                     {/* Location */}

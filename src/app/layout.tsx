@@ -100,7 +100,7 @@ export default async function RootLayout({
     "logo": "https://londonsimports.com/logo.png",
     "image": "https://londonsimports.com/og-image.jpg",
     "telephone": "+233541096372",
-    "email": "Atsweilondon@gmail.com",
+    "email": "info@londonsimports.com",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "GM-1739 Felchris Estate 2, Danfa",
