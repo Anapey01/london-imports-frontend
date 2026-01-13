@@ -62,10 +62,10 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                 <div className="flex-1 overflow-y-auto py-6 px-4">
                     <nav className="flex flex-col gap-2">
                         <MenuItem
-                            href="/products?featured=true"
+                            href="/products?status=READY_TO_SHIP"
                             icon={<Flame className="w-5 h-5 text-orange-500" />}
-                            label="Upcoming Drops"
-                            description="Exclusive limited releases"
+                            label="Available Items"
+                            description="Instant purchase available"
                             onClick={onClose}
                         />
                         <MenuItem

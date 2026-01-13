@@ -105,9 +105,9 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     </button>
                 </div>
 
-                {/* Featured / Upcoming Drops - Highlighted */}
+                {/* Featured / Available Items - Highlighted */}
                 <Link
-                    href="/products?featured=true"
+                    href="/products?status=READY_TO_SHIP"
                     onClick={onClose}
                     className="flex items-center gap-4 px-4 py-4 bg-orange-50/50 hover:bg-orange-50 border-b border-orange-100 transition-colors"
                 >
@@ -115,8 +115,8 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <Flame className="w-5 h-5" />
                     </div>
                     <div>
-                        <span className="block font-bold text-gray-900 text-base">Upcoming Drops</span>
-                        <span className="block text-xs text-orange-600 font-medium">Exclusive limited releases</span>
+                        <span className="block font-bold text-gray-900 text-base">Available Items</span>
+                        <span className="block text-xs text-orange-600 font-medium">Instant purchase available</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-orange-300 ml-auto" />
                 </Link>

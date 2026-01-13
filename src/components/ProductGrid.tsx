@@ -27,6 +27,7 @@ interface ProductGridProps {
     initialSearch?: string;
     initialCategory?: string;
     initialFeatured?: boolean;
+    initialStatus?: string;
 }
 
 export default function ProductGrid({
@@ -34,10 +35,11 @@ export default function ProductGrid({
     categories = [],
     initialSearch = '',
     initialCategory = '',
-    initialFeatured = false
+    initialFeatured = false,
+    initialStatus = ''
 }: ProductGridProps) {
     const [category, setCategory] = useState(initialCategory);
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState(initialStatus);
     const [search, setSearch] = useState(initialSearch);
     const [featured, setFeatured] = useState(initialFeatured);
 

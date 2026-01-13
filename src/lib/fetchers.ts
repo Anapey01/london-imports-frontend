@@ -35,6 +35,10 @@ export async function getRecentProducts(limit = 20) {
     return getProducts({ limit: limit.toString(), ordering: '-created_at' });
 }
 
+export async function getAvailableProducts(limit = 10) {
+    return getProducts({ status: 'READY_TO_SHIP', limit: limit.toString(), ordering: '-created_at' });
+}
+
 export async function getCategories() {
     try {
         const res = await fetch(`${API_BASE_URL}/products/categories/`, {
