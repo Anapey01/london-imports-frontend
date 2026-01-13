@@ -78,7 +78,12 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col">
                 {/* Image Section */}
                 <div className="relative aspect-square p-4 bg-white dark:bg-slate-800 flex items-center justify-center transition-colors">
-                    {(product.reservations_count || 0) > 0 && (
+                    {product.preorder_status === 'READY_TO_SHIP' ? (
+                        <div className="absolute top-2 right-2 bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200 z-10 shadow-sm flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            Ready to Ship
+                        </div>
+                    ) : (product.reservations_count || 0) > 0 && (
                         <div className="absolute top-2 right-2 bg-yellow-50 dark:bg-yellow-900/30 text-orange-800 dark:text-yellow-200 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100 dark:border-yellow-900/50 z-10">
                             {product.reservations_count || 0} reserved
                         </div>

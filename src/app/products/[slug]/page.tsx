@@ -63,7 +63,12 @@ export async function generateMetadata(
     // 4. Construct Metadata
     const productImageUrl = getAbsoluteImageUrl(product.image);
     const productTitle = `${product.name} - London's Imports`;
-    const productDescription = product.description?.substring(0, 160) || `Pre-order ${product.name} from London's Imports. Authentic products delivered to Ghana.`;
+
+    // Dynamic Description
+    const isReadyToShip = product.preorder_status === 'READY_TO_SHIP';
+    const descriptionPrefix = isReadyToShip ? 'Buy' : 'Pre-order';
+    const productDescription = product.description?.substring(0, 160) || `${descriptionPrefix} ${product.name} from London's Imports. Authentic products delivered to Ghana.`;
+
     const pageUrl = `https://londonsimports.com/products/${slug}`;
 
     return {
@@ -154,7 +159,7 @@ export default async function ProductDetailPage({ params }: Props) {
             "priceCurrency": "GHS",
             "price": product.price,
             "priceValidUntil": product.cutoff_datetime || new Date(new Date().getFullYear() + 1, 0, 1).toISOString(),
-            "availability": "https://schema.org/PreOrder",
+            "availability": product.preorder_status === 'READY_TO_SHIP' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
             "url": `https://www.londonsimports.com/products/${slug}`,
             "shippingDetails": {
                 "@type": "OfferShippingDetails",
@@ -167,8 +172,8 @@ export default async function ProductDetailPage({ params }: Props) {
                     "@type": "ShippingDeliveryTime",
                     "handlingTime": {
                         "@type": "QuantitativeValue",
-                        "minValue": 56,
-                        "maxValue": 63,
+                        "minValue": product.preorder_status === 'READY_TO_SHIP' ? 1 : 14,
+                        "maxValue": product.preorder_status === 'READY_TO_SHIP' ? 2 : 28,
                         "unitCode": "DAY"
                     }
                 }

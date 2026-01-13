@@ -204,28 +204,43 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* Product Specs Row - below image */}
                         <div className="flex justify-center gap-8 mt-4 pt-4 border-t border-gray-100">
                             <div className="flex flex-col items-center text-center">
-                                <svg className="w-7 h-7 text-[#006B5A] mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                <svg className={`w-7 h-7 mb-2 ${product.preorder_status === 'READY_TO_SHIP' ? 'text-green-600' : 'text-[#006B5A]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={product.preorder_status === 'READY_TO_SHIP' ? "M5 13l4 4L19 7" : "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"} />
                                 </svg>
-                                <span className="text-sm font-bold text-gray-900">{product.delivery_window_text}</span>
+                                <span className="text-sm font-bold text-gray-900">
+                                    {product.preorder_status === 'READY_TO_SHIP' ? 'Ships within 24h' : product.delivery_window_text}
+                                </span>
                                 <span className="text-xs text-gray-500">Delivery</span>
                             </div>
 
                             <div className="flex flex-col items-center text-center">
-                                <div className="w-7 h-7 bg-[#006B5A] rounded-full flex items-center justify-center mb-2">
-                                    <span className="text-white text-[10px] font-bold">PRE</span>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${product.preorder_status === 'READY_TO_SHIP' ? 'bg-green-600' : 'bg-[#006B5A]'}`}>
+                                    <span className="text-white text-[10px] font-bold">{product.preorder_status === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}</span>
                                 </div>
                                 <span className="text-sm font-bold text-gray-900">{product.category?.name}</span>
                                 <span className="text-xs text-gray-500">Category</span>
                             </div>
 
-                            {product.reservations_count > 0 && (
+                            {/* Show Reserved only if not fully available or if we want social proof? Maybe hide for available items to reduce clutter? */}
+                            {/* User requested differentiation, so let's keep it clean for Available Items unless high demand */}
+                            {product.reservations_count > 0 && product.preorder_status !== 'READY_TO_SHIP' && (
                                 <div className="flex flex-col items-center text-center">
                                     <svg className="w-7 h-7 text-[#F5A623] mb-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                                     </svg>
                                     <span className="text-sm font-bold text-gray-900">{product.reservations_count}+</span>
                                     <span className="text-xs text-gray-500">Reserved</span>
+                                </div>
+                            )}
+
+                            {/* Stock Count for Ready Items */}
+                            {product.preorder_status === 'READY_TO_SHIP' && (
+                                <div className="flex flex-col items-center text-center">
+                                    <svg className="w-7 h-7 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span className="text-sm font-bold text-gray-900">In Stock</span>
+                                    <span className="text-xs text-gray-500">Available</span>
                                 </div>
                             )}
                         </div>
@@ -281,7 +296,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <span className="text-sm text-gray-600 font-medium">
                                 {Number(product.rating ?? 0).toFixed(1)}
                                 <span className="mx-1.5 text-gray-300">|</span>
-                                {product.reservations_count || 0} Pre-orders
+                                {product.preorder_status === 'READY_TO_SHIP' ? 'Ready to Ship' : `${product.reservations_count || 0} Pre-orders`}
                             </span>
                         </div>
 
@@ -408,9 +423,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <button
                                 onClick={handleAddToCart}
                                 disabled={isAdding || (product.preorder_status === 'SOLD_OUT')}
-                                className="flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors disabled:opacity-50"
+                                className={`flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base ${product.preorder_status === 'READY_TO_SHIP' ? 'bg-pink-600 hover:bg-pink-700' : 'bg-orange-500 hover:bg-orange-600'} text-white rounded-full transition-colors disabled:opacity-50`}
                             >
-                                Start order
+                                {product.preorder_status === 'READY_TO_SHIP' ? 'Buy Now' : 'Start Order'}
                             </button>
                         </div>
 
