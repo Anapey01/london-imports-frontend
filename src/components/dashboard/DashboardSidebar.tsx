@@ -10,11 +10,18 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 
-export default function DashboardSidebar() {
+interface DashboardSidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
+}
+
+export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
     const { logout } = useAuthStore();
     const { theme } = useTheme();
     const pathname = usePathname();
     const router = useRouter();
+
+    const isDark = theme === 'dark';
 
     const links = [
         {
@@ -48,7 +55,7 @@ export default function DashboardSidebar() {
         {
             name: 'Settings', href: '/dashboard/vendor/settings', icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.066 2.573c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             )
@@ -66,47 +73,76 @@ export default function DashboardSidebar() {
     };
 
     return (
-        <aside
-            className="w-64 min-h-screen border-r flex flex-col fixed left-0 top-0 pt-16"
-            style={{
-                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                borderColor: theme === 'dark' ? '#1e293b' : '#e5e7eb'
-            }}
-        >
-            <div className="flex-1 py-6 px-4 space-y-2">
-                {links.map((link) => {
-                    const isActive = pathname === link.href;
-                    return (
-                        <Link
-                            key={link.name}
-                            href={link.href}
-                            className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium"
-                            style={{
-                                backgroundColor: isActive ? (theme === 'dark' ? '#1e293b' : '#f3f4f6') : 'transparent',
-                                color: isActive
-                                    ? '#ec4899' // Pink-500
-                                    : (theme === 'dark' ? '#94a3b8' : '#6b7280')
-                            }}
-                        >
-                            {link.icon}
-                            {link.name}
-                        </Link>
-                    );
-                })}
-            </div>
+        <>
+            {/* Mobile Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+                    onClick={onClose}
+                />
+            )}
 
-            <div className="p-4 border-t" style={{ borderColor: theme === 'dark' ? '#1e293b' : '#e5e7eb' }}>
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl w-full transition-colors font-medium"
-                    style={{ color: '#ef4444' }}
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sign Out
-                </button>
-            </div>
-        </aside>
+            <aside
+                className={`w-72 min-h-screen border-r flex flex-col fixed left-0 top-0 pt-0 md:pt-20 z-50 transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    } ${isDark
+                        ? 'bg-slate-900/95 border-slate-800 backdrop-blur-xl'
+                        : 'bg-white/95 border-gray-100 backdrop-blur-xl'
+                    }`}
+            >
+                {/* Mobile Header in Sidebar */}
+                <div className="md:hidden p-6 flex items-center justify-between border-b" style={{ borderColor: isDark ? '#1e293b' : '#f1f5f9' }}>
+                    <span className="font-bold text-lg bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">Menu</span>
+                    <button onClick={onClose} className={`p-2 rounded-lg ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-400 hover:bg-gray-100'}`}>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+                    {links.map((link) => {
+                        const isActive = pathname === link.href;
+                        return (
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                onClick={onClose}
+                                className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group font-medium ${isActive
+                                    ? isDark
+                                        ? 'bg-pink-500/10 text-pink-400'
+                                        : 'bg-pink-50 text-pink-600 shadow-sm shadow-pink-100'
+                                    : isDark
+                                        ? 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    }`}
+                            >
+                                <div className={`transition-transform duration-200 group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}>
+                                    {link.icon}
+                                </div>
+                                {link.name}
+                                {isActive && (
+                                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-pink-500" />
+                                )}
+                            </Link>
+                        );
+                    })}
+                </div>
+
+                <div className="p-4 border-t" style={{ borderColor: isDark ? '#1e293b' : '#f1f5f9' }}>
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full transition-all hover:bg-red-50 hover:text-red-600 group font-medium"
+                        style={{ color: '#ef4444' }}
+                    >
+                        <div className="group-hover:translate-x-1 transition-transform">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </div>
+                        Sign Out
+                    </button>
+                </div>
+            </aside>
+        </>
     );
 }
