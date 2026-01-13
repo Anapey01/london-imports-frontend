@@ -314,7 +314,6 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     Sell on London&apos;s Imports
                 </Link>
 
-                {/* Help Center */}
                 <Link
                     href="/faq"
                     onClick={onClose}
@@ -322,6 +321,23 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 >
                     Help Center
                 </Link>
+
+                {/* Trustpilot - External Link */}
+                <a
+                    href="https://www.trustpilot.com/review/londonsimports.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={onClose}
+                    className="flex items-center justify-between px-4 py-4 border-b border-gray-100 hover:bg-green-50/50 transition-colors group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#00b67a]/10 flex items-center justify-center text-[#00b67a] group-hover:bg-[#00b67a] group-hover:text-white transition-colors">
+                            <Star className="w-4 h-4 fill-current" />
+                        </div>
+                        <span className="text-lg font-medium text-gray-800">Trustpilot Reviews</span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#00b67a]" />
+                </a>
 
                 {/* Social Media Links */}
                 <div className="px-4 py-6">
