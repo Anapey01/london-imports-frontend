@@ -26,26 +26,25 @@ interface ProductGridProps {
     categories?: Category[];
     initialSearch?: string;
     initialCategory?: string;
+    initialFeatured?: boolean;
 }
 
 export default function ProductGrid({
     initialProducts = [],
     categories = [],
     initialSearch = '',
-    initialCategory = ''
+    initialCategory = '',
+    initialFeatured = false
 }: ProductGridProps) {
     const [category, setCategory] = useState(initialCategory);
     const [status, setStatus] = useState('');
     const [search, setSearch] = useState(initialSearch);
-
-    // Fetch categories dynamically (fallback to initial if simple, but here we might just re-use)
-    // Actually, if we pass categories, we might not need to fetch immediately.
-    // But filters are dynamic. Let's keep existing logic but use initial data.
+    const [featured, setFeatured] = useState(initialFeatured);
 
     // Fetch products with filters
     const { data: productsData, isLoading } = useQuery({
-        queryKey: ['products', category, status, search],
-        queryFn: () => productsAPI.list({ category, status, search }),
+        queryKey: ['products', category, status, search, featured],
+        queryFn: () => productsAPI.list({ category, status, search, featured }),
     });
 
     // Helper to normalize data structure
@@ -54,7 +53,8 @@ export default function ProductGrid({
         if (productsData?.data?.results) return productsData.data.results;
         if (productsData?.data && Array.isArray(productsData.data)) return productsData.data;
         // Fallback to initial if no filter applied (though initialData handles this)
-        if (!category && !status && !search) return initialProducts;
+        // Fallback to initial if no filter applied (though initialData handles this)
+        if (!category && !status && !search && !featured) return initialProducts;
         return [];
     };
 
