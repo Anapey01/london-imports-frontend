@@ -217,350 +217,313 @@ export default function VendorRegisterPage() {
     }
 
     return (
-        <div className="min-h-screen py-12 px-4" style={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#f9fafb' }}>
-            <div className="max-w-2xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold mb-2" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
-                        Join Marketplace
-                    </h1>
-                    <p style={{ color: theme === 'dark' ? '#94a3b8' : '#6b7280' }}>
-                        Start selling your products on our main marketplace feed.
-                    </p>
-                </div>
+        <div className={`min-h-screen transition-colors ${theme === 'dark' ? 'bg-slate-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+            {/* Ambient Background */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 ${theme === 'dark' ? 'bg-purple-900' : 'bg-pink-300'}`} />
+                <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 ${theme === 'dark' ? 'bg-pink-900' : 'bg-purple-300'}`} />
+            </div>
 
-                {/* Progress Steps */}
-                <div className="flex justify-between mb-8">
-                    {steps.map((step) => {
-                        const isCompleted = currentStep > step.id;
-                        const isActive = currentStep >= step.id;
-                        const iconColor = isActive ? '#ffffff' : (theme === 'dark' ? '#94a3b8' : '#6b7280');
-
-                        return (
-                            <div key={step.id} className="flex-1 text-center">
-                                <div
-                                    className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 transition-all ${isActive ? '' : 'opacity-50'}`}
-                                    style={{
-                                        backgroundColor: isActive ? '#ec4899' : (theme === 'dark' ? '#334155' : '#e5e7eb'),
-                                    }}
-                                >
-                                    {isCompleted ? StepIcons.check(iconColor) : StepIcons[step.iconKey](iconColor)}
-                                </div>
-                                <span className="text-xs font-medium hidden sm:block" style={{ color: theme === 'dark' ? '#94a3b8' : '#6b7280' }}>
-                                    {step.name}
-                                </span>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Form Card */}
-                <div className="rounded-2xl shadow-lg p-6 sm:p-8" style={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff' }}>
-                    <form onSubmit={handleSubmit}>
-                        {error && (
-                            <div className="mb-6 px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: '#fef2f2', color: '#dc2626' }}>
-                                {error}
-                            </div>
-                        )}
-
-                        {/* Step 1: Account */}
-                        {currentStep === 1 && (
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-bold mb-4" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
-                                    Create Your Account
-                                </h2>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1" style={labelStyle}>First Name *</label>
-                                        <input
-                                            type="text"
-                                            name="first_name"
-                                            value={formData.first_name}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                            style={inputStyle}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1" style={labelStyle}>Last Name *</label>
-                                        <input
-                                            type="text"
-                                            name="last_name"
-                                            value={formData.last_name}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                            style={inputStyle}
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Email *</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Phone Number *</label>
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        placeholder="0XX XXX XXXX"
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Password *</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Confirm Password *</label>
-                                    <input
-                                        type="password"
-                                        name="password_confirm"
-                                        value={formData.password_confirm}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 2: Business */}
-                        {currentStep === 2 && (
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-bold mb-4" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
-                                    Business Information
-                                </h2>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Business Name *</label>
-                                    <input
-                                        type="text"
-                                        name="business_name"
-                                        value={formData.business_name}
-                                        onChange={handleChange}
-                                        placeholder="Your store or business name"
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Business Description</label>
-                                    <textarea
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleChange}
-                                        rows={4}
-                                        placeholder="Tell customers about your business and what you sell..."
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 resize-none"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>WhatsApp Number</label>
-                                    <input
-                                        type="tel"
-                                        name="whatsapp"
-                                        value={formData.whatsapp}
-                                        onChange={handleChange}
-                                        placeholder="For customer inquiries"
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 3: Location */}
-                        {currentStep === 3 && (
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-bold mb-4" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
-                                    Business Location
-                                </h2>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Region *</label>
-                                    <select
-                                        name="region"
-                                        value={formData.region}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    >
-                                        <option value="">Select Region</option>
-                                        <option value="Greater Accra">Greater Accra</option>
-                                        <option value="Ashanti">Ashanti</option>
-                                        <option value="Central">Central</option>
-                                        <option value="Western">Western</option>
-                                        <option value="Eastern">Eastern</option>
-                                        <option value="Volta">Volta</option>
-                                        <option value="Northern">Northern</option>
-                                        <option value="Upper East">Upper East</option>
-                                        <option value="Upper West">Upper West</option>
-                                        <option value="Brong Ahafo">Brong Ahafo</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>City *</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleChange}
-                                        placeholder="e.g., Accra, Kumasi, Tema"
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Full Address</label>
-                                    <textarea
-                                        name="address"
-                                        value={formData.address}
-                                        onChange={handleChange}
-                                        rows={3}
-                                        placeholder="Street address, landmark, etc."
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 resize-none"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 4: Bank */}
-                        {currentStep === 4 && (
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-bold mb-4" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
-                                    Bank Details for Payouts
-                                </h2>
-                                <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fef3c7', color: theme === 'dark' ? '#fcd34d' : '#92400e' }}>
-                                    <p className="text-sm flex items-center gap-2">
-                                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Your earnings will be transferred to this account. Make sure the details are correct.
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Bank Name *</label>
-                                    <select
-                                        name="bank_name"
-                                        value={formData.bank_name}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    >
-                                        <option value="">Select Bank</option>
-                                        <option value="MTN Mobile Money">MTN Mobile Money</option>
-                                        <option value="Vodafone Cash">Vodafone Cash</option>
-                                        <option value="AirtelTigo Money">AirtelTigo Money</option>
-                                        <option value="GCB Bank">GCB Bank</option>
-                                        <option value="Ecobank">Ecobank</option>
-                                        <option value="Fidelity Bank">Fidelity Bank</option>
-                                        <option value="CAL Bank">CAL Bank</option>
-                                        <option value="Stanbic Bank">Stanbic Bank</option>
-                                        <option value="Standard Chartered">Standard Chartered</option>
-                                        <option value="Zenith Bank">Zenith Bank</option>
-                                        <option value="Access Bank">Access Bank</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Account Number *</label>
-                                    <input
-                                        type="text"
-                                        name="bank_account_number"
-                                        value={formData.bank_account_number}
-                                        onChange={handleChange}
-                                        placeholder="Your account or mobile money number"
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1" style={labelStyle}>Account Name *</label>
-                                    <input
-                                        type="text"
-                                        name="bank_account_name"
-                                        value={formData.bank_account_name}
-                                        onChange={handleChange}
-                                        placeholder="Name on the account"
-                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Navigation Buttons */}
-                        <div className="flex justify-between mt-8">
-                            {currentStep > 1 ? (
-                                <button
-                                    type="button"
-                                    onClick={prevStep}
-                                    className="px-6 py-2 rounded-lg font-medium"
-                                    style={{
-                                        backgroundColor: theme === 'dark' ? '#334155' : '#e5e7eb',
-                                        color: theme === 'dark' ? '#f8fafc' : '#374151'
-                                    }}
-                                >
-                                    ← Back
-                                </button>
-                            ) : (
-                                <Link
-                                    href="/register"
-                                    className="px-6 py-2 rounded-lg font-medium"
-                                    style={{
-                                        backgroundColor: theme === 'dark' ? '#334155' : '#e5e7eb',
-                                        color: theme === 'dark' ? '#f8fafc' : '#374151'
-                                    }}
-                                >
-                                    ← Cancel
-                                </Link>
-                            )}
-
-                            {currentStep < 4 ? (
-                                <button
-                                    type="button"
-                                    onClick={nextStep}
-                                    className="px-6 py-2 rounded-lg font-semibold text-white"
-                                    style={{ background: 'linear-gradient(to right, #ec4899, #f43f5e)' }}
-                                >
-                                    Next →
-                                </button>
-                            ) : (
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-6 py-2 rounded-lg font-semibold text-white disabled:opacity-50"
-                                    style={{ background: 'linear-gradient(to right, #ec4899, #f43f5e)' }}
-                                >
-                                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                                </button>
-                            )}
-                        </div>
-                    </form>
-
-                    {/* Already have account */}
-                    <div className="mt-6 text-center text-sm" style={{ color: theme === 'dark' ? '#94a3b8' : '#6b7280' }}>
-                        Already a vendor?{' '}
-                        <Link href="/login" className="font-semibold" style={{ color: '#ec4899' }}>
-                            Sign in
+            <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-3xl mx-auto">
+                    {/* Header */}
+                    <div className="text-center mb-10">
+                        <Link href="/sell" className="inline-flex items-center text-sm text-gray-500 hover:text-pink-600 mb-6 transition-colors">
+                            ← Back to Options
                         </Link>
+                        <h1 className="text-4xl sm:text-5xl font-light mb-4">
+                            Join Marketplace
+                        </h1>
+                        <p className={`text-lg ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'}`}>
+                            Start selling your products on our main marketplace feed.
+                        </p>
+                    </div>
+
+                    {/* Progress Steps */}
+                    <div className="flex justify-between mb-10 px-4 md:px-12">
+                        {steps.map((step) => {
+                            const isCompleted = currentStep > step.id;
+                            const isActive = currentStep >= step.id;
+                            const iconColor = isActive ? '#ffffff' : (theme === 'dark' ? '#94a3b8' : '#6b7280');
+
+                            return (
+                                <div key={step.id} className="flex flex-col items-center">
+                                    <div
+                                        className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 transition-all shadow-lg ${isActive ? 'bg-gradient-to-br from-pink-500 to-rose-600 scale-110' : (theme === 'dark' ? 'bg-slate-800' : 'bg-white')}`}
+                                    >
+                                        {isCompleted ? StepIcons.check(iconColor) : StepIcons[step.iconKey](iconColor)}
+                                    </div>
+                                    <span className={`text-xs font-medium hidden sm:block ${isActive ? 'text-pink-600' : 'text-gray-500'}`}>
+                                        {step.name}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Form Card */}
+                    <div className={`rounded-[2rem] p-8 sm:p-10 border transition-all ${theme === 'dark'
+                        ? 'bg-slate-900/50 border-slate-800 backdrop-blur-xl'
+                        : 'bg-white/80 border-gray-100 shadow-2xl shadow-gray-200/50 backdrop-blur-xl'
+                        }`}>
+                        <form onSubmit={handleSubmit}>
+                            {error && (
+                                <div className="mb-6 px-4 py-3 rounded-xl text-sm bg-red-50 text-red-600 border border-red-100 flex items-center gap-2">
+                                    <span className="font-bold">Error:</span> {error}
+                                </div>
+                            )}
+
+                            {/* Step 1: Account */}
+                            {currentStep === 1 && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <h2 className="text-2xl font-medium mb-6">Create Your Account</h2>
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">First Name</label>
+                                            <input
+                                                type="text"
+                                                name="first_name"
+                                                value={formData.first_name}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Last Name</label>
+                                            <input
+                                                type="text"
+                                                name="last_name"
+                                                value={formData.last_name}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Email</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Phone</label>
+                                        <input
+                                            type="tel"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            placeholder="0XX XXX XXXX"
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Password</label>
+                                            <input
+                                                type="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Confirm</label>
+                                            <input
+                                                type="password"
+                                                name="password_confirm"
+                                                value={formData.password_confirm}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 2: Business */}
+                            {currentStep === 2 && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <h2 className="text-2xl font-medium mb-6">Business Details</h2>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Business Name</label>
+                                        <input
+                                            type="text"
+                                            name="business_name"
+                                            value={formData.business_name}
+                                            onChange={handleChange}
+                                            placeholder="Your store name"
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Description</label>
+                                        <textarea
+                                            name="description"
+                                            value={formData.description}
+                                            onChange={handleChange}
+                                            rows={4}
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none resize-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">WhatsApp</label>
+                                        <input
+                                            type="tel"
+                                            name="whatsapp"
+                                            value={formData.whatsapp}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 3: Location */}
+                            {currentStep === 3 && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <h2 className="text-2xl font-medium mb-6">Location</h2>
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Region</label>
+                                            <select
+                                                name="region"
+                                                value={formData.region}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            >
+                                                <option value="">Select Region</option>
+                                                <option value="Greater Accra">Greater Accra</option>
+                                                <option value="Ashanti">Ashanti</option>
+                                                <option value="Central">Central</option>
+                                                <option value="Western">Western</option>
+                                                {/* Add others */}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">City</label>
+                                            <input
+                                                type="text"
+                                                name="city"
+                                                value={formData.city}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Address</label>
+                                        <textarea
+                                            name="address"
+                                            value={formData.address}
+                                            onChange={handleChange}
+                                            rows={2}
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none resize-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 4: Bank */}
+                            {currentStep === 4 && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <h2 className="text-2xl font-medium mb-6">Payout Details</h2>
+                                    <div className={`p-4 rounded-xl text-sm mb-6 ${theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-pink-50 text-pink-700'}`}>
+                                        Your earnings will be sent here. Ensure details are accurate.
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Bank / Provider</label>
+                                        <select
+                                            name="bank_name"
+                                            value={formData.bank_name}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                            style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                        >
+                                            <option value="">Select Provider</option>
+                                            <option value="MTN Mobile Money">MTN Mobile Money</option>
+                                            <option value="Vodafone Cash">Vodafone Cash</option>
+                                            <option value="GcB Bank">GCB Bank</option>
+                                            <option value="Ecobank">Ecobank</option>
+                                            {/* Add others */}
+                                        </select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Account Number</label>
+                                            <input
+                                                type="text"
+                                                name="bank_account_number"
+                                                value={formData.bank_account_number}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Account Name</label>
+                                            <input
+                                                type="text"
+                                                name="bank_account_name"
+                                                value={formData.bank_account_name}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none"
+                                                style={{ borderColor: theme === 'dark' ? '#334155' : '#e2e8f0' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Buttons */}
+                            <div className="flex justify-between mt-10 pt-6 border-t" style={{ borderColor: theme === 'dark' ? '#334155' : '#f1f5f9' }}>
+                                {currentStep > 1 ? (
+                                    <button
+                                        type="button"
+                                        onClick={prevStep}
+                                        className={`px-6 py-3 rounded-xl font-medium transition-all hover:bg-opacity-80 active:scale-95 ${theme === 'dark' ? 'bg-slate-800 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                    >
+                                        ← Back
+                                    </button>
+                                ) : (
+                                    <Link
+                                        href="/sell"
+                                        className={`px-6 py-3 rounded-xl font-medium transition-all hover:bg-opacity-80 active:scale-95 ${theme === 'dark' ? 'bg-slate-800 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                    >
+                                        Cancel
+                                    </Link>
+                                )}
+
+                                <button
+                                    type={currentStep === 4 ? 'submit' : 'button'}
+                                    onClick={currentStep === 4 ? undefined : nextStep}
+                                    disabled={isSubmitting}
+                                    className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 shadow-lg shadow-pink-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                                >
+                                    {currentStep === 4 ? (isSubmitting ? 'Submitting...' : 'Submit Application') : 'Next Step →'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div className={`mt-8 text-center text-sm ${theme === 'dark' ? 'text-slate-500' : 'text-gray-400'}`}>
+                        Already have an account? <Link href="/login" className="text-pink-600 hover:underline">Log in</Link>
                     </div>
                 </div>
             </div>
