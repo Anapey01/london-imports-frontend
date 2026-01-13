@@ -179,15 +179,7 @@ export default function VendorRegisterPage() {
         }
     };
 
-    const inputStyle = {
-        backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
-        color: theme === 'dark' ? '#f8fafc' : '#111827',
-        borderColor: theme === 'dark' ? '#475569' : '#d1d5db',
-    };
 
-    const labelStyle = {
-        color: theme === 'dark' ? '#e2e8f0' : '#374151',
-    };
 
     if (success) {
         return (

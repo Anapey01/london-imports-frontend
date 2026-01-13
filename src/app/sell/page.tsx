@@ -101,7 +101,7 @@ export default function SellPage() {
 
                         <h3 className="text-3xl font-medium mb-4">Strategic Partner</h3>
                         <p className={`text-lg mb-8 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            For established businesses. Get your own branded storefront, 100% payment control via Paystack, and "Auto-Verified" status.
+                            For established businesses. Get your own branded storefront, 100% payment control via Paystack, and &quot;Auto-Verified&quot; status.
                         </p>
 
                         <ul className="space-y-4 mb-10">
