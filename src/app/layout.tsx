@@ -5,13 +5,20 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import MobileBottomNav from "@/components/MobileBottomNav";
 import QueryProvider from "@/providers/QueryProvider";
 import { ToastProvider } from "@/components/Toast";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+
+// Lazy load below-the-fold components to reduce initial bundle
+const Footer = dynamic(() => import("@/components/Footer"), {
+  loading: () => <div className="h-64 bg-gray-100" />,
+});
+const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"), {
+  ssr: false, // Mobile-only, no SSR needed
+});
 
 // Google Analytics ID
 const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
@@ -263,9 +270,9 @@ export default async function RootLayout({
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
