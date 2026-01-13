@@ -132,7 +132,17 @@ export default function AdminOrderDetailPage() {
         );
     }
 
-    const whatsappUrl = `https://wa.me/${order.phone?.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${order.customer}, regarding order #${order.order_number} from London's Imports:`)}`;
+    const whatsappUrl = (() => {
+        if (!order.phone) return null;
+        let cleanPhone = order.phone.replace(/\D/g, '');
+        // Handle Ghana numbers: 0xx... -> 233xx...
+        if (cleanPhone.startsWith('0')) {
+            cleanPhone = '233' + cleanPhone.substring(1);
+        } else if (cleanPhone.length === 9) {
+            cleanPhone = '233' + cleanPhone;
+        }
+        return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hi ${order.customer}, regarding order #${order.order_number} from London's Imports:`)}`;
+    })();
 
     return (
         <div className={`min-h-screen pb-24 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
@@ -156,15 +166,17 @@ export default function AdminOrderDetailPage() {
                 <div className={`p-4 rounded-xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-sm`}>
                     <p className={`text-xs font-medium mb-3 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>QUICK ACTIONS</p>
                     <div className="grid grid-cols-2 gap-2">
-                        <a
-                            href={whatsappUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-lg text-sm font-medium"
-                        >
-                            <MessageCircle className="w-4 h-4" />
-                            WhatsApp
-                        </a>
+                        {whatsappUrl && (
+                            <a
+                                href={whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-lg text-sm font-medium"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                WhatsApp
+                            </a>
+                        )}
                         {order.payment_status !== 'PAID' && order.status !== 'CANCELLED' && (
                             <button
                                 onClick={handleMarkAsPaid}
