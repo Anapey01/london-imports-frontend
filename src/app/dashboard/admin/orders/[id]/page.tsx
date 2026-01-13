@@ -231,10 +231,11 @@ export default function AdminOrderDetailPage() {
                                                 e.currentTarget.style.display = 'none';
                                             }}
                                         />
-                                    ) : null}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Package className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                    </div>
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <Package className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>

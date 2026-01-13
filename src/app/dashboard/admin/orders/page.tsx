@@ -7,6 +7,8 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
+import { getImageUrl } from '@/lib/image';
+import Image from 'next/image';
 import { ChevronRight, Eye, X, Trash2 } from 'lucide-react';
 
 interface Order {
@@ -22,6 +24,7 @@ interface Order {
     status: string;
     payment_status: string;
     created_at: string;
+    thumbnail?: string;
     items?: Array<{
         id: number;
         product_name: string;
@@ -44,6 +47,7 @@ interface APIOrder {
     status?: string;
     payment_status?: string;
     created_at: string;
+    thumbnail?: string;
 }
 
 export default function AdminOrdersPage() {
@@ -124,6 +128,7 @@ export default function AdminOrdersPage() {
                     status: order.status || 'PENDING',
                     payment_status: order.payment_status || 'PENDING',
                     created_at: order.created_at,
+                    thumbnail: order.thumbnail,
                     items: order.items || []
                 })));
             } catch (err: unknown) {
@@ -239,10 +244,21 @@ export default function AdminOrdersPage() {
                             </span>
                         </div>
 
-                        {/* Customer Info */}
+                        {/* Customer Info & Thumbnail */}
                         <div className="flex items-center gap-3 mb-4">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
-                                {order.customer.name.charAt(0).toUpperCase()}
+                            <div className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                                {order.thumbnail ? (
+                                    <Image
+                                        src={getImageUrl(order.thumbnail)}
+                                        alt="Order Item"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <div className={`w-full h-full flex items-center justify-center text-sm font-bold ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                                        {order.customer.name.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -311,12 +327,26 @@ export default function AdminOrdersPage() {
                         {filteredOrders.map((order: Order) => (
                             <tr key={order.id} className={`${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'} transition-colors`}>
                                 <td className="px-6 py-4">
-                                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                        #{order.order_number || order.id.slice(0, 8)}...
-                                    </p>
-                                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                        {new Date(order.created_at).toLocaleString()}
-                                    </p>
+                                    <div className="flex items-center gap-3">
+                                        {order.thumbnail && (
+                                            <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700">
+                                                <Image
+                                                    src={getImageUrl(order.thumbnail)}
+                                                    alt="Thumbnail"
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                #{order.order_number || order.id.slice(0, 8)}...
+                                            </p>
+                                            <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                                {new Date(order.created_at).toLocaleString()}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4">
                                     <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{order.customer.name}</p>
