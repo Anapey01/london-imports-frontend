@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { X, Package, Truck, Info, HelpCircle } from 'lucide-react';
+import { X, Flame, Truck, Info, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -62,10 +62,10 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                 <div className="flex-1 overflow-y-auto py-6 px-4">
                     <nav className="flex flex-col gap-2">
                         <MenuItem
-                            href="/products"
-                            icon={<Package className="w-5 h-5" />}
-                            label="Pre-orders"
-                            description="Browse upcoming items"
+                            href="/products?featured=true"
+                            icon={<Flame className="w-5 h-5 text-orange-500" />}
+                            label="Upcoming Drops"
+                            description="Exclusive limited releases"
                             onClick={onClose}
                         />
                         <MenuItem

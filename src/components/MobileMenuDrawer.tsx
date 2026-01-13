@@ -27,6 +27,7 @@ import {
     LogOut,
     LogIn,
     Truck,
+    Flame,
 } from 'lucide-react';
 
 interface MobileMenuDrawerProps {
@@ -103,6 +104,22 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <X className="w-6 h-6" />
                     </button>
                 </div>
+
+                {/* Featured / Upcoming Drops - Highlighted */}
+                <Link
+                    href="/products?featured=true"
+                    onClick={onClose}
+                    className="flex items-center gap-4 px-4 py-4 bg-orange-50/50 hover:bg-orange-50 border-b border-orange-100 transition-colors"
+                >
+                    <div className="p-2 rounded-full bg-orange-100 text-orange-600">
+                        <Flame className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <span className="block font-bold text-gray-900 text-base">Upcoming Drops</span>
+                        <span className="block text-xs text-orange-600 font-medium">Exclusive limited releases</span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-orange-300 ml-auto" />
+                </Link>
 
                 {/* Need Help Section */}
                 <Link
