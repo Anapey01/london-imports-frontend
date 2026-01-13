@@ -12,7 +12,7 @@ export async function getProducts(params: Record<string, string> = {}) {
         console.log(`[SSR] Fetching products list: ${url}`);
 
         const res = await fetch(url, {
-            next: { revalidate: 3600 }, // Revalidate every hour
+            next: { revalidate: 60 }, // Revalidate every minute (was 1 hour)
         });
 
         if (!res.ok) {

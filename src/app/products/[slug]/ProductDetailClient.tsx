@@ -66,21 +66,23 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const { addToCart } = useCartStore();
 
-    // Client-side fetch if SSR failed
+    // Client-side fetch to ensure fresh data (e.g. reservation counts)
     useEffect(() => {
-        if (!initialProduct && slug) {
-            setIsLoading(true);
+        if (slug) {
+            // If we don't have initial product, show loading. If we do, just update in background.
+            if (!initialProduct) setIsLoading(true);
+
             const fetchProduct = async () => {
                 try {
-                    // Use the same hardcoded URL logic as fetchers.ts but for client
                     const API_BASE = 'https://london-imports-api.onrender.com/api/v1';
-                    const res = await fetch(`${API_BASE}/products/${slug}/`);
+                    // Add timestamp to prevent browser caching
+                    const res = await fetch(`${API_BASE}/products/${slug}/?t=${Date.now()}`);
                     if (!res.ok) throw new Error('Failed to fetch');
                     const data = await res.json();
                     setProduct(data);
                 } catch (e) {
                     console.error("CSR Fetch Error", e);
-                    setError(true);
+                    if (!initialProduct) setError(true);
                 } finally {
                     setIsLoading(false);
                 }
