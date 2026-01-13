@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+
 
 export default function WhatsAppButton() {
     const whatsappNumber = '233545247009';
