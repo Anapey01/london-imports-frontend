@@ -379,8 +379,32 @@ export default function ContactPage() {
                     </div>
                 )}
 
+                {/* Google Maps */}
+                <div className={`mt-8 rounded-2xl overflow-hidden border backdrop-blur-xl transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'border-white/10' : 'border-gray-200/50 shadow-lg'}`} style={{ transitionDelay: '250ms' }}>
+                    <div className="relative">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.5!2d-0.1505!3d5.6771!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwNDAnMzcuNiJOIDDCsDA5JzAxLjgiVw!5e0!3m2!1sen!2sgh!4v1"
+                            width="100%"
+                            height="200"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            className={`${isDark ? 'grayscale invert opacity-80' : ''}`}
+                        />
+                        <a
+                            href="https://maps.app.goo.gl/K7qfiM3QesWfkkrp7"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`absolute bottom-3 right-3 px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-xl transition-colors ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-white/90 text-gray-700 hover:bg-white shadow-sm'}`}
+                        >
+                            Get Directions →
+                        </a>
+                    </div>
+                </div>
+
                 {/* Contact Info Footer */}
-                <div className={`mt-10 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'}`} style={{ transitionDelay: '300ms' }}>
+                <div className={`mt-6 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'}`} style={{ transitionDelay: '300ms' }}>
                     <h4 className={`font-bold text-sm mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         Contact Information
                     </h4>
@@ -398,9 +422,10 @@ export default function ContactPage() {
                             +233 541 096 372
                         </a>
                     </div>
-                    <p className={`text-xs mt-4 pt-4 border-t ${isDark ? 'text-slate-500 border-white/10' : 'text-gray-400 border-gray-200'}`}>
-                        Business Hours: Mon-Fri 9AM-6PM • Sat 10AM-4PM
-                    </p>
+                    <div className={`text-xs mt-4 pt-4 border-t ${isDark ? 'text-slate-500 border-white/10' : 'text-gray-400 border-gray-200'}`}>
+                        <p>📍 Felchris Estate 2, Danfa, Accra</p>
+                        <p className="mt-1">Business Hours: Mon-Fri 9AM-6PM • Sat 10AM-4PM</p>
+                    </div>
                 </div>
             </div>
         </div>
