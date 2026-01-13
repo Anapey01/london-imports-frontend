@@ -99,7 +99,7 @@ export default async function RootLayout({
     "description": "Ghana's #1 mini-importation platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Trusted by 10,000+ Ghanaians.",
     "logo": "https://londonsimports.com/logo.png",
     "image": "https://londonsimports.com/og-image.jpg",
-    "telephone": "+233541096372",
+    "telephone": "+233545247009",
     "email": "info@londonsimports.com",
     "address": {
       "@type": "PostalAddress",
@@ -147,7 +147,7 @@ export default async function RootLayout({
     "currenciesAccepted": "GHS",
     "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
     "sameAs": [
-      "https://wa.me/233541096372",
+      "https://wa.me/233545247009",
       "https://www.instagram.com/londonimportsghana",
       "https://www.tiktok.com/@londons_imports1",
       "https://www.snapchat.com/add/londons_imports"

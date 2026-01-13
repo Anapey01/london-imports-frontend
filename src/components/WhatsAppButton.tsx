@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 export default function WhatsAppButton() {
-    const whatsappNumber = '233541096372';
+    const whatsappNumber = '233545247009';
     const message = encodeURIComponent('Hi! I have a question about London\'s Imports pre-orders.');
 
     // Function to handle click based on device

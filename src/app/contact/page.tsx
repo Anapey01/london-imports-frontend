@@ -248,7 +248,7 @@ export default function ContactPage() {
                 <div className={`mt-8 grid grid-cols-2 gap-4 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transitionDelay: '200ms' }}>
                     {/* WhatsApp - Premium Card */}
                     <a
-                        href="https://wa.me/233541096372?text=Hi%20London's%20Imports!%20I%20need%20help%20with..."
+                        href="https://wa.me/233545247009?text=Hi%20London's%20Imports!%20I%20need%20help%20with..."
                         target="_blank"
                         rel="noopener noreferrer"
                         className="group relative overflow-hidden rounded-2xl p-5 text-white transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-green-500/25"
@@ -415,7 +415,7 @@ export default function ContactPage() {
                             </div>
                             info@londonsimports.com
                         </a>
-                        <a href="https://wa.me/233541096372" className={`flex items-center gap-2 text-sm font-medium transition-colors ${isDark ? 'text-slate-300 hover:text-green-400' : 'text-gray-600 hover:text-green-500'}`}>
+                        <a href="https://wa.me/233545247009" className={`flex items-center gap-2 text-sm font-medium transition-colors ${isDark ? 'text-slate-300 hover:text-green-400' : 'text-gray-600 hover:text-green-500'}`}>
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-gray-100'}`}>
                                 <MessageCircle className="w-4 h-4" />
                             </div>

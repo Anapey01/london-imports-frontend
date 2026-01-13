@@ -277,7 +277,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <span className="text-gray-800">About Us</span>
                         </Link>
                         <a
-                            href="https://wa.me/233541096372?text=Hi%20I%20have%20a%20question%20about%20London's%20Imports"
+                            href="https://wa.me/233545247009?text=Hi%20I%20have%20a%20question%20about%20London's%20Imports"
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={onClose}
