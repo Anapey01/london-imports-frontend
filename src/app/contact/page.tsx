@@ -1,12 +1,12 @@
 /**
- * London's Imports - Smart Help Center
- * FAQ search first, then contact form if needed
+ * London's Imports - Premium Help Center
+ * High-tech design with glassmorphism, animations & gradients
  */
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { Search, MessageCircle, Mail, ChevronDown, ChevronUp, CheckCircle, Send, HelpCircle } from 'lucide-react';
+import { Search, MessageCircle, Mail, ChevronDown, ChevronUp, CheckCircle, Send, Sparkles, Zap } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com/api/v1';
 
@@ -74,24 +74,30 @@ const faqs = [
     }
 ];
 
-// Subject options for contact form
 const subjectOptions = [
-    { value: 'order_issue', label: 'Order Issue' },
-    { value: 'shipping', label: 'Shipping Question' },
-    { value: 'payment', label: 'Payment Problem' },
-    { value: 'vendor', label: 'Vendor/Seller Inquiry' },
-    { value: 'product', label: 'Product Question' },
-    { value: 'refund', label: 'Returns & Refunds' },
-    { value: 'other', label: 'Other' },
+    { value: 'order_issue', label: 'Order Issue', icon: '📦' },
+    { value: 'shipping', label: 'Shipping Question', icon: '🚚' },
+    { value: 'payment', label: 'Payment Problem', icon: '💳' },
+    { value: 'vendor', label: 'Vendor/Seller Inquiry', icon: '🏪' },
+    { value: 'product', label: 'Product Question', icon: '🛍️' },
+    { value: 'refund', label: 'Returns & Refunds', icon: '↩️' },
+    { value: 'other', label: 'Other', icon: '💬' },
 ];
 
 export default function ContactPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+    const [mounted, setMounted] = useState(false);
+
+    // Animation mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Search state
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+    const [searchFocused, setSearchFocused] = useState(false);
 
     // Form state
     const [showForm, setShowForm] = useState(false);
@@ -105,7 +111,7 @@ export default function ContactPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Filter FAQs based on search
+    // Filter FAQs
     const filteredFaqs = useMemo(() => {
         if (!searchQuery.trim()) return [];
         const query = searchQuery.toLowerCase();
@@ -127,10 +133,7 @@ export default function ContactPage() {
             const response = await fetch(`${API_URL}/auth/contact/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    subject: subjectLabel
-                }),
+                body: JSON.stringify({ ...formData, subject: subjectLabel }),
             });
 
             const data = await response.json();
@@ -144,77 +147,97 @@ export default function ContactPage() {
     };
 
     return (
-        <div className={`min-h-screen ${isDark ? 'bg-slate-900' : 'bg-gradient-to-b from-pink-50 to-white'}`}>
-            {/* Hero Header */}
-            <div className="relative overflow-hidden">
-                <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-pink-900/30 to-violet-900/30' : 'bg-gradient-to-br from-pink-100/50 to-violet-100/50'}`} />
-                <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-pink-500/20 blur-3xl" />
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-violet-500/20 blur-3xl" />
+        <div className={`min-h-screen relative overflow-hidden ${isDark ? 'bg-slate-950' : 'bg-gradient-to-br from-slate-50 via-pink-50/30 to-violet-50/30'}`}>
+            {/* Animated Background Orbs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className={`absolute top-20 -left-32 w-96 h-96 rounded-full blur-3xl animate-pulse ${isDark ? 'bg-pink-500/10' : 'bg-pink-300/30'}`} />
+                <div className={`absolute bottom-20 -right-32 w-96 h-96 rounded-full blur-3xl animate-pulse ${isDark ? 'bg-violet-500/10' : 'bg-violet-300/30'}`} style={{ animationDelay: '1s' }} />
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl ${isDark ? 'bg-blue-500/5' : 'bg-blue-200/20'}`} />
+            </div>
 
-                <div className="relative px-4 py-12 text-center">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 ${isDark ? 'bg-pink-500/20' : 'bg-pink-100'}`}>
-                        <HelpCircle className={`w-8 h-8 ${isDark ? 'text-pink-400' : 'text-pink-600'}`} />
+            {/* Hero Header */}
+            <div className={`relative pt-12 pb-8 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                <div className="text-center px-4">
+                    {/* Premium Badge */}
+                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium mb-6 ${isDark ? 'bg-white/5 text-white/70 border border-white/10' : 'bg-white/80 text-gray-600 border border-gray-200/50 shadow-sm'} backdrop-blur-xl`}>
+                        <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+                        24/7 Support Available
                     </div>
-                    <h1 className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+
+                    {/* Gradient Heading */}
+                    <h1 className="text-4xl sm:text-5xl font-black mb-3 bg-gradient-to-r from-pink-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
                         How can we help?
                     </h1>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                        Search our FAQ or contact support
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        Search our FAQ or get instant support
                     </p>
                 </div>
             </div>
 
-            <div className="max-w-2xl mx-auto px-4 -mt-4 pb-12">
-                {/* Search Input */}
-                <div className={`relative rounded-2xl shadow-lg ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                    <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`} />
-                    <input
-                        type="text"
-                        placeholder="Type your question..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={`w-full pl-12 pr-4 py-4 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-pink-500 ${isDark ? 'bg-slate-800 text-white placeholder-slate-500' : 'bg-white text-gray-900 placeholder-gray-400'}`}
-                    />
+            <div className="max-w-2xl mx-auto px-4 pb-16 relative z-10">
+                {/* Premium Search Input */}
+                <div className={`relative transition-all duration-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transitionDelay: '100ms' }}>
+                    <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${searchFocused ? 'bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-violet-500/20 blur-xl scale-105' : 'opacity-0'}`} />
+                    <div className={`relative rounded-2xl border backdrop-blur-xl transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-gray-200/50 shadow-xl shadow-pink-500/5'} ${searchFocused ? 'ring-2 ring-pink-500/50' : ''}`}>
+                        <Search className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${searchFocused ? 'text-pink-500' : isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+                        <input
+                            type="text"
+                            placeholder="Type your question..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => setSearchFocused(true)}
+                            onBlur={() => setSearchFocused(false)}
+                            className={`w-full pl-14 pr-5 py-5 rounded-2xl text-base font-medium focus:outline-none bg-transparent ${isDark ? 'text-white placeholder-slate-500' : 'text-gray-900 placeholder-gray-400'}`}
+                        />
+                    </div>
                 </div>
 
                 {/* FAQ Results */}
                 {searchQuery.trim() && (
-                    <div className="mt-4 space-y-3">
+                    <div className="mt-4 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
                         {filteredFaqs.length > 0 ? (
                             <>
-                                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                <p className={`text-xs font-medium px-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                                     {filteredFaqs.length} result{filteredFaqs.length !== 1 ? 's' : ''} found
                                 </p>
                                 {filteredFaqs.map((faq, index) => (
                                     <div
                                         key={index}
-                                        className={`rounded-xl overflow-hidden border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'} shadow-sm`}
+                                        className={`rounded-xl overflow-hidden border backdrop-blur-xl transition-all duration-200 hover:scale-[1.01] ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white/80 border-gray-100 hover:shadow-lg shadow-sm'}`}
                                     >
                                         <button
                                             onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                                            className={`w-full flex items-center justify-between px-4 py-3 text-left ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-50'}`}
+                                            className="w-full flex items-center justify-between px-5 py-4 text-left"
                                         >
-                                            <span className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                            <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                                 {faq.question}
                                             </span>
-                                            {expandedFaq === index ? (
-                                                <ChevronUp className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-400'}`} />
-                                            ) : (
-                                                <ChevronDown className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-400'}`} />
-                                            )}
-                                        </button>
-                                        {expandedFaq === index && (
-                                            <div className={`px-4 pb-4 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                                {faq.answer}
+                                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${expandedFaq === index ? 'bg-pink-500/20' : isDark ? 'bg-white/5' : 'bg-gray-100'}`}>
+                                                {expandedFaq === index ? (
+                                                    <ChevronUp className={`w-4 h-4 ${isDark ? 'text-pink-400' : 'text-pink-500'}`} />
+                                                ) : (
+                                                    <ChevronDown className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-400'}`} />
+                                                )}
                                             </div>
-                                        )}
+                                        </button>
+                                        <div className={`overflow-hidden transition-all duration-300 ${expandedFaq === index ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                            <p className={`px-5 pb-4 text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                                                {faq.answer}
+                                            </p>
+                                        </div>
                                     </div>
                                 ))}
                             </>
                         ) : (
-                            <div className={`text-center py-8 rounded-xl ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
-                                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            <div className={`text-center py-10 rounded-xl border backdrop-blur-xl ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-100'}`}>
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${isDark ? 'bg-white/5' : 'bg-gray-100'}`}>
+                                    <Search className={`w-5 h-5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+                                </div>
+                                <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                                     No matching answers found
+                                </p>
+                                <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                    Try different keywords or contact us below
                                 </p>
                             </div>
                         )}
@@ -222,58 +245,75 @@ export default function ContactPage() {
                 )}
 
                 {/* Quick Actions */}
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                    {/* WhatsApp */}
+                <div className={`mt-8 grid grid-cols-2 gap-4 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transitionDelay: '200ms' }}>
+                    {/* WhatsApp - Premium Card */}
                     <a
                         href="https://wa.me/233541096372?text=Hi%20London's%20Imports!%20I%20need%20help%20with..."
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                        className="group relative overflow-hidden rounded-2xl p-5 text-white transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-green-500/25"
+                        style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
                     >
-                        <MessageCircle className="w-6 h-6" />
-                        <div>
-                            <p className="font-semibold text-sm">WhatsApp</p>
-                            <p className="text-xs opacity-90">Instant response</p>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-white/10 blur-2xl group-hover:scale-150 transition-transform duration-500" />
+                        <div className="relative">
+                            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center mb-3">
+                                <MessageCircle className="w-6 h-6" />
+                            </div>
+                            <p className="font-bold text-base">WhatsApp</p>
+                            <p className="text-xs text-white/80 flex items-center gap-1 mt-0.5">
+                                <Zap className="w-3 h-3" />
+                                Instant response
+                            </p>
                         </div>
                     </a>
 
-                    {/* Email */}
+                    {/* Email - Premium Card */}
                     <button
                         onClick={() => setShowForm(!showForm)}
-                        className={`flex items-center gap-3 p-4 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] ${isDark ? 'bg-slate-800 text-white' : 'bg-white text-gray-900'}`}
+                        className={`group relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-300 hover:scale-[1.03] border backdrop-blur-xl ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-2xl hover:shadow-pink-500/10' : 'bg-white/80 border-gray-200/50 hover:shadow-2xl shadow-lg hover:shadow-pink-500/20'}`}
                     >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-pink-500/20' : 'bg-pink-100'}`}>
-                            <Mail className={`w-5 h-5 ${isDark ? 'text-pink-400' : 'text-pink-600'}`} />
-                        </div>
-                        <div className="text-left">
-                            <p className="font-semibold text-sm">Email Us</p>
-                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>24hr response</p>
+                        <div className={`absolute -right-8 -top-8 w-24 h-24 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 ${isDark ? 'bg-pink-500/10' : 'bg-pink-500/5'}`} />
+                        <div className="relative">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center mb-3 shadow-lg shadow-pink-500/30">
+                                <Mail className="w-6 h-6 text-white" />
+                            </div>
+                            <p className={`font-bold text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>Email Us</p>
+                            <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                Response within 24h
+                            </p>
                         </div>
                     </button>
                 </div>
 
                 {/* Contact Form */}
                 {showForm && !submitted && (
-                    <div className={`mt-6 p-6 rounded-2xl shadow-lg ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                        <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            Send us a message
-                        </h3>
+                    <div className={`mt-6 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-gray-200/50 shadow-xl'}`}>
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
+                                <Mail className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h3 className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Send a message</h3>
+                                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>We&apos;ll get back to you soon</p>
+                            </div>
+                        </div>
 
                         {error && (
-                            <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
                                 {error}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3">
                                 <input
                                     type="text"
                                     placeholder="Your name"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     required
-                                    className={`px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${isDark ? 'bg-slate-700 text-white placeholder-slate-400 border-slate-600' : 'bg-gray-50 text-gray-900 placeholder-gray-400 border-gray-200'} border`}
+                                    className={`px-4 py-3.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all ${isDark ? 'bg-white/5 text-white placeholder-slate-500 border border-white/10' : 'bg-gray-50 text-gray-900 placeholder-gray-400 border border-gray-200'}`}
                                 />
                                 <input
                                     type="email"
@@ -281,7 +321,7 @@ export default function ContactPage() {
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     required
-                                    className={`px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${isDark ? 'bg-slate-700 text-white placeholder-slate-400 border-slate-600' : 'bg-gray-50 text-gray-900 placeholder-gray-400 border-gray-200'} border`}
+                                    className={`px-4 py-3.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all ${isDark ? 'bg-white/5 text-white placeholder-slate-500 border border-white/10' : 'bg-gray-50 text-gray-900 placeholder-gray-400 border border-gray-200'}`}
                                 />
                             </div>
 
@@ -289,27 +329,27 @@ export default function ContactPage() {
                                 value={formData.subject}
                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                 required
-                                className={`w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${isDark ? 'bg-slate-700 text-white border-slate-600' : 'bg-gray-50 text-gray-900 border-gray-200'} border`}
+                                className={`w-full px-4 py-3.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none cursor-pointer ${isDark ? 'bg-white/5 text-white border border-white/10' : 'bg-gray-50 text-gray-900 border border-gray-200'}`}
                             >
                                 <option value="">Select a topic...</option>
                                 {subjectOptions.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    <option key={opt.value} value={opt.value}>{opt.icon} {opt.label}</option>
                                 ))}
                             </select>
 
                             <textarea
-                                placeholder="How can we help?"
+                                placeholder="How can we help you?"
                                 value={formData.message}
                                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                 required
                                 rows={4}
-                                className={`w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none ${isDark ? 'bg-slate-700 text-white placeholder-slate-400 border-slate-600' : 'bg-gray-50 text-gray-900 placeholder-gray-400 border-gray-200'} border`}
+                                className={`w-full px-4 py-3.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all resize-none ${isDark ? 'bg-white/5 text-white placeholder-slate-500 border border-white/10' : 'bg-gray-50 text-gray-900 placeholder-gray-400 border border-gray-200'}`}
                             />
 
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all disabled:opacity-50"
+                                className="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 bg-[length:200%_100%] hover:bg-right transition-all duration-500 disabled:opacity-50 shadow-lg shadow-pink-500/30 hover:shadow-xl hover:shadow-pink-500/40"
                             >
                                 {loading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -326,11 +366,11 @@ export default function ContactPage() {
 
                 {/* Success State */}
                 {submitted && (
-                    <div className={`mt-6 p-8 rounded-2xl text-center ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-lg`}>
-                        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                            <CheckCircle className="w-8 h-8 text-green-600" />
+                    <div className={`mt-6 p-8 rounded-2xl text-center border backdrop-blur-xl animate-in fade-in zoom-in-95 duration-500 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-gray-200/50 shadow-xl'}`}>
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-green-500/30">
+                            <CheckCircle className="w-10 h-10 text-white" />
                         </div>
-                        <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             Message Sent!
                         </h3>
                         <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
@@ -339,27 +379,28 @@ export default function ContactPage() {
                     </div>
                 )}
 
-                {/* Contact Info */}
-                <div className={`mt-8 p-5 rounded-2xl ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
-                    <h4 className={`font-semibold text-sm mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                {/* Contact Info Footer */}
+                <div className={`mt-10 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'}`} style={{ transitionDelay: '300ms' }}>
+                    <h4 className={`font-bold text-sm mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         Contact Information
                     </h4>
-                    <div className="space-y-2">
-                        <a href="mailto:info@londonsimports.com" className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
-                            <Mail className="w-4 h-4" />
+                    <div className="flex flex-wrap gap-4">
+                        <a href="mailto:info@londonsimports.com" className={`flex items-center gap-2 text-sm font-medium transition-colors ${isDark ? 'text-slate-300 hover:text-pink-400' : 'text-gray-600 hover:text-pink-500'}`}>
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-gray-100'}`}>
+                                <Mail className="w-4 h-4" />
+                            </div>
                             info@londonsimports.com
                         </a>
-                        <a href="https://wa.me/233541096372" className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
-                            <MessageCircle className="w-4 h-4" />
+                        <a href="https://wa.me/233541096372" className={`flex items-center gap-2 text-sm font-medium transition-colors ${isDark ? 'text-slate-300 hover:text-green-400' : 'text-gray-600 hover:text-green-500'}`}>
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-gray-100'}`}>
+                                <MessageCircle className="w-4 h-4" />
+                            </div>
                             +233 541 096 372
                         </a>
                     </div>
-
-                    <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
-                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            Business Hours: Mon-Fri 9AM-6PM, Sat 10AM-4PM
-                        </p>
-                    </div>
+                    <p className={`text-xs mt-4 pt-4 border-t ${isDark ? 'text-slate-500 border-white/10' : 'text-gray-400 border-gray-200'}`}>
+                        Business Hours: Mon-Fri 9AM-6PM • Sat 10AM-4PM
+                    </p>
                 </div>
             </div>
         </div>
