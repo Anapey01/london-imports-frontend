@@ -9,7 +9,14 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
-import Image from 'next/image';
+
+interface User {
+    role: string;
+    first_name: string;
+    vendor_profile?: {
+        business_name?: string;
+    };
+}
 
 export default function VendorDashboardLayout({
     children,
@@ -19,7 +26,7 @@ export default function VendorDashboardLayout({
     const { theme } = useTheme();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
@@ -38,7 +45,7 @@ export default function VendorDashboardLayout({
                 }
 
                 setUser(userData);
-            } catch (error) {
+            } catch {
                 router.push('/login');
             } finally {
                 setIsLoading(false);
