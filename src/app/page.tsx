@@ -11,6 +11,7 @@ const FeaturedSection = dynamic(() => import('@/components/home/FeaturedSection'
   loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg mx-4" />,
 });
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
+const SEOAccordion = dynamic(() => import('@/components/home/SEOAccordion'));
 
 export default function HomePage() {
   return (
@@ -49,38 +50,8 @@ export default function HomePage() {
       </section>
 
       {/* 4. SEO Content - Mini-Importation & Consolidation Keywords */}
-      <section className="py-12 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6 text-center sm:text-left">
-              Import Goods from China to <span className="text-pink-600">Ghana</span> - Fast Shipping & Customs Clearance
-            </h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm sm:text-base text-gray-600 leading-relaxed">
-              <div>
-                <p className="mb-4">
-                  Looking for reliable <strong>shipping from China to Ghana</strong>? London&apos;s Imports simplifies the process.
-                  Whether you want to <strong>buy from 1688 to Ghana</strong>, Alibaba, or Taobao, we act as your trusted bridge.
-                </p>
-                <p>
-                  We specialize in <strong>China to Ghana consolidation</strong>, allowing you to combine multiple packages into one shipment
-                  to save on <strong>air freight rates</strong>. No need to worry about complex logistics or customs.
-                </p>
-              </div>
-              <div>
-                <p className="mb-4">
-                  Our <strong>door to door shipping in Ghana</strong> ensures your goods arrive safely at your doorstep in Accra or Tema.
-                  We handle all <strong>Ghana Customs duty</strong> and clearance processes for electronics, fashion, and general goods.
-                </p>
-                <p>
-                  Pay securely in Cedis via <strong>Momo</strong>. Join thousands of sophisticated shoppers and business owners using
-                  London&apos;s Imports for stress-free importation.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 4. SEO Content - Mini-Importation & Consolidation Keywords */}
+      <SEOAccordion />
     </div>
   );
 }
