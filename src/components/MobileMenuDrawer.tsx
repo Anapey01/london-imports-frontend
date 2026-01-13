@@ -307,7 +307,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
                 {/* Sell on London's Imports */}
                 <Link
-                    href="/register/vendor"
+                    href="/sell"
                     onClick={onClose}
                     className="block px-4 py-4 text-lg font-medium text-gray-800 hover:bg-gray-50 transition-colors border-b border-gray-100"
                 >

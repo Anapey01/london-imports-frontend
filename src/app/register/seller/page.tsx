@@ -6,7 +6,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 
@@ -48,7 +47,6 @@ const steps = [
 ];
 
 export default function VendorRegisterPage() {
-    const router = useRouter();
     const { theme } = useTheme();
     const [currentStep, setCurrentStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -162,18 +160,19 @@ export default function VendorRegisterPage() {
 
             await authAPI.registerVendor(payload);
             setSuccess(true);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Registration Error:', err);
-            const errors = err.response?.data;
+            const error = err as { response?: { data?: Record<string, string | string[]> }, message?: string };
+            const errors = error.response?.data;
             if (errors) {
                 const firstError = Object.values(errors)[0];
                 const message = Array.isArray(firstError) ? firstError[0] : String(firstError);
                 setError(message);
                 console.error('Validation Errors:', errors);
-            } else if (err.message === 'Network Error') {
+            } else if (error.message === 'Network Error') {
                 setError('Unable to connect to server. Ensure backend is running locally.');
             } else {
-                setError(err.message || 'Registration failed. Please try again.');
+                setError(error.message || 'Registration failed. Please try again.');
             }
         } finally {
             setIsSubmitting(false);
@@ -223,10 +222,10 @@ export default function VendorRegisterPage() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold mb-2" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
-                        Become a Vendor
+                        Join Marketplace
                     </h1>
                     <p style={{ color: theme === 'dark' ? '#94a3b8' : '#6b7280' }}>
-                        Join London&apos;s Imports and reach thousands of customers across Ghana
+                        Start selling your products on our main marketplace feed.
                     </p>
                 </div>
 

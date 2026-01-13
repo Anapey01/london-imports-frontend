@@ -25,6 +25,7 @@ api.interceptors.request.use((config) => {
       '/auth/register/',
       '/auth/login/',
       '/auth/register/vendor/',
+      '/auth/register/partner/',
       '/auth/password/reset/', // Covers request and confirm
     ];
 
@@ -78,6 +79,7 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (data: unknown) => api.post('/auth/register/', data),
   registerVendor: (data: unknown) => api.post('/auth/register/vendor/', data),
+  registerPartner: (data: unknown) => api.post('/auth/register/partner/', data),
   login: (data: { username: string; password: string }) => api.post('/auth/login/', data),
   logout: () => api.post('/auth/logout/', {}), // No refresh token needed in body
   me: () => api.get('/auth/me/'),

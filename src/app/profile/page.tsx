@@ -201,7 +201,7 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
                             </Link>
                         ) : (
                             <Link
-                                href="/register/vendor"
+                                href="/sell"
                                 className={`group inline-flex items-center gap-2 border-b pb-0.5 text-sm font-medium transition-colors ${isDark ? 'border-pink-400 text-pink-400 hover:text-pink-300 hover:border-pink-300' : 'border-pink-600 text-pink-600 hover:text-pink-700 hover:border-pink-700'}`}
                             >
                                 Start Selling
