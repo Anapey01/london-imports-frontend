@@ -28,6 +28,7 @@ interface ProductGridProps {
     initialCategory?: string;
     initialFeatured?: boolean;
     initialStatus?: string;
+    vendorSlug?: string;
 }
 
 export default function ProductGrid({
@@ -36,7 +37,8 @@ export default function ProductGrid({
     initialSearch = '',
     initialCategory = '',
     initialFeatured = false,
-    initialStatus = ''
+    initialStatus = '',
+    vendorSlug = ''
 }: ProductGridProps) {
     const [category, setCategory] = useState(initialCategory);
     const [status, setStatus] = useState(initialStatus);
@@ -45,8 +47,8 @@ export default function ProductGrid({
 
     // Fetch products with filters
     const { data: productsData, isLoading } = useQuery({
-        queryKey: ['products', category, status, search, featured],
-        queryFn: () => productsAPI.list({ category, status, search, featured }),
+        queryKey: ['products', category, status, search, featured, vendorSlug],
+        queryFn: () => productsAPI.list({ category, status, search, featured, vendor: vendorSlug }),
     });
 
     // Helper to normalize data structure

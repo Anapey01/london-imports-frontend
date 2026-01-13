@@ -125,6 +125,7 @@ export const vendorsAPI = {
   createProduct: (data: unknown) => api.post('/products/vendor/products/', data),
   updateProduct: (id: string, data: unknown) => api.patch(`/products/vendor/products/${id}/`, data),
   orders: () => api.get('/orders/vendor/orders/'),
+  getBySlug: (slug: string) => api.get(`/vendors/${slug}/`),
 };
 
 // Admin dashboard API

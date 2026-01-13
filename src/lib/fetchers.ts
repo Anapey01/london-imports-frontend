@@ -103,3 +103,16 @@ export async function getProductMetadata(slug: string) {
 
     return null;
 }
+
+export async function getVendor(slug: string) {
+    const url = `${API_BASE_URL}/vendors/${slug}/`;
+    try {
+        console.log(`[SSR] Fetching vendor: ${url}`);
+        const res = await fetch(url, { next: { revalidate: 60 } });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (e) {
+        console.error(`[SSR] Exception fetching vendor ${slug}:`, e);
+        return null;
+    }
+}
