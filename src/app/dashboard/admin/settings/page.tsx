@@ -235,6 +235,36 @@ export default function AdminSettingsPage() {
                     />
                 </Section>
 
+                {/* Data Integrity */}
+                <Section title="System Maintenance">
+                    <div className="flex items-center justify-between py-2">
+                        <div>
+                            <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Synchronize Product Reservations
+                            </p>
+                            <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                Updates &quot;X reserved&quot; counts on all products based on actual paid orders.
+                                <br />Use this if counts seem incorrect.
+                            </p>
+                        </div>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    if (!confirm('This will recalculate all product reservation counts. Continue?')) return;
+                                    await adminAPI.recalculateReservations();
+                                    alert('Successfully recalculated all reservation counts!');
+                                } catch (err) {
+                                    console.error(err);
+                                    alert('Failed to recalculate: ' + (err as Error).message);
+                                }
+                            }}
+                            className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors"
+                        >
+                            Run Cleanup
+                        </button>
+                    </div>
+                </Section>
+
                 {/* Danger Zone */}
                 <Section title="Danger Zone">
                     <Toggle

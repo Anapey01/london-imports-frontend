@@ -164,6 +164,9 @@ export const adminAPI = {
   // Settings
   settings: () => api.get('/admin/settings/'),
   updateSettings: (data: unknown) => api.patch('/admin/settings/', data),
+
+  // Maintenance
+  recalculateReservations: () => api.post('/auth/admin/recalculate-reservations/'),
 };
 
 export default api;
