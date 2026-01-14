@@ -133,7 +133,12 @@ export const vendorsAPI = {
   payouts: () => api.get('/vendors/payouts/'),
   products: () => api.get('/products/vendor/products/'),
   createProduct: (data: unknown) => api.post('/products/vendor/products/', data),
-  updateProduct: (id: string, data: unknown) => api.patch(`/products/vendor/products/${id}/`, data),
+  updateProduct: (id: string, data: unknown) => {
+    const isFormData = data instanceof FormData;
+    return api.patch(`/products/vendor/products/${id}/`, data, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+    });
+  },
   deleteProduct: (id: string) => api.delete(`/products/vendor/products/${id}/`),
   orders: () => api.get('/orders/vendor/orders/'),
   orderDetail: (orderNumber: string) => api.get(`/orders/vendor/orders/${orderNumber}/`),

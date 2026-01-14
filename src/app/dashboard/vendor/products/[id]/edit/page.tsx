@@ -138,7 +138,12 @@ export default function EditProductPage() {
             router.refresh();
         } catch (error: any) {
             console.error('Failed to update product:', error);
-            alert('Failed to update product.');
+            if (error.response && error.response.data) {
+                console.error('Backend validation errors:', error.response.data);
+                alert(`Failed to update product: ${JSON.stringify(error.response.data)}`);
+            } else {
+                alert('Failed to update product. Please check console for details.');
+            }
         } finally {
             setLoading(false);
         }
@@ -290,10 +295,11 @@ export default function EditProductPage() {
                                 />
                             </div>
                             <div className="col-span-1 sm:col-span-2">
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="shipping_origin" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Shipping Origin
                                 </label>
                                 <input
+                                    id="shipping_origin"
                                     type="text"
                                     name="shipping_origin"
                                     value={formData.shipping_origin}
