@@ -36,6 +36,11 @@ api.interceptors.request.use((config) => {
     if (token && !isPublicEndpoint) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // CRITICAL FIX: If data is FormData, let browser set Content-Type (multipart)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
   }
   return config;
 });
@@ -123,6 +128,7 @@ export const paymentsAPI = {
 
 export const vendorsAPI = {
   dashboard: () => api.get('/vendors/dashboard/'),
+  getProfile: () => api.get('/vendors/profile/'),
   updateProfile: (data: unknown) => api.patch('/vendors/profile/', data),
   payouts: () => api.get('/vendors/payouts/'),
   products: () => api.get('/products/vendor/products/'),
