@@ -63,6 +63,7 @@ export default function AddProductPage() {
             data.append('price', formData.price);
             data.append('category', formData.category_id); // Backend expects ID or slug? Usually ID for Create
             data.append('preorder_status', formData.preorder_status);
+            data.append('is_active', 'true'); // Explicitly force Active status
             if (formData.image) {
                 data.append('image', formData.image);
             }
