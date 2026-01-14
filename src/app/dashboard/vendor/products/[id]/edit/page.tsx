@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme } from '@/providers/ThemeProvider';
 import { useRouter, useParams } from 'next/navigation';
 import { productsAPI, vendorsAPI } from '@/lib/api';
-import { Upload, Loader2, Save, X, Plus, Trash2, ArrowLeft } from 'lucide-react';
-import { Category, Product } from '@/types';
+import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
+import { Category } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import Image from 'next/image';
 

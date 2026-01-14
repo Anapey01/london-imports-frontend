@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { productsAPI, vendorsAPI } from '@/lib/api';
-import { Upload, Loader2, Save, X, Plus } from 'lucide-react';
+import { Upload, Loader2, Save, X, Plus, ChevronLeft } from 'lucide-react';
 import { Category } from '@/types';
 import Link from 'next/link';
 
@@ -21,6 +21,7 @@ export default function AddProductPage() {
         price: '',
         category_id: '',
         preorder_status: 'PREORDER',
+        sizes: '',
         colors: '',
         shipping_origin: 'China', // Default to China
         image: null as File | null,
@@ -335,6 +336,8 @@ export default function AddProductPage() {
                                         </div>
                                         <button
                                             type="button"
+                                            title="Remove image"
+                                            aria-label="Remove image"
                                             onClick={() => setFormData(prev => ({
                                                 ...prev,
                                                 images: prev.images.filter((_, i) => i !== index)
