@@ -342,17 +342,28 @@ export default function EditProductPage() {
                                 className="hidden"
                                 id="image-upload"
                             />
-                            <label htmlFor="image-upload" className="cursor-pointer text-center w-full">
+                            <label htmlFor="image-upload" className="cursor-pointer text-center w-full flex flex-col items-center justify-center relative min-h-[200px]">
                                 {formData.image ? (
-                                    <div className="text-pink-600 font-medium">New Selected: {formData.image.name}</div>
+                                    <div className="text-pink-600 font-medium">Selected: {formData.image.name}</div>
+                                ) : product?.image ? (
+                                    <div className="relative w-full h-48">
+                                        <Image
+                                            src={getImageUrl(product.image)}
+                                            alt="Current Product Image"
+                                            fill
+                                            className="object-contain rounded-lg mb-4"
+                                        />
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-lg">
+                                            <span className="text-white font-medium">Click to change</span>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <>
                                         <div className="w-16 h-16 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <Upload className="w-8 h-8" />
                                         </div>
-                                        <p className={`font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                            {product?.image ? "Click to change main image" : "Upload main image"}
-                                        </p>
+                                        <p className={`font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Click to upload main image</p>
+                                        <p className="text-sm text-gray-500">SVG, PNG, JPG or GIF (max. 5MB)</p>
                                     </>
                                 )}
                             </label>

@@ -106,8 +106,13 @@ export default function VendorProductsPage() {
                             {/* Image */}
                             <div className="aspect-[4/5] relative bg-gray-100 dark:bg-slate-900">
                                 {product.image ? (
+import {getImageUrl} from '@/lib/image';
+
+                                // ... (in component)
+
+                                {product.image ? (
                                     <Image
-                                        src={product.image}
+                                        src={getImageUrl(product.image)}
                                         alt={product.name}
                                         fill
                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
