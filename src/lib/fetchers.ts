@@ -31,8 +31,20 @@ export async function getFeaturedProducts() {
     return getProducts({ featured: 'true', limit: '10', ordering: '-created_at' });
 }
 
-export async function getRecentProducts(limit = 20) {
-    return getProducts({ limit: limit.toString(), ordering: '-created_at' });
+export async function getRecentProducts(limit = 20, isVendor = false) {
+    return getProducts({
+        limit: limit.toString(),
+        ordering: '-created_at',
+        is_vendor: isVendor.toString()
+    });
+}
+
+export async function getVendorMarketplaceProducts(limit = 20) {
+    return getProducts({
+        limit: limit.toString(),
+        ordering: '-created_at',
+        is_vendor: 'true'
+    });
 }
 
 export async function getAvailableProducts(limit = 10) {
