@@ -7,11 +7,17 @@ import { vendorsAPI, productsAPI } from '@/lib/api';
 import { ChevronLeft, Upload, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 
+interface Category {
+    id: string;
+    name: string;
+    slug?: string;
+}
+
 export default function AddProductPage() {
     const { theme } = useTheme();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -63,9 +69,14 @@ export default function AddProductPage() {
 
             await vendorsAPI.createProduct(data);
             router.push('/dashboard/vendor/products');
-        } catch (error) {
+            router.push('/dashboard/vendor/products');
+        } catch (error: any) {
             console.error('Failed to create product:', error);
-            alert('Failed to create product. Please try again.');
+            const errorMessage = error.response?.data?.detail ||
+                JSON.stringify(error.response?.data) ||
+                error.message ||
+                'Failed to create product.';
+            alert(`Error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -73,8 +84,8 @@ export default function AddProductPage() {
 
     const isDark = theme === 'dark';
     const inputClasses = `w-full px-4 py-3 rounded-xl border outline-none transition-all ${isDark
-            ? 'bg-slate-800 border-slate-700 text-white focus:border-pink-500'
-            : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
+        ? 'bg-slate-800 border-slate-700 text-white focus:border-pink-500'
+        : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
         }`;
 
     return (
@@ -160,6 +171,7 @@ export default function AddProductPage() {
                                 required
                                 value={formData.category_id}
                                 onChange={handleChange}
+                                aria-label="Category"
                                 className={inputClasses}
                             >
                                 <option value="">Select a Category</option>
@@ -178,6 +190,7 @@ export default function AddProductPage() {
                                 required
                                 value={formData.preorder_status}
                                 onChange={handleChange}
+                                aria-label="Pre-order status"
                                 className={inputClasses}
                             >
                                 <option value="PREORDER">Pre-order (Standard)</option>
