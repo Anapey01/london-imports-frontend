@@ -50,7 +50,7 @@ export default function CartPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white md:bg-gray-50 dark:bg-slate-900 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+        <div className="min-h-screen bg-white md:bg-gray-50 dark:bg-slate-900 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-end justify-between mb-8 border-b border-gray-200 dark:border-slate-700 pb-4">
                     <h1 className="text-3xl md:text-4xl font-light text-gray-900 dark:text-white tracking-tight">
@@ -123,6 +123,7 @@ export default function CartPage() {
                                                         onClick={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
                                                         className="p-2 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-300 transition-colors rounded-l-full"
                                                         disabled={isLoading}
+                                                        aria-label="Decrease quantity"
                                                     >
                                                         <Minus className="w-4 h-4" />
                                                     </button>
@@ -131,6 +132,7 @@ export default function CartPage() {
                                                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                         className="p-2 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-300 transition-colors rounded-r-full"
                                                         disabled={isLoading}
+                                                        aria-label="Increase quantity"
                                                     >
                                                         <Plus className="w-4 h-4" />
                                                     </button>
