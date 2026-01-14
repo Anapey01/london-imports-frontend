@@ -5,11 +5,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import { vendorsAPI } from '@/lib/api';
-import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Search, Edit, Eye, Trash2 } from 'lucide-react';
+
+interface Product {
+    id: string;
+    name: string;
+    price: string;
+    image: string;
+    slug: string;
+    is_active: boolean;
+    status: string;
+    category?: string;
+}
 
 export default function VendorProductsPage() {
     const { theme } = useTheme();
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
@@ -46,8 +57,8 @@ export default function VendorProductsPage() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className={`w-full pl-10 pr-4 py-3 rounded-xl border outline-none transition-all ${isDark
-                                ? 'bg-slate-800 border-slate-700 text-white focus:border-pink-500'
-                                : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
+                            ? 'bg-slate-800 border-slate-700 text-white focus:border-pink-500'
+                            : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
                             }`}
                     />
                 </div>
@@ -88,8 +99,8 @@ export default function VendorProductsPage() {
                         <div
                             key={product.id}
                             className={`group relative rounded-2xl overflow-hidden border transition-all hover:shadow-xl ${isDark
-                                    ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
-                                    : 'bg-white border-gray-100 hover:border-pink-100'
+                                ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                                : 'bg-white border-gray-100 hover:border-pink-100'
                                 }`}
                         >
                             {/* Image */}
@@ -110,8 +121,8 @@ export default function VendorProductsPage() {
                                 {/* Status Badge */}
                                 <div className="absolute top-3 left-3">
                                     <span className={`px-2 py-1 text-xs font-bold rounded-md ${product.is_active
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-gray-500 text-white'
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-gray-500 text-white'
                                         }`}>
                                         {product.is_active ? 'Active' : 'Draft'}
                                     </span>
@@ -134,6 +145,23 @@ export default function VendorProductsPage() {
                                     >
                                         <Edit className="w-5 h-5" />
                                     </Link>
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm('Are you sure you want to delete this product? This cannot be undone.')) {
+                                                try {
+                                                    await vendorsAPI.deleteProduct(product.id);
+                                                    setProducts(prev => prev.filter(p => p.id !== product.id));
+                                                } catch (err) {
+                                                    console.error('Failed to delete', err);
+                                                    alert('Failed to delete product');
+                                                }
+                                            }
+                                        }}
+                                        className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors"
+                                        title="Delete"
+                                    >
+                                        <Trash2 className="w-5 h-5" />
+                                    </button>
                                 </div>
                             </div>
 

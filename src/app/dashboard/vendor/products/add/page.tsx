@@ -25,6 +25,8 @@ export default function AddProductPage() {
         price: '',
         category_id: '',
         preorder_status: 'PREORDER',
+        sizes: '',
+        colors: '',
         image: null as File | null,
     });
 
@@ -63,6 +65,17 @@ export default function AddProductPage() {
             data.append('price', formData.price);
             data.append('category', formData.category_id); // Backend expects ID or slug? Usually ID for Create
             data.append('preorder_status', formData.preorder_status);
+
+            // Variants parsing
+            if (formData.sizes) {
+                const sizesArray = formData.sizes.split(',').map(s => s.trim()).filter(Boolean);
+                data.append('available_sizes', JSON.stringify(sizesArray));
+            }
+            if (formData.colors) {
+                const colorsArray = formData.colors.split(',').map(s => s.trim()).filter(Boolean);
+                data.append('available_colors', JSON.stringify(colorsArray));
+            }
+
             data.append('is_active', 'true'); // Explicitly force Active status
             if (formData.image) {
                 data.append('image', formData.image);
@@ -198,6 +211,36 @@ export default function AddProductPage() {
                                 <option value="READY_TO_SHIP">Ready to Ship (Available Now)</option>
                                 <option value="CLOSING_SOON">Closing Soon</option>
                             </select>
+                        </div>
+
+                        {/* Variants */}
+                        <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                    Available Sizes (comma-separated)
+                                </label>
+                                <input
+                                    type="text"
+                                    name="sizes"
+                                    value={formData.sizes}
+                                    onChange={handleChange}
+                                    placeholder="e.g. S, M, L, XL"
+                                    className={inputClasses}
+                                />
+                            </div>
+                            <div>
+                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                    Available Colors (comma-separated)
+                                </label>
+                                <input
+                                    type="text"
+                                    name="colors"
+                                    value={formData.colors}
+                                    onChange={handleChange}
+                                    placeholder="e.g. Red, Blue, Black"
+                                    className={inputClasses}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

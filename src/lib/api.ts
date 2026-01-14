@@ -134,6 +134,7 @@ export const vendorsAPI = {
   products: () => api.get('/products/vendor/products/'),
   createProduct: (data: unknown) => api.post('/products/vendor/products/', data),
   updateProduct: (id: string, data: unknown) => api.patch(`/products/vendor/products/${id}/`, data),
+  deleteProduct: (id: string) => api.delete(`/products/vendor/products/${id}/`),
   orders: () => api.get('/orders/vendor/orders/'),
   orderDetail: (orderNumber: string) => api.get(`/orders/vendor/orders/${orderNumber}/`),
   getBySlug: (slug: string) => api.get(`/vendors/${slug}/`),
