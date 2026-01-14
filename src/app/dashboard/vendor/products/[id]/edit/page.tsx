@@ -178,10 +178,11 @@ export default function EditProductPage() {
 
                     <div className="space-y-6">
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                            <label htmlFor="name" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                 Product Name
                             </label>
                             <input
+                                id="name"
                                 type="text"
                                 name="name"
                                 required
@@ -192,10 +193,11 @@ export default function EditProductPage() {
                         </div>
 
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                            <label htmlFor="description" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                 Description
                             </label>
                             <textarea
+                                id="description"
                                 name="description"
                                 required
                                 rows={4}
@@ -207,10 +209,11 @@ export default function EditProductPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="price" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Price (GH₵)
                                 </label>
                                 <input
+                                    id="price"
                                     type="number"
                                     name="price"
                                     required
@@ -222,10 +225,11 @@ export default function EditProductPage() {
                             </div>
 
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="category_id" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Category
                                 </label>
                                 <select
+                                    id="category_id"
                                     name="category_id"
                                     required
                                     value={formData.category_id}
@@ -240,10 +244,11 @@ export default function EditProductPage() {
                             </div>
 
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="preorder_status" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Pre-order Status
                                 </label>
                                 <select
+                                    id="preorder_status"
                                     name="preorder_status"
                                     required
                                     value={formData.preorder_status}
@@ -259,10 +264,11 @@ export default function EditProductPage() {
 
                         <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="sizes" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Available Sizes (comma-separated)
                                 </label>
                                 <input
+                                    id="sizes"
                                     type="text"
                                     name="sizes"
                                     value={formData.sizes}
@@ -271,10 +277,11 @@ export default function EditProductPage() {
                                 />
                             </div>
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="colors" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Available Colors (comma-separated)
                                 </label>
                                 <input
+                                    id="colors"
                                     type="text"
                                     name="colors"
                                     value={formData.colors}
