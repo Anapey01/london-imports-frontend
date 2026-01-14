@@ -404,6 +404,8 @@ export default function EditProductPage() {
                                         </div>
                                         <button
                                             type="button"
+                                            title="Remove image"
+                                            aria-label="Remove image"
                                             onClick={() => setFormData(prev => ({
                                                 ...prev,
                                                 images: prev.images.filter((_, i) => i !== index)
