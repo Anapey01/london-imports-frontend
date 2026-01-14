@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import { vendorsAPI } from '@/lib/api';
 import { Plus, Search, Edit, Eye, Trash2 } from 'lucide-react';
+import { getImageUrl } from '@/lib/image';
 
 interface Product {
     id: string;
@@ -105,11 +106,6 @@ export default function VendorProductsPage() {
                         >
                             {/* Image */}
                             <div className="aspect-[4/5] relative bg-gray-100 dark:bg-slate-900">
-                                {product.image ? (
-import {getImageUrl} from '@/lib/image';
-
-                                // ... (in component)
-
                                 {product.image ? (
                                     <Image
                                         src={getImageUrl(product.image)}
