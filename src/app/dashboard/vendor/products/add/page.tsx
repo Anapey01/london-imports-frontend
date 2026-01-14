@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { productsAPI, vendorsAPI } from '@/lib/api';
-import { Upload, Loader2, Save, X, Plus, ChevronLeft } from 'lucide-react';
+import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
 import { Category } from '@/types';
 import Link from 'next/link';
 
@@ -115,11 +115,12 @@ export default function AddProductPage() {
                     className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'
                         }`}
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ArrowLeft className="w-5 h-5" />
                 </Link>
-                <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    Add New Product
-                </h1>
+                <div>
+                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Add New Product</h1>
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Create a new product listing</p>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
