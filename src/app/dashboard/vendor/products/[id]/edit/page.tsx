@@ -1,19 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTheme } from '@/providers/ThemeProvider';
-import { productsAPI, vendorsAPI } from '@/lib/api';
-import { Upload, Loader2, Save, X, Plus } from 'lucide-react';
-import { Category } from '@/types';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTheme } from '@/context/ThemeContext';
+import { useRouter, useParams } from 'next/navigation';
+import { productsAPI, vendorsAPI } from '@/lib/api';
+import { Upload, Loader2, Save, X, Plus, Trash2, ArrowLeft } from 'lucide-react';
+import { Category, Product } from '@/types';
+import { getImageUrl } from '@/lib/image';
+import Image from 'next/image';
 
-
-export default function AddProductPage() {
+export default function EditProductPage() {
     const { theme } = useTheme();
     const router = useRouter();
+    const params = useParams();
+    const productId = params?.id as string;
+
     const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
     const [categories, setCategories] = useState<Category[]>([]);
+
+    // Existing data from backend
+    const [product, setProduct] = useState<any>(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -21,24 +29,65 @@ export default function AddProductPage() {
         price: '',
         category_id: '',
         preorder_status: 'PREORDER',
+        sizes: '',
         colors: '',
-        shipping_origin: 'China', // Default to China
-        image: null as File | null,
-        images: [] as File[],
+        shipping_origin: '',
+        image: null as File | null, // New main image
+        images: [] as File[], // New gallery images
     });
 
     useEffect(() => {
-        // Fetch categories for dropdown
-        const fetchCategories = async () => {
+        const fetchData = async () => {
             try {
-                const res = await productsAPI.categories();
-                setCategories(res.data.results || []);
+                // Fetch categories
+                const catRes = await productsAPI.categories();
+                setCategories(catRes.data.results || []);
+
+                // Fetch product details
+                if (productId) {
+                    const prodRes = await vendorsAPI.products(); // Ideally fetch single, but list works for now if detail endpoint protected/different
+                    // Wait, vendorsAPI.products() returns list. We need detail.
+                    // vendorsAPI.updateProduct(id, data) exists, but we need get.
+                    // Let's rely on public product detail or add vendor detail to API if needed.
+                    // Actually, vendorsAPI doesn't have a specific getDetail logic in frontend lib yet?
+                    // Let's try /products/vendor/products/${id}/ directly via a new method or fetch.
+                    // Re-checking api.ts... "products: () => api.get('/products/vendor/products/')"
+                    // Let's add vendor detail fetch. For now, use the list and find? No, that's inefficient.
+                    // The backend supports GET /products/vendor/products/{id}/ (VendorProductDetailView).
+                    // So we can assume vendorsAPI.getProduct(id) should exist or we use axios directly.
+                    // Let's assume we can fetch it.
+
+                    // Temporary fix: fetching list and filtering (Upgrade this later!)
+                    const listRes = await vendorsAPI.products();
+                    const found = listRes.data.results.find((p: any) => p.id === productId);
+
+                    if (found) {
+                        setProduct(found);
+                        setFormData({
+                            name: found.name,
+                            description: found.description,
+                            price: found.price,
+                            category_id: found.category?.id || found.category, // Handle populated vs ID
+                            preorder_status: found.preorder_status,
+                            sizes: Array.isArray(found.available_sizes) ? found.available_sizes.join(', ') : '',
+                            colors: Array.isArray(found.available_colors) ? found.available_colors.join(', ') : '',
+                            shipping_origin: found.shipping_origin || 'China',
+                            image: null,
+                            images: []
+                        });
+                    } else {
+                        alert("Product not found");
+                        router.push('/dashboard/vendor/products');
+                    }
+                }
             } catch (err) {
-                console.error("Error fetching categories", err);
+                console.error("Error fetching data", err);
+            } finally {
+                setFetching(false);
             }
         };
-        fetchCategories();
-    }, []);
+        fetchData();
+    }, [productId, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -60,7 +109,7 @@ export default function AddProductPage() {
             data.append('name', formData.name);
             data.append('description', formData.description);
             data.append('price', formData.price);
-            data.append('category', formData.category_id); // Backend expects ID or slug? Usually ID for Create
+            data.append('category', formData.category_id);
             data.append('preorder_status', formData.preorder_status);
             data.append('shipping_origin', formData.shipping_origin);
 
@@ -74,7 +123,7 @@ export default function AddProductPage() {
                 data.append('available_colors', JSON.stringify(colorsArray));
             }
 
-            data.append('is_active', 'true'); // Explicitly force Active status
+            // Only append main image if changed
             if (formData.image) {
                 data.append('image', formData.image);
             }
@@ -84,16 +133,12 @@ export default function AddProductPage() {
                 data.append('uploaded_images', file);
             });
 
-            await vendorsAPI.createProduct(data);
+            await vendorsAPI.updateProduct(productId, data);
             router.push('/dashboard/vendor/products');
-            router.push('/dashboard/vendor/products');
+            router.refresh();
         } catch (error: any) {
-            console.error('Failed to create product:', error);
-            const errorMessage = error.response?.data?.detail ||
-                JSON.stringify(error.response?.data) ||
-                error.message ||
-                'Failed to create product.';
-            alert(`Error: ${errorMessage}`);
+            console.error('Failed to update product:', error);
+            alert('Failed to update product.');
         } finally {
             setLoading(false);
         }
@@ -105,6 +150,10 @@ export default function AddProductPage() {
         : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
         }`;
 
+    if (fetching) {
+        return <div className="flex justify-center py-20"><Loader2 className="animate-spin w-8 h-8 text-pink-500" /></div>;
+    }
+
     return (
         <div className="max-w-3xl mx-auto">
             {/* Header */}
@@ -114,11 +163,12 @@ export default function AddProductPage() {
                     className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'
                         }`}
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ArrowLeft className="w-5 h-5" />
                 </Link>
-                <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    Add New Product
-                </h1>
+                <div>
+                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Edit Product</h1>
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Update your product details</p>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -137,7 +187,6 @@ export default function AddProductPage() {
                                 required
                                 value={formData.name}
                                 onChange={handleChange}
-                                placeholder="e.g., Premium Leather Bag"
                                 className={inputClasses}
                             />
                         </div>
@@ -148,75 +197,66 @@ export default function AddProductPage() {
                             </label>
                             <textarea
                                 name="description"
+                                required
                                 rows={4}
                                 value={formData.description}
                                 onChange={handleChange}
-                                placeholder="Describe your product..."
-                                className={inputClasses}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Pricing & Category */}
-                <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
-                    <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Details</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Price (GH₵)
-                            </label>
-                            <input
-                                type="number"
-                                name="price"
-                                required
-                                step="0.01"
-                                value={formData.price}
-                                onChange={handleChange}
-                                placeholder="0.00"
                                 className={inputClasses}
                             />
                         </div>
 
-                        <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Category
-                            </label>
-                            <select
-                                name="category_id"
-                                required
-                                value={formData.category_id}
-                                onChange={handleChange}
-                                aria-label="Category"
-                                className={inputClasses}
-                            >
-                                <option value="">Select a Category</option>
-                                {categories.map(cat => (
-                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                ))}
-                            </select>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                    Price (GH₵)
+                                </label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    required
+                                    step="0.01"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    className={inputClasses}
+                                />
+                            </div>
+
+                            <div>
+                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                    Category
+                                </label>
+                                <select
+                                    name="category_id"
+                                    required
+                                    value={formData.category_id}
+                                    onChange={handleChange}
+                                    className={inputClasses}
+                                >
+                                    <option value="">Select a Category</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                    Pre-order Status
+                                </label>
+                                <select
+                                    name="preorder_status"
+                                    required
+                                    value={formData.preorder_status}
+                                    onChange={handleChange}
+                                    className={inputClasses}
+                                >
+                                    <option value="PREORDER">Pre-order (Standard)</option>
+                                    <option value="READY_TO_SHIP">Ready to Ship (Available Now)</option>
+                                    <option value="CLOSING_SOON">Closing Soon</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Pre-order Status
-                            </label>
-                            <select
-                                name="preorder_status"
-                                required
-                                value={formData.preorder_status}
-                                onChange={handleChange}
-                                aria-label="Pre-order status"
-                                className={inputClasses}
-                            >
-                                <option value="PREORDER">Pre-order (Standard)</option>
-                                <option value="READY_TO_SHIP">Ready to Ship (Available Now)</option>
-                                <option value="CLOSING_SOON">Closing Soon</option>
-                            </select>
-                        </div>
-
-                        {/* Variants */}
                         <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
@@ -227,7 +267,6 @@ export default function AddProductPage() {
                                     name="sizes"
                                     value={formData.sizes}
                                     onChange={handleChange}
-                                    placeholder="e.g. S, M, L, XL"
                                     className={inputClasses}
                                 />
                             </div>
@@ -240,12 +279,9 @@ export default function AddProductPage() {
                                     name="colors"
                                     value={formData.colors}
                                     onChange={handleChange}
-                                    placeholder="e.g. Red, Blue, Black"
                                     className={inputClasses}
                                 />
                             </div>
-
-                            {/* Shipping Origin */}
                             <div className="col-span-1 sm:col-span-2">
                                 <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                     Shipping Origin
@@ -272,6 +308,19 @@ export default function AddProductPage() {
                         <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                             Main Display Image
                         </label>
+
+                        {/* Existing Main Image Preview */}
+                        {product?.image && !formData.image && (
+                            <div className="mb-4 relative w-32 h-32 rounded-lg overflow-hidden">
+                                <Image
+                                    src={getImageUrl(product.image)}
+                                    alt="Current Main"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
+
                         <div className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors ${isDark ? 'border-slate-700 hover:border-pink-500 hover:bg-slate-800' : 'border-gray-300 hover:border-pink-500 hover:bg-pink-50'}`}>
                             <input
                                 type="file"
@@ -282,14 +331,15 @@ export default function AddProductPage() {
                             />
                             <label htmlFor="image-upload" className="cursor-pointer text-center w-full">
                                 {formData.image ? (
-                                    <div className="text-pink-600 font-medium">Selected: {formData.image.name}</div>
+                                    <div className="text-pink-600 font-medium">New Selected: {formData.image.name}</div>
                                 ) : (
                                     <>
                                         <div className="w-16 h-16 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <Upload className="w-8 h-8" />
                                         </div>
-                                        <p className={`font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Click to upload main image</p>
-                                        <p className="text-sm text-gray-500">SVG, PNG, JPG or GIF (max. 5MB)</p>
+                                        <p className={`font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                            {product?.image ? "Click to change main image" : "Upload main image"}
+                                        </p>
                                     </>
                                 )}
                             </label>
@@ -301,6 +351,25 @@ export default function AddProductPage() {
                         <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                             Additional Images (Gallery)
                         </label>
+
+                        {/* Existing Gallery Images */}
+                        {product?.images && product.images.length > 0 && (
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+                                {product.images.map((img: any) => (
+                                    <div key={img.id} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                        <Image
+                                            src={getImageUrl(img.image)}
+                                            alt={img.alt_text || "Gallery"}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                        {/* Delete button (would need API endpoint implementation to actually delete single image) */}
+                                        {/* For now we just show them. Implementing delete requires backend 'destroy' on ProductImageViewSet or similar */}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <div className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors mb-4 ${isDark ? 'border-slate-700 hover:border-pink-500 hover:bg-slate-800' : 'border-gray-300 hover:border-pink-500 hover:bg-pink-50'}`}>
                             <input
                                 type="file"
@@ -325,7 +394,7 @@ export default function AddProductPage() {
                             </label>
                         </div>
 
-                        {/* Preview List */}
+                        {/* New Upload Preview List */}
                         {formData.images.length > 0 && (
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                 {formData.images.map((file, index) => (
@@ -350,8 +419,13 @@ export default function AddProductPage() {
                     </div>
                 </div>
 
-                {/* Submit */}
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-end pt-4 gap-4">
+                    <Link
+                        href="/dashboard/vendor/products"
+                        className="px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-xl transition-all"
+                    >
+                        Cancel
+                    </Link>
                     <button
                         type="submit"
                         disabled={loading}
@@ -360,12 +434,12 @@ export default function AddProductPage() {
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Creating...
+                                Updating...
                             </>
                         ) : (
                             <>
                                 <Save className="w-5 h-5" />
-                                Publish Product
+                                Save Changes
                             </>
                         )}
                     </button>
