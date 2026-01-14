@@ -138,7 +138,7 @@ export default function VendorDashboardPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Sales Chart Placeholder */}
-                <div className={`lg:col-span-2 p-6 rounded-2xl border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'
+                <div className={`lg:col-span-2 p-6 rounded-2xl border shadow-sm flex flex-col ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'
                     }`}>
                     <div className="flex items-center justify-between mb-6">
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>

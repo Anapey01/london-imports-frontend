@@ -22,7 +22,9 @@ export default function VendorOrdersPage() {
         const fetchOrders = async () => {
             try {
                 const response = await vendorsAPI.orders();
-                setOrders(response.data);
+                // Handle paginated or flat response
+                const data = response.data?.results || response.data;
+                setOrders(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error('Failed to fetch orders:', error);
             } finally {
