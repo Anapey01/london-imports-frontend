@@ -27,6 +27,7 @@ export default function AddProductPage() {
         preorder_status: 'PREORDER',
         sizes: '',
         colors: '',
+        shipping_origin: 'China', // Default to China
         image: null as File | null,
     });
 
@@ -65,6 +66,7 @@ export default function AddProductPage() {
             data.append('price', formData.price);
             data.append('category', formData.category_id); // Backend expects ID or slug? Usually ID for Create
             data.append('preorder_status', formData.preorder_status);
+            data.append('shipping_origin', formData.shipping_origin);
 
             // Variants parsing
             if (formData.sizes) {
@@ -238,6 +240,21 @@ export default function AddProductPage() {
                                     value={formData.colors}
                                     onChange={handleChange}
                                     placeholder="e.g. Red, Blue, Black"
+                                    className={inputClasses}
+                                />
+                            </div>
+
+                            {/* Shipping Origin */}
+                            <div className="col-span-1 sm:col-span-2">
+                                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                    Shipping Origin
+                                </label>
+                                <input
+                                    type="text"
+                                    name="shipping_origin"
+                                    value={formData.shipping_origin}
+                                    onChange={handleChange}
+                                    placeholder="e.g. China, Turkey, London"
                                     className={inputClasses}
                                 />
                             </div>
