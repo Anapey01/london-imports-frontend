@@ -184,6 +184,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                         <button
                                             key={img.id}
                                             onClick={() => setDisplayedImage(imgUrl)}
+                                            aria-label={`View image of ${img.alt || product.name}`}
                                             className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 snap-start
                                                 ${isSelected ? 'border-pink-600 ring-2 ring-pink-100 scale-105' : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'}
                                             `}
@@ -296,7 +297,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <span className="text-sm text-gray-600 font-medium">
                                 {Number(product.rating ?? 0).toFixed(1)}
                                 <span className="mx-1.5 text-gray-300">|</span>
-                                {product.preorder_status === 'READY_TO_SHIP' ? 'Ready to Ship' : `${product.reservations_count || 0} Pre-orders`}
+                                {product.preorder_status === 'READY_TO_SHIP' ? 'Ready to Ship' : `${product.reservations_count || 0} Pre-orders (minus shipping fees)`}
                             </span>
                         </div>
 
