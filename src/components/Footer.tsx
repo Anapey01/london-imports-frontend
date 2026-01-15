@@ -89,6 +89,7 @@ const Footer = () => {
                         <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Shop</h4>
                         <ul className="space-y-4 text-sm">
                             <li><Link href="/products" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">All Products</Link></li>
+                            <li><Link href="/reviews" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Reviews</Link></li>
                             <li><Link href="/how-it-works" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">How It Works</Link></li>
                             <li><Link href="/faq" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
                             <li><Link href="/track" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Track Order</Link></li>
