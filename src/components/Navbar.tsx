@@ -104,10 +104,10 @@ export default function Navbar() {
 
                         {/* MID-RIGHT: Marketplace Link */}
                         <div className="hidden lg:flex items-center mr-6">
-                            <Link href="/market" className="bg-black text-white px-5 py-2.5 rounded-full font-bold hover:bg-gray-800 transition-colors shadow-sm flex items-center gap-2">
+                            <a href="https://market.londonsimports.com" className="bg-black text-white px-5 py-2.5 rounded-full font-bold hover:bg-gray-800 transition-colors shadow-sm flex items-center gap-2">
                                 <span>🏪</span>
                                 <span>Marketplace</span>
-                            </Link>
+                            </a>
                         </div>
 
                         {/* RIGHT: User Actions (No Nav Links here anymore) */}

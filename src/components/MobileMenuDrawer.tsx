@@ -108,8 +108,8 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
                 {/* Featured / Available Items - Highlighted */}
                 {/* Ready to Ship - Clean & Professional */}
-                <Link
-                    href="/products?status=READY_TO_SHIP"
+                <a
+                    href="https://londonsimports.com/products?status=READY_TO_SHIP"
                     onClick={onClose}
                     className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 border-b border-gray-100 transition-colors group"
                 >
@@ -118,11 +118,11 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <span className="block font-medium text-gray-900 text-base">Ready to Ship</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
-                </Link>
+                </a>
 
                 {/* Marketplace Link - Clean & Professional */}
-                <Link
-                    href="/market"
+                <a
+                    href="https://market.londonsimports.com"
                     onClick={onClose}
                     className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 border-b border-gray-100 transition-colors group"
                 >
@@ -131,7 +131,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <span className="block font-medium text-gray-900 text-base">Marketplace</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
-                </Link>
+                </a>
 
                 {/* Need Help Section */}
                 <Link

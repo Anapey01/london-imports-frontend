@@ -62,13 +62,13 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                 <div className="flex-1 overflow-y-auto py-6 px-4">
                     <nav className="flex flex-col gap-2">
                         <MenuItem
-                            href="/products?status=READY_TO_SHIP"
+                            href="https://londonsimports.com/products?status=READY_TO_SHIP"
                             icon={<Flame className="w-5 h-5 text-gray-500 group-hover:text-gray-900" />}
                             label="Ready to Ship"
                             onClick={onClose}
                         />
                         <MenuItem
-                            href="/market"
+                            href="https://market.londonsimports.com"
                             icon={<Store className="w-5 h-5 text-gray-500 group-hover:text-gray-900" />}
                             label="Marketplace"
                             onClick={onClose}
