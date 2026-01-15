@@ -1,54 +1,68 @@
 import React from 'react';
-import { Star, CheckCircle } from 'lucide-react';
+import { Star, CheckCircle, MessageCircle } from 'lucide-react';
 
 const reviews = [
     {
-        name: "Abena K.",
+        name: "Hanneth Musah",
         role: "Verified Buyer",
-        title: "Saved GH₵ 1,500 on iPhone",
-        text: "Was skeptical at first about paying before arrival, but the tracking was precise. Got it in 14 days and saved huge compared to buying locally!",
+        title: "First of all she is legit",
+        text: "First of all she is legit, trusted wealthy, my satisfied with my experience with my best importer London import. She is genuine, patience and reliable 😘 my all time favorite 😍",
         rating: 5,
-        date: "2 days ago"
+        date: "2 days ago",
+        reply: "Thank you for trusting in us ❤️"
     },
     {
-        name: "Kwame O.",
+        name: "Gina Addison",
         role: "Verified Buyer",
-        title: "Game Changer Service",
-        text: "London's Imports is a game changer. The 'Verified Delivery' principle is real. It arrived exactly when they said it would.",
+        title: "She is trust wealthy",
+        text: "She is trust wealthy, patience and also always give updates on the items. She also refund if ur items didn't get to her.",
         rating: 5,
-        date: "1 week ago"
+        date: "2 days ago",
+        reply: "Thank you and we promise to always be the best among all."
     },
     {
-        name: "Sarah D.",
-        role: "Business Vendor",
-        title: "Peace of Mind",
-        text: "I stock my entire shop through them now. The receipt verification gives me peace of mind for my business capital.",
-        rating: 5,
-        date: "2 weeks ago"
-    },
-    {
-        name: "Emmanuel M.",
+        name: "Yesutor Emmanuella Yovogan",
         role: "Verified Buyer",
-        title: "Smooth Payment Options",
-        text: "The flexible payment option helped a lot. Paid half down and the rest when it landed. Super smooth service.",
+        title: "Legit Importer",
+        text: "One of the best mini importers I've come across. Calm and humble. Always a nice shopping experience with her. No scam zone.",
         rating: 5,
-        date: "3 weeks ago"
+        date: "2 days ago",
+        reply: "Thank you for your generosity"
     },
     {
-        name: "Jessica A.",
-        role: "Fashion Haul",
-        title: "Great Prices",
-        text: "Finally I can shop global brands without begging relatives to bring them home. Shipping fees are very reasonable.",
-        rating: 4,
-        date: "1 month ago"
+        name: "Eddy Nyakus",
+        role: "Verified Buyer",
+        title: "I’m very satisfied with my experience…",
+        text: "I’m very satisfied with my experience with London imports. They are genuine, transparent, and reliable. What you order is truly what you get—no hidden issues or misleading descriptions. Communication was clear, and the entire process was handled professionally. I would confidently recommend them to anyone looking for a trustworthy importer.",
+        rating: 5,
+        date: "2 days ago",
+        reply: "Thank you 🙏"
     },
     {
-        name: "Kofi B.",
-        role: "Tech Enthusiast",
-        title: "Early Access Success",
-        text: "Got the S24 before it was even common in stores here. Automation on WhatsApp kept me updated every step.",
+        name: "Wilhelmina Mensah",
+        role: "Verified Buyer",
+        title: "She's the most trusted importer i know",
+        text: "She's the most trusted importer i know. And she gives exactly what you want. No scam, she's the best.",
         rating: 5,
-        date: "1 month ago"
+        date: "2 days ago",
+        reply: "Thank you ☺️"
+    },
+    {
+        name: "Priscilla Quashie sam",
+        role: "Verified Buyer",
+        title: "A trusted person",
+        text: "A place of no scam 100% trustee and honestly her shipment is the best ❤️",
+        rating: 5,
+        date: "2 days ago",
+        reply: "Thank you for your honesty"
+    },
+    {
+        name: "Kofy Smile",
+        role: "Verified Buyer",
+        title: "It is the best mini importation…",
+        text: "It is the best mini importation business in Ghana right now. What makes them special is their paystack integration. Check them out",
+        rating: 5,
+        date: "3 days ago"
     }
 ];
 
@@ -81,7 +95,7 @@ export default function Reviews() {
                     {reviews.map((review, i) => (
                         <div
                             key={i}
-                            className="bg-white p-8 rounded-sm shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+                            className="bg-white p-8 rounded-sm shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100 flex flex-col h-full"
                         >
                             {/* Stars */}
                             <div className="flex gap-1 mb-4">
@@ -101,12 +115,25 @@ export default function Reviews() {
                             </h3>
 
                             {/* Text */}
-                            <p className="text-gray-600 text-base leading-relaxed mb-6 line-clamp-4">
+                            <p className="text-gray-600 text-base leading-relaxed mb-6 line-clamp-4 flex-grow">
                                 "{review.text}"
                             </p>
 
+                            {/* Reply Section */}
+                            {review.reply && (
+                                <div className="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-[#00b67a]">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <MessageCircle className="w-4 h-4 text-[#00b67a]" />
+                                        <span className="text-xs font-bold text-gray-900">Reply from London's Imports</span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 italic">
+                                        "{review.reply}"
+                                    </p>
+                                </div>
+                            )}
+
                             {/* Author & Footer */}
-                            <div className="flex items-center justify-between mt-auto">
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
                                 <div>
                                     <h4 className="font-bold text-gray-900 text-sm">{review.name}</h4>
                                     <div className="flex items-center gap-1.5 mt-0.5 text-gray-400">
