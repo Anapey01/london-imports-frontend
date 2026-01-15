@@ -13,14 +13,13 @@ import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
 import SidebarMenu from './SidebarMenu';
 import MobileMenuDrawer from './MobileMenuDrawer';
-import { useTheme } from '@/providers/ThemeProvider';
 import { Search, Menu, Heart } from 'lucide-react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 
 export default function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
-    const { theme } = useTheme();
+    // const { theme } = useTheme();
     const wishlistItems = useWishlistStore(state => state.items);
     const [mounted, setMounted] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,7 +47,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="border-b sticky top-0 z-40" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <nav className="border-b sticky top-0 z-40 navbar-themed">
                 {/* Desktop Navbar */}
                 <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
@@ -77,7 +76,7 @@ export default function Navbar() {
                                     <span className="text-base sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
                                         London&apos;s
                                     </span>
-                                    <span className="text-base sm:text-2xl font-bold ml-1" style={{ color: theme === 'dark' ? '#f8fafc' : '#1f2937' }}>Imports</span>
+                                    <span className="text-base sm:text-2xl font-bold ml-1 text-gray-800">Imports</span>
                                 </div>
                             </Link>
                         </div>
@@ -103,8 +102,13 @@ export default function Navbar() {
                             </div>
                         </div>
 
-                        {/* MID-RIGHT: Dynamic Category Links - REMOVED per request */}
-                        {/* Categories are now only available in the Sidebar Menu for a cleaner look */}
+                        {/* MID-RIGHT: Marketplace Link */}
+                        <div className="hidden lg:flex items-center mr-6">
+                            <Link href="/market" className="bg-black text-white px-5 py-2.5 rounded-full font-bold hover:bg-gray-800 transition-colors shadow-sm flex items-center gap-2">
+                                <span>🏪</span>
+                                <span>Marketplace</span>
+                            </Link>
+                        </div>
 
                         {/* RIGHT: User Actions (No Nav Links here anymore) */}
                         <div className="flex items-center gap-6">

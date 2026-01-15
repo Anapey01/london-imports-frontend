@@ -28,6 +28,7 @@ import {
     LogIn,
     Truck,
     Flame,
+    Store,
 } from 'lucide-react';
 
 interface MobileMenuDrawerProps {
@@ -119,6 +120,22 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <span className="block text-xs text-orange-600 font-medium">Instant purchase available</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-orange-300 ml-auto" />
+                </Link>
+
+                {/* Marketplace Link - High Visibility */}
+                <Link
+                    href="/market"
+                    onClick={onClose}
+                    className="flex items-center gap-4 px-4 py-4 bg-gray-900 hover:bg-black transition-colors border-b border-gray-800"
+                >
+                    <div className="p-2 rounded-full bg-gray-800 text-white border border-gray-700">
+                        <Store className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <span className="block font-bold text-white text-base">Vendor Marketplace</span>
+                        <span className="block text-xs text-gray-400 font-medium">Shop trusted local sellers</span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-600 ml-auto" />
                 </Link>
 
                 {/* Need Help Section */}

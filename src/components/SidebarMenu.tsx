@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { X, Flame, Truck, Info, HelpCircle } from 'lucide-react';
+import { X, Flame, Truck, Info, HelpCircle, Store } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -66,6 +66,13 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                             icon={<Flame className="w-5 h-5 text-orange-500" />}
                             label="Available Items"
                             description="Instant purchase available"
+                            onClick={onClose}
+                        />
+                        <MenuItem
+                            href="/market"
+                            icon={<Store className="w-5 h-5 text-purple-600" />}
+                            label="Vendor Marketplace"
+                            description="Shop local sellers"
                             onClick={onClose}
                         />
                         <MenuItem
