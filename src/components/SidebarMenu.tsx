@@ -63,14 +63,14 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     <nav className="flex flex-col gap-2">
                         <MenuItem
                             href="/products?status=READY_TO_SHIP"
-                            icon={<Flame className="w-5 h-5 text-orange-500" />}
+                            icon={<Flame className="w-5 h-5 text-gray-500 group-hover:text-gray-900" />}
                             label="Ready to Ship"
                             description="In stock now"
                             onClick={onClose}
                         />
                         <MenuItem
                             href="/market"
-                            icon={<Store className="w-5 h-5 text-purple-600" />}
+                            icon={<Store className="w-5 h-5 text-gray-500 group-hover:text-gray-900" />}
                             label="Marketplace"
                             description="Partner stores"
                             onClick={onClose}

@@ -107,18 +107,16 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 </div>
 
                 {/* Featured / Available Items - Highlighted */}
-                {/* Ready to Ship - Premium Highlight */}
+                {/* Ready to Ship - Clean & Professional */}
                 <Link
                     href="/products?status=READY_TO_SHIP"
                     onClick={onClose}
                     className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 border-b border-gray-100 transition-colors group"
                 >
-                    <div className="p-2 rounded-full bg-orange-50 text-orange-600 group-hover:bg-orange-100 transition-colors">
-                        <Flame className="w-5 h-5" />
-                    </div>
+                    <Flame className="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors" />
                     <div className="flex-1">
-                        <span className="block font-semibold text-gray-900 text-base">Ready to Ship</span>
-                        <span className="block text-xs text-gray-500 font-medium mt-0.5">In stock now</span>
+                        <span className="block font-medium text-gray-900 text-base">Ready to Ship</span>
+                        <span className="block text-xs text-gray-500 mt-0.5">In stock now</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
                 </Link>
@@ -129,12 +127,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     onClick={onClose}
                     className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 border-b border-gray-100 transition-colors group"
                 >
-                    <div className="p-2 rounded-full bg-purple-50 text-purple-600 group-hover:bg-purple-100 transition-colors">
-                        <Store className="w-5 h-5" />
-                    </div>
+                    <Store className="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors" />
                     <div className="flex-1">
-                        <span className="block font-semibold text-gray-900 text-base">Marketplace</span>
-                        <span className="block text-xs text-gray-500 font-medium mt-0.5">Browse partner stores</span>
+                        <span className="block font-medium text-gray-900 text-base">Marketplace</span>
+                        <span className="block text-xs text-gray-500 mt-0.5">Browse partner stores</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
                 </Link>
