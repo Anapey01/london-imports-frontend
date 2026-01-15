@@ -64,15 +64,15 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                         <MenuItem
                             href="/products?status=READY_TO_SHIP"
                             icon={<Flame className="w-5 h-5 text-orange-500" />}
-                            label="Available Items"
-                            description="Instant purchase available"
+                            label="Ready to Ship"
+                            description="In stock now"
                             onClick={onClose}
                         />
                         <MenuItem
                             href="/market"
                             icon={<Store className="w-5 h-5 text-purple-600" />}
-                            label="Vendor Marketplace"
-                            description="Shop local sellers"
+                            label="Marketplace"
+                            description="Partner stores"
                             onClick={onClose}
                         />
                         <MenuItem

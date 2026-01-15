@@ -107,35 +107,36 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 </div>
 
                 {/* Featured / Available Items - Highlighted */}
+                {/* Ready to Ship - Premium Highlight */}
                 <Link
                     href="/products?status=READY_TO_SHIP"
                     onClick={onClose}
-                    className="flex items-center gap-4 px-4 py-4 bg-orange-50/50 hover:bg-orange-50 border-b border-orange-100 transition-colors"
+                    className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 border-b border-gray-100 transition-colors group"
                 >
-                    <div className="p-2 rounded-full bg-orange-100 text-orange-600">
+                    <div className="p-2 rounded-full bg-orange-50 text-orange-600 group-hover:bg-orange-100 transition-colors">
                         <Flame className="w-5 h-5" />
                     </div>
-                    <div>
-                        <span className="block font-bold text-gray-900 text-base">Available Items</span>
-                        <span className="block text-xs text-orange-600 font-medium">Instant purchase available</span>
+                    <div className="flex-1">
+                        <span className="block font-semibold text-gray-900 text-base">Ready to Ship</span>
+                        <span className="block text-xs text-gray-500 font-medium mt-0.5">In stock now</span>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-orange-300 ml-auto" />
+                    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
                 </Link>
 
-                {/* Marketplace Link - High Visibility */}
+                {/* Marketplace Link - Clean & Professional */}
                 <Link
                     href="/market"
                     onClick={onClose}
-                    className="flex items-center gap-4 px-4 py-4 bg-gray-900 hover:bg-black transition-colors border-b border-gray-800"
+                    className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 border-b border-gray-100 transition-colors group"
                 >
-                    <div className="p-2 rounded-full bg-gray-800 text-white border border-gray-700">
+                    <div className="p-2 rounded-full bg-purple-50 text-purple-600 group-hover:bg-purple-100 transition-colors">
                         <Store className="w-5 h-5" />
                     </div>
-                    <div>
-                        <span className="block font-bold text-white text-base">Vendor Marketplace</span>
-                        <span className="block text-xs text-gray-400 font-medium">Shop trusted local sellers</span>
+                    <div className="flex-1">
+                        <span className="block font-semibold text-gray-900 text-base">Marketplace</span>
+                        <span className="block text-xs text-gray-500 font-medium mt-0.5">Browse partner stores</span>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-600 ml-auto" />
+                    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
                 </Link>
 
                 {/* Need Help Section */}
