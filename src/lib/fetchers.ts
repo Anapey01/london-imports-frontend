@@ -28,7 +28,12 @@ export async function getProducts(params: Record<string, string> = {}) {
 }
 
 export async function getFeaturedProducts() {
-    return getProducts({ featured: 'true', limit: '10', ordering: '-created_at' });
+    return getProducts({
+        featured: 'true',
+        limit: '10',
+        ordering: '-created_at',
+        is_vendor: 'false'
+    });
 }
 
 export async function getRecentProducts(limit = 20, isVendor = false) {
@@ -48,7 +53,12 @@ export async function getVendorMarketplaceProducts(limit = 20) {
 }
 
 export async function getAvailableProducts(limit = 10) {
-    return getProducts({ status: 'READY_TO_SHIP', limit: limit.toString(), ordering: '-created_at' });
+    return getProducts({
+        status: 'READY_TO_SHIP',
+        limit: limit.toString(),
+        ordering: '-created_at',
+        is_vendor: 'false'  // Ensure only Admin Ready-to-Ship items show on home
+    });
 }
 
 export async function getCategories() {
