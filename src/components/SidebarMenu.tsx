@@ -94,9 +94,17 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     </nav>
 
                     {/* Categories Section */}
-                    <div className="mt-6 mb-4">
-                        <h4 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Categories</h4>
-                        <nav className="flex flex-col gap-1">
+                    <div className="mt-6 mb-4 group relative">
+                        <div className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Categories</h4>
+                            <span className="text-gray-400 transform group-hover:rotate-180 transition-transform">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </span>
+                        </div>
+
+                        <nav className="hidden group-hover:flex flex-col gap-1 mt-2 animate-in fade-in slide-in-from-top-1 duration-200">
                             {categoriesLoading ? (
                                 <div className="px-4 py-2 text-sm text-gray-400 italic animate-pulse">Loading categories...</div>
                             ) : categories.length > 0 ? (
