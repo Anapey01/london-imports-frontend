@@ -9,7 +9,7 @@ export interface Product {
     id: string;
     name: string;
     slug: string;
-    image: string;
+    image?: string | null;
     price: number;
     preorder_status?: string;
     delivery_window_text?: string;

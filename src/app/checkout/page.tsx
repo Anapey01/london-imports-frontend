@@ -241,6 +241,7 @@ export default function CheckoutPage() {
                                                 value={delivery.region}
                                                 onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
                                                 required
+                                                aria-label="Region"
                                                 className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light appearance-none px-0 cursor-pointer"
                                             >
                                                 <option value="">Select Region</option>

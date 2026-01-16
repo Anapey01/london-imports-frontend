@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, productsAPI } from '@/lib/api';
-import { Search, Plus, Filter, MoreVertical, Edit, Trash2, Eye, Star, Clock } from 'lucide-react';
+
 
 interface Product {
     id: number;
@@ -61,7 +61,7 @@ export default function AdminProductsPage() {
         category: 'Electronics',
         price: 0,
         stock: 0,
-        status: 'DRAFT' as const,
+        status: 'DRAFT' as string,
         featured: false,
         preOrder: true,
         expectedDate: '',
@@ -170,18 +170,7 @@ export default function AdminProductsPage() {
         }
     };
 
-    const togglePreOrder = async (id: number) => {
-        const product = products.find((p: Product) => p.id === id);
-        if (!product) return;
-        try {
-            await adminAPI.updateProduct(String(id), { preOrder: !product.preOrder });
-            // Optimistic update
-            setProducts(products.map((p: Product) => p.id === id ? { ...p, preOrder: !p.preOrder } : p));
-        } catch (err) {
-            console.error('Failed to toggle pre-order:', err);
-            alert('Failed to update pre-order status');
-        }
-    };
+
 
     // Product Icon Component
     const ProductIcon = ({ category, className = '' }: { category: string; className?: string }) => (
@@ -250,6 +239,7 @@ export default function AdminProductsPage() {
                         <input
                             type="text"
                             placeholder="Search products..."
+                            aria-label="Search products"
                             value={searchTerm}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                             className={`w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm ${isDark
@@ -260,6 +250,7 @@ export default function AdminProductsPage() {
                     </div>
                     <select
                         value={categoryFilter}
+                        aria-label="Filter by category"
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategoryFilter(e.target.value)}
                         className={`px-4 py-2.5 rounded-lg border text-sm ${isDark ? 'bg-slate-900/50 border-slate-700 text-white' : 'bg-gray-50 border-gray-200'}`}
                     >
@@ -268,6 +259,7 @@ export default function AdminProductsPage() {
                     </select>
                     <select
                         value={statusFilter}
+                        aria-label="Filter by status"
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
                         className={`px-4 py-2.5 rounded-lg border text-sm ${isDark ? 'bg-slate-900/50 border-slate-700 text-white' : 'bg-gray-50 border-gray-200'}`}
                     >
@@ -280,6 +272,7 @@ export default function AdminProductsPage() {
                     <div className={`flex rounded-lg border overflow-hidden ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
                         <button
                             onClick={() => setViewMode('table')}
+                            aria-label="Switch to table view"
                             className={`p-2.5 transition-colors ${viewMode === 'table' ? 'bg-pink-500 text-white' : isDark ? 'bg-slate-900/50 text-slate-400' : 'bg-gray-50 text-gray-500'}`}
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,6 +281,7 @@ export default function AdminProductsPage() {
                         </button>
                         <button
                             onClick={() => setViewMode('grid')}
+                            aria-label="Switch to grid view"
                             className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-pink-500 text-white' : isDark ? 'bg-slate-900/50 text-slate-400' : 'bg-gray-50 text-gray-500'}`}
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -353,17 +347,20 @@ export default function AdminProductsPage() {
                                         </td>
                                         <td className="px-5 py-4">
                                             <div className="flex items-center justify-end gap-1">
-                                                <button onClick={() => toggleFeatured(product.id)} title={product.featured ? 'Remove from featured' : 'Add to featured'} className={`p-1.5 rounded-md transition-colors ${product.featured ? 'text-amber-500' : isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}>
+                                                <button onClick={() => toggleFeatured(product.id)}
+                                                    title={product.featured ? 'Remove from featured' : 'Add to featured'}
+                                                    aria-label={product.featured ? 'Remove from featured' : 'Add to featured'}
+                                                    className={`p-1.5 rounded-md transition-colors ${product.featured ? 'text-amber-500' : isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}>
                                                     <svg className="w-4 h-4" fill={product.featured ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                                     </svg>
                                                 </button>
-                                                <button onClick={() => { setSelectedProduct(product); setShowEditModal(true); }} className={`p-1.5 rounded-md transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}>
+                                                <button onClick={() => { setSelectedProduct(product); setShowEditModal(true); }} aria-label="Edit product" className={`p-1.5 rounded-md transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}>
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </button>
-                                                <button onClick={() => handleDeleteProduct(product.id)} className={`p-1.5 rounded-md transition-colors ${isDark ? 'text-slate-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}>
+                                                <button onClick={() => handleDeleteProduct(product.id)} aria-label="Delete product" className={`p-1.5 rounded-md transition-colors ${isDark ? 'text-slate-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}>
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
@@ -430,7 +427,7 @@ export default function AdminProductsPage() {
                                         <button onClick={() => { setSelectedProduct(product); setShowEditModal(true); }} className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${isDark ? 'bg-slate-700/50 text-white hover:bg-slate-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                                             Edit
                                         </button>
-                                        <button onClick={() => toggleFeatured(product.id)} className={`p-2 rounded-lg transition-colors ${product.featured ? 'text-amber-500' : isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                        <button onClick={() => toggleFeatured(product.id)} aria-label="Toggle featured" className={`p-2 rounded-lg transition-colors ${product.featured ? 'text-amber-500' : isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                                             <svg className="w-5 h-5" fill={product.featured ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                             </svg>
@@ -452,7 +449,7 @@ export default function AdminProductsPage() {
                                 <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Add New Product</h3>
                                 <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Create a new listing for your catalog</p>
                             </div>
-                            <button onClick={() => setShowAddModal(false)} className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+                            <button onClick={() => setShowAddModal(false)} aria-label="Close modal" className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -461,33 +458,33 @@ export default function AdminProductsPage() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Product Name</label>
-                                <input type="text" value={newProduct.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="e.g., iPhone 16 Pro Max" />
+                                <label htmlFor="add-name" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Product Name</label>
+                                <input id="add-name" type="text" value={newProduct.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="e.g., iPhone 16 Pro Max" />
                             </div>
                             <div>
-                                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Description</label>
-                                <textarea value={newProduct.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewProduct({ ...newProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="Brief product description" />
+                                <label htmlFor="add-desc" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Description</label>
+                                <textarea id="add-desc" value={newProduct.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewProduct({ ...newProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:outline-none focus:ring-2 focus:ring-pink-500/20`} placeholder="Brief product description" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
-                                    <select value={newProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <label htmlFor="add-category" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
+                                    <select id="add-category" value={newProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Price (GHS)</label>
-                                    <input type="number" value={newProduct.price || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} placeholder="0.00" />
+                                    <label htmlFor="add-price" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Price (GHS)</label>
+                                    <input id="add-price" type="number" value={newProduct.price || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} placeholder="0.00" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
-                                    <input type="date" value={newProduct.expectedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                    <label htmlFor="add-date" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
+                                    <input id="add-date" type="date" value={newProduct.expectedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewProduct({ ...newProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                                 </div>
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
-                                    <select value={newProduct.status} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, status: e.target.value as any })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <label htmlFor="add-status" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
+                                    <select id="add-status" value={newProduct.status} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewProduct({ ...newProduct, status: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         <option value="DRAFT">Draft</option>
                                         <option value="PENDING">Pending Review</option>
                                         <option value="ACTIVE">Active</option>
@@ -527,7 +524,7 @@ export default function AdminProductsPage() {
                                 <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Edit Product</h3>
                                 <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Update product details</p>
                             </div>
-                            <button onClick={() => setShowEditModal(false)} className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+                            <button onClick={() => setShowEditModal(false)} aria-label="Close modal" className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -536,33 +533,33 @@ export default function AdminProductsPage() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Product Name</label>
-                                <input type="text" value={selectedProduct.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                <label htmlFor="edit-name" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Product Name</label>
+                                <input id="edit-name" type="text" value={selectedProduct.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, name: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                             </div>
                             <div>
-                                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Description</label>
-                                <textarea value={selectedProduct.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSelectedProduct({ ...selectedProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                <label htmlFor="edit-desc" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Description</label>
+                                <textarea id="edit-desc" value={selectedProduct.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSelectedProduct({ ...selectedProduct, description: e.target.value })} rows={2} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
-                                    <select value={selectedProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <label htmlFor="edit-category" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Category</label>
+                                    <select id="edit-category" value={selectedProduct.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, category: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Price (GHS)</label>
-                                    <input type="number" value={selectedProduct.price} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                    <label htmlFor="edit-price" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Price (GHS)</label>
+                                    <input id="edit-price" type="number" value={selectedProduct.price} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, price: parseFloat(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Stock</label>
-                                    <input type="number" value={selectedProduct.stock} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, stock: parseInt(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                    <label htmlFor="edit-stock" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Stock</label>
+                                    <input id="edit-stock" type="number" value={selectedProduct.stock} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, stock: parseInt(e.target.value) || 0 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                                 </div>
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
-                                    <select value={selectedProduct.status} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, status: e.target.value as any })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                                    <label htmlFor="edit-status" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
+                                    <select id="edit-status" value={selectedProduct.status} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct({ ...selectedProduct, status: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
                                         <option value="DRAFT">Draft</option>
                                         <option value="PENDING">Pending</option>
                                         <option value="ACTIVE">Active</option>
@@ -571,12 +568,12 @@ export default function AdminProductsPage() {
                                 </div>
                             </div>
                             <div>
-                                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
-                                <input type="date" value={selectedProduct.expectedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                                <label htmlFor="edit-date" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
+                                <input id="edit-date" type="date" value={selectedProduct.expectedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
                             </div>
                             <div className={`flex items-center gap-6 py-2 px-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={selectedProduct.preOrder} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, preOrder: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
+                                <label htmlFor="edit-preorder" className="flex items-center gap-2 cursor-pointer">
+                                    <input id="edit-preorder" type="checkbox" checked={selectedProduct.preOrder} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedProduct({ ...selectedProduct, preOrder: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-500" />
                                     <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Pre-Order</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">

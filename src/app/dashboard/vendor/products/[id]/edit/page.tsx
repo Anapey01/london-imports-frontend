@@ -6,7 +6,8 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { useRouter, useParams } from 'next/navigation';
 import { productsAPI, vendorsAPI } from '@/lib/api';
 import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
-import { Category } from '@/types';
+import { useQuery } from '@tanstack/react-query';
+import { Category, Product, ProductImage } from '../../../../../../types';
 import { getImageUrl } from '@/lib/image';
 import Image from 'next/image';
 
@@ -18,10 +19,19 @@ export default function EditProductPage() {
 
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    const [categories, setCategories] = useState<Category[]>([]);
+
+    // Fetch categories using React Query
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => productsAPI.categories(),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+
+    const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
 
     // Existing data from backend
-    const [product, setProduct] = useState<any>(null);
+    const [product, setProduct] = useState<Product | null>(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -39,13 +49,9 @@ export default function EditProductPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch categories
-                const catRes = await productsAPI.categories();
-                setCategories(catRes.data.results || []);
-
                 // Fetch product details
                 if (productId) {
-                    const prodRes = await vendorsAPI.products(); // Ideally fetch single, but list works for now if detail endpoint protected/different
+                    // Ideally fetch single, but list works for now if detail endpoint protected/different
                     // Wait, vendorsAPI.products() returns list. We need detail.
                     // vendorsAPI.updateProduct(id, data) exists, but we need get.
                     // Let's rely on public product detail or add vendor detail to API if needed.
@@ -59,7 +65,7 @@ export default function EditProductPage() {
 
                     // Temporary fix: fetching list and filtering (Upgrade this later!)
                     const listRes = await vendorsAPI.products();
-                    const found = listRes.data.results.find((p: any) => p.id === productId);
+                    const found = listRes.data.results.find((p: Product) => p.id === productId);
 
                     if (found) {
                         setProduct(found);
@@ -136,11 +142,12 @@ export default function EditProductPage() {
             await vendorsAPI.updateProduct(productId, data);
             router.push('/dashboard/vendor/products');
             router.refresh();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to update product:', error);
-            if (error.response && error.response.data) {
-                console.error('Backend validation errors:', error.response.data);
-                alert(`Failed to update product: ${JSON.stringify(error.response.data)}`);
+            const err = error as { response?: { data?: unknown }; message?: string };
+            if (err.response && err.response.data) {
+                console.error('Backend validation errors:', err.response.data);
+                alert(`Failed to update product: ${JSON.stringify(err.response.data)}`);
             } else {
                 alert('Failed to update product. Please check console for details.');
             }
@@ -242,7 +249,7 @@ export default function EditProductPage() {
                                     className={inputClasses}
                                 >
                                     <option value="">Select a Category</option>
-                                    {categories.map(cat => (
+                                    {categories.map((cat: Category) => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                     ))}
                                 </select>
@@ -379,7 +386,7 @@ export default function EditProductPage() {
                         {/* Existing Gallery Images */}
                         {product?.images && product.images.length > 0 && (
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                                {product.images.map((img: any) => (
+                                {product.images.map((img: ProductImage) => (
                                     <div key={img.id} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden">
                                         <Image
                                             src={getImageUrl(img.image)}

@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { X, Flame, Truck, Info, HelpCircle, Store } from 'lucide-react';
+import { X, Flame, Truck, Info, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -18,9 +18,11 @@ interface SidebarMenuProps {
 
 export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
     // Fetch categories dynamically
-    const { data: categoriesData } = useQuery({
+    const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
         queryKey: ['categories'],
         queryFn: () => productsAPI.categories(),
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+        gcTime: 10 * 60 * 1000, // Keep in garbage collection for 10 minutes
     });
 
     const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
@@ -67,12 +69,7 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                             label="Ready to Ship"
                             onClick={onClose}
                         />
-                        <MenuItem
-                            href="https://market.londonsimports.com"
-                            icon={<Store className="w-5 h-5 text-gray-500 group-hover:text-gray-900" />}
-                            label="Marketplace"
-                            onClick={onClose}
-                        />
+
                         <MenuItem
                             href="/delivery-returns"
                             icon={<Truck className="w-5 h-5" />}
@@ -100,18 +97,21 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     <div className="mt-6 mb-4">
                         <h4 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Categories</h4>
                         <nav className="flex flex-col gap-1">
-                            {categories.map((category: any) => (
-                                <Link
-                                    key={category.id}
-                                    href={`/products?category=${category.slug}`}
-                                    onClick={onClose}
-                                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 rounded-lg transition-colors"
-                                >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-pink-500"></span>
-                                    {category.name}
-                                </Link>
-                            ))}
-                            {categories.length === 0 && (
+                            {categoriesLoading ? (
+                                <div className="px-4 py-2 text-sm text-gray-400 italic animate-pulse">Loading categories...</div>
+                            ) : categories.length > 0 ? (
+                                categories.map((category: { id: string; slug: string; name: string }) => (
+                                    <Link
+                                        key={category.id}
+                                        href={`/products?category=${category.slug}`}
+                                        onClick={onClose}
+                                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 rounded-lg transition-colors"
+                                    >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-pink-500"></span>
+                                        {category.name}
+                                    </Link>
+                                ))
+                            ) : (
                                 <div className="px-4 py-2 text-sm text-gray-400 italic">No categories found</div>
                             )}
                         </nav>
@@ -131,7 +131,15 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
     );
 }
 
-function MenuItem({ href, icon, label, description, onClick }: any) {
+interface MenuItemProps {
+    href: string;
+    icon: React.ReactNode;
+    label: string;
+    description?: string;
+    onClick: () => void;
+}
+
+function MenuItem({ href, icon, label, description, onClick }: MenuItemProps) {
     return (
         <Link
             href={href}

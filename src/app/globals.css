@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+/* Dark mode variant managed by tailwind.config.ts */
 
 /* ===== DARK MODE VARIABLES ===== */
 :root {
@@ -23,19 +23,15 @@
   h4,
   h5,
   h6 {
-    @apply tracking-tight;
+    letter-spacing: -0.025em;
   }
 
   h1 {
-    @apply font-light;
+    font-weight: 300;
   }
 }
 
-/* Note: @theme is standard Tailwind CSS v4 syntax. 
-   If your editor flags this as 'unknown', it is safe to ignore. */
-@theme {
-  --font-sans: var(--font-inter);
-}
+/* Font family managed by tailwind.config.ts */
 
 [data-theme='dark'] {
   --bg-primary: #0f172a;
@@ -104,6 +100,12 @@
 [data-theme='dark'] nav {
   background-color: #1e293b !important;
   border-color: #334155 !important;
+}
+
+/* Navbar theme utility to replace inline styles */
+.navbar-themed {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
 }
 
 /* Dark mode cards */
@@ -508,7 +510,11 @@ html {
 
 .animate-marquee {
   animation: marquee 40s linear infinite;
-  min-width: fit-content;
+  min-width: -webkit-fill-available;
+
+  @supports (min-width: fit-content) {
+    min-width: fit-content;
+  }
 }
 
 .animate-marquee:hover {

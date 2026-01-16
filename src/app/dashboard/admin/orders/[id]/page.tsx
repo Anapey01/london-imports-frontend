@@ -149,7 +149,7 @@ export default function AdminOrderDetailPage() {
             {/* Header */}
             <div className={`sticky top-0 z-10 px-4 py-3 border-b ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
                 <div className="flex items-center justify-between">
-                    <button onClick={() => router.back()} className={`p-2 -ml-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <button onClick={() => router.back()} className={`p-2 -ml-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} aria-label="Go back">
                         <ChevronLeft className="w-5 h-5" />
                     </button>
                     <h1 className={`text-base font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>

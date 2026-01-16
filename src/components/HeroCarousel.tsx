@@ -16,8 +16,8 @@ interface Slide {
     subtitle: string;
     ctaText: string;
     ctaLink: string;
-    bgColor: string;
-    textColor: string;
+    bgClass: string;
+    textClass: string;
     categorySlug?: string;
     heroImage?: string; // Static promotional image for the slide
     heroImages?: string[]; // Array of images to alternate
@@ -33,8 +33,8 @@ const slideTemplates: Slide[] = [
         subtitle: "Pre-order the latest fashion before they land",
         ctaText: "Shop now",
         ctaLink: "/products",
-        bgColor: "#d1fae5", // Mint green
-        textColor: "#064e3b",
+        bgClass: "bg-[#d1fae5]", // Mint green
+        textClass: "text-[#064e3b]",
         heroImage: "/assets/images/newyear-drop.webp", // Optimized WebP
         blendMode: "mix-blend-multiply"
     },
@@ -44,8 +44,8 @@ const slideTemplates: Slide[] = [
         subtitle: "Quality home products for your space",
         ctaText: "Shop home",
         ctaLink: "/products?category=home",
-        bgColor: "#795c3e", // Darker brown for better contrast with white text
-        textColor: "#ffffff",
+        bgClass: "bg-[#795c3e]", // Darker brown for better contrast with white text
+        textClass: "text-[#ffffff]",
         categorySlug: "home",
         heroImages: [
             "/assets/images/home-living-1.webp",
@@ -60,8 +60,8 @@ const slideTemplates: Slide[] = [
         subtitle: "Trendy dresses & shoes at amazing prices",
         ctaText: "See all deals",
         ctaLink: "/products?category=fashion",
-        bgColor: "#c1c1c1", // Exact match from image (193,193,193)
-        textColor: "#1f2937", // Dark gray for legibility on light background
+        bgClass: "bg-[#c1c1c1]", // Exact match from image (193,193,193)
+        textClass: "text-[#1f2937]", // Dark gray for legibility on light background
         categorySlug: "fashion",
         heroImage: "/assets/images/fashion-for-less.webp", // Now 30KB instead of 668KB!
         blendMode: "mix-blend-normal",
@@ -74,8 +74,8 @@ const slideTemplates: Slide[] = [
         subtitle: "Phones, laptops & gadgets delivered to you",
         ctaText: "Shop electronics",
         ctaLink: "/products?category=electronics",
-        bgColor: "#0f2b9e", // Vibrant Blue
-        textColor: "#ffffff",
+        bgClass: "bg-[#0f2b9e]", // Vibrant Blue
+        textClass: "text-[#ffffff]",
         categorySlug: "electronics",
         heroImages: [
             "/assets/images/tech-essentials.webp"
@@ -205,30 +205,24 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
                                 }`}
                         >
                             <div
-                                className="h-full w-full flex items-center relative overflow-hidden"
-                                style={{ backgroundColor: slide.bgColor }}
+                                className={`h-full w-full flex items-center relative overflow-hidden ${slide.bgClass}`}
                             >
                                 {/* Text Content - Left Side - Premium Styling */}
                                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10 h-full flex items-center lg:items-start lg:pt-20">
                                     <div className="max-w-[50%] sm:max-w-xs md:max-w-sm">
                                         <h2
-                                            className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-extrabold mb-1 sm:mb-2 leading-tight tracking-tight drop-shadow-sm"
-                                            style={{ color: slide.textColor }}
+                                            className={`text-lg sm:text-2xl md:text-4xl lg:text-5xl font-extrabold mb-1 sm:mb-2 leading-tight tracking-tight drop-shadow-sm ${slide.textClass}`}
                                         >
                                             {slide.title}
                                         </h2>
                                         <p
-                                            className="text-[10px] sm:text-xs md:text-sm mb-3 sm:mb-4 opacity-90 font-medium"
-                                            style={{ color: slide.textColor }}
+                                            className={`text-[10px] sm:text-xs md:text-sm mb-3 sm:mb-4 opacity-90 font-medium ${slide.textClass}`}
                                         >
                                             {slide.subtitle}
                                         </p>
                                         <span
-                                            className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105"
-                                            style={{
-                                                backgroundColor: slide.textColor,
-                                                color: slide.bgColor
-                                            }}
+                                            className={`inline-flex items-center gap-1 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105 bg-white text-black`}
+                                        /* Note: Simplified CTA button for cleaner look, avoiding complex dynamic inversions */
                                         >
                                             {slide.ctaText}
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

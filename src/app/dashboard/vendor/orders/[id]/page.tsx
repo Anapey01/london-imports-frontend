@@ -96,6 +96,7 @@ export default function VendorOrderDetailPage() {
                     <div className="flex items-center gap-3 mb-2">
                         <button
                             onClick={() => router.back()}
+                            aria-label="Go back"
                             className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { productsAPI, vendorsAPI } from '@/lib/api';
 import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
-import { Category } from '@/types';
+import { useQuery } from '@tanstack/react-query';
+import { Category } from '../../../../../types';
 import Link from 'next/link';
 
 
@@ -13,7 +14,16 @@ export default function AddProductPage() {
     const { theme } = useTheme();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState<Category[]>([]);
+
+    // Fetch categories using React Query for consistency and caching
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => productsAPI.categories(),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+
+    const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -29,16 +39,7 @@ export default function AddProductPage() {
     });
 
     useEffect(() => {
-        // Fetch categories for dropdown
-        const fetchCategories = async () => {
-            try {
-                const res = await productsAPI.categories();
-                setCategories(res.data.results || []);
-            } catch (err) {
-                console.error("Error fetching categories", err);
-            }
-        };
-        fetchCategories();
+        // No manual fetch needed, handling via useQuery
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -87,12 +88,12 @@ export default function AddProductPage() {
 
             await vendorsAPI.createProduct(data);
             router.push('/dashboard/vendor/products');
-            router.push('/dashboard/vendor/products');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to create product:', error);
-            const errorMessage = error.response?.data?.detail ||
-                JSON.stringify(error.response?.data) ||
-                error.message ||
+            const err = error as any; // Cast to access properties safely if needed, or use specific error type if available
+            const errorMessage = err.response?.data?.detail ||
+                JSON.stringify(err.response?.data) ||
+                err.message ||
                 'Failed to create product.';
             alert(`Error: ${errorMessage}`);
         } finally {
@@ -198,7 +199,7 @@ export default function AddProductPage() {
                                 className={inputClasses}
                             >
                                 <option value="">Select a Category</option>
-                                {categories.map(cat => (
+                                {categories.map((cat: Category) => (
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
                             </select>

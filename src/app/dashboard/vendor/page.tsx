@@ -92,14 +92,6 @@ export default function VendorDashboardPage() {
             color: "text-pink-500",
             bg: "bg-pink-500/10",
             trend: "+2%"
-        },
-        {
-            label: "On-Time Rate",
-            value: `${metrics?.on_time_rate || 0}%`,
-            icon: Clock,
-            color: "text-purple-500",
-            bg: "bg-purple-500/10",
-            trend: "0%"
         }
     ];
 
@@ -144,7 +136,7 @@ export default function VendorDashboardPage() {
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             Performance Overview
                         </h3>
-                        <select className={`text-sm border-none bg-transparent font-medium focus:ring-0 ${isDark ? 'text-slate-400' : 'text-gray-500'
+                        <select aria-label="Performance period" className={`text-sm border-none bg-transparent font-medium focus:ring-0 ${isDark ? 'text-slate-400' : 'text-gray-500'
                             }`}>
                             <option>This Week</option>
                             <option>This Month</option>
@@ -189,7 +181,7 @@ export default function VendorDashboardPage() {
                     </h3>
                     <div className="space-y-3">
                         <Link
-                            href="/dashboard/vendor/products/new"
+                            href="/dashboard/vendor/products/add"
                             className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-50 hover:bg-gray-100'
                                 }`}
                         >

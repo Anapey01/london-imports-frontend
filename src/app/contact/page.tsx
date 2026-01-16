@@ -151,7 +151,7 @@ export default function ContactPage() {
             {/* Animated Background Orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className={`absolute top-20 -left-32 w-96 h-96 rounded-full blur-3xl animate-pulse ${isDark ? 'bg-pink-500/10' : 'bg-pink-300/30'}`} />
-                <div className={`absolute bottom-20 -right-32 w-96 h-96 rounded-full blur-3xl animate-pulse ${isDark ? 'bg-violet-500/10' : 'bg-violet-300/30'}`} style={{ animationDelay: '1s' }} />
+                <div className={`absolute bottom-20 -right-32 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000 ${isDark ? 'bg-violet-500/10' : 'bg-violet-300/30'}`} />
                 <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl ${isDark ? 'bg-blue-500/5' : 'bg-blue-200/20'}`} />
             </div>
 
@@ -176,7 +176,7 @@ export default function ContactPage() {
 
             <div className="max-w-2xl mx-auto px-4 pb-16 relative z-10">
                 {/* Premium Search Input */}
-                <div className={`relative transition-all duration-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transitionDelay: '100ms' }}>
+                <div className={`relative transition-all duration-500 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                     <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${searchFocused ? 'bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-violet-500/20 blur-xl scale-105' : 'opacity-0'}`} />
                     <div className={`relative rounded-2xl border backdrop-blur-xl transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-gray-200/50 shadow-xl shadow-pink-500/5'} ${searchFocused ? 'ring-2 ring-pink-500/50' : ''}`}>
                         <Search className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${searchFocused ? 'text-pink-500' : isDark ? 'text-slate-500' : 'text-gray-400'}`} />
@@ -245,14 +245,13 @@ export default function ContactPage() {
                 )}
 
                 {/* Quick Actions */}
-                <div className={`mt-8 grid grid-cols-2 gap-4 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transitionDelay: '200ms' }}>
+                <div className={`mt-8 grid grid-cols-2 gap-4 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                     {/* WhatsApp - Premium Card */}
                     <a
                         href="https://wa.me/233545247009?text=Hi%20London's%20Imports!%20I%20need%20help%20with..."
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group relative overflow-hidden rounded-2xl p-5 text-white transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-green-500/25"
-                        style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
+                        className="group relative overflow-hidden rounded-2xl p-5 text-white transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-green-500/25 bg-gradient-to-br from-green-500 to-green-600"
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                         <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-white/10 blur-2xl group-hover:scale-150 transition-transform duration-500" />
@@ -329,6 +328,7 @@ export default function ContactPage() {
                                 value={formData.subject}
                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                 required
+                                aria-label="Select a topic"
                                 className={`w-full px-4 py-3.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none cursor-pointer ${isDark ? 'bg-white/5 text-white border border-white/10' : 'bg-gray-50 text-gray-900 border border-gray-200'}`}
                             >
                                 <option value="">Select a topic...</option>
@@ -380,17 +380,14 @@ export default function ContactPage() {
                 )}
 
                 {/* Google Maps */}
-                <div className={`mt-8 rounded-2xl overflow-hidden border backdrop-blur-xl transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'border-white/10' : 'border-gray-200/50 shadow-lg'}`} style={{ transitionDelay: '250ms' }}>
+                <div className={`mt-8 rounded-2xl overflow-hidden border backdrop-blur-xl transition-all duration-700 delay-[250ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'border-white/10' : 'border-gray-200/50 shadow-lg'}`}>
                     <div className="relative">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.5!2d-0.1505!3d5.6771!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwNDAnMzcuNiJOIDDCsDA5JzAxLjgiVw!5e0!3m2!1sen!2sgh!4v1"
                             width="100%"
                             height="200"
-                            style={{ border: 0 }}
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            className={`${isDark ? 'grayscale invert opacity-80' : ''}`}
+                            title="London's Imports Location"
+                            className={`border-0 ${isDark ? 'grayscale invert opacity-80' : ''}`}
                         />
                         <a
                             href="https://maps.app.goo.gl/K7qfiM3QesWfkkrp7"
@@ -404,7 +401,7 @@ export default function ContactPage() {
                 </div>
 
                 {/* Contact Info Footer */}
-                <div className={`mt-6 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'}`} style={{ transitionDelay: '300ms' }}>
+                <div className={`mt-6 p-6 rounded-2xl border backdrop-blur-xl transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'}`}>
                     <h4 className={`font-bold text-sm mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         Contact Information
                     </h4>

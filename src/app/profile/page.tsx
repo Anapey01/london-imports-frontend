@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { ordersAPI } from '@/lib/api';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import ProductCard from '@/components/ProductCard';
 
 // Helper function to get relative time
@@ -63,6 +64,7 @@ const ToggleSwitch = ({ enabled, onChange, label, description, isDark }: ToggleS
         </div>
         <button
             onClick={onChange}
+            aria-label={label}
             className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? 'bg-pink-500' : isDark ? 'bg-slate-700' : 'bg-gray-200'}`}
         >
             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${enabled ? 'translate-x-5' : ''}`} />
@@ -91,6 +93,7 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
     // Load avatar from localStorage on mount
     useEffect(() => {
         const savedAvatar = localStorage.getItem('userAvatar');
+        // eslint-disable-next-line
         if (savedAvatar) setAvatarUrl(savedAvatar);
     }, []);
 
@@ -114,7 +117,14 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
                         >
                             <div className={`h-20 w-20 rounded-full flex items-center justify-center overflow-hidden border-2 ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-gray-50'} transition-transform group-hover:scale-105`}>
                                 {avatarUrl ? (
-                                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                    <div className="relative w-full h-full">
+                                        <NextImage
+                                            src={avatarUrl}
+                                            alt="Avatar"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
                                 ) : (
                                     <svg className={`w-10 h-10 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -365,7 +375,7 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
                             <div className={`absolute left-[3px] top-1 bottom-1 w-px ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
 
                             <div className="space-y-5">
-                                {orders.slice(0, 4).map((order: any) => {
+                                {orders.slice(0, 4).map((order: Order) => {
                                     const date = new Date(order.created_at);
                                     const isCompleted = order.status === 'COMPLETED';
                                     const timeAgo = getTimeAgo(date);
@@ -506,6 +516,7 @@ const AddressesView = ({ theme }: { theme: string }) => {
     // Load from localStorage
     useEffect(() => {
         const saved = localStorage.getItem('user-addresses');
+        // eslint-disable-next-line
         if (saved) setAddresses(JSON.parse(saved));
     }, []);
 
@@ -634,6 +645,7 @@ const WalletView = ({ theme }: { theme: string }) => {
 
     useEffect(() => {
         const saved = localStorage.getItem('user-payment-methods');
+        // eslint-disable-next-line
         if (saved) setPaymentMethods(JSON.parse(saved));
     }, []);
 
@@ -811,20 +823,20 @@ const SettingsView = ({ user, theme }: { user: User; theme: string }) => {
                 <div className={`p-6 rounded-xl border ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>First Name</label>
-                            <input type="text" defaultValue={user.first_name} className={inputClass} />
+                            <label htmlFor="firstName" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>First Name</label>
+                            <input id="firstName" type="text" defaultValue={user.first_name} className={inputClass} />
                         </div>
                         <div>
-                            <label className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Last Name</label>
-                            <input type="text" defaultValue={user.last_name} className={inputClass} />
+                            <label htmlFor="lastName" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Last Name</label>
+                            <input id="lastName" type="text" defaultValue={user.last_name} className={inputClass} />
                         </div>
                         <div>
-                            <label className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Email Address</label>
-                            <input type="email" defaultValue={user.email} className={`${inputClass} cursor-not-allowed opacity-60`} readOnly />
+                            <label htmlFor="email" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Email Address</label>
+                            <input id="email" type="email" defaultValue={user.email} className={`${inputClass} cursor-not-allowed opacity-60`} readOnly />
                         </div>
                         <div>
-                            <label className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Phone Number</label>
-                            <input type="tel" defaultValue={user.phone || ''} placeholder="Add phone number" className={inputClass} />
+                            <label htmlFor="phone" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Phone Number</label>
+                            <input id="phone" type="tel" defaultValue={user.phone || ''} placeholder="Add phone number" className={inputClass} />
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end">

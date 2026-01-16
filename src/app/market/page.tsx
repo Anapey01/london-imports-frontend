@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getVendorMarketplaceProducts } from '@/lib/fetchers';
 import ProductCard from '@/components/ProductCard';
 import { ProductGridSkeleton } from '@/components/skeletons/HomeSkeletons';
+import { Product } from '../../types';
+import { Product as CartProduct } from '@/stores/cartStore';
 
 export const metadata = {
     title: 'Marketplace | London\'s Imports',
@@ -33,8 +35,15 @@ async function MarketplaceGrid() {
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            {products.map((product: any) => (
-                <ProductCard key={product.id} product={product} />
+            {products.map((product: Product) => (
+                <ProductCard
+                    key={product.id}
+                    product={{
+                        ...product,
+                        price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+                        image: product.image || null
+                    } as CartProduct}
+                />
             ))}
         </div>
     );

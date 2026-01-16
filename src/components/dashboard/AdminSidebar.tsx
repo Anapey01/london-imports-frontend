@@ -75,6 +75,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                 <div className="md:hidden absolute top-4 right-4 z-50">
                     <button
                         onClick={onClose}
+                        aria-label="Close menu"
                         className={`p-2 rounded-lg ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
                     >
                         <X className="w-6 h-6" />

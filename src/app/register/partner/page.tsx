@@ -112,36 +112,36 @@ export default function PartnerRegisterPage() {
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">First Name</label>
-                                        <input name="first_name" required value={formData.first_name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} />
+                                        <label htmlFor="first_name" className="text-xs font-semibold uppercase tracking-wider opacity-70">First Name</label>
+                                        <input id="first_name" name="first_name" required value={formData.first_name} onChange={handleChange} className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Last Name</label>
-                                        <input name="last_name" required value={formData.last_name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} />
+                                        <label htmlFor="last_name" className="text-xs font-semibold uppercase tracking-wider opacity-70">Last Name</label>
+                                        <input id="last_name" name="last_name" required value={formData.last_name} onChange={handleChange} className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1 mb-5">
-                                    <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Email Address</label>
+                                    <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider opacity-70">Email Address</label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                        <input name="email" type="email" required value={formData.email} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} placeholder="you@example.com" />
+                                        <input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} placeholder="you@example.com" />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Password</label>
+                                        <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider opacity-70">Password</label>
                                         <div className="relative">
                                             <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                            <input name="password" type="password" required minLength={8} value={formData.password} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} />
+                                            <input id="password" name="password" type="password" required minLength={8} value={formData.password} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Confirm Password</label>
+                                        <label htmlFor="password_confirm" className="text-xs font-semibold uppercase tracking-wider opacity-70">Confirm Password</label>
                                         <div className="relative">
                                             <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                            <input name="password_confirm" type="password" required value={formData.password_confirm} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} />
+                                            <input id="password_confirm" name="password_confirm" type="password" required value={formData.password_confirm} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
                                         </div>
                                     </div>
                                 </div>
@@ -155,17 +155,17 @@ export default function PartnerRegisterPage() {
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Phone Number</label>
+                                        <label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wider opacity-70">Phone Number</label>
                                         <div className="relative">
                                             <Phone className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                            <input name="phone" type="tel" required value={formData.phone} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} placeholder="054 XXX XXXX" />
+                                            <input id="phone" name="phone" type="tel" required value={formData.phone} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} placeholder="054 XXX XXXX" />
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">WhatsApp (Optional)</label>
+                                        <label htmlFor="whatsapp" className="text-xs font-semibold uppercase tracking-wider opacity-70">WhatsApp (Optional)</label>
                                         <div className="relative">
                                             <Phone className="absolute left-4 top-3.5 h-5 w-5 text-green-500" />
-                                            <input name="whatsapp" type="tel" value={formData.whatsapp} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} placeholder="054 XXX XXXX" />
+                                            <input id="whatsapp" name="whatsapp" type="tel" value={formData.whatsapp} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} placeholder="054 XXX XXXX" />
                                         </div>
                                     </div>
                                 </div>
@@ -179,27 +179,27 @@ export default function PartnerRegisterPage() {
                                 </h3>
                                 <div className="space-y-5">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Ghana Card Number</label>
+                                        <label htmlFor="ghana_card_number" className="text-xs font-semibold uppercase tracking-wider opacity-70">Ghana Card Number</label>
                                         <div className="relative">
                                             <FileText className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                            <input name="ghana_card_number" type="text" required value={formData.ghana_card_number} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} placeholder="GHA-XXXXXXXXX-X" />
+                                            <input id="ghana_card_number" name="ghana_card_number" type="text" required value={formData.ghana_card_number} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} placeholder="GHA-XXXXXXXXX-X" />
                                         </div>
                                         <p className="text-xs opacity-60 mt-1 ml-1">Required for automated fraud checks.</p>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Business Registration No.</label>
+                                        <label htmlFor="business_certificate_number" className="text-xs font-semibold uppercase tracking-wider opacity-70">Business Registration No.</label>
                                         <div className="relative">
                                             <Briefcase className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                            <input name="business_certificate_number" type="text" required value={formData.business_certificate_number} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} />
+                                            <input id="business_certificate_number" name="business_certificate_number" type="text" required value={formData.business_certificate_number} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold uppercase tracking-wider opacity-70">Paystack Private API Key</label>
+                                        <label htmlFor="paystack_private_key" className="text-xs font-semibold uppercase tracking-wider opacity-70">Paystack Private API Key</label>
                                         <div className="relative">
                                             <CreditCard className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                                            <input name="paystack_private_key" type="password" required value={formData.paystack_private_key} onChange={handleChange} className="w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none" style={{ borderColor: isDark ? '#334155' : '#e2e8f0' }} placeholder="sk_live_xxxxxxxxxxxxxxxx" />
+                                            <input id="paystack_private_key" name="paystack_private_key" type="password" required value={formData.paystack_private_key} onChange={handleChange} className={`w-full pl-11 pr-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-indigo-500 transition-all outline-none ${isDark ? 'border-slate-700' : 'border-slate-200'}`} placeholder="sk_live_xxxxxxxxxxxxxxxx" />
                                         </div>
                                         <div className={`mt-3 p-4 rounded-xl text-sm leading-relaxed ${isDark ? 'bg-indigo-900/20 text-indigo-300' : 'bg-indigo-50 text-indigo-800'}`}>
                                             <strong className="block mb-1">Why do we need this?</strong>

@@ -58,7 +58,7 @@ export default function PrivacyPage() {
                 <p>For any privacy-related questions or requests, please contact us via:</p>
                 <ul className="list-disc pl-6 space-y-2">
                     <li>WhatsApp: +233 54 109 6372</li>
-                    <li>Email: support@londonsimports.com</li>
+                    <li>Email: info@londonsimports.com</li>
                 </ul>
 
                 <p className="text-sm text-gray-500 dark:text-slate-500 mt-8">Last updated: January 2026</p>

@@ -51,6 +51,7 @@ const Toggle = ({ label, description, checked, onChange, isDark }: ToggleProps) 
         </div>
         <button
             onClick={() => onChange(!checked)}
+            aria-label={label}
             className={`relative w-12 h-6 rounded-full transition-colors ${checked ? 'bg-pink-500' : isDark ? 'bg-slate-700' : 'bg-gray-200'}`}
         >
             <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${checked ? 'left-7' : 'left-1'}`}></div>
@@ -147,6 +148,7 @@ export default function AdminSettingsPage() {
                         <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Currency</label>
                         <select
                             value={settings.currency}
+                            aria-label="Currency"
                             onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
                             className={`w-full px-4 py-2.5 rounded-lg border text-sm ${isDark
                                 ? 'bg-slate-800 border-slate-700 text-white'
@@ -262,7 +264,7 @@ export default function AdminSettingsPage() {
                                 Synchronize Product Reservations
                             </p>
                             <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                Updates "X reserved" counts on all products based on actual paid orders.
+                                Updates &quot;X reserved&quot; counts on all products based on actual paid orders.
                                 <br />Use this if counts seem incorrect.
                             </p>
                         </div>

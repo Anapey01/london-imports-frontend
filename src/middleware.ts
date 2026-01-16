@@ -9,10 +9,22 @@ export function middleware(request: NextRequest) {
     // Matches: market.londonsimports.com, market.localhost:3000
     const isMarketSubdomain = hostname.startsWith('market.');
 
+    // Force non-www redirect
+    if (hostname.startsWith('www.')) {
+        const newUrl = new URL(request.url);
+        newUrl.hostname = hostname.replace('www.', '');
+        return NextResponse.redirect(newUrl);
+    }
+
     if (isMarketSubdomain) {
         // Rewrite the root path to /market
         if (pathname === '/') {
             return NextResponse.rewrite(new URL('/market', request.url));
+        }
+    } else {
+        // Redirect /market path on main domain to the subdomain
+        if (pathname.startsWith('/market')) {
+            return NextResponse.redirect(new URL('https://market.londonsimports.com'));
         }
     }
 

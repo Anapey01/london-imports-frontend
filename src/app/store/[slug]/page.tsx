@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getVendor } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
-import { MapPin, Star, ShieldCheck, Truck } from 'lucide-react';
+import { MapPin, ShieldCheck, Truck } from 'lucide-react';
 
 interface Props {
     params: Promise<{
@@ -25,7 +25,13 @@ export default async function VendorStorePage({ params }: Props) {
     const showBanner = !!config.banner_url;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className={`min-h-screen bg-gray-50 pb-20 store-theme-root`}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .store-theme-root {
+                    --store-primary: ${primaryColor};
+                }
+            `}} />
             {/* Custom Banner Hero */}
             <div className="relative w-full h-48 md:h-80 bg-gray-900 overflow-hidden">
                 {showBanner ? (
@@ -38,8 +44,8 @@ export default async function VendorStorePage({ params }: Props) {
                     />
                 ) : (
                     <div
-                        className="absolute inset-0 opacity-90"
-                        style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, #111827 100%)` }}
+                        className="absolute inset-0 opacity-90 bg-[image:linear-gradient(135deg,var(--store-primary)_0%,#111827_100%)]"
+                        aria-hidden="true"
                     />
                 )}
 
@@ -137,7 +143,7 @@ export default async function VendorStorePage({ params }: Props) {
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-900">Latest Products</h2>
                             {/* Use custom color for decoration */}
-                            <div className="h-1 w-20 rounded-full" style={{ backgroundColor: primaryColor }} />
+                            <div className="h-1 w-20 rounded-full bg-[var(--store-primary)]" />
                         </div>
 
                         {/* The Grid - Filtered by Vendor Slug */}

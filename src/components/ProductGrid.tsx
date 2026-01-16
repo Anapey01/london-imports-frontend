@@ -43,7 +43,7 @@ export default function ProductGrid({
     const [category, setCategory] = useState(initialCategory);
     const [status, setStatus] = useState(initialStatus);
     const [search, setSearch] = useState(initialSearch);
-    const [featured, setFeatured] = useState(initialFeatured);
+    const [featured] = useState(initialFeatured);
 
     // Fetch products with filters
     const { data: productsData, isLoading } = useQuery({
@@ -85,6 +85,7 @@ export default function ProductGrid({
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
+                    aria-label="Filter by category"
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white"
                 >
                     <option value="">All Categories</option>
@@ -97,6 +98,7 @@ export default function ProductGrid({
                 <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
+                    aria-label="Filter by status"
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white"
                 >
                     <option value="">All Status</option>

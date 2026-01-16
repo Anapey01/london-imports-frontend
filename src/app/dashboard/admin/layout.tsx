@@ -51,8 +51,7 @@ export default function AdminDashboardLayout({
     if (isLoading) {
         return (
             <div
-                className="min-h-screen flex items-center justify-center"
-                style={{ backgroundColor: isDark ? '#0f172a' : '#f9fafb' }}
+                className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
             >
                 <div className="flex flex-col items-center gap-3">
                     <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
@@ -79,6 +78,7 @@ export default function AdminDashboardLayout({
                         {/* Mobile Menu Button */}
                         <button
                             onClick={() => setIsSidebarOpen(true)}
+                            aria-label="Open sidebar"
                             className={`md:hidden p-2 rounded-lg -ml-2 ${isDark ? 'text-white hover:bg-slate-800' : 'text-gray-900 hover:bg-gray-100'}`}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

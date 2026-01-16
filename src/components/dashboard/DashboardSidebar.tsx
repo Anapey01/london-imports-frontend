@@ -89,10 +89,9 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
                         : 'bg-white/95 border-gray-100 backdrop-blur-xl'
                     }`}
             >
-                {/* Mobile Header in Sidebar */}
-                <div className="md:hidden p-6 flex items-center justify-between border-b" style={{ borderColor: isDark ? '#1e293b' : '#f1f5f9' }}>
+                <div className={`md:hidden p-6 flex items-center justify-between border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
                     <span className="font-bold text-lg bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">Menu</span>
-                    <button onClick={onClose} className={`p-2 rounded-lg ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-400 hover:bg-gray-100'}`}>
+                    <button onClick={onClose} aria-label="Close menu" className={`p-2 rounded-lg ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-400 hover:bg-gray-100'}`}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -128,11 +127,10 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
                     })}
                 </div>
 
-                <div className="p-4 border-t" style={{ borderColor: isDark ? '#1e293b' : '#f1f5f9' }}>
+                <div className={`p-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full transition-all hover:bg-red-50 hover:text-red-600 group font-medium"
-                        style={{ color: '#ef4444' }}
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full transition-all hover:bg-red-50 hover:text-red-600 group font-medium text-red-500"
                     >
                         <div className="group-hover:translate-x-1 transition-transform">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

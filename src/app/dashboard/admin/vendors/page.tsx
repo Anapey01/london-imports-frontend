@@ -304,7 +304,7 @@ export default function AdminVendorsPage() {
                                 </span>
                                 <h3 className="text-2xl font-bold">{selectedVendor.business_name}</h3>
                             </div>
-                            <button onClick={() => setSelectedVendor(null)} className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
+                            <button onClick={() => setSelectedVendor(null)} aria-label="Close modal" className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
