@@ -126,10 +126,10 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     </div>
 
                     {/* Footer / Extra Info */}
-                    <div className="mt-auto p-4 bg-pink-50 rounded-xl">
-                        <h4 className="font-bold text-pink-700 mb-1">Need Help?</h4>
-                        <p className="text-sm text-pink-600 mb-3">Contact our support team anytime.</p>
-                        <Link href="/contact" onClick={onClose} className="text-xs font-bold uppercase tracking-wide text-pink-800 hover:underline">
+                    <div className="mt-auto p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <h4 className="font-bold text-gray-900 mb-1">Need Help?</h4>
+                        <p className="text-sm text-gray-500 mb-3">Contact our support team anytime.</p>
+                        <Link href="/contact" onClick={onClose} className="text-xs font-bold uppercase tracking-wide text-gray-900 hover:text-pink-600 hover:underline transition-colors">
                             Contact Support →
                         </Link>
                     </div>
