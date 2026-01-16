@@ -53,11 +53,18 @@ export async function generateMetadata(
     };
 }
 
+import { headers } from 'next/headers';
+
 export default async function ProductsPage({ searchParams }: Props) {
+    // Check if we are on the market subdomain
+    const headersList = await headers();
+    const host = headersList.get('host') || '';
+    const isMarketplace = host.startsWith('market.');
+
     // Fetch initial data on server (SSG/ISR)
     const [categories, productsData] = await Promise.all([
         getCategories(),
-        getRecentProducts(50)
+        getRecentProducts(50, isMarketplace)
     ]);
 
     const initialProducts = productsData?.results || [];
@@ -105,6 +112,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                     initialCategory={category}
                     initialFeatured={featured}
                     initialStatus={status}
+                    isVendor={isMarketplace}
                 />
             </div>
 
