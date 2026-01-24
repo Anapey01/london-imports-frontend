@@ -88,8 +88,9 @@ export default function AdminAnalyticsPage() {
 
         const values = chartData.map(d => d.value);
         const max = Math.max(...values) || 1;
-        const width = 100;
-        const height = 100;
+        // Increase resolution to minimize distortion and improve line quality
+        const width = 800;
+        const height = 300;
 
         const points = values.map((v, i) => {
             const x = (i / (values.length - 1)) * width;
@@ -117,19 +118,13 @@ export default function AdminAnalyticsPage() {
                             </linearGradient>
                         </defs>
 
-                        {[0, 25, 50, 75, 100].map((y) => (
-                            <line key={y} x1="0" y1={y} x2={width} y2={y} stroke={isDark ? '#334155' : '#e5e7eb'} strokeWidth="0.5" />
+                        {/* Grid lines - scaled for height 300 */}
+                        {[0, 75, 150, 225, 300].map((y) => (
+                            <line key={y} x1="0" y1={y} x2={width} y2={y} stroke={isDark ? '#334155' : '#e5e7eb'} strokeWidth="1" />
                         ))}
 
                         <path d={areaPath} fill="url(#areaGradient)" />
-                        <path d={linePath} fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-
-                        {points.map((p, i) => (
-                            <g key={i}>
-                                <circle cx={p.x} cy={p.y} r="4" fill="#ec4899" />
-                                <circle cx={p.x} cy={p.y} r="2" fill="white" />
-                            </g>
-                        ))}
+                        <path d={linePath} fill="none" stroke="#ec4899" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
 
                     <div className="flex justify-between mt-2">
@@ -268,8 +263,8 @@ export default function AdminAnalyticsPage() {
                             key={p}
                             onClick={() => setPeriod(p)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${period === p
-                                    ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/25'
-                                    : isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+                                ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/25'
+                                : isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
                                 }`}
                         >
                             {p === '1y' ? '1 Year' : p === '90d' ? '90 Days' : p === '30d' ? '30 Days' : '7 Days'}
@@ -311,8 +306,8 @@ export default function AdminAnalyticsPage() {
                         </div>
                         {(data?.revenue?.change || 0) !== 0 && (
                             <div className={`px-3 py-1.5 rounded-full text-xs font-semibold ${(data?.revenue?.change || 0) >= 0
-                                    ? isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
-                                    : isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600'
+                                ? isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
+                                : isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600'
                                 }`}>
                                 {(data?.revenue?.change || 0) >= 0 ? '↑' : '↓'} {Math.abs(data?.revenue?.change || 0)}% vs last period
                             </div>
@@ -359,9 +354,9 @@ export default function AdminAnalyticsPage() {
                                             <td className={`px-6 py-3 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                                 <div className="flex items-center gap-3">
                                                     <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-500 text-white' :
-                                                            i === 1 ? 'bg-slate-400 text-white' :
-                                                                i === 2 ? 'bg-amber-700 text-white' :
-                                                                    isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
+                                                        i === 1 ? 'bg-slate-400 text-white' :
+                                                            i === 2 ? 'bg-amber-700 text-white' :
+                                                                isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
                                                         }`}>{i + 1}</span>
                                                     {product.name}
                                                 </div>
