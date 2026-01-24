@@ -134,10 +134,22 @@ export default function StatsBar() {
             suffix: ''
         },
         {
+            value: stats?.on_time_rate || 98,
+            label: 'On-Time Delivery',
+            icon: Clock,
+            suffix: '%'
+        },
+        {
             value: stats?.total_orders || 0,
             label: 'Total Orders',
             icon: TrendingUp,
             suffix: ''
+        },
+        {
+            value: '24/7',
+            label: 'WhatsApp Support',
+            icon: Users,
+            suffix: '' // No suffix for text
         }
     ];
 

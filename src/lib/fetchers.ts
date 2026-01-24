@@ -12,7 +12,7 @@ export async function getProducts(params: Record<string, string> = {}) {
         console.log(`[SSR] Fetching products list: ${url}`);
 
         const res = await fetch(url, {
-            next: { revalidate: 3600 }, // Revalidate every hour (optimized for Hobby plan)
+            next: { revalidate: 60 }, // Revalidate every minute (was 1 hour)
         });
 
         if (!res.ok) {
@@ -79,7 +79,7 @@ export async function getProduct(slug: string) {
     try {
         console.log(`[SSR] Fetching product: ${url}`);
         const res = await fetch(url, {
-            next: { revalidate: 3600 }
+            next: { revalidate: 60 }
         });
 
         if (!res.ok) {
@@ -103,7 +103,7 @@ export async function getProductMetadata(slug: string) {
     const url = `${API_BASE_URL}/products/preview/?slug=${slug}`;
     try {
         console.log(`[SSR] Fetching preview fallback for: ${url}`);
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetch(url, { next: { revalidate: 60 } });
         if (!res.ok) return null;
 
         const data = await res.json();
@@ -130,7 +130,7 @@ export async function getVendor(slug: string) {
     const url = `${API_BASE_URL}/vendors/${slug}/`;
     try {
         console.log(`[SSR] Fetching vendor: ${url}`);
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetch(url, { next: { revalidate: 60 } });
         if (!res.ok) return null;
         return await res.json();
     } catch (e) {

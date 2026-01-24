@@ -160,7 +160,7 @@ export default async function ProductDetailPage({ params }: Props) {
             "price": product.price,
             "priceValidUntil": product.cutoff_datetime || new Date(new Date().getFullYear() + 1, 0, 1).toISOString(),
             "availability": product.preorder_status === 'READY_TO_SHIP' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-            "url": `https://londonsimports.com/products/${slug}`,
+            "url": `https://www.londonsimports.com/products/${slug}`,
             "shippingDetails": {
                 "@type": "OfferShippingDetails",
                 "shippingDestination": {

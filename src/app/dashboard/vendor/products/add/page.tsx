@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { productsAPI, vendorsAPI } from '@/lib/api';
 import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { Category } from '../../../../../types';
 import Link from 'next/link';
 
@@ -14,16 +13,7 @@ export default function AddProductPage() {
     const { theme } = useTheme();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-
-    // Fetch categories using React Query for consistency and caching
-    const { data: categoriesData } = useQuery({
-        queryKey: ['categories'],
-        queryFn: () => productsAPI.categories(),
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-    });
-
-    const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -39,7 +29,16 @@ export default function AddProductPage() {
     });
 
     useEffect(() => {
-        // No manual fetch needed, handling via useQuery
+        // Fetch categories for dropdown
+        const fetchCategories = async () => {
+            try {
+                const res = await productsAPI.categories();
+                setCategories(res.data.results || []);
+            } catch (err) {
+                console.error("Error fetching categories", err);
+            }
+        };
+        fetchCategories();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -199,7 +198,7 @@ export default function AddProductPage() {
                                 className={inputClasses}
                             >
                                 <option value="">Select a Category</option>
-                                {categories.map((cat: Category) => (
+                                {categories.map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
                             </select>

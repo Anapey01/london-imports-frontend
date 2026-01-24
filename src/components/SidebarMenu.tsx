@@ -18,11 +18,9 @@ interface SidebarMenuProps {
 
 export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
     // Fetch categories dynamically
-    const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
+    const { data: categoriesData } = useQuery({
         queryKey: ['categories'],
         queryFn: () => productsAPI.categories(),
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-        gcTime: 10 * 60 * 1000, // Keep in garbage collection for 10 minutes
     });
 
     const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
@@ -94,42 +92,31 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     </nav>
 
                     {/* Categories Section */}
-                    <div className="mt-6 mb-4 group relative">
-                        <div className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
-                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Categories</h4>
-                            <span className="text-gray-400 transform group-hover:rotate-180 transition-transform">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                        <nav className="hidden group-hover:flex flex-col gap-1 mt-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                            {categoriesLoading ? (
-                                <div className="px-4 py-2 text-sm text-gray-400 italic animate-pulse">Loading categories...</div>
-                            ) : categories.length > 0 ? (
-                                categories.map((category: { id: string; slug: string; name: string }) => (
-                                    <Link
-                                        key={category.id}
-                                        href={`/products?category=${category.slug}`}
-                                        onClick={onClose}
-                                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 rounded-lg transition-colors"
-                                    >
-                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-pink-500"></span>
-                                        {category.name}
-                                    </Link>
-                                ))
-                            ) : (
+                    <div className="mt-6 mb-4">
+                        <h4 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Categories</h4>
+                        <nav className="flex flex-col gap-1">
+                            {categories.map((category: { id: string; slug: string; name: string }) => (
+                                <Link
+                                    key={category.id}
+                                    href={`/products?category=${category.slug}`}
+                                    onClick={onClose}
+                                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 rounded-lg transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-pink-500"></span>
+                                    {category.name}
+                                </Link>
+                            ))}
+                            {categories.length === 0 && (
                                 <div className="px-4 py-2 text-sm text-gray-400 italic">No categories found</div>
                             )}
                         </nav>
                     </div>
 
                     {/* Footer / Extra Info */}
-                    <div className="mt-auto p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <h4 className="font-bold text-gray-900 mb-1">Need Help?</h4>
-                        <p className="text-sm text-gray-500 mb-3">Contact our support team anytime.</p>
-                        <Link href="/contact" onClick={onClose} className="text-xs font-bold uppercase tracking-wide text-gray-900 hover:text-pink-600 hover:underline transition-colors">
+                    <div className="mt-auto p-4 bg-pink-50 rounded-xl">
+                        <h4 className="font-bold text-pink-700 mb-1">Need Help?</h4>
+                        <p className="text-sm text-pink-600 mb-3">Contact our support team anytime.</p>
+                        <Link href="/contact" onClick={onClose} className="text-xs font-bold uppercase tracking-wide text-pink-800 hover:underline">
                             Contact Support →
                         </Link>
                     </div>

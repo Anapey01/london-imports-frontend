@@ -92,6 +92,14 @@ export default function VendorDashboardPage() {
             color: "text-pink-500",
             bg: "bg-pink-500/10",
             trend: "+2%"
+        },
+        {
+            label: "On-Time Rate",
+            value: `${metrics?.on_time_rate || 0}%`,
+            icon: Clock,
+            color: "text-purple-500",
+            bg: "bg-purple-500/10",
+            trend: "0%"
         }
     ];
 

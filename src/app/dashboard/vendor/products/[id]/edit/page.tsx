@@ -6,7 +6,6 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { useRouter, useParams } from 'next/navigation';
 import { productsAPI, vendorsAPI } from '@/lib/api';
 import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { Category, Product, ProductImage } from '../../../../../../types';
 import { getImageUrl } from '@/lib/image';
 import Image from 'next/image';
@@ -19,16 +18,7 @@ export default function EditProductPage() {
 
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-
-    // Fetch categories using React Query
-    const { data: categoriesData } = useQuery({
-        queryKey: ['categories'],
-        queryFn: () => productsAPI.categories(),
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-    });
-
-    const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     // Existing data from backend
     const [product, setProduct] = useState<Product | null>(null);
@@ -49,6 +39,10 @@ export default function EditProductPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Fetch categories
+                const catRes = await productsAPI.categories();
+                setCategories(catRes.data.results || []);
+
                 // Fetch product details
                 if (productId) {
                     // Ideally fetch single, but list works for now if detail endpoint protected/different
@@ -249,7 +243,7 @@ export default function EditProductPage() {
                                     className={inputClasses}
                                 >
                                     <option value="">Select a Category</option>
-                                    {categories.map((cat: Category) => (
+                                    {categories.map(cat => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                     ))}
                                 </select>

@@ -37,11 +37,7 @@ interface DashboardStats {
 interface RecentOrder {
     id: string;
     order_number: string;
-    customer: {
-        name: string;
-        email: string;
-        avatar?: string;
-    };
+    customer: string;
     total: string;
     status: string;
     created_at: string;
@@ -191,7 +187,7 @@ export default function AdminDashboardPage() {
     return (
         <div className="space-y-8 pb-20">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, index) => (
                     <div
                         key={index}
@@ -234,7 +230,7 @@ export default function AdminDashboardPage() {
             {/* Quick Actions */}
             <div>
                 <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {quickActions.map((action, index) => (
                         <Link
                             key={index}
@@ -300,10 +296,10 @@ export default function AdminDashboardPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {order.customer.name?.[0] || 'G'}
+                                                    {order.customer?.[0] || 'G'}
                                                 </div>
                                                 <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                    {order.customer.name || 'Guest'}
+                                                    {order.customer || 'Guest'}
                                                 </span>
                                             </div>
                                         </td>

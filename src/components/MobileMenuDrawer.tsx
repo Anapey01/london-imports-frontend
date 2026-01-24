@@ -39,11 +39,9 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
     const { isAuthenticated, logout } = useAuthStore();
 
     // Fetch categories dynamically
-    const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
+    const { data: categoriesData } = useQuery({
         queryKey: ['categories'],
         queryFn: () => productsAPI.categories(),
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-        gcTime: 10 * 60 * 1000, // Keep in garbage collection for 10 minutes
     });
 
     const categories = categoriesData?.data?.results || (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
@@ -220,23 +218,18 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     </div>
 
                     <div className="pb-2">
-                        {categoriesLoading ? (
-                            <div className="px-6 py-3 text-gray-400 text-sm animate-pulse">
-                                Loading categories...
-                            </div>
-                        ) : categories.length > 0 ? (
-                            categories.slice(0, 8).map((category: { id: string; slug: string; name: string }) => (
-                                <Link
-                                    key={category.id}
-                                    href={`/products?category=${category.slug}`}
-                                    onClick={onClose}
-                                    className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
-                                >
-                                    <ShoppingBag className="w-5 h-5 text-gray-600" />
-                                    <span className="text-gray-800">{category.name}</span>
-                                </Link>
-                            ))
-                        ) : (
+                        {categories.slice(0, 8).map((category: { id: string; slug: string; name: string }) => (
+                            <Link
+                                key={category.id}
+                                href={`/products?category=${category.slug}`}
+                                onClick={onClose}
+                                className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                            >
+                                <ShoppingBag className="w-5 h-5 text-gray-600" />
+                                <span className="text-gray-800">{category.name}</span>
+                            </Link>
+                        ))}
+                        {categories.length === 0 && (
                             <div className="px-6 py-3 text-gray-400 text-sm">
                                 No categories yet
                             </div>

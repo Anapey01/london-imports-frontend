@@ -10,10 +10,10 @@ export default function TermsPage() {
         <div className="max-w-4xl mx-auto px-4 py-12">
             <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Terms and Conditions</h1>
             <div className="prose max-w-none text-gray-700 dark:text-slate-300 space-y-4">
-                <p>Welcome to London&apos;s Imports. By using our website and services, you agree to these terms.</p>
+                <p>Welcome to London's Imports. By using our website and services, you agree to these terms.</p>
 
                 <h2 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">1. Pre-Orders</h2>
-                <p>All items are subject to availability. Pre-order delivery times are estimates (typically 8-9 weeks from China to Ghana).</p>
+                <p>All items are subject to availability. Pre-order delivery times are estimates (typically 2-3 weeks from UK/China to Ghana).</p>
 
                 <h2 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">2. Payments</h2>
                 <p>We accept Mobile Money and Cards via Paystack. Full payment is required for immediate purchases. Pre-orders may require a deposit.</p>

@@ -18,7 +18,7 @@ export default function AdminDashboardLayout({
     const { theme } = useTheme();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<{ first_name: string; username: string } | null>(null);
+    const [user, setUser] = useState<any>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const isDark = theme === 'dark';
 
@@ -38,7 +38,7 @@ export default function AdminDashboardLayout({
                 }
 
                 setUser(userData);
-            } catch {
+            } catch (error) {
                 router.push('/admin/login');
             } finally {
                 setIsLoading(false);

@@ -11,7 +11,6 @@ import Navbar from "@/components/Navbar";
 import QueryProvider from "@/providers/QueryProvider";
 import { ToastProvider } from "@/components/Toast";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import PwaRegister from "@/components/PwaRegister";
 
 // Lazy load below-the-fold components to reduce initial bundle
 const Footer = dynamic(() => import("@/components/Footer"), {
@@ -28,7 +27,6 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  manifest: '/manifest.json',
   metadataBase: new URL('https://londonsimports.com'), // Update with actual domain if custom
   title: "Mini Importation Services in Ghana | Buy from China to Accra & Kumasi | London's Imports",
   description: "Ghana's #1 trusted platform for mini-importation. Ship from China (1688, Alibaba, Taobao) to Accra, Kumasi, and Tema. Pay with Momo. Door-to-door delivery, customs clearance included.",
@@ -288,7 +286,6 @@ export default async function RootLayout({
               <main className="pb-20 md:pb-0">{children}</main>
               <Footer />
               <MobileBottomNav />
-              <PwaRegister />
             </ToastProvider>
           </QueryProvider>
         </ThemeProvider>
