@@ -37,7 +37,11 @@ interface DashboardStats {
 interface RecentOrder {
     id: string;
     order_number: string;
-    customer: string;
+    customer: {
+        name: string;
+        email: string;
+        avatar?: string;
+    };
     total: string;
     status: string;
     created_at: string;
@@ -296,10 +300,10 @@ export default function AdminDashboardPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {order.customer?.[0] || 'G'}
+                                                    {order.customer.name?.[0] || 'G'}
                                                 </div>
                                                 <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                    {order.customer || 'Guest'}
+                                                    {order.customer.name || 'Guest'}
                                                 </span>
                                             </div>
                                         </td>
