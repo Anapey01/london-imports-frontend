@@ -140,10 +140,10 @@ export default function AdminAnalyticsPage() {
     // Donut Chart Component - uses real data
     const DonutChart = ({ statusCounts }: { statusCounts: AnalyticsData['orderStatusCounts'] | undefined }) => {
         const chartData = [
-            { label: 'Completed', value: statusCounts?.completed || 0, color: '#10b981' },
-            { label: 'Processing', value: statusCounts?.processing || 0, color: '#3b82f6' },
-            { label: 'Pending', value: statusCounts?.pending || 0, color: '#f59e0b' },
-            { label: 'Cancelled', value: statusCounts?.cancelled || 0, color: '#ef4444' },
+            { label: 'Completed', value: statusCounts?.completed || 0, color: '#10b981', colorClass: 'bg-emerald-500' },
+            { label: 'Processing', value: statusCounts?.processing || 0, color: '#3b82f6', colorClass: 'bg-blue-500' },
+            { label: 'Pending', value: statusCounts?.pending || 0, color: '#f59e0b', colorClass: 'bg-amber-500' },
+            { label: 'Cancelled', value: statusCounts?.cancelled || 0, color: '#ef4444', colorClass: 'bg-red-500' },
         ];
 
         const total = chartData.reduce((sum, d) => sum + d.value, 0);
@@ -186,7 +186,7 @@ export default function AdminAnalyticsPage() {
                 <div className="space-y-2">
                     {chartData.map((d, i) => (
                         <div key={i} className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }}></div>
+                            <div className={`w-3 h-3 rounded-full ${d.colorClass}`}></div>
                             <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{d.label}</span>
                             <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{d.value}</span>
                         </div>
