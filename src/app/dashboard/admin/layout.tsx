@@ -71,7 +71,7 @@ export default function AdminDashboardLayout({
             />
 
             {/* Main Content Area */}
-            <main className="ml-0 md:ml-64 p-4 md:p-8 transition-all duration-300 w-full max-w-[100vw] overflow-x-hidden">
+            <main className="ml-0 md:ml-64 p-4 md:p-8 transition-all duration-300">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
