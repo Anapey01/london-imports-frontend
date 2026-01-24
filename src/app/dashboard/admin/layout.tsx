@@ -18,7 +18,7 @@ export default function AdminDashboardLayout({
     const { theme } = useTheme();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ first_name: string; username: string } | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const isDark = theme === 'dark';
 
@@ -38,7 +38,7 @@ export default function AdminDashboardLayout({
                 }
 
                 setUser(userData);
-            } catch (error) {
+            } catch {
                 router.push('/admin/login');
             } finally {
                 setIsLoading(false);
@@ -71,7 +71,7 @@ export default function AdminDashboardLayout({
             />
 
             {/* Main Content Area */}
-            <main className="ml-0 md:ml-64 p-4 md:p-8 transition-all duration-300">
+            <main className="ml-0 md:ml-64 p-4 md:p-8 transition-all duration-300 w-full max-w-[100vw] overflow-x-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">

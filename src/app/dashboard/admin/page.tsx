@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
     return (
         <div className="space-y-8 pb-20">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, index) => (
                     <div
                         key={index}
@@ -230,7 +230,7 @@ export default function AdminDashboardPage() {
             {/* Quick Actions */}
             <div>
                 <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {quickActions.map((action, index) => (
                         <Link
                             key={index}
