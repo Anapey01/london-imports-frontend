@@ -9,13 +9,21 @@ const PLACEHOLDER_IMAGE = '/assets/placeholder-product.png'; // Make sure this e
 
 // Cloudinary Base URL (Fallback)
 // We try to guess the cloud name if the backend sends a raw path
-const CLOUDINARY_BASE = 'https://res.cloudinary.com/dg67twduw/image/upload/';
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
+const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
 
 export const getImageUrl = (path: string | null | undefined): string => {
     if (!path) return PLACEHOLDER_IMAGE;
 
     // If it's already a full URL (Http/Https), return it
     if (path.startsWith('http')) {
+        // Fix: If the DB has localhost URLs (from dev), rewrite them to the prod API
+        if (path.includes('localhost:8000') || path.includes('127.0.0.1:8000')) {
+            return path
+                .replace('http://localhost:8000', 'https://london-imports-api.onrender.com')
+                .replace('http://127.0.0.1:8000', 'https://london-imports-api.onrender.com');
+        }
+
         // FORCE HTTPS to prevent Mixed Content warnings/blocking on Vercel
         return path.replace('http:', 'https:');
     }
