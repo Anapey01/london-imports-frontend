@@ -27,6 +27,8 @@ api.interceptors.request.use((config) => {
       '/auth/register/vendor/',
       '/auth/register/partner/',
       '/auth/password/reset/', // Covers request and confirm
+      '/products/', // Public product listings & categories
+      '/vendors/', // Public vendor profiles
     ];
 
     const isPublicEndpoint = publicEndpoints.some(endpoint =>
