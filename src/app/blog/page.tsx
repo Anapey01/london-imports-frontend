@@ -37,7 +37,11 @@ async function getBlogPosts(): Promise<BlogPost[]> {
             next: { revalidate: 60 } // Revalidate every minute
         });
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        // Handle both array and paginated object responses
+        if (Array.isArray(data)) return data;
+        if (data && Array.isArray(data.results)) return data.results;
+        return [];
     } catch {
         return [];
     }
@@ -121,8 +125,8 @@ export default async function BlogPage() {
                         <span
                             key={cat}
                             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${cat === 'All'
-                                    ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/25'
-                                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 shadow-sm'
+                                ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/25'
+                                : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 shadow-sm'
                                 }`}
                         >
                             {cat}
