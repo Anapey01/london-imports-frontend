@@ -122,21 +122,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
 
 
-                {/* Need Help Section */}
-                <Link
-                    href="/how-it-works"
-                    onClick={onClose}
-                    className="flex items-center justify-between px-4 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                >
-                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Need Help?</span>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                </Link>
-
-                {/* My Account Section */}
-                <div className="border-b border-gray-100">
-                    <div className="flex items-center justify-between px-4 py-4">
-                        <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">My Account</span>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                {/* SECTION: Account */}
+                <div className="mt-6 border-t border-gray-100 pt-6">
+                    <div className="px-6 pb-2">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Account</span>
                     </div>
 
                     <div className="pb-2">
@@ -206,59 +195,108 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 </div>
 
                 {/* Our Categories Section - Accordion */}
-                <div className="border-b border-gray-100">
-                    <button
-                        onClick={() => setCategoriesOpen(!categoriesOpen)}
-                        className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-colors"
-                    >
-                        <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Our Categories</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-pink-500">
-                                {categoriesOpen ? 'Hide' : 'See All'}
-                            </span>
-                            <ChevronRight
-                                className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${categoriesOpen ? 'rotate-90' : ''}`}
-                            />
-                        </div>
-                    </button>
+                <div className="mt-6 border-t border-gray-100 pt-6">
+                    <div className="px-6 pb-2">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Shop</span>
+                    </div>
 
-                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${categoriesOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="pb-2 bg-gray-50/50">
-                            <Link
-                                href="/products"
-                                onClick={onClose}
-                                className="flex items-center gap-4 px-6 py-3 hover:bg-pink-50 transition-colors border-l-2 border-transparent hover:border-pink-500"
-                            >
-                                <span className="w-5 h-5 flex items-center justify-center">
-                                    <ShoppingBag className="w-4 h-4 text-pink-500" />
+                    <div className="px-2">
+                        <button
+                            onClick={() => setCategoriesOpen(!categoriesOpen)}
+                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                            <div className="flex items-center gap-4">
+                                <ShoppingBag className="w-5 h-5 text-gray-500" />
+                                <span className="text-gray-700 font-medium">Categories</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium text-pink-500">
+                                    {categoriesOpen ? 'Hide' : 'See All'}
                                 </span>
-                                <span className="font-medium text-pink-600">View All Products</span>
-                            </Link>
+                                <ChevronRight
+                                    className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${categoriesOpen ? 'rotate-90' : ''}`}
+                                />
+                            </div>
+                        </button>
 
-                            {categories.slice(0, 8).map((category: { id: string; slug: string; name: string }) => (
+                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${categoriesOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <div className="pl-4 pr-2 pb-2 mt-1 space-y-1 border-l-2 border-gray-100 ml-6">
                                 <Link
-                                    key={category.id}
-                                    href={`/products?category=${category.slug}`}
+                                    href="/products"
                                     onClick={onClose}
-                                    className="flex items-center gap-4 px-6 py-3 hover:bg-gray-100 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-pink-600 font-medium hover:bg-pink-50"
                                 >
-                                    <ShoppingBag className="w-5 h-5 text-gray-400" />
-                                    <span className="text-gray-700">{category.name}</span>
+                                    View All Products
                                 </Link>
-                            ))}
-                            {categories.length === 0 && (
-                                <div className="px-6 py-3 text-gray-400 text-sm">
-                                    No categories yet
-                                </div>
-                            )}
+
+                                {categories.slice(0, 8).map((category: { id: string; slug: string; name: string }) => (
+                                    <Link
+                                        key={category.id}
+                                        href={`/products?category=${category.slug}`}
+                                        onClick={onClose}
+                                        className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                    >
+                                        {category.name}
+                                    </Link>
+                                ))}
+                                {categories.length === 0 && (
+                                    <div className="px-6 py-3 text-gray-400 text-sm">
+                                        No categories yet
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
+
+                    <Link
+                        href="/sell"
+                        onClick={onClose}
+                        className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors text-gray-700 font-medium"
+                    >
+                        <Package className="w-5 h-5 text-gray-500" />
+                        <span>Sell on London&apos;s Imports</span>
+                    </Link>
                 </div>
 
                 {/* Our Services Section */}
-                <div className="border-b border-gray-100">
+                <div className="hidden"> {/* HIDING OLD SERVICES SECTION TO REMOVE DUPLICATES - REPLACED BY SUPPORT SECTION ABOVE */}
                     <div className="flex items-center justify-between px-4 py-4">
                         <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Our Services</span>
+                    </div>
+
+                    <div className="pb-2">
+                        <Link
+                            href="/how-it-works"
+                            onClick={onClose}
+                            className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                            <HelpCircle className="w-5 h-5 text-gray-600" />
+                            <span className="text-gray-800">How It Works</span>
+                        </Link>
+                        <Link
+                            href="/delivery-returns"
+                            onClick={onClose}
+                            className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                            <Truck className="w-5 h-5 text-gray-600" />
+                            <span className="text-gray-800">Delivery & Returns</span>
+                        </Link>
+                        <Link
+                            href="/track"
+                            onClick={onClose}
+                            className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                            <MapPin className="w-5 h-5 text-gray-600" />
+                            <span className="text-gray-800">Track Order</span>
+                        </Link>
+                    </div>
+                </div>
+
+
+                {/* SECTION: Support */}
+                <div className="mt-6 border-t border-gray-100 pt-6">
+                    <div className="px-6 pb-2">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Support</span>
                     </div>
 
                     <div className="pb-2">
@@ -305,40 +343,15 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <span className="text-gray-800">Contact Us</span>
                         </a>
                         <Link
-                            href="/reviews"
-                            onClick={onClose}
-                            className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
-                        >
-                            <Star className="w-5 h-5 text-gray-600" />
-                            <span className="text-gray-800">Reviews</span>
-                        </Link>
-                        <Link
                             href="/faq"
                             onClick={onClose}
                             className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
                         >
                             <FileText className="w-5 h-5 text-gray-600" />
-                            <span className="text-gray-800">FAQ</span>
+                            <span className="text-gray-800">Help Center & FAQ</span>
                         </Link>
                     </div>
                 </div>
-
-                {/* Sell on London's Imports */}
-                <Link
-                    href="/sell"
-                    onClick={onClose}
-                    className="block px-4 py-4 text-lg font-medium text-gray-800 hover:bg-gray-50 transition-colors border-b border-gray-100"
-                >
-                    Sell on London&apos;s Imports
-                </Link>
-
-                <Link
-                    href="/faq"
-                    onClick={onClose}
-                    className="block px-4 py-4 text-lg font-medium text-gray-800 hover:bg-gray-50 transition-colors border-b border-gray-100"
-                >
-                    Help Center
-                </Link>
 
                 {/* Trustpilot - External Link */}
                 <a
