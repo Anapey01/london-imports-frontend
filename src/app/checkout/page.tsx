@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
-import { useCartStore, CartItem } from '@/stores/cartStore';
+import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { ShieldCheck, Truck, CreditCard, MapPin, Lock } from 'lucide-react';
@@ -61,7 +61,7 @@ export default function CheckoutPage() {
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
-    const [checkoutOrder, setCheckoutOrder] = useState<any>(null); // Store order after checkout creation
+    const [checkoutOrder, setCheckoutOrder] = useState<Cart | null>(null); // Store order after checkout creation
     const [delivery, setDelivery] = useState({
         address: '',
         city: '',

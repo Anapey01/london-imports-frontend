@@ -31,7 +31,7 @@ export interface CartItem {
     selected_color?: string;
 }
 
-interface Cart {
+export interface Cart {
     id: string;
     order_number: string;
     items: CartItem[];
