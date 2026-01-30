@@ -950,9 +950,42 @@ export default function ProfilePage() {
     };
 
     if (authLoading || !user) {
+        const isDarkLoading = theme === 'dark';
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+            <div className={`min-h-screen ${isDarkLoading ? 'bg-[#0f172a]' : 'bg-gray-50'}`}>
+                {/* Header skeleton */}
+                <div className={`w-full border-b ${isDarkLoading ? 'border-slate-800' : 'border-gray-200'} pt-24 md:pt-28`}>
+                    <div className="max-w-6xl mx-auto px-6 py-10">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                            <div className={`h-20 w-20 rounded-full animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                            <div className="flex-1 text-center sm:text-left space-y-3">
+                                <div className={`h-8 w-48 rounded animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                                <div className={`h-4 w-32 rounded animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* Main content skeleton */}
+                <div className="max-w-6xl mx-auto px-6 py-8">
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        {/* Sidebar skeleton */}
+                        <div className="w-full lg:w-52 shrink-0 space-y-2">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className={`h-10 rounded-lg animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                            ))}
+                        </div>
+                        {/* Content skeleton */}
+                        <div className="flex-1 space-y-6">
+                            <div className={`h-8 w-32 rounded animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className={`h-20 rounded-xl animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                                ))}
+                            </div>
+                            <div className={`h-64 rounded-xl animate-pulse ${isDarkLoading ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
