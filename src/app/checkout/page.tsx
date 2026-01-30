@@ -101,6 +101,9 @@ export default function CheckoutPage() {
 
     const currentOrderData = checkoutOrder || cart; // Prefer checkout order if created
 
+    // TypeScript safety: Ensure we have data to render
+    if (!currentOrderData) return null;
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -141,6 +144,10 @@ export default function CheckoutPage() {
                 orderToPay = checkoutResponse.data.order;
                 setCheckoutOrder(orderToPay); // Persist order state locally
                 useCartStore.getState().clearCart(); // Optimistically clear cart since it's converted
+            }
+
+            if (!orderToPay) {
+                throw new Error('Failed to create order');
             }
 
             // 2. Initiate Payment (Get config from backend)
