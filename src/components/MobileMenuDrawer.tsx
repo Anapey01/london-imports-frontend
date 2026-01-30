@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
@@ -37,6 +37,7 @@ interface MobileMenuDrawerProps {
 
 export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerProps) {
     const { isAuthenticated, logout } = useAuthStore();
+    const [categoriesOpen, setCategoriesOpen] = useState(false);
 
     // Fetch categories dynamically
     const { data: categoriesData } = useQuery({
@@ -204,36 +205,53 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     </div>
                 </div>
 
-                {/* Our Categories Section */}
+                {/* Our Categories Section - Accordion */}
                 <div className="border-b border-gray-100">
-                    <div className="flex items-center justify-between px-4 py-4">
+                    <button
+                        onClick={() => setCategoriesOpen(!categoriesOpen)}
+                        className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-colors"
+                    >
                         <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Our Categories</span>
-                        <Link
-                            href="/products"
-                            onClick={onClose}
-                            className="text-sm font-medium text-pink-500 hover:text-pink-600"
-                        >
-                            See All
-                        </Link>
-                    </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-pink-500">
+                                {categoriesOpen ? 'Hide' : 'See All'}
+                            </span>
+                            <ChevronRight
+                                className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${categoriesOpen ? 'rotate-90' : ''}`}
+                            />
+                        </div>
+                    </button>
 
-                    <div className="pb-2">
-                        {categories.slice(0, 8).map((category: { id: string; slug: string; name: string }) => (
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${categoriesOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="pb-2 bg-gray-50/50">
                             <Link
-                                key={category.id}
-                                href={`/products?category=${category.slug}`}
+                                href="/products"
                                 onClick={onClose}
-                                className="flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors"
+                                className="flex items-center gap-4 px-6 py-3 hover:bg-pink-50 transition-colors border-l-2 border-transparent hover:border-pink-500"
                             >
-                                <ShoppingBag className="w-5 h-5 text-gray-600" />
-                                <span className="text-gray-800">{category.name}</span>
+                                <span className="w-5 h-5 flex items-center justify-center">
+                                    <ShoppingBag className="w-4 h-4 text-pink-500" />
+                                </span>
+                                <span className="font-medium text-pink-600">View All Products</span>
                             </Link>
-                        ))}
-                        {categories.length === 0 && (
-                            <div className="px-6 py-3 text-gray-400 text-sm">
-                                No categories yet
-                            </div>
-                        )}
+
+                            {categories.slice(0, 8).map((category: { id: string; slug: string; name: string }) => (
+                                <Link
+                                    key={category.id}
+                                    href={`/products?category=${category.slug}`}
+                                    onClick={onClose}
+                                    className="flex items-center gap-4 px-6 py-3 hover:bg-gray-100 transition-colors"
+                                >
+                                    <ShoppingBag className="w-5 h-5 text-gray-400" />
+                                    <span className="text-gray-700">{category.name}</span>
+                                </Link>
+                            ))}
+                            {categories.length === 0 && (
+                                <div className="px-6 py-3 text-gray-400 text-sm">
+                                    No categories yet
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
