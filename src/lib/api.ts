@@ -32,8 +32,9 @@ api.interceptors.request.use((config) => {
       '/blog/', // Public blog articles
     ];
 
+    // Check if URL starts with a public endpoint (use startsWith to avoid matching /admin/products/ as public)
     const isPublicEndpoint = publicEndpoints.some(endpoint =>
-      config.url && config.url.includes(endpoint)
+      config.url && config.url.startsWith(endpoint)
     );
 
     if (token && !isPublicEndpoint) {
