@@ -243,14 +243,6 @@ export default async function RootLayout({
   return (
     <html lang="en-GH" suppressHydrationWarning>
       <head>
-        {/* Preload LCP image for faster hero rendering */}
-        <link
-          rel="preload"
-          href="/assets/images/newyear-drop.webp"
-          as="image"
-          type="image/webp"
-          fetchPriority="high"
-        />
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://london-imports-api.onrender.com" />
