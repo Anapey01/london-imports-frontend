@@ -10,6 +10,7 @@ export interface Product {
     name: string;
     slug: string;
     image?: string | null;
+    primary_image?: string | null;
     price: number;
     preorder_status?: string;
     delivery_window_text?: string;

@@ -35,7 +35,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             // Ensure product matches expected interface
             const wishlistProduct = {
                 ...product,
-                image: product.image || ""
+                image: product.image || product.primary_image || ""
             };
             addToWishlist(wishlistProduct);
         }
