@@ -21,19 +21,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }));
 
-    // Blog articles for SEO
-    const blogArticles = [
+    // Fetch blog posts from API (dynamic)
+    let blogPosts: { slug: string; published_at?: string }[] = [];
+    try {
+        const blogRes = await fetch('https://london-imports-api.onrender.com/api/v1/blog/', {
+            next: { revalidate: 3600 } // Revalidate every hour
+        });
+        if (blogRes.ok) {
+            blogPosts = await blogRes.json();
+        }
+    } catch {
+        // Fallback to static slugs if API fails
+    }
+
+    // Fallback static blog slugs if API returns empty
+    const fallbackBlogSlugs = [
         'how-to-buy-from-1688-in-ghana',
         'mini-importation-beginners-guide',
         'customs-duty-calculator-ghana',
-        'alibaba-vs-1688-which-is-better',
-        'best-products-to-import-from-china-to-ghana',
-        'shipping-time-china-to-ghana',
     ];
 
-    const blogUrls = blogArticles.map((slug) => ({
+    const blogSlugs = blogPosts.length > 0
+        ? blogPosts.map(p => ({ slug: p.slug, date: p.published_at }))
+        : fallbackBlogSlugs.map(slug => ({ slug, date: undefined }));
+
+    const blogUrls = blogSlugs.map(({ slug, date }) => ({
         url: `${baseUrl}/blog/${slug}`,
-        lastModified: new Date(),
+        lastModified: date ? new Date(date) : new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
     }));
