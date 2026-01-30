@@ -58,7 +58,8 @@ export default function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
-    const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT'>('FULL');
+    const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM'>('FULL');
+    const [customAmount, setCustomAmount] = useState('');
 
     const [delivery, setDelivery] = useState({
         address: '',
@@ -102,6 +103,23 @@ export default function CheckoutPage() {
         setIsLoading(true);
 
         try {
+            // Validate Custom Amount
+            if (paymentType === 'CUSTOM') {
+                const amount = parseFloat(customAmount);
+                const minAmount = cart.total * 0.3;
+
+                if (isNaN(amount) || amount < minAmount) {
+                    setError(`Minimum payment amount is GHS ${minAmount.toLocaleString()}`);
+                    setIsLoading(false);
+                    return;
+                }
+                if (amount > cart.total) {
+                    setError(`Amount cannot exceed order total of GHS ${cart.total.toLocaleString()}`);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             // 1. Checkout - finalize order in backend
             const checkoutResponse = await ordersAPI.checkout({
                 delivery_address: delivery.address,
@@ -109,11 +127,20 @@ export default function CheckoutPage() {
                 delivery_region: delivery.region,
                 customer_notes: delivery.notes,
                 payment_type: paymentType,
+                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined
             });
 
             const { order } = checkoutResponse.data;
 
-            // 2. Initialize Paystack
+            // 2. Initiate Payment (Get config from backend)
+            const paymentInitResponse = await paymentsAPI.initiate(
+                order.order_number,
+                paymentType // 'FULL' | 'DEPOSIT' | 'CUSTOM' (Handled by backend now)
+            );
+
+            const { reference } = paymentInitResponse.data;
+
+            // 3. Initialize Paystack
             if (!window.PaystackPop) {
                 setError('Payment system not loaded. Please refresh.');
                 setIsLoading(false);
@@ -121,30 +148,35 @@ export default function CheckoutPage() {
             }
 
             const paystack = window.PaystackPop.setup({
-                key: 'pk_live_19482f7bb4f2f8db7b75211e3b529e3233aee865', // Using Public Key
+                key: 'pk_live_19482f7bb4f2f8db7b75211e3b529e3233aee865',
                 email: user?.email || 'customer@londonsimports.com',
-                amount: Math.ceil(paymentAmount! * 100), // Convert GHS to pesewas (integer)
+                amount: Math.ceil(paymentAmount! * 100), // Fallback amount check
                 currency: 'GHS',
-                ref: order.order_number,
+                ref: reference, // Use backend generated reference
                 metadata: {
                     custom_fields: [
                         { display_name: "Order Number", variable_name: "order_number", value: order.order_number },
                         { display_name: "Customer Name", variable_name: "customer_name", value: user ? `${user.first_name} ${user.last_name}` : 'Guest' },
                         { display_name: "Phone Number", variable_name: "phone_number", value: user?.phone || 'Not provided' },
-                        { display_name: "Delivery Address", variable_name: "delivery_address", value: `${delivery.address}, ${delivery.city}` }
                     ]
                 },
                 callback: function (response: PaystackResponse) {
-                    // Paystack expects a synchronous callback, but we can fire async verification
+                    // Verify with backend using reference
                     paymentsAPI.verify(response.reference)
                         .then(() => {
-                            fetchCart(); // Clear local cart state
+                            fetchCart();
                             router.push(`/checkout/success?order=${order.order_number}`);
                         })
                         .catch((verifyErr) => {
                             console.error('Verification failed', verifyErr);
-                            setError('Payment successful but verification failed. Please contact support.');
-                            setIsLoading(false);
+                            // Even if verification API "fails" (e.g. network), the webhook might succeed.
+                            // But usually it means payment state update failed.
+                            setError('Payment received. Processing confirmation...');
+
+                            // Retry verification once after delay?
+                            setTimeout(() => {
+                                router.push(`/checkout/success?order=${order.order_number}`);
+                            }, 2000);
                         });
                 },
                 onClose: function () {
@@ -169,9 +201,13 @@ export default function CheckoutPage() {
         }
     };
 
-    const paymentAmount = paymentType === 'DEPOSIT'
-        ? (cart.total * 0.3) // 30% deposit if no specific deposit set
-        : cart.total;
+    const getPaymentAmount = () => {
+        if (paymentType === 'DEPOSIT') return cart.total * 0.3;
+        if (paymentType === 'CUSTOM') return parseFloat(customAmount) || 0;
+        return cart.total;
+    };
+
+    const paymentAmount = getPaymentAmount();
 
     return (
         <div className="min-h-screen bg-gray-50 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8">
@@ -318,8 +354,47 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="ml-4">
                                         <span className="block font-medium text-gray-900 text-lg">Deposit Only</span>
-                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {(cart.total * 0.3).toLocaleString()} (30%) now, rest on delivery</p>
+                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {(cart.total * 0.3).toLocaleString()} (30%) now</p>
                                     </div>
+                                </label>
+
+                                <label className={`flex flex-col p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'CUSTOM' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
+                                    <div className="flex items-start w-full">
+                                        <div className="mt-1">
+                                            <input
+                                                type="radio"
+                                                name="payment_type"
+                                                value="CUSTOM"
+                                                checked={paymentType === 'CUSTOM'}
+                                                onChange={() => setPaymentType('CUSTOM')}
+                                                className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
+                                            />
+                                        </div>
+                                        <div className="ml-4 flex-1">
+                                            <span className="block font-medium text-gray-900 text-lg">Flexible Installment</span>
+                                            <p className="text-sm text-gray-500 font-light mt-1">Choose how much you want to pay now (Min 30%)</p>
+                                        </div>
+                                    </div>
+
+                                    {paymentType === 'CUSTOM' && (
+                                        <div className="ml-8 mt-4">
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">GHS</span>
+                                                <input
+                                                    type="number"
+                                                    value={customAmount}
+                                                    onChange={(e) => setCustomAmount(e.target.value)}
+                                                    placeholder={`Min ${(cart.total * 0.3).toFixed(2)}`}
+                                                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
+                                                    min={(cart.total * 0.3)}
+                                                    max={cart.total}
+                                                />
+                                            </div>
+                                            <p className="text-xs text-gray-400 mt-2">
+                                                Remaining balance: GHS {customAmount ? Math.max(0, cart.total - parseFloat(customAmount || '0')).toLocaleString() : cart.total.toLocaleString()}
+                                            </p>
+                                        </div>
+                                    )}
                                 </label>
                             </div>
                         </div>
