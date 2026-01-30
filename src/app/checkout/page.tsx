@@ -61,6 +61,7 @@ export default function CheckoutPage() {
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
+    const [checkoutOrder, setCheckoutOrder] = useState<any>(null); // Store order after checkout creation
     const [delivery, setDelivery] = useState({
         address: '',
         city: '',
@@ -92,10 +93,13 @@ export default function CheckoutPage() {
         return null;
     }
 
-    if (!cart || cart.items?.length === 0) {
+    // Only redirect if cart is empty AND we haven't created an order yet
+    if ((!cart || cart.items?.length === 0) && !checkoutOrder) {
         router.push('/cart');
         return null;
     }
+
+    const currentOrderData = checkoutOrder || cart; // Prefer checkout order if created
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -103,39 +107,47 @@ export default function CheckoutPage() {
         setIsLoading(true);
 
         try {
-            // Validate Custom Amount
-            if (paymentType === 'CUSTOM') {
-                const amount = parseFloat(customAmount);
-                const minAmount = cart.total * 0.3;
+            let orderToPay = checkoutOrder;
 
-                if (isNaN(amount) || amount < minAmount) {
-                    setError(`Minimum payment amount is GHS ${minAmount.toLocaleString()}`);
-                    setIsLoading(false);
-                    return;
+            // Only create new order if we haven't already
+            if (!orderToPay) {
+                // Validate Custom Amount
+                if (paymentType === 'CUSTOM') {
+                    const amount = parseFloat(customAmount);
+                    const minAmount = currentOrderData.total * 0.3;
+
+                    if (isNaN(amount) || amount < minAmount) {
+                        setError(`Minimum payment amount is GHS ${minAmount.toLocaleString()}`);
+                        setIsLoading(false);
+                        return;
+                    }
+                    if (amount > currentOrderData.total) { // Use currentOrderData
+                        setError(`Amount cannot exceed order total of GHS ${currentOrderData.total.toLocaleString()}`);
+                        setIsLoading(false);
+                        return;
+                    }
                 }
-                if (amount > cart.total) {
-                    setError(`Amount cannot exceed order total of GHS ${cart.total.toLocaleString()}`);
-                    setIsLoading(false);
-                    return;
-                }
+
+                // 1. Checkout - finalize order in backend
+                const checkoutResponse = await ordersAPI.checkout({
+                    delivery_address: delivery.address,
+                    delivery_city: delivery.city,
+                    delivery_region: delivery.region,
+                    customer_notes: delivery.notes,
+                    payment_type: paymentType,
+                    custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined
+                });
+
+                orderToPay = checkoutResponse.data.order;
+                setCheckoutOrder(orderToPay); // Persist order state locally
+                useCartStore.getState().clearCart(); // Optimistically clear cart since it's converted
             }
 
-            // 1. Checkout - finalize order in backend
-            const checkoutResponse = await ordersAPI.checkout({
-                delivery_address: delivery.address,
-                delivery_city: delivery.city,
-                delivery_region: delivery.region,
-                customer_notes: delivery.notes,
-                payment_type: paymentType,
-                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined
-            });
-
-            const { order } = checkoutResponse.data;
-
             // 2. Initiate Payment (Get config from backend)
+            // Always initiate fresh payment link for the order
             const paymentInitResponse = await paymentsAPI.initiate(
-                order.order_number,
-                paymentType // 'FULL' | 'DEPOSIT' | 'CUSTOM' (Handled by backend now)
+                orderToPay.order_number,
+                paymentType
             );
 
             const { reference } = paymentInitResponse.data;
@@ -150,37 +162,33 @@ export default function CheckoutPage() {
             const paystack = window.PaystackPop.setup({
                 key: 'pk_live_19482f7bb4f2f8db7b75211e3b529e3233aee865',
                 email: user?.email || 'customer@londonsimports.com',
-                amount: Math.ceil(paymentAmount! * 100), // Fallback amount check
+                amount: Math.ceil(paymentAmount! * 100),
                 currency: 'GHS',
-                ref: reference, // Use backend generated reference
+                ref: reference,
                 metadata: {
                     custom_fields: [
-                        { display_name: "Order Number", variable_name: "order_number", value: order.order_number },
+                        { display_name: "Order Number", variable_name: "order_number", value: orderToPay.order_number },
                         { display_name: "Customer Name", variable_name: "customer_name", value: user ? `${user.first_name} ${user.last_name}` : 'Guest' },
                         { display_name: "Phone Number", variable_name: "phone_number", value: user?.phone || 'Not provided' },
                     ]
                 },
                 callback: function (response: PaystackResponse) {
-                    // Verify with backend using reference
                     paymentsAPI.verify(response.reference)
                         .then(() => {
-                            fetchCart();
-                            router.push(`/checkout/success?order=${order.order_number}`);
+                            // fetchCart(); // No need to fetch cart, it's empty
+                            router.push(`/checkout/success?order=${orderToPay.order_number}`);
                         })
                         .catch((verifyErr) => {
                             console.error('Verification failed', verifyErr);
-                            // Even if verification API "fails" (e.g. network), the webhook might succeed.
-                            // But usually it means payment state update failed.
                             setError('Payment received. Processing confirmation...');
-
-                            // Retry verification once after delay?
                             setTimeout(() => {
-                                router.push(`/checkout/success?order=${order.order_number}`);
+                                router.push(`/checkout/success?order=${orderToPay.order_number}`);
                             }, 2000);
                         });
                 },
                 onClose: function () {
                     setIsLoading(false);
+                    setError('Payment cancelled. You can retry anytime.');
                 }
             });
 
@@ -202,9 +210,15 @@ export default function CheckoutPage() {
     };
 
     const getPaymentAmount = () => {
-        if (paymentType === 'DEPOSIT') return cart.total * 0.3;
+        const sourceData = checkoutOrder || cart;
+        if (!sourceData) return 0;
+
+        // If we have a saved order, rely on its values if possible, otherwise recalc
+        const total = sourceData.total || 0;
+
+        if (paymentType === 'DEPOSIT') return total * 0.3;
         if (paymentType === 'CUSTOM') return parseFloat(customAmount) || 0;
-        return cart.total;
+        return total;
     };
 
     const paymentAmount = getPaymentAmount();
@@ -337,7 +351,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="ml-4">
                                         <span className="block font-medium text-gray-900 text-lg">Full Payment</span>
-                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {cart.total?.toLocaleString()} now</p>
+                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {currentOrderData.total?.toLocaleString()} now</p>
                                     </div>
                                 </label>
 
@@ -354,7 +368,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="ml-4">
                                         <span className="block font-medium text-gray-900 text-lg">Deposit Only</span>
-                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {(cart.total * 0.3).toLocaleString()} (30%) now</p>
+                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {(currentOrderData.total * 0.3).toLocaleString()} (30%) now</p>
                                     </div>
                                 </label>
 
@@ -384,14 +398,14 @@ export default function CheckoutPage() {
                                                     type="number"
                                                     value={customAmount}
                                                     onChange={(e) => setCustomAmount(e.target.value)}
-                                                    placeholder={`Min ${(cart.total * 0.3).toFixed(2)}`}
+                                                    placeholder={`Min ${(currentOrderData.total * 0.3).toFixed(2)}`}
                                                     className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
-                                                    min={(cart.total * 0.3)}
-                                                    max={cart.total}
+                                                    min={(currentOrderData.total * 0.3)}
+                                                    max={currentOrderData.total}
                                                 />
                                             </div>
                                             <p className="text-xs text-gray-400 mt-2">
-                                                Remaining balance: GHS {customAmount ? Math.max(0, cart.total - parseFloat(customAmount || '0')).toLocaleString() : cart.total.toLocaleString()}
+                                                Remaining balance: GHS {customAmount ? Math.max(0, currentOrderData.total - parseFloat(customAmount || '0')).toLocaleString() : currentOrderData.total.toLocaleString()}
                                             </p>
                                         </div>
                                     )}
@@ -407,7 +421,7 @@ export default function CheckoutPage() {
 
                             {/* Items List (Compact) */}
                             <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                {cart.items?.map((item: CartItem) => (
+                                {currentOrderData.items?.map((item: CartItem) => (
                                     <div key={item.id} className="flex justify-between items-center text-sm group">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
                                             <span className="w-6 h-6 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-full text-xs font-medium text-gray-600">
@@ -425,17 +439,17 @@ export default function CheckoutPage() {
                             <div className="border-t border-gray-100 pt-6 space-y-3">
                                 <div className="flex justify-between text-gray-500 font-light">
                                     <span>Subtotal</span>
-                                    <span className="font-medium text-gray-900">GHS {cart.subtotal?.toLocaleString()}</span>
+                                    <span className="font-medium text-gray-900">GHS {currentOrderData.subtotal?.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-500 font-light">
                                     <span>Delivery</span>
                                     <span className="font-medium text-gray-900">
-                                        {cart.delivery_fee > 0 ? `GHS ${cart.delivery_fee.toLocaleString()}` : 'Pay on Arrival'}
+                                        {currentOrderData.delivery_fee > 0 ? `GHS ${currentOrderData.delivery_fee.toLocaleString()}` : 'Pay on Arrival'}
                                     </span>
                                 </div>
                                 <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
                                     <span className="text-lg text-gray-900 font-medium pb-1">Total</span>
-                                    <span className="text-2xl sm:text-3xl font-light text-gray-900">GHS {cart.total?.toLocaleString()}</span>
+                                    <span className="text-2xl sm:text-3xl font-light text-gray-900">GHS {currentOrderData.total?.toLocaleString()}</span>
                                 </div>
 
                                 <div className="bg-gray-50 rounded-xl p-4 mt-4 flex justify-between items-center text-gray-900">
