@@ -6,9 +6,10 @@ import { getImageUrl } from '@/lib/image';
 // ISR: Revalidate product pages every hour
 export const revalidate = 3600;
 
-// Pre-render all products at build time
+// Pre-render top 50 products at build time (Performance Optimization)
+// The rest will be generated on-demand (ISR) when first visited
 export async function generateStaticParams() {
-    const products = await getProducts({ limit: '1000' });
+    const products = await getProducts({ limit: '50' });
     return products.results.map((product: { slug: string }) => ({
         slug: product.slug,
     }));
