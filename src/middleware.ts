@@ -5,17 +5,32 @@ export function middleware(request: NextRequest) {
     const hostname = request.headers.get('host') || '';
     const { pathname } = request.nextUrl;
 
-    // Check if we are on the market subdomain
-    // Matches: market.londonsimports.com, market.localhost:3000
-    const isMarketSubdomain = hostname.startsWith('market.');
+    // Check for subdomains
+    // Matches: market.londonsimports.com or store-name.londonsimports.com
+    const isSubdomain = hostname.includes('.') && !hostname.startsWith('www.');
 
-    if (isMarketSubdomain) {
-        // Rewrite the root path to /market
-        if (pathname === '/') {
-            return NextResponse.rewrite(new URL('/market', request.url));
+    if (isSubdomain) {
+        const subdomain = hostname.split('.')[0];
+
+        // Handle specific subdomains
+        if (subdomain === 'market') {
+            if (pathname === '/') {
+                return NextResponse.rewrite(new URL('/market', request.url));
+            }
+        }
+        // Exclude other reserved subdomains
+        else if (['admin', 'api', 'www', 'localhost'].includes(subdomain)) {
+            // Do nothing, let them pass
+        }
+        // Handle Partner Store Subdomains (e.g. nike.londonsimports.com -> /store/nike)
+        else {
+            // Rewrite root to store page
+            if (pathname === '/') {
+                return NextResponse.rewrite(new URL(`/store/${subdomain}`, request.url));
+            }
         }
     } else {
-        // Redirect /market path on main domain to the subdomain
+        // Main domain logic
         if (pathname.startsWith('/market')) {
             return NextResponse.redirect(new URL('https://market.londonsimports.com'));
         }

@@ -138,3 +138,17 @@ export async function getVendor(slug: string) {
         return null;
     }
 }
+
+export async function getAllVendors() {
+    const url = `${API_BASE_URL}/vendors/`;
+    try {
+        console.log(`[SSR] Fetching all vendors: ${url}`);
+        const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache for 1 hour
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.results || data;
+    } catch (e) {
+        console.error("[SSR] Exception fetching all vendors:", e);
+        return [];
+    }
+}

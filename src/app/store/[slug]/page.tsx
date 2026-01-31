@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getVendor } from '@/lib/fetchers';
+import { getVendor, getAllVendors } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import { MapPin, ShieldCheck, Truck } from 'lucide-react';
 
@@ -8,6 +8,14 @@ interface Props {
     params: Promise<{
         slug: string;
     }>;
+}
+
+// Generate static params for SSG optimization
+export async function generateStaticParams() {
+    const vendors = await getAllVendors();
+    return vendors.map((vendor: { slug: string }) => ({
+        slug: vendor.slug,
+    }));
 }
 
 export default async function VendorStorePage({ params }: Props) {
