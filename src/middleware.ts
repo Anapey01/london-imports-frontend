@@ -7,10 +7,38 @@ export function middleware(request: NextRequest) {
 
     // Check for subdomains
     // Matches: market.londonsimports.com or store-name.londonsimports.com
-    const isSubdomain = hostname.includes('.') && !hostname.startsWith('www.');
+    // BUT EXCLUDE: londonsimports.com (root) and www.londonsimports.com
 
-    if (isSubdomain) {
-        const subdomain = hostname.split('.')[0];
+    let isTenantSubdomain = false;
+    let subdomain = '';
+
+    // Explicitly check if it is NOT the root domain
+    if (hostname === 'londonsimports.com' || hostname === 'www.londonsimports.com') {
+        isTenantSubdomain = false;
+    }
+    // If it has a subdomain part ...
+    else if (hostname.includes('.') && !hostname.startsWith('www.')) {
+        // Split parts
+        const parts = hostname.split('.');
+        // If it ends with londonsimports.com, the first part is the subdomain
+        if (hostname.endsWith('.londonsimports.com')) {
+            subdomain = parts[0];
+            isTenantSubdomain = true;
+        }
+        // Handle localhost subdomains (e.g. nike.localhost:3000)
+        else if (hostname.includes('localhost') && parts.length > 1 && parts[0] !== 'localhost') {
+            subdomain = parts[0];
+            isTenantSubdomain = true;
+        }
+        // Handle Vercel previews or custom domains
+        // Assume any other domain structure with > 2 parts is a potential subdomain
+        // BUT be careful not to break vercel.app
+        else if (hostname.endsWith('.vercel.app')) {
+            // Do nothing for vercel.app previews unless we explicitly want to test subdomains there
+        }
+    }
+
+    if (isTenantSubdomain) {
 
         // Handle specific subdomains
         if (subdomain === 'market') {
@@ -19,7 +47,7 @@ export function middleware(request: NextRequest) {
             }
         }
         // Exclude other reserved subdomains
-        else if (['admin', 'api', 'www', 'localhost'].includes(subdomain)) {
+        else if (['admin', 'api', 'www'].includes(subdomain)) {
             // Do nothing, let them pass
         }
         // Handle Partner Store Subdomains (e.g. nike.londonsimports.com -> /store/nike)
@@ -30,8 +58,9 @@ export function middleware(request: NextRequest) {
             }
         }
     } else {
-        // Main domain logic
+        // Main domain logic (londonsimports.com)
         if (pathname.startsWith('/market')) {
+            // Redirect /market path on main domain to the subdomain
             return NextResponse.redirect(new URL('https://market.londonsimports.com'));
         }
     }
