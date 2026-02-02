@@ -110,10 +110,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     {/* Wishlist Button */}
                     <button
                         onClick={toggleWishlist}
-                        className="absolute top-2 left-2 z-20 p-1.5 rounded-full bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-600 text-gray-400 hover:text-pink-500 transition-all shadow-sm group"
+                        className="absolute top-2 left-2 z-20 p-1.5 rounded-full bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-600 text-gray-400 hover:text-store-primary transition-all shadow-sm group"
                         aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                        <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? "fill-pink-500 text-pink-500" : "group-hover:text-pink-500"}`} />
+                        <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? "fill-store-primary text-store-primary" : "group-hover:text-store-primary"}`} />
                     </button>
                 </div>
 
@@ -157,7 +157,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     <button
                         onClick={handleAddToCart}
                         disabled={isAdding}
-                        className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-600 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors"
+                        className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-600 dark:text-slate-400 hover:text-store-primary dark:hover:text-store-primary transition-colors"
                         aria-label="Add to cart"
                     >
                         <div className="relative">

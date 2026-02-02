@@ -4,7 +4,7 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = 'https://london-imports-api.onrender.com/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com/api/v1'; // Switched to Render for Dev/Prod
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
