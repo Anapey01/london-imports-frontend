@@ -3,7 +3,7 @@
  * Uses native fetch for Next.js caching and revalidation
  */
 
-const API_BASE_URL = 'http://localhost:8000/api/v1'; // Localhost for Testing
+const API_BASE_URL = 'https://london-imports-api.onrender.com/api/v1';
 
 export async function getProducts(params: Record<string, string> = {}) {
     try {
@@ -130,7 +130,7 @@ export async function getVendor(slug: string) {
     const url = `${API_BASE_URL}/vendors/${slug}/`;
     try {
         console.log(`[SSR] Fetching vendor: ${url}`);
-        const res = await fetch(url, { next: { revalidate: 0 } });
+        const res = await fetch(url, { next: { revalidate: 60 } });
         if (!res.ok) return null;
         return await res.json();
     } catch (e) {
@@ -143,7 +143,7 @@ export async function getAllVendors() {
     const url = `${API_BASE_URL}/vendors/`;
     try {
         console.log(`[SSR] Fetching all vendors: ${url}`);
-        const res = await fetch(url, { next: { revalidate: 0 } }); // No cache for debugging
+        const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache for 1 hour
         if (!res.ok) return [];
         const data = await res.json();
         return data.results || data;

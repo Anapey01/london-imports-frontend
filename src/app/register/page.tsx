@@ -4,35 +4,15 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { User, Lock, Mail, Phone, ArrowRight } from 'lucide-react';
-import { vendorsAPI } from '@/lib/api';
 
 export default function RegisterPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { register, isLoading } = useAuthStore();
-
-    const redirect = searchParams.get('redirect') || '/';
-    const vendorSlug = searchParams.get('vendor');
-    const [vendorName, setVendorName] = useState<string>('');
-
-    useEffect(() => {
-        if (vendorSlug) {
-            const fetchVendor = async () => {
-                try {
-                    const res = await vendorsAPI.getBySlug(vendorSlug);
-                    if (res.data) setVendorName(res.data.business_name);
-                } catch (e) {
-                    setVendorName(vendorSlug);
-                }
-            };
-            fetchVendor();
-        }
-    }, [vendorSlug]);
 
     const [formData, setFormData] = useState({
         username: '', // Initialize to avoid controlled/uncontrolled issues
@@ -64,7 +44,7 @@ export default function RegisterPage() {
                 ...formData,
                 username: formData.email
             });
-            router.push(redirect);
+            router.push('/');
         } catch (error: unknown) {
             console.error('Registration Error Full Object:', JSON.stringify(error, null, 2));
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
@@ -94,12 +74,8 @@ export default function RegisterPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 md:px-6">
             <div className="w-full max-w-md mx-auto">
                 <div className="text-center mb-10">
-                    <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">
-                        {vendorSlug ? `Create account with ${vendorName || vendorSlug}` : 'Create Account'}
-                    </h1>
-                    <p className="text-gray-500 font-light text-sm">
-                        {vendorSlug ? 'Join to start shopping' : "Join London's Imports to start shopping"}
-                    </p>
+                    <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">Create Account</h1>
+                    <p className="text-gray-500 font-light text-sm">Join London&apos;s Imports to start shopping</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -227,10 +203,7 @@ export default function RegisterPage() {
                 <div className="mt-8 text-center text-sm font-light text-gray-500">
                     <p>
                         Already have an account?{' '}
-                        <Link
-                            href={vendorSlug ? `/login?vendor=${vendorSlug}&redirect=${redirect}` : "/login"}
-                            className="text-gray-900 font-medium hover:underline underline-offset-4"
-                        >
+                        <Link href="/login" className="text-gray-900 font-medium hover:underline underline-offset-4">
                             Sign in
                         </Link>
                     </p>

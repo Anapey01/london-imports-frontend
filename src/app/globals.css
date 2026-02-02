@@ -13,10 +13,6 @@
   --accent-primary: #f472b6;
   --accent-secondary: #f9a8d4;
   --font-sans: var(--font-inter);
-  --store-primary: #ec4899;
-  /* Faint version for backgrounds, approx 5-10% opacity equivalent of the primary color */
-  --store-primary-faint: color-mix(in srgb, var(--store-primary), white 95%);
-  /* Default Pink-500 */
 }
 
 @layer base {
@@ -275,21 +271,6 @@
   border-color: #ec4899 !important;
 }
 
-/* Hide scrollbar utility */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-}
-
-@supports (scrollbar-width: none) {
-  .hide-scrollbar {
-    scrollbar-width: none;
-  }
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -476,7 +457,7 @@ html {
 /* ===== BUTTONS ===== */
 
 .btn-primary {
-  background-color: var(--store-primary);
+  background-color: #f472b6;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 9999px;
@@ -486,16 +467,15 @@ html {
 }
 
 .btn-primary:hover {
-  background-color: var(--store-primary);
-  filter: brightness(0.9);
+  background-color: #ec4899;
   box-shadow: 0 6px 20px -4px rgba(244, 114, 182, 0.35);
   transform: translateY(-2px);
 }
 
 .btn-secondary {
   background-color: white;
-  color: var(--store-primary);
-  border: 1.5px solid var(--store-primary);
+  color: #f472b6;
+  border: 1.5px solid #f472b6;
   padding: 0.75rem 1.5rem;
   border-radius: 9999px;
   font-weight: 600;
@@ -503,7 +483,7 @@ html {
 }
 
 .btn-secondary:hover {
-  background-color: var(--store-primary);
+  background-color: #f472b6;
   color: white;
   transform: translateY(-1px);
 }

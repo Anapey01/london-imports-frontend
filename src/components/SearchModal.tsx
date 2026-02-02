@@ -124,7 +124,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         {/* Loading State */}
                         {isSearching && (
                             <div className="p-8 text-center text-gray-500">
-                                <div className="animate-spin w-6 h-6 border-2 border-store-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                                <div className="animate-spin w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full mx-auto mb-2"></div>
                                 <p>Searching...</p>
                             </div>
                         )}
@@ -138,7 +138,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
 
                         {/* Results List */}
-                        {!isSearching && results.map((product: { id: string; slug: string; name: string; price: number; image?: string }) => (
+                        {!isSearching && results.map((product: any) => (
                             <button
                                 key={product.id}
                                 onClick={() => handleProductClick(product.slug)}
@@ -155,7 +155,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-semibold text-gray-900 truncate">{product.name}</h4>
-                                    <p className="text-store-primary font-bold text-sm">GH₵ {product.price?.toLocaleString() || '0.00'}</p>
+                                    <p className="text-pink-600 font-bold text-sm">GH₵ {product.price?.toLocaleString() || '0.00'}</p>
                                 </div>
                                 <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -171,9 +171,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     {categories.length > 0 ? (
-                                        categories.slice(0, 10).map((cat: { id?: string; slug?: string; name: string }, index: number) => (
+                                        categories.slice(0, 10).map((cat: any) => (
                                             <button
-                                                key={cat.id || cat.slug || index}
+                                                key={cat.id || cat.slug || Math.random()}
                                                 onClick={() => setQuery(cat.name)}
                                                 className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-pink-500 hover:text-pink-600 transition-colors shadow-sm"
                                             >
@@ -186,7 +186,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                             <button
                                                 key={term}
                                                 onClick={() => setQuery(term)}
-                                                className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-store-primary hover:text-store-primary transition-colors shadow-sm"
+                                                className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-pink-500 hover:text-pink-600 transition-colors shadow-sm"
                                             >
                                                 {term}
                                             </button>

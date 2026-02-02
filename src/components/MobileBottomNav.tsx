@@ -6,30 +6,25 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { Home, Grid2X2, ShoppingCart, User, Heart } from 'lucide-react';
 
 export default function MobileBottomNav() {
     const pathname = usePathname();
-    const params = useParams();
     const { itemCount } = useCartStore();
     const { isAuthenticated } = useAuthStore();
-
-    // Check if we are in a vendor store context
-    const vendorSlug = params?.slug as string;
-    const isVendorStore = vendorSlug && pathname?.startsWith('/store/');
 
     const navItems = [
         {
             name: 'Home',
-            href: isVendorStore ? `/store/${vendorSlug}` : '/',
+            href: '/',
             icon: Home,
         },
         {
             name: 'Categories',
-            href: isVendorStore ? `/products?vendor=${vendorSlug}` : '/products',
+            href: '/products',
             icon: Grid2X2,
         },
         {
@@ -45,7 +40,7 @@ export default function MobileBottomNav() {
         },
         {
             name: 'Account',
-            href: isAuthenticated ? '/profile' : (isVendorStore ? `/login?vendor=${vendorSlug}&redirect=/store/${vendorSlug}` : '/login'),
+            href: isAuthenticated ? '/profile' : '/login',
             icon: User,
         },
     ];
@@ -62,8 +57,8 @@ export default function MobileBottomNav() {
                 <div className="flex justify-around items-center h-16 px-2">
                     {navItems.map((item) => {
                         const isActive =
-                            item.name === 'Home'
-                                ? pathname === item.href
+                            item.href === '/'
+                                ? pathname === '/'
                                 : pathname?.startsWith(item.href);
 
                         return (

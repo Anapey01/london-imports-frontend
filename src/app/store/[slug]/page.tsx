@@ -51,10 +51,10 @@ export default async function VendorStorePage({ params }: Props) {
                         priority
                     />
                 ) : (
-                    <div className="absolute inset-0 bg-[image:linear-gradient(135deg,var(--store-primary)_0%,#0f172a_100%)]">
-                        {/* Subtle Pattern Overlay */}
-                        <div className="absolute inset-0 bg-[image:radial-gradient(rgba(255,255,255,0.15)_1px,transparent_1px)] bg-[length:24px_24px]"></div>
-                    </div>
+                    <div
+                        className="absolute inset-0 opacity-90 bg-[image:linear-gradient(135deg,var(--store-primary)_0%,#111827_100%)]"
+                        aria-hidden="true"
+                    />
                 )}
 
                 {/* Overlay Content */}
@@ -101,102 +101,65 @@ export default async function VendorStorePage({ params }: Props) {
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Sidebar / Info */}
+                    <aside className="lg:col-span-1 space-y-6">
+                        {/* About Card */}
+                        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                            <h3 className="font-bold text-gray-900 mb-4 text-lg">About Store</h3>
+                            <p className="text-gray-600 leading-relaxed text-sm">
+                                {vendor.description || `Welcome to ${vendor.business_name}. Browse our exclusive collection of products.`}
+                            </p>
 
-                {/* Horizontal Info Bar (Scrollable on Mobile) */}
-                <div className="flex flex-nowrap overflow-x-auto pb-6 -mx-4 px-4 gap-4 md:grid md:grid-cols-3 md:gap-6 md:pb-0 md:overflow-visible md:mx-0 md:px-0 mb-8 md:mb-12 snap-x snap-mandatory hide-scrollbar scroll-pl-4">
-                    {/* About Section */}
-                    <div className="min-w-[85vw] md:min-w-0 flex-shrink-0 bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm md:col-span-2 relative overflow-hidden group hover:shadow-md transition-all duration-300 snap-start">
-                        <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--store-primary)]" />
+                            <hr className="my-6 border-gray-100" />
 
-                        <div className="flex flex-col h-full justify-between">
-                            <div>
-                                <h3 className="font-bold text-gray-900 mb-2 md:mb-3 text-xl md:text-2xl flex items-center gap-2">
-                                    About {vendor.business_name}
-                                </h3>
-                                <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-2xl line-clamp-3 md:line-clamp-none">
-                                    {vendor.description || `Welcome to our store. We are committed to providing you with the best quality products and service. browse our exclusive collection.`}
-                                </p>
+                            {/* Metrics */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-500 text-sm">Reliability</span>
+                                    <span className="font-bold text-green-600 flex items-center gap-1">
+                                        {(vendor.fulfillment_rate || 0)}%
+                                        <ShieldCheck className="w-4 h-4" />
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-500 text-sm">Status</span>
+                                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Active Seller</span>
+                                </div>
                             </div>
+                        </div>
 
-                            <div className="flex flex-wrap items-center gap-4 md:gap-6 mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-50">
-                                {/* Reliability Badge */}
-                                <div className="flex items-center gap-2 md:gap-3">
-                                    <div className="p-1.5 md:p-2 rounded-lg bg-gray-50 text-gray-400">
-                                        <ShieldCheck className="w-4 h-4 md:w-5 md:h-5" />
-                                    </div>
+                        {/* Store Policy / Custom Message from Config */}
+                        {config.allow_returns !== false && (
+                            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+                                <div className="flex items-start gap-3">
+                                    <Truck className="w-5 h-5 text-blue-600 mt-0.5" />
                                     <div>
-                                        <p className="text-[10px] md:text-xs text-gray-500 font-semibold uppercase tracking-wider">Reliability</p>
-                                        <p className="font-bold text-gray-900 flex items-center gap-1 text-sm md:text-base">
-                                            {(!vendor.fulfillment_rate || Number(vendor.fulfillment_rate) === 0) ? (
-                                                <span className="text-blue-600">New Seller</span>
-                                            ) : (
-                                                <>
-                                                    {vendor.fulfillment_rate}%
-                                                    <span className="text-green-500 text-xs font-normal hidden sm:inline">Highly Rated</span>
-                                                </>
-                                            )}
+                                        <h4 className="font-bold text-blue-900 text-sm mb-1">Shipping & Returns</h4>
+                                        <p className="text-blue-700 text-xs leading-relaxed">
+                                            Orders from this store are processed directly by the vendor. Delivery times may vary.
                                         </p>
                                     </div>
                                 </div>
-
-                                {/* Divider */}
-                                <div className="w-px h-6 md:h-8 bg-gray-100" />
-
-                                {/* Status Badge */}
-                                <div className="flex items-center gap-2 md:gap-3">
-                                    <div className="p-1.5 md:p-2 rounded-lg bg-green-50 text-green-600">
-                                        <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] md:text-xs text-gray-500 font-semibold uppercase tracking-wider">Status</p>
-                                        <p className="font-bold text-gray-900 text-sm md:text-base">Active Store</p>
-                                    </div>
-                                </div>
                             </div>
+                        )}
+                    </aside>
+
+                    {/* Products Grid */}
+                    <div className="lg:col-span-3">
+                        {/* Custom Tab Bar */}
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-gray-900">Latest Products</h2>
+                            {/* Use custom color for decoration */}
+                            <div className="h-1 w-20 rounded-full bg-[var(--store-primary)]" />
                         </div>
+
+                        {/* The Grid - Filtered by Vendor Slug */}
+                        <ProductGrid
+                            vendorSlug={slug}
+                            initialFeatured={false} // Show all
+                        />
                     </div>
-
-                    {/* Shipping & Policy (Compact) */}
-                    {config.allow_returns !== false && (
-                        <div className="min-w-[85vw] md:min-w-0 flex-shrink-0 rounded-2xl p-6 md:p-8 border border-gray-100 relative overflow-hidden flex flex-col justify-center bg-gray-50/50 group hover:bg-[var(--store-primary-faint)] transition-colors duration-500 snap-start"
-                        /* Note: Removed inline style for pattern to use class based approach where possible or keep minimal */
-                        >
-                            {/* Subtle Pattern Overlay */}
-                            <div className="absolute inset-0 opacity-[0.03] bg-[image:radial-gradient(currentColor_1px,transparent_1px)] bg-[length:16px_16px] text-[var(--store-primary)]"></div>
-
-                            <div className="relative z-10 h-full flex flex-col justify-center">
-                                <div className="flex items-center gap-3 mb-2 md:mb-4">
-                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white flex items-center justify-center shadow-sm text-[var(--store-primary)] group-hover:scale-110 transition-transform duration-300">
-                                        <Truck className="w-5 h-5 md:w-6 md:h-6" />
-                                    </div>
-                                    <h4 className="font-bold text-gray-900 text-base md:text-lg">Shipping & Returns</h4>
-                                </div>
-
-                                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                    Orders are processed directly by <span className="font-semibold text-gray-900">{vendor.business_name}</span>.
-                                </p>
-
-                                <div className="mt-auto pt-4 border-t border-gray-200/50">
-                                    <span className="text-xs font-medium text-gray-500 bg-white/60 px-2 py-1 rounded-md inline-block">
-                                        Standard delivery rates apply
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Products Grid - Full Width */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                        <h2 className="text-2xl font-bold text-gray-900">Latest Products</h2>
-                        {/* Optional: Add sort/filter toggle here if needed later */}
-                    </div>
-
-                    <ProductGrid
-                        vendorSlug={slug}
-                        initialFeatured={false}
-                    />
                 </div>
             </main>
         </div>

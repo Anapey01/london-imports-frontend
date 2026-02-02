@@ -3,52 +3,24 @@
  */
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { User, Lock, ArrowRight } from 'lucide-react';
-import { vendorsAPI } from '@/lib/api';
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/profile';
     const role = searchParams.get('role'); // 'vendor' | 'partner' | 'admin'
-    const vendorSlug = searchParams.get('vendor');
 
     const { login, isLoading } = useAuthStore();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // Simple state for vendor name - could fetch from API if needed, 
-    // but for now we trust the slug or show generic "Store" if fetching is too slow.
-    // Ideally, we'd fetch the public vendor profile here.
-    const [vendorName, setVendorName] = useState<string>('');
-
-    // Effect to fetch vendor name if slug exists
-    useEffect(() => {
-        if (vendorSlug) {
-            // Quick fetch or formatting
-            // If we want to be fast, just format the slug: 'test-vendor' -> 'Test Vendor'
-            // If we want accuracy, fetch. Let's fetch lightweight.
-            const fetchVendor = async () => {
-                try {
-                    const res = await vendorsAPI.getBySlug(vendorSlug);
-                    if (res.data) setVendorName(res.data.business_name);
-                } catch (e) {
-                    setVendorName(vendorSlug); // Fallback
-                }
-            };
-            fetchVendor();
-        }
-    }, [vendorSlug]);
-
-
     const getTitle = () => {
-        if (vendorName || vendorSlug) return `Sign in to ${vendorName || vendorSlug}`;
-
         switch (role) {
             case 'vendor': return 'Seller Portal';
             case 'partner': return 'Partner Portal';
@@ -75,10 +47,7 @@ function LoginForm() {
             <div className="text-center mb-10">
                 <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">{getTitle()}</h1>
                 <p className="text-gray-500 font-light text-sm">
-                    {vendorSlug
-                        ? 'Please sign in to continue your purchase'
-                        : (role ? `Sign in to manage your ${role} account` : 'Please sign in to your account')
-                    }
+                    {role ? `Sign in to manage your ${role} account` : 'Please sign in to your account'}
                 </p>
             </div>
 
@@ -146,10 +115,7 @@ function LoginForm() {
 
             <div className="mt-8 text-center text-sm font-light text-gray-500">
                 Don&apos;t have an account?{' '}
-                <Link
-                    href={vendorSlug ? `/register?vendor=${vendorSlug}&redirect=${redirect}` : "/register"}
-                    className="text-gray-900 font-medium hover:underline underline-offset-4"
-                >
+                <Link href="/register" className="text-gray-900 font-medium hover:underline underline-offset-4">
                     Create one
                 </Link>
             </div>
