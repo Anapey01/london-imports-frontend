@@ -69,7 +69,7 @@ export async function getCategories() {
         if (!res.ok) return [];
         const data = await res.json();
         return data.results || data;
-    } catch (e) {
+    } catch {
         return [];
     }
 }
