@@ -1,4 +1,4 @@
-zimport { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
