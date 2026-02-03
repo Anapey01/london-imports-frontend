@@ -10,6 +10,14 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import AdminSidebar from '@/components/dashboard/AdminSidebar';
 
+interface User {
+    role: string;
+    is_staff?: boolean;
+    is_superuser?: boolean;
+    first_name?: string;
+    username: string;
+}
+
 export default function AdminDashboardLayout({
     children,
 }: {
@@ -18,7 +26,7 @@ export default function AdminDashboardLayout({
     const { theme } = useTheme();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const isDark = theme === 'dark';
 
@@ -38,7 +46,7 @@ export default function AdminDashboardLayout({
                 }
 
                 setUser(userData);
-            } catch (error) {
+            } catch {
                 router.push('/admin/login');
             } finally {
                 setIsLoading(false);

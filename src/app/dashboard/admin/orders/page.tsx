@@ -62,7 +62,8 @@ export default function AdminOrdersPage() {
         try {
             await adminAPI.deleteOrder(id);
             setOrders(prev => prev.filter(o => o.id !== id));
-        } catch {
+        } catch (error) {
+            console.error('Delete failed:', error);
             alert('Failed to delete order');
         }
     };
