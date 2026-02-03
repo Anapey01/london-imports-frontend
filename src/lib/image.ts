@@ -46,3 +46,16 @@ export const getImageUrl = (path: string | null | undefined): string => {
 
     return path;
 };
+
+// Loader to bypass Vercel optimization and use Cloudinary's native transformation
+export const cloudinaryLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
+    if (!src.includes('res.cloudinary.com')) {
+        return src;
+    }
+    // Convert https://res.cloudinary.com/cloudname/image/upload/v1234/folder/img.jpg
+    // To: https://res.cloudinary.com/cloudname/image/upload/f_auto,q_auto,w_width/v1234/folder/img.jpg
+
+    // Simple insertion after /upload/
+    const params = [`f_auto`, `q_${quality || 'auto'}`, `w_${width}`];
+    return src.replace('/upload/', `/upload/${params.join(',')}/`);
+};
