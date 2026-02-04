@@ -6,6 +6,9 @@ import { ProductGridSkeleton } from '@/components/skeletons/HomeSkeletons';
 import { Product } from '../../types';
 import { Product as CartProduct } from '@/stores/cartStore';
 
+// ISR: Revalidate marketplace page every 24 hours (Vercel free tier limit)
+export const revalidate = 86400;
+
 export const metadata = {
     title: 'Marketplace | London\'s Imports',
     description: 'Shop ready-to-ship items from our trusted vendors.',

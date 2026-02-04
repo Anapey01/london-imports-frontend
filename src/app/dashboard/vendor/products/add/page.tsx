@@ -89,9 +89,13 @@ export default function AddProductPage() {
             router.push('/dashboard/vendor/products');
         } catch (error: unknown) {
             console.error('Failed to create product:', error);
-            const err = error as any; // Cast to access properties safely if needed, or use specific error type if available
+            interface ApiError {
+                response?: { data?: { detail?: string } };
+                message?: string;
+            }
+            const err = error as ApiError;
             const errorMessage = err.response?.data?.detail ||
-                JSON.stringify(err.response?.data) ||
+                (err.response?.data ? JSON.stringify(err.response.data) : null) ||
                 err.message ||
                 'Failed to create product.';
             alert(`Error: ${errorMessage}`);

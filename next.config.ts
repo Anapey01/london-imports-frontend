@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // CRITICAL: Disable Vercel Image Optimization to eliminate the 1,000/month quota
+    // Product images use Cloudinary (has its own optimizer)
+    // Local assets are already optimized WebP files
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
     remotePatterns: [

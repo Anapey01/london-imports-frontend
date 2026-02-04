@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+// Note: Inline styles are REQUIRED for Next.js ImageResponse API - CSS files are not supported
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
@@ -23,13 +25,13 @@ export default async function Image() {
     ];
 
     try {
-        const res = await fetch('https://london-imports-api.onrender.com/api/v1/products/?is_featured=true&limit=2', { next: { revalidate: 3600 } });
+        const res = await fetch('https://london-imports-api.onrender.com/api/v1/products/?is_featured=true&limit=2', { next: { revalidate: 86400 } });
         if (res.ok) {
             const data = await res.json();
             if (data.results && data.results.length > 0) {
                 // Extract images. Ideally map to absolute URLs
                 // We'll trust the serializer update we just did!
-                const fetchedImages = data.results.map((p: any) => p.image).filter(Boolean);
+                const fetchedImages = data.results.map((p: { image?: string }) => p.image).filter(Boolean);
                 if (fetchedImages.length > 0) products.splice(0, fetchedImages.length, ...fetchedImages);
             }
         }
@@ -60,7 +62,7 @@ export default async function Image() {
                     <h1 style={{ fontSize: '56px', fontWeight: 'bold', color: '#1a1a1a', margin: 0, lineHeight: 1.2, display: 'flex', flexDirection: 'column' }}>
                         <span>Mini Importation Ghana |</span>
                         <span>Ship from China to Accra |</span>
-                        <span style={{ color: '#7c3aed' }}>London's Imports</span>
+                        <span style={{ color: '#7c3aed' }}>London&apos;s Imports</span>
                     </h1>
 
                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '40px' }}>
@@ -79,7 +81,7 @@ export default async function Image() {
                 <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '45%', justifyContent: 'center' }}>
                     {products.map((img, i) => (
                         <div key={i} style={{ display: 'flex', width: '220px', height: '380px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
-                            <img src={img} width="220" height="380" style={{ objectFit: 'cover' }} />
+                            <img src={img} alt="Featured product" width="220" height="380" style={{ objectFit: 'cover' }} />
                         </div>
                     )).slice(0, 2)}
                 </div>

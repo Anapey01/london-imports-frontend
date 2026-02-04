@@ -3,8 +3,8 @@ import ProductDetailClient from './ProductDetailClient';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
 
-// ISR: Revalidate product pages every hour
-export const revalidate = 3600;
+// ISR: Revalidate product pages every 24 hours (to stay within Vercel 1,000 writes/month limit)
+export const revalidate = 86400;
 
 // Pre-render top 50 products at build time (Performance Optimization)
 // The rest will be generated on-demand (ISR) when first visited
