@@ -39,7 +39,14 @@ interface Product {
     video_url?: string;
     vendor?: { business_name: string };
     preorder_status?: string;
-    variants?: { id: string; name: string; price: number; stock_quantity: number }[];
+    variants?: Variant[];
+}
+
+interface Variant {
+    id: string;
+    name: string;
+    price: number;
+    stock_quantity: number;
 }
 
 interface ProductDetailClientProps {
@@ -53,7 +60,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [isAdding, setIsAdding] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
-    const [selectedVariant, setSelectedVariant] = useState<Product['variants'][0] | null>(null);
+    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
 
     // Reset selection when product changes
     useEffect(() => {
