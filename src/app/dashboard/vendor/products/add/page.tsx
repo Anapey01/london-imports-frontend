@@ -7,12 +7,14 @@ import { productsAPI, vendorsAPI } from '@/lib/api';
 import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
 import { Category } from '../../../../../types';
 import Link from 'next/link';
+import { compressImage } from '@/lib/imageUtils';
 
 
 export default function AddProductPage() {
     const { theme } = useTheme();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [compressionStatus, setCompressionStatus] = useState<string>(''); // To show user what's happening
     const [categories, setCategories] = useState<Category[]>([]);
 
     const [formData, setFormData] = useState({
@@ -55,6 +57,7 @@ export default function AddProductPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setCompressionStatus('Compressing images...');
 
         try {
             const data = new FormData();
@@ -76,18 +79,30 @@ export default function AddProductPage() {
             }
 
             data.append('is_active', 'true'); // Explicitly force Active status
+
+            // Compress Main Image
             if (formData.image) {
-                data.append('image', formData.image);
+                const compressedMain = await compressImage(formData.image);
+                data.append('image', compressedMain);
             }
 
-            // Append multiple images
-            formData.images.forEach((file) => {
-                data.append('uploaded_images', file);
-            });
+            // Compress Gallery Images
+            if (formData.images.length > 0) {
+                // Process in parallel
+                const compressedGallery = await Promise.all(
+                    formData.images.map(file => compressImage(file))
+                );
 
+                compressedGallery.forEach((file) => {
+                    data.append('uploaded_images', file);
+                });
+            }
+
+            setCompressionStatus('Uploading...');
             await vendorsAPI.createProduct(data);
             router.push('/dashboard/vendor/products');
         } catch (error: unknown) {
+            setCompressionStatus('');
             console.error('Failed to create product:', error);
             interface ApiError {
                 response?: { data?: { detail?: string } };
@@ -376,7 +391,7 @@ export default function AddProductPage() {
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Creating...
+                                {compressionStatus || 'Creating...'}
                             </>
                         ) : (
                             <>

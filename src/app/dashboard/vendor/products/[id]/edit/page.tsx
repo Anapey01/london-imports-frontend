@@ -9,6 +9,7 @@ import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
 import { Category, Product, ProductImage } from '../../../../../../types';
 import { getImageUrl } from '@/lib/image';
 import Image from 'next/image';
+import { compressImage } from '@/lib/imageUtils';
 
 export default function EditProductPage() {
     const { theme } = useTheme();
@@ -17,6 +18,7 @@ export default function EditProductPage() {
     const productId = params?.id as string;
 
     const [loading, setLoading] = useState(false);
+    const [compressionStatus, setCompressionStatus] = useState<string>('');
     const [fetching, setFetching] = useState(true);
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -103,6 +105,7 @@ export default function EditProductPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setCompressionStatus('Compressing images...');
 
         try {
             const data = new FormData();
@@ -125,18 +128,28 @@ export default function EditProductPage() {
 
             // Only append main image if changed
             if (formData.image) {
-                data.append('image', formData.image);
+                const compressedMain = await compressImage(formData.image);
+                data.append('image', compressedMain);
             }
 
-            // Append multiple images
-            formData.images.forEach((file) => {
-                data.append('uploaded_images', file);
-            });
+            // Compress Gallery Images
+            if (formData.images.length > 0) {
+                // Process in parallel
+                const compressedGallery = await Promise.all(
+                    formData.images.map(file => compressImage(file))
+                );
 
+                compressedGallery.forEach((file) => {
+                    data.append('uploaded_images', file);
+                });
+            }
+
+            setCompressionStatus('Updating...');
             await vendorsAPI.updateProduct(productId, data);
             router.push('/dashboard/vendor/products');
             router.refresh();
         } catch (error: unknown) {
+            setCompressionStatus('');
             console.error('Failed to update product:', error);
             const err = error as { response?: { data?: unknown }; message?: string };
             if (err.response && err.response.data) {
@@ -461,7 +474,7 @@ export default function EditProductPage() {
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Updating...
+                                {compressionStatus || 'Updating...'}
                             </>
                         ) : (
                             <>
