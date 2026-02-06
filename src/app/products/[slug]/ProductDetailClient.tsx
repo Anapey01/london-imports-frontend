@@ -39,6 +39,7 @@ interface Product {
     video_url?: string;
     vendor?: { business_name: string };
     preorder_status?: string;
+    variants?: { id: string; name: string; price: number; stock_quantity: number }[];
 }
 
 interface ProductDetailClientProps {
@@ -52,11 +53,13 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [isAdding, setIsAdding] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
+    const [selectedVariant, setSelectedVariant] = useState<Product['variants'][0] | null>(null);
 
     // Reset selection when product changes
     useEffect(() => {
         setSelectedSize('');
         setSelectedColor('');
+        setSelectedVariant(null);
     }, [initialProduct]);
 
     // CSR State
@@ -134,18 +137,24 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const handleAddToCart = async () => {
         // Validation for variants
-        if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
+        // Validation for variants
+        if (product.variants && product.variants.length > 0 && !selectedVariant) {
+            alert('Please select an option');
+            return;
+        }
+        if ((!product.variants || product.variants.length === 0) && product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
             alert('Please select a size');
             return;
         }
-        if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
+        if ((!product.variants || product.variants.length === 0) && product.available_colors && product.available_colors.length > 0 && !selectedColor) {
             alert('Please select a color');
             return;
         }
 
         setIsAdding(true);
         try {
-            await addToCart(product, quantity, selectedSize, selectedColor);
+            // @ts-ignore - Update CartStore to accept variant
+            await addToCart(product, quantity, selectedSize || selectedVariant?.name, selectedColor, selectedVariant);
             router.push('/cart');
         } catch (e) {
             console.error(e);
@@ -304,27 +313,62 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* Price - Always Visible */}
                         <div className="mb-6 relative">
                             <span className="text-3xl lg:text-4xl font-bold text-gray-900">
-                                GHS {product.price?.toLocaleString()}
+                                GHS {selectedVariant
+                                    ? selectedVariant.price.toLocaleString()
+                                    : (product.variants && product.variants.length > 0
+                                        ? `From ${Math.min(...product.variants.map(v => v.price)).toLocaleString()}`
+                                        : product.price?.toLocaleString())}
                             </span>
                         </div>
 
                         {/* Variant Selectors: Premium Dropdowns */}
                         <div className="space-y-6 mb-8">
-                            {product.available_colors && product.available_colors.length > 0 && (
+                            {/* Advanced Variants (Price differentiation) */}
+                            {product.variants && product.variants.length > 0 && (
+                                <div className="relative w-full sm:max-w-xs">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        Select Option
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {product.variants.map((v) => (
+                                            <button
+                                                key={v.id}
+                                                onClick={() => setSelectedVariant(v)}
+                                                className={`px-4 py-3 text-sm font-medium rounded-xl border transition-all text-left
+                                                    ${selectedVariant?.id === v.id
+                                                        ? 'border-pink-600 bg-pink-50 text-pink-700 ring-1 ring-pink-600'
+                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700 hover:bg-gray-50'
+                                                    }
+                                                `}
+                                            >
+                                                <div className="flex justify-between items-center">
+                                                    <span>{v.name}</span>
+                                                    <span className="text-xs opacity-80">GH₵{v.price}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Legacy Options (if no advanced variants) */}
+                            {(!product.variants || product.variants.length === 0) && product.available_colors && product.available_colors.length > 0 && (
                                 <VariantDropdown
                                     label="Color"
                                     options={product.available_colors}
                                     selected={selectedColor}
                                     onSelect={setSelectedColor}
+                                    onSelectVariant={() => { }}
                                 />
                             )}
 
-                            {product.available_sizes && product.available_sizes.length > 0 && (
+                            {(!product.variants || product.variants.length === 0) && product.available_sizes && product.available_sizes.length > 0 && (
                                 <VariantDropdown
                                     label="Size"
                                     options={product.available_sizes}
                                     selected={selectedSize}
                                     onSelect={setSelectedSize}
+                                    onSelectVariant={() => { }}
                                 />
                             )}
                         </div>
@@ -451,7 +495,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     );
 }
 
-function VariantDropdown({ label, options, selected, onSelect }: { label: string, options: string[], selected: string, onSelect: (val: string) => void }) {
+function VariantDropdown({ label, options, selected, onSelect, onSelectVariant }: { label: string, options: string[], selected: string, onSelect: (val: string) => void, onSelectVariant?: any }) {
     const [isOpen, setIsOpen] = useState(false);
     // Helper to clean accidental parentheses from user input (e.g. "( Green")
     const clean = (text: string) => text.replace(/[()]/g, '').trim();

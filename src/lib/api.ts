@@ -111,8 +111,8 @@ export const productsAPI = {
 
 export const ordersAPI = {
   cart: () => api.get('/orders/cart/'),
-  addToCart: (productId: string, quantity: number, selectedSize?: string, selectedColor?: string) =>
-    api.post('/orders/cart/', { product_id: productId, quantity, selected_size: selectedSize, selected_color: selectedColor }),
+  addToCart: (productId: string, quantity: number, selectedSize?: string, selectedColor?: string, variantId?: string) =>
+    api.post('/orders/cart/', { product_id: productId, quantity, selected_size: selectedSize, selected_color: selectedColor, variant_id: variantId }),
   removeFromCart: (itemId: string) =>
     api.delete('/orders/cart/', { params: { item_id: itemId } }),
   checkout: (data: unknown) => api.post('/orders/checkout/', data),

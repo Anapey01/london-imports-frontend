@@ -48,7 +48,7 @@ interface CartState {
     itemCount: number;
 
     fetchCart: () => Promise<void>;
-    addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string) => Promise<void>;
+    addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string, selectedVariant?: any) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     clearCart: () => void;
@@ -114,7 +114,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
         }
     },
 
-    addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string) => {
+    addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string, selectedVariant?: any) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         if (isAuthenticated) {
@@ -122,7 +122,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
             set({ isLoading: true });
             try {
                 // Pass variants to API
-                const response = await ordersAPI.addToCart(product.id, quantity, selectedSize, selectedColor);
+                // @ts-ignore - API needs update to accept variant_id
+                const response = await ordersAPI.addToCart(product.id, quantity, selectedSize || selectedVariant?.name, selectedColor, selectedVariant?.id);
                 const cart = response.data;
                 set({
                     cart,
@@ -135,10 +136,14 @@ export const useCartStore = create<CartState>()((set, get) => ({
             // Guest Side
             const currentGuest = get().guestItems;
 
+            // Determine effective size/variant name
+            const effectiveSize = selectedVariant ? selectedVariant.name : selectedSize;
+            const effectivePrice = selectedVariant ? parseFloat(selectedVariant.price) : product.price;
+
             // Check existence based on ID AND variants
             const existingIndex = currentGuest.findIndex(i =>
                 i.product.id === product.id &&
-                i.selected_size === selectedSize &&
+                i.selected_size === effectiveSize &&
                 i.selected_color === selectedColor
             );
 
@@ -157,14 +162,14 @@ export const useCartStore = create<CartState>()((set, get) => ({
                         name: product.name,
                         slug: product.slug,
                         image: product.image || '',
-                        price: product.price,
+                        price: effectivePrice, // Display price might vary
                         preorder_status: product.preorder_status || 'active',
                         delivery_window_text: product.delivery_window_text || ''
                     },
                     quantity,
-                    unit_price: product.price,
-                    total_price: product.price * quantity,
-                    selected_size: selectedSize,
+                    unit_price: effectivePrice,
+                    total_price: effectivePrice * quantity,
+                    selected_size: effectiveSize,
                     selected_color: selectedColor
                 });
             }
