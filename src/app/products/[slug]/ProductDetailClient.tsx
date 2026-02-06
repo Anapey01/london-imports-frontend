@@ -160,7 +160,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
         setIsAdding(true);
         try {
-            // @ts-ignore - Update CartStore to accept variant
             await addToCart(product, quantity, selectedSize || selectedVariant?.name, selectedColor, selectedVariant);
             router.push('/cart');
         } catch (e) {
@@ -365,7 +364,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     options={product.available_colors}
                                     selected={selectedColor}
                                     onSelect={setSelectedColor}
-                                    onSelectVariant={() => { }}
                                 />
                             )}
 
@@ -375,7 +373,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     options={product.available_sizes}
                                     selected={selectedSize}
                                     onSelect={setSelectedSize}
-                                    onSelectVariant={() => { }}
                                 />
                             )}
                         </div>
@@ -502,7 +499,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     );
 }
 
-function VariantDropdown({ label, options, selected, onSelect, onSelectVariant }: { label: string, options: string[], selected: string, onSelect: (val: string) => void, onSelectVariant?: any }) {
+function VariantDropdown({ label, options, selected, onSelect }: { label: string, options: string[], selected: string, onSelect: (val: string) => void }) {
     const [isOpen, setIsOpen] = useState(false);
     // Helper to clean accidental parentheses from user input (e.g. "( Green")
     const clean = (text: string) => text.replace(/[()]/g, '').trim();
