@@ -121,9 +121,15 @@ export const useCartStore = create<CartState>()((set, get) => ({
             // Server Side
             set({ isLoading: true });
             try {
+                // Combine variant and size if both exist, as backend only has selected_size field
+                let sizeParam = selectedSize || "";
+                if (selectedVariant) {
+                    sizeParam = selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name;
+                }
+
                 // Pass variants to API
                 // @ts-ignore - API needs update to accept variant_id
-                const response = await ordersAPI.addToCart(product.id, quantity, selectedSize || selectedVariant?.name, selectedColor, selectedVariant?.id);
+                const response = await ordersAPI.addToCart(product.id, quantity, sizeParam, selectedColor, selectedVariant?.id);
                 const cart = response.data;
                 set({
                     cart,
@@ -137,7 +143,10 @@ export const useCartStore = create<CartState>()((set, get) => ({
             const currentGuest = get().guestItems;
 
             // Determine effective size/variant name
-            const effectiveSize = selectedVariant ? selectedVariant.name : selectedSize;
+            let effectiveSize = selectedSize;
+            if (selectedVariant) {
+                effectiveSize = selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name;
+            }
             const effectivePrice = selectedVariant ? parseFloat(selectedVariant.price) : product.price;
 
             // Check existence based on ID AND variants

@@ -149,11 +149,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             alert('Please select an option');
             return;
         }
-        if ((!product.variants || product.variants.length === 0) && product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
+        if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
             alert('Please select a size');
             return;
         }
-        if ((!product.variants || product.variants.length === 0) && product.available_colors && product.available_colors.length > 0 && !selectedColor) {
+        if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
             alert('Please select a color');
             return;
         }
@@ -340,7 +340,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             )}
 
                             {/* Legacy Options (if no advanced variants) */}
-                            {(!product.variants || product.variants.length === 0) && product.available_colors && product.available_colors.length > 0 && (
+                            {product.available_colors && product.available_colors.length > 0 && (
                                 <VariantDropdown
                                     label="Color"
                                     options={product.available_colors}
@@ -349,7 +349,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 />
                             )}
 
-                            {(!product.variants || product.variants.length === 0) && product.available_sizes && product.available_sizes.length > 0 && (
+                            {product.available_sizes && product.available_sizes.length > 0 && (
                                 <VariantDropdown
                                     label="Size"
                                     options={product.available_sizes}
