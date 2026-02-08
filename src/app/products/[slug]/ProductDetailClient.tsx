@@ -331,30 +331,12 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         <div className="space-y-6 mb-8">
                             {/* Advanced Variants (Price differentiation) */}
                             {product.variants && product.variants.length > 0 && (
-                                <div className="relative w-full sm:max-w-xs">
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                                        Select Option
-                                    </label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {product.variants.map((v) => (
-                                            <button
-                                                key={v.id}
-                                                onClick={() => setSelectedVariant(v)}
-                                                className={`px-4 py-3 text-sm font-medium rounded-xl border transition-all text-left
-                                                    ${selectedVariant?.id === v.id
-                                                        ? 'border-pink-600 bg-pink-50 text-pink-700 ring-1 ring-pink-600'
-                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700 hover:bg-gray-50'
-                                                    }
-                                                `}
-                                            >
-                                                <div className="flex justify-between items-center">
-                                                    <span>{v.name}</span>
-                                                    <span className="text-xs opacity-80">GH₵{v.price}</span>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                <PriceVariantDropdown
+                                    label="Select Option"
+                                    variants={product.variants}
+                                    selected={selectedVariant}
+                                    onSelect={setSelectedVariant}
+                                />
                             )}
 
                             {/* Legacy Options (if no advanced variants) */}
@@ -543,6 +525,68 @@ function VariantDropdown({ label, options, selected, onSelect }: { label: string
                     </>
                 )}
             </div>
+        </div>
+    );
+}
+
+function PriceVariantDropdown({ label, variants, selected, onSelect }: { label: string, variants: Variant[], selected: Variant | null, onSelect: (val: Variant) => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="relative w-full sm:max-w-xs">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                {label}
+            </label>
+            <div className="relative">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all hover:border-gray-300 shadow-sm"
+                >
+                    <span className={`block truncate ${!selected ? 'text-gray-400' : 'text-gray-900 font-medium'}`}>
+                        {selected ? `${selected.name} - GH₵${selected.price.toLocaleString()}` : 'Select an option'}
+                    </span>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                        <svg className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                    </span>
+                </button>
+
+                {isOpen && (
+                    <div className="absolute z-50 mt-1 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100">
+                        {variants.map((variant) => (
+                            <button
+                                key={variant.id}
+                                onClick={() => {
+                                    onSelect(variant);
+                                    setIsOpen(false);
+                                }}
+                                className={`w-full text-left cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-pink-50 transition-colors
+                                    ${selected?.id === variant.id ? 'text-pink-900 bg-pink-50 font-medium' : 'text-gray-900'}
+                                `}
+                            >
+                                <div className="flex justify-between">
+                                    <span className="block truncate">{variant.name}</span>
+                                    <span className="block truncate text-gray-500">GH₵{variant.price.toLocaleString()}</span>
+                                </div>
+
+                                {selected?.id === variant.id && (
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-pink-600">
+                                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+            {/* Overlay to close when clicking outside */}
+            {isOpen && (
+                <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
+            )}
         </div>
     );
 }

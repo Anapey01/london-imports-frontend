@@ -43,10 +43,10 @@ const slideTemplates: Slide[] = [
         title: "Home & Living",
         subtitle: "Quality home products for your space",
         ctaText: "Shop home",
-        ctaLink: "/products?category=home",
+        ctaLink: "/products?category=kitchen-appliances",
         bgClass: "bg-[#795c3e]", // Darker brown for better contrast with white text
         textClass: "text-[#ffffff]",
-        categorySlug: "home",
+        categorySlug: "kitchen-appliances",
         heroImages: [
             "/assets/images/home-living-1.webp",
             "/assets/images/home-living-2.webp"
@@ -59,10 +59,10 @@ const slideTemplates: Slide[] = [
         title: "Fashion for less",
         subtitle: "Trendy dresses & shoes at amazing prices",
         ctaText: "See all deals",
-        ctaLink: "/products?category=fashion",
+        ctaLink: "/products?category=outfits",
         bgClass: "bg-[#c1c1c1]", // Exact match from image (193,193,193)
         textClass: "text-[#1f2937]", // Dark gray for legibility on light background
-        categorySlug: "fashion",
+        categorySlug: "outfits",
         heroImage: "/assets/images/fashion-for-less.webp", // Now 30KB instead of 668KB!
         blendMode: "mix-blend-normal",
         objectFit: "object-cover",
@@ -73,10 +73,10 @@ const slideTemplates: Slide[] = [
         title: "Tech Essentials",
         subtitle: "Phones, laptops & gadgets delivered to you",
         ctaText: "Shop electronics",
-        ctaLink: "/products?category=electronics",
+        ctaLink: "/products?category=mobile-phones-and-gadgets",
         bgClass: "bg-[#0f2b9e]", // Vibrant Blue
         textClass: "text-[#ffffff]",
-        categorySlug: "electronics",
+        categorySlug: "mobile-phones-and-gadgets",
         heroImages: [
             "/assets/images/tech-essentials.webp"
         ],
