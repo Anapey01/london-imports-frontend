@@ -10,7 +10,7 @@ interface StarRatingProps {
     initialRating?: number;
     readOnly?: boolean;
     onRate?: (rating: number) => void;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
 export default function StarRating({
@@ -31,6 +31,7 @@ export default function StarRating({
     };
 
     const sizeClasses = {
+        xs: 'w-3 h-3',
         sm: 'w-4 h-4',
         md: 'w-5 h-5',
         lg: 'w-6 h-6'
@@ -47,7 +48,7 @@ export default function StarRating({
                         <svg
                             className={`
                                 ${sizeClasses[size]} 
-                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100'}
+                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100 dark:text-gray-600 dark:fill-gray-800'}
                             `}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -82,7 +83,7 @@ export default function StarRating({
                         <svg
                             className={`
                                 ${sizeClasses[size]} 
-                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100'}
+                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100 dark:text-gray-600 dark:fill-gray-800'}
                                 drop-shadow-sm
                             `}
                             xmlns="http://www.w3.org/2000/svg"

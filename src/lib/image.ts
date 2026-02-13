@@ -47,15 +47,20 @@ export const getImageUrl = (path: string | null | undefined): string => {
     return path;
 };
 
-// Loader to bypass Vercel optimization and use Cloudinary's native transformation
 export const cloudinaryLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
-    if (!src.includes('res.cloudinary.com')) {
+    // If it's not a Cloudinary URL, return as is (Next.js will optimize if configured, or just serve)
+    if (!src.includes('cloudinary.com')) {
         return src;
     }
-    // Convert https://res.cloudinary.com/cloudname/image/upload/v1234/folder/img.jpg
-    // To: https://res.cloudinary.com/cloudname/image/upload/f_auto,q_auto,w_width/v1234/folder/img.jpg
 
-    // Simple insertion after /upload/
-    const params = [`f_auto`, `q_${quality || 'auto'}`, `w_${width}`];
-    return src.replace('/upload/', `/upload/${params.join(',')}/`);
+    // Default params
+    const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`];
+
+    // If src already has transformations (e.g. /image/upload/v123/...), inject new ones after /upload/
+    if (src.includes('/image/upload/')) {
+        const [base, rest] = src.split('/image/upload/');
+        return `${base}/image/upload/${params.join(',')}/${rest}`;
+    }
+
+    return src;
 };

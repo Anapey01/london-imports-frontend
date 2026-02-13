@@ -25,14 +25,11 @@ interface BlogPost {
     updated_at: string;
 }
 
-// ISR: Revalidate blog pages every 24 hours (Vercel free tier limit)
-export const revalidate = 86400;
-
 // Fetch blog post from API
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
         const res = await fetch(`https://london-imports-api.onrender.com/api/v1/blog/${slug}/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 3600 }
         });
         if (!res.ok) return null;
         return res.json();
@@ -53,7 +50,7 @@ export async function generateStaticParams() {
 
     try {
         const res = await fetch('https://london-imports-api.onrender.com/api/v1/blog/', {
-            next: { revalidate: 86400 }
+            next: { revalidate: 3600 }
         });
         if (res.ok) {
             const posts = await res.json();

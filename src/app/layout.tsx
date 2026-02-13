@@ -3,7 +3,7 @@
  * Includes Navbar, providers, and global styles
  */
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Jost } from "next/font/google";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
@@ -21,9 +21,10 @@ const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 // Google Analytics ID
 const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
-const inter = Inter({
+const jost = Jost({
   subsets: ["latin"],
   display: "swap", // Prevents invisible text during font loading (improves FCP)
+  variable: "--font-jost",
 });
 
 export const metadata: Metadata = {
@@ -247,7 +248,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://london-imports-api.onrender.com" />
       </head>
-      <body className={`${inter.className} bg-gray-50 min-h-screen`} suppressHydrationWarning>
+      <body className={`${jost.variable} font-sans bg-gray-50 min-h-screen`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
