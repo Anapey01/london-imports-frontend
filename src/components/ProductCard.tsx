@@ -75,66 +75,71 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-slate-700 flex flex-col h-full overflow-hidden group/card relative">
-            {/* Floating Action Buttons (Right Side) */}
-            <div className="absolute top-2 right-2 z-20 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-                {/* Wishlist Button */}
-                <button
-                    onClick={toggleWishlist}
-                    className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-400 hover:text-pink-500 shadow-md hover:shadow-lg transition-all"
-                    aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                >
-                    <Heart className={`w-4 h-4 ${isWishlisted ? "fill-pink-500 text-pink-500" : ""}`} />
-                </button>
 
-                {/* Quick Add / View Options */}
-                {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
-                    <Link
-                        href={`/products/${product.slug}`}
-                        className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-black dark:hover:text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center"
-                        aria-label="View options"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                    </Link>
-                ) : (
+            <div className="relative">
+                <Link href={`/products/${product.slug}`} className="block">
+                    {/* Image Section */}
+                    <div className="relative aspect-[3/4] p-4 bg-white dark:bg-slate-800 flex items-center justify-center transition-colors">
+                        {!imageError ? (
+                            <Image
+                                src={imageUrl}
+                                alt={`${product.name} - China Import to Ghana`}
+                                fill
+                                priority={priority}
+                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                                loader={cloudinaryLoader}
+                                className="object-contain hover:scale-105 transition-transform duration-300"
+                                onError={() => setImageError(true)}
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-slate-600">
+                                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                        )}
+                    </div>
+                </Link>
+
+                {/* Floating Action Buttons (Right Side) - Positioned over image */}
+                <div className="absolute bottom-2 right-2 z-20 flex flex-col gap-2 transition-opacity duration-300">
+                    {/* Wishlist Button */}
                     <button
-                        onClick={handleAddToCart}
-                        disabled={isAdding}
-                        className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
-                        aria-label="Add to cart"
+                        onClick={toggleWishlist}
+                        className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-400 hover:text-pink-500 shadow-md hover:shadow-lg transition-all"
+                        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
+                        <Heart className={`w-4 h-4 ${isWishlisted ? "fill-pink-500 text-pink-500" : ""}`} />
                     </button>
-                )}
+
+                    {/* Quick Add / View Options */}
+                    {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
+                        <Link
+                            href={`/products/${product.slug}`}
+                            className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-black dark:hover:text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                            aria-label="View options"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isAdding}
+                            className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                            aria-label="Add to cart"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
             </div>
 
             <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col">
-                {/* Image Section */}
-                <div className="relative aspect-[3/4] p-4 bg-white dark:bg-slate-800 flex items-center justify-center transition-colors">
-                    {!imageError ? (
-                        <Image
-                            src={imageUrl}
-                            alt={`${product.name} - China Import to Ghana`}
-                            fill
-                            priority={priority}
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                            loader={cloudinaryLoader}
-                            className="object-contain hover:scale-105 transition-transform duration-300"
-                            onError={() => setImageError(true)}
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-slate-600">
-                            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                        </div>
-                    )}
-                </div>
-
                 {/* Details Section */}
                 <div className="px-3 pb-4 pt-1 flex flex-col gap-1.5 flex-1 bg-white dark:bg-slate-800 transition-colors text-center">
                     {/* Star Rating */}
