@@ -13,6 +13,7 @@ import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
 import { ChevronDown } from 'lucide-react';
+import RelatedProducts from '@/components/RelatedProducts';
 
 interface ProductImage {
     id: string;
@@ -32,7 +33,7 @@ interface Product {
     reservations_count: number;
     available_colors?: string[];
     available_sizes?: string[];
-    category?: { name: string };
+    category?: { name: string; slug?: string };
     origin_country?: string;
     delivery_window_text?: string;
     video?: string;
@@ -439,6 +440,12 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     </div>
                 </div>
             </main>
+
+            {/* Related Products Section */}
+            <RelatedProducts
+                currentSlug={product.slug}
+                categorySlug={product.category?.slug}
+            />
 
             {/* Sticky Mobile Cart - Renders only when main CTA is scrolled past */}
             <StickyMobileCart
