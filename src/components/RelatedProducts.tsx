@@ -70,7 +70,7 @@ export default function RelatedProducts({ currentSlug, categorySlug }: RelatedPr
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 animate-fade-in-up delay-200">
                         {products.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
