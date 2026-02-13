@@ -8,15 +8,20 @@ export default function RecentlyViewed() {
     const [products, setProducts] = useState<Product[]>([]);
 
     useEffect(() => {
+        // Load from localStorage only on client mount
         try {
             const stored = localStorage.getItem('recently_viewed');
             if (stored) {
-                setProducts(JSON.parse(stored));
+                // Determine if state actually needs updating to avoid cycles if React is strict
+                const parsed = JSON.parse(stored);
+                if (parsed.length > 0) {
+                    setProducts(parsed);
+                }
             }
         } catch (e) {
             console.error("Failed to load recently viewed", e);
         }
-    }, []);
+    }, []); // Empty dependency array means this runs once on mount
 
     if (products.length === 0) return null;
 
