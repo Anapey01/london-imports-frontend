@@ -74,21 +74,47 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     const imageUrl = getImageUrl(product.image);
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-slate-700 flex flex-col h-full overflow-hidden group/card">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-slate-700 flex flex-col h-full overflow-hidden group/card relative">
+            {/* Floating Action Buttons (Right Side) */}
+            <div className="absolute top-2 right-2 z-20 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
+                {/* Wishlist Button */}
+                <button
+                    onClick={toggleWishlist}
+                    className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-400 hover:text-pink-500 shadow-md hover:shadow-lg transition-all"
+                    aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                    <Heart className={`w-4 h-4 ${isWishlisted ? "fill-pink-500 text-pink-500" : ""}`} />
+                </button>
+
+                {/* Quick Add / View Options */}
+                {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
+                    <Link
+                        href={`/products/${product.slug}`}
+                        className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-black dark:hover:text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                        aria-label="View options"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </Link>
+                ) : (
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={isAdding}
+                        className="p-2 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                        aria-label="Add to cart"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </button>
+                )}
+            </div>
+
             <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col">
                 {/* Image Section */}
-                <div className="relative aspect-square p-4 bg-white dark:bg-slate-800 flex items-center justify-center transition-colors">
-                    {product.preorder_status === 'READY_TO_SHIP' ? (
-                        <div className="absolute top-2 right-2 bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200 z-10 shadow-sm flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                            Ready to Ship
-                        </div>
-                    ) : (product.reservations_count || 0) > 0 && (
-                        <div className="absolute top-2 right-2 bg-yellow-50 dark:bg-yellow-900/30 text-orange-800 dark:text-yellow-200 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100 dark:border-yellow-900/50 z-10">
-                            {product.reservations_count || 0} reserved
-                        </div>
-                    )}
-
+                <div className="relative aspect-[3/4] p-4 bg-white dark:bg-slate-800 flex items-center justify-center transition-colors">
                     {!imageError ? (
                         <Image
                             src={imageUrl}
@@ -106,72 +132,27 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                             </svg>
                         </div>
                     )}
-
-                    {/* Wishlist Button */}
-                    <button
-                        onClick={toggleWishlist}
-                        className="absolute top-2 left-2 z-20 p-1.5 rounded-full bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-600 text-gray-400 hover:text-pink-500 transition-all shadow-sm group"
-                        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                        <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? "fill-pink-500 text-pink-500" : "group-hover:text-pink-500"}`} />
-                    </button>
                 </div>
 
                 {/* Details Section */}
-                <div className="p-3 flex flex-col gap-1 flex-1 bg-white dark:bg-slate-800 transition-colors">
-                    <h3 className="text-sm font-normal text-gray-700 dark:text-slate-200 line-clamp-2 min-h-[40px] leading-tight">
+                <div className="px-3 pb-4 pt-1 flex flex-col gap-1.5 flex-1 bg-white dark:bg-slate-800 transition-colors text-center">
+                    {/* Star Rating */}
+                    <div className="flex items-center justify-center gap-1">
+                        <StarRating size="xs" />
+                        <span className="text-[10px] text-gray-400 dark:text-slate-500">({Math.floor(Math.random() * 50) + 1})</span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-sm font-medium text-gray-800 dark:text-slate-200 line-clamp-1 leading-tight">
                         {product.name}
                     </h3>
 
-                    <div className="mt-1">
-                        {/* Price - Always Visible for Guests */}
-                        <span className="text-black dark:text-white font-bold text-lg">
-                            GH₵ {Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
-                    </div>
-
-                    <div className="text-xs text-yellow-500 flex items-center gap-1 mb-2">
-                        <StarRating size="sm" />
-                        <span className="text-gray-500 dark:text-slate-400">({Math.floor(Math.random() * 50) + 1})</span>
+                    {/* Price */}
+                    <div className="text-black dark:text-white font-bold text-base">
+                        GH₵ {Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                 </div>
             </Link>
-
-            {/* Add to cart icon button */}
-            <div className="px-3 pb-3 flex justify-center bg-white dark:bg-slate-800 transition-colors">
-                {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
-                    <Link
-                        href={`/products/${product.slug}`}
-                        className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-600 dark:text-slate-400 hover:text-black dark:hover:text-white transition-colors"
-                        aria-label="Select options"
-                    >
-                        <div className="relative">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </div>
-                        <span className="text-[10px] whitespace-nowrap">View Options</span>
-                    </Link>
-                ) : (
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={isAdding}
-                        className="flex flex-col items-center gap-0.5 px-4 py-2 text-gray-600 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors"
-                        aria-label="Add to cart"
-                    >
-                        <div className="relative">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-700 dark:bg-slate-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                                +
-                            </span>
-                        </div>
-                        <span className="text-[10px] whitespace-nowrap">Add to cart</span>
-                    </button>
-                )}
-            </div>
         </div>
     );
 }

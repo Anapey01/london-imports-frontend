@@ -10,7 +10,7 @@ interface StarRatingProps {
     initialRating?: number;
     readOnly?: boolean;
     onRate?: (rating: number) => void;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
 export default function StarRating({
@@ -31,6 +31,7 @@ export default function StarRating({
     };
 
     const sizeClasses = {
+        xs: 'w-3 h-3',
         sm: 'w-4 h-4',
         md: 'w-5 h-5',
         lg: 'w-6 h-6'
