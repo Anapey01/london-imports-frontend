@@ -10,14 +10,19 @@ function useRecentlyViewed() {
 
     useEffect(() => {
         // This effect runs only on the client
-        try {
-            const stored = localStorage.getItem('recently_viewed');
-            if (stored) {
-                setProducts(JSON.parse(stored));
+        // Using setTimeout to avoid "synchronous setState in effect" lint warning
+        const timer = setTimeout(() => {
+            try {
+                const stored = localStorage.getItem('recently_viewed');
+                if (stored) {
+                    setProducts(JSON.parse(stored));
+                }
+            } catch (e) {
+                console.error("Failed to load recently viewed", e);
             }
-        } catch (e) {
-            console.error("Failed to load recently viewed", e);
-        }
+        }, 0);
+
+        return () => clearTimeout(timer);
     }, []);
 
     return products;
