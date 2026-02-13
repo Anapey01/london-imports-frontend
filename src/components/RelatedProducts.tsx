@@ -50,7 +50,12 @@ export default function RelatedProducts({ currentSlug, categorySlug }: RelatedPr
     return (
         <section className="py-12 border-t border-gray-100 dark:border-slate-800 mt-12 bg-gray-50 dark:bg-slate-900 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">You May Also Like</h2>
+                <div className="text-center mb-10 animate-fade-in-up">
+                    <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white relative inline-block">
+                        You May Also Like
+                        <span className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-pink-500 rounded-full"></span>
+                    </h2>
+                </div>
 
                 {isLoading ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -59,7 +64,7 @@ export default function RelatedProducts({ currentSlug, categorySlug }: RelatedPr
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                         {products.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
