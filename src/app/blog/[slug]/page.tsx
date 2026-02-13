@@ -29,7 +29,7 @@ interface BlogPost {
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
         const res = await fetch(`https://london-imports-api.onrender.com/api/v1/blog/${slug}/`, {
-            next: { revalidate: 60 }
+            next: { revalidate: 3600 }
         });
         if (!res.ok) return null;
         return res.json();

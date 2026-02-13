@@ -17,7 +17,7 @@ interface ProductCardProps {
 }
 
 import Image from 'next/image';
-import { getImageUrl, cloudinaryLoader } from '@/lib/image';
+import { getImageUrl } from '@/lib/image';
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
     const [isAdding, setIsAdding] = useState(false);
@@ -87,7 +87,6 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                                 fill
                                 priority={priority}
                                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                                loader={cloudinaryLoader}
                                 className="object-contain hover:scale-105 transition-transform duration-300"
                                 onError={() => setImageError(true)}
                             />

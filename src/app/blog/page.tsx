@@ -34,7 +34,7 @@ interface BlogPost {
 async function getBlogPosts(): Promise<BlogPost[]> {
     try {
         const res = await fetch('https://london-imports-api.onrender.com/api/v1/blog/', {
-            next: { revalidate: 60 } // Revalidate every minute
+            next: { revalidate: 3600 } // Revalidate every hour to save Vercel limits
         });
         if (!res.ok) return [];
         const data = await res.json();
