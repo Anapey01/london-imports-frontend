@@ -70,9 +70,11 @@ export default function RelatedProducts({ currentSlug, categorySlug }: RelatedPr
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 animate-fade-in-up delay-200">
+                    <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 gap-4 sm:gap-6 animate-fade-in-up delay-200 pb-4 md:pb-0 scrollbar-hide">
                         {products.map(product => (
-                            <ProductCard key={product.id} product={product} />
+                            <div key={product.id} className="flex-none w-[45%] md:w-auto snap-center">
+                                <ProductCard product={product} />
+                            </div>
                         ))}
                     </div>
                 )}

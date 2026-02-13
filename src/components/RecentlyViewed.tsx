@@ -43,9 +43,11 @@ export default function RecentlyViewed() {
                     {/* Clear history button could go here */}
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+                <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 pb-4 md:pb-0 scrollbar-hide">
                     {products.slice(0, 5).map(product => (
-                        <ProductCard key={product.id} product={product} />
+                        <div key={product.id} className="flex-none w-[45%] md:w-auto snap-center">
+                            <ProductCard product={product} />
+                        </div>
                     ))}
                 </div>
             </div>
