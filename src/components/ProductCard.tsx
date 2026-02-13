@@ -145,16 +145,16 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     {/* Star Rating */}
                     <div className="flex items-center justify-center gap-1">
                         <StarRating size="xs" />
-                        <span className="text-[10px] text-gray-400 dark:text-slate-500">({Math.floor(Math.random() * 50) + 1})</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400">({Math.floor(Math.random() * 50) + 1})</span>
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-sm font-medium text-gray-800 dark:text-slate-200 line-clamp-1 leading-tight">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight">
                         {product.name}
                     </h3>
 
                     {/* Price */}
-                    <div className="text-black dark:text-white font-bold text-base">
+                    <div className="text-gray-900 dark:text-white font-bold text-base mt-1">
                         GH₵ {Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                 </div>

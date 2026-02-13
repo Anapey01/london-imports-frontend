@@ -48,7 +48,7 @@ export default function StarRating({
                         <svg
                             className={`
                                 ${sizeClasses[size]} 
-                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100'}
+                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100 dark:text-gray-600 dark:fill-gray-800'}
                             `}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ export default function StarRating({
                         <svg
                             className={`
                                 ${sizeClasses[size]} 
-                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100'}
+                                ${isFilled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-100 dark:text-gray-600 dark:fill-gray-800'}
                                 drop-shadow-sm
                             `}
                             xmlns="http://www.w3.org/2000/svg"
