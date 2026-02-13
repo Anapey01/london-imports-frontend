@@ -27,12 +27,18 @@ export default function RelatedProducts({ currentSlug, categorySlug }: RelatedPr
                 // Fetch products by category
                 const response = await productsAPI.list({ category: categorySlug });
 
-                // Filter out current product and limit to 4
-                // Note: API returns paginated response { count, next, previous, results }
+                // Filter out current product
                 const results = response.data.results || [];
-                const related = results
-                    .filter((p: Product) => p.slug !== currentSlug)
-                    .slice(0, 4);
+                let related = results.filter((p: Product) => p.slug !== currentSlug);
+
+                // Shuffle array (Fisher-Yates)
+                for (let i = related.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [related[i], related[j]] = [related[j], related[i]];
+                }
+
+                // Limit to 4
+                related = related.slice(0, 4);
 
                 setProducts(related);
             } catch (error) {

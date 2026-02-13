@@ -14,6 +14,7 @@ import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
 import { ChevronDown } from 'lucide-react';
 import RelatedProducts from '@/components/RelatedProducts';
+import RecentlyViewed from '@/components/RecentlyViewed';
 
 interface ProductImage {
     id: string;
@@ -100,6 +101,25 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     useEffect(() => {
         if (product) {
             setDisplayedImage(getImageUrl(product.image));
+
+            // ADDED: Save to Recently Viewed
+            try {
+                const stored = localStorage.getItem('recently_viewed');
+                let history: Product[] = stored ? JSON.parse(stored) : [];
+
+                // Remove if duplicate (so we can move it to top)
+                history = history.filter(p => p.slug !== product.slug);
+
+                // Add current to top
+                history.unshift(product);
+
+                // Limit to 10
+                if (history.length > 10) history.pop();
+
+                localStorage.setItem('recently_viewed', JSON.stringify(history));
+            } catch (e) {
+                console.error("Failed to save recently viewed", e);
+            }
         }
     }, [product]);
 
@@ -446,6 +466,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 currentSlug={product.slug}
                 categorySlug={product.category?.slug}
             />
+
+            {/* Recently Viewed Section */}
+            <RecentlyViewed />
 
             {/* Sticky Mobile Cart - Renders only when main CTA is scrolled past */}
             <StickyMobileCart
