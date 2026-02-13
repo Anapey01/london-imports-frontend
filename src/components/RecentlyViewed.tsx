@@ -1,27 +1,24 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import ProductCard from '@/components/ProductCard';
-import { Product } from '@/stores/cartStore';
-
-export default function RecentlyViewed() {
+// Custom hook for safe localStorage access
+function useRecentlyViewed() {
     const [products, setProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        // Load from localStorage only on client mount
+        // This effect runs only on the client
         try {
             const stored = localStorage.getItem('recently_viewed');
             if (stored) {
-                // Determine if state actually needs updating to avoid cycles if React is strict
-                const parsed = JSON.parse(stored);
-                if (parsed.length > 0) {
-                    setProducts(parsed);
-                }
+                setProducts(JSON.parse(stored));
             }
         } catch (e) {
             console.error("Failed to load recently viewed", e);
         }
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
+
+    return products;
+}
+
+export default function RecentlyViewed() {
+    const products = useRecentlyViewed();
 
     if (products.length === 0) return null;
 
