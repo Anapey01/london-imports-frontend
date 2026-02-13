@@ -1,3 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import ProductCard from '@/components/ProductCard';
+import { Product } from '@/stores/cartStore';
+
 // Custom hook for safe localStorage access
 function useRecentlyViewed() {
     const [products, setProducts] = useState<Product[]>([]);
