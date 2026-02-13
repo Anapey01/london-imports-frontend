@@ -1,5 +1,9 @@
 @import "tailwindcss";
-/* Dark mode variant managed by tailwind.config.ts */
+
+/* Tailwind v4: Override default media-query dark mode with selector-based.
+   This ensures dark: classes ONLY activate when data-theme="dark" is set,
+   NOT based on the phone's system prefers-color-scheme setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* ===== DARK MODE VARIABLES ===== */
 :root {
