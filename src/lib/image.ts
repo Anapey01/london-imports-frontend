@@ -46,3 +46,21 @@ export const getImageUrl = (path: string | null | undefined): string => {
 
     return path;
 };
+
+export const cloudinaryLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
+    // If it's not a Cloudinary URL, return as is (Next.js will optimize if configured, or just serve)
+    if (!src.includes('cloudinary.com')) {
+        return src;
+    }
+
+    // Default params
+    const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`];
+
+    // If src already has transformations (e.g. /image/upload/v123/...), inject new ones after /upload/
+    if (src.includes('/image/upload/')) {
+        const [base, rest] = src.split('/image/upload/');
+        return `${base}/image/upload/${params.join(',')}/${rest}`;
+    }
+
+    return src;
+};
