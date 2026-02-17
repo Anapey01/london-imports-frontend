@@ -9,7 +9,7 @@ export async function getProducts(params: Record<string, string> = {}) {
     try {
         const queryString = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/products/?${queryString}`;
-        console.log(`[SSR] Fetching products list: ${url}`);
+
 
         const res = await fetch(url, {
             next: { revalidate: 3600 }, // Revalidate every hour to save Vercel limits
@@ -77,7 +77,7 @@ export async function getCategories() {
 export async function getProduct(slug: string) {
     const url = `${API_BASE_URL}/products/${slug}/`;
     try {
-        console.log(`[SSR] Fetching product: ${url}`);
+
         const res = await fetch(url, {
             next: { revalidate: 3600 }
         });
@@ -102,7 +102,7 @@ export async function getProductMetadata(slug: string) {
     // 2. Fallback: Fetch from public preview endpoint
     const url = `${API_BASE_URL}/products/preview/?slug=${slug}`;
     try {
-        console.log(`[SSR] Fetching preview fallback for: ${url}`);
+
         const res = await fetch(url, { next: { revalidate: 3600 } });
         if (!res.ok) return null;
 
@@ -129,7 +129,7 @@ export async function getProductMetadata(slug: string) {
 export async function getVendor(slug: string) {
     const url = `${API_BASE_URL}/vendors/${slug}/`;
     try {
-        console.log(`[SSR] Fetching vendor: ${url}`);
+
         const res = await fetch(url, { next: { revalidate: 3600 } });
         if (!res.ok) return null;
         return await res.json();
@@ -142,7 +142,7 @@ export async function getVendor(slug: string) {
 export async function getAllVendors() {
     const url = `${API_BASE_URL}/vendors/`;
     try {
-        console.log(`[SSR] Fetching all vendors: ${url}`);
+
         const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache for 1 hour
         if (!res.ok) return [];
         const data = await res.json();

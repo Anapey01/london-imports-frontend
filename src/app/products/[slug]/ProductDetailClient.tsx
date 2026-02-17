@@ -41,6 +41,7 @@ interface Product {
     video_url?: string;
     vendor?: { business_name: string };
     preorder_status?: string;
+    variants?: { name: string; price: number }[];
 }
 
 interface ProductDetailClientProps {
@@ -54,6 +55,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [isAdding, setIsAdding] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
+    const [product, setProduct] = useState(initialProduct);
+    const [isLoading, setIsLoading] = useState(!initialProduct);
+    const [error, setError] = useState(false);
 
     // Reset selection when product changes
     useEffect(() => {
@@ -61,10 +65,51 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         setSelectedColor('');
     }, [initialProduct]);
 
+    // Derived state for price display
+    const [currentPrice, setCurrentPrice] = useState(initialProduct?.price || 0);
+
+    // Update price when variants are selected
+    useEffect(() => {
+        if (!product) return;
+
+        // Reset to base price first
+        let newPrice = Number(product.price);
+
+        if (product.variants && product.variants.length > 0) {
+            // Try to find matching variant
+            // Logic matches backend: 
+            // 1. Exact Size
+            // 2. Exact Color
+            // 3. Size + Color combo
+
+            let matchingVariant = null;
+
+            if (selectedSize) {
+                matchingVariant = product.variants.find(v => v.name.toLowerCase() === selectedSize.toLowerCase());
+            }
+
+            if (!matchingVariant && selectedColor) {
+                matchingVariant = product.variants.find(v => v.name.toLowerCase() === selectedColor.toLowerCase());
+            }
+
+            if (!matchingVariant && selectedSize && selectedColor) {
+                const combo1 = `${selectedColor} ${selectedSize}`.toLowerCase();
+                const combo2 = `${selectedSize} ${selectedColor}`.toLowerCase();
+                matchingVariant = product.variants.find(v =>
+                    v.name.toLowerCase() === combo1 || v.name.toLowerCase() === combo2
+                );
+            }
+
+            if (matchingVariant) {
+                newPrice = Number(matchingVariant.price);
+            }
+        }
+
+        setCurrentPrice(newPrice);
+    }, [product, selectedSize, selectedColor]);
+
     // CSR State
-    const [product, setProduct] = useState(initialProduct);
-    const [isLoading, setIsLoading] = useState(!initialProduct);
-    const [error, setError] = useState(false);
+
 
     const { addToCart } = useCartStore();
 
@@ -82,6 +127,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     if (!res.ok) throw new Error('Failed to fetch');
                     const data = await res.json();
                     setProduct(data);
+                    // Ensure price updates if new data loads
+                    setCurrentPrice(Number(data.price));
                 } catch (e) {
                     console.error("CSR Fetch Error", e);
                     if (!initialProduct) setError(true);
@@ -325,7 +372,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* Price - Always Visible */}
                         <div className="mb-6 relative">
                             <span className="text-3xl lg:text-4xl font-bold text-gray-900">
-                                GHS {product.price?.toLocaleString()}
+                                GHS {currentPrice.toLocaleString()}
                             </span>
                         </div>
 

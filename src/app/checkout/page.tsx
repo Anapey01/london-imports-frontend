@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
@@ -50,7 +50,7 @@ declare global {
     }
 }
 
-export default function CheckoutPage() {
+function CheckoutPage() {
     const router = useRouter();
     const { cart, fetchCart } = useCartStore();
     const { user, isAuthenticated } = useAuthStore();
@@ -58,7 +58,7 @@ export default function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
-    const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM'>('FULL');
+    const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
     const [checkoutOrder, setCheckoutOrder] = useState<Cart | null>(null); // Store order after checkout creation
@@ -69,15 +69,54 @@ export default function CheckoutPage() {
         notes: '',
     });
 
+    // URL Params to resume payment for existing order
+    const searchParams = useSearchParams();
+    const orderNumberParam = searchParams.get('order');
+
     useEffect(() => {
         if (isAuthenticated) {
             fetchCart();
         }
     }, [isAuthenticated, fetchCart]);
 
-    // Pre-fill address when user profile loads
+    // Fetch existing order if param exists
     useEffect(() => {
-        if (user && !delivery.address) {
+        if (orderNumberParam && isAuthenticated) {
+            setIsLoading(true);
+            ordersAPI.detail(orderNumberParam)
+                .then(res => {
+                    // Only allow paying for PENDING orders
+                    if (res.data.state === 'PENDING_PAYMENT') {
+                        setCheckoutOrder(res.data);
+                        // Pre-fill delivery info from this order
+                        setDelivery({
+                            address: res.data.delivery_address || '',
+                            city: res.data.delivery_city || '',
+                            region: res.data.delivery_region || '',
+                            notes: res.data.customer_notes || '',
+                        });
+                        // Set payment amount based on what's due
+                        if (res.data.balance_due > 0 && res.data.amount_paid > 0) {
+                            setPaymentType('BALANCE');
+                        } else if (res.data.deposit_amount > 0) {
+                            // If it was a deposit order but nothing paid yet
+                            setPaymentType('DEPOSIT');
+                        }
+                    } else {
+                        setError(`Order ${orderNumberParam} is not pending payment (State: ${res.data.state})`);
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to load order", err);
+                    setError("Could not load order details");
+                })
+                .finally(() => setIsLoading(false));
+        }
+    }, [orderNumberParam, isAuthenticated]);
+
+    // Pre-fill address when user profile loads (only if not loaded from order)
+    useEffect(() => {
+        if (user && !delivery.address && !checkoutOrder) {
             setDelivery(prev => ({
                 ...prev,
                 address: user.address || prev.address,
@@ -86,15 +125,16 @@ export default function CheckoutPage() {
             }));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    }, [user, checkoutOrder]);
 
     if (!isAuthenticated) {
         router.push('/login?redirect=/checkout');
         return null;
     }
 
-    // Only redirect if cart is empty AND we haven't created an order yet
-    if ((!cart || cart.items?.length === 0) && !checkoutOrder) {
+    // Only redirect if cart is empty AND we haven't created/loaded an order yet
+    // And we are NOT currently trying to load one (isLoading)
+    if ((!cart || cart.items?.length === 0) && !checkoutOrder && !isLoading && !orderNumberParam) {
         router.push('/cart');
         return null;
     }
@@ -508,5 +548,15 @@ export default function CheckoutPage() {
                 onLoad={() => setIsPaystackLoaded(true)}
             />
         </div>
+    );
+}
+
+import { Suspense } from 'react';
+
+export default function CheckoutPageWrapper() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading checkout...</div>}>
+            <CheckoutPage />
+        </Suspense>
     );
 }
