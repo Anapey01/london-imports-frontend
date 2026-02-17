@@ -1,7 +1,7 @@
-'use client'; // Error boundaries must be Client Components
+'use client';
 
 import { useEffect } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 export default function Error({
     error,
@@ -11,35 +11,37 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log the error using your preferred logging service
-        console.error('Safe Error Boundary Caught:', error);
+        // Log the error to an error reporting service
+        console.error(error);
     }, [error]);
 
     return (
-        <div className="min-h-[50vh] flex items-center justify-center p-4">
-            <div className="text-center max-w-md w-full bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
-                <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <AlertTriangle className="w-8 h-8 text-red-500" />
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-center px-4">
+            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full flex flex-col items-center">
+                <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6">
+                    <AlertTriangle className="w-8 h-8" />
                 </div>
 
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Something went wrong!
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong!</h2>
 
-                <p className="text-gray-500 dark:text-slate-400 mb-6 font-medium">
-                    We encountered an unexpected error.
+                <p className="text-gray-600 mb-8 text-sm leading-relaxed">
+                    We apologize for the inconvenience. An unexpected error has occurred. Our team has been notified.
                 </p>
 
-                <button
-                    onClick={
-                        // Attempt to recover by trying to re-render the segment
-                        () => reset()
-                    }
-                    className="flex items-center justify-center gap-2 w-full py-3 bg-gray-900 hover:bg-black dark:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-xl transition-colors font-medium"
-                >
-                    <RefreshCw className="w-4 h-4" />
-                    Try Again
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3 w-full">
+                    <button
+                        onClick={() => reset()}
+                        className="flex-1 bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors shadow-sm active:scale-95 transform duration-200"
+                    >
+                        Try again
+                    </button>
+                    <a
+                        href="/"
+                        className="flex-1 bg-gray-100 text-gray-900 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors text-center"
+                    >
+                        Go Home
+                    </a>
+                </div>
             </div>
         </div>
     );

@@ -41,14 +41,7 @@ interface Product {
     video_url?: string;
     vendor?: { business_name: string };
     preorder_status?: string;
-    variants?: Variant[];
-}
-
-interface Variant {
-    id: string;
-    name: string;
-    price: number;
-    stock_quantity: number;
+    variants?: { name: string; price: number }[];
 }
 
 interface ProductDetailClientProps {
@@ -62,19 +55,61 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [isAdding, setIsAdding] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
-    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+    const [product, setProduct] = useState(initialProduct);
+    const [isLoading, setIsLoading] = useState(!initialProduct);
+    const [error, setError] = useState(false);
 
     // Reset selection when product changes
     useEffect(() => {
         setSelectedSize('');
         setSelectedColor('');
-        setSelectedVariant(null);
     }, [initialProduct]);
 
+    // Derived state for price display
+    const [currentPrice, setCurrentPrice] = useState(initialProduct?.price || 0);
+
+    // Update price when variants are selected
+    useEffect(() => {
+        if (!product) return;
+
+        // Reset to base price first
+        let newPrice = Number(product.price);
+
+        if (product.variants && product.variants.length > 0) {
+            // Try to find matching variant
+            // Logic matches backend: 
+            // 1. Exact Size
+            // 2. Exact Color
+            // 3. Size + Color combo
+
+            let matchingVariant = null;
+
+            if (selectedSize) {
+                matchingVariant = product.variants.find(v => v.name.toLowerCase() === selectedSize.toLowerCase());
+            }
+
+            if (!matchingVariant && selectedColor) {
+                matchingVariant = product.variants.find(v => v.name.toLowerCase() === selectedColor.toLowerCase());
+            }
+
+            if (!matchingVariant && selectedSize && selectedColor) {
+                const combo1 = `${selectedColor} ${selectedSize}`.toLowerCase();
+                const combo2 = `${selectedSize} ${selectedColor}`.toLowerCase();
+                matchingVariant = product.variants.find(v =>
+                    v.name.toLowerCase() === combo1 || v.name.toLowerCase() === combo2
+                );
+            }
+
+            if (matchingVariant) {
+                newPrice = Number(matchingVariant.price);
+            }
+        }
+
+        setCurrentPrice(newPrice);
+    }, [product, selectedSize, selectedColor]);
+
     // CSR State
-    const [product, setProduct] = useState(initialProduct);
-    const [isLoading, setIsLoading] = useState(!initialProduct);
-    const [error, setError] = useState(false);
+
 
     const { addToCart } = useCartStore();
 
@@ -92,6 +127,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     if (!res.ok) throw new Error('Failed to fetch');
                     const data = await res.json();
                     setProduct(data);
+                    // Ensure price updates if new data loads
+                    setCurrentPrice(Number(data.price));
                 } catch (e) {
                     console.error("CSR Fetch Error", e);
                     if (!initialProduct) setError(true);
@@ -165,11 +202,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const handleAddToCart = async () => {
         // Validation for variants
-        // Validation for variants
-        if (product.variants && product.variants.length > 0 && !selectedVariant) {
-            alert('Please select an option');
-            return;
-        }
         if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
             alert('Please select a size');
             return;
@@ -181,7 +213,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
         setIsAdding(true);
         try {
-            await addToCart(product, quantity, selectedSize || selectedVariant?.name, selectedColor, selectedVariant);
+            await addToCart(product, quantity, selectedSize, selectedColor);
             router.push('/cart');
         } catch (e) {
             console.error(e);
@@ -340,27 +372,13 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* Price - Always Visible */}
                         <div className="mb-6 relative">
                             <span className="text-3xl lg:text-4xl font-bold text-gray-900">
-                                GHS {selectedVariant
-                                    ? selectedVariant.price.toLocaleString()
-                                    : (product.variants && product.variants.length > 0
-                                        ? `From ${Math.min(...product.variants.map(v => v.price)).toLocaleString()}`
-                                        : product.price?.toLocaleString())}
+                                GHS {currentPrice.toLocaleString()}
                             </span>
                         </div>
 
                         {/* Variant Selectors: Premium Dropdowns */}
                         <div className="space-y-6 mb-8">
-                            {/* Advanced Variants (Price differentiation) */}
-                            {product.variants && product.variants.length > 0 && (
-                                <PriceVariantDropdown
-                                    label="Select Option"
-                                    variants={product.variants}
-                                    selected={selectedVariant}
-                                    onSelect={setSelectedVariant}
-                                />
-                            )}
-
-                            {/* Legacy Options (if no advanced variants) */}
+                            {/* Color Dropdown */}
                             {product.available_colors && product.available_colors.length > 0 && (
                                 <VariantDropdown
                                     label="Color"
@@ -370,14 +388,24 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 />
                             )}
 
-                            {product.available_sizes && product.available_sizes.length > 0 && (
-                                <VariantDropdown
-                                    label="Size"
-                                    options={product.available_sizes}
-                                    selected={selectedSize}
-                                    onSelect={setSelectedSize}
-                                />
-                            )}
+                            {/* Size / Variant Dropdown */}
+                            {(() => {
+                                // Unified logic: Use explicit sizes if available, otherwise fallback to variant names
+                                const sizeOptions = (product.available_sizes && product.available_sizes.length > 0)
+                                    ? product.available_sizes
+                                    : (product.variants?.map(v => v.name) || []);
+
+                                if (sizeOptions.length === 0) return null;
+
+                                return (
+                                    <VariantDropdown
+                                        label="Option" // Changed from "Size" to "Option" to be more generic for things like "50pcs"
+                                        options={sizeOptions}
+                                        selected={selectedSize}
+                                        onSelect={setSelectedSize}
+                                    />
+                                );
+                            })()}
                         </div>
 
                         {/* Description */}
@@ -555,68 +583,6 @@ function VariantDropdown({ label, options, selected, onSelect }: { label: string
                     </>
                 )}
             </div>
-        </div>
-    );
-}
-
-function PriceVariantDropdown({ label, variants, selected, onSelect }: { label: string, variants: Variant[], selected: Variant | null, onSelect: (val: Variant) => void }) {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-        <div className="relative w-full sm:max-w-xs">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                {label}
-            </label>
-            <div className="relative">
-                <button
-                    type="button"
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all hover:border-gray-300 shadow-sm"
-                >
-                    <span className={`block truncate ${!selected ? 'text-gray-400' : 'text-gray-900 font-medium'}`}>
-                        {selected ? `${selected.name} - GH₵${selected.price.toLocaleString()}` : 'Select an option'}
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                        <svg className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                    </span>
-                </button>
-
-                {isOpen && (
-                    <div className="absolute z-50 mt-1 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100">
-                        {variants.map((variant) => (
-                            <button
-                                key={variant.id}
-                                onClick={() => {
-                                    onSelect(variant);
-                                    setIsOpen(false);
-                                }}
-                                className={`w-full text-left cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-pink-50 transition-colors
-                                    ${selected?.id === variant.id ? 'text-pink-900 bg-pink-50 font-medium' : 'text-gray-900'}
-                                `}
-                            >
-                                <div className="flex justify-between">
-                                    <span className="block truncate">{variant.name}</span>
-                                    <span className="block truncate text-gray-500">GH₵{variant.price.toLocaleString()}</span>
-                                </div>
-
-                                {selected?.id === variant.id && (
-                                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-pink-600">
-                                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                        </svg>
-                                    </span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-            {/* Overlay to close when clicking outside */}
-            {isOpen && (
-                <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
-            )}
         </div>
     );
 }

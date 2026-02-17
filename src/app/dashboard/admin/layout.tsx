@@ -11,11 +11,14 @@ import { authAPI } from '@/lib/api';
 import AdminSidebar from '@/components/dashboard/AdminSidebar';
 
 interface User {
-    role: string;
-    is_staff?: boolean;
-    is_superuser?: boolean;
-    first_name?: string;
+    first_name: string;
+    last_name: string;
     username: string;
+    email: string;
+    role: string;
+    is_staff: boolean;
+    is_superuser: boolean;
+    avatar?: string;
 }
 
 export default function AdminDashboardLayout({
