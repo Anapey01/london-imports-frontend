@@ -157,7 +157,8 @@ function CheckoutPage() {
                 // Validate Custom Amount
                 if (paymentType === 'CUSTOM') {
                     const amount = parseFloat(customAmount);
-                    const minAmount = currentOrderData.total * 0.3;
+                    // const minAmount = currentOrderData.total * 0.3;
+                    const minAmount = 1;
 
                     if (isNaN(amount) || amount < minAmount) {
                         setError(`Minimum payment amount is GHS ${minAmount.toLocaleString()}`);
@@ -433,7 +434,7 @@ function CheckoutPage() {
                                         </div>
                                         <div className="ml-4 flex-1">
                                             <span className="block font-medium text-gray-900 text-lg">Flexible Installment</span>
-                                            <p className="text-sm text-gray-500 font-light mt-1">Choose how much you want to pay now (Min 30%)</p>
+                                            <p className="text-sm text-gray-500 font-light mt-1">Choose how much you want to pay now</p>
                                         </div>
                                     </div>
 
@@ -445,9 +446,9 @@ function CheckoutPage() {
                                                     type="number"
                                                     value={customAmount}
                                                     onChange={(e) => setCustomAmount(e.target.value)}
-                                                    placeholder={`Min ${(currentOrderData.total * 0.3).toFixed(2)}`}
+                                                    placeholder="Enter amount (min 1.00)"
                                                     className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
-                                                    min={(currentOrderData.total * 0.3)}
+                                                    min="1"
                                                     max={currentOrderData.total}
                                                 />
                                             </div>

@@ -378,6 +378,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                         {/* Variant Selectors: Premium Dropdowns */}
                         <div className="space-y-6 mb-8">
+                            {/* Color Dropdown */}
                             {product.available_colors && product.available_colors.length > 0 && (
                                 <VariantDropdown
                                     label="Color"
@@ -387,14 +388,24 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 />
                             )}
 
-                            {product.available_sizes && product.available_sizes.length > 0 && (
-                                <VariantDropdown
-                                    label="Size"
-                                    options={product.available_sizes}
-                                    selected={selectedSize}
-                                    onSelect={setSelectedSize}
-                                />
-                            )}
+                            {/* Size / Variant Dropdown */}
+                            {(() => {
+                                // Unified logic: Use explicit sizes if available, otherwise fallback to variant names
+                                const sizeOptions = (product.available_sizes && product.available_sizes.length > 0)
+                                    ? product.available_sizes
+                                    : (product.variants?.map(v => v.name) || []);
+
+                                if (sizeOptions.length === 0) return null;
+
+                                return (
+                                    <VariantDropdown
+                                        label="Option" // Changed from "Size" to "Option" to be more generic for things like "50pcs"
+                                        options={sizeOptions}
+                                        selected={selectedSize}
+                                        onSelect={setSelectedSize}
+                                    />
+                                );
+                            })()}
                         </div>
 
                         {/* Description */}
