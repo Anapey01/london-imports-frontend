@@ -7,14 +7,21 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
-import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
-import { ChevronDown } from 'lucide-react';
-import RelatedProducts from '@/components/RelatedProducts';
-import RecentlyViewed from '@/components/RecentlyViewed';
+import VariantDropdown from '@/components/VariantDropdown';
+import ProductImageGallery from '@/components/product/ProductImageGallery';
+
+// Lazy Load components to improve initial page load performance
+const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
+    loading: () => <div className="h-96 w-full bg-gray-50 animate-pulse rounded-xl my-12" />
+});
+const RecentlyViewed = dynamic(() => import('@/components/RecentlyViewed'), {
+    loading: () => <div className="h-48 w-full bg-gray-50 animate-pulse rounded-xl my-12" />
+});
 
 interface ProductImage {
     id: string;
@@ -59,10 +66,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [isLoading, setIsLoading] = useState(!initialProduct);
     const [error, setError] = useState(false);
 
+    // Image state moved here to control from parent if needed, but mostly passed to Gallery
+    const [displayedImage, setDisplayedImage] = useState<string | null>(null);
+
     // Reset selection when product changes
     useEffect(() => {
         setSelectedSize('');
         setSelectedColor('');
+        setDisplayedImage(null);
     }, [initialProduct]);
 
     // Derived state for price display
@@ -108,9 +119,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         setCurrentPrice(newPrice);
     }, [product, selectedSize, selectedColor]);
 
-    // CSR State
-
-
     const { addToCart } = useCartStore();
 
     // Client-side fetch to ensure fresh data (e.g. reservation counts)
@@ -140,8 +148,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         }
     }, [initialProduct, slug]);
 
-    const [displayedImage, setDisplayedImage] = useState<string | null>(null);
-
     // Ref for the main CTA section to trigger the sticky bar
     const [ctaRef, setCtaRef] = useState<HTMLDivElement | null>(null);
 
@@ -169,16 +175,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             }
         }
     }, [product]);
-
-    // Gather all images: Main + Extras
-    const allImages = product ? [
-        { id: 'main', image: product.image, alt: product.name },
-        ...(product.images || []).map((img: ProductImage) => ({
-            id: img.id,
-            image: img.image,
-            alt: img.alt_text || product.name
-        }))
-    ].filter(img => img.image) : [];
 
     const currentImage = displayedImage || getImageUrl(product?.image);
 
@@ -228,119 +224,20 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 {/* Two Column Grid: Image Left, Details Right */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
-                    {/* LEFT COLUMN: Product Image */}
-                    <div className="space-y-6">
-                        {/* Main Image - directly on cream background */}
-                        <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm transition-all duration-300">
-                            <Image
-                                src={currentImage}
-                                alt={`${product.name} - China Import to Ghana`}
-                                fill
-                                className="object-contain drop-shadow-2xl"
-                                sizes="(max-width: 768px) 100vw, 50vw"
-                                priority
-                            />
-                        </div>
-
-                        {/* Gallery Thumbnails */}
-                        {allImages.length > 1 && (
-                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                                {allImages.map((img) => {
-                                    const imgUrl = getImageUrl(img.image);
-                                    const isSelected = currentImage === imgUrl;
-                                    return (
-                                        <button
-                                            key={img.id}
-                                            onClick={() => setDisplayedImage(imgUrl)}
-                                            aria-label={`View image of ${img.alt || product.name}`}
-                                            className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 snap-start
-                                                ${isSelected ? 'border-pink-600 ring-2 ring-pink-100 scale-105' : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'}
-                                            `}
-                                        >
-                                            <Image
-                                                src={imgUrl}
-                                                alt={img.alt}
-                                                fill
-                                                className="object-cover"
-                                                sizes="80px"
-                                            />
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )}
-
-                        {/* Product Specs Row - below image */}
-                        <div className="flex justify-center gap-8 mt-4 pt-4 border-t border-gray-100">
-                            <div className="flex flex-col items-center text-center">
-                                <svg className={`w-7 h-7 mb-2 ${product.preorder_status === 'READY_TO_SHIP' ? 'text-green-600' : 'text-[#006B5A]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={product.preorder_status === 'READY_TO_SHIP' ? "M5 13l4 4L19 7" : "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"} />
-                                </svg>
-                                <span className="text-sm font-bold text-gray-900">
-                                    {product.preorder_status === 'READY_TO_SHIP' ? 'Ships within 24h' : product.delivery_window_text}
-                                </span>
-                                <span className="text-xs text-gray-500">Delivery</span>
-                            </div>
-
-                            <div className="flex flex-col items-center text-center">
-                                <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${product.preorder_status === 'READY_TO_SHIP' ? 'bg-green-600' : 'bg-[#006B5A]'}`}>
-                                    <span className="text-white text-[10px] font-bold">{product.preorder_status === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}</span>
-                                </div>
-                                <span className="text-sm font-bold text-gray-900">{product.category?.name}</span>
-                                <span className="text-xs text-gray-500">Category</span>
-                            </div>
-
-                            {/* Show Reserved only if not fully available or if we want social proof? Maybe hide for available items to reduce clutter? */}
-                            {/* User requested differentiation, so let's keep it clean for Available Items unless high demand */}
-                            {product.reservations_count > 0 && product.preorder_status !== 'READY_TO_SHIP' && (
-                                <div className="flex flex-col items-center text-center">
-                                    <svg className="w-7 h-7 text-[#F5A623] mb-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-sm font-bold text-gray-900">{product.reservations_count}+</span>
-                                    <span className="text-xs text-gray-500">Reserved</span>
-                                </div>
-                            )}
-
-                            {/* Stock Count for Ready Items */}
-                            {product.preorder_status === 'READY_TO_SHIP' && (
-                                <div className="flex flex-col items-center text-center">
-                                    <svg className="w-7 h-7 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    <span className="text-sm font-bold text-gray-900">In Stock</span>
-                                    <span className="text-xs text-gray-500">Available</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Video Section */}
-                        {(product.video || product.video_url) && (
-                            <div className="mt-8">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4">Product Video</h3>
-                                <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-lg">
-                                    {product.video ? (
-                                        <video
-                                            controls
-                                            className="w-full h-full object-cover"
-                                            poster={currentImage} // Use current displayed image as poster
-                                        >
-                                            <source src={product.video} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    ) : product.video_url ? (
-                                        <iframe
-                                            src={product.video_url.replace('watch?v=', 'embed/').split('&')[0]}
-                                            title={product.name}
-                                            className="w-full h-full"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                        />
-                                    ) : null}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    {/* LEFT COLUMN: Product Image Gallery */}
+                    <ProductImageGallery
+                        mainImage={product.image}
+                        productName={product.name}
+                        images={product.images}
+                        video={product.video}
+                        videoUrl={product.video_url}
+                        currentImage={currentImage}
+                        onImageSelect={setDisplayedImage}
+                        preorderStatus={product.preorder_status}
+                        deliveryWindowText={product.delivery_window_text}
+                        categoryName={product.category?.name}
+                        reservationsCount={product.reservations_count}
+                    />
 
                     {/* RIGHT COLUMN: Product Info */}
                     <div>
@@ -399,7 +296,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                                 return (
                                     <VariantDropdown
-                                        label="Option" // Changed from "Size" to "Option" to be more generic for things like "50pcs"
+                                        label="Option"
                                         options={sizeOptions}
                                         selected={selectedSize}
                                         onSelect={setSelectedSize}
@@ -519,16 +416,16 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 </div>
             </main>
 
-            {/* Related Products Section */}
+            {/* Related Products Section (Lazy Loaded) */}
             <RelatedProducts
                 currentSlug={product.slug}
                 categorySlug={product.category?.slug}
             />
 
-            {/* Recently Viewed Section */}
+            {/* Recently Viewed Section (Lazy Loaded) */}
             <RecentlyViewed />
 
-            {/* Sticky Mobile Cart - Renders only when main CTA is scrolled past */}
+            {/* Sticky Mobile Cart */}
             <StickyMobileCart
                 product={product}
                 isAdding={isAdding}
@@ -539,50 +436,3 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     );
 }
 
-function VariantDropdown({ label, options, selected, onSelect }: { label: string, options: string[], selected: string, onSelect: (val: string) => void }) {
-    const [isOpen, setIsOpen] = useState(false);
-    // Helper to clean accidental parentheses from user input (e.g. "( Green")
-    const clean = (text: string) => text.replace(/[()]/g, '').trim();
-
-    return (
-        <div className="relative w-full sm:max-w-xs">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                {label}
-            </label>
-            <div className="relative">
-                <button
-                    type="button"
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all hover:border-gray-300 shadow-sm"
-                >
-                    <span className={`block truncate ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
-                        {selected ? clean(selected) : `Select ${label}`}
-                    </span>
-                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isOpen && (
-                    <>
-                        <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                        <div className="absolute z-20 mt-2 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100 border border-gray-100">
-                            {options.map((option) => (
-                                <button
-                                    key={option}
-                                    onClick={() => {
-                                        onSelect(option);
-                                        setIsOpen(false);
-                                    }}
-                                    className={`w-full text-left cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0
-                                        ${selected === option ? 'bg-pink-50 text-pink-700 font-semibold' : 'text-gray-700'}
-                                    `}
-                                >
-                                    {clean(option)}
-                                </button>
-                            ))}
-                        </div>
-                    </>
-                )}
-            </div>
-        </div>
-    );
-}

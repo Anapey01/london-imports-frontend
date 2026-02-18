@@ -4,7 +4,8 @@
  */
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { ordersAPI } from '@/lib/api';
@@ -21,7 +22,8 @@ const statusSteps = [
 
 export default function OrderDetailPage() {
     const params = useParams();
-    const router = useRouter();
+    // const router = useRouter(); // Unused
+
     const orderNumber = params.orderNumber as string;
     const { isAuthenticated } = useAuthStore();
 
@@ -117,8 +119,15 @@ export default function OrderDetailPage() {
                             {/* Progress line */}
                             <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200">
                                 <div
-                                    className="h-full bg-purple-600 transition-all duration-500"
-                                    style={{ width: `${(currentStep / (statusSteps.length - 1)) * 100}%` }}
+                                    className={`h-full bg-purple-600 transition-all duration-500 ${{
+                                        0: 'w-0',
+                                        1: 'w-1/5',
+                                        2: 'w-2/5',
+                                        3: 'w-3/5',
+                                        4: 'w-4/5',
+                                        5: 'w-full'
+                                    }[currentStep] || 'w-0'
+                                        }`}
                                 />
                             </div>
 
@@ -152,7 +161,8 @@ export default function OrderDetailPage() {
                         <div className="bg-white rounded-xl p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h2>
                             <div className="space-y-4">
-                                {order.items?.map((item: any) => (
+                                {order.items?.map((item: { id: string; product_name: string; quantity: number; unit_price: number; total_price: number }) => (
+
                                     <div key={item.id} className="flex justify-between py-3 border-b last:border-0">
                                         <div>
                                             <p className="font-medium text-gray-900">{item.product_name}</p>

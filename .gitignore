@@ -43,3 +43,7 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+*storybook.log
+storybook-static
+test_output*.txt

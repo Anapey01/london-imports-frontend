@@ -12,7 +12,7 @@ export async function getProducts(params: Record<string, string> = {}) {
 
 
         const res = await fetch(url, {
-            next: { revalidate: 3600 }, // Revalidate every hour to save Vercel limits
+            next: { revalidate: 86400 }, // Revalidate every 24 hours to save Vercel limits
         });
 
         if (!res.ok) {
@@ -64,7 +64,7 @@ export async function getAvailableProducts(limit = 10) {
 export async function getCategories() {
     try {
         const res = await fetch(`${API_BASE_URL}/products/categories/`, {
-            next: { revalidate: 3600 }
+            next: { revalidate: 86400 }
         });
         if (!res.ok) return [];
         const data = await res.json();
@@ -79,7 +79,7 @@ export async function getProduct(slug: string) {
     try {
 
         const res = await fetch(url, {
-            next: { revalidate: 3600 }
+            next: { revalidate: 86400 }
         });
 
         if (!res.ok) {
@@ -103,7 +103,7 @@ export async function getProductMetadata(slug: string) {
     const url = `${API_BASE_URL}/products/preview/?slug=${slug}`;
     try {
 
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetch(url, { next: { revalidate: 86400 } });
         if (!res.ok) return null;
 
         const data = await res.json();
@@ -130,7 +130,7 @@ export async function getVendor(slug: string) {
     const url = `${API_BASE_URL}/vendors/${slug}/`;
     try {
 
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetch(url, { next: { revalidate: 86400 } });
         if (!res.ok) return null;
         return await res.json();
     } catch (e) {
@@ -143,7 +143,7 @@ export async function getAllVendors() {
     const url = `${API_BASE_URL}/vendors/`;
     try {
 
-        const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache for 1 hour
+        const res = await fetch(url, { next: { revalidate: 86400 } }); // Cache for 24 hours
         if (!res.ok) return [];
         const data = await res.json();
         return data.results || data;
