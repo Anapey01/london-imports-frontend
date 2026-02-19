@@ -25,7 +25,8 @@ export default async function Image() {
     ];
 
     try {
-        const res = await fetch('https://london-imports-api.onrender.com/api/v1/products/?is_featured=true&limit=2', { next: { revalidate: 86400 } });
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com';
+        const res = await fetch(`${apiUrl}/api/v1/products/?is_featured=true&limit=2`, { next: { revalidate: 86400 } });
         if (res.ok) {
             const data = await res.json();
             if (data.results && data.results.length > 0) {

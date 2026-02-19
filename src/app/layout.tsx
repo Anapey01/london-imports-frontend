@@ -79,6 +79,13 @@ export const metadata: Metadata = {
       'x-default': 'https://londonsimports.com',
     },
   },
+  icons: {
+    icon: '/favicon.ico',
+    apple: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  },
   manifest: '/manifest.json',
 };
 
@@ -249,14 +256,27 @@ export default async function RootLayout({
     ]
   };
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "London's Imports",
+    "url": "https://londonsimports.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://londonsimports.com/products?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <html lang="en-GH" suppressHydrationWarning>
       <head>
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://london-imports-api.onrender.com" />
-      </head>
-      <body className={`${jost.variable} font-sans bg-gray-50 min-h-screen`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -265,7 +285,12 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
-
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
+      <body className={`${jost.variable} font-sans bg-gray-50 min-h-screen`} suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
