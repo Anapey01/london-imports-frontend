@@ -24,7 +24,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Fetch blog posts from API (dynamic)
     let blogPosts: { slug: string; published_at?: string }[] = [];
     try {
-        const blogRes = await fetch('https://london-imports-api.onrender.com/api/v1/blog/', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com';
+        const blogRes = await fetch(`${apiUrl}/api/v1/blog/`, {
             next: { revalidate: 86400 } // Revalidate every 24 hours
         });
         if (blogRes.ok) {
