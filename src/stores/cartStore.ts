@@ -20,6 +20,7 @@ export interface Product {
     cutoff_date?: string;
     available_sizes?: string[];
     available_colors?: string[];
+    target_quantity?: number;
 }
 
 export interface CartItem {

@@ -10,6 +10,7 @@ import { useCartStore, Product } from '@/stores/cartStore';
 import { useState, useMemo } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart } from 'lucide-react';
+import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 
 interface ProductCardProps {
     product: Product;
@@ -164,8 +165,17 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     </h3>
 
                     {/* Price */}
-                    <div className="text-gray-900 dark:text-white font-bold text-base mt-1">
+                    <div className="text-gray-900 dark:text-white font-bold text-base mt-0.5">
                         GH₵ {Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+
+                    {/* Progress Bar (Innovation) */}
+                    <div className="mt-2 text-left">
+                        <GroupBuyProgress
+                            current={product.reservations_count || 0}
+                            target={product.target_quantity || 10}
+                            variant="compact"
+                        />
                     </div>
                 </div>
             </Link>

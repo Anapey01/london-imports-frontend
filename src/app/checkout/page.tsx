@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Script from 'next/script';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
@@ -58,7 +58,7 @@ function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
-    const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE'>('FULL');
+    const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
     const [checkoutOrder, setCheckoutOrder] = useState<Cart | null>(null); // Store order after checkout creation
@@ -127,6 +127,17 @@ function CheckoutPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, checkoutOrder]);
 
+    const currentOrderData = useMemo(() => checkoutOrder || cart, [checkoutOrder, cart]);
+
+    const paymentAmount = useMemo(() => {
+        if (!currentOrderData) return 0;
+        const total = currentOrderData.total || 0;
+
+        if (paymentType === 'DEPOSIT') return total * 0.3;
+        if (paymentType === 'CUSTOM') return parseFloat(customAmount) || 0;
+        return total;
+    }, [currentOrderData, paymentType, customAmount]);
+
     if (!isAuthenticated) {
         router.push('/login?redirect=/checkout');
         return null;
@@ -138,8 +149,6 @@ function CheckoutPage() {
         router.push('/cart');
         return null;
     }
-
-    const currentOrderData = checkoutOrder || cart; // Prefer checkout order if created
 
     // TypeScript safety: Ensure we have data to render
     if (!currentOrderData) return null;
@@ -191,8 +200,30 @@ function CheckoutPage() {
                 throw new Error('Failed to create order');
             }
 
-            // 2. Initiate Payment (Get config from backend)
-            // Always initiate fresh payment link for the order
+            // 2. Initiate Payment (Get config from backend) or Redirect to WhatsApp
+            if (paymentType === 'WHATSAPP') {
+                const whatsappNumber = '233545247009';
+                const message = encodeURIComponent(
+                    `Hi! 🚀 I've just placed an order on London's Imports!\n\n` +
+                    `*Order Number:* #${orderToPay.order_number}\n` +
+                    `*Total Amount:* GHS ${orderToPay.total.toLocaleString()}\n` +
+                    `*Shipping City:* ${delivery.city}\n\n` +
+                    `Please send me the Momo payment details so I can complete my purchase. Thanks! ✨`
+                );
+
+                // Open WhatsApp
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                if (isMobile) {
+                    window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+                } else {
+                    window.open(`https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${message}`, '_blank');
+                    // Also redirect them to success page locally since we've "finalized" the intent
+                    router.push(`/checkout/success?order=${orderToPay.order_number}`);
+                }
+                return;
+            }
+
+            // (Traditional Paystack flow continues...)
             const paymentInitResponse = await paymentsAPI.initiate(
                 orderToPay.order_number,
                 paymentType
@@ -256,20 +287,6 @@ function CheckoutPage() {
             setIsLoading(false);
         }
     };
-
-    const getPaymentAmount = () => {
-        const sourceData = checkoutOrder || cart;
-        if (!sourceData) return 0;
-
-        // If we have a saved order, rely on its values if possible, otherwise recalc
-        const total = sourceData.total || 0;
-
-        if (paymentType === 'DEPOSIT') return total * 0.3;
-        if (paymentType === 'CUSTOM') return parseFloat(customAmount) || 0;
-        return total;
-    };
-
-    const paymentAmount = getPaymentAmount();
 
     return (
         <div className="min-h-screen bg-gray-50 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8">
@@ -420,6 +437,26 @@ function CheckoutPage() {
                                     </div>
                                 </label>
 
+                                <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'WHATSAPP' ? 'border-green-600 bg-green-50 ring-1 ring-green-600' : 'border-gray-200 hover:border-gray-300'}`}>
+                                    <div className="mt-1">
+                                        <input
+                                            type="radio"
+                                            name="payment_type"
+                                            value="WHATSAPP"
+                                            checked={paymentType === 'WHATSAPP'}
+                                            onChange={() => setPaymentType('WHATSAPP')}
+                                            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-600 accent-green-600"
+                                        />
+                                    </div>
+                                    <div className="ml-4">
+                                        <span className="block font-medium text-gray-900 text-lg flex items-center gap-2">
+                                            WhatsApp Momo Checkout
+                                            <span className="bg-green-100 text-green-700 text-[10px] uppercase px-2 py-0.5 rounded-full font-bold tracking-wider">Recommended</span>
+                                        </span>
+                                        <p className="text-sm text-gray-500 font-light mt-1 italic">Click to finalize order & chat with an admin for Momo details</p>
+                                    </div>
+                                </label>
+
                                 <label className={`flex flex-col p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'CUSTOM' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
                                     <div className="flex items-start w-full">
                                         <div className="mt-1">
@@ -520,8 +557,8 @@ function CheckoutPage() {
 
                             <button
                                 type="submit"
-                                disabled={isLoading || !isPaystackLoaded}
-                                className="w-full mt-8 bg-gray-900 text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl transform active:scale-95 duration-200 disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-2"
+                                disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded)}
+                                className={`w-full mt-8 py-4 rounded-full font-medium transition-all shadow-lg hover:shadow-xl transform active:scale-95 duration-200 disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-2 ${paymentType === 'WHATSAPP' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-900 hover:bg-gray-800 text-white'}`}
                             >
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
@@ -530,8 +567,19 @@ function CheckoutPage() {
                                     </span>
                                 ) : (
                                     <>
-                                        <CreditCard className="w-4 h-4" />
-                                        Pay GHS {paymentAmount?.toLocaleString()}
+                                        {paymentType === 'WHATSAPP' ? (
+                                            <>
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                                </svg>
+                                                Checkout via WhatsApp
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CreditCard className="w-4 h-4" />
+                                                Pay GHS {paymentAmount?.toLocaleString()}
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </button>

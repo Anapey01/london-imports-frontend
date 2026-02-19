@@ -49,7 +49,10 @@ interface Product {
     vendor?: { business_name: string };
     preorder_status?: string;
     variants?: { name: string; price: number }[];
+    target_quantity?: number;
 }
+
+import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 
 interface ProductDetailClientProps {
     initialProduct: Product | null;
@@ -267,10 +270,19 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         </div>
 
                         {/* Price - Always Visible */}
-                        <div className="mb-6 relative">
+                        <div className="mb-4 relative">
                             <span className="text-3xl lg:text-4xl font-bold text-gray-900">
                                 GHS {currentPrice.toLocaleString()}
                             </span>
+                        </div>
+
+                        {/* Progress Tracker (Detailed) */}
+                        <div className="mb-8 p-4 bg-accent-50 rounded-2xl border border-accent-100">
+                            <GroupBuyProgress
+                                current={product.reservations_count || 0}
+                                target={product.target_quantity || 10}
+                                variant="detailed"
+                            />
                         </div>
 
                         {/* Variant Selectors: Premium Dropdowns */}

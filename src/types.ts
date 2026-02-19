@@ -26,4 +26,6 @@ export interface Product {
     available_colors?: string[];
     shipping_origin?: string;
     preorder_status?: string;
+    target_quantity: number;
+    reservations_count: number;
 }

@@ -387,16 +387,20 @@ html {
   }
 }
 
-/* Shimmer for loading skeletons */
+/* Shimmer for progress bars */
 @keyframes shimmer {
   0% {
-    background-position: -200% 0;
+    transform: translateX(-150%) skewX(-20deg);
   }
-
+  50% {
+    transform: translateX(150%) skewX(-20deg);
+  }
   100% {
-    background-position: 200% 0;
+    transform: translateX(150%) skewX(-20deg);
   }
 }
+
+/* Shimmer for loading skeletons */
 
 /* ===== ANIMATION UTILITIES ===== */
 
