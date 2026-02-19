@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 
 import { getImageUrl } from '@/lib/image';
@@ -38,6 +39,7 @@ export default function ProductImageGallery({
     categoryName,
     reservationsCount = 0
 }: ProductImageGalleryProps) {
+    const [isPlaying, setIsPlaying] = useState(false);
 
     // Helper to normalize image objects
     const allImages = [
@@ -139,25 +141,49 @@ export default function ProductImageGallery({
             {(video || videoUrl) && (
                 <div className="mt-8">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Product Video</h3>
-                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-lg">
-                        {video ? (
-                            <video
-                                controls
-                                className="w-full h-full object-cover"
-                                poster={currentImage} // Use current displayed image as poster
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-lg group">
+                        {!isPlaying ? (
+                            <button
+                                onClick={() => setIsPlaying(true)}
+                                className="w-full h-full relative flex items-center justify-center group"
+                                aria-label="Play product video"
                             >
-                                <source src={video} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                        ) : videoUrl ? (
-                            <iframe
-                                src={videoUrl.replace('watch?v=', 'embed/').split('&')[0]}
-                                title={productName}
-                                className="w-full h-full"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            />
-                        ) : null}
+                                <Image
+                                    src={currentImage}
+                                    alt="Video thumbnail"
+                                    fill
+                                    className="object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center pl-1 shadow-lg">
+                                            <svg className="w-6 h-6 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        ) : (
+                            video ? (
+                                <video
+                                    controls
+                                    autoPlay
+                                    className="w-full h-full object-cover"
+                                >
+                                    <source src={video} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            ) : videoUrl ? (
+                                <iframe
+                                    src={`${videoUrl.replace('watch?v=', 'embed/').split('&')[0]}?autoplay=1`}
+                                    title={productName}
+                                    className="w-full h-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            ) : null
+                        )}
                     </div>
                 </div>
             )}

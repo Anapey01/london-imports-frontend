@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
 import { useCartStore, Product } from '@/stores/cartStore';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart } from 'lucide-react';
 
@@ -25,6 +25,17 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     const addToCart = useCartStore(state => state.addToCart);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
     const isWishlisted = isInWishlist(product.id);
+
+    // Stable random review count based on product ID
+    const reviewCount = useMemo(() => {
+        const idStr = String(product.id);
+        let hash = 0;
+        for (let i = 0; i < idStr.length; i++) {
+            hash = ((hash << 5) - hash) + idStr.charCodeAt(i);
+            hash |= 0;
+        }
+        return (Math.abs(hash) % 50) + 1;
+    }, [product.id]);
 
     const toggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -144,7 +155,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     {/* Star Rating */}
                     <div className="flex items-center justify-center gap-1">
                         <StarRating size="xs" />
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400">({Math.floor(Math.random() * 50) + 1})</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400">({reviewCount})</span>
                     </div>
 
                     {/* Title */}

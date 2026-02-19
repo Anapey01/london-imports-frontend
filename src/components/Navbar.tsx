@@ -6,13 +6,16 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic'; // Added dynamic import
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useEffect, useState } from 'react';
-import SearchModal from './SearchModal';
+// Lazy load heavy interactive components
+const SearchModal = dynamic(() => import('./SearchModal'));
+const SidebarMenu = dynamic(() => import('./SidebarMenu'));
+const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
+
 import ThemeToggle from './ThemeToggle';
-import SidebarMenu from './SidebarMenu';
-import MobileMenuDrawer from './MobileMenuDrawer';
 import { Search, Menu, Heart } from 'lucide-react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 

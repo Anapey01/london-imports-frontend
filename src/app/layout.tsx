@@ -2,7 +2,7 @@
  * London's Imports - Root Layout
  * Includes Navbar, providers, and global styles
  */
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Jost } from "next/font/google";
 import Script from "next/script";
 import dynamic from "next/dynamic";
@@ -79,6 +79,13 @@ export const metadata: Metadata = {
       'x-default': 'https://londonsimports.com',
     },
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#ffffff',
 };
 
 
