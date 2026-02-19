@@ -79,6 +79,7 @@ export const metadata: Metadata = {
       'x-default': 'https://londonsimports.com',
     },
   },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {

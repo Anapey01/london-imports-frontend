@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import * as Sentry from '@sentry/nextjs';
 import { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
@@ -11,7 +13,8 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log the error to an error reporting service
+        // Log the error to Sentry
+        Sentry.captureException(error);
         console.error(error);
     }, [error]);
 
@@ -35,12 +38,12 @@ export default function Error({
                     >
                         Try again
                     </button>
-                    <a
+                    <Link
                         href="/"
                         className="flex-1 bg-gray-100 text-gray-900 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors text-center"
                     >
                         Go Home
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
