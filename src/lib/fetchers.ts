@@ -12,7 +12,7 @@ export async function getProducts(params: Record<string, string> = {}) {
 
 
         const res = await fetch(url, {
-            next: { revalidate: 86400 }, // Revalidate every 24 hours to save Vercel limits
+            next: { revalidate: 60 }, // Revalidate every minute for "live" progress bars
         });
 
         if (!res.ok) {
@@ -64,7 +64,7 @@ export async function getAvailableProducts(limit = 10) {
 export async function getCategories() {
     try {
         const res = await fetch(`${API_BASE_URL}/products/categories/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 60 }
         });
         if (!res.ok) return [];
         const data = await res.json();
@@ -79,7 +79,7 @@ export async function getProduct(slug: string) {
     try {
 
         const res = await fetch(url, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 60 }
         });
 
         if (!res.ok) {
