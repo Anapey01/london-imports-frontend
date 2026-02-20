@@ -115,12 +115,11 @@ export default function SourcingPage() {
                 router.push('/login?redirect=/sourcing');
                 return;
             }
-            if (!res.ok) throw new Error('Upload failed');
-
             const data: SourcingResult = await res.json();
             setResult(data);
-        } catch {
-            setError('Something went wrong. Please try again.');
+        } catch (err: any) {
+            console.error('Sourcing upload error:', err);
+            setError(err.message === 'Upload failed' ? 'Something went wrong with the upload. Please try again.' : 'AI analysis is taking longer than expected. Please try again or wait a moment.');
         } finally {
             setIsUploading(false);
         }
@@ -184,7 +183,7 @@ export default function SourcingPage() {
                                 {previewUrl ? (
                                     <div className="space-y-5">
                                         <div className="relative w-full max-w-[240px] mx-auto aspect-square rounded-lg overflow-hidden border border-gray-200">
-                                            <Image src={previewUrl} alt="Preview" fill className="object-cover" />
+                                            <Image src={previewUrl} alt="Preview" fill className="object-cover" unoptimized />
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); resetForm(); }}
                                                 className="absolute top-2 right-2 w-7 h-7 bg-black/70 rounded-full flex items-center justify-center hover:bg-black transition-colors"
@@ -302,7 +301,7 @@ export default function SourcingPage() {
                             <div className="p-6 flex gap-5 items-start border-b border-gray-100">
                                 {result.image_url && (
                                     <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
-                                        <Image src={result.image_url} alt="Uploaded" fill className="object-cover" />
+                                        <Image src={result.image_url} alt="Uploaded" fill className="object-cover" unoptimized />
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
