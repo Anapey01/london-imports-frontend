@@ -115,11 +115,16 @@ export default function SourcingPage() {
                 router.push('/login?redirect=/sourcing');
                 return;
             }
-            const data: SourcingResult = await res.json();
+
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.detail || data.error || 'Upload failed');
+            }
+
             setResult(data);
         } catch (err: any) {
             console.error('Sourcing upload error:', err);
-            setError(err.message === 'Upload failed' ? 'Something went wrong with the upload. Please try again.' : 'AI analysis is taking longer than expected. Please try again or wait a moment.');
+            setError(err.message || 'Something went wrong. Please try again.');
         } finally {
             setIsUploading(false);
         }
