@@ -280,8 +280,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         <div className="mb-8 p-4 bg-accent-50 rounded-2xl border border-accent-100">
                             <GroupBuyProgress
                                 current={product.reservations_count || 0}
-                                target={product.target_quantity || 10}
-                                variant="detailed"
+                                target={product.target_quantity || 100}
+                                variant="compact"
                             />
                         </div>
 

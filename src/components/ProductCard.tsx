@@ -173,7 +173,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     <div className="mt-2 text-left">
                         <GroupBuyProgress
                             current={product.reservations_count || 0}
-                            target={product.target_quantity || 10}
+                            target={product.target_quantity || 100}
                             variant="compact"
                         />
                     </div>

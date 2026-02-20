@@ -28,6 +28,7 @@ import {
     LogIn,
     Truck,
     Flame,
+    Sparkles,
 } from 'lucide-react';
 
 interface MobileMenuDrawerProps {
@@ -255,6 +256,16 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     >
                         <Package className="w-5 h-5 text-gray-500" />
                         <span>Sell on London&apos;s Imports</span>
+                    </Link>
+
+                    <Link
+                        href="/sourcing"
+                        onClick={onClose}
+                        className="flex items-center gap-4 px-6 py-3 hover:bg-purple-50 transition-colors text-purple-700 font-medium"
+                    >
+                        <Sparkles className="w-5 h-5 text-purple-500" />
+                        <span>AI Sourcing</span>
+                        <span className="ml-auto text-[10px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">NEW</span>
                     </Link>
                 </div>
 

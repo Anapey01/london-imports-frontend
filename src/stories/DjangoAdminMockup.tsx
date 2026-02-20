@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Camera, Search, User, MessageCircle, Clock, ExternalLink } from 'lucide-react';
+import { Search, MessageCircle, Clock, ExternalLink } from 'lucide-react';
+
+import Image from 'next/image';
+
 
 /**
  * A mockup component that visually demonstrates the simplified 
@@ -32,7 +35,7 @@ export const DjangoAdminMockup: React.FC = () => {
             <div className="mt-12 max-w-5xl mx-auto bg-blue-50 border border-blue-100 p-6 rounded-2xl flex gap-6 items-center shadow-inner">
                 <div className="text-4xl">💡</div>
                 <div>
-                    <h4 className="font-bold text-blue-900 mb-1 italic">Agent's Note: Admin Hub</h4>
+                    <h4 className="font-bold text-blue-900 mb-1 italic">Agent&apos;s Note: Admin Hub</h4>
                     <p className="text-blue-800 text-sm leading-relaxed">
                         {view === 'product'
                             ? "I've simplified the product forms so you only see what matters for pre-orders."
@@ -72,15 +75,15 @@ const ProductEditorView = () => (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-[#666]">Name:</label>
-                            <input type="text" value="Air Max 2026 Limited" readOnly className="w-full border p-2 bg-gray-50 rounded" />
+                            <input type="text" value="Air Max 2026 Limited" readOnly title="Product name" className="w-full border p-2 bg-gray-50 rounded" />
                         </div>
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-[#666]">Slug:</label>
-                            <input type="text" value="air-max-2026-limited" readOnly className="w-full border p-2 bg-gray-100 italic rounded text-gray-500" />
+                            <input type="text" value="air-max-2026-limited" readOnly title="Product slug" className="w-full border p-2 bg-gray-100 italic rounded text-gray-500" />
                         </div>
                         <div className="col-span-full space-y-2">
                             <label className="block text-sm font-bold text-[#666]">Description:</label>
-                            <textarea rows={2} readOnly className="w-full border p-2 bg-gray-50 rounded italic text-gray-500 text-sm">A premium sneaker designed for comfort and speed...</textarea>
+                            <textarea rows={2} readOnly title="Product description" className="w-full border p-2 bg-gray-50 rounded italic text-gray-500 text-sm">A premium sneaker designed for comfort and speed...</textarea>
                         </div>
                         <div className="col-span-full grid grid-cols-2 gap-8 items-start">
                             <div className="space-y-2">
@@ -92,8 +95,8 @@ const ProductEditorView = () => (
                             </div>
                             <div className="space-y-2">
                                 <label className="block text-sm font-bold text-[#666]">Image Preview:</label>
-                                <div className="border border-[#eee] p-2 rounded bg-white shadow-sm inline-block">
-                                    <img src="https://placehold.co/150" alt="Preview" className="w-32 h-32 object-cover rounded-md" />
+                                <div className="border border-[#eee] p-2 rounded bg-white shadow-sm inline-block relative w-32 h-32">
+                                    <Image src="https://placehold.co/150" alt="Preview" fill className="object-cover rounded-md" />
                                 </div>
                             </div>
                         </div>
@@ -108,16 +111,16 @@ const ProductEditorView = () => (
                     <div className="grid grid-cols-3 gap-8 px-4">
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-[#666]">Price (GH₵):</label>
-                            <input type="text" value="1,200.00" readOnly className="w-full border p-2 bg-gray-50 rounded font-bold" />
+                            <input type="text" value="1,200.00" readOnly title="Price in GH₵" className="w-full border p-2 bg-gray-50 rounded font-bold" />
                         </div>
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-[#666]">Deposit (GH₵):</label>
-                            <input type="text" value="400.00" readOnly className="w-full border p-2 bg-gray-50 rounded" />
+                            <input type="text" value="400.00" readOnly title="Deposit in GH₵" className="w-full border p-2 bg-gray-50 rounded" />
                         </div>
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-[#666]">SKU:</label>
                             <div className="flex items-center gap-2">
-                                <input type="text" value="SNK-AM2026-X" readOnly className="flex-1 border p-2 bg-gray-100 rounded text-gray-600" />
+                                <input type="text" value="SNK-AM2026-X" readOnly title="Product SKU" className="flex-1 border p-2 bg-gray-100 rounded text-gray-600" />
                                 <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-bold">AUTO</span>
                             </div>
                         </div>
@@ -133,7 +136,7 @@ const ProductEditorView = () => (
                     <div className="grid grid-cols-3 gap-8 px-4 pb-4">
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-pink-900">Target Quantity:</label>
-                            <input type="number" value="20" readOnly className="w-full border-pink-200 border p-2 bg-white rounded-lg focus:ring-pink-500 shadow-sm font-bold text-center text-pink-600" />
+                            <input type="number" value="20" readOnly title="Target quantity" className="w-full border-pink-200 border p-2 bg-white rounded-lg focus:ring-pink-500 shadow-sm font-bold text-center text-pink-600" />
                             <span className="block text-[10px] text-pink-400 italic">This powers the progress bar!</span>
                         </div>
                         <div className="space-y-2">
@@ -142,7 +145,7 @@ const ProductEditorView = () => (
                         </div>
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-[#666]">Pre-order Status:</label>
-                            <select disabled className="w-full border p-2 bg-purple-600 text-white rounded-lg font-bold">
+                            <select disabled title="Pre-order status" className="w-full border p-2 bg-purple-600 text-white rounded-lg font-bold">
                                 <option>PRE-ORDER</option>
                             </select>
                         </div>
@@ -203,7 +206,7 @@ const SourcingDashboardView = () => (
             <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 text-[#666] border-b">
                     <tr>
-                        <th className="p-4 w-10"><input type="checkbox" readOnly /></th>
+                        <th className="p-4 w-10"><input type="checkbox" readOnly title="Select all" /></th>
                         <th className="p-4 font-bold uppercase tracking-wider text-[10px]">User Image</th>
                         <th className="p-4 font-bold uppercase tracking-wider text-[10px]">User Detail</th>
                         <th className="p-4 font-bold uppercase tracking-wider text-[10px]" title="AI Finding Results">AI Best Match</th>
@@ -233,13 +236,13 @@ const SourcingDashboardView = () => (
                         },
                     ].map((req, i) => (
                         <tr key={i} className="hover:bg-slate-50/50">
-                            <td className="p-4"><input type="checkbox" readOnly /></td>
+                            <td className="p-4"><input type="checkbox" readOnly title="Select row" /></td>
                             <td className="p-4">
                                 <div className="w-16 h-16 bg-slate-100 rounded border p-1 shadow-sm relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-zoom-in">
                                         <Search size={16} className="text-white" />
                                     </div>
-                                    <img src="https://placehold.co/100" alt="User Shot" className="w-full h-full object-cover rounded" />
+                                    <Image src="https://placehold.co/100" alt="User Shot" fill className="object-cover rounded" />
                                 </div>
                             </td>
                             <td className="p-4">
@@ -248,7 +251,9 @@ const SourcingDashboardView = () => (
                             </td>
                             <td className="p-4">
                                 <div className="bg-emerald-50 border border-emerald-100 p-2 rounded-lg flex items-center gap-3">
-                                    <img src="https://placehold.co/60" alt="Finding" className="w-10 h-10 rounded object-cover border border-emerald-200" />
+                                    <div className="relative w-10 h-10 flex-shrink-0">
+                                        <Image src="https://placehold.co/60" alt="Finding" fill className="rounded object-cover border border-emerald-200" />
+                                    </div>
                                     <div>
                                         <div className="text-[10px] text-emerald-700 font-black italic uppercase">AI MATCH FOUND</div>
                                         <div className="text-xs font-bold text-slate-800">{req.finding}</div>
@@ -257,7 +262,7 @@ const SourcingDashboardView = () => (
                                 </div>
                             </td>
                             <td className="p-4">
-                                <span style={{ backgroundColor: req.color }} className="text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                <span className={`text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${req.status === 'New' ? 'bg-violet-600' : 'bg-amber-500'}`}>
                                     {req.status}
                                 </span>
                             </td>
