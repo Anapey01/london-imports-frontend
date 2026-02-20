@@ -84,23 +84,23 @@ export default function Navbar() {
                             </Link>
                         </div>
 
-                        {/* MIDDLE: Search Bar */}
-                        <div className="flex-1 max-w-xl mx-8">
-                            <div className="relative">
+                        {/* MIDDLE: Search Bar (Refined & Subtle) */}
+                        <div className="flex-1 max-w-md mx-12">
+                            <div className="relative group">
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
                                     const term = (e.currentTarget.elements.namedItem('search') as HTMLInputElement).value;
                                     if (term) window.location.href = `/products?search=${encodeURIComponent(term)}`;
                                 }}>
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-pink-500 transition-colors">
+                                        <Search className="w-4 h-4" />
+                                    </div>
                                     <input
                                         name="search"
                                         type="text"
-                                        placeholder="Search products..."
-                                        className="w-full h-11 pl-5 pr-12 rounded-full border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-sm outline-none text-gray-900 placeholder-gray-500"
+                                        placeholder="Search premium imports..."
+                                        className="w-full h-10 pl-11 pr-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-pink-500/30 focus:border-pink-500 transition-all text-sm outline-none text-gray-900 placeholder-gray-400 font-medium"
                                     />
-                                    <button type="submit" className="absolute right-1 top-1 h-9 w-9 bg-pink-500 rounded-full flex items-center justify-center text-white hover:bg-pink-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-500" aria-label="Search">
-                                        <Search className="w-5 h-5" />
-                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -182,42 +182,41 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Mobile Navbar - Clean Style */}
+                {/* Mobile Navbar - Professional & Tighter */}
                 <div className="md:hidden">
-                    {/* Single Row: Menu + Logo + Search */}
-                    <div className="flex items-center justify-between px-4 h-14">
+                    <div className="flex items-center justify-between px-4 h-16">
                         {/* Hamburger Menu */}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="p-2 -ml-2 text-gray-700"
+                            className="p-1.5 text-gray-700 hover:text-pink-600 transition-colors"
                             aria-label="Open menu"
                         >
-                            <Menu className="w-7 h-7" />
+                            <Menu className="w-6 h-6" />
                         </button>
 
                         {/* Centered Logo */}
-                        <Link href="/" className="flex items-center gap-1.5">
+                        <Link href="/" className="flex items-center gap-2">
                             <Image
                                 src="/logo.jpg"
                                 alt="London's Imports"
-                                width={36}
-                                height={36}
-                                className="rounded-lg"
+                                width={32}
+                                height={32}
+                                className="rounded-lg shadow-sm"
                                 priority
                             />
-                            <span className="text-lg font-bold">
-                                <span className="text-pink-600">London&apos;s</span>
-                                <span className="text-gray-800"> Imports</span>
-                            </span>
+                            <div className="flex flex-col leading-none">
+                                <span className="text-sm font-black tracking-tight text-gray-900">LONDON&apos;S</span>
+                                <span className="text-[10px] font-bold text-pink-600 tracking-[0.2em] uppercase">Imports</span>
+                            </div>
                         </Link>
 
                         {/* Search Icon */}
                         <button
                             onClick={() => setSearchOpen(true)}
-                            className="p-2 -mr-2 text-gray-700"
+                            className="p-1.5 text-gray-700 hover:text-pink-600 transition-colors"
                             aria-label="Open search"
                         >
-                            <Search className="w-6 h-6" />
+                            <Search className="w-5 h-5" />
                         </button>
                     </div>
                 </div>

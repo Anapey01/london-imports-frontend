@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { MessageCircle, Upload, Search, CheckCircle, Smartphone, ArrowRight, Zap, ShoppingBag, CreditCard } from 'lucide-react';
+import { MessageCircle, Upload, Search, CheckCircle, Smartphone, ArrowRight, Zap, ShoppingBag, CreditCard, Home, User, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
 /**
  * 💡 Innovative feature mockups to demonstrate future possibilities
  */
 export const InnovationMockups: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'whatsapp' | 'ai' | 'checkout'>('whatsapp');
+    const [activeTab, setActiveTab] = useState<'whatsapp' | 'ai' | 'checkout' | 'menu'>('menu');
 
     return (
         <div className="bg-slate-50 min-h-screen p-8 font-sans">
@@ -36,15 +36,15 @@ export const InnovationMockups: React.FC = () => {
                             <Zap size={18} /> AI Visual Sourcing
                         </button>
                         <button
-                            onClick={() => setActiveTab('checkout')}
-                            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'checkout' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
+                            onClick={() => setActiveTab('menu')}
+                            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'menu' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
                         >
-                            <ShoppingBag size={18} /> Full Checkout Flow
+                            <ArrowRight size={18} /> Menu Redesign
                         </button>
                     </div>
                 </div>
 
-                {activeTab === 'whatsapp' ? <WhatsAppMomoDemo /> : (activeTab === 'ai' ? <AIVisualSourcingDemo /> : <FullCheckoutFlowDemo />)}
+                {activeTab === 'whatsapp' ? <WhatsAppMomoDemo /> : (activeTab === 'ai' ? <AIVisualSourcingDemo /> : (activeTab === 'checkout' ? <FullCheckoutFlowDemo /> : <NavigationRedesignDemo />))}
 
                 {/* Integration Note */}
                 <div className="mt-20 border-t pt-12">
@@ -509,6 +509,129 @@ const FullCheckoutFlowDemo = () => {
                     </button>
                 </div>
             )}
+        </div>
+    );
+};
+const NavigationRedesignDemo = () => {
+    return (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12">
+            <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl border border-slate-100">
+                <div className="text-center mb-10">
+                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Hierarchy & Clarity</span>
+                    <h2 className="text-3xl font-black text-slate-900 mt-4">Premium Navigation</h2>
+                    <p className="text-slate-500 text-sm mt-2 italic">Refined for a professional, editorial shopping experience.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {/* Desktop Sidebar Mockup */}
+                    <div className="border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm bg-slate-50/30">
+                        <div className="p-4 border-b border-slate-100 bg-white flex justify-between items-center text-[10px] font-bold text-slate-400">
+                            <span>DESKTOP SIDEBAR</span>
+                            <div className="flex gap-1">
+                                <div className="w-2 h-2 rounded-full bg-slate-200"></div>
+                                <div className="w-2 h-2 rounded-full bg-slate-200"></div>
+                            </div>
+                        </div>
+                        <div className="p-6">
+                            <div className="w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 space-y-6">
+                                <div className="flex items-center gap-2 pb-4 border-b border-slate-50">
+                                    <div className="w-8 h-8 bg-slate-900 rounded-lg"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-xs font-black uppercase">London&apos;s</span>
+                                        <span className="text-[8px] font-bold text-pink-600 tracking-widest uppercase">Imports</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="bg-slate-50 p-2 rounded-xl flex items-center gap-3">
+                                        <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                            <Zap size={12} className="text-pink-500" />
+                                        </div>
+                                        <span className="text-[10px] font-black text-slate-800 uppercase">Ready to Ship</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-2 rounded-xl flex items-center gap-3">
+                                        <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center shadow-sm text-purple-600">
+                                            <Sparkles size={12} />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-slate-800 uppercase">AI Sourcing</span>
+                                            <span className="text-[8px] font-bold text-purple-600">NEW</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-3 pt-2">
+                                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest px-2">Navigation</span>
+                                    <div className="flex items-center justify-between px-2">
+                                        <div className="flex items-center gap-3">
+                                            <ShoppingBag size={14} className="text-slate-400" />
+                                            <span className="text-[10px] font-bold text-slate-800">Collections</span>
+                                        </div>
+                                        <ArrowRight size={10} className="text-slate-300" />
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2">
+                                        <User size={14} className="text-slate-400" />
+                                        <span className="text-[10px] font-bold text-slate-800">My Space</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mobile Navigation Mockup */}
+                    <div className="space-y-6">
+                        {/* Mobile Header */}
+                        <div className="border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm bg-slate-50/30 p-4">
+                            <div className="text-[10px] font-black text-slate-400 uppercase mb-3 px-2">Refined Mobile Header</div>
+                            <div className="bg-white border rounded-2xl p-3 flex items-center justify-between">
+                                <Search size={16} className="text-slate-300" />
+                                <div className="flex flex-col items-center leading-none">
+                                    <span className="text-[10px] font-black uppercase">London&apos;s</span>
+                                    <span className="text-[7px] font-bold text-pink-600 tracking-widest uppercase">Imports</span>
+                                </div>
+                                <div className="w-5 h-5 bg-slate-100 rounded"></div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Bottom Nav */}
+                        <div className="border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm bg-slate-50/30 p-4">
+                            <div className="text-[10px] font-black text-slate-400 uppercase mb-3 px-2">Streamlined Bottom Nav (4 Items)</div>
+                            <div className="bg-white/80 backdrop-blur-md border rounded-2xl p-2 flex justify-around">
+                                <div className="flex flex-col items-center gap-1">
+                                    <Home size={16} className="text-pink-600" />
+                                    <div className="w-1 h-1 bg-pink-500 rounded-full"></div>
+                                </div>
+                                <Search size={16} className="text-slate-300" />
+                                <div className="relative">
+                                    <ShoppingBag size={16} className="text-slate-300" />
+                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-pink-600 rounded-full border border-white"></div>
+                                </div>
+                                <User size={16} className="text-slate-300" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-12 p-6 bg-slate-900 rounded-[2rem] text-white">
+                    <h3 className="text-lg font-black mb-4">Core Principles of Redesign</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <div className="text-indigo-400 font-bold text-sm">01. Breathing Space</div>
+                            <p className="text-[11px] text-slate-400 leading-relaxed italic">Removed tight borders and gray backgrounds in favor of whitespace and subtle shadows.</p>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="text-pink-400 font-bold text-sm">02. Enhanced Hierarchy</div>
+                            <p className="text-[11px] text-slate-400 leading-relaxed italic">Categories and AI features are now primary actions, while support is neatly tucked into accordions.</p>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="text-emerald-400 font-bold text-sm">03. Thumb Optimization</div>
+                            <p className="text-[11px] text-slate-400 leading-relaxed italic">Bottom navigation reduced to 4 essential items to prevent mis-clicks and improve reach.</p>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="text-purple-400 font-bold text-sm">04. Branded Typography</div>
+                            <p className="text-[11px] text-slate-400 leading-relaxed italic">A consistent mix of Black (900) and Medium weights creates a premium, editorial feel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
