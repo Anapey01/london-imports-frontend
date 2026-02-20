@@ -308,8 +308,12 @@ export default function SourcingPage() {
                                 <CheckCircle2 className="w-4 h-4 text-white" />
                             </div>
                             <div>
-                                <p className="text-sm font-semibold text-gray-900">Analysis complete</p>
-                                <p className="text-xs text-gray-400">Your product has been identified</p>
+                                <p className="text-sm font-semibold text-gray-900">
+                                    {result.ai_analysis?.product_name ? `Found: ${result.ai_analysis.product_name}` : 'Analysis complete'}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                    {result.ai_analysis?.product_name ? 'We found a match for your item' : 'Your product has been identified'}
+                                </p>
                             </div>
                         </div>
 
