@@ -95,13 +95,20 @@ export default function SourcingPage() {
                 return;
             }
 
+            // Robust URL construction
+            let baseUrl = API_BASE.replace(/\/$/, ""); // Strip trailing slash
+            if (baseUrl.endsWith('/api/v1')) {
+                baseUrl = baseUrl.substring(0, baseUrl.length - 7);
+            }
+            const fetchUrl = `${baseUrl}/api/v1/sourcing/requests/`;
+
             const formData = new FormData();
             formData.append('image', selectedFile);
-            if (description.trim()) {
-                formData.append('description', description.trim());
+            if (description) {
+                formData.append('description', description);
             }
 
-            const res = await fetch(`${API_BASE}/api/v1/sourcing/requests/`, {
+            const res = await fetch(fetchUrl, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData,
