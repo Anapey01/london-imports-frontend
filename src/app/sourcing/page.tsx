@@ -20,6 +20,7 @@ import {
     DollarSign,
     Layers,
     X,
+    Clock,
 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com';
@@ -136,8 +137,9 @@ export default function SourcingPage() {
                 throw new Error(`Server returned non-JSON response (${res.status}). Check backend logs.`);
             }
         } catch (err: any) {
-            console.error('Sourcing upload error:', err);
-            setError(err.message || 'Something went wrong. Please try again.');
+            const error = err as Error;
+            console.error('Sourcing upload error:', error);
+            setError(error.message || 'Something went wrong. Please try again.');
         } finally {
             setIsUploading(false);
         }
@@ -305,33 +307,51 @@ export default function SourcingPage() {
                         {/* Success header */}
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                                <CheckCircle2 className="w-4 h-4 text-white" />
+                                {result.status === 'ANALYZED' ? (
+                                    <CheckCircle2 className="w-4 h-4 text-white" />
+                                ) : (
+                                    <Clock className="w-4 h-4 text-white animate-pulse" />
+                                )}
                             </div>
                             <div>
                                 <p className="text-sm font-semibold text-gray-900">
-                                    {result.ai_analysis?.product_name ? `Found: ${result.ai_analysis.product_name}` : 'Analysis complete'}
+                                    {result.status === 'ANALYZED' && result.ai_analysis?.product_name
+                                        ? `Found: ${result.ai_analysis.product_name}`
+                                        : result.status === 'PENDING'
+                                            ? 'Request Received'
+                                            : 'Analysis in Progress'}
                                 </p>
                                 <p className="text-xs text-gray-400">
-                                    {result.ai_analysis?.product_name ? 'We found a match for your item' : 'Your product has been identified'}
+                                    {result.status === 'ANALYZED'
+                                        ? 'We successfully identified your item'
+                                        : 'Our team will manually review this request shortly'}
                                 </p>
                             </div>
                         </div>
 
                         {/* Result card */}
-                        <div className="border border-gray-200 rounded-xl overflow-hidden">
+                        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
                             {/* Product header */}
                             <div className="p-6 flex gap-5 items-start border-b border-gray-100">
                                 {result.image_url && (
-                                    <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+                                    <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
                                         <Image src={result.image_url} alt="Uploaded" fill className="object-cover" unoptimized />
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
-                                    <h2 className="text-lg font-bold text-gray-900 leading-tight">
-                                        {result.ai_analysis?.product_name || 'Product Detected'}
-                                    </h2>
-                                    <p className="text-sm text-gray-400 mt-1 line-clamp-2">
-                                        {result.ai_analysis?.description}
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h2 className="text-lg font-bold text-gray-900 leading-tight">
+                                            {result.ai_analysis?.product_name || 'Processing Request...'}
+                                        </h2>
+                                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${result.status === 'ANALYZED'
+                                            ? 'bg-green-50 text-green-700 border-green-100'
+                                            : 'bg-blue-50 text-blue-700 border-blue-100'
+                                            }`}>
+                                            {result.status}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
+                                        {result.ai_analysis?.description || 'We are currently analyzing your image to extract product details. If AI analysis is taking longer than expected, our team will source it manually based on your screenshot.'}
                                     </p>
                                     {result.ai_analysis?.confidence && (
                                         <span className={`inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border
