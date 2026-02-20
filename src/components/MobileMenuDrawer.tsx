@@ -111,24 +111,24 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <Link
                             href="/products?status=READY_TO_SHIP"
                             onClick={onClose}
-                            className="flex flex-col items-center justify-center p-5 rounded-3xl bg-slate-50 border border-slate-100/50 hover:bg-pink-50 hover:border-pink-100 transition-all group shadow-sm active:scale-95"
+                            className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 hover:bg-pink-50 hover:border-pink-100 transition-all group shadow-sm active:scale-95"
                         >
-                            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                                <Flame className="w-5 h-5 text-pink-500" />
+                            <div className="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <Flame className="w-4 h-4 text-pink-500" />
                             </div>
-                            <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider">Ready to Ship</span>
+                            <span className="text-[10px] font-black text-slate-800 uppercase tracking-tight leading-tight">Ready to Ship</span>
                         </Link>
                         <Link
                             href="/sourcing"
                             onClick={onClose}
-                            className="flex flex-col items-center justify-center p-5 rounded-3xl bg-slate-50 border border-slate-100/50 hover:bg-purple-50 hover:border-purple-100 transition-all group shadow-sm active:scale-95"
+                            className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 hover:bg-purple-50 hover:border-purple-100 transition-all group shadow-sm active:scale-95"
                         >
-                            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                                <Sparkles className="w-5 h-5 text-purple-500" />
+                            <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <Sparkles className="w-4 h-4 text-purple-500" />
                             </div>
-                            <div className="flex flex-col items-center">
-                                <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider">AI Sourcing</span>
-                                <span className="text-[8px] font-black bg-purple-600 text-white px-1.5 py-0.5 rounded-full mt-1">NEW</span>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-slate-800 uppercase tracking-tight leading-tight">AI Sourcing</span>
+                                <span className="text-[7px] font-black text-purple-600 uppercase">NEW</span>
                             </div>
                         </Link>
                     </div>
@@ -183,21 +183,21 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     </button>
                                 </>
                             ) : (
-                                <div className="p-5 bg-gray-950 rounded-[2rem] mx-2 my-2 shadow-xl shadow-gray-200">
-                                    <p className="text-white text-base font-black mb-1">Welcome back.</p>
-                                    <p className="text-gray-400 text-xs mb-5 font-medium">Login to track orders and save your premium favorites.</p>
+                                <div className="p-5 bg-white border border-gray-100 rounded-3xl mx-2 my-2 shadow-sm">
+                                    <p className="text-gray-900 text-sm font-black mb-1">Elite Member Access.</p>
+                                    <p className="text-gray-500 text-[10px] mb-4 font-medium leading-normal">Sign in to track orders and save your premium favorites.</p>
                                     <div className="flex gap-2">
                                         <Link
                                             href="/login"
                                             onClick={onClose}
-                                            className="flex-1 bg-white text-gray-900 py-3 px-4 rounded-2xl text-[10px] font-black text-center hover:bg-gray-100 transition-all active:scale-95"
+                                            className="flex-1 bg-gray-900 text-white py-2.5 px-4 rounded-xl text-[9px] font-black text-center hover:bg-gray-800 transition-all active:scale-95"
                                         >
                                             LOGIN
                                         </Link>
                                         <Link
                                             href="/register"
                                             onClick={onClose}
-                                            className="flex-1 bg-white/10 text-white py-3 px-4 rounded-2xl text-[10px] font-black text-center border border-white/20 hover:bg-white/20 transition-all active:scale-95"
+                                            className="flex-1 bg-gray-50 text-gray-900 border border-gray-100 py-2.5 px-4 rounded-xl text-[9px] font-black text-center hover:bg-gray-100 transition-all active:scale-95"
                                         >
                                             JOIN
                                         </Link>
@@ -311,13 +311,34 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 {/* Bottom Bar: Socials */}
                 <div className="px-8 py-8 border-t border-gray-50 bg-gray-50/50">
                     <div className="flex gap-4">
-                        <a href="#" className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-pink-600 hover:border-pink-100 transition-all shadow-sm">
+                        <a
+                            href="https://www.instagram.com/londonimportsghana"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-pink-600 hover:border-pink-100 transition-all shadow-sm group"
+                        >
                             <span className="sr-only">Instagram</span>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                         </a>
-                        <a href="#" className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-black hover:border-black/10 transition-all shadow-sm">
+                        <a
+                            href="https://www.tiktok.com/@londons_imports1"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-black hover:border-black/10 transition-all shadow-sm group"
+                        >
                             <span className="sr-only">TikTok</span>
-                            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+                            <svg className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+                        </a>
+                        <a
+                            href="https://www.snapchat.com/add/londons_imports"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#FFFC00] hover:border-[#FFFC00]/20 transition-all shadow-sm group"
+                        >
+                            <span className="sr-only">Snapchat</span>
+                            <svg className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                                <path d="M12.003 1.996a9.982 9.982 0 0 0-2.835.405c-.172.05-.38.125-.572.247-.468.298-1.298 1.096-1.55 1.488-.042.064-.096.112-.132.193-.075.163-.075.335.003.493.078.158.21.325.753.642.617.362 1.25.82 1.444 1.25.132.296.136.634.02 1.05-.164.58-.592 1.03-1.09 1.554-.344.364-.783.827-1.11 1.464-.325.633-.42 1.29-.272 1.956.12.535.418 1 .892 1.392.215.178.232.228.214.3-.04.168-.5.736-1.042.825-.37.06-.708.016-1.487-.194l-.3-.082c-.37-.098-.553-.146-.66-.146-.223 0-.323.078-.507.22l-.088.067c-.206.158-.45.346-.86.346-.51 0-.91-.32-1.127-.9-.057-.15-.157-.222-.258-.222-.43 0-.66.82-.445 1.6.14.506.58.796 1.463 1.03.11.03.353.088.756.184.444.106.84.2 1.157.34.62.274.965.738.965 1.305 0 .805-.623 1.21-1.855 1.21-.297 0-.638-.024-1.002-.072-.82-.107-1.493-.195-2.022.253a.853.853 0 0 0-.27.65c-.012.873 1.077 1.838 2.5 2.214 2 1.114 4.887 1.114 7.214 0 1.423-.376 2.512-1.34 2.5-2.214a.853.853 0 0 0-.27-.65c-.53-.448-1.202-.36-2.022-.253-.364.048-.705.072-1.002.072-1.232 0-1.855-.405-1.855-1.21 0-.568.345-1.03.965-1.306.317-.14.713-.233 1.157-.34.403-.095.646-.153.756-.183.882-.234 1.323-.524 1.463-1.03.215-.78-.016-1.6-.446-1.6-.1 0-.2.07-.257.22-.217.58-.617.9-1.127.9-.41 0-.654-.188-.86-.346l-.088-.067c-.183-.142-.284-.22-.507-.22-.107 0-.29.048-.66.146l-.3.082c-.78.21-1.117.254-1.488.194-.54-.09-1-.657-1.04-1.825-.02-.073 0-.123.213-.3.473-.392.772-.857.892-1.392.148-.665.053-1.323-.272-1.956-.327-.637-.766-1.1-1.11-1.464-.498-.523-.926-.974-1.09-1.554-.116-.416-.112-.754.02-1.05.193-.43.827-.888 1.444-1.25.543-.317.675-.484.753-.642.08-.158.078-.33.003-.493-.036-.08-.09-.128-.132-.193-.252-.392-1.082-1.19-1.55-1.488-.192-.122-.4-.197-.572-.247a9.98 9.98 0 0 0-2.835-.405z" />
+                            </svg>
                         </a>
                     </div>
                 </div>

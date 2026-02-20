@@ -19,6 +19,7 @@ import {
     LogOut,
     Flame,
     Sparkles,
+    Instagram,
 } from 'lucide-react';
 
 interface SidebarMenuProps {
@@ -157,21 +158,21 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                                     </button>
                                 </>
                             ) : (
-                                <div className="p-6 bg-gray-950 rounded-[2rem] mx-2 my-2 shadow-xl shadow-gray-200">
-                                    <p className="text-white text-base font-black mb-1">Elite Access.</p>
-                                    <p className="text-gray-400 text-[11px] mb-5 font-medium leading-relaxed">Sign in to unlock exclusive features and track your premium orders.</p>
+                                <div className="p-6 bg-white border border-gray-100 rounded-3xl mx-2 my-2 shadow-sm">
+                                    <p className="text-gray-900 text-sm font-black mb-1">Elite Member Access.</p>
+                                    <p className="text-gray-500 text-[10px] mb-5 font-medium leading-relaxed">Sign in to unlock exclusive features and track your premium orders.</p>
                                     <div className="flex gap-2">
                                         <Link
                                             href="/login"
                                             onClick={onClose}
-                                            className="flex-1 bg-white text-gray-900 py-3 rounded-2xl text-[10px] font-black text-center hover:bg-gray-100 transition-all"
+                                            className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-[9px] font-black text-center hover:bg-gray-800 transition-all"
                                         >
                                             LOG IN
                                         </Link>
                                         <Link
                                             href="/register"
                                             onClick={onClose}
-                                            className="flex-1 bg-white/10 text-white border border-white/20 py-3 rounded-2xl text-[10px] font-black text-center hover:bg-white/20 transition-all"
+                                            className="flex-1 bg-gray-50 text-gray-900 border border-gray-100 py-2.5 rounded-xl text-[9px] font-black text-center hover:bg-gray-100 transition-all"
                                         >
                                             REGISTER
                                         </Link>
@@ -267,11 +268,31 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                         </div>
                     </div>
 
-                    {/* Footer Theme Toggle */}
-                    <div className="mt-auto px-8 py-8 opacity-40 hover:opacity-100 transition-opacity">
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Theme</span>
-                            <ThemeToggle />
+                    {/* Footer Socials & Theme Toggle */}
+                    <div className="mt-auto border-t border-gray-50 bg-gray-50/50">
+                        <div className="px-8 py-6 flex gap-4">
+                            <a
+                                href="https://www.instagram.com/londonimportsghana"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-pink-600 hover:border-pink-100 transition-all shadow-sm group"
+                            >
+                                <Instagram size={18} className="group-hover:scale-110 transition-transform" />
+                            </a>
+                            <a
+                                href="https://www.tiktok.com/@londons_imports1"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-black hover:border-black/10 transition-all shadow-sm group"
+                            >
+                                <svg className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+                            </a>
+                        </div>
+                        <div className="px-8 pb-8">
+                            <div className="flex items-center justify-between p-4 bg-white/50 border border-gray-100/50 rounded-2xl">
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Theme</span>
+                                <ThemeToggle />
+                            </div>
                         </div>
                     </div>
                 </div>
