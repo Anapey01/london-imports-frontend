@@ -116,12 +116,18 @@ export default function SourcingPage() {
                 return;
             }
 
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.detail || data.error || 'Upload failed');
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.detail || data.error || `Server Error (${res.status})`);
+                }
+                setResult(data);
+            } else {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                throw new Error(`Server returned non-JSON response (${res.status}). Check backend logs.`);
             }
-
-            setResult(data);
         } catch (err: any) {
             console.error('Sourcing upload error:', err);
             setError(err.message || 'Something went wrong. Please try again.');
