@@ -46,31 +46,6 @@ const faqs = [
         question: "What if my item doesn't arrive?",
         answer: "If delivery fails for any reason, you receive a full refund. Our 92% on-time delivery rate means this is rare, but you're always protected.",
         keywords: ["not arrive", "missing", "lost", "refund", "didn't come"]
-    },
-    {
-        question: "How do I become a vendor?",
-        answer: "Visit our 'Become a Vendor' page and fill out the application form. Our team will review your application and contact you within 2-3 business days.",
-        keywords: ["vendor", "seller", "sell", "store", "become vendor"]
-    },
-    {
-        question: "What happens if there's a delay?",
-        answer: "We'll notify you immediately via SMS and WhatsApp. If the delay exceeds the promised window, you can choose to wait for a discount or receive a full refund.",
-        keywords: ["delay", "late", "delayed", "waiting"]
-    },
-    {
-        question: "Can I buy from 1688 or Taobao?",
-        answer: "Yes! We ship to all major cities in Ghana from 1688, Taobao, or Alibaba. We consolidate your orders in China and deliver door-to-door anywhere in Ghana.",
-        keywords: ["1688", "taobao", "alibaba", "china", "order from china"]
-    },
-    {
-        question: "What are the customs/clearance costs?",
-        answer: "Customs duties typically range 0-20% depending on item category. London's Imports includes customs clearance in our pricing - no hidden fees!",
-        keywords: ["customs", "clearance", "duty", "tax", "tema", "port"]
-    },
-    {
-        question: "Do you deliver to Kumasi/outside Accra?",
-        answer: "Yes! We deliver to Accra, Kumasi, Tema, Takoradi, Cape Coast, and all major cities in Ghana. Door-to-door delivery included.",
-        keywords: ["kumasi", "delivery", "outside accra", "takoradi", "cape coast", "city"]
     }
 ];
 
@@ -78,7 +53,6 @@ const subjectOptions = [
     { value: 'order_issue', label: 'Order Issue', icon: '📦' },
     { value: 'shipping', label: 'Shipping Question', icon: '🚚' },
     { value: 'payment', label: 'Payment Problem', icon: '💳' },
-    { value: 'vendor', label: 'Vendor/Seller Inquiry', icon: '🏪' },
     { value: 'product', label: 'Product Question', icon: '🛍️' },
     { value: 'refund', label: 'Returns & Refunds', icon: '↩️' },
     { value: 'other', label: 'Other', icon: '💬' },

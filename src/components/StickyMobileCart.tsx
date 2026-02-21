@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface StickyMobileCartProps {
-    product: any;
+    product: {
+        name: string;
+        price: number;
+        preorder_status?: string;
+    };
     isAdding: boolean;
     onAddToCart: () => void;
     triggerRef: React.RefObject<HTMLElement | null>;
@@ -43,11 +47,11 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
     return createPortal(
         <div
             className={`
-                fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]
+                fixed bottom-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-t border-white/20 shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.08)]
                 px-4 py-3 pb-safe transform transition-transform duration-300 ease-in-out md:hidden
                 ${isVisible ? 'translate-y-0' : 'translate-y-full'}
             `}
-            aria-hidden={!isVisible}
+            aria-hidden={!isVisible ? "true" : "false"}
         >
             <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
                 {/* Product Info (Truncated) */}
