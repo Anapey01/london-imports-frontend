@@ -24,8 +24,8 @@ interface AboutStats {
 export default function AboutPageContent() {
     const [stats, setStats] = useState<AboutStats>({
         regions: 16,
-        sellers: 120,
-        orders: 22,
+        sellers: 0,
+        orders: 0,
         authenticity: 100
     });
     const [isLoaded, setIsLoaded] = useState(false);
