@@ -1,3 +1,4 @@
+import React, { useRef, useEffect } from 'react';
 import { Package } from 'lucide-react';
 
 interface GroupBuyProgressProps {
@@ -18,6 +19,13 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
     const current = Math.max(rawCurrent, 0);
     const percentage = Math.min(Math.round((current / target) * 100), 100);
     const remaining = Math.max(target - current, 0);
+    const progressRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (progressRef.current) {
+            progressRef.current.style.width = `${percentage}%`;
+        }
+    }, [percentage]);
 
     return (
         <div className="flex flex-col gap-2 w-full">
@@ -30,8 +38,8 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
 
             <div className="w-full bg-gray-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden shadow-inner border border-gray-200 dark:border-slate-600">
                 <div
+                    ref={progressRef}
                     className="bg-pink-600 h-full transition-all duration-1000 ease-out relative"
-                    style={{ width: `${percentage}%` }}
                 >
                     {/* Subtle shine effect */}
                     <div className="absolute inset-0 bg-white/20 skew-x-[-20deg] animate-[shimmer_2s_infinite]" />

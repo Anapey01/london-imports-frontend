@@ -92,6 +92,7 @@ const Footer = () => {
                             <li><Link href="/reviews" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Reviews</Link></li>
                             <li><Link href="/how-it-works" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">How It Works</Link></li>
                             <li><Link href="/faq" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
+                            <li><Link href="/blog" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold">Blog</Link></li>
                             <li><Link href="/track" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Track Order</Link></li>
                         </ul>
                     </div>

@@ -51,7 +51,7 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
                 px-4 py-3 pb-safe transform transition-transform duration-300 ease-in-out md:hidden
                 ${isVisible ? 'translate-y-0' : 'translate-y-full'}
             `}
-            aria-hidden={!isVisible ? "true" : "false"}
+            {...(!isVisible && { 'aria-hidden': true })}
         >
             <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
                 {/* Product Info (Truncated) */}

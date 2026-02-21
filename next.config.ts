@@ -1,6 +1,12 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+});
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -95,7 +101,7 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(
-  bundleAnalyzer(nextConfig),
+  withPWA(bundleAnalyzer(nextConfig)),
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options

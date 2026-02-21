@@ -8,9 +8,7 @@ import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import QueryProvider from "@/providers/QueryProvider";
-import { ToastProvider } from "@/components/Toast";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import Providers from "@/providers/Providers";
 
 // Lazy load below-the-fold components to reduce initial bundle
 const Footer = dynamic(() => import("@/components/Footer"), {
@@ -305,16 +303,12 @@ export default async function RootLayout({
           `}
         </Script>
 
-        <ThemeProvider>
-          <QueryProvider>
-            <ToastProvider>
-              <Navbar />
-              <main className="pb-20 md:pb-0">{children}</main>
-              <Footer />
-              <MobileBottomNav />
-            </ToastProvider>
-          </QueryProvider>
-        </ThemeProvider>
+        <Providers>
+          <Navbar />
+          <main className="pb-20 md:pb-0">{children}</main>
+          <Footer />
+          <MobileBottomNav />
+        </Providers>
       </body>
     </html>
   );

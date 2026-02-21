@@ -69,9 +69,8 @@ api.interceptors.response.use(
         const err = refreshError as { response?: { status?: number } };
         // We do NOT logout on network errors (status 0/undefined/500) to prevent instability
         if (typeof window !== 'undefined' && err.response && (err.response.status === 401 || err.response.status === 403)) {
-          // Clear any local auth state
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('user');
+          // Clear any local auth state through the store for consistency
+          import('@/stores/authStore').then(m => m.useAuthStore.getState().logout());
 
           // Force logout ONLY if not already on login page to avoid loops
           if (!window.location.pathname.includes('/login')) {

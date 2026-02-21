@@ -17,7 +17,7 @@ interface User {
     address: string;
     city: string;
     region: string;
-    vendor_profile?: any;
+    vendor_profile?: Record<string, unknown>;
     is_staff?: boolean;
     is_superuser?: boolean;
 }
@@ -28,7 +28,7 @@ interface AuthState {
     isLoading: boolean;
 
     login: (username: string, password: string) => Promise<void>;
-    register: (data: any) => Promise<void>;
+    register: (data: Record<string, unknown>) => Promise<void>;
     logout: () => void;
     fetchUser: () => Promise<void>;
     setUser: (user: User | null) => void;
@@ -60,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            register: async (data: any) => {
+            register: async (data: Record<string, unknown>) => {
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.register(data);
@@ -101,6 +101,7 @@ export const useAuthStore = create<AuthState>()(
         {
             name: 'auth-storage',
             partialize: (state) => ({
+                user: state.user,
                 isAuthenticated: state.isAuthenticated
             }),
         }

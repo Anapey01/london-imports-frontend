@@ -230,6 +230,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 <Link href="/track" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900">Track My Order</Link>
                                 <Link href="/about" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900">Our Story</Link>
                                 <Link href="/faq" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900">Help Center</Link>
+                                <Link href="/blog" onClick={onClose} className="block text-xs font-bold text-pink-600 hover:text-pink-700">Blog / Articles</Link>
                                 <a href="https://wa.me/233545247009" target="_blank" rel="noopener noreferrer" onClick={onClose} className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-[10px] font-black hover:bg-green-100 transition-colors mt-2">
                                     <Phone className="w-3 h-3" />
                                     WHATSAPP SUPPORT
