@@ -21,10 +21,10 @@ import {
     Package,
     Phone,
     LogOut,
-    Flame,
-    Sparkles,
     Instagram,
     Star,
+    Zap,
+    Scan,
 } from 'lucide-react';
 
 interface MobileMenuDrawerProps {
@@ -113,8 +113,8 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             onClick={onClose}
                             className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all group"
                         >
-                            <div className="w-8 h-8 rounded-xl bg-pink-50 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                                <Flame className="w-4 h-4 text-pink-500" />
+                            <div className="w-8 h-8 rounded-xl bg-rose-50/50 flex items-center justify-center border border-rose-100/50 group-hover:scale-110 transition-transform flex-shrink-0">
+                                <Zap className="w-4 h-4 text-rose-500" strokeWidth={1.5} />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold text-gray-900 uppercase tracking-wide">Ready to Ship</span>
@@ -126,8 +126,8 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             onClick={onClose}
                             className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all group"
                         >
-                            <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                                <Sparkles className="w-4 h-4 text-purple-500" />
+                            <div className="w-8 h-8 rounded-xl bg-violet-50/50 flex items-center justify-center border border-violet-100/50 group-hover:scale-110 transition-transform flex-shrink-0">
+                                <Scan className="w-4 h-4 text-violet-500" strokeWidth={1.5} />
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">

@@ -16,10 +16,10 @@ import {
     Package,
     Phone,
     LogOut,
-    Flame,
-    Sparkles,
     Instagram,
     Star,
+    Zap,
+    Scan,
 } from 'lucide-react';
 
 interface SidebarMenuProps {
@@ -96,8 +96,8 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                             onClick={onClose}
                             className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all group"
                         >
-                            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                                <Flame className="w-5 h-5 text-pink-500" />
+                            <div className="w-10 h-10 rounded-xl bg-rose-50/50 flex items-center justify-center border border-rose-100/50 group-hover:scale-110 transition-transform flex-shrink-0">
+                                <Zap className="w-5 h-5 text-rose-500" strokeWidth={1.2} />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold text-gray-900 uppercase tracking-wide">Ready to Ship</span>
@@ -110,8 +110,8 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                             onClick={onClose}
                             className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all group"
                         >
-                            <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                                <Sparkles className="w-5 h-5 text-purple-500" />
+                            <div className="w-10 h-10 rounded-xl bg-violet-50/50 flex items-center justify-center border border-violet-100/50 group-hover:scale-110 transition-transform flex-shrink-0">
+                                <Scan className="w-5 h-5 text-violet-500" strokeWidth={1.2} />
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
