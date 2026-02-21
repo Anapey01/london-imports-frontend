@@ -35,10 +35,12 @@ export default function AboutPageContent() {
             try {
                 const response = await api.get('/orders/stats/');
                 if (response.data) {
-                    setStats(prev => ({
-                        ...prev,
-                        orders: Math.floor((response.data.orders_fulfilled || 0) / 1000), // Displaying in 'k'
-                    }));
+                    setStats({
+                        orders: response.data.orders_fulfilled || 0,
+                        sellers: response.data.verified_vendors || 0,
+                        regions: response.data.regions || 16,
+                        authenticity: response.data.authenticity_rate || 100,
+                    });
                 }
                 setIsLoaded(true);
             } catch (error) {
@@ -108,7 +110,7 @@ export default function AboutPageContent() {
                             className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-100 relative group"
                         >
                             <Image
-                                src="/assets/about/ceo_official.jpg"
+                                src="/assets/about/ceo.png"
                                 alt="Abena Serwaa - Founder & CEO"
                                 fill
                                 className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -238,7 +240,7 @@ export default function AboutPageContent() {
                             <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Verified Suppliers</div>
                         </motion.div>
                         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                            <div className="text-6xl font-black text-orange-600 mb-2 tabular-nums">{isLoaded ? stats.orders + "k+" : '..'}</div>
+                            <div className="text-6xl font-black text-orange-600 mb-2 tabular-nums">{isLoaded ? (stats.orders >= 1000 ? (stats.orders / 1000).toFixed(1) + "k+" : stats.orders) : '..'}</div>
                             <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Deliveries</div>
                         </motion.div>
                         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>

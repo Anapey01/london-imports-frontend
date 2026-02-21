@@ -286,7 +286,7 @@ export default function ContactPageContent() {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl">
+                    <div className="bg-white rounded-[1.5rem] p-8 shadow-xl border border-slate-100">
                         {submitted ? (
                             <div className="h-full flex flex-col items-center justify-center text-center py-10 space-y-6">
                                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600">
@@ -318,7 +318,7 @@ export default function ContactPageContent() {
                                             required
                                             value={formData.name}
                                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                            className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-slate-900 focus:ring-2 focus:ring-orange-500 transition-all font-medium"
+                                            className="w-full bg-transparent border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all font-medium text-sm"
                                             placeholder="Abena Serwaa"
                                         />
                                     </div>
@@ -329,7 +329,7 @@ export default function ContactPageContent() {
                                             required
                                             value={formData.email}
                                             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                            className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-slate-900 focus:ring-2 focus:ring-orange-500 transition-all font-medium"
+                                            className="w-full bg-transparent border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all font-medium text-sm"
                                             placeholder="abena@company.gh"
                                         />
                                     </div>
@@ -341,7 +341,7 @@ export default function ContactPageContent() {
                                         aria-label="Inquiry Type"
                                         value={formData.subject}
                                         onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                                        className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-slate-900 focus:ring-2 focus:ring-orange-500 transition-all font-medium appearance-none"
+                                        className="w-full bg-transparent border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all font-medium text-sm appearance-none"
                                     >
                                         <option value="">Select a topic...</option>
                                         {subjectOptions.map(opt => (
@@ -356,14 +356,14 @@ export default function ContactPageContent() {
                                         value={formData.message}
                                         onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                                         rows={4}
-                                        className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-slate-900 focus:ring-2 focus:ring-orange-500 transition-all font-medium resize-none"
+                                        className="w-full bg-transparent border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all font-medium text-sm resize-none"
                                         placeholder="How can our team assist you today?"
                                     />
                                 </div>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-extrabold flex items-center justify-center gap-3 transition-all shadow-lg shadow-orange-600/20 active:scale-[0.98] disabled:opacity-50 uppercase tracking-widest text-sm"
+                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 rounded-xl font-extrabold flex items-center justify-center gap-3 transition-all shadow-md shadow-orange-600/10 active:scale-[0.98] disabled:opacity-50 uppercase tracking-widest text-xs"
                                 >
                                     {loading ? 'Sending...' : 'Send Message'} <Send className="w-5 h-5" />
                                 </button>
