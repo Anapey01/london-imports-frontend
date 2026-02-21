@@ -1,7 +1,9 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
-const withPWA = require('next-pwa')({
+import withPWAInit from 'next-pwa';
+
+const withPWA = withPWAInit({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
