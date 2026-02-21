@@ -110,14 +110,14 @@ export default function AboutPageContent() {
                             className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-100 relative group"
                         >
                             <Image
-                                src="/assets/our-story.jpg"
-                                alt="Abena Serwaa - Founder & CEO"
+                                src="/assets/about/ceo.png"
+                                alt="Abagail - Founder & CEO"
                                 fill
                                 className="object-cover group-hover:scale-110 transition-transform duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent z-10" />
                             <div className="absolute bottom-6 left-6 z-20 text-white">
-                                <h4 className="text-xl font-bold">Abena Serwaa</h4>
+                                <h4 className="text-xl font-bold">Abagail</h4>
                                 <p className="text-orange-400 text-[10px] uppercase font-black">Founder & CEO</p>
                             </div>
                         </motion.div>
