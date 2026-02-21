@@ -86,11 +86,14 @@ export default function AboutPageContent() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
-                        className="relative rounded-[2rem] overflow-hidden shadow-2xl h-[400px] bg-slate-200 flex items-center justify-center font-black text-white/40 text-4xl uppercase italic"
+                        className="relative rounded-[2rem] overflow-hidden shadow-2xl h-[400px] border border-orange-100"
                     >
-                        {/* Fallback pattern while actual image isn't set */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-purple-600/10" />
-                        Logistics Tech
+                        <Image
+                            src="/assets/about/logistics-tech.png"
+                            alt="Logistics Technology"
+                            fill
+                            className="object-cover"
+                        />
                     </motion.div>
                 </div>
             </section>
@@ -102,9 +105,15 @@ export default function AboutPageContent() {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-300 relative"
+                            className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-100 relative group"
                         >
-                            <div className="absolute inset-0 flex items-center justify-center font-black text-white/20 text-2xl uppercase tracking-widest text-center">CEO IMAGE</div>
+                            <Image
+                                src="/assets/about/ceo.png"
+                                alt="Abena Serwaa - Founder & CEO"
+                                fill
+                                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent z-10" />
                             <div className="absolute bottom-6 left-6 z-20 text-white">
                                 <h4 className="text-xl font-bold">Abena Serwaa</h4>
                                 <p className="text-orange-400 text-[10px] uppercase font-black">Founder & CEO</p>
@@ -159,7 +168,15 @@ export default function AboutPageContent() {
                             whileInView={{ opacity: 1, y: 0 }}
                             className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 text-left group"
                         >
-                            <div className="h-48 bg-gray-100 flex items-center justify-center font-black text-gray-300 text-2xl italic">Consumer Hub</div>
+                            <div className="h-56 relative overflow-hidden">
+                                <Image
+                                    src="/assets/about/consumers.png"
+                                    alt="Serving Consumers"
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-orange-600/10 group-hover:bg-transparent transition-colors" />
+                            </div>
                             <div className="p-8 space-y-4">
                                 <h3 className="text-2xl font-bold text-gray-900">Serving Consumers</h3>
                                 <p className="text-gray-500 text-sm leading-relaxed">Connecting individuals to high-quality international products with doorstep delivery.</p>
@@ -173,7 +190,15 @@ export default function AboutPageContent() {
                             transition={{ delay: 0.1 }}
                             className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 text-left group"
                         >
-                            <div className="h-48 bg-slate-100 flex items-center justify-center font-black text-slate-300 text-2xl italic">Business Hub</div>
+                            <div className="h-56 relative overflow-hidden">
+                                <Image
+                                    src="/assets/about/businesses.png"
+                                    alt="Empowering Businesses"
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors" />
+                            </div>
                             <div className="p-8 space-y-4">
                                 <h3 className="text-2xl font-bold text-gray-900">Empowering Businesses</h3>
                                 <p className="text-gray-500 text-sm leading-relaxed">Providing retailers with factory-direct sourcing and scaling logistics.</p>
