@@ -9,12 +9,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
-import { Home, Search, ShoppingBag, User } from 'lucide-react';
+import { useWishlistStore } from '@/stores/wishlistStore';
+import { Home, Search, ShoppingBag, User, Heart } from 'lucide-react';
 
 export default function MobileBottomNav() {
     const pathname = usePathname();
     const { itemCount } = useCartStore();
     const { isAuthenticated } = useAuthStore();
+    const wishlistItems = useWishlistStore(state => state.items);
 
     // Consolidated to 4 primary items for better usability and less clutter
     const navItems = [
@@ -27,6 +29,12 @@ export default function MobileBottomNav() {
             name: 'Shop',
             href: '/products',
             icon: Search,
+        },
+        {
+            name: 'Wishlist',
+            href: '/wishlist',
+            icon: Heart,
+            badge: wishlistItems.length,
         },
         {
             name: 'Basket',
