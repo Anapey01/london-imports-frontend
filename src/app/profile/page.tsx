@@ -209,17 +209,7 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
                                 </svg>
                                 Admin Dashboard
                             </Link>
-                        ) : (
-                            <Link
-                                href="/sell"
-                                className={`group inline-flex items-center gap-2 border-b pb-0.5 text-sm font-medium transition-colors ${isDark ? 'border-pink-400 text-pink-400 hover:text-pink-300 hover:border-pink-300' : 'border-pink-600 text-pink-600 hover:text-pink-700 hover:border-pink-700'}`}
-                            >
-                                Start Selling
-                                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                </svg>
-                            </Link>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

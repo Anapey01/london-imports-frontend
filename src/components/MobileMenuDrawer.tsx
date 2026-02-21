@@ -208,12 +208,6 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 </div>
                             </div>
 
-                            <Link href="/sell" onClick={onClose} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors group">
-                                <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors">
-                                    <Package className="w-4 h-4 text-gray-500 group-hover:text-gray-900" />
-                                </div>
-                                <span className="text-gray-800 font-bold text-sm">Sell with Us</span>
-                            </Link>
                         </div>
                     </div>
 

@@ -207,14 +207,6 @@ export default function RegisterPage() {
                             Sign in
                         </Link>
                     </p>
-                    <div className="mt-4">
-                        <p>
-                            Want to sell with us?{' '}
-                            <Link href="/sell" className="text-gray-900 font-medium hover:underline underline-offset-4">
-                                Vendor Options
-                            </Link>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
