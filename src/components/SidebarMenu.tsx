@@ -12,7 +12,6 @@ import {
     ChevronRight,
     HelpCircle,
     ShoppingBag,
-    Heart,
     User,
     Package,
     Phone,
@@ -74,8 +73,8 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                             className="rounded-lg shadow-sm group-hover:scale-105 transition-transform"
                         />
                         <div className="flex flex-col leading-none">
-                            <span className="text-sm font-black tracking-tight text-gray-900 uppercase">London&apos;s</span>
-                            <span className="text-[10px] font-bold text-pink-600 tracking-[0.2em] uppercase">Imports</span>
+                            <span className="text-sm font-bold tracking-tight text-gray-900 uppercase">London&apos;s</span>
+                            <span className="text-[10px] font-semibold text-pink-600 tracking-[0.25em] uppercase">Imports</span>
                         </div>
                     </Link>
                     <button
@@ -89,92 +88,88 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto pb-10 custom-scrollbar">
-                    {/* SECTION: Featured Actions */}
-                    <div className="p-4 grid grid-cols-1 gap-2">
+                    {/* SECTION: Featured Actions - Refined minimalist list */}
+                    <div className="px-4 py-6 space-y-1">
                         <Link
                             href="/products?status=READY_TO_SHIP"
                             onClick={onClose}
-                            className="flex items-center gap-4 px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-pink-50 hover:border-pink-100 transition-all group active:scale-95"
+                            className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all group"
                         >
-                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
                                 <Flame className="w-5 h-5 text-pink-500" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Ready to Ship</span>
-                                <span className="text-[10px] text-slate-400 font-medium italic">Instant delivery items</span>
+                                <span className="text-xs font-bold text-gray-900 uppercase tracking-wide">Ready to Ship</span>
+                                <span className="text-[10px] text-gray-400 font-medium">Instant global delivery</span>
                             </div>
                         </Link>
 
                         <Link
                             href="/sourcing"
                             onClick={onClose}
-                            className="flex items-center gap-4 px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-purple-50 hover:border-purple-100 transition-all group active:scale-95"
+                            className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all group"
                         >
-                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                            <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
                                 <Sparkles className="w-5 h-5 text-purple-500" />
                             </div>
                             <div className="flex flex-col">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-xs font-black text-slate-800 uppercase tracking-wider">AI Sourcing</span>
-                                    <span className="text-[8px] font-black bg-purple-600 text-white px-1.5 py-0.5 rounded-full">NEW</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-gray-900 uppercase tracking-wide">AI Sourcing</span>
+                                    <span className="text-[8px] font-bold bg-purple-600 text-white px-1.5 py-0.5 rounded-full">NEW</span>
                                 </div>
-                                <span className="text-[10px] text-slate-400 font-medium italic">Find anything, anywhere</span>
+                                <span className="text-[10px] text-gray-400 font-medium">Find anything, anywhere</span>
                             </div>
                         </Link>
                     </div>
 
-                    {/* SECTION: Account */}
-                    <div className="mt-2 border-t border-gray-50 pt-6">
+                    {/* SECTION: Member Space - Integrated minimalist style */}
+                    <div className="border-t border-gray-50 pt-6">
                         <div className="px-8 pb-3">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Member Space</span>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Member Space</span>
                         </div>
 
                         <div className="px-4 space-y-1">
                             {isAuthenticated ? (
                                 <>
-                                    <Link href="/profile" onClick={onClose} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors group">
-                                        <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-pink-50">
+                                    <Link href="/profile" onClick={onClose} className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-pink-50">
                                             <User className="w-4 h-4 text-gray-500 group-hover:text-pink-600" />
                                         </div>
-                                        <span className="text-gray-800 font-bold text-sm">Dashboard</span>
+                                        <span className="text-gray-800 font-semibold text-sm">Dashboard</span>
                                     </Link>
-                                    <Link href="/orders" onClick={onClose} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors group">
-                                        <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-pink-50">
+                                    <Link href="/orders" onClick={onClose} className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-pink-50">
                                             <Package className="w-4 h-4 text-gray-500 group-hover:text-pink-600" />
                                         </div>
-                                        <span className="text-gray-800 font-bold text-sm">My Orders</span>
+                                        <span className="text-gray-800 font-semibold text-sm">My Orders</span>
                                     </Link>
-                                    <Link href="/wishlist" onClick={onClose} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors group">
-                                        <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-pink-50">
-                                            <Heart className="w-4 h-4 text-gray-500 group-hover:text-pink-600" />
-                                        </div>
-                                        <span className="text-gray-800 font-bold text-sm">Saved Items</span>
-                                    </Link>
-                                    <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-red-50 transition-colors group text-left">
-                                        <div className="w-8 h-8 rounded-xl bg-red-50/50 flex items-center justify-center group-hover:bg-red-50">
+                                    <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-red-50 transition-colors group text-left">
+                                        <div className="w-8 h-8 rounded-lg bg-red-50/50 flex items-center justify-center group-hover:bg-red-50">
                                             <LogOut className="w-4 h-4 text-red-500" />
                                         </div>
-                                        <span className="text-red-600 font-bold text-sm">Log Out</span>
+                                        <span className="text-red-600 font-semibold text-sm">Log Out</span>
                                     </button>
                                 </>
                             ) : (
-                                <div className="p-6 bg-white border border-gray-100 rounded-3xl mx-2 my-2 shadow-sm">
-                                    <p className="text-gray-900 text-sm font-black mb-1">Elite Member Access.</p>
-                                    <p className="text-gray-500 text-[10px] mb-5 font-medium leading-relaxed">Sign in to unlock exclusive features and track your premium orders.</p>
+                                <div className="px-4 py-4 space-y-4">
+                                    <div className="space-y-1">
+                                        <p className="text-gray-900 text-sm font-bold">Elite Member Access.</p>
+                                        <p className="text-gray-400 text-[11px] font-medium leading-relaxed">Sign in to unlock exclusive features and track your premium orders.</p>
+                                    </div>
                                     <div className="flex gap-2">
                                         <Link
                                             href="/login"
                                             onClick={onClose}
-                                            className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-[9px] font-black text-center hover:bg-gray-800 transition-all"
+                                            className="flex-1 bg-gray-900 text-white py-3 px-4 rounded-xl text-[10px] font-bold text-center hover:bg-gray-800 transition-all tracking-widest"
                                         >
                                             LOG IN
                                         </Link>
                                         <Link
                                             href="/register"
                                             onClick={onClose}
-                                            className="flex-1 bg-gray-50 text-gray-900 border border-gray-100 py-2.5 rounded-xl text-[9px] font-black text-center hover:bg-gray-100 transition-all"
+                                            className="flex-1 bg-white text-gray-900 border border-gray-200 py-3 px-4 rounded-xl text-[10px] font-bold text-center hover:bg-gray-50 transition-all tracking-widest"
                                         >
-                                            REGISTER
+                                            JOIN
                                         </Link>
                                     </div>
                                 </div>
@@ -185,7 +180,7 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
                     {/* SECTION: Navigation */}
                     <div className="mt-6 border-t border-gray-50 pt-6">
                         <div className="px-8 pb-3">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Navigation</span>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em]">Collections</span>
                         </div>
 
                         <div className="px-4 space-y-1">
