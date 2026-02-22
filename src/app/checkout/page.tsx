@@ -44,6 +44,29 @@ interface PaystackPop {
     };
 }
 
+interface ExtendedCart extends Cart {
+    deposit_amount?: number;
+    balance_due?: number;
+    amount_paid?: number;
+    state?: string;
+    delivery_address?: string;
+    delivery_city?: string;
+    delivery_region?: string;
+    customer_notes?: string;
+}
+
+interface BackendError {
+    response?: {
+        data?: string | {
+            error?: string;
+            message?: string;
+            detail?: string;
+            [key: string]: string | string[] | undefined;
+        };
+    };
+    message?: string;
+}
+
 declare global {
     interface Window {
         PaystackPop?: PaystackPop;
@@ -61,7 +84,7 @@ function CheckoutPage() {
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
-    const [checkoutOrder, setCheckoutOrder] = useState<Cart | null>(null); // Store order after checkout creation
+    const [checkoutOrder, setCheckoutOrder] = useState<ExtendedCart | null>(null); // Store order after checkout creation
     const [delivery, setDelivery] = useState({
         address: '',
         city: '',
@@ -131,12 +154,22 @@ function CheckoutPage() {
 
     const paymentAmount = useMemo(() => {
         if (!currentOrderData) return 0;
-        const total = currentOrderData.total || 0;
+        const data = currentOrderData as ExtendedCart;
 
-        if (paymentType === 'DEPOSIT') return total * 0.3;
-        if (paymentType === 'CUSTOM') return parseFloat(customAmount) || 0;
-        return total;
-    }, [currentOrderData, paymentType, customAmount]);
+        // Prioritize specific fields if available (when resuming or after creation)
+        switch (paymentType) {
+            case 'DEPOSIT':
+                return 'deposit_amount' in data ? (data.deposit_amount || 0) : (data.total * 0.3);
+            case 'CUSTOM':
+                return parseFloat(customAmount) || 0;
+            case 'BALANCE':
+                if ('balance_due' in data) return data.balance_due || 0;
+                return (data.total || 0) - (data.amount_paid || 0);
+            case 'FULL':
+            default:
+                return data.total || 0;
+        }
+    }, [currentOrderData, paymentType, customAmount]) as number;
 
     if (!isAuthenticated) {
         router.push('/login?redirect=/checkout');
@@ -282,15 +315,34 @@ function CheckoutPage() {
             paystack.openIframe();
 
         } catch (err: unknown) {
-            console.error('Checkout error:', err);
+            const error = err as BackendError;
+            console.error('Checkout error:', error);
             let errorMessage = 'Checkout failed. Please try again.';
 
-            if (err && typeof err === 'object' && 'response' in err) {
-                const response = (err as { response: { data?: { error?: string } } }).response;
-                if (response?.data?.error) {
-                    errorMessage = response.data.error;
+            // Extract error message from various possible response formats
+            const responseData = error.response?.data;
+            if (responseData) {
+                if (typeof responseData === 'string') {
+                    errorMessage = responseData;
+                } else if (typeof responseData === 'object') {
+                    if (responseData.error) errorMessage = responseData.error;
+                    else if (responseData.message) errorMessage = responseData.message;
+                    else if (responseData.detail) errorMessage = responseData.detail;
+                    else {
+                        // Handle validation errors (e.g., { "payment_type": ["Invalid choice"] })
+                        const firstKey = Object.keys(responseData)[0];
+                        const firstError = responseData[firstKey];
+                        if (firstKey && Array.isArray(firstError)) {
+                            errorMessage = `${firstKey}: ${firstError[0]}`;
+                        } else if (firstKey && typeof firstError === 'string') {
+                            errorMessage = `${firstKey}: ${firstError}`;
+                        }
+                    }
                 }
+            } else if (error.message) {
+                errorMessage = error.message;
             }
+
             setError(errorMessage);
             setIsLoading(false);
         }
