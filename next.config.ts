@@ -15,7 +15,12 @@ const withPWA = withPWAInit({
     clientsClaim: true,
     runtimeCaching: [
       {
-        // 1. HTML documents (initial page loads) - SWR for instant offline
+        // 1. Paystack - ALWAYS NetworkOnly to avoid any PWA/Interception conflicts
+        urlPattern: ({ url }) => url.origin.includes('paystack'),
+        handler: 'NetworkOnly',
+      },
+      {
+        // 2. HTML documents (initial page loads) - SWR for instant offline
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'StaleWhileRevalidate',
         options: {
@@ -27,7 +32,7 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 2. Next.js Static Assets & RSC Payloads
+        // 3. Next.js Static Assets & RSC Payloads
         urlPattern: ({ url }) => {
           return url.pathname.includes('/_next/data/') ||
             url.searchParams.has('_rsc') ||
@@ -44,7 +49,7 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 3. API V1 - SWR for instant data display
+        // 4. API V1 - SWR for instant data display
         urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
         handler: 'StaleWhileRevalidate',
         options: {
@@ -59,7 +64,7 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 4. Cloudinary & Render Media
+        // 5. Cloudinary & Render Media
         urlPattern: ({ url }) =>
           url.origin === 'https://res.cloudinary.com' ||
           (url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/media/')),
@@ -160,7 +165,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://london-imports-api.onrender.com https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com https://checkout.paystack.com; img-src 'self' data: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://upload.wikimedia.org https://checkout.paystack.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://london-imports-api.onrender.com https://www.google-analytics.com https://api.paystack.co https://checkout-api.paystack.co https://js.paystack.co https://res.cloudinary.com https://www.googletagmanager.com; frame-src 'self' https://www.google.com https://www.youtube-nocookie.com https://checkout.paystack.com; frame-ancestors 'none'; object-src 'none';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googletagmanager.com https://london-imports-api.onrender.com https://*.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paystack.com https://checkout.paystack.com; img-src 'self' data: blob: https://*.cloudinary.com https://london-imports-api.onrender.com https://upload.wikimedia.org https://*.paystack.com https://*.googletagmanager.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://london-imports-api.onrender.com https://*.google-analytics.com https://api.paystack.co https://checkout-api.paystack.co https://*.paystack.co https://*.paystack.com https://*.cloudinary.com https://*.googletagmanager.com; frame-src 'self' https://*.paystack.com https://*.google.com https://*.youtube-nocookie.com https://checkout.paystack.com; frame-ancestors 'none'; object-src 'none';"
           }
         ],
       },
