@@ -15,7 +15,7 @@ import { ShoppingBag, Trash2, Minus, Plus, ArrowRight } from 'lucide-react';
 
 export default function CartPage() {
     const router = useRouter();
-    const { cart, guestItems, isLoading, fetchCart, removeFromCart, updateQuantity } = useCartStore();
+    const { cart, guestItems, isLoading, fetchCart, removeFromCart, updateQuantity, selectedItemIds, toggleSelection, selectAll } = useCartStore();
     const { isAuthenticated } = useAuthStore();
     const [mounted, setMounted] = useState(false);
 
@@ -26,16 +26,13 @@ export default function CartPage() {
     }, [fetchCart]);
 
     const items = isAuthenticated ? (cart?.items || []) : guestItems;
+    const selectedItems = items.filter(item => selectedItemIds.has(item.id));
 
-    // Derived totals for guest/initial load to avoid flickering
-    const subtotal = isAuthenticated
-        ? (cart?.subtotal || 0)
-        : items.reduce((sum, i) => sum + i.total_price, 0);
+    // Derived totals based on selection
+    const subtotal = selectedItems.reduce((sum, i) => sum + i.total_price, 0);
+    const total = subtotal + (isAuthenticated && cart?.delivery_fee && selectedItems.length > 0 ? cart.delivery_fee : 0);
 
-    // Fallback total logic
-    const total = isAuthenticated
-        ? (cart?.total || subtotal)
-        : subtotal;
+    const allSelected = items.length > 0 && items.every(i => selectedItemIds.has(i.id));
 
     if (!mounted) {
         return <div className="min-h-screen bg-gray-50 pt-32 pb-20 flex justify-center"><div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div></div>;
@@ -57,6 +54,20 @@ export default function CartPage() {
                         My Basket
                         <sup className="ml-2 text-sm font-medium text-gray-500">{items.length}</sup>
                     </h1>
+                    {items.length > 0 && (
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={allSelected}
+                                onChange={(e) => selectAll(e.target.checked)}
+                                className="w-4 h-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                                id="select-all"
+                            />
+                            <label htmlFor="select-all" className="text-sm font-medium text-gray-600 cursor-pointer">
+                                {allSelected ? 'Deselect All' : 'Select All'}
+                            </label>
+                        </div>
+                    )}
                 </div>
 
                 {items.length === 0 ? (
@@ -82,7 +93,17 @@ export default function CartPage() {
                         <div className="lg:col-span-8">
                             <div className="space-y-6">
                                 {items.map((item) => (
-                                    <div key={item.id} className="flex gap-6 py-6 border-b border-gray-100 last:border-0">
+                                    <div key={item.id} className={`flex gap-4 md:gap-6 py-6 border-b border-gray-100 last:border-0 transition-opacity ${!selectedItemIds.has(item.id) ? 'opacity-60' : ''}`}>
+                                        {/* Selection Checkbox */}
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedItemIds.has(item.id)}
+                                                onChange={() => toggleSelection(item.id)}
+                                                className="w-5 h-5 rounded border-gray-300 text-pink-600 focus:ring-pink-500 cursor-pointer"
+                                                aria-label={`Select ${item.product.name} for checkout`}
+                                            />
+                                        </div>
                                         {/* Image */}
                                         <div className="w-24 h-32 flex-shrink-0 bg-gray-100 rounded-sm overflow-hidden relative">
                                             {item.product?.image ? (
@@ -176,9 +197,13 @@ export default function CartPage() {
 
                                 <button
                                     onClick={handleCheckout}
-                                    className="w-full bg-gray-900 text-white py-4 rounded-full font-medium hover:bg-pink-600 transition-colors shadow-lg hover:shadow-xl transform active:scale-95 duration-200"
+                                    disabled={selectedItems.length === 0 || isLoading}
+                                    className={`w-full py-4 rounded-full font-medium transition-all shadow-lg transform active:scale-95 duration-200 ${selectedItems.length === 0
+                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                                        : 'bg-gray-900 text-white hover:bg-pink-600 hover:shadow-xl'
+                                        }`}
                                 >
-                                    Proceed to Checkout
+                                    {selectedItems.length === 0 ? 'Select items to checkout' : 'Proceed to Checkout'}
                                 </button>
 
                                 <p className="text-center mt-4 text-xs text-gray-400 font-light">

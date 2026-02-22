@@ -75,7 +75,7 @@ declare global {
 
 function CheckoutPage() {
     const router = useRouter();
-    const { cart, fetchCart } = useCartStore();
+    const { cart, fetchCart, selectedItemIds } = useCartStore();
     const { user, isAuthenticated } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -237,7 +237,8 @@ function CheckoutPage() {
                 delivery_region: delivery.region,
                 customer_notes: delivery.notes,
                 payment_type: paymentType,
-                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined
+                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
+                item_ids: Array.from(selectedItemIds) // Pass selected items to backend
             });
 
             orderToPay = checkoutResponse.data.order;
@@ -582,25 +583,35 @@ function CheckoutPage() {
 
                             {/* Items List (Compact) */}
                             <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                {currentOrderData.items?.map((item: CartItem) => (
-                                    <div key={item.id} className="flex justify-between items-center text-sm group">
-                                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                                            <span className="w-6 h-6 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-full text-xs font-medium text-gray-600">
-                                                {item.quantity}
-                                            </span>
-                                            <span className="text-gray-600 group-hover:text-gray-900 transition-colors truncate p-1">
-                                                {item.product.name}
-                                            </span>
+                                {(currentOrderData.items || [])
+                                    .filter((item: CartItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
+                                    .map((item: CartItem) => (
+                                        <div key={item.id} className="flex justify-between items-center text-sm group">
+                                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                <span className="w-6 h-6 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-full text-xs font-medium text-gray-600">
+                                                    {item.quantity}
+                                                </span>
+                                                <span className="text-gray-600 group-hover:text-gray-900 transition-colors truncate p-1">
+                                                    {item.product.name}
+                                                </span>
+                                            </div>
+                                            <span className="font-medium text-gray-900 whitespace-nowrap ml-4">GHS {item.total_price?.toLocaleString()}</span>
                                         </div>
-                                        <span className="font-medium text-gray-900 whitespace-nowrap ml-4">GHS {item.total_price?.toLocaleString()}</span>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
 
                             <div className="border-t border-gray-100 pt-6 space-y-3">
                                 <div className="flex justify-between text-gray-500 font-light">
                                     <span>Subtotal</span>
-                                    <span className="font-medium text-gray-900">GHS {currentOrderData.subtotal?.toLocaleString()}</span>
+                                    <span className="font-medium text-gray-900">
+                                        GHS {(() => {
+                                            if (checkoutOrder || orderNumberParam) return currentOrderData.subtotal?.toLocaleString();
+                                            const selSubtotal = (currentOrderData.items || [])
+                                                .filter((i: CartItem) => selectedItemIds.has(i.id))
+                                                .reduce((sum: number, i: CartItem) => sum + i.total_price, 0);
+                                            return selSubtotal.toLocaleString();
+                                        })()}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-gray-500 font-light">
                                     <span>Delivery</span>
@@ -610,7 +621,16 @@ function CheckoutPage() {
                                 </div>
                                 <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
                                     <span className="text-lg text-gray-900 font-medium pb-1">Total</span>
-                                    <span className="text-2xl sm:text-3xl font-light text-gray-900">GHS {currentOrderData.total?.toLocaleString()}</span>
+                                    <span className="text-2xl sm:text-3xl font-light text-gray-900">
+                                        GHS {(() => {
+                                            if (checkoutOrder || orderNumberParam) return currentOrderData.total?.toLocaleString();
+                                            const selSubtotal = (currentOrderData.items || [])
+                                                .filter((i: CartItem) => selectedItemIds.has(i.id))
+                                                .reduce((sum: number, i: CartItem) => sum + i.total_price, 0);
+                                            const selTotal = selSubtotal + (currentOrderData.delivery_fee || 0);
+                                            return selTotal.toLocaleString();
+                                        })()}
+                                    </span>
                                 </div>
 
                                 <div className="bg-gray-50 rounded-xl p-4 mt-4 flex justify-between items-center text-gray-900">

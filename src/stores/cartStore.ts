@@ -47,11 +47,14 @@ interface CartState {
     guestItems: CartItem[];
     isLoading: boolean;
     itemCount: number;
+    selectedItemIds: Set<string>;
 
     fetchCart: () => Promise<void>;
-    addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string, selectedVariant?: any) => Promise<void>;
+    addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
+    toggleSelection: (itemId: string) => void;
+    selectAll: (selected: boolean) => void;
     clearCart: () => void;
 }
 
@@ -62,6 +65,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
     guestItems: [], // Local offline items
     isLoading: false,
     itemCount: 0,
+    selectedItemIds: new Set(),
 
     fetchCart: async () => {
         // Fix: Check auth store state, not missing access_token
@@ -91,14 +95,20 @@ export const useCartStore = create<CartState>()((set, get) => ({
             try {
                 const response = await ordersAPI.cart();
                 const cart = response.data;
+
+                // Initialize selection if empty (selecting all by default on first fetch)
+                const newSelected = new Set(get().selectedItemIds);
+                if (newSelected.size === 0 && cart.items?.length > 0) {
+                    cart.items.forEach((i: CartItem) => newSelected.add(i.id));
+                }
+
                 set({
                     cart,
+                    selectedItemIds: newSelected,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
             } catch {
                 set({ cart: null });
-                // Don't reset itemCount here if we want to fallback to guest? 
-                // Actually if api fails, we might just show 0 or keep old state.
             } finally {
                 set({ isLoading: false });
             }
@@ -107,15 +117,20 @@ export const useCartStore = create<CartState>()((set, get) => ({
             const saved = localStorage.getItem('guest_cart');
             if (saved) {
                 const items = JSON.parse(saved);
+                const newSelected = new Set(get().selectedItemIds);
+                if (newSelected.size === 0 && items.length > 0) {
+                    items.forEach((i: CartItem) => newSelected.add(i.id));
+                }
                 set({
                     guestItems: items,
+                    selectedItemIds: newSelected,
                     itemCount: items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0)
                 });
             }
         }
     },
 
-    addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string, selectedVariant?: any) => {
+    addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         if (isAuthenticated) {
@@ -129,11 +144,21 @@ export const useCartStore = create<CartState>()((set, get) => ({
                 }
 
                 // Pass variants to API
-                // @ts-ignore - API needs update to accept variant_id
                 const response = await ordersAPI.addToCart(product.id, quantity, sizeParam, selectedColor, selectedVariant?.id);
                 const cart = response.data;
+
+                // Auto-select the newly added item
+                const newSelected = new Set(get().selectedItemIds);
+                cart.items?.forEach((i: CartItem) => {
+                    // We don't easily know which one is "new", so we just ensure all items are in selection if we want?
+                    // Or check which ID was added. Backend returns full cart.
+                    // For now, let's just ensure the newly returned items are all selected to be safe.
+                    newSelected.add(i.id);
+                });
+
                 set({
                     cart,
+                    selectedItemIds: newSelected,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
             } finally {
@@ -263,8 +288,31 @@ export const useCartStore = create<CartState>()((set, get) => ({
         }
     },
 
+    toggleSelection: (itemId: string) => {
+        const selected = new Set(get().selectedItemIds);
+        if (selected.has(itemId)) {
+            selected.delete(itemId);
+        } else {
+            selected.add(itemId);
+        }
+        set({ selectedItemIds: selected });
+    },
+
+    selectAll: (selected: boolean) => {
+        const items = isAuthenticated() ? (get().cart?.items || []) : get().guestItems;
+        if (selected) {
+            set({ selectedItemIds: new Set(items.map(i => i.id)) });
+        } else {
+            set({ selectedItemIds: new Set() });
+        }
+    },
+
     clearCart: () => {
-        set({ cart: null, guestItems: [], itemCount: 0 });
+        set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: new Set() });
         localStorage.removeItem('guest_cart');
     },
 }));
+
+function isAuthenticated() {
+    return useAuthStore.getState().isAuthenticated;
+}
