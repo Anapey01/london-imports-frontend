@@ -59,8 +59,13 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Attempt refresh (cookies handled automatically)
-        await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
+        // Attempt refresh (cookies handled automatically, but SimpleJWT often returns new access token)
+        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
+
+        const { access } = response.data;
+        if (access && typeof window !== 'undefined') {
+          localStorage.setItem('access_token', access);
+        }
 
         // Retry original request
         return api(originalRequest);

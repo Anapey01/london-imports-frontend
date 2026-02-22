@@ -241,6 +241,7 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
 
                         <div className={`overflow-hidden transition-all duration-300 ${supportOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
                             <div className="pl-16 pr-4 py-3 space-y-3">
+                                <Link href="/about" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">Our Story</Link>
                                 <Link href="/how-it-works" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">How It Works</Link>
                                 <Link href="/delivery-returns" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">Delivery & Returns</Link>
                                 <Link href="/track" onClick={onClose} className="block text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">Track My Order</Link>

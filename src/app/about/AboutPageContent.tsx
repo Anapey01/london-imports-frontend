@@ -110,7 +110,7 @@ export default function AboutPageContent() {
                             className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-100 relative group"
                         >
                             <Image
-                                src="/assets/abouet/ceo.png"
+                                src="/assets/about/ceo.png"
                                 alt="Abagail - Founder & CEO"
                                 fill
                                 className="object-cover group-hover:scale-110 transition-transform duration-700"

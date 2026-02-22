@@ -7,18 +7,21 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { User, Lock, ArrowRight } from 'lucide-react';
+import { User, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirect = searchParams.get('redirect') || '/profile';
+    const redirect = searchParams.get('redirect') || '/';
     const role = searchParams.get('role'); // 'vendor' | 'partner' | 'admin'
+    const emailParam = searchParams.get('email');
+    const isRegistered = searchParams.get('registered') === 'true';
 
     const { login, isLoading } = useAuthStore();
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState(emailParam || '');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(isRegistered ? 'Registration successful! Please sign in with your account.' : '');
 
     const getTitle = () => {
         switch (role) {
@@ -32,6 +35,7 @@ function LoginForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
 
         try {
             await login(username, password);
@@ -52,6 +56,12 @@ function LoginForm() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                {success && (
+                    <div className="bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-lg text-sm font-light flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4" />
+                        {success}
+                    </div>
+                )}
                 {error && (
                     <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm font-light">
                         {error}

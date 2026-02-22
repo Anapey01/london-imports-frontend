@@ -12,7 +12,7 @@ import { User, Lock, Mail, Phone, ArrowRight } from 'lucide-react';
 
 export default function RegisterPage() {
     const router = useRouter();
-    const { register, isLoading } = useAuthStore();
+    const { register, logout, isLoading } = useAuthStore();
 
     const [formData, setFormData] = useState({
         username: '', // Initialize to avoid controlled/uncontrolled issues
@@ -44,7 +44,12 @@ export default function RegisterPage() {
                 ...formData,
                 username: formData.email
             });
-            router.push('/');
+
+            // Clear the automatic login session
+            logout();
+
+            // Redirect to login with email pre-filled
+            router.push(`/login?email=${encodeURIComponent(formData.email)}&registered=true`);
         } catch (error: unknown) {
             console.error('Registration Error Full Object:', JSON.stringify(error, null, 2));
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
