@@ -18,7 +18,6 @@ import {
     Zap,
     Scan,
     Menu,
-    ChevronDown,
     ChevronRight,
     Instagram,
     Star,
@@ -76,18 +75,16 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     style={{ backgroundColor: 'var(--bg-primary)' }}
                 >
                     <div className="flex items-center gap-2">
-                        {/* THE PINK PILL TRIGGER (Mobile Version) */}
+                        {/* THE MINIMALIST MENU ICON */}
                         <div
                             onClick={onClose}
-                            className="p-2 rounded-xl flex items-center gap-1.5 bg-pink-50 text-pink-600 ring-2 ring-pink-100 shadow-sm cursor-pointer active:scale-95 transition-all"
+                            className="p-2 -ml-2 text-slate-700 dark:text-slate-300 cursor-pointer active:scale-90 transition-all"
                         >
-                            <Menu className="w-5 h-5" strokeWidth={2.5} />
-                            <span className="text-xs font-black uppercase tracking-wider">Menu</span>
-                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                            <Menu className="w-6 h-6" strokeWidth={1.5} />
                         </div>
 
                         {/* Separator Line */}
-                        <div className="w-[1px] h-6 bg-pink-100 mx-1" />
+                        <div className="w-[1px] h-6 bg-gray-100 dark:bg-slate-800 mx-1" />
 
                         <Link href="/" onClick={onClose} className="flex items-center gap-1.5 group">
                             <Image
