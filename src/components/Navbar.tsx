@@ -63,26 +63,29 @@ export default function Navbar() {
                                 onMouseLeave={() => setIsHoveringMenu(false)}
                             >
                                 <button
-                                    onClick={() => setIsHoveringMenu(!isHoveringMenu)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setIsHoveringMenu(!isHoveringMenu);
+                                    }}
                                     className={`p-2.5 -ml-2 rounded-xl transition-all flex items-center gap-2 focus:outline-none ${isHoveringMenu
-                                        ? 'bg-pink-50 text-pink-600 ring-2 ring-pink-100'
+                                        ? 'bg-pink-50 text-pink-600 ring-2 ring-pink-100 shadow-sm'
                                         : 'text-gray-700 hover:bg-gray-50 hover:text-pink-600'
                                         }`}
-                                    aria-label="Toggle categories menu"
+                                    aria-label="Toggle menu"
                                 >
                                     <Menu className="w-6 h-6" strokeWidth={2.5} />
                                     <span className="text-sm font-black uppercase tracking-wider hidden lg:inline">Menu</span>
                                     <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isHoveringMenu ? 'rotate-180' : ''}`} />
                                 </button>
 
-                                {/* MEGA MENU COMPONENT */}
+                                {/* MEGA MENU COMPONENT - Positioned relative to Navbar Container */}
                                 <div
-                                    className={`absolute top-full left-1/2 -translate-x-1/2 w-[100vw] transition-all duration-300 origin-top overflow-visible ${isHoveringMenu
+                                    className={`absolute top-full left-0 w-full min-w-[1200px] transition-all duration-300 origin-top z-50 ${isHoveringMenu
                                         ? 'opacity-100 translate-y-0 visible'
                                         : 'opacity-0 -translate-y-2 invisible'
                                         }`}
                                 >
-                                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-1">
+                                    <div className="pt-2">
                                         <MegaMenu />
                                     </div>
                                 </div>

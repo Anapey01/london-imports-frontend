@@ -177,7 +177,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     {/* SECTION: Direct Access */}
                     <div className="mt-6 border-t border-gray-50 pt-6">
                         <div className="px-8 pb-3">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em]">Direct Access</span>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em]">Main Menu</span>
                         </div>
 
                         <div className="px-4 space-y-1">
@@ -186,7 +186,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${categoriesOpen ? 'bg-white' : 'bg-gray-50 group-hover:bg-pink-50'}`}>
                                         <ShoppingBag className={`w-4 h-4 ${categoriesOpen ? 'text-pink-600' : 'text-gray-500 group-hover:text-pink-600'}`} />
                                     </div>
-                                    <span className={`font-bold text-sm ${categoriesOpen ? 'text-pink-600' : 'text-gray-800'}`}>Product Categories</span>
+                                    <span className={`font-bold text-sm ${categoriesOpen ? 'text-pink-600' : 'text-gray-800'}`}>Menu</span>
                                 </div>
                                 <ChevronRight className={`w-4 h-4 text-gray-300 transition-transform duration-300 ${categoriesOpen ? 'rotate-90' : ''}`} />
                             </button>
