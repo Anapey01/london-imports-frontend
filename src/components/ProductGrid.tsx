@@ -1,6 +1,4 @@
-'use client';
-
-import { useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
@@ -40,10 +38,11 @@ export default function ProductGrid({
     initialStatus = '',
     vendorSlug = ''
 }: ProductGridProps) {
-    const [category, setCategory] = useState(initialCategory);
-    const [status, setStatus] = useState(initialStatus);
-    const [search, setSearch] = useState(initialSearch);
-    const [featured] = useState(initialFeatured);
+    // Use props as the source of truth for current filters
+    const category = initialCategory;
+    const status = initialStatus;
+    const search = initialSearch;
+    const featured = initialFeatured;
 
     // Fetch products with filters
     const { data: productsData, isLoading } = useQuery({
@@ -51,20 +50,33 @@ export default function ProductGrid({
         queryFn: () => productsAPI.list({ category, status, search, featured, vendor: vendorSlug }),
     });
 
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    // Helper to update URL params
+    const updateSearch = (name: string, value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value) {
+            params.set(name, value);
+        } else {
+            params.delete(name);
+        }
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
     // Helper to normalize data structure
     const getProducts = () => {
         // If we have query data, use it
         if (productsData?.data?.results) return productsData.data.results;
         if (productsData?.data && Array.isArray(productsData.data)) return productsData.data;
-        // Fallback to initial if no filter applied (though initialData handles this)
-        // Fallback to initial if no filter applied (though initialData handles this)
+        // Fallback to initial if no filter applied
         if (!category && !status && !search && !featured) return initialProducts;
         return [];
     };
 
     const products = getProducts();
     const displayCategories = categories.length > 0 ? categories : [];
-    // We could also fetch categories if empty, but for now server passes them.
 
     return (
         <div>
@@ -75,8 +87,12 @@ export default function ProductGrid({
                     <input
                         type="text"
                         placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        defaultValue={search}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                updateSearch('search', (e.target as HTMLInputElement).value);
+                            }
+                        }}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     />
                 </div>
@@ -84,7 +100,7 @@ export default function ProductGrid({
                 {/* Category Filter */}
                 <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => updateSearch('category', e.target.value)}
                     aria-label="Filter by category"
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white"
                 >
@@ -97,7 +113,7 @@ export default function ProductGrid({
                 {/* Status Filter */}
                 <select
                     value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    onChange={(e) => updateSearch('status', e.target.value)}
                     aria-label="Filter by status"
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white"
                 >

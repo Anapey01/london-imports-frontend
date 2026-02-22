@@ -1,5 +1,5 @@
 import HowItWorksBar from '@/components/HowItWorksBar';
-import { getCategories, getRecentProducts, getProducts } from '@/lib/fetchers';
+import { getCategories, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import StatsBar from '@/components/StatsBar';
 import { Metadata } from 'next';
@@ -54,20 +54,25 @@ export async function generateMetadata(
 }
 
 export default async function ProductsPage({ searchParams }: Props) {
-    // Fetch initial data on server (SSG/ISR)
-    const [categories, productsData] = await Promise.all([
-        getCategories(),
-        getRecentProducts(50)
-    ]);
-
-    const initialProducts = productsData?.results || [];
-
     // Extract filters from URL
     const search = typeof searchParams?.search === 'string' ? searchParams.search : undefined;
     const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
     const featured = searchParams.featured === 'true';
     const status = typeof searchParams?.status === 'string' ? searchParams.status : undefined;
     const isAvailableItems = status === 'READY_TO_SHIP';
+
+    // Fetch initial data on server (SSG/ISR) with filters applied
+    const [categories, productsData] = await Promise.all([
+        getCategories(),
+        getProducts({
+            category: category || '',
+            status: status || '',
+            featured: featured.toString(),
+            limit: '50'
+        })
+    ]);
+
+    const initialProducts = productsData?.results || [];
 
     return (
         <div className="min-h-screen bg-gray-50">
