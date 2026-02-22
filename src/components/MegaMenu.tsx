@@ -1,312 +1,203 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
-import ThemeToggle from './ThemeToggle';
 import {
-    Smartphone,
     Shirt,
-    Home,
-    Gamepad2,
-    ChevronRight,
     Zap,
     Scan,
-    User,
-    Package,
-    LogOut,
+    Sun,
+    Wind,
+    Tv,
+    ShoppingBag,
+    Briefcase,
+    ChevronRight,
     HelpCircle,
+    User,
+    UserPlus,
+    Footprints,
+    Droplet,
+    Utensils,
+    Crown,
     Instagram,
-    Star
+    Star,
+    LayoutGrid,
+    Package,
+    Gem,
+    Sparkles,
+    Smartphone,
+    IceCream,
 } from 'lucide-react';
 
-const CATEGORY_GROUPS = [
-    {
-        id: 'electronics',
-        name: 'Electronics',
-        icon: Smartphone,
-        subgroup: [
-            {
-                title: 'Phones & Tablets',
-                links: [
-                    { name: 'iPhones', href: '/products?category=phones&q=iphone' },
-                    { name: 'Samsung', href: '/products?category=phones&q=samsung' },
-                    { name: 'Tablets', href: '/products?category=tablets' },
-                    { name: 'Accessories', href: '/products?category=phone-accessories' },
-                ]
-            },
-            {
-                title: 'Computing',
-                links: [
-                    { name: 'Laptops', href: '/products?category=computing&q=laptops' },
-                    { name: 'Printers', href: '/products?category=computing&q=printers' },
-                    { name: 'Storage', href: '/products?category=computing&q=storage' },
-                ]
-            }
-        ]
-    },
-    {
-        id: 'fashion',
-        name: 'Fashion',
-        icon: Shirt,
-        subgroup: [
-            {
-                title: "Women's Fashion",
-                links: [
-                    { name: 'Dresses', href: '/products?category=fashion&q=dresses' },
-                    { name: 'Shoes', href: '/products?category=fashion&q=women-shoes' },
-                    { name: 'Bags', href: '/products?category=fashion&q=bags' },
-                ]
-            },
-            {
-                title: "Men's Fashion",
-                links: [
-                    { name: 'Shirts', href: '/products?category=fashion&q=shirts' },
-                    { name: 'Trousers', href: '/products?category=fashion&q=trousers' },
-                    { name: 'Watch', href: '/products?category=fashion&q=watches' },
-                ]
-            }
-        ]
-    },
-    {
-        id: 'home',
-        name: 'Home & Office',
-        icon: Home,
-        subgroup: [
-            {
-                title: 'Home Decoration',
-                links: [
-                    { name: 'Curtains', href: '/products?category=home&q=curtains' },
-                    { name: 'Wall Art', href: '/products?category=home&q=art' },
-                    { name: 'Lighting', href: '/products?category=home&q=lighting' },
-                ]
-            },
-            {
-                title: 'Small Appliances',
-                links: [
-                    { name: 'Blenders', href: '/products?category=home&q=blenders' },
-                    { name: 'Air Fryers', href: '/products?category=home&q=fryers' },
-                    { name: 'Kettles', href: '/products?category=home&q=kettles' },
-                ]
-            }
-        ]
-    },
-    {
-        id: 'gaming',
-        name: 'Gaming',
-        icon: Gamepad2,
-        subgroup: [
-            {
-                title: 'Consoles',
-                links: [
-                    { name: 'PlayStation', href: '/products?category=gaming&q=ps5' },
-                    { name: 'Nintendo Switch', href: '/products?category=gaming&q=nintendo' },
-                    { name: 'Xbox', href: '/products?category=gaming&q=xbox' },
-                ]
-            },
-            {
-                title: 'Video Games',
-                links: [
-                    { name: 'PS5 Games', href: '/products?category=gaming&q=ps5-games' },
-                    { name: 'PC Games', href: '/products?category=gaming&q=pc-games' },
-                ]
-            }
-        ]
-    }
+export const CATEGORY_GROUPS = [
+    { id: 'all', name: 'All Categories', icon: LayoutGrid },
+    { id: 'lightenings', name: 'Lightenings', icon: Sun },
+    { id: 'kids-shoes', name: 'Kids shoes', icon: Footprints },
+    { id: 'air-care', name: 'Air care products', icon: Wind },
+    { id: 'electronics', name: 'Electronic Appliances', icon: Tv },
+    { id: 'shein-bale', name: 'SHEIN ladies dress bale', icon: Package },
+    { id: 'perfumes', name: 'Arabian perfumes', icon: Droplet },
+    { id: 'home-kitchen', name: 'Home and kitchen', icon: Utensils },
+    { id: 'outfits', name: 'Outfits', icon: Shirt },
+    { id: 'business-finance', name: 'Business & Finance', icon: Briefcase },
+    { id: 'hair-accessories', name: 'Hair and accessories', icon: Crown },
+    { id: 'bags', name: 'Bags', icon: ShoppingBag },
+    { id: 'jewelry', name: 'Jewelry and accessories', icon: Gem },
+    { id: 'beauty', name: 'Body care and beauty', icon: Sparkles },
+    { id: 'heels', name: 'Heels and shoes', icon: Footprints },
+    { id: 'snacks', name: 'Snacks', icon: IceCream },
+    { id: 'gadgets', name: 'Mobile phones and gadgets', icon: Smartphone },
 ];
 
 export default function MegaMenu() {
-    const [activeTab, setActiveTab] = useState<string | null>(CATEGORY_GROUPS[0].id);
-    const { isAuthenticated, logout } = useAuthStore();
-
-    const activeCategory = CATEGORY_GROUPS.find(c => c.id === activeTab);
+    const { isAuthenticated } = useAuthStore();
 
     return (
-        <div className="w-full bg-white dark:bg-slate-900 border-x border-b border-gray-100 dark:border-slate-800 shadow-2xl rounded-b-3xl overflow-hidden flex z-50 min-h-[500px] glass-menu">
+        <div
+            className="relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl rounded-2xl overflow-visible flex z-50 min-h-[500px] w-[280px]"
+        >
+            {/* JUMIA-STYLE CARET/POINTER */}
+            <div className="absolute -top-2 left-6 w-4 h-4 bg-white dark:bg-slate-900 border-t border-l border-gray-100 dark:border-slate-800 rotate-45 z-[-1]" />
 
-            {/* LEFT RAIL: Parent Categories & Mobile Ported Actions */}
-            <div className="w-1/4 bg-gray-50/50 dark:bg-slate-900/50 border-r border-gray-100 dark:border-slate-800 py-6 overflow-y-auto max-h-[600px] scrollbar-hide">
 
-                {/* HIGHLIGHTED ACTIONS (Ported from Mobile) */}
-                <div className="px-3 mb-6 space-y-1">
-                    <Link href="/products?status=READY_TO_SHIP" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm transition-all group text-rose-600">
-                        <div className="p-2 bg-rose-50 dark:bg-rose-950/30 rounded-xl group-hover:bg-rose-100 dark:group-hover:bg-rose-900/40 transition-colors">
-                            <Zap className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[11px] font-black uppercase tracking-wider">Ready to Ship</span>
-                            <span className="text-[9px] text-gray-400 dark:text-gray-500 font-medium whitespace-nowrap">Global Delivery</span>
-                        </div>
-                    </Link>
-                    <Link href="/sourcing" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white hover:shadow-sm transition-all group text-violet-600">
-                        <div className="p-2 bg-violet-50 rounded-xl group-hover:bg-violet-100 transition-colors">
-                            <Scan className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-black uppercase tracking-wider">AI Sourcing</span>
-                                <span className="text-[7px] bg-violet-600 text-white px-1 rounded-full">NEW</span>
+            {/* LEFT RAIL: Parent Categories & Top Actions */}
+            <div className="w-[280px] flex-shrink-0 bg-white dark:bg-slate-900 border-r border-gray-50 dark:border-slate-800 py-4 flex flex-col">
+
+                {/* LOGIN / ACCOUNT SECTION */}
+                <div className="px-3 mb-6">
+                    {isAuthenticated ? (
+                        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gray-50 dark:bg-slate-800/50">
+                            <div className="w-9 h-9 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+                                <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                             </div>
-                            <span className="text-[9px] text-gray-400 font-medium">Fine anything</span>
-                        </div>
-                    </Link>
-                </div>
-
-                <div className="px-6 mb-2">
-                    <span className="text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.2em]">Categories</span>
-                </div>
-
-                {CATEGORY_GROUPS.map((category) => {
-                    const Icon = category.icon;
-                    const isActive = activeTab === category.id;
-
-                    return (
-                        <div
-                            key={category.id}
-                            onMouseEnter={() => setActiveTab(category.id)}
-                            className={`flex items-center justify-between px-6 py-3.5 cursor-pointer transition-all duration-200 group ${isActive
-                                ? 'bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 shadow-sm border-y border-gray-100 dark:border-slate-700'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/30 dark:hover:bg-slate-800/30'
-                                }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : 'group-hover:scale-110'} transition-transform`} strokeWidth={isActive ? 2.5 : 2} />
-                                <span className={`text-sm ${isActive ? 'font-black' : 'font-bold'}`}>
-                                    {category.name}
-                                </span>
+                            <div className="flex flex-col overflow-hidden">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Welcome</span>
+                                <span className="text-sm font-bold text-gray-900 dark:text-white truncate">My Account</span>
                             </div>
-                            <ChevronRight className={`w-4 h-4 transition-transform ${isActive ? 'translate-x-1 opacity-100' : 'opacity-0'}`} />
                         </div>
-                    );
-                })}
-
-                {/* MEMBER SPACE (Ported from Mobile) */}
-                <div className="mt-8 border-t border-gray-100 dark:border-slate-800 pt-6">
-                    <div className="px-6 mb-3">
-                        <span className="text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.2em]">Member Space</span>
-                    </div>
-
-                    <div className="px-3 space-y-1">
-                        {isAuthenticated ? (
-                            <>
-                                <Link href="/orders" className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm transition-all group">
-                                    <Package className="w-4 h-4 text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-400" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">My Orders</span>
-                                </Link>
-                                <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm transition-all group">
-                                    <User className="w-4 h-4 text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-400" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Dashboard</span>
-                                </Link>
-                                <button onClick={() => logout()} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 transition-all group w-full text-left">
-                                    <LogOut className="w-4 h-4 text-red-400" />
-                                    <span className="text-sm font-bold text-red-500 dark:text-red-400">Sign Out</span>
-                                </button>
-                            </>
-                        ) : (
-                            <div className="px-4 py-2">
-                                <Link href="/login" className="block w-full text-center bg-gray-900 dark:bg-pink-600 text-white text-[10px] font-black py-2.5 rounded-xl hover:bg-black dark:hover:bg-pink-700 transition-all">SIGN IN</Link>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {/* RIGHT PANEL: Sub-categories + Support + Socials */}
-            <div className="w-3/4 flex flex-col dark:bg-slate-900">
-                <div className="p-10 flex-1">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeTab}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.2 }}
-                            className="grid grid-cols-3 gap-12"
-                        >
-                            {activeCategory?.subgroup.map((group, idx) => (
-                                <div key={idx} className="space-y-5">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-600 border-b border-gray-100 dark:border-slate-800 pb-3">
-                                        {group.title}
-                                    </h4>
-                                    <div className="flex flex-col gap-3">
-                                        {group.links.map((link, lIdx) => (
-                                            <Link
-                                                key={lIdx}
-                                                href={link.href}
-                                                className="text-[13px] font-bold text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 hover:translate-x-1.5 transition-all flex items-center gap-2 group/link"
-                                            >
-                                                <span className="w-1 h-1 rounded-full bg-gray-200 dark:bg-slate-800 group-hover/link:bg-pink-400 transition-colors" />
-                                                {link.name}
-                                            </Link>
-                                        ))}
-                                    </div>
+                    ) : (
+                        <div className="space-y-1">
+                            <Link href="/login" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <User className="w-5 h-5 transition-transform" strokeWidth={1.5} />
+                                    <span className="text-[13px] font-bold uppercase tracking-wider">Login</span>
                                 </div>
-                            ))}
-                        </motion.div>
-                    </AnimatePresence>
+                                <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
+                            </Link>
+                            <Link href="/signup" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <UserPlus className="w-5 h-5 transition-transform" strokeWidth={1.5} />
+                                    <span className="text-[13px] font-bold uppercase tracking-wider">Sign Up</span>
+                                </div>
+                                <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
-                {/* BOTTOM UTILITY / FOOTER AREA (Ported from Mobile Menu) */}
-                <div className="bg-gray-50/80 dark:bg-slate-950/50 border-t border-gray-100 dark:border-slate-800 p-8 flex items-center justify-between">
-                    <div className="flex items-center gap-10">
-                        {/* Support Link */}
-                        <Link href="/faq" className="flex items-center gap-3 group">
-                            <div className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 group-hover:bg-pink-50 dark:group-hover:bg-pink-950/20 transition-colors">
-                                <HelpCircle className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-pink-600 dark:group-hover:text-pink-400" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs font-black text-gray-900 dark:text-white">Support & Help</span>
-                                <span className="text-[10px] text-gray-500 dark:text-gray-600 font-bold">24/7 Assistance</span>
-                            </div>
-                        </Link>
-
-                        {/* Theme Toggle (Desktop Friendly Version) */}
-                        <div className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
-                            <span className="text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest">Theme</span>
-                            <ThemeToggle />
+                {/* HIGHLIGHTED ACTIONS */}
+                <div className="px-3 mb-2 space-y-1">
+                    <Link href="/products?status=READY_TO_SHIP" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
+                        <div className="flex items-center gap-3">
+                            <Zap className="w-5 h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
+                            <span className="text-[13px] font-bold">Ready to Ship</span>
                         </div>
-                    </div>
-
-                    {/* Social Links (Ported from Mobile) */}
-                    <div className="flex items-center gap-3">
-                        <a
-                            href="https://instagram.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Follow us on Instagram"
-                            className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 text-gray-400 dark:text-gray-500 hover:text-pink-600 dark:hover:text-pink-400 transition-all hover:scale-110"
-                        >
-                            <Instagram size={18} />
-                        </a>
-                        <a
-                            href="https://tiktok.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Follow us on TikTok"
-                            className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-all hover:scale-110"
-                        >
-                            <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
-                        </a>
-                        <a
-                            href="https://trustpilot.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Rate us on Trustpilot"
-                            className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 text-gray-400 dark:text-gray-500 hover:text-emerald-500 dark:hover:text-emerald-400 transition-all hover:scale-110"
-                        >
-                            <Star size={18} />
-                        </a>
-                    </div>
-
-                    <Link
-                        href="/products?status=FLASH_DEAL"
-                        className="bg-pink-600 text-white px-6 py-2.5 rounded-xl text-[10px] font-black tracking-widest hover:bg-pink-700 transition-all shadow-lg shadow-pink-200 uppercase"
-                    >
-                        View Weekly Deals
+                        <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
+                    </Link>
+                    <Link href="/sourcing" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
+                        <div className="flex items-center gap-3">
+                            <Scan className="w-5 h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
+                            <div className="flex items-center gap-2">
+                                <span className="text-[13px] font-bold">AI Sourcing</span>
+                                <span className="text-[8px] border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded-md font-black uppercase">NEW</span>
+                            </div>
+                        </div>
+                        <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
                     </Link>
                 </div>
+
+                <div className="h-px bg-gray-50 dark:bg-slate-800 mx-6 mb-4" />
+
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                    {CATEGORY_GROUPS.map((category) => {
+                        const Icon = category.icon;
+
+                        return (
+                            <Link
+                                key={category.id}
+                                href={`/products?category=${category.id}`}
+                                className="flex items-center justify-between px-6 py-2.5 cursor-pointer transition-all group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Icon className="w-5 h-5 transition-transform" strokeWidth={1.5} />
+                                    <span className="text-[13px] font-bold">
+                                        {category.name}
+                                    </span>
+                                </div>
+                                <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
+                            </Link>
+                        );
+                    })}
+                </div>
+
+                {/* BOTTOM UTILITY (Internal to Rail) */}
+                <div className="mt-auto border-t border-gray-50 dark:border-slate-800 pt-4 px-3 pb-2 flex flex-col gap-3">
+                    <Link href="/faq" className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group">
+                        <HelpCircle className="w-4 h-4 text-gray-400 group-hover:text-pink-500" />
+                        <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Help Center</span>
+                    </Link>
+
+                    {/* SOCIAL MEDIA ICONS (Synced with Footer) */}
+                    <div className="flex items-center justify-between px-4 pb-2">
+                        <a
+                            href="https://www.instagram.com/londonimportsghana"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Instagram"
+                            title="Instagram"
+                            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 hover:text-pink-600 hover:bg-pink-50 transition-all"
+                        >
+                            <Instagram className="w-4 h-4" />
+                        </a>
+                        <a
+                            href="https://www.tiktok.com/@londons_imports1"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="TikTok"
+                            title="TikTok"
+                            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 transition-all"
+                        >
+                            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                            </svg>
+                        </a>
+                        <a
+                            href="https://www.snapchat.com/add/londons_imports"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Snapchat"
+                            title="Snapchat"
+                            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 hover:text-[#FFCC00] hover:bg-yellow-50 transition-all"
+                        >
+                            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                <path d="M12.003 1.996a9.982 9.982 0 0 0-2.835.405c-.172.05-.38.125-.572.247-.468.298-1.298 1.096-1.55 1.488-.042.064-.096.112-.132.193-.075.163-.075.335.003.493.078.158.21.325.753.642.617.362 1.25.82 1.444 1.25.132.296.136.634.02 1.05-.164.58-.592 1.03-1.09 1.554-.344.364-.783.827-1.11 1.464-.325.633-.42 1.29-.272 1.956.12.535.418 1 .892 1.392.215.178.232.228.214.3-.04.168-.5.736-1.042.825-.37.06-.708.016-1.487-.194l-.3-.082c-.37-.098-.553-.146-.66-.146-.223 0-.323.078-.507.22l-.088.067c-.206.158-.45.346-.86.346-.51 0-.91-.32-1.127-.9-.057-.15-.157-.222-.258-.222-.43 0-.66.82-.445 1.6.14.506.58.796 1.463 1.03.11.03.353.088.756.184.444.106.84.2 1.157.34.62.274.965.738.965 1.305 0 .805-.623 1.21-1.855 1.21-.297 0-.638-.024-1.002-.072-.82-.107-1.493-.195-2.022.253a.853.853 0 0 0-.27.65c-.012.873 1.077 1.838 2.5 2.214 2 1.114 4.887 1.114 7.214 0 1.423-.376 2.512-1.34 2.5-2.214a.853.853 0 0 0-.27-.65c-.53-.448-1.202-.36-2.022-.253-.364.048-.705.072-1.002.072-1.232 0-1.855-.405-1.855-1.21 0-.568.345-1.03.965-1.306.317-.14.713-.233 1.157-.34.403-.095.646-.153.756-.183.882-.234 1.323-.524 1.463-1.03.215-.78-.016-1.6-.446-1.6-.1 0-.2.07-.257.22-.217.58-.617.9-1.127.9-.41 0-.654-.188-.86-.346l-.088-.067c-.183-.142-.284-.22-.507-.22-.107 0-.29.048-.66.146l-.3.082c-.78.21-1.117.254-1.488.194-.54-.09-1-.657-1.04-1.825-.02-.073 0-.123.213-.3.473-.392.772-.857.892-1.392.148-.665.053-1.323-.272-1.956-.327-.637-.766-1.1-1.11-1.464-.498-.523-.926-.974-1.09-1.554-.116-.416-.112-.754.02-1.05.193-.43.827-.888 1.444-1.25.543-.317.675-.484.753-.642.08-.158.078-.33.003-.493-.036-.08-.09-.128-.132-.193-.252-.392-1.082-1.19-1.55-1.488-.192-.122-.4-.197-.572-.247a9.98 9.98 0 0 0-2.835-.405z" />
+                            </svg>
+                        </a>
+                        <a
+                            href="https://www.trustpilot.com/review/londonsimports.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Trustpilot"
+                            title="Trustpilot"
+                            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 hover:text-green-600 hover:bg-green-50 transition-all"
+                        >
+                            <Star className="w-4 h-4" />
+                        </a>
+                    </div>
+                </div>
             </div>
+
         </div>
     );
 }

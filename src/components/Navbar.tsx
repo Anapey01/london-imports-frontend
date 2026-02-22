@@ -12,7 +12,6 @@ import { useCartStore } from '@/stores/cartStore';
 import { useEffect, useState } from 'react';
 // Lazy load heavy interactive components
 const SearchModal = dynamic(() => import('./SearchModal'));
-const SidebarMenu = dynamic(() => import('./SidebarMenu'));
 const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
 const MegaMenu = dynamic(() => import('./MegaMenu'));
 
@@ -27,7 +26,6 @@ export default function Navbar() {
     const wishlistItems = useWishlistStore(state => state.items);
     const [mounted, setMounted] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(false); // Desktop Sidebar
     const [searchOpen, setSearchOpen] = useState(false);
     const [isHoveringMenu, setIsHoveringMenu] = useState(false);
 
@@ -247,10 +245,6 @@ export default function Navbar() {
                 {/* Search Modal */}
                 <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
             </nav >
-
-            {/* Desktop Sidebar Menu */}
-            < SidebarMenu isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)
-            } />
 
             {/* Mobile Menu Drawer */}
             <MobileMenuDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />

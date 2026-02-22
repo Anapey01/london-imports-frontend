@@ -17,8 +17,8 @@ const meta: Meta<typeof MegaMenu> = {
                         Categories
                     </div>
                     {/* DROP DOWN CONTAINER */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-[100vw] opacity-100 visible">
-                        <div className="max-w-7xl mx-auto px-10 pt-1">
+                    <div className="absolute top-full left-0 opacity-100 visible z-50">
+                        <div className="pt-1">
                             <Story />
                         </div>
                     </div>
