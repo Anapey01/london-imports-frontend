@@ -121,7 +121,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 className="rounded-md shadow-sm"
                             />
                             <div className="flex flex-col leading-none">
-                                <span className="text-[11px] font-black tracking-tighter text-slate-900 dark:text-white group-hover:text-pink-600 transition-colors">LONDON&apos;S</span>
+                                <span className="text-[11px] font-black tracking-tighter nuclear-black transition-colors">LONDON&apos;S</span>
                                 <span className="text-[8px] font-bold text-pink-600 tracking-[0.1em] uppercase">Imports</span>
                             </div>
                         </Link>
@@ -132,7 +132,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         className="p-2 text-gray-500 hover:text-pink-600 transition-colors"
                         aria-label="Close menu"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-5 h-5 nuclear-icon-black" strokeWidth={2.5} />
                     </button>
                 </div>
 
@@ -332,7 +332,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 className="w-full flex items-center justify-between px-6 py-4 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-all font-bold text-[13px] text-red-600 uppercase tracking-wider"
                             >
                                 <div className="flex items-center gap-4">
-                                    <X className="w-5 h-5" strokeWidth={1.5} />
+                                    <X className="w-5 h-5 nuclear-icon-black" strokeWidth={2.5} />
                                     EXIT ACCOUNT
                                 </div>
                             </button>

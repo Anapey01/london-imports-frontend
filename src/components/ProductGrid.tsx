@@ -40,11 +40,12 @@ export default function ProductGrid({
     initialStatus = '',
     vendorSlug = ''
 }: ProductGridProps) {
-    // Use props as the source of truth for current filters
-    const category = initialCategory;
-    const status = initialStatus;
-    const search = initialSearch;
-    const featured = initialFeatured;
+    const searchParams = useSearchParams();
+    // Derived state from URL - always reactive
+    const category = searchParams.get('category') ?? initialCategory;
+    const status = searchParams.get('status') ?? initialStatus;
+    const search = searchParams.get('search') ?? initialSearch;
+    const featured = searchParams.get('featured') === 'true' || initialFeatured;
 
     // Fetch products with filters
     const { data: productsData, isLoading } = useQuery({
@@ -54,7 +55,6 @@ export default function ProductGrid({
 
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     // Helper to update URL params
     const updateSearch = (name: string, value: string) => {
