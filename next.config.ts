@@ -1,13 +1,50 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
-import withPWAInit from 'next-pwa';
+import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-  register: true,
-  skipWaiting: true,
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  extendDefaultRuntimeCaching: true,
+  workboxOptions: {
+    runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/api\/(products|orders|faq|categories|reviews)\//,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'api-cache',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          },
+          networkTimeoutSeconds: 10,
+        },
+      },
+      {
+        urlPattern: /^https:\/\/res\.cloudinary\.com\//,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'cloudinary-images',
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/media\//,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'media-images',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+          },
+        },
+      },
+    ],
+  },
 });
 
 const bundleAnalyzer = withBundleAnalyzer({
