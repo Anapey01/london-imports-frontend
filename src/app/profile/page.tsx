@@ -14,7 +14,16 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import ProductCard from '@/components/ProductCard';
 import { getImageUrl } from '@/lib/image';
-import { User, Order, OrderItem } from '@/types';
+import { User, Order } from '@/types';
+import {
+    TrendingUp,
+    ShoppingBag,
+    Clock,
+    CheckCircle,
+    Package,
+    ChevronRight,
+    Calendar
+} from 'lucide-react';
 
 // Helper function to get relative time
 const getTimeAgo = (date: Date): string => {
@@ -261,121 +270,164 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
     return (
         <div className="space-y-10">
             {/* Page Title */}
-            <div className={`border-b pb-4 ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
-                <h2 className={`text-2xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    Overview
-                </h2>
+            <div className="flex items-center justify-between mb-2">
+                <div>
+                    <h2 className={`text-4xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        Overview
+                    </h2>
+                    <p className={`text-sm font-light mt-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        A snapshot of your account and recent activity.
+                    </p>
+                </div>
             </div>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                <div>
-                    <p className={`text-3xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{orders.length}</p>
-                    <p className={`text-xs mt-1 font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Total Orders</p>
-                </div>
-                <div>
-                    <p className={`text-3xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{pendingCount}</p>
-                    <p className={`text-xs mt-1 font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>In Progress</p>
-                </div>
-                <div>
-                    <p className={`text-3xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{completedCount}</p>
-                    <p className={`text-xs mt-1 font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Completed</p>
-                </div>
-                <div>
-                    <p className={`text-3xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>GHS {totalSpent.toFixed(0)}</p>
-                    <p className={`text-xs mt-1 font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Total Spent</p>
-                </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                    { label: 'Total Orders', value: orders.length, icon: ShoppingBag, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                    { label: 'In Progress', value: pendingCount, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+                    { label: 'Completed', value: completedCount, icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                    { label: 'Total Spent', value: `GHS ${totalSpent.toLocaleString()}`, icon: TrendingUp, color: 'text-pink-500', bg: 'bg-pink-500/10' },
+                ].map((stat, i) => (
+                    <div key={i} className={`p-6 rounded-3xl border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} transition-all hover:scale-[1.02] duration-300`}>
+                        <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4`}>
+                            <stat.icon size={22} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                            <p className={`text-2xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{stat.value}</p>
+                            <p className={`text-xs mt-1 uppercase tracking-widest font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{stat.label}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
 
-            {/* Recent Orders */}
-            <div>
-                <div className="flex items-end justify-between mb-4">
-                    <h3 className={`text-sm font-medium uppercase tracking-wide ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Recent Orders</h3>
-                    {orders.length > 5 && (
-                        <button className={`text-xs font-light border-b pb-0.5 transition-colors ${isDark ? 'border-slate-500 text-slate-400 hover:text-white hover:border-white' : 'border-gray-400 text-gray-500 hover:text-gray-900 hover:border-gray-900'}`}>
-                            View all
-                        </button>
+            {/* Content Grid: Orders & Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                {/* Recent Orders - Taking more space on desktop */}
+                <div className="lg:col-span-7 xl:col-span-8 space-y-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <ShoppingBag size={18} className="text-pink-500" />
+                            <h3 className={`text-sm font-semibold uppercase tracking-widest ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>Recent Orders</h3>
+                        </div>
+                        {orders.length > 5 && (
+                            <button className={`text-xs font-medium px-4 py-1.5 rounded-full border border-gray-200 transition-all ${isDark ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800' : 'border-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>
+                                View all
+                            </button>
+                        )}
+                    </div>
+
+                    {recentOrders.length > 0 ? (
+                        <div className="grid gap-4">
+                            {recentOrders.map((order: Order) => {
+                                const isPaid = ['PAID', 'DELIVERED'].includes(order.state);
+                                const firstItem = order.items?.[0];
+
+                                return (
+                                    <Link
+                                        key={order.order_number}
+                                        href={`/orders/${order.order_number}`}
+                                        className={`group flex items-center gap-4 p-4 rounded-3xl border transition-all duration-300 ${isDark ? 'bg-slate-900/40 border-slate-800 hover:bg-slate-800/60' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md'}`}
+                                    >
+                                        <div className="relative w-16 h-20 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
+                                            {firstItem?.product.image ? (
+                                                <NextImage
+                                                    src={getImageUrl(firstItem.product.image)}
+                                                    alt={firstItem.product_name}
+                                                    fill
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <Package size={24} />
+                                                </div>
+                                            )}
+                                            {order.items && order.items.length > 1 && (
+                                                <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-md text-white text-[10px] px-1.5 py-0.5 rounded-lg border border-white/10">
+                                                    +{order.items.length - 1}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>#{order.order_number}</span>
+                                                <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter font-bold ${isPaid
+                                                    ? 'bg-emerald-500/10 text-emerald-500'
+                                                    : 'bg-amber-500/10 text-amber-500'
+                                                    }`}>
+                                                    {order.state_display || order.state}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs font-light text-gray-500">
+                                                <Calendar size={12} />
+                                                <span>{new Date(order.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="text-right">
+                                            <p className={`text-base font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}
+                                            </p>
+                                            <div className={`mt-1 inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-tighter ${isDark ? 'text-slate-500' : 'text-gray-400'} group-hover:text-pink-500 transition-colors`}>
+                                                View <ChevronRight size={10} />
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className={`py-16 text-center rounded-3xl border border-dashed ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                            <ShoppingBag size={40} className={`mx-auto mb-4 ${isDark ? 'text-slate-700' : 'text-gray-300'}`} strokeWidth={1} />
+                            <p className={`text-sm font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No orders yet</p>
+                            <Link href="/products" className="inline-flex items-center gap-2 mt-4 text-xs font-medium text-pink-600 hover:gap-3 transition-all">
+                                Start shopping <ChevronRight size={12} />
+                            </Link>
+                        </div>
                     )}
                 </div>
 
-                {recentOrders.length > 0 ? (
-                    <div className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-gray-100'}`}>
-                        {recentOrders.map((order: Order) => (
-                            <div key={order.order_number} className="flex items-center justify-between py-4">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-2 h-2 rounded-full ${['PAID', 'DELIVERED'].includes(order.state) ? 'bg-green-500' : 'bg-amber-500'}`} />
-                                    <div>
-                                        <p className={`text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                            #{order.order_number}
-                                        </p>
-                                        <p className={`text-xs font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                            {new Date(order.created_at).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className={`text-sm font-light ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                        GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}
-                                    </p>
-                                    <p className={`text-xs font-light capitalize ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                        {(order.state_display || order.state || '').toLowerCase()}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                {/* Recent Activity - Side column on desktop */}
+                <div className="lg:col-span-5 xl:col-span-4 space-y-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Clock size={18} className="text-pink-500" />
+                        <h3 className={`text-sm font-semibold uppercase tracking-widest ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>Activity</h3>
                     </div>
-                ) : (
-                    <div className={`py-16 text-center`}>
-                        <svg className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-slate-700' : 'text-gray-200'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        <p className={`text-sm font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No orders yet</p>
-                        <Link href="/products" className={`inline-block mt-4 text-xs border-b pb-0.5 ${isDark ? 'border-pink-400 text-pink-400' : 'border-pink-600 text-pink-600'}`}>
-                            Start shopping
-                        </Link>
-                    </div>
-                )}
-            </div>
 
-            {/* Activity Timeline */}
-            <div>
-                <h3 className={`text-sm font-medium uppercase tracking-wide mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Recent Activity</h3>
-                <div className={`${isDark ? '' : ''}`}>
-                    {orders.length > 0 ? (
-                        <div className="relative pl-6">
-                            {/* Timeline line */}
-                            <div className={`absolute left-[3px] top-1 bottom-1 w-px ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
-
-                            <div className="space-y-5">
-                                {orders.slice(0, 4).map((order: Order) => {
+                    <div className="grid gap-4">
+                        {orders.length > 0 ? (
+                            <div className="space-y-4">
+                                {orders.slice(0, 5).map((order: Order) => {
                                     const date = new Date(order.created_at);
                                     const isCompleted = ['PAID', 'DELIVERED'].includes(order.state);
                                     const timeAgo = getTimeAgo(date);
 
                                     return (
-                                        <div key={order.order_number} className="flex gap-4 relative">
-                                            {/* Timeline dot */}
-                                            <div className={`absolute -left-6 top-1 w-1.5 h-1.5 rounded-full ${isCompleted ? 'bg-green-500' : 'bg-amber-500'}`} />
-                                            {/* Content */}
+                                        <div key={order.order_number} className={`flex items-start gap-3 p-4 rounded-3xl border ${isDark ? 'bg-slate-900/10 border-slate-800/50' : 'bg-gray-50/50 border-gray-100 shadow-sm'}`}>
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${isCompleted ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'
+                                                }`}>
+                                                {isCompleted ? <CheckCircle size={14} /> : <Package size={14} />}
+                                            </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className={`text-sm font-light ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                    {isCompleted ? 'Order delivered' : 'Order placed'}
-                                                    <span className="font-normal"> #{order.order_number}</span>
+                                                <p className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-800'} mb-0.5`}>
+                                                    {isCompleted ? 'Order Delivered' : 'Order Placed'}
                                                 </p>
-                                                <p className={`text-xs font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                                    {timeAgo} · GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}
-                                                </p>
+                                                <div className={`text-[10px] font-light ${isDark ? 'text-slate-500' : 'text-gray-500'} flex items-center justify-between`}>
+                                                    <span>#{order.order_number}</span>
+                                                    <span>{timeAgo}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
-                        </div>
-                    ) : (
-                        <p className={`text-sm font-light text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            No activity yet
-                        </p>
-                    )}
+                        ) : (
+                            <div className={`py-12 text-center rounded-3xl border border-dashed ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                                <p className={`text-sm font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No activity yet</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
@@ -385,7 +437,6 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
 const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
     const isDark = theme === 'dark';
     const [filter, setFilter] = useState('ALL');
-    const router = useRouter();
 
     const filteredOrders = filter === 'ALL'
         ? orders

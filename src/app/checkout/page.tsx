@@ -140,6 +140,9 @@ function CheckoutPage() {
                             } else {
                                 setPaymentType('DEPOSIT');
                             }
+                        } else {
+                            // If no balance due and no deposit set, default to FULL
+                            setPaymentType('FULL');
                         }
                     } else {
                         setError(`Order ${orderNumberParam} is not pending payment (State: ${res.data.state})`);
@@ -230,23 +233,25 @@ function CheckoutPage() {
 
             let orderToPay = checkoutOrder;
 
-            // 1. Checkout - finalize/update order in backend
-            // We always call checkout to ensure delivery info and payment_type calculations are synced
-            const checkoutResponse = await ordersAPI.checkout({
-                delivery_address: delivery.address,
-                delivery_city: delivery.city,
-                delivery_region: delivery.region,
-                customer_notes: delivery.notes,
-                payment_type: paymentType,
-                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
-                item_ids: Array.from(selectedItemIds) // Pass selected items to backend
-            });
+            // 1. Checkout/Sync - Only call checkout if we are NOT resuming an already created order
+            // If we ARE resuming, the order is already final in terms of items, we just need to pay it.
+            if (!orderNumberParam) {
+                const checkoutResponse = await ordersAPI.checkout({
+                    delivery_address: delivery.address,
+                    delivery_city: delivery.city,
+                    delivery_region: delivery.region,
+                    customer_notes: delivery.notes,
+                    payment_type: paymentType,
+                    custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
+                    item_ids: Array.from(selectedItemIds)
+                });
 
-            orderToPay = checkoutResponse.data.order;
-            setCheckoutOrder(orderToPay); // Update local state with latest totals/settings
+                orderToPay = checkoutResponse.data.order;
+                setCheckoutOrder(orderToPay);
+            }
 
             if (!orderToPay) {
-                throw new Error('Failed to create order');
+                throw new Error('Order data is missing. Please refresh.');
             }
 
             // 2. Initiate Payment (Get config from backend) or Redirect to WhatsApp
@@ -713,12 +718,13 @@ function CheckoutPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded)}
-                                className={`w-full mt-8 py-4 rounded-full font-medium transition-all shadow-lg hover:shadow-xl transform active:scale-95 duration-200 disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-2 ${paymentType === 'WHATSAPP' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-900 hover:bg-gray-800 text-white'}`}
+                                id="checkout-pay-button"
+                                className={`w-full mt-8 py-4 px-6 rounded-full font-bold transition-all shadow-lg hover:shadow-xl transform active:scale-95 duration-200 disabled:opacity-70 disabled:grayscale disabled:hover:scale-100 flex items-center justify-center gap-2 text-base md:text-lg ${paymentType === 'WHATSAPP' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-black hover:bg-gray-900 text-white'}`}
                             >
                                 {isLoading ? (
-                                    <span className="flex items-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Processing...
+                                    <span className="flex items-center gap-3">
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        Processing Order...
                                     </span>
                                 ) : (
                                     <>
@@ -731,8 +737,17 @@ function CheckoutPage() {
                                             </>
                                         ) : (
                                             <>
-                                                <CreditCard className="w-4 h-4" />
-                                                Pay GHS {paymentAmount?.toLocaleString()}
+                                                {!isPaystackLoaded ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                        Connecting to Secured Gateway...
+                                                    </span>
+                                                ) : (
+                                                    <>
+                                                        <CreditCard className="w-5 h-5 mr-1" strokeWidth={2.5} />
+                                                        Pay GHS {paymentAmount?.toLocaleString()}
+                                                    </>
+                                                )}
                                             </>
                                         )}
                                     </>
@@ -744,13 +759,13 @@ function CheckoutPage() {
                             </p>
                         </div>
                     </div>
+                    <Script
+                        src="https://js.paystack.co/v1/inline.js"
+                        strategy="lazyOnload"
+                        onLoad={() => setIsPaystackLoaded(true)}
+                    />
                 </form>
             </div>
-            <Script
-                src="https://js.paystack.co/v1/inline.js"
-                strategy="afterInteractive"
-                onLoad={() => setIsPaystackLoaded(true)}
-            />
         </div>
     );
 }
