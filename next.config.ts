@@ -94,7 +94,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://london-imports-api.onrender.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://upload.wikimedia.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://london-imports-api.onrender.com https://www.google-analytics.com; frame-src 'self' https://www.google.com https://www.youtube-nocookie.com; frame-ancestors 'none'; object-src 'none';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://london-imports-api.onrender.com https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://upload.wikimedia.org https://checkout.paystack.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://london-imports-api.onrender.com https://www.google-analytics.com https://api.paystack.co https://checkout-api.paystack.co; frame-src 'self' https://www.google.com https://www.youtube-nocookie.com https://checkout.paystack.com; frame-ancestors 'none'; object-src 'none';"
           }
         ],
       },
