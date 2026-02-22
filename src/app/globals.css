@@ -102,6 +102,29 @@
   border-color: #334155 !important;
 }
 
+/* Nuclear Contrast Utility for Mobile Drawer visibility */
+.nuclear-black {
+  color: #000000 !important;
+}
+
+.dark .nuclear-black,
+[data-theme='dark'] .nuclear-black {
+  color: #ffffff !important;
+}
+
+.nuclear-icon-black {
+  color: #000000 !important;
+}
+
+.dark .nuclear-icon-black,
+[data-theme='dark'] .nuclear-icon-black {
+  color: #ffffff !important;
+}
+
+.bg-primary-surface {
+  background-color: var(--bg-primary) !important;
+}
+
 /* Dark mode navbar */
 [data-theme='dark'] nav {
   background-color: #1e293b !important;
