@@ -23,6 +23,9 @@ import {
     Star,
     Zap,
     Scan,
+    Menu,
+    ChevronDown,
+    ChevronLeft,
 } from 'lucide-react';
 import { CATEGORY_GROUPS } from './MegaMenu';
 
@@ -72,27 +75,42 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 aria-modal="true"
                 aria-label="Mobile navigation menu"
             >
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-6 border-b border-gray-50 bg-white sticky top-0 z-20">
-                    <Link href="/" onClick={onClose} className="flex items-center gap-2">
-                        <Image
-                            src="/logo.jpg"
-                            alt="London's Imports"
-                            width={32}
-                            height={32}
-                            className="rounded-lg shadow-sm"
-                        />
-                        <div className="flex flex-col leading-none">
-                            <span className="text-sm font-bold tracking-tight text-gray-900 uppercase">London&apos;s</span>
-                            <span className="text-[10px] font-semibold text-pink-600 tracking-[0.25em] uppercase">Imports</span>
+                {/* Header - Synced with Desktop Look */}
+                <div className="flex items-center justify-between px-5 py-5 border-b border-gray-100 bg-white sticky top-0 z-20">
+                    <div className="flex items-center gap-3">
+                        <div
+                            onClick={onClose}
+                            className="flex items-center gap-1.5 p-1.5 transition-all text-gray-900 cursor-pointer"
+                        >
+                            <Menu className="w-6 h-6" strokeWidth={2.5} />
+                            <span className="text-xs font-black uppercase tracking-wider">Menu</span>
+                            <ChevronLeft className="w-4 h-4 text-gray-400" />
                         </div>
-                    </Link>
+
+                        {/* Separator Line from Image */}
+                        <div className="w-[1px] h-6 bg-gray-100" />
+
+                        <Link href="/" onClick={onClose} className="flex items-center gap-1.5">
+                            <Image
+                                src="/logo.jpg"
+                                alt="London's Imports"
+                                width={24}
+                                height={24}
+                                className="rounded-md"
+                            />
+                            <div className="flex flex-col leading-none">
+                                <span className="text-[10px] font-black tracking-tight text-gray-900 uppercase">London&apos;s</span>
+                                <span className="text-[8px] font-bold text-pink-600 tracking-[0.1em] uppercase">Imports</span>
+                            </div>
+                        </Link>
+                    </div>
+
                     <button
                         onClick={onClose}
-                        className="p-2 -mr-2 text-gray-400 hover:text-pink-600 transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-pink-600 transition-colors"
                         aria-label="Close menu"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -181,14 +199,18 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         </div>
 
                         <div className="px-4 space-y-1">
-                            <button onClick={() => setCategoriesOpen(!categoriesOpen)} className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all group ${categoriesOpen ? 'bg-pink-50 text-pink-600 shadow-sm' : 'hover:bg-gray-50'}`}>
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${categoriesOpen ? 'bg-white' : 'bg-gray-50 group-hover:bg-pink-50'}`}>
-                                        <ShoppingBag className={`w-4 h-4 ${categoriesOpen ? 'text-pink-600' : 'text-gray-500 group-hover:text-pink-600'}`} />
-                                    </div>
-                                    <span className={`font-bold text-sm ${categoriesOpen ? 'text-pink-600' : 'text-gray-800'}`}>Menu</span>
+                            <button
+                                onClick={() => setCategoriesOpen(!categoriesOpen)}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all group ${categoriesOpen
+                                    ? 'bg-pink-50 text-pink-600 shadow-sm ring-1 ring-pink-100'
+                                    : 'text-gray-700 hover:bg-gray-50 hover:text-pink-600'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Menu className="w-5 h-5" strokeWidth={2.5} />
+                                    <span className="text-sm font-black uppercase tracking-wider">Menu</span>
                                 </div>
-                                <ChevronRight className={`w-4 h-4 text-gray-300 transition-transform duration-300 ${categoriesOpen ? 'rotate-90' : ''}`} />
+                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${categoriesOpen ? 'rotate-180' : ''}`} />
                             </button>
 
                             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${categoriesOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
