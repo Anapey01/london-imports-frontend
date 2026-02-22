@@ -226,7 +226,6 @@ function CheckoutPage() {
 
                 orderToPay = checkoutResponse.data.order;
                 setCheckoutOrder(orderToPay); // Persist order state locally
-                useCartStore.getState().clearCart(); // Optimistically clear cart since it's converted
             }
 
             if (!orderToPay) {
@@ -246,6 +245,8 @@ function CheckoutPage() {
 
                 // Open WhatsApp
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                useCartStore.getState().clearCart(); // Clear cart as they transition to external payment
+
                 if (isMobile) {
                     window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
                 } else {
@@ -295,7 +296,7 @@ function CheckoutPage() {
                 callback: function (response: PaystackResponse) {
                     paymentsAPI.verify(response.reference)
                         .then(() => {
-                            // fetchCart(); // No need to fetch cart, it's empty
+                            useCartStore.getState().clearCart(); // Finalize cart clearing after verification
                             router.push(`/checkout/success?order=${orderToPay.order_number}`);
                         })
                         .catch((verifyErr) => {
