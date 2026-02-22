@@ -11,67 +11,63 @@ const withPWA = withPWAInit({
     document: "/offline",
   },
   workboxOptions: {
+    skipWaiting: true,
+    clientsClaim: true,
     runtimeCaching: [
       {
-        // 1. Precise match for HTML documents (initial page loads)
+        // 1. HTML documents (initial page loads) - SWR for instant offline
         urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'NetworkFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'pages-cache',
           expiration: {
             maxEntries: 50,
             maxAgeSeconds: 24 * 60 * 60, // 24 hours
           },
-          networkTimeoutSeconds: 5,
         },
       },
       {
-        // 2. Comprehensive match for RSC payloads & Next.js chunked data
+        // 2. Next.js Static Assets & RSC Payloads
         urlPattern: ({ url }) => {
           return url.pathname.includes('/_next/data/') ||
             url.searchParams.has('_rsc') ||
-            url.pathname.includes('/_next/static/');
+            url.pathname.includes('/_next/static/') ||
+            url.pathname.includes('/_next/image');
         },
-        handler: 'NetworkFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: 'nextjs-data',
+          cacheName: 'nextjs-assets',
           expiration: {
             maxEntries: 200,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
           },
         },
       },
       {
-        // 3. API V1 - Corrected URL pattern
-        urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/api\/v1\/(products|orders|faq|categories|reviews)\//,
-        handler: 'NetworkFirst',
+        // 3. API V1 - SWR for instant data display
+        urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'api-cache',
+          cacheableResponse: {
+            statuses: [200],
+          },
           expiration: {
             maxEntries: 100,
             maxAgeSeconds: 24 * 60 * 60, // 24 hours
           },
-          networkTimeoutSeconds: 10,
         },
       },
       {
-        urlPattern: /^https:\/\/res\.cloudinary\.com\//,
+        // 4. Cloudinary & Render Media
+        urlPattern: ({ url }) =>
+          url.origin === 'https://res.cloudinary.com' ||
+          (url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/media/')),
         handler: 'CacheFirst',
         options: {
-          cacheName: 'cloudinary-images',
+          cacheName: 'media-cache',
           expiration: {
             maxEntries: 200,
-            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-          },
-        },
-      },
-      {
-        urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/media\//,
-        handler: 'CacheFirst',
-        options: {
-          cacheName: 'media-images',
-          expiration: {
-            maxEntries: 100,
             maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
           },
         },
