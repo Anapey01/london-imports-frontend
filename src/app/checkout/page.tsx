@@ -159,27 +159,27 @@ function CheckoutPage() {
         setIsLoading(true);
 
         try {
+            // 0. Validate Payment Amount (Resumable or New)
+            if (paymentType === 'CUSTOM') {
+                const amount = parseFloat(customAmount);
+                const minAmount = 1;
+
+                if (isNaN(amount) || amount < minAmount) {
+                    setError(`Minimum payment amount is GHS ${minAmount.toLocaleString()}`);
+                    setIsLoading(false);
+                    return;
+                }
+                if (amount > currentOrderData.total) {
+                    setError(`Amount cannot exceed order total of GHS ${currentOrderData.total.toLocaleString()}`);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             let orderToPay = checkoutOrder;
 
             // Only create new order if we haven't already
             if (!orderToPay) {
-                // Validate Custom Amount
-                if (paymentType === 'CUSTOM') {
-                    const amount = parseFloat(customAmount);
-                    // const minAmount = currentOrderData.total * 0.3;
-                    const minAmount = 1;
-
-                    if (isNaN(amount) || amount < minAmount) {
-                        setError(`Minimum payment amount is GHS ${minAmount.toLocaleString()}`);
-                        setIsLoading(false);
-                        return;
-                    }
-                    if (amount > currentOrderData.total) { // Use currentOrderData
-                        setError(`Amount cannot exceed order total of GHS ${currentOrderData.total.toLocaleString()}`);
-                        setIsLoading(false);
-                        return;
-                    }
-                }
 
                 // 1. Checkout - finalize order in backend
                 const checkoutResponse = await ordersAPI.checkout({
@@ -238,10 +238,17 @@ function CheckoutPage() {
                 return;
             }
 
+            // Safety check for payment amount
+            if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
+                setError('Invalid payment amount. Please enter a valid number.');
+                setIsLoading(false);
+                return;
+            }
+
             const paystack = window.PaystackPop.setup({
                 key: 'pk_live_19482f7bb4f2f8db7b75211e3b529e3233aee865',
                 email: user?.email || 'customer@londonsimports.com',
-                amount: Math.ceil(paymentAmount! * 100),
+                amount: Math.ceil(paymentAmount * 100),
                 currency: 'GHS',
                 ref: reference,
                 metadata: {
