@@ -669,30 +669,38 @@ function CheckoutPage() {
                                     <span>Subtotal</span>
                                     <span className="font-medium text-gray-900">
                                         GHS {(() => {
-                                            if (checkoutOrder || orderNumberParam) return currentOrderData.subtotal?.toLocaleString();
+                                            if (checkoutOrder || orderNumberParam) return Number(currentOrderData.subtotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
                                             const selSubtotal = (currentOrderData.items || [])
                                                 .filter((i: CartItem) => selectedItemIds.has(i.id))
-                                                .reduce((sum: number, i: CartItem) => sum + i.total_price, 0);
-                                            return selSubtotal.toLocaleString();
+                                                .reduce((sum: number, i: CartItem) => sum + Number(i.total_price || 0), 0);
+                                            return selSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
                                         })()}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-gray-500 font-light">
                                     <span>Delivery</span>
                                     <span className="font-medium text-gray-900">
-                                        {currentOrderData.delivery_fee > 0 ? `GHS ${currentOrderData.delivery_fee.toLocaleString()}` : 'Pay on Arrival'}
+                                        {Number(currentOrderData.delivery_fee) > 0 ? `GHS ${Number(currentOrderData.delivery_fee).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : 'FREE'}
                                     </span>
                                 </div>
+
+                                {checkoutOrder && Number(checkoutOrder.amount_paid || 0) > 0 && (
+                                    <div className="flex justify-between text-green-600 font-light">
+                                        <span>Already Paid</span>
+                                        <span className="font-medium">- GHS {Number(checkoutOrder.amount_paid).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                    </div>
+                                )}
+
                                 <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
-                                    <span className="text-lg text-gray-900 font-medium pb-1">Total</span>
-                                    <span className="text-2xl sm:text-3xl font-light text-gray-900">
+                                    <span className="text-lg text-gray-900 font-medium pb-1">Total Order Value</span>
+                                    <span className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
                                         GHS {(() => {
-                                            if (checkoutOrder || orderNumberParam) return currentOrderData.total?.toLocaleString();
+                                            if (checkoutOrder || orderNumberParam) return Number(currentOrderData.total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
                                             const selSubtotal = (currentOrderData.items || [])
                                                 .filter((i: CartItem) => selectedItemIds.has(i.id))
-                                                .reduce((sum: number, i: CartItem) => sum + i.total_price, 0);
-                                            const selTotal = selSubtotal + (currentOrderData.delivery_fee || 0);
-                                            return selTotal.toLocaleString();
+                                                .reduce((sum: number, i: CartItem) => sum + Number(i.total_price || 0), 0);
+                                            const selTotal = selSubtotal + Number(currentOrderData.delivery_fee || 0);
+                                            return selTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
                                         })()}
                                     </span>
                                 </div>

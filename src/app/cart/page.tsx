@@ -29,8 +29,16 @@ export default function CartPage() {
     const selectedItems = items.filter(item => selectedItemIds.has(item.id));
 
     // Derived totals based on selection
-    const subtotal = selectedItems.reduce((sum, i) => sum + i.total_price, 0);
-    const total = subtotal + (isAuthenticated && cart?.delivery_fee && selectedItems.length > 0 ? cart.delivery_fee : 0);
+    const subtotal = selectedItems.reduce((sum, i) => sum + Number(i.total_price || 0), 0);
+    const deliveryFee = isAuthenticated && cart?.delivery_fee && selectedItems.length > 0 ? Number(cart.delivery_fee) : 0;
+    const total = subtotal + deliveryFee;
+
+    // Installment logic: Min deposit for selected items
+    const minDepositTotal = selectedItems.reduce((sum, i) => {
+        // Use product's deposit_amount if set, otherwise fallback to 30% of total
+        const deposit = i.product.deposit_amount ? Number(i.product.deposit_amount) : (Number(i.total_price) * 0.3);
+        return sum + deposit;
+    }, 0);
 
     const allSelected = items.length > 0 && items.every(i => selectedItemIds.has(i.id));
 
@@ -179,19 +187,34 @@ export default function CartPage() {
                                 <h2 className="text-xl font-light text-gray-900 mb-6 tracking-tight">Summary</h2>
 
                                 <div className="space-y-4 mb-8">
-                                    <div className="flex justify-between text-gray-600 font-light">
+                                    <div className="flex justify-between text-gray-500 font-light">
                                         <span>Subtotal</span>
-                                        <span className="font-medium text-gray-900">GHS {subtotal.toLocaleString()}</span>
+                                        <span className="font-medium text-gray-900">GHS {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
-                                    <div className="flex justify-between text-gray-600 font-light">
+                                    <div className="flex justify-between text-gray-500 font-light">
                                         <span>Delivery</span>
-                                        <span className="text-gray-900">
-                                            {isAuthenticated && cart?.delivery_fee ? `GHS ${cart.delivery_fee}` : 'Calc. at checkout'}
+                                        <span className="font-medium text-gray-900">
+                                            {deliveryFee > 0 ? `GHS ${deliveryFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'FREE'}
                                         </span>
                                     </div>
+
+                                    {minDepositTotal > 0 && minDepositTotal < subtotal && (
+                                        <div className="flex justify-between items-center py-2 px-3 bg-amber-50 rounded-lg border border-amber-100/50">
+                                            <div className="flex flex-col">
+                                                <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider">Installment Option</span>
+                                                <span className="text-amber-600 text-[10px] font-medium">Min. Deposit Due Now</span>
+                                            </div>
+                                            <span className="font-bold text-amber-900">GHS {minDepositTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        </div>
+                                    )}
+
                                     <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
-                                        <span className="text-lg text-gray-900 font-medium">Total</span>
-                                        <span className="text-2xl font-light text-gray-900">GHS {total.toLocaleString()}</span>
+                                        <span className="text-lg text-gray-900 font-medium pb-1">Total</span>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight leading-none">
+                                                GHS {total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
