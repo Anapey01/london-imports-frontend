@@ -66,21 +66,21 @@ export default function Navbar() {
                             >
                                 <button
                                     className={`p-2.5 -ml-2 rounded-xl transition-all flex items-center gap-2 focus:outline-none ${isHoveringMenu
-                                        ? 'bg-pink-50 text-pink-600'
+                                        ? 'bg-pink-50 text-pink-600 ring-2 ring-pink-100'
                                         : 'text-gray-700 hover:bg-gray-50 hover:text-pink-600'
                                         }`}
                                     aria-label="Toggle categories menu"
                                 >
                                     <Menu className="w-6 h-6" strokeWidth={2.5} />
-                                    <span className="text-sm font-black uppercase tracking-wider hidden xl:inline">Categories</span>
+                                    <span className="text-sm font-black uppercase tracking-wider hidden lg:inline">Categories</span>
                                     <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isHoveringMenu ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {/* MEGA MENU COMPONENT */}
                                 <div
                                     className={`absolute top-full left-1/2 -translate-x-1/2 w-[100vw] transition-all duration-300 origin-top overflow-visible ${isHoveringMenu
-                                            ? 'opacity-100 translate-y-0 visible'
-                                            : 'opacity-0 -translate-y-2 invisible'
+                                        ? 'opacity-100 translate-y-0 visible'
+                                        : 'opacity-0 -translate-y-2 invisible'
                                         }`}
                                 >
                                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-1">

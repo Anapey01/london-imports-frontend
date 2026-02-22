@@ -75,7 +75,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
             {/* Drawer */}
             <div
-                className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white z-50 shadow-2xl overflow-y-auto animate-slide-in-left flex flex-col"
+                className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-900 z-50 shadow-2xl overflow-y-auto animate-slide-in-left flex flex-col glass-menu"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Mobile navigation menu"
