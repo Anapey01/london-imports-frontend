@@ -119,11 +119,26 @@ function CheckoutPage() {
                             notes: res.data.customer_notes || '',
                         });
                         // Set payment amount based on what's due
-                        if (res.data.balance_due > 0 && res.data.amount_paid > 0) {
+                        const totalAmount = parseFloat(res.data.total.toString());
+                        const depositAmount = parseFloat((res.data.deposit_amount || 0).toString());
+                        const amountPaid = parseFloat((res.data.amount_paid || 0).toString());
+                        const balanceDue = parseFloat((res.data.balance_due || 0).toString());
+
+                        if (balanceDue > 0 && amountPaid > 0) {
                             setPaymentType('BALANCE');
-                        } else if (res.data.deposit_amount > 0) {
-                            // If it was a deposit order but nothing paid yet
-                            setPaymentType('DEPOSIT');
+                        } else if (depositAmount > 0) {
+                            // Check if it's a fixed 30% deposit or custom
+                            const isStandardDeposit = Math.abs(depositAmount - (totalAmount * 0.3)) < 0.01;
+                            const isFullPayment = Math.abs(depositAmount - totalAmount) < 0.01;
+
+                            if (!isStandardDeposit && !isFullPayment) {
+                                setPaymentType('CUSTOM');
+                                setCustomAmount(depositAmount.toString());
+                            } else if (isFullPayment) {
+                                setPaymentType('FULL');
+                            } else {
+                                setPaymentType('DEPOSIT');
+                            }
                         }
                     } else {
                         setError(`Order ${orderNumberParam} is not pending payment (State: ${res.data.state})`);
@@ -155,19 +170,22 @@ function CheckoutPage() {
     const paymentAmount = useMemo(() => {
         if (!currentOrderData) return 0;
         const data = currentOrderData as ExtendedCart;
+        const total = parseFloat(data.total?.toString() || '0');
 
         // Prioritize specific fields if available (when resuming or after creation)
         switch (paymentType) {
             case 'DEPOSIT':
-                return 'deposit_amount' in data ? (data.deposit_amount || 0) : (data.total * 0.3);
+                const deposit = data.deposit_amount ? parseFloat(data.deposit_amount.toString()) : 0;
+                return deposit || (total * 0.3);
             case 'CUSTOM':
                 return parseFloat(customAmount) || 0;
             case 'BALANCE':
-                if ('balance_due' in data) return data.balance_due || 0;
-                return (data.total || 0) - (data.amount_paid || 0);
+                if (data.balance_due) return parseFloat(data.balance_due.toString());
+                const balance = total - parseFloat((data.amount_paid || 0).toString());
+                return balance;
             case 'FULL':
             default:
-                return data.total || 0;
+                return total;
         }
     }, [currentOrderData, paymentType, customAmount]) as number;
 
@@ -211,22 +229,19 @@ function CheckoutPage() {
 
             let orderToPay = checkoutOrder;
 
-            // Only create new order if we haven't already
-            if (!orderToPay) {
+            // 1. Checkout - finalize/update order in backend
+            // We always call checkout to ensure delivery info and payment_type calculations are synced
+            const checkoutResponse = await ordersAPI.checkout({
+                delivery_address: delivery.address,
+                delivery_city: delivery.city,
+                delivery_region: delivery.region,
+                customer_notes: delivery.notes,
+                payment_type: paymentType,
+                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined
+            });
 
-                // 1. Checkout - finalize order in backend
-                const checkoutResponse = await ordersAPI.checkout({
-                    delivery_address: delivery.address,
-                    delivery_city: delivery.city,
-                    delivery_region: delivery.region,
-                    customer_notes: delivery.notes,
-                    payment_type: paymentType,
-                    custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined
-                });
-
-                orderToPay = checkoutResponse.data.order;
-                setCheckoutOrder(orderToPay); // Persist order state locally
-            }
+            orderToPay = checkoutResponse.data.order;
+            setCheckoutOrder(orderToPay); // Update local state with latest totals/settings
 
             if (!orderToPay) {
                 throw new Error('Failed to create order');
