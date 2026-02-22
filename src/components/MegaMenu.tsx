@@ -34,20 +34,20 @@ export const CATEGORY_GROUPS = [
     { id: 'all', name: 'All Categories', icon: LayoutGrid },
     { id: 'lightenings', name: 'Lightenings', icon: Sun },
     { id: 'kids-shoes', name: 'Kids shoes', icon: Footprints },
-    { id: 'air-care', name: 'Air care products', icon: Wind },
-    { id: 'electronics', name: 'Electronic Appliances', icon: Tv },
-    { id: 'shein-bale', name: 'SHEIN ladies dress bale', icon: Package },
+    { id: 'Rooms', name: 'Air care products', icon: Wind },
+    { id: 'electronic-appliances', name: 'Electronic Appliances', icon: Tv },
+    { id: 'shein-ladies-dress-bale', name: 'SHEIN ladies dress bale', icon: Package },
     { id: 'perfumes', name: 'Arabian perfumes', icon: Droplet },
-    { id: 'home-kitchen', name: 'Home and kitchen', icon: Utensils },
+    { id: 'kitchen-appliances', name: 'Home and kitchen', icon: Utensils },
     { id: 'outfits', name: 'Outfits', icon: Shirt },
-    { id: 'business-finance', name: 'Business & Finance', icon: Briefcase },
-    { id: 'hair-accessories', name: 'Hair and accessories', icon: Crown },
+    { id: 'business-finance-books', name: 'Business & Finance', icon: Briefcase },
+    { id: 'hair-and-accessories', name: 'Hair and accessories', icon: Crown },
     { id: 'bags', name: 'Bags', icon: ShoppingBag },
-    { id: 'jewelry', name: 'Jewelry and accessories', icon: Gem },
-    { id: 'beauty', name: 'Body care and beauty', icon: Sparkles },
-    { id: 'heels', name: 'Heels and shoes', icon: Footprints },
+    { id: 'accessories', name: 'Jewelry and accessories', icon: Gem },
+    { id: 'body-care-and-beauty', name: 'Body care and beauty', icon: Sparkles },
+    { id: 'heels-and-shoes', name: 'Heels and shoes', icon: Footprints },
     { id: 'snacks', name: 'Snacks', icon: IceCream },
-    { id: 'gadgets', name: 'Mobile phones and gadgets', icon: Smartphone },
+    { id: 'mobile-phones-and-gadgets', name: 'Mobile phones and gadgets', icon: Smartphone },
 ];
 
 export default function MegaMenu() {
@@ -55,7 +55,7 @@ export default function MegaMenu() {
 
     return (
         <div
-            className="relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl rounded-2xl overflow-visible flex z-50 min-h-[500px] w-[280px]"
+            className="relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl rounded-2xl overflow-hidden flex z-50 max-h-[calc(100vh-110px)] min-h-[500px] w-[280px]"
         >
             {/* JUMIA-STYLE CARET/POINTER */}
             <div className="absolute -top-2 left-6 w-4 h-4 bg-white dark:bg-slate-900 border-t border-l border-gray-100 dark:border-slate-800 rotate-45 z-[-1]" />
