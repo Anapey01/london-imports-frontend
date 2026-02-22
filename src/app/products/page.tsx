@@ -9,15 +9,16 @@ import { Metadata } from 'next';
 export const revalidate = 86400;
 
 type Props = {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
     { searchParams }: Props
 ): Promise<Metadata> {
-    const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-    const featured = searchParams.featured === 'true';
-    const status = typeof searchParams.status === 'string' ? searchParams.status : undefined;
+    const resolvedSearchParams = await searchParams;
+    const category = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined;
+    const featured = resolvedSearchParams.featured === 'true';
+    const status = typeof resolvedSearchParams.status === 'string' ? resolvedSearchParams.status : undefined;
     const isAvailableItems = status === 'READY_TO_SHIP';
 
     // Default Metadata
@@ -55,11 +56,13 @@ export async function generateMetadata(
 }
 
 export default async function ProductsPage({ searchParams }: Props) {
+    const resolvedSearchParams = await searchParams;
+
     // Extract filters from URL
-    const search = typeof searchParams?.search === 'string' ? searchParams.search : undefined;
-    const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
-    const featured = searchParams.featured === 'true';
-    const status = typeof searchParams?.status === 'string' ? searchParams.status : undefined;
+    const search = typeof resolvedSearchParams?.search === 'string' ? resolvedSearchParams.search : undefined;
+    const category = typeof resolvedSearchParams?.category === 'string' ? resolvedSearchParams.category : undefined;
+    const featured = resolvedSearchParams.featured === 'true';
+    const status = typeof resolvedSearchParams?.status === 'string' ? resolvedSearchParams.status : undefined;
     const isAvailableItems = status === 'READY_TO_SHIP';
 
     // Fetch initial data on server (SSG/ISR) with filters applied
