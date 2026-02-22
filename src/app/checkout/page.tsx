@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
+import Link from 'next/link';
 import { ShieldCheck, Truck, CreditCard, MapPin, Lock } from 'lucide-react';
 
 // Paystack Interfaces
@@ -388,88 +389,131 @@ function CheckoutPage() {
                             </div>
                         )}
 
-                        {/* Delivery Information */}
-                        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-6">
-                                <MapPin className="w-5 h-5 text-gray-400" />
-                                <h2 className="text-xl font-light text-gray-900 tracking-tight">Delivery Details</h2>
-                            </div>
-
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
-                                        Address
-                                    </label>
-                                    <textarea
-                                        value={delivery.address}
-                                        onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
-                                        required
-                                        rows={2}
-                                        className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
-                                        placeholder="Enter your full street address"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                    <div>
-                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
-                                            City
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={delivery.city}
-                                            onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
-                                            required
-                                            className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light placeholder-gray-400 px-0"
-                                            placeholder="Accra"
-                                        />
+                        {orderNumberParam && (
+                            <div className="bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-white/10 rounded-full">
+                                        <CreditCard className="w-4 h-4" />
                                     </div>
                                     <div>
+                                        <p className="text-sm font-medium">Resuming Order #{orderNumberParam}</p>
+                                        <p className="text-[10px] uppercase tracking-wider text-gray-400">Fast Track Payment Mode</p>
+                                    </div>
+                                </div>
+                                <div className="hidden sm:block">
+                                    <Link href="/orders" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                        Cancel & Go Back
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Delivery Information */}
+                        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <MapPin className="w-5 h-5 text-gray-400" />
+                                    <h2 className="text-xl font-light text-gray-900 tracking-tight">Delivery Details</h2>
+                                </div>
+                                {orderNumberParam && (
+                                    <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">Locked</span>
+                                )}
+                            </div>
+
+                            {orderNumberParam ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                    <div>
+                                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Shipping Address</label>
+                                        <p className="text-sm font-light text-gray-900">{delivery.address}</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Destination</label>
+                                        <p className="text-sm font-light text-gray-900">{delivery.city}, {delivery.region}</p>
+                                    </div>
+                                    {delivery.notes && (
+                                        <div className="sm:col-span-2">
+                                            <label className="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Delivery Notes</label>
+                                            <p className="text-sm font-light text-gray-600 italic">&quot;{delivery.notes}&quot;</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div>
                                         <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
-                                            Region
+                                            Address
                                         </label>
-                                        <div className="relative">
-                                            <select
-                                                value={delivery.region}
-                                                onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
+                                        <textarea
+                                            value={delivery.address}
+                                            onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
+                                            required
+                                            rows={2}
+                                            className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
+                                            placeholder="Enter your full street address"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                        <div>
+                                            <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
+                                                City
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={delivery.city}
+                                                onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
                                                 required
-                                                aria-label="Region"
-                                                className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light appearance-none px-0 cursor-pointer"
-                                            >
-                                                <option value="">Select Region</option>
-                                                <option value="Greater Accra">Greater Accra</option>
-                                                <option value="Ashanti">Ashanti</option>
-                                                <option value="Western">Western</option>
-                                                <option value="Central">Central</option>
-                                                <option value="Eastern">Eastern</option>
-                                                <option value="Northern">Northern</option>
-                                                <option value="Volta">Volta</option>
-                                                <option value="Upper East">Upper East</option>
-                                                <option value="Upper West">Upper West</option>
-                                                <option value="Bono">Bono</option>
-                                            </select>
-                                            <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none">
-                                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                                                </svg>
+                                                className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light placeholder-gray-400 px-0"
+                                                placeholder="Accra"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
+                                                Region
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    value={delivery.region}
+                                                    onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
+                                                    required
+                                                    aria-label="Region"
+                                                    className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light appearance-none px-0 cursor-pointer"
+                                                >
+                                                    <option value="">Select Region</option>
+                                                    <option value="Greater Accra">Greater Accra</option>
+                                                    <option value="Ashanti">Ashanti</option>
+                                                    <option value="Western">Western</option>
+                                                    <option value="Central">Central</option>
+                                                    <option value="Eastern">Eastern</option>
+                                                    <option value="Northern">Northern</option>
+                                                    <option value="Volta">Volta</option>
+                                                    <option value="Upper East">Upper East</option>
+                                                    <option value="Upper West">Upper West</option>
+                                                    <option value="Bono">Bono</option>
+                                                </select>
+                                                <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
-                                        Notes (Optional)
-                                    </label>
-                                    <textarea
-                                        value={delivery.notes}
-                                        onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
-                                        rows={2}
-                                        className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
-                                        placeholder="Special delivery instructions..."
-                                    />
+                                    <div>
+                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">
+                                            Notes (Optional)
+                                        </label>
+                                        <textarea
+                                            value={delivery.notes}
+                                            onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
+                                            rows={2}
+                                            className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none focus-visible:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
+                                            placeholder="Special delivery instructions..."
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Payment Option */}
@@ -480,98 +524,113 @@ function CheckoutPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'FULL' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
-                                    <div className="mt-1">
-                                        <input
-                                            type="radio"
-                                            name="payment_type"
-                                            value="FULL"
-                                            checked={paymentType === 'FULL'}
-                                            onChange={() => setPaymentType('FULL')}
-                                            className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
-                                        />
-                                    </div>
-                                    <div className="ml-4">
-                                        <span className="block font-medium text-gray-900 text-lg">Full Payment</span>
-                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {currentOrderData.total?.toLocaleString()} now</p>
-                                    </div>
-                                </label>
-
-                                <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'DEPOSIT' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
-                                    <div className="mt-1">
-                                        <input
-                                            type="radio"
-                                            name="payment_type"
-                                            value="DEPOSIT"
-                                            checked={paymentType === 'DEPOSIT'}
-                                            onChange={() => setPaymentType('DEPOSIT')}
-                                            className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
-                                        />
-                                    </div>
-                                    <div className="ml-4">
-                                        <span className="block font-medium text-gray-900 text-lg">Deposit Only</span>
-                                        <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {(currentOrderData.total * 0.3).toLocaleString()} (30%) now</p>
-                                    </div>
-                                </label>
-
-                                <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'WHATSAPP' ? 'border-green-600 bg-green-50 ring-1 ring-green-600' : 'border-gray-200 hover:border-gray-300'}`}>
-                                    <div className="mt-1">
-                                        <input
-                                            type="radio"
-                                            name="payment_type"
-                                            value="WHATSAPP"
-                                            checked={paymentType === 'WHATSAPP'}
-                                            onChange={() => setPaymentType('WHATSAPP')}
-                                            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-600 accent-green-600"
-                                        />
-                                    </div>
-                                    <div className="ml-4">
-                                        <span className="block font-medium text-gray-900 text-lg flex items-center gap-2">
-                                            WhatsApp Momo Checkout
-                                            <span className="bg-green-100 text-green-700 text-[10px] uppercase px-2 py-0.5 rounded-full font-bold tracking-wider">Recommended</span>
-                                        </span>
-                                        <p className="text-sm text-gray-500 font-light mt-1 italic">Click to finalize order & chat with an admin for Momo details</p>
-                                    </div>
-                                </label>
-
-                                <label className={`flex flex-col p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'CUSTOM' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
-                                    <div className="flex items-start w-full">
+                                {/* Only show BALANCE option if we are paying a balance */}
+                                {paymentType === 'BALANCE' ? (
+                                    <label className="flex items-start p-6 rounded-2xl border border-black bg-gray-50 ring-1 ring-black cursor-default">
                                         <div className="mt-1">
-                                            <input
-                                                type="radio"
-                                                name="payment_type"
-                                                value="CUSTOM"
-                                                checked={paymentType === 'CUSTOM'}
-                                                onChange={() => setPaymentType('CUSTOM')}
-                                                className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
-                                            />
+                                            <input type="radio" checked readOnly className="w-4 h-4 text-black border-gray-300 accent-black" />
                                         </div>
-                                        <div className="ml-4 flex-1">
-                                            <span className="block font-medium text-gray-900 text-lg">Flexible Installment</span>
-                                            <p className="text-sm text-gray-500 font-light mt-1">Choose how much you want to pay now</p>
+                                        <div className="ml-4">
+                                            <span className="block font-medium text-gray-900 text-lg">Clear Balance</span>
+                                            <p className="text-sm text-gray-500 font-light mt-1 italic">Paying off the remaining balance for this order.</p>
                                         </div>
-                                    </div>
-
-                                    {paymentType === 'CUSTOM' && (
-                                        <div className="ml-8 mt-4">
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">GHS</span>
+                                    </label>
+                                ) : (
+                                    <>
+                                        <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'FULL' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <div className="mt-1">
                                                 <input
-                                                    type="number"
-                                                    value={customAmount}
-                                                    onChange={(e) => setCustomAmount(e.target.value)}
-                                                    placeholder="Enter amount (min 1.00)"
-                                                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
-                                                    min="1"
-                                                    max={currentOrderData.total}
+                                                    type="radio"
+                                                    name="payment_type"
+                                                    value="FULL"
+                                                    checked={paymentType === 'FULL'}
+                                                    onChange={() => setPaymentType('FULL')}
+                                                    className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
                                                 />
                                             </div>
-                                            <p className="text-xs text-gray-400 mt-2">
-                                                Remaining balance: GHS {customAmount ? Math.max(0, currentOrderData.total - parseFloat(customAmount || '0')).toLocaleString() : currentOrderData.total.toLocaleString()}
-                                            </p>
-                                        </div>
-                                    )}
-                                </label>
+                                            <div className="ml-4">
+                                                <span className="block font-medium text-gray-900 text-lg">Full Payment</span>
+                                                <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {currentOrderData.total?.toLocaleString()} now</p>
+                                            </div>
+                                        </label>
+
+                                        <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'DEPOSIT' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="radio"
+                                                    name="payment_type"
+                                                    value="DEPOSIT"
+                                                    checked={paymentType === 'DEPOSIT'}
+                                                    onChange={() => setPaymentType('DEPOSIT')}
+                                                    className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
+                                                />
+                                            </div>
+                                            <div className="ml-4">
+                                                <span className="block font-medium text-gray-900 text-lg">Deposit Only</span>
+                                                <p className="text-sm text-gray-500 font-light mt-1">Pay GHS {(currentOrderData.total * 0.3).toLocaleString()} (30%) now</p>
+                                            </div>
+                                        </label>
+
+                                        <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'WHATSAPP' ? 'border-green-600 bg-green-50 ring-1 ring-green-600' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="radio"
+                                                    name="payment_type"
+                                                    value="WHATSAPP"
+                                                    checked={paymentType === 'WHATSAPP'}
+                                                    onChange={() => setPaymentType('WHATSAPP')}
+                                                    className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-600 accent-green-600"
+                                                />
+                                            </div>
+                                            <div className="ml-4">
+                                                <span className="block font-medium text-gray-900 text-lg flex items-center gap-2">
+                                                    WhatsApp Momo Checkout
+                                                    <span className="bg-green-100 text-green-700 text-[10px] uppercase px-2 py-0.5 rounded-full font-bold tracking-wider">Recommended</span>
+                                                </span>
+                                                <p className="text-sm text-gray-500 font-light mt-1 italic">Click to finalize order & chat with an admin for Momo details</p>
+                                            </div>
+                                        </label>
+
+                                        <label className={`flex flex-col p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'CUSTOM' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <div className="flex items-start w-full">
+                                                <div className="mt-1">
+                                                    <input
+                                                        type="radio"
+                                                        name="payment_type"
+                                                        value="CUSTOM"
+                                                        checked={paymentType === 'CUSTOM'}
+                                                        onChange={() => setPaymentType('CUSTOM')}
+                                                        className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
+                                                    />
+                                                </div>
+                                                <div className="ml-4 flex-1">
+                                                    <span className="block font-medium text-gray-900 text-lg">Flexible Installment</span>
+                                                    <p className="text-sm text-gray-500 font-light mt-1">Choose how much you want to pay now</p>
+                                                </div>
+                                            </div>
+
+                                            {paymentType === 'CUSTOM' && (
+                                                <div className="ml-8 mt-4">
+                                                    <div className="relative">
+                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">GHS</span>
+                                                        <input
+                                                            type="number"
+                                                            value={customAmount}
+                                                            onChange={(e) => setCustomAmount(e.target.value)}
+                                                            placeholder="Enter amount (min 1.00)"
+                                                            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
+                                                            min="1"
+                                                            max={currentOrderData.total}
+                                                        />
+                                                    </div>
+                                                    <p className="text-xs text-gray-400 mt-2">
+                                                        Remaining balance: GHS {customAmount ? Math.max(0, currentOrderData.total - parseFloat(customAmount || '0')).toLocaleString() : currentOrderData.total.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </label>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
