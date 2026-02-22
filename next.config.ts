@@ -13,6 +13,7 @@ const withPWA = withPWAInit({
   workboxOptions: {
     runtimeCaching: [
       {
+        // 1. Precise match for HTML documents (initial page loads)
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'NetworkFirst',
         options: {
@@ -21,26 +22,28 @@ const withPWA = withPWAInit({
             maxEntries: 50,
             maxAgeSeconds: 24 * 60 * 60, // 24 hours
           },
-          networkTimeoutSeconds: 5, // Fallback to cache faster if network is slow
+          networkTimeoutSeconds: 5,
         },
       },
       {
-        urlPattern: ({ request, url }) => {
-          return request.destination === 'document' ||
-            url.pathname.includes('/_next/data/') ||
-            url.searchParams.has('_rsc');
+        // 2. Comprehensive match for RSC payloads & Next.js chunked data
+        urlPattern: ({ url }) => {
+          return url.pathname.includes('/_next/data/') ||
+            url.searchParams.has('_rsc') ||
+            url.pathname.includes('/_next/static/');
         },
         handler: 'NetworkFirst',
         options: {
-          cacheName: 'rsc-cache',
+          cacheName: 'nextjs-data',
           expiration: {
-            maxEntries: 100,
+            maxEntries: 200,
             maxAgeSeconds: 24 * 60 * 60, // 24 hours
           },
         },
       },
       {
-        urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/api\/(products|orders|faq|categories|reviews)\//,
+        // 3. API V1 - Corrected URL pattern
+        urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/api\/v1\/(products|orders|faq|categories|reviews)\//,
         handler: 'NetworkFirst',
         options: {
           cacheName: 'api-cache',
