@@ -16,7 +16,7 @@ const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
 const MegaMenu = dynamic(() => import('./MegaMenu'));
 
 import ThemeToggle from './ThemeToggle';
-import { Search, Menu, Heart, ChevronDown } from 'lucide-react';
+import { Search, Menu, Heart } from 'lucide-react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 
 export default function Navbar() {
@@ -67,15 +67,13 @@ export default function Navbar() {
                                         e.preventDefault();
                                         setIsHoveringMenu(!isHoveringMenu);
                                     }}
-                                    className={`p-2.5 -ml-2 rounded-xl transition-all flex items-center gap-2 focus:outline-none ${isHoveringMenu
-                                        ? 'bg-pink-50 text-pink-600 ring-2 ring-pink-100 shadow-sm'
-                                        : 'text-gray-700 hover:bg-gray-50 hover:text-pink-600'
+                                    className={`p-2 rounded-lg transition-all flex items-center justify-center focus:outline-none ${isHoveringMenu
+                                        ? 'bg-gray-100 text-gray-900'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                     aria-label="Toggle menu"
                                 >
-                                    <Menu className="w-6 h-6" strokeWidth={2.5} />
-                                    <span className="text-sm font-black uppercase tracking-wider hidden lg:inline">Menu</span>
-                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isHoveringMenu ? 'rotate-180' : ''}`} />
+                                    <Menu className="w-6 h-6" strokeWidth={1.5} />
                                 </button>
 
                                 {/* MEGA MENU COMPONENT - Positioned relative to Navbar Container */}
@@ -212,12 +210,10 @@ export default function Navbar() {
                     <div className="flex items-center justify-between px-4 h-16">
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="flex items-center gap-1.5 p-2 -ml-1 rounded-xl bg-pink-50 text-pink-600 ring-2 ring-pink-100 shadow-sm transition-all active:scale-95 group"
+                            className="p-2 -ml-1 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 active:scale-95 transition-all"
                             aria-label="Open menu"
                         >
-                            <Menu className="w-5 h-5" strokeWidth={2.5} />
-                            <span className="text-[10px] font-black uppercase tracking-wider">Menu</span>
-                            <ChevronDown className="w-3 h-3 transition-transform opacity-70" />
+                            <Menu className="w-6 h-6" strokeWidth={1.5} />
                         </button>
 
                         {/* Centered Logo */}

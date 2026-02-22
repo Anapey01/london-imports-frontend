@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 export const CATEGORY_GROUPS = [
-    { id: 'all', name: 'All Categories', icon: LayoutGrid },
+    { id: 'all', name: 'PRODUCTS', icon: LayoutGrid },
     { id: 'lightenings', name: 'Lightenings', icon: Sun },
     { id: 'kids-shoes', name: 'Kids shoes', icon: Footprints },
     { id: 'Rooms', name: 'Air care products', icon: Wind },

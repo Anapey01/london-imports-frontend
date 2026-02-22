@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
@@ -21,6 +21,15 @@ import {
     ChevronRight,
     Instagram,
     Star,
+    ShoppingBag,
+    Info,
+    BookOpen,
+    Truck,
+    Heart,
+    Mail,
+    FileText,
+    Shield,
+    ChevronDown,
 } from 'lucide-react';
 import { CATEGORY_GROUPS } from './MegaMenu';
 
@@ -29,8 +38,25 @@ interface MobileMenuDrawerProps {
     onClose: () => void;
 }
 
+const SHOP_ITEMS = [
+    { name: 'Reviews', href: '/reviews', icon: Star },
+    { name: 'How It Works', href: '/how-it-works', icon: Info },
+    { name: 'FAQs', href: '/faq', icon: HelpCircle },
+    { name: 'Blog', href: '/blog', icon: BookOpen },
+    { name: 'Track Order', href: '/track', icon: Truck },
+];
+
+const SUPPORT_ITEMS = [
+    { name: 'Our Story', href: '/about', icon: Heart },
+    { name: 'Contact Us', href: '/contact', icon: Mail },
+    { name: 'Terms of Service', href: '/terms', icon: FileText },
+    { name: 'Privacy Policy', href: '/privacy', icon: Shield },
+];
+
 export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerProps) {
     const { isAuthenticated, logout } = useAuthStore();
+    const [shopOpen, setShopOpen] = useState(false);
+    const [supportOpen, setSupportOpen] = useState(false);
     const categories = CATEGORY_GROUPS;
 
     // Prevent body scroll when menu is open
@@ -56,7 +82,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity"
                 onClick={onClose}
                 aria-hidden="true"
             />
@@ -78,13 +104,13 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         {/* THE MINIMALIST MENU ICON */}
                         <div
                             onClick={onClose}
-                            className="p-2 -ml-2 text-slate-700 dark:text-slate-300 cursor-pointer active:scale-90 transition-all"
+                            className="p-2 -ml-2 text-slate-900 dark:text-white cursor-pointer active:scale-90 transition-all"
                         >
                             <Menu className="w-6 h-6" strokeWidth={1.5} />
                         </div>
 
                         {/* Separator Line */}
-                        <div className="w-[1px] h-6 bg-gray-100 dark:bg-slate-800 mx-1" />
+                        <div className="w-[1px] h-6 bg-gray-200 dark:bg-slate-700 mx-1" />
 
                         <Link href="/" onClick={onClose} className="flex items-center gap-1.5 group">
                             <Image
@@ -103,7 +129,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
                     <button
                         onClick={onClose}
-                        className="p-2 text-gray-400 hover:text-pink-600 transition-colors"
+                        className="p-2 text-gray-500 hover:text-pink-600 transition-colors"
                         aria-label="Close menu"
                     >
                         <X className="w-5 h-5" />
@@ -119,126 +145,187 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <Link
                                 href="/profile"
                                 onClick={onClose}
-                                className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+                                className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                             >
                                 <div className="flex items-center gap-4">
-                                    <User className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                    <User className="w-5 h-5" strokeWidth={1.5} />
                                     MY ACCOUNT
                                 </div>
-                                <ChevronRight className="w-3 h-3 text-gray-300" />
+                                <ChevronRight className="w-3 h-3 text-gray-400" />
                             </Link>
                         ) : (
                             <div className="flex flex-col">
                                 <Link
                                     href="/login"
                                     onClick={onClose}
-                                    className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+                                    className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <User className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                        <User className="w-5 h-5" strokeWidth={1.5} />
                                         LOGIN
                                     </div>
-                                    <ChevronRight className="w-3 h-3 text-gray-300" />
+                                    <ChevronRight className="w-3 h-3 text-gray-400" />
                                 </Link>
                                 <Link
                                     href="/register"
                                     onClick={onClose}
-                                    className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+                                    className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <UserPlus className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                        <UserPlus className="w-5 h-5" strokeWidth={1.5} />
                                         SIGN UP
                                     </div>
-                                    <ChevronRight className="w-3 h-3 text-gray-300" />
+                                    <ChevronRight className="w-3 h-3 text-gray-400" />
                                 </Link>
                             </div>
                         )}
                     </div>
 
-                    <div className="h-px bg-gray-50 dark:bg-slate-800 mx-6 my-2" />
+                    <div className="h-px bg-gray-100 dark:bg-slate-800 mx-6 my-2" />
 
                     {/* 2. CORE REDIRECTS */}
                     <div className="px-2">
                         <Link
                             href="/products?status=READY_TO_SHIP"
                             onClick={onClose}
-                            className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+                            className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                         >
                             <div className="flex items-center gap-4">
-                                <Zap className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                <Zap className="w-5 h-5 text-rose-500" strokeWidth={1.5} />
                                 Ready to Ship
                             </div>
-                            <ChevronRight className="w-3 h-3 text-gray-300" />
+                            <ChevronRight className="w-3 h-3 text-gray-400" />
                         </Link>
                         <Link
                             href="/sourcing"
                             onClick={onClose}
-                            className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+                            className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                         >
                             <div className="flex items-center gap-4">
-                                <Scan className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                <Scan className="w-5 h-5 text-indigo-500" strokeWidth={1.5} />
                                 <div className="flex items-center gap-2">
                                     AI Sourcing
                                     <span className="text-[8px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-1.5 py-0.5 rounded-md font-black">NEW</span>
                                 </div>
                             </div>
-                            <ChevronRight className="w-3 h-3 text-gray-300" />
+                            <ChevronRight className="w-3 h-3 text-gray-400" />
                         </Link>
                     </div>
 
-                    <div className="h-px bg-gray-50 dark:bg-slate-800 mx-6 my-2" />
+                    <div className="h-px bg-gray-100 dark:bg-slate-800 mx-6 my-2" />
 
-                    {/* 3. CATEGORIES SECTION */}
+                    {/* 3. PRODUCTS SECTION */}
                     <div className="px-6 py-4">
-                        <span className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em]">All Categories</span>
+                        <span className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-[0.2em] opacity-80">PRODUCTS</span>
                     </div>
 
                     <div className="px-2">
                         {categories.map((category) => {
                             const Icon = category.icon;
+                            // Skip "All Categories" as it's the header's intent or already handled by the list
+                            if (category.id === 'all') return null;
+
                             return (
                                 <Link
                                     key={category.id}
-                                    href={category.id === 'all' ? '/products' : `/products?category=${category.id}`}
+                                    href={`/products?category=${category.id}`}
                                     onClick={onClose}
                                     className="flex items-center justify-between px-6 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group"
                                 >
-                                    <div className="flex items-center gap-4 text-[13px] font-bold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                                        <Icon className="w-4.5 h-4.5 opacity-60 group-hover:opacity-100" strokeWidth={1.5} />
+                                    <div className="flex items-center gap-4 text-[13px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                                        <Icon className="w-4.5 h-4.5 opacity-70 group-hover:opacity-100" strokeWidth={1.5} />
                                         {category.name}
                                     </div>
-                                    <ChevronRight className="w-3 h-3 text-gray-200 opacity-0 group-hover:opacity-100 transition-all" />
+                                    <ChevronRight className="w-3 h-3 text-gray-300 opacity-0 group-hover:opacity-100 transition-all" />
                                 </Link>
                             );
                         })}
                     </div>
 
-                    <div className="h-px bg-gray-50 dark:bg-slate-800 mx-6 my-4" />
+                    <div className="h-px bg-gray-100 dark:bg-slate-800 mx-6 my-4" />
 
-                    {/* 4. HELP CENTER SECTION */}
-                    <div className="px-2">
+                    {/* 4. HELP CENTER & DYNAMIC SECTIONS */}
+                    <div className="px-2 space-y-1">
                         <Link
                             href="/faq"
                             onClick={onClose}
-                            className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+                            className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                         >
                             <div className="flex items-center gap-4">
-                                <HelpCircle className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                <HelpCircle className="w-5 h-5" strokeWidth={1.5} />
                                 HELP CENTER
                             </div>
-                            <ChevronRight className="w-3 h-3 text-gray-300" />
+                            <ChevronRight className="w-3 h-3 text-gray-400" />
                         </Link>
+
+                        {/* SHOP SECTION */}
+                        <div>
+                            <button
+                                onClick={() => setShopOpen(!shopOpen)}
+                                className="w-full flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
+                                    SHOP
+                                </div>
+                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${shopOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${shopOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div className="pl-14 pr-4 py-2 space-y-1">
+                                    {SHOP_ITEMS.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={onClose}
+                                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-[13px] font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all"
+                                        >
+                                            <item.icon className="w-4 h-4 opacity-70" strokeWidth={1.5} />
+                                            {item.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SUPPORT SECTION */}
+                        <div>
+                            <button
+                                onClick={() => setSupportOpen(!supportOpen)}
+                                className="w-full flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <Heart className="w-5 h-5" strokeWidth={1.5} />
+                                    SUPPORT
+                                </div>
+                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${supportOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${supportOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div className="pl-14 pr-4 py-2 space-y-1">
+                                    {SUPPORT_ITEMS.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={onClose}
+                                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-[13px] font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all"
+                                        >
+                                            <item.icon className="w-4 h-4 opacity-70" strokeWidth={1.5} />
+                                            {item.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* 5. LOGOUT (If Auth) */}
                     {isAuthenticated && (
-                        <div className="px-2 mt-2">
+                        <div className="px-2 mt-4">
                             <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center justify-between px-6 py-4 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-all font-bold text-[13px] text-red-600 uppercase tracking-wider"
                             >
                                 <div className="flex items-center gap-4">
-                                    <X className="w-5 h-5 opacity-70" strokeWidth={1.5} />
+                                    <X className="w-5 h-5" strokeWidth={1.5} />
                                     EXIT ACCOUNT
                                 </div>
                             </button>
@@ -247,23 +334,24 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
                     {/* BOTTOM PUSH / UTILITIES */}
                     <div className="mt-auto pt-8 px-6 pb-4">
-                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl mb-6">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Theme Mode</span>
+                        {/* FLAT THEME TOGGLE (No Card) */}
+                        <div className="flex items-center justify-between px-4 py-6 border-t border-gray-100 dark:border-slate-800">
+                            <span className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest">Theme Mode</span>
                             <ThemeToggle />
                         </div>
 
-                        {/* SOCIAL ICONS - Absolute Bottom */}
-                        <div className="flex justify-between items-center bg-white dark:bg-slate-800 p-2.5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-                            <a href="https://www.instagram.com/londonimportsghana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all" title="Instagram">
+                        {/* SOCIAL ICONS (No Card) */}
+                        <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-slate-800">
+                            <a href="https://www.instagram.com/londonimportsghana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all" title="Instagram">
                                 <Instagram size={18} />
                             </a>
-                            <a href="https://www.tiktok.com/@londons_imports1" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 transition-all" title="TikTok">
+                            <a href="https://www.tiktok.com/@londons_imports1" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 transition-all" title="TikTok">
                                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
                             </a>
-                            <a href="https://www.snapchat.com/add/londons_imports" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#FFCC00] hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-all" title="Snapchat">
+                            <a href="https://www.snapchat.com/add/londons_imports" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-[#FFCC00] hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-all" title="Snapchat">
                                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.003 1.996a9.982 9.982 0 0 0-2.835.405c-.172.05-.38.125-.572.247-.468.298-1.298 1.096-1.55 1.488-.042.064-.096.112-.132.193-.075.163-.075.335.003.493.078.158.21.325.753.642.617.362 1.25.82 1.444 1.25.132.296.136.634.02 1.05-.164.58-.592 1.03-1.09 1.554-.344.364-.783.827-1.11 1.464-.325.633-.42 1.29-.272 1.956.12.535.418 1 .892 1.392.215.178.232.228.214.3-.04.168-.5.736-1.042.825-.37.06-.708.016-1.487-.194l-.3-.082c-.37-.098-.553-.146-.66-.146-.223 0-.323.078-.507.22l-.088.067c-.206.158-.45.346-.86.346-.51 0-.91-.32-1.127-.9-.057-.15-.157-.222-.258-.222-.43 0-.66.82-.445 1.6.14.506.58.796 1.463 1.03.11.03.353.088.756.184.444.106.84.2 1.157.34.62.274.965.738.965 1.305 0 .805-.623 1.21-1.855 1.21-.297 0-.638-.024-1.002-.072-.82-.107-1.493-.195-2.022.253a.853.853 0 0 0-.27.65c-.012.873 1.077 1.838 2.5 2.214 2 1.114 4.887 1.114 7.214 0 1.423-.376 2.512-1.34 2.5-2.214a.853.853 0 0 0-.27-.65c-.53-.448-1.202-.36-2.022-.253-.364.048-.705.072-1.002.072-1.232 0-1.855-.405-1.855-1.21 0-.568.345-1.03.965-1.306.317-.14.713-.233 1.157-.34.403-.095.646-.153.756-.183.882-.234 1.323-.524 1.463-1.03.215-.78-.016-1.6-.446-1.6-.1 0-.2.07-.257.22-.217.58-.617.9-1.127.9-.41 0-.654-.188-.86-.346l-.088-.067c-.183-.142-.284-.22-.507-.22-.107 0-.29.048-.66.146l-.3.082c-.78.21-1.117.254-1.488.194-.54-.09-1-.657-1.04-1.825-.02-.073 0-.123.213-.3.473-.392.772-.857.892-1.392.148-.665.053-1.323-.272-1.956-.327-.637-.766-1.1-1.11-1.464-.498-.523-.926-.974-1.09-1.554-.116-.416-.112-.754.02-1.05.193-.43.827-.888 1.444-1.25.543-.317.675-.484.753-.642.08-.158.078-.33.003-.493-.036-.08-.09-.128-.132-.193-.252-.392-1.082-1.19-1.55-1.488-.192-.122-.4-.197-.572-.247a9.98 9.98 0 0 0-2.835-.405z" /></svg>
                             </a>
-                            <a href="https://www.trustpilot.com/review/londonsimports.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#00b67a] hover:bg-green-50 dark:hover:bg-green-900/20 transition-all font-bold" title="Trustpilot">
+                            <a href="https://www.trustpilot.com/review/londonsimports.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-[#00b67a] hover:bg-green-50 dark:hover:bg-green-900/20 transition-all font-bold" title="Trustpilot">
                                 <Star size={18} />
                             </a>
                         </div>
