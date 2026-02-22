@@ -226,7 +226,8 @@ function CheckoutPage() {
             // (Traditional Paystack flow continues...)
             const paymentInitResponse = await paymentsAPI.initiate(
                 orderToPay.order_number,
-                paymentType
+                paymentType,
+                paymentAmount
             );
 
             const { reference } = paymentInitResponse.data;
@@ -600,7 +601,7 @@ function CheckoutPage() {
             </div>
             <Script
                 src="https://js.paystack.co/v1/inline.js"
-                strategy="lazyOnload"
+                strategy="afterInteractive"
                 onLoad={() => setIsPaystackLoaded(true)}
             />
         </div>

@@ -128,8 +128,8 @@ export const ordersAPI = {
 };
 
 export const paymentsAPI = {
-  initiate: (orderNumber: string, paymentType: string) =>
-    api.post('/payments/initiate/', { order_number: orderNumber, payment_type: paymentType }),
+  initiate: (orderNumber: string, payment_type: string, amount?: number) =>
+    api.post('/payments/initiate/', { order_number: orderNumber, payment_type, amount }),
   verify: (reference: string) => api.post('/payments/verify/', { reference }),
   orderPayments: (orderNumber: string) => api.get(`/payments/order/${orderNumber}/`),
 };
