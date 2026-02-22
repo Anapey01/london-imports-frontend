@@ -30,18 +30,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // Initialize theme from localStorage or default to light
     useEffect(() => {
-        // Fix lint: Avoid sync setState in effect
+        const stored = localStorage.getItem('theme') as Theme | null;
+
         const timer = setTimeout(() => {
             setMounted(true);
+            if (stored) {
+                setThemeState(stored);
+            } else {
+                setThemeState('light');
+            }
         }, 0);
-
-        const stored = localStorage.getItem('theme') as Theme | null;
-        if (stored) {
-            setThemeState(stored);
-        } else {
-            // Default to light mode (sun mode) regardless of system preference
-            setThemeState('light');
-        }
 
         return () => clearTimeout(timer);
     }, []);
@@ -72,14 +70,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setThemeState(newTheme);
     };
 
-    // Prevent flash of wrong theme
-    if (!mounted) {
-        return null;
-    }
-
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-            {children}
+            <div className={!mounted ? 'opacity-0' : 'transition-opacity duration-300'}>
+                {children}
+            </div>
         </ThemeContext.Provider>
     );
 }

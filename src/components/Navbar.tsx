@@ -14,9 +14,10 @@ import { useEffect, useState } from 'react';
 const SearchModal = dynamic(() => import('./SearchModal'));
 const SidebarMenu = dynamic(() => import('./SidebarMenu'));
 const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
+const MegaMenu = dynamic(() => import('./MegaMenu'));
 
 import ThemeToggle from './ThemeToggle';
-import { Search, Menu, Heart } from 'lucide-react';
+import { Search, Menu, Heart, ChevronDown } from 'lucide-react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 
 export default function Navbar() {
@@ -28,6 +29,7 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false); // Desktop Sidebar
     const [searchOpen, setSearchOpen] = useState(false);
+    const [isHoveringMenu, setIsHoveringMenu] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -56,30 +58,51 @@ export default function Navbar() {
                     <div className="flex justify-between items-center h-20">
                         {/* LEFT: Menu Toggle + Logo */}
                         <div className="flex-shrink-0 flex items-center gap-6">
-                            {/* Desktop Menu Button */}
-                            <button
-                                onClick={() => setSidebarOpen(true)}
-                                className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 text-gray-700 hover:text-pink-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500"
-                                aria-label="Open menu"
+                            {/* Categories / MegaMenu Trigger */}
+                            <div
+                                className="relative py-4"
+                                onMouseEnter={() => setIsHoveringMenu(true)}
+                                onMouseLeave={() => setIsHoveringMenu(false)}
                             >
-                                <Menu className="w-7 h-7" />
-                                <span className="text-sm font-bold hidden xl:inline">Menu</span>
-                            </button>
+                                <button
+                                    className={`p-2.5 -ml-2 rounded-xl transition-all flex items-center gap-2 focus:outline-none ${isHoveringMenu
+                                        ? 'bg-pink-50 text-pink-600'
+                                        : 'text-gray-700 hover:bg-gray-50 hover:text-pink-600'
+                                        }`}
+                                    aria-label="Toggle categories menu"
+                                >
+                                    <Menu className="w-6 h-6" strokeWidth={2.5} />
+                                    <span className="text-sm font-black uppercase tracking-wider hidden xl:inline">Categories</span>
+                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isHoveringMenu ? 'rotate-180' : ''}`} />
+                                </button>
 
-                            <Link href="/" className="flex items-center gap-2">
+                                {/* MEGA MENU COMPONENT */}
+                                <div
+                                    className={`absolute top-full left-1/2 -translate-x-1/2 w-[100vw] transition-all duration-300 origin-top overflow-visible ${isHoveringMenu
+                                            ? 'opacity-100 translate-y-0 visible'
+                                            : 'opacity-0 -translate-y-2 invisible'
+                                        }`}
+                                >
+                                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-1">
+                                        <MegaMenu />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Link href="/" className="flex items-center gap-2 group">
                                 <Image
                                     src="/logo.jpg"
                                     alt="London's Imports"
-                                    width={50}
-                                    height={50}
-                                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-lg"
+                                    width={40}
+                                    height={40}
+                                    className="h-10 w-10 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform"
                                     priority
                                 />
-                                <div>
-                                    <span className="text-base sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                        London&apos;s
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-lg font-black tracking-tight bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+                                        LONDON&apos;S
                                     </span>
-                                    <span className="text-base sm:text-2xl font-bold ml-1 text-gray-800">Imports</span>
+                                    <span className="text-[10px] font-bold text-gray-400 tracking-[0.3em] uppercase">Imports</span>
                                 </div>
                             </Link>
                         </div>

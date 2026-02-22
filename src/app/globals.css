@@ -3,7 +3,9 @@
 /* Tailwind v4: Override default media-query dark mode with selector-based.
    This ensures dark: classes ONLY activate when data-theme="dark" is set,
    NOT based on the phone's system prefers-color-scheme setting. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@theme {
+  --variant-dark: (&:where([data-theme="dark"], [data-theme="dark"] *));
+}
 
 /* ===== DARK MODE VARIABLES ===== */
 :root {
@@ -106,7 +108,25 @@
   border-color: #334155 !important;
 }
 
-/* Navbar theme utility to replace inline styles */
+/* Glassmorphism for MegaMenu */
+.glass-menu {
+  background: rgba(var(--bg-card-rgb, 255, 255, 255), 0.9);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .glass-menu {
+  background: rgba(30, 41, 59, 0.85);
+  /* Slate 800 with opacity */
+}
+
+.megamenu-container {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Navbar theme utility */
 .navbar-themed {
   background-color: var(--bg-card);
   border-color: var(--border-color);
@@ -392,9 +412,11 @@ html {
   0% {
     transform: translateX(-150%) skewX(-20deg);
   }
+
   50% {
     transform: translateX(150%) skewX(-20deg);
   }
+
   100% {
     transform: translateX(150%) skewX(-20deg);
   }
