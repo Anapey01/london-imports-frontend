@@ -64,13 +64,17 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
             {/* Drawer */}
             <div
-                className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-900 z-50 shadow-2xl overflow-hidden flex flex-col"
+                className="fixed inset-y-0 left-0 w-[85%] max-w-sm z-50 shadow-2xl overflow-hidden flex flex-col transition-colors duration-300"
+                style={{ backgroundColor: 'var(--bg-primary)' }}
                 role="dialog"
                 aria-modal="true"
                 aria-label="Mobile navigation menu"
             >
                 {/* Header - Branding & Navigation Control */}
-                <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-20">
+                <div
+                    className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-slate-800 sticky top-0 z-20 transition-colors duration-300"
+                    style={{ backgroundColor: 'var(--bg-primary)' }}
+                >
                     <div className="flex items-center gap-2">
                         {/* THE PINK PILL TRIGGER (Mobile Version) */}
                         <div
@@ -94,7 +98,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 className="rounded-md shadow-sm"
                             />
                             <div className="flex flex-col leading-none">
-                                <span className="text-[11px] font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-pink-600 transition-colors">LONDON&apos;S</span>
+                                <span className="text-[11px] font-black tracking-tighter text-slate-900 dark:text-white group-hover:text-pink-600 transition-colors">LONDON&apos;S</span>
                                 <span className="text-[8px] font-bold text-pink-600 tracking-[0.1em] uppercase">Imports</span>
                             </div>
                         </Link>
