@@ -7,8 +7,38 @@ const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
   extendDefaultRuntimeCaching: true,
+  fallbacks: {
+    document: "/offline",
+  },
   workboxOptions: {
     runtimeCaching: [
+      {
+        urlPattern: ({ request }) => request.mode === 'navigate',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'pages-cache',
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          },
+          networkTimeoutSeconds: 5, // Fallback to cache faster if network is slow
+        },
+      },
+      {
+        urlPattern: ({ request, url }) => {
+          return request.destination === 'document' ||
+            url.pathname.includes('/_next/data/') ||
+            url.searchParams.has('_rsc');
+        },
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'rsc-cache',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          },
+        },
+      },
       {
         urlPattern: /^https:\/\/london-imports-api\.onrender\.com\/api\/(products|orders|faq|categories|reviews)\//,
         handler: 'NetworkFirst',
