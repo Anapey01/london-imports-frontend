@@ -189,12 +189,12 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         </div>
 
                         <div className="px-4 space-y-1">
-                            <button onClick={() => setCategoriesOpen(!categoriesOpen)} className="w-full flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors group">
+                            <button onClick={() => setCategoriesOpen(!categoriesOpen)} className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all group ${categoriesOpen ? 'bg-pink-50 text-pink-600 shadow-sm' : 'hover:bg-gray-50'}`}>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-pink-50 transition-colors">
-                                        <ShoppingBag className="w-4 h-4 text-gray-500 group-hover:text-pink-600" />
+                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${categoriesOpen ? 'bg-white' : 'bg-gray-50 group-hover:bg-pink-50'}`}>
+                                        <ShoppingBag className={`w-4 h-4 ${categoriesOpen ? 'text-pink-600' : 'text-gray-500 group-hover:text-pink-600'}`} />
                                     </div>
-                                    <span className="text-gray-800 font-bold text-sm">Product Categories</span>
+                                    <span className={`font-bold text-sm ${categoriesOpen ? 'text-pink-600' : 'text-gray-800'}`}>Product Categories</span>
                                 </div>
                                 <ChevronRight className={`w-4 h-4 text-gray-300 transition-transform duration-300 ${categoriesOpen ? 'rotate-90' : ''}`} />
                             </button>
