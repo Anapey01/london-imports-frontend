@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getVendor, getAllVendors } from '@/lib/fetchers';
@@ -158,10 +159,12 @@ export default async function VendorStorePage({ params }: Props) {
                         </div>
 
                         {/* The Grid - Filtered by Vendor Slug */}
-                        <ProductGrid
-                            vendorSlug={slug}
-                            initialFeatured={false} // Show all
-                        />
+                        <Suspense fallback={<div className="h-96 animate-pulse bg-gray-100 rounded-2xl" />}>
+                            <ProductGrid
+                                vendorSlug={slug}
+                                initialFeatured={false} // Show all
+                            />
+                        </Suspense>
                     </div>
                 </div>
             </main>
