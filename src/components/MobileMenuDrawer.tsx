@@ -148,10 +148,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                             >
                                 <div className="flex items-center gap-4">
-                                    <User className="w-5 h-5" strokeWidth={1.5} />
+                                    <User className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
                                     MY ACCOUNT
                                 </div>
-                                <ChevronRight className="w-3 h-3 text-gray-400" />
+                                <ChevronRight className="w-3 h-3 text-slate-400" />
                             </Link>
                         ) : (
                             <div className="flex flex-col">
@@ -161,10 +161,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <User className="w-5 h-5" strokeWidth={1.5} />
+                                        <User className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
                                         LOGIN
                                     </div>
-                                    <ChevronRight className="w-3 h-3 text-gray-400" />
+                                    <ChevronRight className="w-3 h-3 text-slate-400" />
                                 </Link>
                                 <Link
                                     href="/register"
@@ -172,10 +172,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <UserPlus className="w-5 h-5" strokeWidth={1.5} />
+                                        <UserPlus className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
                                         SIGN UP
                                     </div>
-                                    <ChevronRight className="w-3 h-3 text-gray-400" />
+                                    <ChevronRight className="w-3 h-3 text-slate-400" />
                                 </Link>
                             </div>
                         )}
@@ -191,10 +191,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                         >
                             <div className="flex items-center gap-4">
-                                <Zap className="w-5 h-5 text-rose-500" strokeWidth={1.5} />
+                                <Zap className="w-5 h-5 text-rose-600" strokeWidth={1.5} />
                                 Ready to Ship
                             </div>
-                            <ChevronRight className="w-3 h-3 text-gray-400" />
+                            <ChevronRight className="w-3 h-3 text-slate-400" />
                         </Link>
                         <Link
                             href="/sourcing"
@@ -202,13 +202,13 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                         >
                             <div className="flex items-center gap-4">
-                                <Scan className="w-5 h-5 text-indigo-500" strokeWidth={1.5} />
+                                <Scan className="w-5 h-5 text-indigo-600" strokeWidth={1.5} />
                                 <div className="flex items-center gap-2">
                                     AI Sourcing
                                     <span className="text-[8px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-1.5 py-0.5 rounded-md font-black">NEW</span>
                                 </div>
                             </div>
-                            <ChevronRight className="w-3 h-3 text-gray-400" />
+                            <ChevronRight className="w-3 h-3 text-slate-400" />
                         </Link>
                     </div>
 
@@ -216,7 +216,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
                     {/* 3. PRODUCTS SECTION */}
                     <div className="px-6 py-4">
-                        <span className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-[0.2em] opacity-80">PRODUCTS</span>
+                        <span className="text-[10px] font-black text-slate-900 dark:text-slate-400 uppercase tracking-[0.2em]">PRODUCTS</span>
                     </div>
 
                     <div className="px-2">
@@ -232,11 +232,11 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     onClick={onClose}
                                     className="flex items-center justify-between px-6 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group"
                                 >
-                                    <div className="flex items-center gap-4 text-[13px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                                        <Icon className="w-4.5 h-4.5 opacity-70 group-hover:opacity-100" strokeWidth={1.5} />
+                                    <div className="flex items-center gap-4 text-[13px] font-bold text-slate-900 dark:text-slate-300 group-hover:text-pink-600 dark:group-hover:text-white transition-colors">
+                                        <Icon className="w-4.5 h-4.5 text-slate-900 dark:text-slate-400 group-hover:text-pink-600" strokeWidth={1.5} />
                                         {category.name}
                                     </div>
-                                    <ChevronRight className="w-3 h-3 text-gray-300 opacity-0 group-hover:opacity-100 transition-all" />
+                                    <ChevronRight className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-all" />
                                 </Link>
                             );
                         })}
@@ -252,10 +252,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             className="flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                         >
                             <div className="flex items-center gap-4">
-                                <HelpCircle className="w-5 h-5" strokeWidth={1.5} />
+                                <HelpCircle className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
                                 HELP CENTER
                             </div>
-                            <ChevronRight className="w-3 h-3 text-gray-400" />
+                            <ChevronRight className="w-3 h-3 text-slate-400" />
                         </Link>
 
                         {/* SHOP SECTION */}
@@ -265,10 +265,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 className="w-full flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                             >
                                 <div className="flex items-center gap-4">
-                                    <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
+                                    <ShoppingBag className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
                                     SHOP
                                 </div>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${shopOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${shopOpen ? 'rotate-180' : ''}`} />
                             </button>
                             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${shopOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                 <div className="pl-14 pr-4 py-2 space-y-1">
@@ -277,9 +277,9 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                             key={item.href}
                                             href={item.href}
                                             onClick={onClose}
-                                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-[13px] font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all"
+                                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-[13px] font-bold text-slate-900 dark:text-slate-400 hover:text-pink-600 dark:hover:text-white transition-all"
                                         >
-                                            <item.icon className="w-4 h-4 opacity-70" strokeWidth={1.5} />
+                                            <item.icon className="w-4 h-4 text-slate-900 dark:text-slate-400" strokeWidth={1.5} />
                                             {item.name}
                                         </Link>
                                     ))}
@@ -294,10 +294,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 className="w-full flex items-center justify-between px-6 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all font-bold text-[13px] text-slate-900 dark:text-white uppercase tracking-wider"
                             >
                                 <div className="flex items-center gap-4">
-                                    <Heart className="w-5 h-5" strokeWidth={1.5} />
+                                    <Heart className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
                                     SUPPORT
                                 </div>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${supportOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${supportOpen ? 'rotate-180' : ''}`} />
                             </button>
                             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${supportOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                 <div className="pl-14 pr-4 py-2 space-y-1">
@@ -306,9 +306,9 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                             key={item.href}
                                             href={item.href}
                                             onClick={onClose}
-                                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-[13px] font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all"
+                                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-[13px] font-bold text-slate-900 dark:text-slate-400 hover:text-pink-600 dark:hover:text-white transition-all"
                                         >
-                                            <item.icon className="w-4 h-4 opacity-70" strokeWidth={1.5} />
+                                            <item.icon className="w-4 h-4 text-slate-900 dark:text-slate-400" strokeWidth={1.5} />
                                             {item.name}
                                         </Link>
                                     ))}
@@ -336,7 +336,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     <div className="mt-auto pt-8 px-6 pb-4">
                         {/* FLAT THEME TOGGLE (No Card) */}
                         <div className="flex items-center justify-between px-4 py-6 border-t border-gray-100 dark:border-slate-800">
-                            <span className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest">Theme Mode</span>
+                            <span className="text-[10px] font-black text-slate-900 dark:text-slate-400 uppercase tracking-widest">Theme Mode</span>
                             <ThemeToggle />
                         </div>
 
