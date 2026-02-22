@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import HowItWorksBar from '@/components/HowItWorksBar';
 import { getCategories, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
@@ -103,14 +104,16 @@ export default async function ProductsPage({ searchParams }: Props) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Client Side Search/Filter Component which takes initial data */}
-                <ProductGrid
-                    initialProducts={initialProducts}
-                    categories={categories}
-                    initialSearch={search}
-                    initialCategory={category}
-                    initialFeatured={featured}
-                    initialStatus={status}
-                />
+                <Suspense fallback={<div className="h-96 animate-pulse bg-gray-100 rounded-2xl" />}>
+                    <ProductGrid
+                        initialProducts={initialProducts}
+                        categories={categories}
+                        initialSearch={search}
+                        initialCategory={category}
+                        initialFeatured={featured}
+                        initialStatus={status}
+                    />
+                </Suspense>
             </div>
 
             {/* Trust Badges & Stats */}
