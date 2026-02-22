@@ -125,34 +125,48 @@ export default function OrderDetailPage() {
                 {!['CANCELLED', 'REFUNDED', 'PENDING_PAYMENT'].includes(order.state) && (
                     <div className="bg-white rounded-2xl p-8 mb-8 shadow-sm border border-gray-100">
                         <h2 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-8">Order Lifecycle</h2>
-                        <div className="flex justify-between relative">
-                            <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-100">
-                                <div
-                                    className={`h-full bg-gray-900 transition-all duration-700 ease-out ${['w-0', 'w-1/5', 'w-2/5', 'w-3/5', 'w-4/5', 'w-full'][currentStep] || 'w-0'
-                                        }`}
-                                />
-                            </div>
 
-                            {statusSteps.map((step, index) => (
-                                <div key={step.key} className="relative z-10 flex flex-col items-center">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-500 ${index <= currentStep
-                                        ? 'bg-gray-900 text-white'
-                                        : 'bg-white border-2 border-gray-100 text-gray-300'
-                                        }`}>
-                                        {index < currentStep ? (
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        ) : (
-                                            <span className="text-xs">{index + 1}</span>
-                                        )}
-                                    </div>
-                                    <span className={`text-[10px] uppercase tracking-wider mt-3 text-center w-16 ${index <= currentStep ? 'text-gray-900 font-medium' : 'text-gray-400 font-light'
-                                        }`}>
-                                        {step.label}
-                                    </span>
+                        <div className="overflow-x-auto pb-4 -mx-2 px-2 scrollbar-hide">
+                            <div className="flex justify-between relative min-w-[600px] pt-2 mb-2">
+                                <div className="absolute top-6 left-4 right-4 h-0.5 bg-gray-100">
+                                    <div
+                                        className={`h-full bg-gray-900 transition-all duration-700 ease-out ${currentStep === 0 ? 'w-0' :
+                                                currentStep === 1 ? 'w-1/5' :
+                                                    currentStep === 2 ? 'w-2/5' :
+                                                        currentStep === 3 ? 'w-3/5' :
+                                                            currentStep === 4 ? 'w-4/5' :
+                                                                'w-full'
+                                            }`}
+                                    />
                                 </div>
-                            ))}
+
+                                {statusSteps.map((step, index) => (
+                                    <div key={step.key} className="relative z-10 flex flex-col items-center flex-1">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-500 mb-4 ${index <= currentStep
+                                            ? 'bg-gray-900 text-white shadow-md'
+                                            : 'bg-white border-2 border-gray-100 text-gray-300'
+                                            }`}>
+                                            {index < currentStep ? (
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            ) : (
+                                                <span className="text-xs font-semibold">{index + 1}</span>
+                                            )}
+                                        </div>
+                                        <div className="h-10 flex items-start justify-center text-center">
+                                            <span className={`text-[10px] leading-tight uppercase tracking-wider px-2 font-semibold ${index <= currentStep ? 'text-gray-900' : 'text-gray-400 font-normal'
+                                                }`}>
+                                                {step.label}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center mt-2 md:hidden">
+                            <p className="text-[10px] text-gray-400 italic">Scroll left/right to view all steps</p>
                         </div>
                     </div>
                 )}
