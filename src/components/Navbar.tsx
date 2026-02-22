@@ -212,12 +212,12 @@ export default function Navbar() {
                     <div className="flex items-center justify-between px-4 h-16">
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="flex items-center gap-1.5 p-1.5 -ml-1 text-gray-700 hover:text-pink-600 transition-all active:scale-95 group"
+                            className="flex items-center gap-1.5 p-2 -ml-1 rounded-xl bg-pink-50 text-pink-600 ring-2 ring-pink-100 shadow-sm transition-all active:scale-95 group"
                             aria-label="Open menu"
                         >
-                            <Menu className="w-6 h-6" strokeWidth={2.5} />
-                            <span className="text-xs font-black uppercase tracking-wider">Menu</span>
-                            <ChevronDown className="w-3.5 h-3.5 text-gray-400 group-hover:text-pink-600 transition-transform opacity-70" />
+                            <Menu className="w-5 h-5" strokeWidth={2.5} />
+                            <span className="text-[10px] font-black uppercase tracking-wider">Menu</span>
+                            <ChevronDown className="w-3 h-3 transition-transform opacity-70" />
                         </button>
 
                         {/* Centered Logo */}
