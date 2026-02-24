@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Package } from 'lucide-react';
+import { formatNumber } from '@/lib/format';
 
 interface GroupBuyProgressProps {
     current: number;
@@ -48,13 +49,13 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
 
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[11px] font-bold tracking-tight">
                 <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 italic font-medium">
-                    <span>{current.toLocaleString()} {current === 1 ? 'item' : 'items'} ordered</span>
+                    <span>{formatNumber(current)} {current === 1 ? 'item' : 'items'} ordered</span>
                 </div>
 
                 <div className="text-right">
                     {remaining > 0 ? (
                         <span className="text-gray-400 dark:text-gray-500 font-medium italic">
-                            {remaining.toLocaleString()} more to ship
+                            {formatNumber(remaining)} more to ship
                         </span>
                     ) : (
                         <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-black">

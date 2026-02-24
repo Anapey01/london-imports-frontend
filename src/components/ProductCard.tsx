@@ -11,6 +11,7 @@ import { useState, useMemo } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart } from 'lucide-react';
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
+import { formatPrice } from '@/lib/format';
 
 interface ProductCardProps {
     product: Product;
@@ -166,7 +167,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
                     {/* Price */}
                     <div className="text-gray-900 dark:text-white font-bold text-base mt-0.5">
-                        GH₵ {Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {formatPrice(product.price)}
                     </div>
 
                     {/* Progress Bar (Innovation) */}

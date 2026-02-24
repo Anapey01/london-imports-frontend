@@ -85,6 +85,22 @@ const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://browser.sentry-cdn.com https://*.sentry.io",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: https: blob: https://res.cloudinary.com https://*.google-analytics.com https://*.googletagmanager.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "connect-src 'self' https://london-imports-api.onrender.com https://api.paystack.co https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+  "frame-src 'self' https://js.paystack.co https://checkout.paystack.com",
+  "media-src 'self' https://res.cloudinary.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "upgrade-insecure-requests"
+].join('; ');
+
 const nextConfig: NextConfig = {
   images: {
     loader: 'custom',
@@ -165,7 +181,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googletagmanager.com https://london-imports-api.onrender.com https://*.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paystack.com https://checkout.paystack.com; img-src 'self' data: blob: https://*.cloudinary.com https://london-imports-api.onrender.com https://upload.wikimedia.org https://*.paystack.com https://*.googletagmanager.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://london-imports-api.onrender.com https://*.google-analytics.com https://api.paystack.co https://checkout-api.paystack.co https://*.paystack.co https://*.paystack.com https://*.cloudinary.com https://*.googletagmanager.com; frame-src 'self' https://*.paystack.com https://*.google.com https://*.youtube-nocookie.com https://checkout.paystack.com; frame-ancestors 'none'; object-src 'none';"
+            value: CSP
           }
         ],
       },
@@ -192,9 +208,6 @@ export default withSentryConfig(
 
     // Transpiles SDK to be compatible with IE11 (increases bundle size)
     // transpileClientSDK: true,
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
   }
 );
 

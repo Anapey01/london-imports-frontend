@@ -90,6 +90,9 @@ export default async function Image() {
         ),
         {
             ...size,
+            headers: {
+                'Cache-Control': 'public, immutable, no-transform, max-age=31536000',
+            },
         }
     );
 }

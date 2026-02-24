@@ -123,9 +123,10 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
             if (filtered.length > 0) slideProducts = filtered;
         }
 
-        // Shuffle and take first N products
-        const shuffled = [...slideProducts].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
+        // For initial render (SSR/Hydration), we MUST be deterministic
+        // We'll just take the top products until the client-side effect kicks in (if we wanted to shuffle)
+        // For now, let's just use a stable slice. Shuffling during render is a crime in Next.js.
+        return slideProducts.slice(0, count);
     };
 
     const nextSlide = useCallback(() => {

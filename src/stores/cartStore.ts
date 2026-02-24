@@ -225,7 +225,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
     removeFromCart: async (itemId: string) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-        if (isAuthenticated) {
+        // Guard: Never send guest_ IDs to server
+        if (isAuthenticated && !itemId.startsWith('guest_')) {
             set({ isLoading: true });
             try {
                 const response = await ordersAPI.removeFromCart(itemId);
@@ -234,11 +235,13 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     cart,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
+            } catch (error) {
+                console.error("Failed to remove from cart", error);
             } finally {
                 set({ isLoading: false });
             }
         } else {
-            // Guest remove
+            // Guest remove or fallback if ID was guest_ even if logged in
             const newGuest = get().guestItems.filter(i => i.id !== itemId);
             localStorage.setItem('guest_cart', JSON.stringify(newGuest));
             set({
@@ -251,21 +254,22 @@ export const useCartStore = create<CartState>()((set, get) => ({
     updateQuantity: async (itemId: string, quantity: number) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-        if (isAuthenticated) {
-            // For server, we currently remove/re-add in this codebase's logic
-            // Ideally backend supports patch, but following existing pattern:
-            const cart = get().cart;
-            const item = cart?.items.find(i => i.id === itemId);
-            if (item && quantity > 0) {
-                await get().removeFromCart(itemId);
-                await get().addToCart(item.product, quantity); // Updated to pass object? 
-                // WAIT: api.addToCart takes ID. We need to be careful. 
-                // My new addToCart takes OBJECT.
-                // But server logic needs ID.
-                // See addToCart impl above: ordersAPI.addToCart(product.id...)
-                // So passing `item.product` (which is an object) works!
-            } else if (quantity === 0) {
-                await get().removeFromCart(itemId);
+        if (isAuthenticated && !itemId.startsWith('guest_')) {
+            set({ isLoading: true });
+            try {
+                // ATOMIC UPDATE: Use the new PATCH endpoint
+                const response = await ordersAPI.updateCartItem(itemId, quantity);
+                const cart = response.data;
+                set({
+                    cart,
+                    itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
+                });
+            } catch (error) {
+                console.error("Failed to update quantity", error);
+                // Fallback: If it's a 404 or 400, maybe the cart is out of sync, trigger refresh
+                get().fetchCart();
+            } finally {
+                set({ isLoading: false });
             }
         } else {
             // Guest update

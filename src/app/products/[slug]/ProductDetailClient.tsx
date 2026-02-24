@@ -14,6 +14,7 @@ import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
 import VariantDropdown from '@/components/VariantDropdown';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
+import { formatPrice } from '@/lib/format';
 
 // Lazy Load components to improve initial page load performance
 const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
@@ -251,7 +252,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </h1>
                             <ShareButton
                                 title={product.name}
-                                url={typeof window !== 'undefined' ? window.location.href : ''}
+                                url={`https://londonsimports.com/products/${slug}`}
                             />
                         </div>
 
@@ -269,10 +270,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </span>
                         </div>
 
-                        {/* Price - Always Visible */}
                         <div className="mb-4 relative">
                             <span className="text-3xl lg:text-4xl font-bold text-gray-900">
-                                GHS {currentPrice.toLocaleString()}
+                                {formatPrice(currentPrice)}
                             </span>
                         </div>
 

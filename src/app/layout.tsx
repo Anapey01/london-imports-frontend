@@ -9,6 +9,8 @@ import dynamic from "next/dynamic";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Providers from "@/providers/Providers";
+import PWAUpdater from "@/components/PWAUpdater";
+
 
 // Lazy load below-the-fold components to reduce initial bundle
 const Footer = dynamic(() => import("@/components/Footer"), {
@@ -304,11 +306,13 @@ export default async function RootLayout({
         </Script>
 
         <Providers>
+          <PWAUpdater />
           <Navbar />
           <main className="pb-20 md:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
         </Providers>
+
       </body>
     </html>
   );
