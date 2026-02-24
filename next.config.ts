@@ -15,8 +15,8 @@ const withPWA = withPWAInit({
     clientsClaim: true,
     runtimeCaching: [
       {
-        // 1. Paystack - ALWAYS NetworkOnly to avoid any PWA/Interception conflicts
-        urlPattern: ({ url }) => url.origin.includes('paystack'),
+        // 1. Paystack - EXCLUDE EVERYTHING from Service Worker to prevent checkout freezes
+        urlPattern: ({ url }) => url.origin.includes('paystack.co') || url.origin.includes('paystack.com'),
         handler: 'NetworkOnly',
       },
       {
