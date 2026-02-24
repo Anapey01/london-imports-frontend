@@ -7,7 +7,6 @@
  * NOTE: This file must NOT have 'use client' - it runs in both environments.
  */
 
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
 
 interface ImageLoaderParams {
     src: string;
