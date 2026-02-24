@@ -20,60 +20,62 @@ const withPWA = withPWAInit({
         handler: 'NetworkOnly',
       },
       {
-        // 2. HTML documents (initial page loads) - SWR for instant offline
+        // 2. HTML documents (initial page loads) - NetworkFirst to avoid broken offline states
         urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'StaleWhileRevalidate',
+        handler: 'NetworkFirst',
         options: {
           cacheName: 'pages-cache',
           expiration: {
             maxEntries: 50,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+            maxAgeSeconds: 24 * 60 * 60,
           },
         },
       },
       {
-        // 3. Next.js Static Assets & RSC Payloads
-        urlPattern: ({ url }) => {
-          return url.pathname.includes('/_next/data/') ||
-            url.searchParams.has('_rsc') ||
-            url.pathname.includes('/_next/static/') ||
-            url.pathname.includes('/_next/image');
-        },
-        handler: 'StaleWhileRevalidate',
+        // 3. RSC Payloads & Data - MUST be NetworkFirst to prevent navigation hangs (304 issues)
+        urlPattern: ({ url }) => url.searchParams.has('_rsc') || url.pathname.includes('/_next/data/'),
+        handler: 'NetworkFirst',
         options: {
-          cacheName: 'nextjs-assets',
-          expiration: {
-            maxEntries: 200,
-            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-          },
-        },
-      },
-      {
-        // 4. API V1 - SWR for instant data display
-        urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'api-cache',
-          cacheableResponse: {
-            statuses: [200],
-          },
+          cacheName: 'next-data',
           expiration: {
             maxEntries: 100,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+            maxAgeSeconds: 1 * 60 * 60, // 1 hour
           },
         },
       },
       {
-        // 5. Cloudinary & Render Media
+        // 4. Static Assets - SWR is fine here
+        urlPattern: ({ url }) => url.pathname.includes('/_next/static/') || url.pathname.includes('/_next/image'),
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'static-assets',
+        },
+      },
+      {
+        // 5. API - NetworkFirst to ensure fresh basket/order data during checkout
+        urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'api-cache',
+          cacheableResponse: { statuses: [0, 200] },
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 24 * 60 * 60,
+          },
+        },
+      },
+      {
+        // 6. External Images (Cloudinary, Wikipedia, etc.) - CacheFirst for speed
         urlPattern: ({ url }) =>
           url.origin === 'https://res.cloudinary.com' ||
+          url.origin.includes('wikimedia.org') ||
           (url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/media/')),
         handler: 'CacheFirst',
         options: {
-          cacheName: 'media-cache',
+          cacheName: 'image-cache',
           expiration: {
             maxEntries: 200,
-            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+            maxAgeSeconds: 30 * 24 * 60 * 60,
           },
         },
       },
@@ -87,12 +89,12 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://browser.sentry-cdn.com https://*.sentry.io",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://vercel.live",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: https: blob: https://res.cloudinary.com https://*.google-analytics.com https://*.googletagmanager.com",
+  "img-src 'self' data: https: blob: https://res.cloudinary.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://london-imports-api.onrender.com https://api.paystack.co https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
-  "frame-src 'self' https://js.paystack.co https://checkout.paystack.com",
+  "connect-src 'self' https://london-imports-api.onrender.com https://api.paystack.co https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://vercel.live",
+  "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live",
   "media-src 'self' https://res.cloudinary.com",
   "object-src 'none'",
   "base-uri 'self'",
