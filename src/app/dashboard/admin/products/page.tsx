@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, productsAPI } from '@/lib/api';
+import { getImageUrl } from '@/lib/image';
 
 
 interface Product {
@@ -313,8 +314,17 @@ export default function AdminProductsPage() {
                                     <tr key={product.id} className={`${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-gray-50/50'} transition-colors`}>
                                         <td className="px-5 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
-                                                    <ProductIcon category={product.category} className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                                                    {product.image ? (
+                                                        <img
+                                                            src={getImageUrl(product.image)}
+                                                            alt={product.name}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                                        />
+                                                    ) : (
+                                                        <ProductIcon category={product.category} className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-2">
@@ -390,8 +400,22 @@ export default function AdminProductsPage() {
                         const statusStyle = getStatusStyle(product.status);
                         return (
                             <div key={product.id} className={`rounded-xl border overflow-hidden transition-shadow hover:shadow-lg ${isDark ? 'bg-slate-800/30 border-slate-700/50' : 'bg-white border-gray-100'}`}>
-                                <div className={`h-36 flex items-center justify-center relative ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
-                                    <ProductIcon category={product.category} className={`w-16 h-16 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                                <div className={`h-36 flex items-center justify-center relative overflow-hidden ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
+                                    {product.image ? (
+                                        <img
+                                            src={getImageUrl(product.image)}
+                                            alt={product.name}
+                                            className="w-full h-full object-contain p-2"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                                const fallback = (e.target as HTMLImageElement).nextElementSibling as HTMLElement;
+                                                if (fallback) fallback.style.display = 'flex';
+                                            }}
+                                        />
+                                    ) : null}
+                                    <div className={`${product.image ? 'hidden' : 'flex'} items-center justify-center w-full h-full`}>
+                                        <ProductIcon category={product.category} className={`w-16 h-16 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                                    </div>
                                     {product.preOrder && (
                                         <span className="absolute top-3 left-3 text-[10px] px-2 py-1 rounded-md font-medium bg-purple-500 text-white">
                                             PRE-ORDER
