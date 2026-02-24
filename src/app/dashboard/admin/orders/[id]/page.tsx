@@ -17,7 +17,7 @@ import {
     MessageCircle,
     Clock
 } from 'lucide-react';
-import Image from 'next/image';
+
 
 interface OrderItem {
     id: string;
@@ -222,20 +222,20 @@ export default function AdminOrderDetailPage() {
                             <div key={item.id} className="flex items-center gap-3 p-4">
                                 <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-100 dark:bg-slate-700 shrink-0">
                                     {item.image ? (
-                                        <Image
+                                        <img
                                             src={getImageUrl(item.image)}
                                             alt={item.product_name}
-                                            fill
-                                            className="object-cover"
+                                            className="w-full h-full object-cover"
                                             onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
+                                                (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                                const fallback = (e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement;
+                                                if (fallback) fallback.style.display = 'flex';
                                             }}
                                         />
-                                    ) : (
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <Package className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                        </div>
-                                    )}
+                                    ) : null}
+                                    <div className={`${item.image ? 'hidden' : 'flex'} absolute inset-0 items-center justify-center`}>
+                                        <Package className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                                    </div>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>

@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
-import Image from 'next/image';
 import { ChevronRight, Eye, X, Trash2 } from 'lucide-react';
+
 
 interface Order {
     id: string;
@@ -249,11 +249,11 @@ export default function AdminOrdersPage() {
                         <div className="flex items-center gap-3 mb-4">
                             <div className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                                 {order.thumbnail ? (
-                                    <Image
+                                    <img
                                         src={getImageUrl(order.thumbnail)}
                                         alt="Order Item"
-                                        fill
-                                        className="object-cover"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                     />
                                 ) : (
                                     <div className={`w-full h-full flex items-center justify-center text-sm font-bold ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
@@ -331,11 +331,11 @@ export default function AdminOrdersPage() {
                                     <div className="flex items-center gap-3">
                                         {order.thumbnail && (
                                             <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700">
-                                                <Image
+                                                <img
                                                     src={getImageUrl(order.thumbnail)}
                                                     alt="Thumbnail"
-                                                    fill
-                                                    className="object-cover"
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                                 />
                                             </div>
                                         )}
