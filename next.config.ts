@@ -65,12 +65,12 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 6. External Images (Cloudinary, Wikipedia, etc.) - CacheFirst for speed
+        // 6. External Images (Cloudinary, Wikipedia, etc.) - SWR to allow updates
         urlPattern: ({ url }) =>
           url.origin === 'https://res.cloudinary.com' ||
           url.origin.includes('wikimedia.org') ||
           (url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/media/')),
-        handler: 'CacheFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'image-cache',
           expiration: {
