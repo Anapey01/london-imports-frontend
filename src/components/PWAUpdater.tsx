@@ -21,16 +21,17 @@ export default function PWAUpdater() {
                 navigator.serviceWorker.getRegistrations().then((registrations) => {
                     for (const registration of registrations) {
                         registration.update().then(() => {
-                            // If a new worker is found and waiting, force a reload to let it take control
                             if (registration.waiting) {
                                 console.log("[PWA] New version found, reloading to apply...");
-                                // We don't reload immediately unless we are sure, 
-                                // but we notify the user or just postMessage 'SKIP_WAITING'
                                 registration.waiting.postMessage({ type: 'SKIP_WAITING' });
                                 window.location.reload();
                             }
+                        }).catch((err) => {
+                            console.error("[PWA] Service Worker update failed:", err);
                         });
                     }
+                }).catch((err) => {
+                    console.error("[PWA] Failed to get registrations:", err);
                 });
             }
         }
