@@ -90,7 +90,7 @@ const slideTemplates: Slide[] = [
 interface Product {
     id: string | number;
     name: string;
-    primary_image?: string;
+    image?: string;
     category?: { slug: string };
 }
 
@@ -286,9 +286,9 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
                                                 ${pIndex === 2 ? 'w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rotate-[5deg]' : ''}
                                             `}
                                         >
-                                            {product.primary_image ? (
+                                            {product.image ? (
                                                 <Image
-                                                    src={product.primary_image}
+                                                    src={product.image}
                                                     alt={product.name}
                                                     fill
                                                     priority={index === 0}
