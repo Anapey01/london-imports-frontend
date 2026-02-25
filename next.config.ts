@@ -93,7 +93,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://london-imports-api.onrender.com https://api.paystack.co https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://vercel.live",
+  "connect-src 'self' https://res.cloudinary.com https://london-imports-api.onrender.com https://api.paystack.co https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://vercel.live",
   "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live",
   "worker-src 'self' blob:",
   "child-src 'self' blob:",
