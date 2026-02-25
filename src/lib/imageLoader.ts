@@ -28,8 +28,13 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     }
 
     // For backend media URLs (https://london-imports-api.onrender.com/media/...)
-    if (src.startsWith('https://london-imports-api.onrender.com')) {
+    if (src.includes('onrender.com') && src.includes('/media/')) {
         return src;
+    }
+
+    // Safety: If it starts with /media/, prepend the backend host
+    if (src.startsWith('/media/')) {
+        return `https://london-imports-api.onrender.com${src}`;
     }
 
     // For local assets (e.g. /assets/logo.png), return as-is
