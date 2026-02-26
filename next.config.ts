@@ -89,8 +89,8 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://vercel.live",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://vercel.live",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com",
   "img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org",
   "font-src 'self' https://fonts.gstatic.com",
   "connect-src 'self' https://res.cloudinary.com https://london-imports-api.onrender.com https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://vercel.live",

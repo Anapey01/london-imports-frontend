@@ -791,12 +791,12 @@ function CheckoutPage() {
                             </p>
                         </div>
                     </div>
-                    <Script
-                        src="https://js.paystack.co/v1/inline.js"
-                        strategy="afterInteractive"
-                        onLoad={() => setIsPaystackLoaded(true)}
-                    />
                 </form>
+                <Script
+                    src="https://js.paystack.co/v1/inline.js"
+                    strategy="afterInteractive"
+                    onLoad={() => setIsPaystackLoaded(true)}
+                />
             </div>
         </div>
     );
