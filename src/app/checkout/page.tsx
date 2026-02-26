@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -83,6 +83,7 @@ function CheckoutPage() {
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
     const [canPay, setCanPay] = useState(true);
+    const formRef = useRef<HTMLFormElement>(null);
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
     const [connectionTimeout, setConnectionTimeout] = useState(false);
@@ -398,14 +399,9 @@ function CheckoutPage() {
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+                <form ref={formRef} onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-8 lg:gap-12">
                     <div className="lg:col-span-7 space-y-6 lg:space-y-8">
-                        {error && (
-                            <div className="bg-red-50 text-red-600 px-6 py-4 rounded-2xl border border-red-100 flex items-center gap-3">
-                                <ShieldCheck className="w-5 h-5 flex-shrink-0" />
-                                <p className="text-sm font-medium">{error}</p>
-                            </div>
-                        )}
+                        {/* Removed duplicate error alert from top - now near button for mobile visibility */}
 
                         {orderNumberParam && (
                             <div className="bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -724,6 +720,14 @@ function CheckoutPage() {
                                 </div>
                             </div>
 
+                            {/* Error Visibility Fix for Mobile */}
+                            {error && (
+                                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex items-center gap-3 mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                    <p className="text-xs font-medium">{error}</p>
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
                                 disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
@@ -799,9 +803,8 @@ function CheckoutPage() {
                         </div>
                     </div>
                     {/* 
-                      Paystack Inline requires the script to be inside a form element.
-                      next/script moves the tag to the head, which breaks Paystack's detection.
-                      We use a raw script tag here instead.
+                      FORCE Paystack script inside form using dangerouslySetInnerHTML.
+                      This prevents Next.js from moving it to the <head>.
                     */}
                     <script
                         src="https://js.paystack.co/v1/inline.js"
