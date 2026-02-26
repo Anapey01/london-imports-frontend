@@ -5,7 +5,6 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import Script from 'next/script';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -799,9 +798,14 @@ function CheckoutPage() {
                             </p>
                         </div>
                     </div>
-                    <Script
+                    {/* 
+                      Paystack Inline requires the script to be inside a form element.
+                      next/script moves the tag to the head, which breaks Paystack's detection.
+                      We use a raw script tag here instead.
+                    */}
+                    <script
                         src="https://js.paystack.co/v1/inline.js"
-                        strategy="afterInteractive"
+                        async
                         onLoad={() => setIsPaystackLoaded(true)}
                     />
                 </form>
