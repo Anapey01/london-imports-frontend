@@ -132,6 +132,37 @@ function CheckoutPage() {
         };
     }, [isLoading, isPaystackLoaded, paymentType]);
 
+    // Manual Paystack script injection to ensure onLoad fires and it stays in form
+    useEffect(() => {
+        if (!formRef.current || isPaystackLoaded) return;
+
+        const scriptId = 'paystack-inline-js';
+        if (document.getElementById(scriptId)) {
+            if (window.PaystackPop) setIsPaystackLoaded(true);
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = "https://js.paystack.co/v1/inline.js";
+        script.async = true;
+        script.onload = () => {
+            console.log("Paystack script loaded");
+            setIsPaystackLoaded(true);
+        };
+        formRef.current.appendChild(script);
+
+        // Fallback: Check window.PaystackPop periodically in case onload missed
+        const checkInterval = setInterval(() => {
+            if (window.PaystackPop) {
+                setIsPaystackLoaded(true);
+                clearInterval(checkInterval);
+            }
+        }, 1000);
+
+        return () => clearInterval(checkInterval);
+    }, [isPaystackLoaded]);
+
     // Fetch existing order if param exists
     useEffect(() => {
         if (orderNumberParam && isAuthenticated) {
@@ -205,22 +236,40 @@ function CheckoutPage() {
     const paymentAmount = useMemo(() => {
         if (!currentOrderData) return 0;
         const data = currentOrderData as ExtendedCart;
-        const total = parseFloat(data.total?.toString() || '0');
+
+        // Robust numeric parsing to handle potential strings or formatted values
+        const parseValue = (val: string | number | null | undefined) => {
+            if (typeof val === 'number') return val;
+            const str = String(val || '0').replace(/[^\d.-]/g, '');
+            const parsed = parseFloat(str);
+            return isNaN(parsed) ? 0 : parsed;
+        };
+
+        const total = parseValue(data.total);
+        let amount = total; // Default to full payment
 
         switch (paymentType) {
             case 'DEPOSIT':
-                const deposit = data.deposit_amount ? parseFloat(data.deposit_amount.toString()) : 0;
-                return deposit || (total * 0.3);
+                const deposit = parseValue(data.deposit_amount);
+                amount = deposit || (total * 0.3);
+                break;
             case 'CUSTOM':
-                return parseFloat(customAmount) || 0;
+                amount = parseValue(customAmount);
+                break;
             case 'BALANCE':
-                if (data.balance_due) return parseFloat(data.balance_due.toString());
-                const balance = total - parseFloat((data.amount_paid || 0).toString());
-                return balance;
+                const balance = data.balance_due ? parseValue(data.balance_due) : (total - parseValue(data.amount_paid));
+                amount = balance;
+                break;
             case 'FULL':
             default:
-                return total;
+                amount = total;
+                break;
         }
+
+        // Safety fallback: if FULL payment results in 0 but total exists, use total
+        if (paymentType === 'FULL' && amount <= 0 && total > 0) amount = total;
+
+        return amount;
     }, [currentOrderData, paymentType, customAmount]);
 
     if (!isAuthenticated) {
@@ -802,15 +851,7 @@ function CheckoutPage() {
                             </p>
                         </div>
                     </div>
-                    {/* 
-                      FORCE Paystack script inside form using dangerouslySetInnerHTML.
-                      This prevents Next.js from moving it to the <head>.
-                    */}
-                    <script
-                        src="https://js.paystack.co/v1/inline.js"
-                        async
-                        onLoad={() => setIsPaystackLoaded(true)}
-                    />
+                    {/* Script is injected via useEffect with formRef to ensure it's inside form */}
                 </form>
             </div>
         </div>
