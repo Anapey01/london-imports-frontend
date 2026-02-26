@@ -83,6 +83,7 @@ function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
+    const [canPay, setCanPay] = useState(true);
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
     const [connectionTimeout, setConnectionTimeout] = useState(false);
@@ -140,6 +141,7 @@ function CheckoutPage() {
                     // Only allow paying for PENDING orders
                     if (res.data.state === 'PENDING_PAYMENT') {
                         setCheckoutOrder(res.data);
+                        setCanPay(true);
                         // Pre-fill delivery info from this order
                         setDelivery({
                             address: res.data.delivery_address || '',
@@ -174,6 +176,8 @@ function CheckoutPage() {
                         }
                     } else {
                         setError(`Order ${orderNumberParam} is not pending payment (State: ${res.data.state})`);
+                        setCanPay(false);
+                        setCheckoutOrder(res.data); // Still set it so we can show summary, but canPay=false blocks button
                     }
                 })
                 .catch(err => {
@@ -723,11 +727,15 @@ function CheckoutPage() {
 
                             <button
                                 type="submit"
-                                disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded)}
+                                disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
                                 id="checkout-pay-button"
                                 className={`w-full mt-8 py-4 px-6 rounded-full font-bold transition-all shadow-lg hover:shadow-xl transform active:scale-95 duration-200 disabled:opacity-70 disabled:grayscale disabled:hover:scale-100 flex items-center justify-center gap-2 text-base md:text-lg ${paymentType === 'WHATSAPP' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-black hover:bg-gray-900 text-white'}`}
                             >
-                                {isLoading ? (
+                                {!canPay ? (
+                                    <span className="flex items-center gap-2">
+                                        <Lock className="w-5 h-5" /> Cannot Process Payment
+                                    </span>
+                                ) : isLoading ? (
                                     <span className="flex items-center gap-3">
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         Processing Order...
@@ -791,12 +799,12 @@ function CheckoutPage() {
                             </p>
                         </div>
                     </div>
+                    <Script
+                        src="https://js.paystack.co/v1/inline.js"
+                        strategy="afterInteractive"
+                        onLoad={() => setIsPaystackLoaded(true)}
+                    />
                 </form>
-                <Script
-                    src="https://js.paystack.co/v1/inline.js"
-                    strategy="afterInteractive"
-                    onLoad={() => setIsPaystackLoaded(true)}
-                />
             </div>
         </div>
     );
