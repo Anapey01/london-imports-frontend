@@ -6,6 +6,7 @@ import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     ChevronLeft,
     Package,
@@ -222,9 +223,11 @@ export default function AdminOrderDetailPage() {
                             <div key={item.id} className="flex items-center gap-3 p-4">
                                 <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-100 dark:bg-slate-700 shrink-0">
                                     {item.image ? (
-                                        <img
+                                        <Image
                                             src={getImageUrl(item.image)}
                                             alt={item.product_name}
+                                            width={56}
+                                            height={56}
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
                                                 (e.currentTarget as HTMLImageElement).style.display = 'none';

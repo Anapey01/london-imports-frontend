@@ -41,12 +41,13 @@ export default function AdminSignupPage() {
             await authAPI.registerAdmin(formData);
             toast.success('Admin account created! Please login.');
             router.push('/admin/login');
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const errorRes = err as { response?: { status?: number; data?: { detail?: string; message?: string } } };
             // Check for specific error messages from backend
-            if (err.response?.status === 403) {
+            if (errorRes.response?.status === 403) {
                 setError('Invalid secret key. Authorization required.');
             } else {
-                setError(err.response?.data?.detail || err.response?.data?.message || 'Registration failed');
+                setError(errorRes.response?.data?.detail || errorRes.response?.data?.message || 'Registration failed');
             }
             setLoading(false);
         }
@@ -54,8 +55,7 @@ export default function AdminSignupPage() {
 
     return (
         <div
-            className="min-h-screen flex items-center justify-center px-4"
-            style={{ backgroundColor: isDark ? '#0f172a' : '#f8fafc' }}
+            className={`min-h-screen flex items-center justify-center px-4 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
         >
             <div className={`w-full max-w-md`}>
                 {/* Logo & Title */}

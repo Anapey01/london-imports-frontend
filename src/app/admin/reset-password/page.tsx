@@ -5,7 +5,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import Link from 'next/link';
@@ -13,7 +13,6 @@ import { toast } from 'react-hot-toast';
 
 function ResetPasswordForm() {
     const { theme } = useTheme();
-    const router = useRouter();
     const searchParams = useSearchParams();
     const isDark = theme === 'dark';
 
@@ -59,8 +58,8 @@ function ResetPasswordForm() {
             });
             setSuccess(true);
             toast.success('Password reset successfully!');
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to reset password. Link may be expired.');
+        } catch (err: unknown) {
+            setError((err as { response?: { data?: { error?: string } } }).response?.data?.error || 'Failed to reset password. Link may be expired.');
         } finally {
             setLoading(false);
         }
@@ -149,8 +148,7 @@ export default function ResetPasswordPage() {
 
     return (
         <div
-            className="min-h-screen flex items-center justify-center px-4"
-            style={{ backgroundColor: isDark ? '#0f172a' : '#f8fafc' }}
+            className={`min-h-screen flex items-center justify-center px-4 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
         >
             <div className={`w-full max-w-md`}>
                 <div className="text-center mb-8">

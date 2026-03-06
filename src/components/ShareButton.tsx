@@ -27,7 +27,7 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
             try {
                 await navigator.share(shareData);
                 return;
-            } catch (err) {
+            } catch {
                 // User cancelled or error, fall through to copy
             }
         }

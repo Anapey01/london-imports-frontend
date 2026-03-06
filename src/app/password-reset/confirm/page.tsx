@@ -53,15 +53,16 @@ function ResetForm() {
 
             setSuccess(true);
             setTimeout(() => router.push('/login'), 3000);
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const errorRes = err as { response?: { data?: { error?: string } } };
             console.error('Password Reset Error:', err);
 
             // Try to extract specific error message
-            let errorMessage = err.response?.data?.error;
+            let errorMessage = errorRes.response?.data?.error;
 
             // Handle DRF field errors (e.g. { password: ["Too common"] })
-            if (!errorMessage && err.response?.data) {
-                const data = err.response.data;
+            if (!errorMessage && errorRes.response?.data) {
+                const data = errorRes.response.data as Record<string, string[] | string>;
                 const firstKey = Object.keys(data)[0];
                 if (firstKey) {
                     const firstError = Array.isArray(data[firstKey]) ? data[firstKey][0] : data[firstKey];

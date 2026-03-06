@@ -9,7 +9,8 @@ class SoundEffects {
 
     private getContext(): AudioContext {
         if (!this.audioContext) {
-            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const WinAudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+            this.audioContext = new WinAudioContext();
         }
         return this.audioContext;
     }
@@ -34,7 +35,7 @@ class SoundEffects {
 
             oscillator.start(ctx.currentTime);
             oscillator.stop(ctx.currentTime + 0.1);
-        } catch (e) {
+        } catch {
             // Silent fail if audio not available
         }
     }
@@ -65,7 +66,7 @@ class SoundEffects {
                 oscillator.start(startTime);
                 oscillator.stop(startTime + 0.3);
             });
-        } catch (e) {
+        } catch {
             // Silent fail if audio not available
         }
     }
@@ -91,7 +92,7 @@ class SoundEffects {
 
             oscillator.start(ctx.currentTime);
             oscillator.stop(ctx.currentTime + 0.2);
-        } catch (e) {
+        } catch {
             // Silent fail if audio not available
         }
     }

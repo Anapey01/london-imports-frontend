@@ -138,7 +138,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
 
                         {/* Results List */}
-                        {!isSearching && results.map((product: any) => (
+                        {!isSearching && results.map((product: { id: number | string; slug: string; name: string; image?: string; price: number }) => (
                             <button
                                 key={product.id}
                                 onClick={() => handleProductClick(product.slug)}
@@ -171,7 +171,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     {categories.length > 0 ? (
-                                        categories.slice(0, 10).map((cat: any, index: number) => (
+                                        categories.slice(0, 10).map((cat: { id: number | string; name: string; slug?: string }, index: number) => (
                                             <button
                                                 key={cat.id || cat.slug || index}
                                                 onClick={() => setQuery(cat.name)}

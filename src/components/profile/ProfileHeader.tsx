@@ -27,7 +27,6 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
     // Load avatar from localStorage on mount
     useEffect(() => {
         const savedAvatar = localStorage.getItem('userAvatar');
-        // eslint-disable-next-line
         if (savedAvatar) setAvatarUrl(savedAvatar);
     }, []);
 

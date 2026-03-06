@@ -78,11 +78,10 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({ activeStep }) => {
                 {showResults && products.map((p, i) => (
                     <div
                         key={i}
-                        className={`flex gap-3 p-2 rounded-xl animate-fade-in-up cursor-pointer transition-all duration-300 ${selectedProduct === i
+                        className={`flex gap-3 p-2 rounded-xl animate-fade-in-up cursor-pointer transition-all duration-300 ${i === 0 ? 'delay0' : i === 1 ? 'delay1' : 'delay2'} ${selectedProduct === i
                             ? 'bg-pink-100 ring-2 ring-pink-400 scale-[1.02]'
                             : 'bg-gray-50 hover:bg-gray-100'
                             }`}
-                        style={{ animationDelay: `${i * 0.15}s`, opacity: 0, animationFillMode: 'forwards' }}
                     >
                         <div className={`w-10 h-10 ${p.bg} rounded-lg flex items-center justify-center shadow-sm`}>
                             <PhoneIcon color={p.color} />

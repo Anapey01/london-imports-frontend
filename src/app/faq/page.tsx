@@ -4,7 +4,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from '@/providers/ThemeProvider';
 
 const faqs = [
     {
@@ -67,7 +66,6 @@ const faqs = [
 ];
 
 export default function FAQPage() {
-    const { theme } = useTheme();
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (

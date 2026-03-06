@@ -14,7 +14,6 @@ const AddressesView = ({ theme }: { theme: string }) => {
     // Load from localStorage
     useEffect(() => {
         const saved = localStorage.getItem('user-addresses');
-        // eslint-disable-next-line
         if (saved) setAddresses(JSON.parse(saved));
     }, []);
 

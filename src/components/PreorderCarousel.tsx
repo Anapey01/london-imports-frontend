@@ -5,11 +5,11 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Product } from '@/stores/cartStore';
 import ProductCard from './ProductCard';
 
 interface PreorderCarouselProps {
-    products: any[];
+    products: Product[];
 }
 
 export default function PreorderCarousel({ products }: PreorderCarouselProps) {

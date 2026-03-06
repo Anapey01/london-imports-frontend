@@ -5,7 +5,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import Link from 'next/link';
@@ -27,7 +26,7 @@ export default function ForgotPasswordPage() {
             await authAPI.requestPasswordReset({ email });
             setStatus('success');
             setMessage('If an account exists with this email, a reset link has been sent. Please check your inbox (or console if running locally).');
-        } catch (err: any) {
+        } catch {
             setStatus('error');
             setMessage('Failed to process request. Please try again.');
         }
@@ -35,8 +34,7 @@ export default function ForgotPasswordPage() {
 
     return (
         <div
-            className="min-h-screen flex items-center justify-center px-4"
-            style={{ backgroundColor: isDark ? '#0f172a' : '#f8fafc' }}
+            className={`min-h-screen flex items-center justify-center px-4 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
         >
             <div className={`w-full max-w-md`}>
                 <div className="text-center mb-8">

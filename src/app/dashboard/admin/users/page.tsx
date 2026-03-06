@@ -17,6 +17,7 @@ interface AdminUser {
     role: string;
     is_active: boolean;
     created_at: string;
+    date_joined?: string;
 }
 
 export default function AdminUsersPage() {
@@ -35,7 +36,7 @@ export default function AdminUsersPage() {
         try {
             const response = await adminAPI.users();
             const usersData = response.data.results || response.data || [];
-            setUsers(usersData.map((user: any) => ({
+            setUsers(usersData.map((user: AdminUser) => ({
                 id: user.id,
                 username: user.username,
                 email: user.email,

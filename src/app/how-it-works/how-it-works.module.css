@@ -86,3 +86,23 @@
 .phoneMockup :global(.border-pink-500) {
   border-color: #ec4899 !important;
 }
+
+.delay0 {
+  animation-delay: 0s;
+}
+
+.delay1 {
+  animation-delay: 0.15s;
+}
+
+.delay2 {
+  animation-delay: 0.3s;
+}
+
+.delay3 {
+  animation-delay: 0.45s;
+}
+
+.delay4 {
+  animation-delay: 0.6s;
+}

@@ -47,16 +47,15 @@ export default function AdminLoginPage() {
 
             // Success - redirect to admin dashboard
             router.push('/dashboard/admin');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Invalid credentials');
+        } catch (err: unknown) {
+            setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || 'Invalid credentials');
             setLoading(false);
         }
     };
 
     return (
         <div
-            className="min-h-screen flex items-center justify-center px-4"
-            style={{ backgroundColor: isDark ? '#0f172a' : '#f8fafc' }}
+            className={`min-h-screen flex items-center justify-center px-4 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
         >
             <div className={`w-full max-w-md`}>
                 {/* Logo & Title */}

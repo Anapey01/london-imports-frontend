@@ -136,7 +136,7 @@ export default function SourcingPage() {
                 console.error('Non-JSON response:', text);
                 throw new Error(`Server returned non-JSON response (${res.status}). Check backend logs.`);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             const error = err as Error;
             console.error('Sourcing upload error:', error);
             setError(error.message || 'Something went wrong. Please try again.');

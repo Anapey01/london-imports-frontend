@@ -153,7 +153,7 @@ export default function CategoryCards() {
                                         </Link>
                                     ) : (
                                         <div className="grid grid-cols-2 gap-3 lg:gap-4 h-full max-h-[260px] lg:max-h-[300px]">
-                                            {displayItems.slice(0, 4).map((item: any, i: number) => (
+                                            {displayItems.slice(0, 4).map((item: GridItem, i: number) => (
                                                 <Link key={i} href={item.link} className="block group">
                                                     <div className="relative aspect-square mb-1 bg-gray-50 overflow-hidden rounded-md border border-gray-100">
                                                         <Image

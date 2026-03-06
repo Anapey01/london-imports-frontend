@@ -11,7 +11,6 @@ const WalletView = ({ theme }: { theme: string }) => {
 
     useEffect(() => {
         const saved = localStorage.getItem('user-payment-methods');
-        // eslint-disable-next-line
         if (saved) setPaymentMethods(JSON.parse(saved));
     }, []);
 

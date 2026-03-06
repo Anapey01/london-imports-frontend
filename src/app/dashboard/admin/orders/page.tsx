@@ -5,6 +5,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
@@ -249,9 +250,11 @@ export default function AdminOrdersPage() {
                         <div className="flex items-center gap-3 mb-4">
                             <div className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                                 {order.thumbnail ? (
-                                    <img
+                                    <Image
                                         src={getImageUrl(order.thumbnail)}
                                         alt="Order Item"
+                                        width={48}
+                                        height={48}
                                         className="w-full h-full object-cover"
                                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                     />
@@ -331,9 +334,11 @@ export default function AdminOrdersPage() {
                                     <div className="flex items-center gap-3">
                                         {order.thumbnail && (
                                             <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700">
-                                                <img
+                                                <Image
                                                     src={getImageUrl(order.thumbnail)}
                                                     alt="Thumbnail"
+                                                    width={40}
+                                                    height={40}
                                                     className="w-full h-full object-cover"
                                                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                                 />
