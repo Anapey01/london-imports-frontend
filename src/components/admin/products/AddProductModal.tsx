@@ -3,14 +3,15 @@
 import React from 'react';
 
 interface NewProduct {
-    name?: string;
-    description?: string;
-    category?: string;
-    price?: number;
-    expectedDate?: string;
-    status?: string;
-    preOrder?: boolean;
-    featured?: boolean;
+    name: string;
+    description: string;
+    category: string;
+    price: number;
+    stock: number;
+    expectedDate: string;
+    status: string;
+    preOrder: boolean;
+    featured: boolean;
 }
 
 interface AddProductModalProps {
