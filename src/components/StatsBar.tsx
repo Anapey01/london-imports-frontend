@@ -14,13 +14,10 @@ interface PlatformStats {
 
 // Animated counter hook
 function useAnimatedCounter(end: number | string, duration: number = 1500, start: boolean = true) {
-    const [count, setCount] = useState<number | string>(0);
+    const [count, setCount] = useState<number | string>(typeof end === 'string' ? end : 0);
 
     useEffect(() => {
-        if (typeof end === 'string') {
-            setCount(end);
-            return;
-        }
+        if (typeof end === 'string') return;
 
         if (!start || end === 0) {
             setCount(end);

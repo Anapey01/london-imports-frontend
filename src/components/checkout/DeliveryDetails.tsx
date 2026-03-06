@@ -10,7 +10,7 @@ interface DeliveryDetailsProps {
         region: string;
         notes: string;
     };
-    setDelivery: (delivery: any) => void;
+    setDelivery: (delivery: { address: string; city: string; region: string; notes: string; }) => void;
 }
 
 const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery }: DeliveryDetailsProps) => {
