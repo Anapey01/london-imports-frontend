@@ -8,15 +8,26 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 
+interface AdminUser {
+    id: string | number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+    is_active: boolean;
+    created_at: string;
+}
+
 export default function AdminUsersPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('ALL');
-    const [selectedUser, setSelectedUser] = useState<any>(null);
-    const [deleteUser, setDeleteUser] = useState<any>(null);
+    const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+    const [deleteUser, setDeleteUser] = useState<AdminUser | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState('');
 
@@ -34,7 +45,7 @@ export default function AdminUsersPage() {
                 is_active: user.is_active !== false,
                 created_at: user.created_at || user.date_joined,
             })));
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to load users:', err);
             setError('Failed to load users');
         } finally {
@@ -50,10 +61,10 @@ export default function AdminUsersPage() {
         if (!deleteUser) return;
         setIsDeleting(true);
         try {
-            await adminAPI.deleteUser(deleteUser.id);
+            await adminAPI.deleteUser(deleteUser.id.toString());
             setUsers(users.filter(u => u.id !== deleteUser.id));
             setDeleteUser(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to delete user:', err);
             setError('Failed to delete user');
         } finally {
@@ -111,11 +122,26 @@ export default function AdminUsersPage() {
                     <p className="text-pink-100 text-sm">{users.length} registered users</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                 </div>
             </div>
+
+            {/* Error Message */}
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center gap-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm">{error}</span>
+                    <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-red-500" title="Dismiss error">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            )}
 
             {/* Search */}
             <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
@@ -185,6 +211,8 @@ export default function AdminUsersPage() {
                                             <button
                                                 onClick={() => setSelectedUser(user)}
                                                 className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-400'}`}
+                                                title={`Edit ${user.first_name} ${user.last_name}`}
+                                                aria-label={`Edit ${user.first_name} ${user.last_name}`}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -193,6 +221,8 @@ export default function AdminUsersPage() {
                                             <button
                                                 onClick={() => setDeleteUser(user)}
                                                 className="p-2 rounded-lg transition-colors hover:bg-red-50 text-red-400"
+                                                title={`Delete ${user.first_name} ${user.last_name}`}
+                                                aria-label={`Delete ${user.first_name} ${user.last_name}`}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -273,6 +303,8 @@ export default function AdminUsersPage() {
                                 <select
                                     defaultValue={selectedUser.role}
                                     className={`w-full px-4 py-2.5 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                                    aria-label="Select user role"
+                                    title="User role"
                                 >
                                     <option value="CUSTOMER">Customer</option>
                                     <option value="VENDOR">Vendor</option>
@@ -284,6 +316,8 @@ export default function AdminUsersPage() {
                                 <select
                                     defaultValue={selectedUser.is_active ? 'active' : 'suspended'}
                                     className={`w-full px-4 py-2.5 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                                    aria-label="Select user status"
+                                    title="User status"
                                 >
                                     <option value="active">Active</option>
                                     <option value="suspended">Suspended</option>

@@ -81,3 +81,79 @@ export interface Order {
     amount_paid?: number;
     delivery_window?: string;
 }
+
+export interface Address {
+    id: string;
+    label: string;
+    city: string;
+    area: string;
+    landmark: string;
+    phone: string;
+    isDefault: boolean;
+}
+
+export interface PaystackResponse {
+    reference: string;
+    status: string;
+    message: string;
+    transaction: string;
+    trxref: string;
+}
+
+export interface PaystackConfig {
+    key: string;
+    email: string;
+    amount: number;
+    currency: string;
+    ref?: string;
+    metadata?: {
+        custom_fields: Array<{
+            display_name: string;
+            variable_name: string;
+            value: string;
+        }>;
+    };
+    callback: (response: PaystackResponse) => void;
+    onClose: () => void;
+}
+
+export interface PaystackPop {
+    setup: (config: PaystackConfig) => {
+        openIframe: () => void;
+    };
+}
+
+export interface ExtendedCart extends Order {
+    // Already inherits from Order, but if there was a Cart base:
+    deposit_amount?: number;
+    balance_due?: number;
+    amount_paid?: number;
+}
+
+export interface BackendError {
+    response?: {
+        data?: string | {
+            error?: string;
+            message?: string;
+            detail?: string;
+            [key: string]: string | string[] | undefined;
+        };
+    };
+    message?: string;
+}
+
+export interface AdminProduct {
+    id: number;
+    name: string;
+    category: string;
+    price: number;
+    stock: number;
+    status: string;
+    image: string;
+    vendor: string;
+    featured: boolean;
+    preOrder: boolean;
+    description: string;
+    createdAt?: string;
+    expectedDate?: string;
+}

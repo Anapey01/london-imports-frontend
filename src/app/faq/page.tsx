@@ -71,14 +71,14 @@ export default function FAQPage() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <div className="min-h-screen py-16 px-4" style={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#f9fafb' }}>
+        <div className="min-h-screen py-16 px-4 bg-gray-50 dark:bg-slate-950">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
+                    <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-slate-50">
                         Frequently Asked Questions
                     </h1>
-                    <p style={{ color: theme === 'dark' ? '#94a3b8' : '#6b7280' }}>
+                    <p className="text-gray-500 dark:text-slate-400">
                         Everything you need to know about pre-ordering with London&apos;s Imports
                     </p>
                 </div>
@@ -88,28 +88,22 @@ export default function FAQPage() {
                     {faqs.map((faq, index) => (
                         <div
                             key={index}
-                            className="border rounded-xl overflow-hidden"
-                            style={{
-                                backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
-                                borderColor: theme === 'dark' ? '#334155' : '#e5e7eb'
-                            }}
+                            className={`border rounded-xl overflow-hidden bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700`}
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full flex items-center justify-between px-6 py-4 text-left transition-colors"
-                                style={{
-                                    backgroundColor: openIndex === index
-                                        ? (theme === 'dark' ? '#334155' : '#f9fafb')
-                                        : 'transparent'
-                                }}
+                                className={`w-full flex items-center justify-between px-6 py-4 text-left transition-colors ${openIndex === index
+                                    ? 'bg-gray-50 dark:bg-slate-700/50'
+                                    : 'bg-transparent'
+                                    }`}
                             >
-                                <span className="font-semibold" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
+                                <span className="font-semibold text-gray-900 dark:text-slate-50">
                                     {faq.question}
                                 </span>
                                 <svg
-                                    className={`w-5 h-5 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''}`}
+                                    className={`w-5 h-5 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''} text-gray-500 dark:text-slate-400`}
                                     fill="none"
-                                    stroke={theme === 'dark' ? '#94a3b8' : '#6b7280'}
+                                    stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -119,7 +113,7 @@ export default function FAQPage() {
                             <div
                                 className={`overflow-hidden transition-all duration-200 ${openIndex === index ? 'max-h-[500px]' : 'max-h-0'}`}
                             >
-                                <p className="px-6 pb-4 leading-relaxed" style={{ color: theme === 'dark' ? '#cbd5e1' : '#6b7280' }}>
+                                <p className="px-6 pb-4 leading-relaxed text-gray-500 dark:text-slate-300">
                                     {faq.answer}
                                 </p>
                             </div>
@@ -128,17 +122,16 @@ export default function FAQPage() {
                 </div>
 
                 {/* Still have questions? */}
-                <div className="mt-12 text-center p-8 rounded-2xl" style={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#fdf2f8' }}>
-                    <h3 className="text-xl font-bold mb-2" style={{ color: theme === 'dark' ? '#f8fafc' : '#111827' }}>
+                <div className="mt-12 text-center p-8 rounded-2xl bg-pink-50 dark:bg-slate-800">
+                    <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-slate-50">
                         Still have questions?
                     </h3>
-                    <p className="mb-4" style={{ color: theme === 'dark' ? '#94a3b8' : '#6b7280' }}>
+                    <p className="mb-4 text-gray-500 dark:text-slate-400">
                         We&apos;re here to help! Reach out to our support team.
                     </p>
                     <a
                         href="/contact"
-                        className="inline-block px-6 py-3 rounded-xl font-semibold text-white"
-                        style={{ background: 'linear-gradient(to right, #ec4899, #f43f5e)' }}
+                        className="inline-block px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500"
                     >
                         Contact Support
                     </a>

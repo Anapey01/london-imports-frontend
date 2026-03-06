@@ -1,19 +1,26 @@
-/**
- * London's Imports - Checkout Page
- * Redesigned to match the premium, editorial aesthetic of the Wishlist/Cart
- */
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCartStore, CartItem, Cart } from '@/stores/cartStore';
+import { useCartStore } from '@/stores/cartStore';
+import type { CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
-import Link from 'next/link';
-import { ShieldCheck, Truck, CreditCard, MapPin, Lock, RefreshCcw, AlertCircle } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
+import { ExtendedCart, BackendError } from '@/types';
+import type { OrderItem } from '@/types';
+import { AlertCircle } from 'lucide-react';
 
-// Paystack Interfaces
+// New Component Imports
+import CheckoutHeader from '@/components/checkout/CheckoutHeader';
+import ResumeOrderNotice from '@/components/checkout/ResumeOrderNotice';
+import DeliveryDetails from '@/components/checkout/DeliveryDetails';
+import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector';
+import OrderSummary from '@/components/checkout/OrderSummary';
+import CheckoutSubmitButton from '@/components/checkout/CheckoutSubmitButton';
+
+
+// Paystack types for global window
 interface PaystackResponse {
     reference: string;
     status: string;
@@ -22,12 +29,12 @@ interface PaystackResponse {
     trxref: string;
 }
 
-interface PaystackConfig {
+interface PaystackOptions {
     key: string;
     email: string;
     amount: number;
     currency: string;
-    ref?: string;
+    ref: string;
     metadata?: {
         custom_fields: Array<{
             display_name: string;
@@ -39,45 +46,20 @@ interface PaystackConfig {
     onClose: () => void;
 }
 
-interface PaystackPop {
-    setup: (config: PaystackConfig) => {
-        openIframe: () => void;
-    };
-}
-
-interface ExtendedCart extends Cart {
-    deposit_amount?: number;
-    balance_due?: number;
-    amount_paid?: number;
-    state?: string;
-    delivery_address?: string;
-    delivery_city?: string;
-    delivery_region?: string;
-    customer_notes?: string;
-}
-
-interface BackendError {
-    response?: {
-        data?: string | {
-            error?: string;
-            message?: string;
-            detail?: string;
-            [key: string]: string | string[] | undefined;
-        };
-    };
-    message?: string;
-}
-
 declare global {
     interface Window {
-        PaystackPop?: PaystackPop;
+        PaystackPop: {
+            setup: (options: PaystackOptions) => {
+                openIframe: () => void;
+            };
+        };
     }
 }
 
 function CheckoutPage() {
     const router = useRouter();
     const { cart, fetchCart, selectedItemIds } = useCartStore();
-    const { user, isAuthenticated } = useAuthStore();
+    const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
@@ -89,7 +71,7 @@ function CheckoutPage() {
     const [connectionTimeout, setConnectionTimeout] = useState(false);
     const [connectionProgress, setConnectionProgress] = useState(0);
 
-    const [checkoutOrder, setCheckoutOrder] = useState<ExtendedCart | null>(null); // Store order after checkout creation
+    const [checkoutOrder, setCheckoutOrder] = useState<ExtendedCart | null>(null);
     const [delivery, setDelivery] = useState({
         address: '',
         city: '',
@@ -97,7 +79,6 @@ function CheckoutPage() {
         notes: '',
     });
 
-    // URL Params to resume payment for existing order
     const searchParams = useSearchParams();
     const orderNumberParam = searchParams.get('order');
 
@@ -107,7 +88,6 @@ function CheckoutPage() {
         }
     }, [isAuthenticated, fetchCart]);
 
-    // Handle Paystack Loading Timeout
     useEffect(() => {
         let timer: NodeJS.Timeout;
         let progressInterval: NodeJS.Timeout;
@@ -123,7 +103,7 @@ function CheckoutPage() {
             timer = setTimeout(() => {
                 setConnectionTimeout(true);
                 setConnectionProgress(100);
-            }, 10000); // 10 seconds timeout
+            }, 10000);
         }
 
         return () => {
@@ -132,7 +112,6 @@ function CheckoutPage() {
         };
     }, [isLoading, isPaystackLoaded, paymentType]);
 
-    // Manual Paystack script injection to ensure onLoad fires and it stays in form
     useEffect(() => {
         if (!formRef.current || isPaystackLoaded) return;
 
@@ -147,291 +126,159 @@ function CheckoutPage() {
         script.src = "https://js.paystack.co/v1/inline.js";
         script.async = true;
         script.onload = () => {
-            console.log("Paystack script loaded");
             setIsPaystackLoaded(true);
         };
         formRef.current.appendChild(script);
-
-        // Fallback: Check window.PaystackPop periodically in case onload missed
-        const checkInterval = setInterval(() => {
-            if (window.PaystackPop) {
-                setIsPaystackLoaded(true);
-                clearInterval(checkInterval);
-            }
-        }, 1000);
-
-        return () => clearInterval(checkInterval);
     }, [isPaystackLoaded]);
 
-    // Fetch existing order if param exists
     useEffect(() => {
         if (orderNumberParam && isAuthenticated) {
-            setIsLoading(true);
             ordersAPI.detail(orderNumberParam)
                 .then(res => {
-                    // Only allow paying for PENDING orders
-                    if (res.data.state === 'PENDING_PAYMENT') {
-                        setCheckoutOrder(res.data);
-                        setCanPay(true);
-                        // Pre-fill delivery info from this order
-                        setDelivery({
-                            address: res.data.delivery_address || '',
-                            city: res.data.delivery_city || '',
-                            region: res.data.delivery_region || '',
-                            notes: res.data.customer_notes || '',
-                        });
-                        // Set payment amount based on what's due
-                        const totalAmount = parseFloat(res.data.total.toString());
-                        const depositAmount = parseFloat((res.data.deposit_amount || 0).toString());
-                        const amountPaid = parseFloat((res.data.amount_paid || 0).toString());
-                        const balanceDue = parseFloat((res.data.balance_due || 0).toString());
-
-                        if (balanceDue > 0 && amountPaid > 0) {
-                            setPaymentType('BALANCE');
-                        } else if (depositAmount > 0) {
-                            // Check if it's a fixed 30% deposit or custom
-                            const isStandardDeposit = Math.abs(depositAmount - (totalAmount * 0.3)) < 0.01;
-                            const isFullPayment = Math.abs(depositAmount - totalAmount) < 0.01;
-
-                            if (!isStandardDeposit && !isFullPayment) {
-                                setPaymentType('CUSTOM');
-                                setCustomAmount(depositAmount.toString());
-                            } else if (isFullPayment) {
-                                setPaymentType('FULL');
-                            } else {
-                                setPaymentType('DEPOSIT');
-                            }
-                        } else {
-                            // If no balance due and no deposit set, default to FULL
-                            setPaymentType('FULL');
-                        }
-                    } else {
-                        setError(`Order ${orderNumberParam} is not pending payment (State: ${res.data.state})`);
-                        setCanPay(false);
-                        setCheckoutOrder(res.data); // Still set it so we can show summary, but canPay=false blocks button
+                    const orderData = res.data;
+                    setCheckoutOrder(orderData);
+                    setDelivery({
+                        address: orderData.delivery_address || '',
+                        city: orderData.delivery_city || '',
+                        region: orderData.delivery_region || '',
+                        notes: orderData.customer_notes || '',
+                    });
+                    if (orderData.state === 'PARTIALLY_PAID') {
+                        setPaymentType('BALANCE');
                     }
                 })
                 .catch(err => {
-                    console.error("Failed to load order", err);
-                    setError("Could not load order details");
-                })
-                .finally(() => setIsLoading(false));
+                    console.error("Order Load Error:", err);
+                    setError('Could not load order details');
+                });
         }
     }, [orderNumberParam, isAuthenticated]);
 
-    // Pre-fill address when user profile loads (only if not loaded from order)
-    useEffect(() => {
-        if (user && !delivery.address && !checkoutOrder) {
-            setDelivery(prev => ({
-                ...prev,
-                address: user.address || prev.address,
-                city: user.city || prev.city,
-                region: user.region || prev.region,
-            }));
-        }
-    }, [user, checkoutOrder, delivery.address]);
-
-    const currentOrderData = useMemo(() => checkoutOrder || cart, [checkoutOrder, cart]);
+    const currentOrderData = useMemo(() => {
+        if (checkoutOrder) return checkoutOrder;
+        if (cart) return cart;
+        return { items: [], total: 0, subtotal: 0, delivery_fee: 0 };
+    }, [checkoutOrder, cart]);
 
     const paymentAmount = useMemo(() => {
-        if (!currentOrderData) return 0;
-        const data = currentOrderData as ExtendedCart;
+        const totalValue = currentOrderData.total || 0;
+        const totalPaid = checkoutOrder ? Number(checkoutOrder.amount_paid || 0) : 0;
+        const balanceDue = Math.max(0, totalValue - totalPaid);
 
-        // Robust numeric parsing to handle potential strings or formatted values
-        const parseValue = (val: string | number | null | undefined) => {
-            if (typeof val === 'number') return val;
-            const str = String(val || '0').replace(/[^\d.-]/g, '');
-            const parsed = parseFloat(str);
-            return isNaN(parsed) ? 0 : parsed;
-        };
+        if (paymentType === 'BALANCE') return balanceDue;
+        if (paymentType === 'DEPOSIT') return totalValue * 0.3;
+        if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
+        if (paymentType === 'WHATSAPP') return 0;
+        return balanceDue;
+    }, [paymentType, currentOrderData.total, customAmount, checkoutOrder]);
 
-        const total = parseValue(data.total);
-        let amount = total; // Default to full payment
+    const parseValue = (val: string | number | null | undefined): number => {
+        if (val === null || val === undefined) return 0;
+        if (typeof val === 'number') return val;
+        const parsed = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
+        return isNaN(parsed) ? 0 : parsed;
+    };
 
-        switch (paymentType) {
-            case 'DEPOSIT':
-                const deposit = parseValue(data.deposit_amount);
-                amount = deposit || (total * 0.3);
-                break;
-            case 'CUSTOM':
-                amount = parseValue(customAmount);
-                break;
-            case 'BALANCE':
-                const balance = data.balance_due ? parseValue(data.balance_due) : (total - parseValue(data.amount_paid));
-                amount = balance;
-                break;
-            case 'FULL':
-            default:
-                amount = total;
-                break;
+    useEffect(() => {
+        const total = parseValue(currentOrderData.total);
+        if (total <= 0 && !authLoading) {
+            setCanPay(false);
+        } else {
+            setCanPay(true);
         }
-
-        // Safety fallback: if FULL payment results in 0 but total exists, use total
-        if (paymentType === 'FULL' && amount <= 0 && total > 0) amount = total;
-
-        return amount;
-    }, [currentOrderData, paymentType, customAmount]);
-
-    if (!isAuthenticated) {
-        router.push('/login?redirect=/checkout');
-        return null;
-    }
-
-    if ((!cart || cart.items?.length === 0) && !checkoutOrder && !isLoading && !orderNumberParam) {
-        router.push('/cart');
-        return null;
-    }
-
-    if (!currentOrderData) return null;
+    }, [currentOrderData.total, authLoading]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
 
+        if (paymentType === 'CUSTOM' && (!customAmount || parseFloat(customAmount) <= 0)) {
+            setError('Please enter a valid installment amount');
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            if (paymentType === 'CUSTOM') {
-                const amount = parseFloat(customAmount);
-                const minAmount = 1;
-
-                if (isNaN(amount) || amount < minAmount) {
-                    setError(`Minimum payment amount is ${formatPrice(minAmount)}`);
-                    setIsLoading(false);
-                    return;
-                }
-                if (amount > currentOrderData.total) {
-                    setError(`Amount cannot exceed order total of ${formatPrice(currentOrderData.total)}`);
-                    setIsLoading(false);
-                    return;
-                }
-            }
-
             let orderToPay = checkoutOrder;
-
-            if (!orderNumberParam) {
-                const checkoutResponse = await ordersAPI.checkout({
+            if (!orderToPay) {
+                const orderPayload = {
+                    items: (currentOrderData.items || [])
+                        .filter((item: CartItem | OrderItem) => selectedItemIds.has(item.id))
+                        .map((item: CartItem | OrderItem) => ({
+                            product: item.product.id,
+                            quantity: item.quantity,
+                            selected_size: item.selected_size,
+                            selected_color: item.selected_color,
+                        })),
                     delivery_address: delivery.address,
                     delivery_city: delivery.city,
                     delivery_region: delivery.region,
                     customer_notes: delivery.notes,
-                    payment_type: paymentType,
-                    custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
-                    item_ids: Array.from(selectedItemIds)
-                });
-
-                orderToPay = checkoutResponse.data.order;
+                };
+                const res = await ordersAPI.checkout(orderPayload);
+                orderToPay = res.data;
                 setCheckoutOrder(orderToPay);
             }
 
-            if (!orderToPay) {
-                throw new Error('Order data is missing. Please refresh.');
-            }
-
             if (paymentType === 'WHATSAPP') {
-                const whatsappNumber = '233545247009';
-                const message = encodeURIComponent(
-                    `Hi! 🚀 I've just placed an order on London's Imports!\n\n` +
-                    `*Order Number:* #${orderToPay.order_number}\n` +
-                    `*Total Amount:* ${formatPrice(orderToPay.total)}\n` +
-                    `*Shipping City:* ${delivery.city}\n\n` +
-                    `Please send me the Momo payment details so I can complete my purchase. Thanks! ✨`
-                );
-
-                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                useCartStore.getState().clearCart();
-
-                if (isMobile) {
-                    window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
-                } else {
-                    window.open(`https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${message}`, '_blank');
-                    router.push(`/checkout/success?order=${orderToPay.order_number}`);
-                }
+                const message = encodeURIComponent(`Hi, I'd like to pay for my order #${orderToPay?.order_number}. Total: ${formatPrice(orderToPay?.total || 0)}.`);
+                window.open(`https://wa.me/233535698330?text=${message}`, '_blank');
+                router.push('/orders');
                 return;
             }
 
-            const paymentInitResponse = await paymentsAPI.initiate(
-                orderToPay.order_number,
-                paymentType,
-                paymentAmount
-            );
-
-            const { reference } = paymentInitResponse.data;
-
-            if (!window.PaystackPop) {
-                setError('Payment system not loaded. Please refresh.');
-                setIsLoading(false);
-                return;
+            const paystack = window.PaystackPop;
+            if (!paystack) {
+                throw new Error("Payment gateway not ready. Please try again or use WhatsApp.");
             }
 
-            if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
-                setError('Invalid payment amount. Please enter a valid number.');
-                setIsLoading(false);
-                return;
-            }
-
-            const paystack = window.PaystackPop.setup({
-                key: 'pk_live_19482f7bb4f2f8db7b75211e3b529e3233aee865',
-                email: user?.email || 'customer@londonsimports.com',
-                amount: Math.ceil(paymentAmount * 100),
+            const handler = paystack.setup({
+                key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9',
+                email: user?.email || '',
+                amount: Math.round(paymentAmount * 100),
                 currency: 'GHS',
-                ref: reference,
+                ref: `LTRX-${Date.now()}-${orderToPay?.order_number}`,
                 metadata: {
                     custom_fields: [
-                        { display_name: "Order Number", variable_name: "order_number", value: orderToPay.order_number },
-                        { display_name: "Customer Name", variable_name: "customer_name", value: user ? `${user.first_name} ${user.last_name}` : 'Guest' },
-                        { display_name: "Phone Number", variable_name: "phone_number", value: user?.phone || 'Not provided' },
+                        { display_name: "Order ID", variable_name: "order_id", value: orderToPay?.order_number || '' },
+                        { display_name: "Payment Type", variable_name: "payment_type", value: paymentType }
                     ]
                 },
-                callback: function (response: PaystackResponse) {
-                    paymentsAPI.verify(response.reference)
-                        .then(() => {
-                            useCartStore.getState().clearCart();
-                            router.push(`/checkout/success?order=${orderToPay.order_number}`);
-                        })
-                        .catch((verifyErr) => {
-                            console.error('Verification failed', verifyErr);
-                            setError('Payment received. Processing confirmation...');
-                            setTimeout(() => {
-                                router.push(`/checkout/success?order=${orderToPay.order_number}`);
-                            }, 2000);
+                callback: async (response: PaystackResponse) => {
+                    try {
+                        await paymentsAPI.verify({
+                            reference: response.reference,
+                            order_number: orderToPay?.order_number || '',
+                            payment_type: paymentType,
+                            amount: paymentAmount
                         });
+                        router.push('/orders?success=true');
+                    } catch (verifyErr) {
+                        console.error('Verification failed:', verifyErr);
+                        setError('Payment verification failed. Please contact support.');
+                        setIsLoading(false);
+                    }
                 },
-                onClose: function () {
+                onClose: () => {
                     setIsLoading(false);
-                    setError('Payment cancelled. You can retry anytime.');
+                    setError('Payment window closed');
                 }
             });
-
-            paystack.openIframe();
+            handler.openIframe();
 
         } catch (err: unknown) {
-            const error = err as BackendError;
-            console.error('Checkout error:', error);
-            let errorMessage = 'Checkout failed. Please try again.';
-
-            const responseData = error.response?.data;
-            if (responseData) {
-                if (typeof responseData === 'string') {
-                    errorMessage = responseData;
-                } else if (typeof responseData === 'object') {
-                    if (responseData.error) errorMessage = responseData.error;
-                    else if (responseData.message) errorMessage = responseData.message;
-                    else if (responseData.detail) errorMessage = responseData.detail;
-                    else {
-                        const firstKey = Object.keys(responseData)[0];
-                        const firstError = responseData[firstKey];
-                        if (firstKey && Array.isArray(firstError)) {
-                            errorMessage = `${firstKey}: ${firstError[0]}`;
-                        } else if (firstKey && typeof firstError === 'string') {
-                            errorMessage = `${firstKey}: ${firstError}`;
-                        }
-                    }
-                }
-            } else if (error.message) {
-                errorMessage = error.message;
+            console.error("Checkout Error:", err);
+            const backendError = err as BackendError;
+            const errorData = backendError.response?.data;
+            if (errorData && typeof errorData === 'object') {
+                const detailedError = errorData as { error?: string; message?: string; detail?: string };
+                setError(detailedError.error || detailedError.message || detailedError.detail || 'Checkout failed');
+            } else if (typeof errorData === 'string') {
+                setError(errorData);
+            } else {
+                setError(err instanceof Error ? err.message : 'Error processing request');
             }
-
-            setError(errorMessage);
             setIsLoading(false);
         }
     };
@@ -439,430 +286,63 @@ function CheckoutPage() {
     return (
         <div className="min-h-screen bg-gray-50 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <div className="flex items-end justify-between mb-12 border-b border-gray-200 pb-4">
-                    <div className="flex items-center gap-3">
-                        <Lock className="w-6 h-6 text-gray-400" strokeWidth={1.5} />
-                        <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-tight">
-                            Secure Checkout
-                        </h1>
-                    </div>
-                </div>
+                <CheckoutHeader />
 
                 <form ref={formRef} onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-8 lg:gap-12">
                     <div className="lg:col-span-7 space-y-6 lg:space-y-8">
-                        {/* Removed duplicate error alert from top - now near button for mobile visibility */}
+                        {orderNumberParam && <ResumeOrderNotice orderNumber={orderNumberParam} />}
 
-                        {orderNumberParam && (
-                            <div className="bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/10 rounded-full">
-                                        <CreditCard className="w-4 h-4" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-medium">Resuming Order #{orderNumberParam}</p>
-                                        <p className="text-[10px] uppercase tracking-wider text-gray-400">Fast Track Payment Mode</p>
-                                    </div>
-                                </div>
-                                <div className="hidden sm:block">
-                                    <Link href="/orders" className="text-xs text-gray-400 hover:text-white transition-colors">
-                                        Cancel & Go Back
-                                    </Link>
-                                </div>
-                            </div>
-                        )}
+                        <DeliveryDetails
+                            orderNumberParam={orderNumberParam}
+                            delivery={delivery}
+                            setDelivery={setDelivery}
+                        />
 
-                        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-3">
-                                    <MapPin className="w-5 h-5 text-gray-400" />
-                                    <h2 className="text-xl font-light text-gray-900 tracking-tight">Delivery Details</h2>
-                                </div>
-                                {orderNumberParam && (
-                                    <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">Locked</span>
-                                )}
-                            </div>
-
-                            {orderNumberParam ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                                    <div>
-                                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Shipping Address</label>
-                                        <p className="text-sm font-light text-gray-900">{delivery.address}</p>
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Destination</label>
-                                        <p className="text-sm font-light text-gray-900">{delivery.city}, {delivery.region}</p>
-                                    </div>
-                                    {delivery.notes && (
-                                        <div className="sm:col-span-2">
-                                            <label className="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Delivery Notes</label>
-                                            <p className="text-sm font-light text-gray-600 italic">&quot;{delivery.notes}&quot;</p>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">Address</label>
-                                        <textarea
-                                            value={delivery.address}
-                                            onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
-                                            required
-                                            rows={2}
-                                            className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:ring-0 focus:outline-none transition-all font-light resize-none placeholder-gray-400 px-0"
-                                            placeholder="Enter your full street address"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                        <div>
-                                            <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">City</label>
-                                            <input
-                                                type="text"
-                                                value={delivery.city}
-                                                onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
-                                                required
-                                                className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 transition-all font-light placeholder-gray-400 px-0"
-                                                placeholder="Accra"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">Region</label>
-                                            <div className="relative">
-                                                <select
-                                                    value={delivery.region}
-                                                    onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
-                                                    required
-                                                    title="Select Region"
-                                                    className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 transition-all font-light appearance-none px-0 cursor-pointer"
-                                                >
-                                                    <option value="">Select Region</option>
-                                                    <option value="Greater Accra">Greater Accra</option>
-                                                    <option value="Ashanti">Ashanti</option>
-                                                    <option value="Western">Western</option>
-                                                    <option value="Central">Central</option>
-                                                    <option value="Eastern">Eastern</option>
-                                                    <option value="Northern">Northern</option>
-                                                    <option value="Volta">Volta</option>
-                                                    <option value="Upper East">Upper East</option>
-                                                    <option value="Upper West">Upper West</option>
-                                                    <option value="Bono">Bono</option>
-                                                </select>
-                                                <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none">
-                                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">Notes (Optional)</label>
-                                        <textarea
-                                            value={delivery.notes}
-                                            onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
-                                            rows={2}
-                                            className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 transition-all font-light resize-none placeholder-gray-400 px-0"
-                                            placeholder="Special delivery instructions..."
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-6">
-                                <CreditCard className="w-5 h-5 text-gray-400" />
-                                <h2 className="text-xl font-light text-gray-900 tracking-tight">Payment Method</h2>
-                            </div>
-
-                            <div className="space-y-4">
-                                {paymentType === 'BALANCE' ? (
-                                    <label className="flex items-start p-6 rounded-2xl border border-black bg-gray-50 ring-1 ring-black cursor-default">
-                                        <div className="mt-1">
-                                            <input type="radio" checked readOnly className="w-4 h-4 text-black border-gray-300 accent-black" />
-                                        </div>
-                                        <div className="ml-4">
-                                            <span className="block font-medium text-gray-900 text-lg">Clear Balance</span>
-                                            <p className="text-sm text-gray-500 font-light mt-1 italic">Paying off the remaining balance for this order.</p>
-                                        </div>
-                                    </label>
-                                ) : (
-                                    <>
-                                        <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'FULL' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="radio"
-                                                    name="payment_type"
-                                                    value="FULL"
-                                                    checked={paymentType === 'FULL'}
-                                                    onChange={() => setPaymentType('FULL')}
-                                                    className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
-                                                />
-                                            </div>
-                                            <div className="ml-4">
-                                                <span className="block font-medium text-gray-900 text-lg">Full Payment</span>
-                                                <p className="text-sm text-gray-500 font-light mt-1">Pay {formatPrice(currentOrderData.total)} now</p>
-                                            </div>
-                                        </label>
-
-                                        <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'DEPOSIT' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="radio"
-                                                    name="payment_type"
-                                                    value="DEPOSIT"
-                                                    checked={paymentType === 'DEPOSIT'}
-                                                    onChange={() => setPaymentType('DEPOSIT')}
-                                                    className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
-                                                />
-                                            </div>
-                                            <div className="ml-4">
-                                                <span className="block font-medium text-gray-900 text-lg">Deposit Only</span>
-                                                <p className="text-sm text-gray-500 font-light mt-1">Pay {formatPrice(currentOrderData.total * 0.3)} (30%) now</p>
-                                            </div>
-                                        </label>
-
-                                        <label className={`flex items-start p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'WHATSAPP' ? 'border-green-600 bg-green-50 ring-1 ring-green-600' : 'border-gray-200 hover:border-gray-300'}`}>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="radio"
-                                                    name="payment_type"
-                                                    value="WHATSAPP"
-                                                    checked={paymentType === 'WHATSAPP'}
-                                                    onChange={() => setPaymentType('WHATSAPP')}
-                                                    className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-600 accent-green-600"
-                                                />
-                                            </div>
-                                            <div className="ml-4">
-                                                <span className="block font-medium text-gray-900 text-lg flex items-center gap-2">
-                                                    WhatsApp Momo Checkout
-                                                    <span className="bg-green-100 text-green-700 text-[10px] uppercase px-2 py-0.5 rounded-full font-bold tracking-wider">Recommended</span>
-                                                </span>
-                                                <p className="text-sm text-gray-500 font-light mt-1 italic">Click to finalize order & chat with an admin for Momo details</p>
-                                            </div>
-                                        </label>
-
-                                        <label className={`flex flex-col p-4 sm:p-6 rounded-2xl cursor-pointer transition-all border ${paymentType === 'CUSTOM' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}>
-                                            <div className="flex items-start w-full">
-                                                <div className="mt-1">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment_type"
-                                                        value="CUSTOM"
-                                                        checked={paymentType === 'CUSTOM'}
-                                                        onChange={() => setPaymentType('CUSTOM')}
-                                                        className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
-                                                    />
-                                                </div>
-                                                <div className="ml-4 flex-1">
-                                                    <span className="block font-medium text-gray-900 text-lg">Flexible Installment</span>
-                                                    <p className="text-sm text-gray-500 font-light mt-1">Choose how much you want to pay now</p>
-                                                </div>
-                                            </div>
-
-                                            {paymentType === 'CUSTOM' && (
-                                                <div className="ml-8 mt-4">
-                                                    <div className="relative">
-                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">GHS</span>
-                                                        <input
-                                                            type="number"
-                                                            value={customAmount}
-                                                            onChange={(e) => setCustomAmount(e.target.value)}
-                                                            placeholder="Enter amount (min 1.00)"
-                                                            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
-                                                            min="1"
-                                                            max={currentOrderData.total}
-                                                        />
-                                                    </div>
-                                                    <p className="text-xs text-gray-400 mt-2">
-                                                        Remaining balance: {formatPrice(customAmount ? Math.max(0, currentOrderData.total - parseFloat(customAmount || '0')) : currentOrderData.total)}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </label>
-                                    </>
-                                )}
-                            </div>
-                        </div>
+                        <PaymentMethodSelector
+                            paymentType={paymentType}
+                            setPaymentType={setPaymentType}
+                            currentOrderData={currentOrderData}
+                            customAmount={customAmount}
+                            setCustomAmount={setCustomAmount}
+                        />
                     </div>
 
                     <div className="lg:col-span-5">
-                        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 sticky top-32">
-                            <h2 className="text-xl font-light text-gray-900 mb-6 tracking-tight">Order Summary</h2>
+                        <OrderSummary
+                            currentOrderData={currentOrderData}
+                            selectedItemIds={selectedItemIds}
+                            checkoutOrder={checkoutOrder}
+                            orderNumberParam={orderNumberParam}
+                            paymentAmount={paymentAmount}
+                        />
 
-                            <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                {(currentOrderData.items || [])
-                                    .filter((item: CartItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
-                                    .map((item: CartItem) => (
-                                        <div key={item.id} className="flex justify-between items-center text-sm group">
-                                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                <span className="w-6 h-6 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-full text-xs font-medium text-gray-600">
-                                                    {item.quantity}
-                                                </span>
-                                                <span className="text-gray-600 group-hover:text-gray-900 transition-colors truncate p-1">
-                                                    {item.product.name}
-                                                </span>
-                                            </div>
-                                            <span className="font-medium text-gray-900 whitespace-nowrap ml-4">
-                                                {formatPrice(item.total_price)}
-                                            </span>
-                                        </div>
-                                    ))}
+                        {error && (
+                            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex items-center gap-3 mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                <p className="text-xs font-medium">{error}</p>
                             </div>
+                        )}
 
-                            <div className="border-t border-gray-100 pt-6 space-y-3">
-                                <div className="flex justify-between text-gray-500 font-light">
-                                    <span>Subtotal</span>
-                                    <span className="font-medium text-gray-900">
-                                        {(() => {
-                                            if (checkoutOrder || orderNumberParam) return formatPrice(currentOrderData.subtotal || 0);
-                                            const selSubtotal = (currentOrderData.items || [])
-                                                .filter((i: CartItem) => selectedItemIds.has(i.id))
-                                                .reduce((sum: number, i: CartItem) => sum + Number(i.total_price || 0), 0);
-                                            return formatPrice(selSubtotal);
-                                        })()}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between text-gray-500 font-light">
-                                    <span>Delivery</span>
-                                    <span className="font-medium text-gray-900">
-                                        {Number(currentOrderData.delivery_fee) > 0 ? formatPrice(currentOrderData.delivery_fee) : 'FREE'}
-                                    </span>
-                                </div>
-
-                                {checkoutOrder && Number(checkoutOrder.amount_paid || 0) > 0 && (
-                                    <div className="flex justify-between text-green-600 font-light">
-                                        <span>Already Paid</span>
-                                        <span className="font-medium">- {formatPrice(Number(checkoutOrder.amount_paid))}</span>
-                                    </div>
-                                )}
-
-                                <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
-                                    <span className="text-lg text-gray-900 font-medium pb-1">Total Order Value</span>
-                                    <span className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
-                                        {(() => {
-                                            if (checkoutOrder || orderNumberParam) return formatPrice(currentOrderData.total || 0);
-                                            const selSubtotal = (currentOrderData.items || [])
-                                                .filter((i: CartItem) => selectedItemIds.has(i.id))
-                                                .reduce((sum: number, i: CartItem) => sum + Number(i.total_price || 0), 0);
-                                            const selTotal = selSubtotal + Number(currentOrderData.delivery_fee || 0);
-                                            return formatPrice(selTotal);
-                                        })()}
-                                    </span>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-xl p-4 mt-4 flex justify-between items-center text-gray-900">
-                                    <span className="font-medium">Due Now</span>
-                                    <span className="font-bold text-lg sm:text-xl">{formatPrice(paymentAmount)}</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-8 p-4 bg-gray-50 rounded-xl text-xs text-gray-500 space-y-2 border border-gray-100">
-                                <div className="flex items-center gap-2">
-                                    <ShieldCheck className="w-4 h-4 text-gray-900" />
-                                    <span>Payment secured by Paystack</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Truck className="w-4 h-4 text-gray-900" />
-                                    <span>Delivery to your doorstep</span>
-                                </div>
-                            </div>
-
-                            {/* Error Visibility Fix for Mobile */}
-                            {error && (
-                                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex items-center gap-3 mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                                    <p className="text-xs font-medium">{error}</p>
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
-                                id="checkout-pay-button"
-                                className={`w-full mt-8 py-4 px-6 rounded-full font-bold transition-all shadow-lg hover:shadow-xl transform active:scale-95 duration-200 disabled:opacity-70 disabled:grayscale disabled:hover:scale-100 flex items-center justify-center gap-2 text-base md:text-lg ${paymentType === 'WHATSAPP' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-black hover:bg-gray-900 text-white'}`}
-                            >
-                                {!canPay ? (
-                                    <span className="flex items-center gap-2">
-                                        <Lock className="w-5 h-5" /> Cannot Process Payment
-                                    </span>
-                                ) : isLoading ? (
-                                    <span className="flex items-center gap-3">
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Processing Order...
-                                    </span>
-                                ) : (
-                                    <>
-                                        {paymentType === 'WHATSAPP' ? (
-                                            <>
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                                                </svg>
-                                                Checkout via WhatsApp
-                                            </>
-                                        ) : (
-                                            <>
-                                                {(!isPaystackLoaded || (isLoading && !window.PaystackPop)) ? (
-                                                    <div className="flex flex-col items-center w-full gap-2">
-                                                        <span className="flex items-center gap-2">
-                                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                            {connectionTimeout ? 'Connection Slow...' : 'Connecting to Secured Gateway...'}
-                                                        </span>
-                                                        <progress
-                                                            className="w-full h-1 rounded-full overflow-hidden max-w-[200px] border-none bg-white/20 [&::-webkit-progress-bar]:bg-transparent [&::-webkit-progress-value]:bg-white [&::-moz-progress-bar]:bg-white transition-all duration-300"
-                                                            value={connectionProgress}
-                                                            max="100"
-                                                            title="Connection Progress"
-                                                        />
-                                                        {connectionTimeout && (
-                                                            <div className="mt-2 flex flex-col gap-2 w-full">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => window.location.reload()}
-                                                                    className="text-[10px] bg-white/10 hover:bg-white/20 py-1 px-3 rounded flex items-center justify-center gap-2"
-                                                                >
-                                                                    <RefreshCcw className="w-3 h-3" /> Refresh Connection
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setPaymentType('WHATSAPP')}
-                                                                    className="text-[10px] bg-green-500/20 hover:bg-green-500/40 py-1 px-3 rounded flex items-center justify-center gap-2 text-green-200"
-                                                                >
-                                                                    <AlertCircle className="w-3 h-3" /> Still stuck? Use WhatsApp Momo
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <CreditCard className="w-5 h-5 mr-1" strokeWidth={2.5} />
-                                                        Pay {formatPrice(paymentAmount)}
-                                                    </>
-                                                )}
-                                            </>
-                                        )}
-                                    </>
-                                )}
-                            </button>
-
-                            <p className="text-center mt-4 text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                                Secured by Paystack
-                            </p>
-                        </div>
+                        <CheckoutSubmitButton
+                            isLoading={isLoading}
+                            isPaystackLoaded={isPaystackLoaded}
+                            canPay={canPay}
+                            paymentType={paymentType}
+                            paymentAmount={paymentAmount}
+                            connectionTimeout={connectionTimeout}
+                            connectionProgress={connectionProgress}
+                            setPaymentType={setPaymentType}
+                        />
                     </div>
-                    {/* Script is injected via useEffect with formRef to ensure it's inside form */}
                 </form>
             </div>
         </div>
     );
 }
 
-import { Suspense } from 'react';
-
 export default function CheckoutPageWrapper() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading checkout...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-black/10 border-t-black rounded-full animate-spin" /></div>}>
             <CheckoutPage />
         </Suspense>
     );

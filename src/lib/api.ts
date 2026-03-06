@@ -132,7 +132,8 @@ export const ordersAPI = {
 export const paymentsAPI = {
   initiate: (orderNumber: string, payment_type: string, amount?: number) =>
     api.post('/payments/initiate/', { order_number: orderNumber, payment_type, amount }),
-  verify: (reference: string) => api.post('/payments/verify/', { reference }),
+  verify: (data: string | object) =>
+    api.post('/payments/verify/', typeof data === 'string' ? { reference: data } : data),
   orderPayments: (orderNumber: string) => api.get(`/payments/order/${orderNumber}/`),
 };
 

@@ -123,7 +123,6 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
             <div
                 ref={scrollContainerRef}
                 className="flex gap-4 md:gap-6 overflow-x-auto pb-8 pt-4 px-4 md:px-1 scrollbar-hide snap-x snap-mandatory"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {products.map((product) => (
                     <div

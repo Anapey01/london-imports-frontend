@@ -9,8 +9,15 @@ import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 
+import { AccountStep } from '@/components/register/AccountStep';
+import { BusinessStep } from '@/components/register/BusinessStep';
+import { LocationStep } from '@/components/register/LocationStep';
+import { BankStep } from '@/components/register/BankStep';
+import { VendorFormData } from '@/types/vendor';
+
 // SVG Icons for steps
 const StepIcons = {
+    // ... existing icons ...
     account: (color: string) => (
         <svg className="w-6 h-6" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -53,7 +60,7 @@ export default function VendorRegisterPage() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<VendorFormData>({
         // Account
         first_name: '',
         last_name: '',
@@ -264,222 +271,21 @@ export default function VendorRegisterPage() {
                                 </div>
                             )}
 
-                            {/* Step 1: Account */}
+                            {/* Form Steps */}
                             {currentStep === 1 && (
-                                <div className="space-y-6 animate-fade-in">
-                                    <h2 className="text-2xl font-medium mb-6">Create Your Account</h2>
-                                    <div className="grid grid-cols-2 gap-5">
-                                        <div className="space-y-1">
-                                            <label htmlFor="first_name" className="text-xs font-semibold uppercase tracking-wider opacity-70">First Name</label>
-                                            <input
-                                                id="first_name"
-                                                type="text"
-                                                name="first_name"
-                                                value={formData.first_name}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label htmlFor="last_name" className="text-xs font-semibold uppercase tracking-wider opacity-70">Last Name</label>
-                                            <input
-                                                id="last_name"
-                                                type="text"
-                                                name="last_name"
-                                                value={formData.last_name}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider opacity-70">Email</label>
-                                        <input
-                                            id="email"
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wider opacity-70">Phone</label>
-                                        <input
-                                            id="phone"
-                                            type="tel"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            placeholder="0XX XXX XXXX"
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-5">
-                                        <div className="space-y-1">
-                                            <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider opacity-70">Password</label>
-                                            <input
-                                                id="password"
-                                                type="password"
-                                                name="password"
-                                                value={formData.password}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label htmlFor="password_confirm" className="text-xs font-semibold uppercase tracking-wider opacity-70">Confirm</label>
-                                            <input
-                                                id="password_confirm"
-                                                type="password"
-                                                name="password_confirm"
-                                                value={formData.password_confirm}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                <AccountStep formData={formData} handleChange={handleChange} theme={theme} />
                             )}
 
-                            {/* Step 2: Business */}
                             {currentStep === 2 && (
-                                <div className="space-y-6 animate-fade-in">
-                                    <h2 className="text-2xl font-medium mb-6">Business Details</h2>
-                                    <div className="space-y-1">
-                                        <label htmlFor="business_name_input" className="text-xs font-semibold uppercase tracking-wider opacity-70">Business Name</label>
-                                        <input
-                                            id="business_name_input"
-                                            type="text"
-                                            name="business_name"
-                                            value={formData.business_name}
-                                            onChange={handleChange}
-                                            placeholder="Your store name"
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label htmlFor="description" className="text-xs font-semibold uppercase tracking-wider opacity-70">Description</label>
-                                        <textarea
-                                            id="description"
-                                            name="description"
-                                            value={formData.description}
-                                            onChange={handleChange}
-                                            rows={4}
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none resize-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label htmlFor="whatsapp" className="text-xs font-semibold uppercase tracking-wider opacity-70">WhatsApp</label>
-                                        <input
-                                            id="whatsapp"
-                                            type="tel"
-                                            name="whatsapp"
-                                            value={formData.whatsapp}
-                                            onChange={handleChange}
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        />
-                                    </div>
-                                </div>
+                                <BusinessStep formData={formData} handleChange={handleChange} theme={theme} />
                             )}
 
-                            {/* Step 3: Location */}
                             {currentStep === 3 && (
-                                <div className="space-y-6 animate-fade-in">
-                                    <h2 className="text-2xl font-medium mb-6">Location</h2>
-                                    <div className="grid grid-cols-2 gap-5">
-                                        <div className="space-y-1">
-                                            <label htmlFor="region" className="text-xs font-semibold uppercase tracking-wider opacity-70">Region</label>
-                                            <select
-                                                id="region"
-                                                name="region"
-                                                value={formData.region}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            >
-                                                <option value="">Select Region</option>
-                                                <option value="Greater Accra">Greater Accra</option>
-                                                <option value="Ashanti">Ashanti</option>
-                                                <option value="Central">Central</option>
-                                                <option value="Western">Western</option>
-                                                {/* Add others */}
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label htmlFor="city" className="text-xs font-semibold uppercase tracking-wider opacity-70">City</label>
-                                            <input
-                                                id="city"
-                                                type="text"
-                                                name="city"
-                                                value={formData.city}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label htmlFor="address" className="text-xs font-semibold uppercase tracking-wider opacity-70">Address</label>
-                                        <textarea
-                                            id="address"
-                                            name="address"
-                                            value={formData.address}
-                                            onChange={handleChange}
-                                            rows={2}
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none resize-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        />
-                                    </div>
-                                </div>
+                                <LocationStep formData={formData} handleChange={handleChange} theme={theme} />
                             )}
 
-                            {/* Step 4: Bank */}
                             {currentStep === 4 && (
-                                <div className="space-y-6 animate-fade-in">
-                                    <h2 className="text-2xl font-medium mb-6">Payout Details</h2>
-                                    <div className={`p-4 rounded-xl text-sm mb-6 ${theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-pink-50 text-pink-700'}`}>
-                                        Your earnings will be sent here. Ensure details are accurate.
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label htmlFor="bank_name" className="text-xs font-semibold uppercase tracking-wider opacity-70">Bank / Provider</label>
-                                        <select
-                                            id="bank_name"
-                                            name="bank_name"
-                                            value={formData.bank_name}
-                                            onChange={handleChange}
-                                            className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                        >
-                                            <option value="">Select Provider</option>
-                                            <option value="MTN Mobile Money">MTN Mobile Money</option>
-                                            <option value="Vodafone Cash">Vodafone Cash</option>
-                                            <option value="GcB Bank">GCB Bank</option>
-                                            <option value="Ecobank">Ecobank</option>
-                                            {/* Add others */}
-                                        </select>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-5">
-                                        <div className="space-y-1">
-                                            <label htmlFor="bank_account_number" className="text-xs font-semibold uppercase tracking-wider opacity-70">Account Number</label>
-                                            <input
-                                                id="bank_account_number"
-                                                type="text"
-                                                name="bank_account_number"
-                                                value={formData.bank_account_number}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label htmlFor="bank_account_name" className="text-xs font-semibold uppercase tracking-wider opacity-70">Account Name</label>
-                                            <input
-                                                id="bank_account_name"
-                                                type="text"
-                                                name="bank_account_name"
-                                                value={formData.bank_account_name}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 rounded-xl bg-transparent border focus:ring-2 focus:ring-pink-500 transition-all outline-none ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                <BankStep formData={formData} handleChange={handleChange} theme={theme} />
                             )}
 
                             {/* Buttons */}
