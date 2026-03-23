@@ -169,8 +169,7 @@ export default function AdminOrdersPage() {
             PROCESSING: isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600',
             IN_TRANSIT: isDark ? 'bg-indigo-900/30 text-indigo-400' : 'bg-indigo-100 text-indigo-600',
             OUT_FOR_DELIVERY: isDark ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-100 text-orange-600',
-            DELIVERED: isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600',
-            COMPLETED: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
+            DELIVERED: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
             CANCELLED: isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600',
         };
         return colors[status] || colors.PENDING;
@@ -185,12 +184,13 @@ export default function AdminOrdersPage() {
         return colors[status] || colors.PENDING;
     };
 
-    const STATUS_TABS = ['All', 'PENDING', 'PROCESSING', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'] as const;
+    const STATUS_TABS = ['All', 'PENDING', 'PROCESSING', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
     const statusCounts: Record<string, number> = {
         All: orders.length,
         PENDING: orders.filter(o => o.status === 'PENDING').length,
         PROCESSING: orders.filter(o => o.status === 'PROCESSING').length,
         IN_TRANSIT: orders.filter(o => o.status === 'IN_TRANSIT').length,
+        OUT_FOR_DELIVERY: orders.filter(o => o.status === 'OUT_FOR_DELIVERY').length,
         DELIVERED: orders.filter(o => o.status === 'DELIVERED').length,
         CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
     };

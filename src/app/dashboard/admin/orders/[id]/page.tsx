@@ -81,7 +81,7 @@ export default function AdminOrderDetailPage() {
         setUpdating(true);
         try {
             await adminAPI.updateOrder(orderId, { status: newStatus });
-            await loadOrder();
+            await loadOrder(); 
         } catch {
             alert('Failed to update status');
         } finally {
@@ -198,6 +198,15 @@ export default function AdminOrderDetailPage() {
                                 >
                                     <Package className="w-4 h-4" />
                                     In Transit
+                                </button>
+                                <button
+                                    onClick={() => handleUpdateStatus('PROCESSING')}
+                                    disabled={updating || order.status === 'PROCESSING'}
+                                    className="flex items-center justify-center gap-2 py-2.5 bg-gray-600 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                                    title="Move back to processing"
+                                >
+                                    <Clock className="w-4 h-4" />
+                                    To Processing
                                 </button>
                                 <button
                                     onClick={() => handleUpdateStatus('DELIVERED')}
