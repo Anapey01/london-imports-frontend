@@ -16,7 +16,7 @@ const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
 const MegaMenu = dynamic(() => import('./MegaMenu'));
 
 import ThemeToggle from './ThemeToggle';
-import { Search, Menu, Heart } from 'lucide-react';
+import { Search, Menu, Heart, ChevronRight } from 'lucide-react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 
 export default function Navbar() {
@@ -78,7 +78,7 @@ export default function Navbar() {
 
                                 {/* MEGA MENU COMPONENT - Positioned relative to Navbar Container */}
                                 <div
-                                    className={`absolute top-full left-0 w-full min-w-[1200px] transition-all duration-300 origin-top z-50 ${isHoveringMenu
+                                    className={`absolute top-full left-0 transition-all duration-300 origin-top z-50 ${isHoveringMenu
                                         ? 'opacity-100 translate-y-0 visible'
                                         : 'opacity-0 -translate-y-2 invisible'
                                         }`}
@@ -122,8 +122,15 @@ export default function Navbar() {
                                         name="search"
                                         type="text"
                                         placeholder="Search premium imports..."
-                                        className="w-full h-10 pl-11 pr-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-pink-500/30 focus:border-pink-500 transition-all text-sm outline-none text-gray-900 placeholder-gray-400 font-medium"
+                                        className="w-full h-10 pl-11 pr-12 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-pink-500/30 focus:border-pink-500 transition-all text-sm outline-none text-gray-900 placeholder-gray-400 font-medium"
                                     />
+                                    <button 
+                                        type="submit"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-pink-600 transition-colors"
+                                        aria-label="Submit search"
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -235,10 +242,10 @@ export default function Navbar() {
                         {/* Search Icon */}
                         <button
                             onClick={() => setSearchOpen(true)}
-                            className="p-1.5 text-gray-700 hover:text-pink-600 transition-colors"
+                            className="p-2.5 text-gray-700 hover:text-pink-600 active:scale-95 transition-all"
                             aria-label="Open search"
                         >
-                            <Search className="w-5 h-5" />
+                            <Search className="w-6 h-6" />
                         </button>
                     </div>
                 </div>

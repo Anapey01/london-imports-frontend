@@ -5,19 +5,64 @@
 
 const API_BASE_URL = 'https://london-imports-api.onrender.com/api/v1';
 
+/**
+ * Robust fetch with timeout and retry logic for Render's Cold Starts
+ */
+async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 2) {
+    const timeout = 15000; // 15 seconds timeout
+    
+    for (let i = 0; i <= retries; i++) {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+            });
+            clearTimeout(id);
+            
+            if (response.ok) return response;
+            
+            // If it's a 5xx error, it might be a transient deployment issue, so retry
+            if (response.status >= 500 && i < retries) {
+                console.warn(`[SSR] Retry ${i + 1} for ${url} (Status: ${response.status})`);
+                await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); // Exponential backoff
+                continue;
+            }
+            
+            return response;
+        } catch (err: any) {
+            clearTimeout(id);
+            if (err.name === 'AbortError') {
+                console.error(`[SSR] Fetch timeout for ${url}`);
+            } else {
+                console.error(`[SSR] Fetch error for ${url}:`, err.message);
+            }
+            
+            if (i < retries) {
+                console.warn(`[SSR] Retrying ${url}... (${i + 1}/${retries})`);
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                continue;
+            }
+            throw err;
+        }
+    }
+    throw new Error(`Failed to fetch ${url} after ${retries} retries`);
+}
+
 export async function getProducts(params: Record<string, string> = {}) {
     try {
         const queryString = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
-
-        const res = await fetch(url, {
-            next: { revalidate: 86400 }, // Revalidate every 24 hours to save Vercel limits
+        const res = await fetchWithRetry(url, {
+            next: { revalidate: 86400 },
         });
 
         if (!res.ok) {
             console.error(`[SSR] Error fetching products list: ${res.status} ${res.statusText}`);
-            throw new Error('Failed to fetch products');
+            return { count: 0, results: [] }; // Return empty instead of throwing to prevent page crash
         }
 
         return res.json();
@@ -57,13 +102,13 @@ export async function getAvailableProducts(limit = 10) {
         status: 'READY_TO_SHIP',
         limit: limit.toString(),
         ordering: '-created_at',
-        is_vendor: 'false'  // Ensure only Admin Ready-to-Ship items show on home
+        is_vendor: 'false'
     });
 }
 
 export async function getCategories() {
     try {
-        const res = await fetch(`${API_BASE_URL}/products/categories/`, {
+        const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
             next: { revalidate: 86400 }
         });
         if (!res.ok) return [];
@@ -76,7 +121,7 @@ export async function getCategories() {
 
 export async function getCategory(slug: string) {
     try {
-        const res = await fetch(`${API_BASE_URL}/products/categories/`, {
+        const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
             next: { revalidate: 86400 }
         });
         if (!res.ok) return null;
@@ -91,8 +136,7 @@ export async function getCategory(slug: string) {
 export async function getProduct(slug: string) {
     const url = `${API_BASE_URL}/products/${slug}/`;
     try {
-
-        const res = await fetch(url, {
+        const res = await fetchWithRetry(url, {
             next: { revalidate: 86400 }
         });
 
@@ -109,15 +153,12 @@ export async function getProduct(slug: string) {
 }
 
 export async function getProductMetadata(slug: string) {
-    // 1. Try fetching full product (Public or Auth handled by permissions)
     const fullProduct = await getProduct(slug);
     if (fullProduct) return fullProduct;
 
-    // 2. Fallback: Fetch from public preview endpoint
     const url = `${API_BASE_URL}/products/preview/?slug=${slug}`;
     try {
-
-        const res = await fetch(url, { next: { revalidate: 86400 } });
+        const res = await fetchWithRetry(url, { next: { revalidate: 86400 } });
         if (!res.ok) return null;
 
         const data = await res.json();
@@ -143,8 +184,7 @@ export async function getProductMetadata(slug: string) {
 export async function getVendor(slug: string) {
     const url = `${API_BASE_URL}/vendors/${slug}/`;
     try {
-
-        const res = await fetch(url, { next: { revalidate: 86400 } });
+        const res = await fetchWithRetry(url, { next: { revalidate: 86400 } });
         if (!res.ok) return null;
         return await res.json();
     } catch (e) {
@@ -156,8 +196,7 @@ export async function getVendor(slug: string) {
 export async function getAllVendors() {
     const url = `${API_BASE_URL}/vendors/`;
     try {
-
-        const res = await fetch(url, { next: { revalidate: 86400 } }); // Cache for 24 hours
+        const res = await fetchWithRetry(url, { next: { revalidate: 86400 } });
         if (!res.ok) return [];
         const data = await res.json();
         return data.results || data;
