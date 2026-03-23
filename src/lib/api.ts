@@ -50,13 +50,35 @@ api.interceptors.request.use((config) => {
 });
 
 // Handle token refresh on 401
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function subscribeTokenRefresh(cb: (token: string) => void) {
+  refreshSubscribers.push(cb);
+}
+
+function onRefreshed(token: string) {
+  refreshSubscribers.map((cb) => cb(token));
+  refreshSubscribers = [];
+}
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((token: string) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(api(originalRequest));
+          });
+        });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
         // Attempt refresh (cookies handled automatically, but SimpleJWT often returns new access token)
@@ -65,19 +87,23 @@ api.interceptors.response.use(
         const { access } = response.data;
         if (access && typeof window !== 'undefined') {
           localStorage.setItem('access_token', access);
+          onRefreshed(access);
         }
+        
+        isRefreshing = false;
 
-        // Retry original request
+        // Ensure the retry uses the new token
+        originalRequest.headers.Authorization = `Bearer ${access}`;
         return api(originalRequest);
       } catch (refreshError: unknown) {
+        isRefreshing = false;
+        refreshSubscribers = [];
+        
         // Refresh failed - User must login ONLY if it's an auth error (401/403)
         const err = refreshError as { response?: { status?: number } };
-        // We do NOT logout on network errors (status 0/undefined/500) to prevent instability
         if (typeof window !== 'undefined' && err.response && (err.response.status === 401 || err.response.status === 403)) {
-          // Clear any local auth state through the store for consistency
           import('@/stores/authStore').then(m => m.useAuthStore.getState().logout());
 
-          // Force logout ONLY if not already on login page to avoid loops
           if (!window.location.pathname.includes('/login')) {
             window.location.href = '/login?expired=true';
           }
