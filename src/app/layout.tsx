@@ -10,6 +10,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Providers from "@/providers/Providers";
 import PWAUpdater from "@/components/PWAUpdater";
+import { Analytics } from "@vercel/analytics/next";
 
 
 // Lazy load below-the-fold components to reduce initial bundle
@@ -312,6 +313,7 @@ export default async function RootLayout({
           <Footer />
           <MobileBottomNav />
         </Providers>
+        <Analytics />
 
       </body>
     </html>
