@@ -1,10 +1,14 @@
-User-Agent: *
+User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /profile/
 Disallow: /orders/
 Disallow: /cart/
+Disallow: /login/
+Disallow: /register/
+Disallow: /login
+Disallow: /register
 
 # Block AI Bots & Scrapers (Standard Syntax)
 User-agent: GPTBot
@@ -26,3 +30,4 @@ User-agent: FacebookBot
 Disallow: /
 
 Sitemap: https://londonsimports.com/sitemap.xml
+Sitemap: https://londonsimports.com/sitemap-images.xml

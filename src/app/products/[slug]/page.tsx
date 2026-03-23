@@ -112,74 +112,102 @@ export default async function ProductDetailPage({ params }: Props) {
     const { slug } = await params;
     const product = await getProduct(slug);
 
-    // If product is null, we pass null to client component
-    // The client component will attempt a CSR fetch (Hybrid Resilience)
-    // This avoids blocking the user if SSR fails due to timeouts/network
-
-
     const jsonLd = product ? {
         "@context": "https://schema.org",
-        "@type": "Product",
-        "name": product.name,
-        "image": product.image ? getAbsoluteImageUrl(product.image) : undefined,
-        "description": product.description,
-        "sku": product.id,
-        "brand": {
-            "@type": "Brand",
-            "name": product.vendor?.business_name || "London's Imports"
-        },
-        "aggregateRating": (product.rating && product.rating_count) ? {
-            "@type": "AggregateRating",
-            "ratingValue": product.rating,
-            "reviewCount": product.rating_count
-        } : undefined,
-        "review": product.reviews?.map((review: { user_name: string; created_at: string; rating: number; comment: string }) => ({
-            "@type": "Review",
-            "author": {
-                "@type": "Person",
-                "name": review.user_name || "Anonymous"
-            },
-            "datePublished": review.created_at,
-            "reviewRating": {
-                "@type": "Rating",
-                "ratingValue": review.rating
-            },
-            "reviewBody": review.comment
-        })),
-        "subjectOf": (product.video || product.video_url) ? {
-            "@type": "VideoObject",
-            "name": product.name,
-            "description": product.description,
-            "thumbnailUrl": getAbsoluteImageUrl(product.image),
-            "uploadDate": product.created_at,
-            "contentUrl": product.video || undefined,
-            "embedUrl": product.video_url || undefined
-        } : undefined,
-        "offers": {
-            "@type": "Offer",
-            "priceCurrency": "GHS",
-            "price": product.price,
-            "priceValidUntil": product.cutoff_datetime || new Date(new Date().getFullYear() + 1, 0, 1).toISOString(),
-            "availability": product.preorder_status === 'READY_TO_SHIP' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-            "url": `https://www.londonsimports.com/products/${slug}`,
-            "shippingDetails": {
-                "@type": "OfferShippingDetails",
-                "shippingDestination": {
-                    "@type": "DefinedRegion",
-                    "addressCountry": "GH",
-                    "addressRegion": ["Accra", "Kumasi", "Tema"]
+        "@graph": [
+            {
+                "@type": "Product",
+                "name": product.name,
+                "image": product.image ? getAbsoluteImageUrl(product.image) : undefined,
+                "description": product.description,
+                "sku": product.id,
+                "brand": {
+                    "@type": "Brand",
+                    "name": product.vendor?.business_name || "London's Imports"
                 },
-                "deliveryTime": {
-                    "@type": "ShippingDeliveryTime",
-                    "handlingTime": {
-                        "@type": "QuantitativeValue",
-                        "minValue": product.preorder_status === 'READY_TO_SHIP' ? 1 : 14,
-                        "maxValue": product.preorder_status === 'READY_TO_SHIP' ? 2 : 28,
-                        "unitCode": "DAY"
+                "aggregateRating": (product.rating && product.rating_count) ? {
+                    "@type": "AggregateRating",
+                    "ratingValue": product.rating,
+                    "reviewCount": product.rating_count
+                } : undefined,
+                "review": product.reviews?.map((review: { user_name: string; created_at: string; rating: number; comment: string }) => ({
+                    "@type": "Review",
+                    "author": {
+                        "@type": "Person",
+                        "name": review.user_name || "Anonymous"
+                    },
+                    "datePublished": review.created_at,
+                    "reviewRating": {
+                        "@type": "Rating",
+                        "ratingValue": review.rating
+                    },
+                    "reviewBody": review.comment
+                })),
+                "subjectOf": (product.video || product.video_url) ? {
+                    "@type": "VideoObject",
+                    "name": product.name,
+                    "description": product.description,
+                    "thumbnailUrl": getAbsoluteImageUrl(product.image),
+                    "uploadDate": product.created_at,
+                    "contentUrl": product.video || undefined,
+                    "embedUrl": product.video_url || undefined
+                } : undefined,
+                "offers": {
+                    "@type": "Offer",
+                    "priceCurrency": "GHS",
+                    "price": product.price,
+                    "priceValidUntil": product.cutoff_datetime || new Date(new Date().getFullYear() + 1, 0, 1).toISOString(),
+                    "availability": product.preorder_status === 'READY_TO_SHIP' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+                    "url": `https://londonsimports.com/products/${slug}`,
+                    "shippingDetails": {
+                        "@type": "OfferShippingDetails",
+                        "shippingDestination": {
+                            "@type": "DefinedRegion",
+                            "addressCountry": "GH",
+                            "addressRegion": ["Accra", "Kumasi", "Tema"]
+                        },
+                        "deliveryTime": {
+                            "@type": "ShippingDeliveryTime",
+                            "handlingTime": {
+                                "@type": "QuantitativeValue",
+                                "minValue": product.preorder_status === 'READY_TO_SHIP' ? 1 : 14,
+                                "maxValue": product.preorder_status === 'READY_TO_SHIP' ? 2 : 28,
+                                "unitCode": "DAY"
+                            }
+                        }
                     }
                 }
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": "https://londonsimports.com"
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Products",
+                        "item": "https://londonsimports.com/products"
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 3,
+                        "name": product.category?.name || "Products",
+                        "item": `https://londonsimports.com/products/category/${product.category?.slug || ""}`
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 4,
+                        "name": product.name,
+                        "item": `https://londonsimports.com/products/${slug}`
+                    }
+                ]
             }
-        }
+        ]
     } : null;
 
     return (

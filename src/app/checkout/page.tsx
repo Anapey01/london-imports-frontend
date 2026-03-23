@@ -7,6 +7,7 @@ import type { CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
+import { trackBeginCheckout, trackPurchase } from '@/lib/analytics';
 import { ExtendedCart, BackendError } from '@/types';
 import type { OrderItem } from '@/types';
 import { AlertCircle } from 'lucide-react';
@@ -89,6 +90,12 @@ function CheckoutPage() {
     }, [isAuthenticated, fetchCart]);
 
     useEffect(() => {
+        if (cart && cart.items.length > 0) {
+            trackBeginCheckout(cart);
+        }
+    }, [cart]);
+
+    useEffect(() => {
         let timer: NodeJS.Timeout;
         let progressInterval: NodeJS.Timeout;
 
@@ -132,7 +139,50 @@ function CheckoutPage() {
     }, [isPaystackLoaded]);
 
     useEffect(() => {
-        if (orderNumberParam && isAuthenticated) {
+        const buyNowSlug = searchParams.get('buyNow');
+        const buyNowQty = parseInt(searchParams.get('qty') || '1');
+        const buyNowSize = searchParams.get('size') || '';
+        const buyNowColor = searchParams.get('color') || '';
+
+        if (buyNowSlug) {
+            setIsLoading(true);
+            const API_BASE = 'https://london-imports-api.onrender.com/api/v1';
+            fetch(`${API_BASE}/products/${buyNowSlug}/`)
+                .then(res => res.json())
+                .then(product => {
+                    const tempOrder: ExtendedCart = {
+                        items: [{
+                            id: 'buynow-temp',
+                            product: {
+                                id: product.id,
+                                name: product.name,
+                                image: product.image || '',
+                                slug: product.slug
+                            },
+                            product_name: product.name,
+                            quantity: buyNowQty,
+                            selected_size: buyNowSize,
+                            selected_color: buyNowColor,
+                            total_price: Number(product.price) * buyNowQty,
+                            unit_price: Number(product.price)
+                        }],
+                        subtotal: Number(product.price) * buyNowQty,
+                        delivery_fee: 0,
+                        total: Number(product.price) * buyNowQty,
+                        order_number: 'TEMP-BUYNOW',
+                        state: 'PENDING',
+                        state_display: 'Pending',
+                        id: '',
+                        created_at: new Date().toISOString()
+                    };
+                    setCheckoutOrder(tempOrder);
+                })
+                .catch(err => {
+                    console.error("Buy Now Load Error:", err);
+                    setError('Could not load product details');
+                })
+                .finally(() => setIsLoading(false));
+        } else if (orderNumberParam && isAuthenticated) {
             ordersAPI.detail(orderNumberParam)
                 .then(res => {
                     const orderData = res.data;
@@ -152,7 +202,7 @@ function CheckoutPage() {
                     setError('Could not load order details');
                 });
         }
-    }, [orderNumberParam, isAuthenticated]);
+    }, [orderNumberParam, isAuthenticated, searchParams, user]);
 
     const currentOrderData = useMemo(() => {
         if (checkoutOrder) return checkoutOrder;
@@ -202,9 +252,11 @@ function CheckoutPage() {
         try {
             let orderToPay = checkoutOrder;
             if (!orderToPay) {
+                const buyNowSlug = searchParams.get('buyNow');
+                
                 const orderPayload = {
                     items: (currentOrderData.items || [])
-                        .filter((item: CartItem | OrderItem) => selectedItemIds.has(item.id))
+                        .filter((item: CartItem | OrderItem) => buyNowSlug ? true : selectedItemIds.has(item.id))
                         .map((item: CartItem | OrderItem) => ({
                             product: item.product.id,
                             quantity: item.quantity,
@@ -253,6 +305,9 @@ function CheckoutPage() {
                             payment_type: paymentType,
                             amount: paymentAmount
                         });
+                        if (orderToPay) {
+                            trackPurchase(orderToPay, response.reference);
+                        }
                         router.push('/orders?success=true');
                     } catch (verifyErr) {
                         console.error('Verification failed:', verifyErr);

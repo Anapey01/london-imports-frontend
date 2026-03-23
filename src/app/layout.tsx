@@ -61,14 +61,14 @@ export const metadata: Metadata = {
     description: "Ghana's trusted platform for importing goods from China. We handle shipping, customs, and doorstep delivery in Accra, Kumasi, Tema. Pay in Cedis via Momo.",
     url: 'https://londonsimports.com',
     siteName: "London's Imports",
-    /* images: [
+    images: [
       {
-        url: '/og-image.jpg', // Must be in public folder
+        url: 'https://londonsimports.com/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "London's Imports Ghana - China to Accra Shipping",
       },
-    ], */
+    ],
     locale: 'en_GH',
     type: 'website',
   },
@@ -109,11 +109,11 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "Store"],
     "@id": "https://londonsimports.com/#business",
-    "name": "London's Imports Ghana",
-    "alternateName": "London's Imports - Mini Importation Ghana",
+    "name": "London's Imports",
+    "alternateName": ["Mini Importation Ghana", "Londons Imports"],
     "url": "https://londonsimports.com",
     "description": "Ghana's #1 mini-importation platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Trusted by 10,000+ Ghanaians.",
-    "logo": "https://londonsimports.com/logo.png",
+    "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
     "telephone": "+233545247009",
     "email": "info@londonsimports.com",
@@ -256,7 +256,7 @@ export default async function RootLayout({
     ]
   };
 
-  const websiteJsonLd = {
+  const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "London's Imports",
@@ -283,11 +283,11 @@ export default async function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       </head>
       <body className={`${jost.variable} font-sans bg-gray-50 min-h-screen`} suppressHydrationWarning>

@@ -234,7 +234,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     return (
                                         <Link
                                             key={category.id}
-                                            href={`/products?category=${category.id}`}
+                                            href={`/products/category/${category.id}`}
                                             onClick={onClose}
                                             className="flex items-center justify-between px-6 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group"
                                         >

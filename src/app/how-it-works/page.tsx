@@ -45,8 +45,34 @@ export default function HowItWorksPage() {
         }
     ];
 
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to Import from China to Ghana",
+        "description": "A 4-step guide on using London's Imports to ship goods from China (1688, Alibaba) to Ghana.",
+        "step": steps.map((s, i) => ({
+            "@type": "HowToStep",
+            "position": i + 1,
+            "name": s.title,
+            "text": s.desc,
+            "url": "https://londonsimports.com/how-it-works"
+        })),
+        "totalTime": "P14D",
+        "supply": [
+            { "@type": "HowToSupply", "name": "Mobile Money Account" },
+            { "@type": "HowToSupply", "name": "London's Imports Account" }
+        ],
+        "tool": [
+            { "@type": "HowToTool", "name": "Smartphone or Computer" }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+            />
             {/* Hero */}
             <section className="bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 py-16">
                 <div className="max-w-5xl mx-auto px-6 lg:px-8 text-center">

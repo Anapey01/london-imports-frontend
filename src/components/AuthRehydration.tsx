@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import { setAnalyticsUser } from '@/lib/analytics';
 
 /**
  * London's Imports - Auth Rehydration
@@ -15,7 +16,10 @@ export default function AuthRehydration() {
 
         // If we have a token but state says not authenticated (or just to be sure on boot)
         if (token) {
-            fetchUser().catch(() => {
+            fetchUser().then(() => {
+                const user = useAuthStore.getState().user;
+                if (user?.id) setAnalyticsUser(user.id);
+            }).catch(() => {
                 // Verification failed, store will clear itself
                 console.warn('Auth rehydration failed: Session potentially expired');
             });

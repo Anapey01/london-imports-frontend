@@ -21,7 +21,8 @@ import {
     ChevronRight,
     TrendingUp,
     BarChart3,
-    Trash2
+    Trash2,
+    Mail
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -163,6 +164,12 @@ export default function AdminDashboardPage() {
             icon: BarChart3,
             color: 'bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400'
         },
+        {
+            label: 'Broadcast',
+            href: '/dashboard/admin/broadcast',
+            icon: Mail,
+            color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400'
+        },
     ];
 
     const getStatusColor = (status: string) => {
@@ -170,6 +177,7 @@ export default function AdminDashboardPage() {
             case 'COMPLETED': return 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/20';
             case 'PENDING': return 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20';
             case 'PROCESSING': return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
+            case 'IN_TRANSIT': return 'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/20';
             case 'CANCELLED': return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
             default: return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-800';
         }

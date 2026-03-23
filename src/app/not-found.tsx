@@ -1,7 +1,15 @@
-'use client';
-
+import { Metadata } from 'next';
 import Link from 'next/link';
 import { Home, MoveLeft, Search } from 'lucide-react';
+
+export const metadata: Metadata = {
+    title: 'Page Not Found | London\'s Imports',
+    description: 'The page you are looking for does not exist.',
+    robots: {
+        index: false,
+        follow: true,
+    },
+};
 
 export default function NotFound() {
     return (

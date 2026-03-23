@@ -21,7 +21,7 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                 <div className="grid md:grid-cols-12 gap-12 lg:gap-8 mb-16">
                     {/* Brand Column */}
-                    <div className="md:col-span-4 lg:col-span-5">
+                    <div className="md:col-span-4 lg:col-span-3">
                         <div className="flex items-center gap-3 mb-6">
                             <Image src="/logo.jpg" alt="London's Imports" width={48} height={48} className="rounded-xl shadow-2xl ring-1 ring-white/10" />
                             <div>
@@ -88,22 +88,33 @@ const Footer = () => {
                     <div className="md:col-span-2 lg:col-span-2">
                         <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Shop</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/products" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">All Products</Link></li>
+                            <li><Link href="/products" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Shop All China Imports</Link></li>
                             <li><Link href="/reviews" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Reviews</Link></li>
-                            <li><Link href="/how-it-works" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">How It Works</Link></li>
+                            <li><Link href="/how-it-works" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">How China Imports Work</Link></li>
                             <li><Link href="/faq" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
                             <li><Link href="/blog" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold">Blog</Link></li>
-                            <li><Link href="/track" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Track Order</Link></li>
+                            <li><Link href="/track" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold text-pink-500">Track China Shipping</Link></li>
                         </ul>
                     </div>
 
                     <div className="md:col-span-3 lg:col-span-2">
                         <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Support</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/about" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Our Story</Link></li>
+                            <li><Link href="/about" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini-Importation Story</Link></li>
                             <li><Link href="/contact" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Contact Us</Link></li>
                             <li><Link href="/terms" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Terms of Service</Link></li>
                             <li><Link href="/privacy" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Privacy Policy</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Regional Hubs - SEO Booster */}
+                    <div className="md:col-span-3 lg:col-span-2">
+                        <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Regional Hubs</h4>
+                        <ul className="space-y-4 text-sm">
+                            <li><Link href="/products?search=Accra" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini Importation Accra</Link></li>
+                            <li><Link href="/products?search=Kumasi" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini Importation Kumasi</Link></li>
+                            <li><Link href="/products?search=Tema" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini Importation Tema</Link></li>
+                            <li><Link href="/blog?tag=Guides" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Shipping Guides</Link></li>
                         </ul>
                     </div>
 
@@ -126,6 +137,7 @@ const Footer = () => {
                             <input
                                 type="email"
                                 placeholder="Subscribe to drops..."
+                                aria-label="Email for newsletter"
                                 className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm w-full focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-slate-600"
                             />
                             <button className="bg-white hover:bg-pink-50 text-black px-4 py-2.5 rounded-lg transition-colors font-medium text-sm">

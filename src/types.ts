@@ -80,6 +80,15 @@ export interface Order {
     balance_due?: number;
     amount_paid?: number;
     delivery_window?: string;
+    timeline_events?: OrderTimelineEvent[];
+}
+
+export interface OrderTimelineEvent {
+    id: string;
+    title: string;
+    description?: string;
+    location?: string;
+    timestamp: string;
 }
 
 export interface Address {

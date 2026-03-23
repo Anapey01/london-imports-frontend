@@ -1,15 +1,26 @@
 import { MetadataRoute } from 'next';
-import { getProducts } from '@/lib/fetchers';
+import { getProducts, getCategories } from '@/lib/fetchers';
 
 // Cache sitemap for 24 hours to reduce Vercel CPU usage
 export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://www.londonsimports.com';
+    const baseUrl = 'https://londonsimports.com';
 
-    // Fetch all products (limit to 1000 for now)
-    const productsData = await getProducts({ limit: '1000' });
+    // Fetch all products and categories
+    const [productsData, categoriesData] = await Promise.all([
+        getProducts({ limit: '1000' }),
+        getCategories()
+    ]);
     const products = productsData.results || [];
+    const categories = Array.isArray(categoriesData) ? categoriesData : [];
+
+    const categoryUrls = categories.map((cat: { slug: string }) => ({
+        url: `${baseUrl}/products/category/${cat.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+    }));
 
     interface ProductSitemap {
         slug: string;
@@ -95,5 +106,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         ...blogUrls,
         ...productUrls,
+        ...categoryUrls,
     ];
 }

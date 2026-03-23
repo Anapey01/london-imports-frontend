@@ -74,6 +74,20 @@ export async function getCategories() {
     }
 }
 
+export async function getCategory(slug: string) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/products/categories/`, {
+            next: { revalidate: 86400 }
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const categories = data.results || data;
+        return categories.find((cat: { slug: string }) => cat.slug === slug) || null;
+    } catch {
+        return null;
+    }
+}
+
 export async function getProduct(slug: string) {
     const url = `${API_BASE_URL}/products/${slug}/`;
     try {

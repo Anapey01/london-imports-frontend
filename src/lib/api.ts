@@ -111,6 +111,8 @@ export const productsAPI = {
   preview: (params?: unknown) => api.get('/products/preview/', { params }),
   categories: () => api.get('/products/categories/'),
   detail: (slug: string) => api.get(`/products/${slug}/`),
+  addReview: (slug: string, data: { rating: number; comment: string }) => 
+    api.post(`/products/${slug}/reviews/`, data),
 };
 
 export const ordersAPI = {
@@ -125,7 +127,7 @@ export const ordersAPI = {
   list: () => api.get('/orders/'),
   detail: (orderNumber: string) => api.get(`/orders/${orderNumber}/`),
   track: (orderNumber: string) => api.get(`/orders/${orderNumber}/track/`),
-  cancel: (orderNumber: string, reason: string) =>
+  cancelOrder: (orderNumber: string, reason?: string) => 
     api.post(`/orders/${orderNumber}/cancel/`, { reason }),
 };
 
@@ -193,6 +195,8 @@ export const adminAPI = {
   // Settings
   settings: () => api.get('/admin/settings/'),
   updateSettings: (data: unknown) => api.patch('/admin/settings/', data),
+  sendBroadcastEmail: (data: { subject: string; message: string; target?: string }) => 
+    api.post('/admin/broadcast/', data),
 
   // Maintenance
   recalculateReservations: () => api.post('/auth/admin/recalculate-reservations/'),

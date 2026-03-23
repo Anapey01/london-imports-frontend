@@ -247,7 +247,7 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
                                                     <Image
                                                         key={img}
                                                         src={img}
-                                                        alt={slide.title}
+                                                        alt={`Mini Importation Ghana: ${slide.title}`}
                                                         fill
                                                         className={`${slide.objectFit || 'object-contain'} object-right-bottom ${slide.blendMode || 'mix-blend-multiply'} transition-opacity duration-1000 ${imgIndex === ((slideVisits[slide.id] || 0) % slide.heroImages!.length)
                                                             ? 'opacity-100' // Opacity 100 for clear visibility
@@ -289,7 +289,7 @@ export default function HeroCarousel({ initialProducts = [] }: HeroCarouselProps
                                             {product.image ? (
                                                 <Image
                                                     src={product.image}
-                                                    alt={product.name}
+                                                    alt={`${product.name} - Mini Importation Ghana`}
                                                     fill
                                                     priority={index === 0}
                                                     className="object-cover"

@@ -18,6 +18,7 @@ const statusSteps = [
     { key: 'OPEN_FOR_BATCH', label: 'Order Confirmed' },
     { key: 'CUTOFF_REACHED', label: 'Processing' },
     { key: 'IN_FULFILLMENT', label: 'In Fulfillment' },
+    { key: 'IN_TRANSIT', label: 'In Transit' },
     { key: 'OUT_FOR_DELIVERY', label: 'Out for Delivery' },
     { key: 'DELIVERED', label: 'Delivered' },
 ];
@@ -131,10 +132,11 @@ export default function OrderDetailPage() {
                                 <div className="absolute top-6 left-4 right-4 h-0.5 bg-gray-100">
                                     <div
                                         className={`h-full bg-gray-900 transition-all duration-700 ease-out ${currentStep === 0 ? 'w-0' :
-                                                currentStep === 1 ? 'w-1/5' :
-                                                    currentStep === 2 ? 'w-2/5' :
-                                                        currentStep === 3 ? 'w-3/5' :
-                                                            currentStep === 4 ? 'w-4/5' :
+                                            currentStep === 1 ? 'w-[16.6%]' :
+                                                currentStep === 2 ? 'w-[33.3%]' :
+                                                    currentStep === 3 ? 'w-[50%]' :
+                                                        currentStep === 4 ? 'w-[66.6%]' :
+                                                            currentStep === 5 ? 'w-[83.3%]' :
                                                                 'w-full'
                                             }`}
                                     />
@@ -167,6 +169,38 @@ export default function OrderDetailPage() {
 
                         <div className="flex justify-center mt-2 md:hidden">
                             <p className="text-[10px] text-gray-400 italic">Scroll left/right to view all steps</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Granular Timeline Events */}
+                {order.timeline_events && order.timeline_events.length > 0 && (
+                    <div className="bg-white rounded-2xl p-8 mb-8 shadow-sm border border-gray-100">
+                        <h2 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-6">Tracking Updates</h2>
+                        <div className="space-y-6">
+                            {order.timeline_events?.map((event, index) => (
+                                <div key={event.id} className="flex gap-4">
+                                    <div className="flex flex-col items-center">
+                                        <div className={`w-3 h-3 rounded-full mt-1.5 ${index === 0 ? 'bg-pink-600 ring-4 ring-pink-50' : 'bg-gray-200'}`}></div>
+                                        {index !== (order?.timeline_events?.length ?? 0) - 1 && <div className="w-px h-full bg-gray-100 my-1"></div>}
+                                    </div>
+                                    <div className="flex-1 pb-4">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className={`text-sm font-semibold ${index === 0 ? 'text-gray-900' : 'text-gray-600'}`}>{event.title}</h3>
+                                            <span className="text-[10px] font-medium text-gray-400">
+                                                {new Date(event.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 font-light leading-relaxed">{event.description}</p>
+                                        {event.location && (
+                                            <p className="text-[10px] text-gray-400 mt-1 inline-flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                                {event.location}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}

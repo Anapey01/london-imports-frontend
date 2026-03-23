@@ -17,6 +17,7 @@ import { Order, OrderItem } from '@/types';
 const getStatusColor = (state: string) => {
     switch (state) {
         case 'PAID':
+        case 'IN_TRANSIT':
         case 'DELIVERED': return 'text-green-600';
         case 'PENDING_PAYMENT':
         case 'DRAFT': return 'text-amber-600';
@@ -29,6 +30,7 @@ const getStatusColor = (state: string) => {
 const getStatusBg = (state: string) => {
     switch (state) {
         case 'PAID':
+        case 'IN_TRANSIT':
         case 'DELIVERED': return 'bg-green-500';
         case 'PENDING_PAYMENT':
         case 'DRAFT': return 'bg-amber-500';

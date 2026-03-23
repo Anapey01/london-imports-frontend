@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 export const CATEGORY_GROUPS = [
-    { id: 'all', name: 'PRODUCTS', icon: LayoutGrid },
+    { id: 'all', name: 'SHOP ALL', icon: LayoutGrid },
     { id: 'lightenings', name: 'Lightenings', icon: Sun },
     { id: 'kids-shoes', name: 'Kids shoes', icon: Footprints },
     { id: 'air-care-products', name: 'Air care products', icon: Wind },
@@ -55,7 +55,7 @@ export default function MegaMenu() {
 
     return (
         <div
-            className="relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl rounded-2xl overflow-hidden flex z-50 max-h-[calc(100vh-110px)] min-h-[500px] w-[280px]"
+            className="relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl rounded-2xl overflow-hidden flex z-50 max-h-[calc(100vh-110px)] min-h-[500px] w-auto min-w-[280px]"
         >
             {/* JUMIA-STYLE CARET/POINTER */}
             <div className="absolute -top-2 left-6 w-4 h-4 bg-white dark:bg-slate-900 border-t border-l border-gray-100 dark:border-slate-800 rotate-45 z-[-1]" />
@@ -85,7 +85,7 @@ export default function MegaMenu() {
                                 </div>
                                 <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
                             </Link>
-                            <Link href="/signup" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
+                            <Link href="/register" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <UserPlus className="w-5 h-5 transition-transform" strokeWidth={1.5} />
                                     <span className="text-[13px] font-bold uppercase tracking-wider">Sign Up</span>
@@ -101,7 +101,7 @@ export default function MegaMenu() {
                     <Link href="/products?status=READY_TO_SHIP" className="flex items-center justify-between px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all group">
                         <div className="flex items-center gap-3">
                             <Zap className="w-5 h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
-                            <span className="text-[13px] font-bold">Ready to Ship</span>
+                            <span className="text-[13px] font-bold">Ready to Ship in Ghana</span>
                         </div>
                         <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
                     </Link>
@@ -126,7 +126,7 @@ export default function MegaMenu() {
                         return (
                             <Link
                                 key={category.id}
-                                href={`/products?category=${category.id}`}
+                                href={category.id === 'all' ? '/products' : `/products/category/${category.id}`}
                                 className="flex items-center justify-between px-6 py-2.5 cursor-pointer transition-all group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50"
                             >
                                 <div className="flex items-center gap-3">

@@ -15,6 +15,7 @@ import StickyMobileCart from '@/components/StickyMobileCart';
 import VariantDropdown from '@/components/VariantDropdown';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import { formatPrice } from '@/lib/format';
+import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
 // Lazy Load components to improve initial page load performance
 const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
@@ -23,6 +24,18 @@ const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
 const RecentlyViewed = dynamic(() => import('@/components/RecentlyViewed'), {
     loading: () => <div className="h-48 w-full bg-gray-50 animate-pulse rounded-xl my-12" />
 });
+const ProductReviews = dynamic(() => import('@/components/product/ProductReviews'), {
+    loading: () => <div className="h-96 w-full bg-gray-50 animate-pulse rounded-xl my-12" />
+});
+
+interface Review {
+    id: string;
+    user_name: string;
+    rating: number;
+    comment: string;
+    is_verified: boolean;
+    created_at: string;
+}
 
 interface ProductImage {
     id: string;
@@ -51,6 +64,8 @@ interface Product {
     preorder_status?: string;
     variants?: { name: string; price: number }[];
     target_quantity?: number;
+    rating_count?: number;
+    reviews?: Review[];
 }
 
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
@@ -62,8 +77,9 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ initialProduct, slug }: ProductDetailClientProps) {
     const router = useRouter();
-    const [quantity] = useState(1);
+    const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
+    const [isBuyingNow, setIsBuyingNow] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [product, setProduct] = useState(initialProduct);
@@ -158,6 +174,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     useEffect(() => {
         if (product) {
             setDisplayedImage(getImageUrl(product.image));
+            trackViewItem(product);
 
             // ADDED: Save to Recently Viewed
             try {
@@ -214,11 +231,40 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         setIsAdding(true);
         try {
             await addToCart(product, quantity, selectedSize, selectedColor);
+            trackAddToCart(product, quantity);
             router.push('/cart');
         } catch (e) {
             console.error(e);
         } finally {
             setIsAdding(false);
+        }
+    };
+
+    const handleBuyNow = async () => {
+        // Validation for variants
+        if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
+            alert('Please select a size');
+            return;
+        }
+        if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
+            alert('Please select a color');
+            return;
+        }
+
+        setIsBuyingNow(true);
+        try {
+            // Encode selection into URL for checkout to parse
+            const params = new URLSearchParams({
+                buyNow: product.slug,
+                qty: quantity.toString(),
+                size: selectedSize,
+                color: selectedColor
+            });
+            router.push(`/checkout?${params.toString()}`);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsBuyingNow(false);
         }
     };
 
@@ -270,10 +316,39 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </span>
                         </div>
 
-                        <div className="mb-4 relative">
-                            <span className="text-3xl lg:text-4xl font-bold text-gray-900">
-                                {formatPrice(currentPrice)}
-                            </span>
+                        {/* Quantity & Price */}
+                        <div className="flex items-center gap-8 mb-8">
+                            <div>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Quantity</p>
+                                <div className="flex items-center border-2 border-gray-100 rounded-xl px-2 py-1 bg-gray-50/50">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-pink-600 transition-colors"
+                                        aria-label="Decrease quantity"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
+                                        </svg>
+                                    </button>
+                                    <span className="w-10 text-center font-bold text-gray-900">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                                        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-pink-600 transition-colors"
+                                        aria-label="Increase quantity"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs font-bold text-transparent uppercase tracking-wide mb-2">Price</p>
+                                <span className="text-3xl lg:text-4xl font-bold text-gray-900">
+                                    {formatPrice(currentPrice)}
+                                </span>
+                            </div>
                         </div>
 
                         {/* Progress Tracker (Detailed) */}
@@ -410,11 +485,18 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                             {/* Start order button */}
                             <button
-                                onClick={handleAddToCart}
-                                disabled={isAdding || (product.preorder_status === 'SOLD_OUT')}
+                                onClick={product.preorder_status === 'READY_TO_SHIP' ? handleBuyNow : handleAddToCart}
+                                disabled={isAdding || isBuyingNow || (product.preorder_status === 'SOLD_OUT')}
                                 className={`flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base ${product.preorder_status === 'READY_TO_SHIP' ? 'bg-pink-600 hover:bg-pink-700' : 'bg-orange-500 hover:bg-orange-600'} text-white rounded-full transition-colors disabled:opacity-50`}
                             >
-                                {product.preorder_status === 'READY_TO_SHIP' ? 'Buy Now' : 'Start Order'}
+                                {isBuyingNow || isAdding ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <span>Processing...</span>
+                                    </div>
+                                ) : (
+                                    product.preorder_status === 'READY_TO_SHIP' ? 'Buy Now' : 'Start Order'
+                                )}
                             </button>
                         </div>
 
@@ -432,6 +514,13 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             <RelatedProducts
                 currentSlug={product.slug}
                 categorySlug={product.category?.slug}
+            />
+
+            <ProductReviews
+                productSlug={product.slug}
+                initialReviews={product.reviews || []}
+                rating={product.rating || 0}
+                ratingCount={product.rating_count || 0}
             />
 
             {/* Recently Viewed Section (Lazy Loaded) */}
