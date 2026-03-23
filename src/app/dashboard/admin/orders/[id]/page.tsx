@@ -80,7 +80,7 @@ export default function AdminOrderDetailPage() {
         if (!confirm(`Change status to ${newStatus}?`)) return;
         setUpdating(true);
         try {
-            await adminAPI.updateOrder(orderId, { state: newStatus });
+            await adminAPI.updateOrder(orderId, { status: newStatus });
             await loadOrder();
         } catch {
             alert('Failed to update status');
@@ -93,7 +93,7 @@ export default function AdminOrderDetailPage() {
         if (!confirm('Mark this order as PAID?')) return;
         setUpdating(true);
         try {
-            await adminAPI.updateOrder(orderId, { payment_status: 'PAID', state: 'PAID' });
+            await adminAPI.updateOrder(orderId, { payment_status: 'PAID', status: 'PROCESSING' });
             await loadOrder();
         } catch {
             alert('Failed to update payment');
