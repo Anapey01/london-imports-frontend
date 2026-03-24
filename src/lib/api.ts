@@ -211,6 +211,8 @@ export const adminAPI = {
 
   // Analytics
   analytics: (params?: unknown) => api.get('/admin/analytics/', { params }),
+  exportAnalytics: (params?: { period: string }) => 
+    api.get('/admin/analytics/export/', { params, responseType: 'blob' }),
 
   // Vendors management
   vendors: (params?: unknown) => api.get('/admin/vendors/', { params }),
