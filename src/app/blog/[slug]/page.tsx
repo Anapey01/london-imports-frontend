@@ -7,9 +7,6 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
-import { getFeaturedProducts } from '@/lib/fetchers';
-import ProductCard from '@/components/ProductCard';
-import { Product } from '@/types';
 
 // Blog post type from API
 interface BlogPost {
@@ -238,8 +235,6 @@ export default async function BlogArticlePage({
     params: Promise<{ slug: string }>
 }) {
     const { slug } = await params;
-    const featuredProductsData = await getFeaturedProducts();
-    const featuredProducts = featuredProductsData?.results || [];
 
     // Try API first, then fallback
     let article = await getBlogPost(slug);
@@ -357,7 +352,7 @@ export default async function BlogArticlePage({
     };
 
     return (
-        <article className="min-h-screen bg-white dark:bg-[#0a0f1d] selection:bg-pink-100 selection:text-pink-600">
+        <article className="min-h-screen bg-white dark:bg-[#0a0f1d] selection:bg-pink-100 selection:text-pink-600 font-sans">
             {/* Structured Data */}
             <script
                 type="application/ld+json"
@@ -367,59 +362,50 @@ export default async function BlogArticlePage({
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
             />
-            {/* Elegant Header / Hero */}
-            <div className="relative w-full pt-32 pb-16 px-6 border-b border-gray-100 dark:border-slate-800/50 bg-[#fafafa] dark:bg-slate-900/20">
-                <div className="max-w-4xl mx-auto">
-                    <Link
-                        href="/blog"
-                        className="inline-flex items-center gap-2 text-sm font-bold mb-8 text-pink-600 dark:text-pink-400 hover:opacity-70 transition-opacity uppercase tracking-widest"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                        </svg>
-                        All Articles
-                    </Link>
 
-                    <div className="flex items-center gap-3 mb-6">
-                        <span className="px-3 py-1 rounded-full bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest">
-                            {article.category_display}
-                        </span>
-                        <span className="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">
-                            {new Date(article.published_at).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric'
-                            })}
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                        <span className="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">
-                            {article.read_time_minutes} min read
-                        </span>
-                    </div>
-
-                    <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-8 tracking-tight leading-[1.1]">
-                        {article.title}
-                    </h1>
-
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg">
-                            {article.author_name ? article.author_name.charAt(0) : 'L'}
-                        </div>
-                        <div>
-                            <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
-                                {article.author_name || 'London Imports'}
-                            </p>
-                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Editorial Team</p>
-                        </div>
-                    </div>
-                </div>
+            {/* Subtle Reading Progress */}
+            <div className="fixed top-0 left-0 w-full h-[2px] z-[60] bg-gray-50/50 dark:bg-slate-900/30">
+                <div id="reading-progress" className="h-full bg-pink-600 transition-all duration-150 w-0"></div>
             </div>
 
-            {/* Main Article Content */}
-            <article className="max-w-4xl mx-auto px-6 py-16">
-                {/* Featured Image - Premium Presentation */}
+            {/* Craft-Style 'Document' Header */}
+            <header className="max-w-3xl mx-auto pt-48 pb-20 px-6 text-center">
+                <Link
+                    href="/blog"
+                    className="inline-flex items-center gap-2 text-[9px] font-bold mb-12 text-gray-400 hover:text-pink-600 transition-colors uppercase tracking-[0.5em]"
+                >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Journal Index
+                </Link>
+
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-black text-gray-900 dark:text-white mb-10 tracking-tight leading-[1.05]">
+                    {article.title}
+                </h1>
+
+                <div className="flex flex-col items-center gap-6 pt-10 border-t border-gray-100 dark:border-slate-800">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold text-xs">
+                            {article.author_name ? article.author_name.charAt(0) : 'L'}
+                        </div>
+                        <span className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-[0.2em]">
+                            {article.author_name || 'Editorial Team'}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-[9px] font-bold text-gray-400 uppercase tracking-[0.3em]">
+                        <span>{new Date(article.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                        <span className="w-1 h-1 rounded-full bg-gray-200"></span>
+                        <span>{article.read_time_minutes} min read</span>
+                    </div>
+                </div>
+            </header>
+
+            {/* Document Content Area */}
+            <main className="max-w-3xl mx-auto px-6 py-20">
+                {/* Clean Visual Anchor */}
                 {article.featured_image && (
-                    <div className="relative w-full aspect-video rounded-[3rem] overflow-hidden mb-16 shadow-2xl shadow-pink-500/10">
+                    <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden mb-24 shadow-[0_30px_60px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-slate-800">
                         <Image
                             src={article.featured_image}
                             alt={article.title}
@@ -430,83 +416,44 @@ export default async function BlogArticlePage({
                     </div>
                 )}
 
-                {/* Rich Text Content from CKEditor */}
-                <div 
-                    className="blog-content prose prose-lg md:prose-xl max-w-none dark:prose-invert prose-p:leading-relaxed prose-headings:font-black prose-headings:tracking-tight prose-a:text-pink-600 dark:prose-a:text-pink-400 prose-img:rounded-3xl prose-img:shadow-xl"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
-                />
-
-                {/* Premium Share / CTA Section */}
-                <div className="mt-24 pt-12 border-t border-gray-100 dark:border-slate-800">
-                    <div className="p-10 md:p-16 rounded-[3rem] bg-gray-900 text-white relative overflow-hidden group">
-                        <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[100%] rounded-full bg-violet-600/20 blur-[120px] group-hover:bg-pink-600/20 transition-colors duration-1000"></div>
-                        
-                        <div className="relative z-10 max-w-2xl">
-                            <h2 className="text-3xl md:text-4xl font-black mb-6 leading-tight">
-                                Ready to import like a pro?
-                            </h2>
-                            <p className="text-gray-400 text-lg mb-10 leading-relaxed">
-                                Don&apos;t navigate the complex world of shipping alone. We handle the sourcing, consolidation, and customs clearing while you focus on selling.
-                            </p>
-                            
-                            <div className="flex flex-wrap gap-4">
-                                <a
-                                    href="https://wa.me/233545247009"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-8 py-4 rounded-2xl bg-[#25D366] text-white font-bold flex items-center gap-3 hover:scale-105 transition-transform"
-                                >
-                                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                                    </svg>
-                                    WhatsApp Concierge
-                                </a>
-                                <Link
-                                    href="/products"
-                                    className="px-8 py-4 rounded-2xl bg-white text-gray-900 font-bold hover:bg-pink-500 hover:text-white transition-all transform hover:scale-105"
-                                >
-                                    Explore Products
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
+                {/* Craft-Style Body */}
+                <div className="relative">
+                    <div 
+                        className="blog-content prose prose-stone lg:prose-lg dark:prose-invert max-w-none 
+                        prose-p:text-gray-600 dark:prose-p:text-slate-400 prose-p:leading-[1.9] prose-p:mb-10
+                        prose-headings:font-serif prose-headings:font-black prose-headings:tracking-tight 
+                        prose-strong:text-gray-900 dark:prose-strong:text-white
+                        prose-blockquote:border-pink-600 prose-blockquote:bg-gray-50/50 dark:prose-blockquote:bg-slate-900/20
+                        prose-img:rounded-md prose-img:border prose-img:border-gray-100 dark:prose-img:border-slate-800"
+                        dangerouslySetInnerHTML={{ __html: article.content }}
+                    />
                 </div>
 
-                {/* Navigation Back */}
-                <div className="mt-16 text-center">
+                {/* Refined Back Link */}
+                <div className="mt-40 text-center pb-32 border-t border-gray-100 dark:border-slate-800 pt-20">
                     <Link
                         href="/blog"
-                        className="text-gray-400 hover:text-pink-600 font-bold uppercase tracking-widest text-sm transition-colors"
+                        className="text-gray-400 hover:text-pink-600 font-bold uppercase tracking-[0.5em] text-[9px] transition-colors"
                     >
-                        ← Return to Publication
+                        End of Entry
                     </Link>
                 </div>
-            </article>
+            </main>
 
-
-            {/* Trending Imports - Search Authority Booster */}
-            <div className="max-w-4xl mx-auto px-4 mt-16 border-t pt-12 relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900">Trending Imports</h2>
-                    <Link href="/products" className="text-sm font-semibold text-blue-600 hover:text-blue-700">
-                        View all deals →
-                    </Link>
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    {featuredProducts.slice(0, 4).map((product: Product) => (
-                        <ProductCard key={product.id} product={{ ...product, price: Number(product.price) }} />
-                    ))}
-                </div>
-                <div className="mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-100 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div>
-                        <h3 className="font-bold text-blue-900">Start your own mini importation business</h3>
-                        <p className="text-sm text-blue-700 mt-1">Join 10,000+ Ghanaians buying directly from China with London's Imports.</p>
-                    </div>
-                    <Link href="/register" className="whitespace-nowrap bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200">
-                        Join for Free
-                    </Link>
-                </div>
-            </div>
+            {/* Reading Progress Client-Side Logic */}
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `
+                        window.onscroll = function() {
+                            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                            var scrolled = (winScroll / height) * 100;
+                            var progress = document.getElementById("reading-progress");
+                            if (progress) progress.style.width = scrolled + "%";
+                        };
+                    `
+                }}
+            />
         </article>
     );
 }

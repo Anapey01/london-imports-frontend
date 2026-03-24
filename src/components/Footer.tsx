@@ -107,14 +107,14 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Regional Hubs - SEO Booster */}
-                    <div className="md:col-span-3 lg:col-span-2">
+                    {/* Regional Hubs - SEO Booster (Hidden visually, kept for crawlers) */}
+                    <div className="absolute -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden" aria-hidden="true">
                         <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Regional Hubs</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/products?search=Accra" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini Importation Accra</Link></li>
-                            <li><Link href="/products?search=Kumasi" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini Importation Kumasi</Link></li>
-                            <li><Link href="/products?search=Tema" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini Importation Tema</Link></li>
-                            <li><Link href="/blog?tag=Guides" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Shipping Guides</Link></li>
+                            <li><Link href="/products?search=Accra">Mini Importation Accra</Link></li>
+                            <li><Link href="/products?search=Kumasi">Mini Importation Kumasi</Link></li>
+                            <li><Link href="/products?search=Tema">Mini Importation Tema</Link></li>
+                            <li><Link href="/blog?tag=Guides">Shipping Guides</Link></li>
                         </ul>
                     </div>
 

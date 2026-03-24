@@ -1,11 +1,5 @@
+/* Tailwind v4 CSS imports */
 @import "tailwindcss";
-
-/* Tailwind v4: Override default media-query dark mode with selector-based.
-   This ensures dark: classes ONLY activate when data-theme="dark" is set,
-   NOT based on the phone's system prefers-color-scheme setting. */
-@theme {
-  --variant-dark: (&:where([data-theme="dark"], [data-theme="dark"] *));
-}
 
 /* ===== DARK MODE VARIABLES ===== */
 :root {
@@ -18,7 +12,6 @@
   --border-color: #e2e8f0;
   --accent-primary: #f472b6;
   --accent-secondary: #f9a8d4;
-  --font-sans: var(--font-inter);
 }
 
 @layer base {
@@ -595,52 +588,66 @@ html {
 .blog-content {
   color: inherit;
   line-height: 1.8;
+  font-family: var(--font-jost), sans-serif;
+}
+.blog-content h1,
+.blog-content h2,
+.blog-content h3 {
+  font-family: var(--font-instrument-serif), serif;
 }
 .blog-content h2 {
-  margin-top: 3.5rem;
-  margin-bottom: 1.5rem;
-  font-size: 2.25rem;
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  font-size: 2rem;
   font-weight: 900;
   letter-spacing: -0.02em;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 .blog-content h3 {
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
-  font-size: 1.75rem;
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
   font-weight: 900;
   letter-spacing: -0.01em;
 }
 .blog-content p {
-  margin-bottom: 2rem;
-  font-size: 1.125rem;
+  margin-bottom: 2.5rem;
+  font-size: 1.05rem;
+  line-height: 2.0;
+  color: #4b5563;
+}
+[data-theme='dark'] .blog-content p {
+  color: #94a3b8;
 }
 .blog-content ul,
 .blog-content ol {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   padding-left: 1.5rem;
 }
 .blog-content li {
-  margin-bottom: 0.75rem;
-  font-size: 1.125rem;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
 }
 .blog-content img {
   max-width: 100%;
   height: auto;
-  margin: 3rem auto;
-  border-radius: 2rem;
+  margin: 5rem auto;
+  border-radius: 0.75rem;
   display: block;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 .blog-content .image-style-side {
   float: right;
-  margin-left: 2rem;
-  max-width: 50%;
+  margin-left: 2.5rem;
+  margin-bottom: 2.5rem;
+  max-width: 45%;
 }
 .blog-content .image-style-align-left {
   float: left;
-  margin-right: 2rem;
-  max-width: 50%;
+  margin-right: 2.5rem;
+  margin-bottom: 2.5rem;
+  max-width: 45%;
 }
 .blog-content .image_resized {
   display: block;
@@ -648,18 +655,20 @@ html {
   margin-right: auto;
 }
 .blog-content blockquote {
-  border-left: 4px solid #db2777;
-  padding: 1.5rem 2rem;
+  border-left: 3px solid #db2777;
+  padding: 2.5rem 3rem;
   background: #fdf2f8;
   font-style: italic;
-  margin: 3rem 0;
-  border-radius: 0 1.5rem 1.5rem 0;
-  color: #4b5563;
+  margin: 4rem 0;
+  border-radius: 0 1rem 1rem 0;
+  color: #374151;
+  font-size: 1.25rem;
+  line-height: 1.6;
 }
 
 [data-theme='dark'] .blog-content blockquote {
-  background: #83184310;
-  color: #9ca3af;
+  background: #83184308;
+  color: #cbd5e1;
 }
 
 @media (max-width: 768px) {
@@ -671,9 +680,15 @@ html {
     margin-right: 0;
   }
   .blog-content h2 {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
+    margin-top: 3.5rem;
   }
   .blog-content h3 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    margin-top: 2.5rem;
+  }
+  .blog-content p {
+    font-size: 1rem;
+    line-height: 1.9;
   }
 }

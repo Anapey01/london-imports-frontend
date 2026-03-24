@@ -3,7 +3,7 @@
  * Includes Navbar, providers, and global styles
  */
 import type { Metadata, Viewport } from "next";
-import { Jost } from "next/font/google";
+import { Instrument_Serif, Instrument_Sans } from "next/font/google";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
@@ -22,16 +22,25 @@ const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 // Google Analytics ID
 const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
-const jost = Jost({
+
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  display: "swap", // Prevents invisible text during font loading (improves FCP)
-  variable: "--font-jost",
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-instrument-serif",
+});
+
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-instrument-sans",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://londonsimports.com'), // Update with actual domain if custom
-  title: "Mini Importation Services in Ghana | Buy from China to Accra & Kumasi | London's Imports",
-  description: "Ghana's #1 trusted platform for mini-importation. Ship from China (1688, Alibaba, Taobao) to Accra, Kumasi, and Tema. Pay with Momo. Door-to-door delivery, customs clearance included.",
+  title: "Ghana's #1 Mini Importation Service | Buy from China to Accra & Kumasi | London's Imports Ghana",
+  description: "Ghana's most trusted platform for mini-importation. Ship from China (1688, Alibaba, Taobao) directly to Accra, Kumasi, and Tema. Pay with Momo. Local expertise, door-to-door delivery.",
   keywords: [
     // Primary - Ghana Geographic Focus
     "Mini Importation Ghana", "Buy from China to Ghana", "Shipping from China to Accra",
@@ -58,10 +67,10 @@ export const metadata: Metadata = {
     "London's Imports Ghana", "Londons Imports"
   ],
   openGraph: {
-    title: "Mini Importation Ghana - Ship from China to Accra & Kumasi",
+    title: "London's Imports Ghana - #1 China to Accra Shipping",
     description: "Ghana's trusted platform for importing goods from China. We handle shipping, customs, and doorstep delivery in Accra, Kumasi, Tema. Pay in Cedis via Momo.",
     url: 'https://londonsimports.com',
-    siteName: "London's Imports",
+    siteName: "London's Imports Ghana",
     images: [
       {
         url: 'https://londonsimports.com/og-image.jpg',
@@ -108,12 +117,13 @@ export default async function RootLayout({
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "Store"],
-    "@id": "https://londonsimports.com/#business",
-    "name": "London's Imports",
-    "alternateName": ["Mini Importation Ghana", "Londons Imports"],
+    "@type": "Organization",
+    "@id": "https://londonsimports.com/#organization",
+    "name": "London's Imports Ghana",
+    "legalName": "London's Imports Ghana Limited",
+    "alternateName": ["Mini Importation Ghana", "Londons Imports GH"],
     "url": "https://londonsimports.com",
-    "description": "Ghana's #1 mini-importation platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Trusted by 10,000+ Ghanaians.",
+    "description": "Ghana's leading mini-importation logistics and sourcing platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Independent Ghanaian entity.",
     "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
     "telephone": "+233545247009",
@@ -291,7 +301,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       </head>
-      <body className={`${jost.variable} font-sans bg-gray-50 min-h-screen`} suppressHydrationWarning>
+      <body className={`${instrumentSerif.variable} ${instrumentSans.variable} font-sans bg-[#F9FAFB] dark:bg-[#0a0f1d] min-h-screen`} suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
