@@ -281,8 +281,23 @@ export default function AdminAnalyticsPage() {
             {/* Main Charts & Funnel */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className={`lg:col-span-2 p-6 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                    <h3 className={`font-semibold mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>Revenue Trajectory</h3>
-                    <AreaChart chartData={data?.revenueChart || []} />
+                    <div className="flex justify-between items-center mb-8">
+                        <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Revenue Trajectory</h3>
+                        {data?.revenue?.total === 0 && (
+                            <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded tracking-tight">
+                                NO PAID ACTIVITY IN {period.toUpperCase()}
+                            </span>
+                        )}
+                    </div>
+                    {data?.revenue?.total === 0 ? (
+                        <div className={`h-[300px] flex flex-col items-center justify-center text-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <TrendingUp className="w-8 h-8 mb-3 opacity-20" />
+                            <p className="text-sm font-medium">No paid revenue recorded for this period.</p>
+                            <p className="text-[10px] mt-1 opacity-60">Try selecting a longer period (30D/90D) or check your open orders.</p>
+                        </div>
+                    ) : (
+                        <AreaChart chartData={data?.revenueChart || []} />
+                    )}
                 </div>
 
                 <div className={`p-6 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
