@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 
@@ -144,6 +144,24 @@ export default function AdminAnalyticsPage() {
                         <span key={i}>{d.day}</span>
                     ))}
                 </div>
+            </div>
+        );
+    };
+    
+    const ProgressBar = ({ rate, isDark }: { rate: number; isDark: boolean }) => {
+        const barRef = useRef<HTMLDivElement>(null);
+        useEffect(() => {
+            if (barRef.current) {
+                barRef.current.style.width = `${rate}%`;
+            }
+        }, [rate]);
+
+        return (
+            <div className={`h-1.5 w-full rounded-full ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                <div 
+                    ref={barRef}
+                    className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out w-0" 
+                />
             </div>
         );
     };
@@ -309,9 +327,7 @@ export default function AdminAnalyticsPage() {
                                     <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{p.name}</span>
                                     <span className="text-indigo-400">{p.rate}%</span>
                                 </div>
-                                <div className={`h-1.5 w-full rounded-full ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${p.rate}%` }}></div>
-                                </div>
+                                <ProgressBar rate={p.rate} isDark={isDark} />
                                 <div className="flex justify-between text-[10px] text-slate-500 opacity-60">
                                     <span>Sold: {p.sold}</span>
                                     <span>In Stock: {p.stock}</span>
