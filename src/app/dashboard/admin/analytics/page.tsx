@@ -7,6 +7,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
+import { TrendingUp } from 'lucide-react';
 
 interface AnalyticsData {
     revenue: { total: number; change: number; yoy_change: number }; // Added YoY
