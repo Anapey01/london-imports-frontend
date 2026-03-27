@@ -116,7 +116,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const isSoldOut = useMemo(() => {
         if (product?.preorder_status === 'SOLD_OUT') return true;
-        return currentStock <= 0;
+        
+        // Only enforce strict stock if explicitly READY_TO_SHIP
+        // For pre-orders (DROPS, SOURCING), we allow infinite sales until status is changed
+        if (product?.preorder_status === 'READY_TO_SHIP') {
+            return currentStock <= 0;
+        }
+        
+        return false;
     }, [product, currentStock]);
 
     // Update price when variants are selected
@@ -260,10 +267,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             showToast(`Added ${quantity}x ${product.name} to cart`, 'success');
             router.push('/cart');
         } catch (e: unknown) {
-            console.error(e);
+            console.error("Add to Cart Failed:", e);
             let errorMessage = "Failed to add to cart. Please try again.";
             if (e && typeof e === 'object' && 'response' in e) {
                 const axiosError = e as { response?: { data?: { error?: string } } };
+                console.error("Backend Error Details:", axiosError.response?.data);
                 errorMessage = axiosError.response?.data?.error || errorMessage;
             }
             showToast(errorMessage, 'error');

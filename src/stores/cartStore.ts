@@ -143,6 +143,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     sizeParam = selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name;
                 }
 
+                console.info("[CartStore] Adding to cart (Server):", { productId: product.id, quantity, size: sizeParam, color: selectedColor });
+
                 // Pass variants to API
                 const response = await ordersAPI.addToCart(product.id, quantity, sizeParam, selectedColor, selectedVariant?.id);
                 const cart = response.data;
@@ -150,9 +152,6 @@ export const useCartStore = create<CartState>()((set, get) => ({
                 // Auto-select the newly added item
                 const newSelected = new Set(get().selectedItemIds);
                 cart.items?.forEach((i: CartItem) => {
-                    // We don't easily know which one is "new", so we just ensure all items are in selection if we want?
-                    // Or check which ID was added. Backend returns full cart.
-                    // For now, let's just ensure the newly returned items are all selected to be safe.
                     newSelected.add(i.id);
                 });
 
@@ -161,11 +160,15 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     selectedItemIds: newSelected,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
+            } catch (err) {
+                console.error("[CartStore] Server addToCart failed:", err);
+                throw err; // Rethrow to allow component-level catch/toast
             } finally {
                 set({ isLoading: false });
             }
         } else {
             // Guest Side
+            console.info("[CartStore] Adding to cart (Guest):", { product, quantity, selectedSize, selectedColor });
             const currentGuest = get().guestItems;
 
             // Determine effective size/variant name

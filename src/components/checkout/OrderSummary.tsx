@@ -27,7 +27,7 @@ const OrderSummary = ({
     paymentAmount
 }: OrderSummaryProps) => {
     return (
-        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 sticky top-32">
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
             <h2 className="text-xl font-light text-gray-900 mb-6 tracking-tight">Order Summary</h2>
 
             <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">

@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCartStore } from '@/stores/cartStore';
+import { useCartStore, type CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 import { trackBeginCheckout, trackPurchase } from '@/lib/analytics';
-import { ExtendedCart, BackendError } from '@/types';
+import { ExtendedCart, BackendError, type OrderItem } from '@/types';
 import { AlertCircle } from 'lucide-react';
 
 // New Component Imports
@@ -182,7 +182,12 @@ function CheckoutPage() {
     }, [checkoutOrder, cart, searchParams]);
 
     const paymentAmount = useMemo(() => {
-        const totalValue = currentOrderData.total || 0;
+        // Calculate total of ONLY selected items
+        const selSubtotal = (currentOrderData.items || [])
+            .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
+            .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
+            
+        const totalValue = selSubtotal + Number(currentOrderData.delivery_fee || 0);
         const totalPaid = checkoutOrder ? Number(checkoutOrder.amount_paid || 0) : 0;
         const balanceDue = Math.max(0, totalValue - totalPaid);
 
@@ -191,23 +196,22 @@ function CheckoutPage() {
         if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
         if (paymentType === 'WHATSAPP') return 0;
         return balanceDue;
-    }, [paymentType, currentOrderData.total, customAmount, checkoutOrder]);
+    }, [paymentType, currentOrderData.items, currentOrderData.delivery_fee, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
 
-    const parseValue = (val: string | number | null | undefined): number => {
-        if (val === null || val === undefined) return 0;
-        if (typeof val === 'number') return val;
-        const parsed = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
-        return isNaN(parsed) ? 0 : parsed;
-    };
 
     useEffect(() => {
-        const total = parseValue(currentOrderData.total);
+        const selSubtotal = (currentOrderData.items || [])
+            .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
+            .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
+        
+        const total = selSubtotal + Number(currentOrderData.delivery_fee || 0);
+        
         if (total <= 0 && !authLoading) {
             setCanPay(false);
         } else {
             setCanPay(true);
         }
-    }, [currentOrderData.total, authLoading]);
+    }, [currentOrderData.items, currentOrderData.delivery_fee, authLoading, selectedItemIds, checkoutOrder, orderNumberParam]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -338,31 +342,33 @@ function CheckoutPage() {
                     </div>
 
                     <div className="lg:col-span-5">
-                        <OrderSummary
-                            currentOrderData={currentOrderData}
-                            selectedItemIds={selectedItemIds}
-                            checkoutOrder={checkoutOrder}
-                            orderNumberParam={orderNumberParam}
-                            paymentAmount={paymentAmount}
-                        />
+                        <div className="lg:sticky lg:top-32 space-y-6">
+                            <OrderSummary
+                                currentOrderData={currentOrderData}
+                                selectedItemIds={selectedItemIds}
+                                checkoutOrder={checkoutOrder}
+                                orderNumberParam={orderNumberParam}
+                                paymentAmount={paymentAmount}
+                            />
 
-                        {error && (
-                            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex items-center gap-3 mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                                <p className="text-xs font-medium">{error}</p>
-                            </div>
-                        )}
+                            {error && (
+                                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                    <p className="text-xs font-medium">{error}</p>
+                                </div>
+                            )}
 
-                        <CheckoutSubmitButton
-                            isLoading={isLoading}
-                            isPaystackLoaded={isPaystackLoaded}
-                            canPay={canPay}
-                            paymentType={paymentType}
-                            paymentAmount={paymentAmount}
-                            connectionTimeout={connectionTimeout}
-                            connectionProgress={connectionProgress}
-                            setPaymentType={setPaymentType}
-                        />
+                            <CheckoutSubmitButton
+                                isLoading={isLoading}
+                                isPaystackLoaded={isPaystackLoaded}
+                                canPay={canPay}
+                                paymentType={paymentType}
+                                paymentAmount={paymentAmount}
+                                connectionTimeout={connectionTimeout}
+                                connectionProgress={connectionProgress}
+                                setPaymentType={setPaymentType}
+                            />
+                        </div>
                     </div>
                 </form>
             </div>
