@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import dynamic from 'next/dynamic';
@@ -16,6 +16,8 @@ import VariantDropdown from '@/components/VariantDropdown';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import { formatPrice } from '@/lib/format';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
+import { useToast } from '@/components/Toast';
+import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 
 // Lazy Load components to improve initial page load performance
 const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
@@ -43,6 +45,14 @@ interface ProductImage {
     alt_text?: string;
 }
 
+interface ProductVariant {
+    id: string;
+    name: string;
+    price: string;
+    sku?: string;
+    stock_quantity: number;
+}
+
 interface Product {
     id: string;
     name: string;
@@ -62,13 +72,12 @@ interface Product {
     video_url?: string;
     vendor?: { business_name: string };
     preorder_status?: string;
-    variants?: { name: string; price: number }[];
+    variants?: ProductVariant[];
+    stock_quantity: number;
     target_quantity?: number;
     rating_count?: number;
     reviews?: Review[];
 }
-
-import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 
 interface ProductDetailClientProps {
     initialProduct: Product | null;
@@ -96,8 +105,19 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         setDisplayedImage(null);
     }, [initialProduct]);
 
-    // Derived state for price display
+    // Derived state for price and stock
     const [currentPrice, setCurrentPrice] = useState(initialProduct?.price || 0);
+    const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
+
+    const currentStock = useMemo(() => {
+        if (selectedVariant) return selectedVariant.stock_quantity;
+        return product?.stock_quantity ?? 0;
+    }, [product, selectedVariant]);
+
+    const isSoldOut = useMemo(() => {
+        if (product?.preorder_status === 'SOLD_OUT') return true;
+        return currentStock <= 0;
+    }, [product, currentStock]);
 
     // Update price when variants are selected
     useEffect(() => {
@@ -130,16 +150,21 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     v.name.toLowerCase() === combo1 || v.name.toLowerCase() === combo2
                 );
             }
-
             if (matchingVariant) {
                 newPrice = Number(matchingVariant.price);
+                setSelectedVariant(matchingVariant as unknown as ProductVariant);
+            } else {
+                setSelectedVariant(null);
             }
+        } else {
+            setSelectedVariant(null);
         }
 
         setCurrentPrice(newPrice);
     }, [product, selectedSize, selectedColor]);
 
     const { addToCart } = useCartStore();
+    const { showToast } = useToast();
 
     // Client-side fetch to ensure fresh data (e.g. reservation counts)
     useEffect(() => {
@@ -220,21 +245,28 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleAddToCart = async () => {
         // Validation for variants
         if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
-            alert('Please select a size');
+            showToast('Please select a size', 'error');
             return;
         }
         if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
-            alert('Please select a color');
+            showToast('Please select a color', 'error');
             return;
         }
 
         setIsAdding(true);
         try {
-            await addToCart(product, quantity, selectedSize, selectedColor);
+            await addToCart(product, quantity, selectedSize, selectedColor, selectedVariant || undefined);
             trackAddToCart(product, quantity);
+            showToast(`Added ${quantity}x ${product.name} to cart`, 'success');
             router.push('/cart');
-        } catch (e) {
+        } catch (e: unknown) {
             console.error(e);
+            let errorMessage = "Failed to add to cart. Please try again.";
+            if (e && typeof e === 'object' && 'response' in e) {
+                const axiosError = e as { response?: { data?: { error?: string } } };
+                errorMessage = axiosError.response?.data?.error || errorMessage;
+            }
+            showToast(errorMessage, 'error');
         } finally {
             setIsAdding(false);
         }
@@ -253,16 +285,24 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
         setIsBuyingNow(true);
         try {
-            // Encode selection into URL for checkout to parse
+            // First add to cart, then go directly to checkout
+            await addToCart(product, quantity, selectedSize, selectedColor, selectedVariant || undefined);
+            trackAddToCart(product, quantity);
+            showToast(`Proceeding to checkout`, 'success');
+            
+            // Encode selection into URL for checkout to identify the focus product
             const params = new URLSearchParams({
                 buyNow: product.slug,
-                qty: quantity.toString(),
-                size: selectedSize,
-                color: selectedColor
             });
             router.push(`/checkout?${params.toString()}`);
-        } catch (e) {
+        } catch (e: unknown) {
             console.error(e);
+            let errorMessage = "Something went wrong. Please try again.";
+             if (e && typeof e === 'object' && 'response' in e) {
+                const axiosError = e as { response?: { data?: { error?: string } } };
+                errorMessage = axiosError.response?.data?.error || errorMessage;
+            }
+            showToast(errorMessage, 'error');
         } finally {
             setIsBuyingNow(false);
         }
@@ -341,6 +381,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                         </svg>
                                     </button>
                                 </div>
+                                {currentStock > 0 && currentStock < 5 && (
+                                    <p className="text-[10px] text-orange-600 font-bold mt-1 animate-pulse">Only {currentStock} left!</p>
+                                )}
                             </div>
 
                             <div>
@@ -459,8 +502,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             {/* Add to cart icon button */}
                             <button
                                 onClick={handleAddToCart}
-                                disabled={isAdding}
-                                className="flex flex-col items-center gap-1 px-3 sm:px-4 py-2 text-gray-600 hover:text-pink-600 transition-colors min-w-[60px]"
+                                disabled={isAdding || isSoldOut}
+                                className="flex flex-col items-center gap-1 px-3 sm:px-4 py-2 text-gray-600 hover:text-pink-600 transition-colors min-w-[60px] disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
                                 aria-label="Add to cart"
                             >
                                 <div className="relative">
@@ -468,9 +511,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
                                     {/* Plus badge */}
-                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                                        +
-                                    </span>
+                                    {!isSoldOut && (
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                            +
+                                        </span>
+                                    )}
                                 </div>
                                 <span className="text-[10px] sm:text-xs whitespace-nowrap">Add to cart</span>
                             </button>
@@ -486,16 +531,18 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             {/* Start order button */}
                             <button
                                 onClick={product.preorder_status === 'READY_TO_SHIP' ? handleBuyNow : handleAddToCart}
-                                disabled={isAdding || isBuyingNow || (product.preorder_status === 'SOLD_OUT')}
-                                className={`flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base ${product.preorder_status === 'READY_TO_SHIP' ? 'bg-pink-600 hover:bg-pink-700' : 'bg-orange-500 hover:bg-orange-600'} text-white rounded-full transition-colors disabled:opacity-50`}
+                                disabled={isAdding || isBuyingNow || isSoldOut}
+                                className={`flex-1 py-3 px-4 sm:px-6 font-semibold text-center text-sm sm:text-base ${isSoldOut ? 'bg-gray-400' : (product.preorder_status === 'READY_TO_SHIP' ? 'bg-pink-600 hover:bg-pink-700' : 'bg-orange-500 hover:bg-orange-600')} text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                             >
-                                {isBuyingNow || isAdding ? (
-                                    <div className="flex items-center justify-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>Processing...</span>
-                                    </div>
-                                ) : (
-                                    product.preorder_status === 'READY_TO_SHIP' ? 'Buy Now' : 'Start Order'
+                                {isSoldOut ? 'Sold Out' : (
+                                    isBuyingNow || isAdding ? (
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            <span>Processing...</span>
+                                        </div>
+                                    ) : (
+                                        product.preorder_status === 'READY_TO_SHIP' ? 'Buy Now' : 'Start Order'
+                                    )
                                 )}
                             </button>
                         </div>

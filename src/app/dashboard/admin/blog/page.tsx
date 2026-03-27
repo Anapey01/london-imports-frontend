@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
-import Link from 'next/link';
+import Image from 'next/image';
 
 interface BlogPost {
     id: number;
@@ -120,14 +120,6 @@ export default function AdminBlogPage() {
         }
     };
 
-    const togglePublish = async (id: number) => {
-        try {
-            await adminAPI.publishBlogPost(String(id));
-            await loadPosts();
-        } catch (err) {
-            console.error('Failed to toggle publish:', err);
-        }
-    };
 
     const openCreateModal = () => {
         setEditingPost(null);
@@ -231,7 +223,9 @@ export default function AdminBlogPage() {
                                     <td className="px-5 py-4">
                                         <div className="flex items-center gap-3">
                                             {post.image ? (
-                                                <img src={post.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                                                <div className="relative w-10 h-10 overflow-hidden rounded-lg">
+                                                    <Image src={post.image} alt="" fill className="object-cover" />
+                                                </div>
                                             ) : (
                                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
                                                     <svg className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,7 +296,12 @@ export default function AdminBlogPage() {
                             <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                 {editingPost ? 'Refine Article' : 'Draft New Article'}
                             </h3>
-                            <button onClick={closeModal} className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+                            <button 
+                                onClick={closeModal} 
+                                title="Close modal"
+                                aria-label="Close modal"
+                                className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                            >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -344,8 +343,10 @@ export default function AdminBlogPage() {
                                     }`}>
                                         {(selectedImage || imagePreview) ? (
                                             <>
-                                                <img src={imagePreview || ''} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <div className="absolute inset-0 w-full h-full">
+                                                    <Image src={imagePreview || ''} alt="Preview" fill className="object-cover" />
+                                                </div>
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center z-10">
                                                     <label className="cursor-pointer px-4 py-2 bg-white rounded-lg text-xs font-bold text-slate-900">Change Image</label>
                                                 </div>
                                             </>
@@ -357,8 +358,15 @@ export default function AdminBlogPage() {
                                                 <span className="text-xs text-slate-500">Upload high-res JPG/PNG</span>
                                             </label>
                                         )}
-                                        <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" id="blog-image-input" />
-                                        <label htmlFor="blog-image-input" className="absolute inset-0 cursor-pointer" />
+                                        <input 
+                                            type="file" 
+                                            onChange={handleImageChange} 
+                                            className="hidden" 
+                                            accept="image/*" 
+                                            id="blog-image-input" 
+                                            title="Select blog featured image"
+                                        />
+                                        <label htmlFor="blog-image-input" className="absolute inset-0 cursor-pointer" title="Click to upload image" aria-label="Upload featured image" />
                                     </div>
                                 </div>
 
@@ -397,6 +405,8 @@ export default function AdminBlogPage() {
                                     <select
                                         value={formData.category}
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                        title="Select category"
+                                        aria-label="Category"
                                         className={`w-full px-4 py-3 rounded-xl border text-sm ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}
                                     >
                                         {categories.map(cat => (

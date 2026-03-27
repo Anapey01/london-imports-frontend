@@ -178,8 +178,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
             // Check existence based on ID AND variants
             const existingIndex = currentGuest.findIndex(i =>
                 i.product.id === product.id &&
-                i.selected_size === effectiveSize &&
-                i.selected_color === selectedColor
+                i.selected_size?.toLowerCase() === effectiveSize?.toLowerCase() &&
+                i.selected_color?.toLowerCase() === selectedColor?.toLowerCase()
             );
 
             const newGuest = [...currentGuest];

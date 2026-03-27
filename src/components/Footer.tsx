@@ -149,7 +149,7 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500" suppressHydrationWarning>
                         &copy; {new Date().getFullYear()} London&apos;s Imports. All rights reserved.
                     </p>
 

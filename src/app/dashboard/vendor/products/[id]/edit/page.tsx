@@ -59,15 +59,9 @@ export default function EditProductPage() {
                     // Let's rely on public product detail or add vendor detail to API if needed.
                     // Actually, vendorsAPI doesn't have a specific getDetail logic in frontend lib yet?
                     // Let's try /products/vendor/products/${id}/ directly via a new method or fetch.
-                    // Re-checking api.ts... "products: () => api.get('/products/vendor/products/')"
-                    // Let's add vendor detail fetch. For now, use the list and find? No, that's inefficient.
-                    // The backend supports GET /products/vendor/products/{id}/ (VendorProductDetailView).
-                    // So we can assume vendorsAPI.getProduct(id) should exist or we use axios directly.
-                    // Let's assume we can fetch it.
-
-                    // Temporary fix: fetching list and filtering (Upgrade this later!)
-                    const listRes = await vendorsAPI.products();
-                    const found = listRes.data.results.find((p: Product) => p.id === productId);
+                    // Optimized: Use specific Vendor Detail endpoint
+                    const res = await vendorsAPI.getProduct(productId);
+                    const found = res.data;
 
                     if (found) {
                         setProduct(found);

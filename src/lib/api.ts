@@ -172,6 +172,7 @@ export const vendorsAPI = {
   payouts: () => api.get('/vendors/payouts/'),
   products: () => api.get('/products/vendor/products/'),
   createProduct: (data: unknown) => api.post('/products/vendor/products/', data),
+  getProduct: (id: string) => api.get(`/products/vendor/products/${id}/`),
   updateProduct: (id: string, data: unknown) => {
     const isFormData = data instanceof FormData;
     return api.patch(`/products/vendor/products/${id}/`, data, {
@@ -207,6 +208,7 @@ export const adminAPI = {
   updateProduct: (id: string, data: unknown) => api.patch(`/admin/products/${id}/`, data),
   approveProduct: (id: string) => api.post(`/admin/products/${id}/approve/`),
   featureProduct: (id: string, featured: boolean) => api.post(`/admin/products/${id}/feature/`, { featured }),
+  getProduct: (id: string) => api.get(`/admin/products/${id}/`),
   deleteProduct: (id: string) => api.delete(`/admin/products/${id}/`),
 
   // Analytics

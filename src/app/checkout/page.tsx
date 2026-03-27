@@ -137,50 +137,7 @@ function CheckoutPage() {
     }, [isPaystackLoaded]);
 
     useEffect(() => {
-        const buyNowSlug = searchParams.get('buyNow');
-        const buyNowQty = parseInt(searchParams.get('qty') || '1');
-        const buyNowSize = searchParams.get('size') || '';
-        const buyNowColor = searchParams.get('color') || '';
-
-        if (buyNowSlug) {
-            setIsLoading(true);
-            const API_BASE = 'https://london-imports-api.onrender.com/api/v1';
-            fetch(`${API_BASE}/products/${buyNowSlug}/`)
-                .then(res => res.json())
-                .then(product => {
-                    const tempOrder: ExtendedCart = {
-                        items: [{
-                            id: 'buynow-temp',
-                            product: {
-                                id: product.id,
-                                name: product.name,
-                                image: product.image || '',
-                                slug: product.slug
-                            },
-                            product_name: product.name,
-                            quantity: buyNowQty,
-                            selected_size: buyNowSize,
-                            selected_color: buyNowColor,
-                            total_price: Number(product.price) * buyNowQty,
-                            unit_price: Number(product.price)
-                        }],
-                        subtotal: Number(product.price) * buyNowQty,
-                        delivery_fee: 0,
-                        total: Number(product.price) * buyNowQty,
-                        order_number: 'TEMP-BUYNOW',
-                        state: 'PENDING',
-                        state_display: 'Pending',
-                        id: '',
-                        created_at: new Date().toISOString()
-                    };
-                    setCheckoutOrder(tempOrder);
-                })
-                .catch(err => {
-                    console.error("Buy Now Load Error:", err);
-                    setError('Could not load product details');
-                })
-                .finally(() => setIsLoading(false));
-        } else if (orderNumberParam && isAuthenticated) {
+        if (orderNumberParam && isAuthenticated) {
             ordersAPI.detail(orderNumberParam)
                 .then(res => {
                     const orderData = res.data;
@@ -204,9 +161,25 @@ function CheckoutPage() {
 
     const currentOrderData = useMemo(() => {
         if (checkoutOrder) return checkoutOrder;
+        
+        const buyNowSlug = searchParams.get('buyNow');
+        if (cart && buyNowSlug) {
+            // Find the item added by Buy Now
+            // We look for the most recently updated item matching this slug
+            const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
+            if (buyNowItem) {
+                return {
+                    ...cart,
+                    items: [buyNowItem],
+                    subtotal: buyNowItem.total_price,
+                    total: buyNowItem.total_price + cart.delivery_fee, // Approximate
+                };
+            }
+        }
+        
         if (cart) return cart;
         return { items: [], total: 0, subtotal: 0, delivery_fee: 0 };
-    }, [checkoutOrder, cart]);
+    }, [checkoutOrder, cart, searchParams]);
 
     const paymentAmount = useMemo(() => {
         const totalValue = currentOrderData.total || 0;
@@ -251,9 +224,18 @@ function CheckoutPage() {
             let orderToPay = checkoutOrder;
             if (!orderToPay) {
                 const buyNowSlug = searchParams.get('buyNow');
+                let targetItemIds = Array.from(selectedItemIds);
                 
+                // If Buy Now, find that specific item in the cart to isolate it
+                if (buyNowSlug && cart) {
+                    const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
+                    if (buyNowItem) {
+                        targetItemIds = [buyNowItem.id];
+                    }
+                }
+
                 const orderPayload = {
-                    item_ids: buyNowSlug ? undefined : Array.from(selectedItemIds),
+                    item_ids: targetItemIds.length > 0 ? targetItemIds : undefined,
                     delivery_address: delivery.address,
                     delivery_city: delivery.city,
                     delivery_region: delivery.region,
