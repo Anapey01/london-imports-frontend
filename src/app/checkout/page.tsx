@@ -156,8 +156,19 @@ function CheckoutPage() {
                     console.error("Order Load Error:", err);
                     setError('Could not load order details');
                 });
+        } else if (!orderNumberParam && isAuthenticated && user) {
+            // Phase 1: Smart Pre-fill from User Profile (Only if empty)
+            setDelivery(prev => {
+                if (prev.address) return prev;
+                return {
+                    address: user.address || '',
+                    city: user.city || '',
+                    region: user.region || '',
+                    notes: '',
+                };
+            });
         }
-    }, [orderNumberParam, isAuthenticated, searchParams, user]);
+    }, [orderNumberParam, isAuthenticated, user]);
 
     const currentOrderData = useMemo(() => {
         if (checkoutOrder) return checkoutOrder;
