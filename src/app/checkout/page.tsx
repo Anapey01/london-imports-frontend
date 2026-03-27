@@ -3,13 +3,11 @@
 import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
-import type { CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 import { trackBeginCheckout, trackPurchase } from '@/lib/analytics';
 import { ExtendedCart, BackendError } from '@/types';
-import type { OrderItem } from '@/types';
 import { AlertCircle } from 'lucide-react';
 
 // New Component Imports
@@ -255,18 +253,13 @@ function CheckoutPage() {
                 const buyNowSlug = searchParams.get('buyNow');
                 
                 const orderPayload = {
-                    items: (currentOrderData.items || [])
-                        .filter((item: CartItem | OrderItem) => buyNowSlug ? true : selectedItemIds.has(item.id))
-                        .map((item: CartItem | OrderItem) => ({
-                            product: item.product.id,
-                            quantity: item.quantity,
-                            selected_size: item.selected_size,
-                            selected_color: item.selected_color,
-                        })),
+                    item_ids: buyNowSlug ? undefined : Array.from(selectedItemIds),
                     delivery_address: delivery.address,
                     delivery_city: delivery.city,
                     delivery_region: delivery.region,
                     customer_notes: delivery.notes,
+                    payment_type: paymentType === 'BALANCE' ? 'FULL' : paymentType,
+                    custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
                 };
                 const res = await ordersAPI.checkout(orderPayload);
                 orderToPay = res.data;
