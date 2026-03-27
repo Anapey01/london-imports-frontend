@@ -2,12 +2,17 @@
 
 import { formatPrice } from '@/lib/format';
 
+interface BaseOrderItem {
+    id: string;
+    total_price?: number | string;
+}
+
 interface PaymentMethodSelectorProps {
     paymentType: 'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP';
     setPaymentType: (type: 'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP') => void;
     currentOrderData: {
         total: number;
-        items?: any[];
+        items?: BaseOrderItem[];
         delivery_fee?: number;
     };
     selectedItemIds: Set<string>;
@@ -20,8 +25,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
     // Deduplicate total calculation
     const calculateSelectedTotal = () => {
         const selSubtotal = (currentOrderData.items || [])
-            .filter((i: any) => selectedItemIds.has(i.id))
-            .reduce((sum: number, i: any) => sum + Number(i.total_price || 0), 0);
+            .filter((i: BaseOrderItem) => selectedItemIds.has(i.id))
+            .reduce((sum: number, i: BaseOrderItem) => sum + Number(i.total_price || 0), 0);
         return selSubtotal + (currentOrderData.delivery_fee || 0);
     };
 
