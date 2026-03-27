@@ -1,18 +1,33 @@
 'use client';
 
 import { formatPrice } from '@/lib/format';
+import { type CartItem } from '@/stores/cartStore';
 
 interface PaymentMethodSelectorProps {
     paymentType: 'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP';
     setPaymentType: (type: 'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP') => void;
     currentOrderData: {
         total: number;
+        items?: CartItem[];
+        delivery_fee?: number;
     };
+    selectedItemIds: Set<string>;
     customAmount: string;
     setCustomAmount: (amount: string) => void;
 }
 
-const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, customAmount, setCustomAmount }: PaymentMethodSelectorProps) => {
+const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, customAmount, setCustomAmount, selectedItemIds }: PaymentMethodSelectorProps) => {
+    
+    // Deduplicate total calculation
+    const calculateSelectedTotal = () => {
+        const selSubtotal = (currentOrderData.items || [])
+            .filter((i: CartItem) => selectedItemIds.has(i.id))
+            .reduce((sum: number, i: CartItem) => sum + Number(i.total_price || 0), 0);
+        return selSubtotal + (currentOrderData.delivery_fee || 0);
+    };
+
+    const selectedTotal = calculateSelectedTotal();
+
     return (
         <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-6">
@@ -48,7 +63,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                             </div>
                             <div className="ml-4">
                                 <span className="block font-medium text-gray-900 text-lg">Full Payment</span>
-                                <p className="text-sm text-gray-500 font-light mt-1">Pay {formatPrice(currentOrderData.total)} now</p>
+                                <p className="text-sm text-gray-500 font-light mt-1">Pay {formatPrice(selectedTotal)} now</p>
                             </div>
                         </label>
 
@@ -65,7 +80,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                             </div>
                             <div className="ml-4">
                                 <span className="block font-medium text-gray-900 text-lg">Deposit Only</span>
-                                <p className="text-sm text-gray-500 font-light mt-1">Pay {formatPrice(currentOrderData.total * 0.3)} (30%) now</p>
+                                <p className="text-sm text-gray-500 font-light mt-1">Pay {formatPrice(selectedTotal * 0.3)} (30%) now</p>
                             </div>
                         </label>
 
@@ -98,7 +113,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                         value="CUSTOM"
                                         checked={paymentType === 'CUSTOM'}
                                         onChange={() => setPaymentType('CUSTOM')}
-                                        className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black"
+                                        disabled={selectedTotal <= 0}
+                                        className="w-4 h-4 text-black border-gray-300 focus:ring-black accent-black disabled:opacity-20"
                                     />
                                 </div>
                                 <div className="ml-4 flex-1">
@@ -114,15 +130,19 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                         <input
                                             type="number"
                                             value={customAmount}
-                                            onChange={(e) => setCustomAmount(e.target.value)}
+                                            onChange={(e) => {
+                                                const val = parseFloat(e.target.value);
+                                                if (val > selectedTotal) return;
+                                                setCustomAmount(e.target.value);
+                                            }}
                                             placeholder="Enter amount (min 1.00)"
                                             className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-black focus:border-black transition-all"
                                             min="1"
-                                            max={currentOrderData.total}
+                                            max={selectedTotal}
                                         />
                                     </div>
                                     <p className="text-xs text-gray-400 mt-2">
-                                        Remaining balance: {formatPrice(customAmount ? Math.max(0, currentOrderData.total - parseFloat(customAmount || '0')) : currentOrderData.total)}
+                                        Remaining balance: {formatPrice(customAmount ? Math.max(0, selectedTotal - parseFloat(customAmount || '0')) : selectedTotal)}
                                     </p>
                                 </div>
                             )}

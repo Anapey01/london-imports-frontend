@@ -57,7 +57,7 @@ declare global {
 
 function CheckoutPage() {
     const router = useRouter();
-    const { cart, fetchCart, selectedItemIds } = useCartStore();
+    const { cart, fetchCart, clearCart, selectedItemIds } = useCartStore();
     const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -206,12 +206,18 @@ function CheckoutPage() {
         
         const total = selSubtotal + Number(currentOrderData.delivery_fee || 0);
         
+        // Redirect if no items and not loading
+        if (!isLoading && !authLoading && !checkoutOrder && !orderNumberParam && (currentOrderData.items?.length || 0) === 0) {
+            router.push('/cart');
+            return;
+        }
+
         if (total <= 0 && !authLoading) {
             setCanPay(false);
         } else {
             setCanPay(true);
         }
-    }, [currentOrderData.items, currentOrderData.delivery_fee, authLoading, selectedItemIds, checkoutOrder, orderNumberParam]);
+    }, [currentOrderData.items, currentOrderData.delivery_fee, authLoading, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -276,23 +282,9 @@ function CheckoutPage() {
                         { display_name: "Payment Type", variable_name: "payment_type", value: paymentType }
                     ]
                 },
-                callback: async (response: PaystackResponse) => {
-                    try {
-                        await paymentsAPI.verify({
-                            reference: response.reference,
-                            order_number: orderToPay?.order_number || '',
-                            payment_type: paymentType,
-                            amount: paymentAmount
-                        });
-                        if (orderToPay) {
-                            trackPurchase(orderToPay, response.reference);
-                        }
-                        router.push('/orders?success=true');
-                    } catch (verifyErr) {
-                        console.error('Verification failed:', verifyErr);
-                        setError('Payment verification failed. Please contact support.');
-                        setIsLoading(false);
-                    }
+                callback: (response: PaystackResponse) => {
+                    // Refactored to non-async for library compatibility
+                    handleVerification(response);
                 },
                 onClose: () => {
                     setIsLoading(false);
@@ -300,6 +292,28 @@ function CheckoutPage() {
                 }
             });
             handler.openIframe();
+
+            async function handleVerification(response: PaystackResponse) {
+                try {
+                    setIsLoading(true);
+                    await paymentsAPI.verify({
+                        reference: response.reference,
+                        order_number: orderToPay?.order_number || '',
+                        payment_type: paymentType,
+                        amount: paymentAmount
+                    });
+                    
+                    if (orderToPay) {
+                        trackPurchase(orderToPay, response.reference);
+                    }
+                    clearCart();
+                    router.push('/orders?success=true');
+                } catch (verifyErr) {
+                    console.error('Verification failed:', verifyErr);
+                    setError('Payment verification failed. Please contact support.');
+                    setIsLoading(false);
+                }
+            }
 
         } catch (err: unknown) {
             console.error("Checkout Error:", err);
@@ -338,6 +352,7 @@ function CheckoutPage() {
                             currentOrderData={currentOrderData}
                             customAmount={customAmount}
                             setCustomAmount={setCustomAmount}
+                            selectedItemIds={selectedItemIds}
                         />
                     </div>
 
