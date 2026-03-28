@@ -10,7 +10,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import {
-    ChevronRight, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square
+    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square
 } from 'lucide-react';
 
 interface Order {
@@ -79,18 +79,38 @@ export default function AdminOrdersPage() {
     const [statusFilter, setStatusFilter] = useState('All');
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [bulkUpdating, setBulkUpdating] = useState(false);
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
 
     const loadOrders = useCallback(async () => {
+        setLoading(true);
         try {
-            const response = await adminAPI.orders();
-            const ordersData = response.data.results || response.data || [];
+            const params: any = { page: currentPage };
+            if (statusFilter !== 'All' && statusFilter !== 'ALL') {
+                params.status = statusFilter;
+            }
+            
+            const response = await adminAPI.orders(params);
+            const data = response.data;
+            
+            // Handle DRF paginated response
+            const ordersData = data.results || data || [];
             setOrders(ordersData.map(mapAPIOrder));
+            
+            // Assume 20 items per page if count/results present
+            if (data.count !== undefined) {
+                setTotalCount(data.count);
+                setTotalPages(Math.ceil(data.count / 20)); // Adjust based on backend PAGE_SIZE
+            }
         } catch (err) {
             console.error('Failed to load orders:', err);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [currentPage, statusFilter]);
 
     useEffect(() => { loadOrders(); }, [loadOrders]);
 
@@ -158,10 +178,8 @@ export default function AdminOrdersPage() {
         }
     };
 
-    const filteredOrders = orders.filter(o => {
-        if (statusFilter === 'All' || statusFilter === 'ALL') return true;
-        return o.status === statusFilter;
-    });
+    // Server-side filtering is now used, so filteredOrders is just orders
+    const filteredOrders = orders;
 
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
@@ -232,7 +250,11 @@ export default function AdminOrdersPage() {
                     {STATUS_TABS.map(s => (
                         <button
                             key={s}
-                            onClick={() => { setStatusFilter(s); setSelectedIds(new Set()); }}
+                            onClick={() => { 
+                                setStatusFilter(s); 
+                                setCurrentPage(1); // Reset to first page
+                                setSelectedIds(new Set()); 
+                            }}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${statusFilter === s
                                 ? 'bg-pink-500 text-white'
                                 : isDark
@@ -241,7 +263,8 @@ export default function AdminOrdersPage() {
                                 }`}
                         >
                             {statusLabel(s)}
-                            <span className="ml-2 opacity-70">({statusCounts[s] ?? 0})</span>
+                            {statusFilter === 'All' && s === 'All' && <span className="ml-2 opacity-70">({totalCount})</span>}
+                            {statusFilter !== 'All' && s === statusFilter && <span className="ml-2 opacity-70">({totalCount})</span>}
                         </button>
                     ))}
                 </div>
@@ -493,6 +516,57 @@ export default function AdminOrdersPage() {
                     </div>
                 )}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className={`flex items-center justify-between p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                        <span className="ml-2">({totalCount} total)</span>
+                    </p>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1 || loading}
+                            className={`p-2 rounded-lg border transition-colors disabled:opacity-50 ${isDark ? 'border-slate-700 hover:bg-slate-700 text-white' : 'border-gray-100 hover:bg-gray-50 text-gray-900'}`}
+                            title="Previous Page"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                            // Simple logic to show pages around current
+                            let pageNum = currentPage - 2 + i;
+                            if (currentPage <= 2) pageNum = i + 1;
+                            if (currentPage >= totalPages - 1) pageNum = totalPages - 4 + i;
+                            
+                            if (pageNum < 1 || pageNum > totalPages) return null;
+                            
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${currentPage === pageNum
+                                        ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30'
+                                        : isDark 
+                                            ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' 
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages || loading}
+                            className={`p-2 rounded-lg border transition-colors disabled:opacity-50 ${isDark ? 'border-slate-700 hover:bg-slate-700 text-white' : 'border-gray-100 hover:bg-gray-50 text-gray-900'}`}
+                            title="Next Page"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
