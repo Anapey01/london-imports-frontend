@@ -2,9 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Address } from '@/types';
+import { MapPin, CheckCircle2, Navigation, Trash2, Edit2, Plus } from 'lucide-react';
 
-// Addresses View
-const AddressesView = ({ theme }: { theme: string }) => {
+interface AddressesViewProps {
+    theme: string;
+    user: any; // User type from authStore
+}
+
+const AddressesView = ({ theme, user }: AddressesViewProps) => {
     const isDark = theme === 'dark';
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [showForm, setShowForm] = useState(false);
@@ -40,95 +45,172 @@ const AddressesView = ({ theme }: { theme: string }) => {
         saveAddresses(addresses.filter(a => a.id !== id));
     };
 
-    const setDefault = (id: string) => {
-        saveAddresses(addresses.map(a => ({ ...a, isDefault: a.id === id })));
-    };
+    // Unused: const setDefault = (id: string) => {
+    //    saveAddresses(addresses.map(a => ({ ...a, isDefault: a.id === id })));
+    // };
 
-    const inputClass = `w-full px-4 py-3 rounded-lg border outline-none transition-colors text-sm ${isDark
+    const inputClass = `w-full px-4 py-3 rounded-xl border outline-none transition-all text-sm ${isDark
         ? 'bg-slate-900 border-slate-700 text-white focus:border-pink-500 placeholder:text-slate-600'
-        : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 placeholder:text-gray-400'
+        : 'bg-white border-gray-100 text-gray-900 focus:border-pink-500 placeholder:text-gray-400 focus:ring-2 focus:ring-pink-500/10'
         }`;
 
     return (
-        <div className="space-y-8">
-            <div className={`border-b pb-4 ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
-                <div className="flex items-end justify-between">
-                    <h2 className={`text-2xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        Addresses
-                    </h2>
+        <div className="space-y-10 animate-fade-in-up">
+            <div className={`border-b pb-6 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            Your Addresses
+                        </h2>
+                        <p className={`text-sm mt-1 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                            Manage your delivery locations and primary shipping info
+                        </p>
+                    </div>
                     {!showForm && (
                         <button
                             onClick={() => setShowForm(true)}
-                            className={`text-xs font-light border-b pb-0.5 transition-colors ${isDark ? 'border-pink-400 text-pink-400' : 'border-pink-600 text-pink-600'}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 text-white text-xs font-bold rounded-xl hover:bg-pink-700 transition-all active:scale-95 shadow-lg shadow-pink-500/20"
                         >
-                            + Add address
+                            <Plus className="w-3 h-3" />
+                            Add Address
                         </button>
                     )}
                 </div>
             </div>
 
-            {showForm && (
-                <form onSubmit={handleSubmit} className={`p-6 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
-                    <h3 className={`text-sm font-medium uppercase tracking-wide mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        {editingId ? 'Edit Address' : 'New Address'}
+            {/* Profile Address (The one synced from checkout) */}
+            {user?.address && (
+                <div className="space-y-4">
+                    <h3 className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                        Primary Account Address
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="Label (e.g., Home, Office)" value={formData.label} onChange={e => setFormData({ ...formData, label: e.target.value })} className={inputClass} required />
-                        <input type="text" placeholder="City" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} className={inputClass} required />
-                        <input type="text" placeholder="Area / Neighborhood" value={formData.area} onChange={e => setFormData({ ...formData, area: e.target.value })} className={inputClass} required />
-                        <input type="text" placeholder="Landmark" value={formData.landmark} onChange={e => setFormData({ ...formData, landmark: e.target.value })} className={inputClass} />
-                        <input type="tel" placeholder="Phone Number" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className={inputClass} required />
+                    <div className={`p-6 rounded-3xl border-2 hover:border-pink-500/50 transition-all ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-pink-50/30 border-pink-100/50 shadow-sm'}`}>
+                        <div className="flex items-start gap-4">
+                            <div className="mt-1 p-2 bg-pink-100 rounded-xl">
+                                <MapPin className="w-5 h-5 text-pink-600" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h4 className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Official Shipping Info</h4>
+                                    <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase truncate">
+                                        <CheckCircle2 className="w-3 h-3" />
+                                        Synced from Checkout
+                                    </span>
+                                </div>
+                                <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                                    {user.address}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-4 mt-3">
+                                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                                        <Navigation className="w-3.5 h-3.5" />
+                                        {user.city}, {user.region}
+                                    </div>
+                                    {user.ghana_post_gps && (
+                                        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-pink-600 bg-white px-2 py-1 rounded-lg border border-pink-100 shadow-sm">
+                                            GPS: {user.ghana_post_gps}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex gap-3 mt-6">
-                        <button type="submit" className="px-5 py-2.5 bg-pink-600 text-white text-sm font-medium rounded-lg hover:bg-pink-700 transition-colors">
-                            {editingId ? 'Update' : 'Save Address'}
+                </div>
+            )}
+
+            {showForm && (
+                <form onSubmit={handleSubmit} className={`p-8 rounded-3xl border shadow-xl ${isDark ? 'border-slate-800 bg-slate-900/80 shadow-slate-950/50' : 'border-gray-100 bg-white shadow-gray-100'}`}>
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            {editingId ? 'Edit Address' : 'New Delivery Location'}
+                        </h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Label</label>
+                            <input type="text" placeholder="e.g. Home, Office" value={formData.label} onChange={e => setFormData({ ...formData, label: e.target.value })} className={inputClass} required />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">City</label>
+                            <input type="text" placeholder="e.g. Accra" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} className={inputClass} required />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Area / Neighborhood</label>
+                            <input type="text" placeholder="e.g. East Legon" value={formData.area} onChange={e => setFormData({ ...formData, area: e.target.value })} className={inputClass} required />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Landmark</label>
+                            <input type="text" placeholder="e.g. Near Shell Hospital" value={formData.landmark} onChange={e => setFormData({ ...formData, landmark: e.target.value })} className={inputClass} />
+                        </div>
+                        <div className="space-y-1.5 md:col-span-2">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Phone Number</label>
+                            <input type="tel" placeholder="+233..." value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className={inputClass} required />
+                        </div>
+                    </div>
+                    
+                    <div className="flex gap-4 mt-10 p-4 bg-gray-50/50 dark:bg-slate-800/30 rounded-2xl">
+                        <button type="submit" className="flex-1 py-3.5 bg-pink-600 text-white text-sm font-bold rounded-xl hover:bg-pink-700 transition-all hover:shadow-lg hover:shadow-pink-500/20 active:scale-[0.98]">
+                            {editingId ? 'Save Changes' : 'Add to Collection'}
                         </button>
-                        <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}>
+                        <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className={`px-6 text-sm font-bold rounded-xl transition-all ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}>
                             Cancel
                         </button>
                     </div>
                 </form>
             )}
 
-            {addresses.length === 0 && !showForm ? (
-                <div className="text-center py-16">
-                    <svg className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-slate-700' : 'text-gray-200'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                    </svg>
-                    <p className={`text-sm font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No saved addresses</p>
-                    <button onClick={() => setShowForm(true)} className={`mt-4 text-xs border-b pb-0.5 ${isDark ? 'border-pink-400 text-pink-400' : 'border-pink-600 text-pink-600'}`}>
-                        Add your first address
-                    </button>
-                </div>
-            ) : (
-                <div className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-gray-100'}`}>
-                    {addresses.map(address => (
-                        <div key={address.id} className="py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                    <p className={`font-light ${isDark ? 'text-white' : 'text-gray-900'}`}>{address.label}</p>
-                                    {address.isDefault && (
-                                        <span className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded ${isDark ? 'bg-pink-900/30 text-pink-400' : 'bg-pink-50 text-pink-600'}`}>Default</span>
-                                    )}
+            <div className="space-y-4">
+                <h3 className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                    Additional saved address
+                </h3>
+                
+                {addresses.length === 0 && !showForm ? (
+                    <div className={`p-12 text-center rounded-[2.5rem] border-2 border-dashed ${isDark ? 'border-slate-800 bg-slate-900/20' : 'border-gray-200 bg-gray-50/50'}`}>
+                        <Plus className={`w-12 h-12 mx-auto mb-4 opacity-20 ${isDark ? 'text-white' : 'text-black'}`} />
+                        <p className={`text-sm font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No additional addresses saved</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {addresses.map(address => (
+                            <div key={address.id} className={`p-6 rounded-3xl border group transition-all duration-300 ${isDark ? 'border-slate-800 bg-slate-900/30 hover:bg-slate-800/50' : 'border-gray-100 bg-white hover:shadow-xl hover:shadow-gray-200/50'}`}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                                            <MapPin className="w-4 h-4" />
+                                        </div>
+                                        <p className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{address.label}</p>
+                                    </div>
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button 
+                                            onClick={() => { setFormData({ label: address.label, city: address.city, area: address.area, landmark: address.landmark, phone: address.phone }); setEditingId(address.id); setShowForm(true); }} 
+                                            className={`p-2 rounded-lg hover:bg-pink-50 hover:text-pink-600 transition-all ${isDark ? 'text-slate-400' : 'text-gray-400'}`}
+                                            title="Edit"
+                                        >
+                                            <Edit2 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(address.id)} 
+                                            className="p-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-gray-400"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className={`text-sm font-light mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                    {address.area}, {address.city}
-                                    {address.landmark && ` · Near ${address.landmark}`}
-                                </p>
-                                <p className={`text-xs font-light mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{address.phone}</p>
+                                <div className="space-y-1">
+                                    <p className={`text-xs font-medium ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                                        {address.area}, {address.city}
+                                    </p>
+                                    {address.landmark && (
+                                        <p className="text-[10px] text-gray-400 italic">Near {address.landmark}</p>
+                                    )}
+                                    <p className={`text-[10px] font-bold mt-2 ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>{address.phone}</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                                {!address.isDefault && (
-                                    <button onClick={() => setDefault(address.id)} className={`text-xs font-light ${isDark ? 'text-slate-500 hover:text-white' : 'text-gray-400 hover:text-gray-900'}`}>Set default</button>
-                                )}
-                                <button onClick={() => { setFormData({ label: address.label, city: address.city, area: address.area, landmark: address.landmark, phone: address.phone }); setEditingId(address.id); setShowForm(true); }} className={`text-xs font-light ${isDark ? 'text-slate-500 hover:text-white' : 'text-gray-400 hover:text-gray-900'}`}>Edit</button>
-                                <button onClick={() => handleDelete(address.id)} className="text-xs font-light text-red-500 hover:text-red-400">Remove</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

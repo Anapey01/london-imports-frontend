@@ -6,6 +6,15 @@ import { productsAPI } from '@/lib/api';
 import StarRating from '@/components/StarRating';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { 
+    MessageSquare, 
+    Star, 
+    CheckCircle2, 
+    User, 
+    Calendar, 
+    ArrowRight,
+    X
+} from 'lucide-react';
 
 interface Review {
     id: string;
@@ -71,114 +80,129 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
     });
 
     return (
-        <section className="py-16 border-t border-gray-100 bg-gray-50/30">
+        <section className="py-24 border-t border-gray-100 bg-white" id="reviews">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col lg:flex-row gap-12">
+                <div className="flex flex-col lg:flex-row gap-16">
                     
-                    {/* Left: Rating Summary */}
+                    {/* Left: Rating Summary Card */}
                     <div className="lg:w-1/3">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
-                        
-                        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="text-5xl font-bold text-gray-900">
-                                    {Number(rating || 0).toFixed(1)}
+                        <div className="sticky top-32">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-8 tracking-tight">Customer Experience</h2>
+                            
+                            <div className="bg-gradient-to-br from-gray-50 to-white p-10 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-8 opacity-5 -rotate-12 transform group-hover:rotate-0 transition-transform duration-700">
+                                    <MessageSquare className="w-32 h-32 text-black" />
                                 </div>
-                                <div>
-                                    <StarRating initialRating={Number(rating || 0)} readOnly size="md" />
-                                    <p className="text-sm text-gray-500 mt-1">Based on {ratingCount || reviews.length} reviews</p>
-                                </div>
-                            </div>
-
-                            {/* Distribution bars */}
-                            <div className="space-y-3 mb-8">
-                                {distribution.map((item) => (
-                                    <div key={item.star} className="flex items-center gap-3">
-                                        <span className="text-xs font-bold text-gray-600 w-3">{item.star}</span>
-                                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <motion.div 
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${item.percentage}%` }}
-                                                className="h-full bg-yellow-400 rounded-full"
-                                            />
+                                
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-6 mb-10">
+                                        <div className="text-7xl font-black text-gray-900 leading-none">
+                                            {Number(rating || 0).toFixed(1)}
                                         </div>
-                                        <span className="text-xs text-gray-400 w-8">{Math.round(item.percentage)}%</span>
+                                        <div>
+                                            <StarRating initialRating={Number(rating || 0)} readOnly size="md" />
+                                            <p className="text-sm font-medium text-gray-500 mt-2 uppercase tracking-widest">
+                                                Based on {ratingCount || reviews.length} reviews
+                                            </p>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
 
-                            {!showForm && (
-                                <button 
-                                    onClick={() => isAuthenticated ? setShowForm(true) : toast.error('Please login to write a review')}
-                                    className="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95"
-                                >
-                                    Write a Review
-                                </button>
-                            )}
+                                    {/* Premium Distribution Bars */}
+                                    <div className="space-y-4 mb-10">
+                                        {distribution.map((item) => (
+                                            <div key={item.star} className="flex items-center gap-4">
+                                                <div className="flex items-center gap-1 w-8">
+                                                    <span className="text-xs font-bold text-gray-900">{item.star}</span>
+                                                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                                </div>
+                                                <div className="flex-1 h-2 bg-gray-200/50 rounded-full overflow-hidden">
+                                                    <motion.div 
+                                                        initial={{ width: 0 }}
+                                                        whileInView={{ width: `${item.percentage}%` }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ duration: 1, ease: "easeOut" }}
+                                                        className="h-full bg-black rounded-full"
+                                                    />
+                                                </div>
+                                                <span className="text-[10px] font-bold text-gray-400 min-w-[30px] text-right">
+                                                    {Math.round(item.percentage)}%
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {!showForm && (
+                                        <button 
+                                            onClick={() => isAuthenticated ? setShowForm(true) : toast.error('Please login to write a review')}
+                                            className="w-full flex items-center justify-center gap-3 py-4 bg-pink-600 text-white rounded-2xl font-bold hover:bg-pink-700 transition-all hover:shadow-lg hover:shadow-pink-500/20 active:scale-[0.98] group/btn"
+                                        >
+                                            Write a Review
+                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Right: Reviews List & Form */}
                     <div className="lg:w-2/3">
-                        <AnimatePresence>
+                        <AnimatePresence mode="wait">
                             {showForm && (
                                 <motion.div 
-                                    initial={{ opacity: 0, y: -20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    className="bg-white p-8 rounded-3xl shadow-md border border-pink-100 mb-12"
+                                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    className="bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-pink-100/50 border-2 border-pink-50 mb-16 relative"
                                 >
-                                    <div className="flex items-center justify-between mb-6">
-                                        <h3 className="text-xl font-bold text-gray-900">How would you rate this?</h3>
-                                        <button 
-                                            onClick={() => setShowForm(false)} 
-                                            className="text-gray-400 hover:text-gray-600"
-                                            title="Close review form"
-                                            aria-label="Close review form"
-                                        >
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                        </button>
+                                    <button 
+                                        onClick={() => setShowForm(false)} 
+                                        className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors"
+                                        aria-label="Close"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+
+                                    <div className="mb-8">
+                                        <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Post Your Review</h3>
+                                        <p className="text-sm text-gray-500 mt-1">We value your honest feedback !</p>
                                     </div>
 
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-2">Rating</label>
-                                            <div className="flex gap-2">
-                                                {[1, 2, 3, 4, 5].map((s) => (
-                                                    <button
-                                                        key={s}
-                                                        type="button"
-                                                        onClick={() => setNewRating(s)}
-                                                        className={`p-1 transition-transform hover:scale-110 ${s <= newRating ? 'text-yellow-400' : 'text-gray-200'}`}
-                                                        title={`Rate ${s} stars`}
-                                                        aria-label={`Rate ${s} stars`}
-                                                    >
-                                                        <svg className="w-8 h-8 fill-current" viewBox="0 0 20 20">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                        </svg>
-                                                    </button>
-                                                ))}
+                                    <form onSubmit={handleSubmit} className="space-y-8">
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Select Rating</label>
+                                            <div className="p-4 bg-gray-50 rounded-2xl inline-block">
+                                                <StarRating 
+                                                    initialRating={Number(newRating)} 
+                                                    onRate={(r) => setNewRating(r)}
+                                                    size="lg" 
+                                                />
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-2">Comment</label>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-end">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Your Comment</label>
+                                                <span className={`text-[10px] font-bold ${comment.length > 500 ? 'text-red-500' : 'text-gray-300'}`}>
+                                                    {comment.length} / 500
+                                                </span>
+                                            </div>
                                             <textarea
                                                 required
                                                 value={comment}
-                                                onChange={(e) => setComment(e.target.value)}
-                                                placeholder="What did you think of the product?"
-                                                rows={4}
-                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all"
+                                                onChange={(e) => setComment(e.target.value.slice(0, 500))}
+                                                placeholder="Describe your experience with this product..."
+                                                rows={5}
+                                                className="w-full px-6 py-5 bg-gray-50 border-2 border-transparent focus:border-pink-500 focus:bg-white rounded-[1.5rem] outline-none transition-all text-gray-900 placeholder:text-gray-400 ring-offset-2"
                                             />
                                         </div>
 
                                         <button
                                             type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full py-4 bg-pink-600 text-white rounded-xl font-bold hover:bg-pink-700 transition-all disabled:opacity-50"
+                                            disabled={isSubmitting || comment.length < 5}
+                                            className="w-full py-5 bg-black text-white rounded-2xl font-bold hover:bg-gray-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-xl shadow-gray-200/50 active:scale-[0.98]"
                                         >
-                                            {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                                            {isSubmitting ? 'Publishing...' : 'Publish Review'}
                                         </button>
                                     </form>
                                 </motion.div>
@@ -186,47 +210,74 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                         </AnimatePresence>
 
                         {/* Reviews List */}
-                        <div className="space-y-6">
+                        <div className="space-y-8">
                             {reviews.length > 0 ? (
-                                reviews.map((review, idx) => (
-                                    <motion.div 
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: idx * 0.1 }}
-                                        key={review.id} 
-                                        className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm"
-                                    >
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold">
-                                                    {review.user_name?.charAt(0) || 'A'}
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold text-gray-900">{review.user_name || 'Anonymous User'}</h4>
-                                                    <div className="flex items-center gap-2">
-                                                        <StarRating initialRating={review.rating} readOnly size="sm" />
-                                                        {review.is_verified && (
-                                                            <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                                                                Verified Buyer
-                                                            </span>
-                                                        )}
+                                <div className="grid grid-cols-1 gap-8">
+                                    {reviews.map((review, idx) => (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 30 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: idx * 0.05, duration: 0.5 }}
+                                            key={review.id} 
+                                            className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow group/card"
+                                        >
+                                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-14 h-14 bg-gradient-to-tr from-pink-500 to-pink-400 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-pink-200 transition-transform group-hover/card:scale-110">
+                                                        <User className="w-6 h-6" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-bold text-gray-900 text-lg leading-none mb-2">
+                                                            {review.user_name || 'Valued Customer'}
+                                                        </h4>
+                                                        <div className="flex flex-wrap items-center gap-3">
+                                                            <StarRating initialRating={review.rating} readOnly size="sm" />
+                                                            {review.is_verified && (
+                                                                <span className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-tighter shadow-sm border border-emerald-100/50">
+                                                                    <CheckCircle2 className="w-3 h-3" />
+                                                                    Verified Buyer
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg text-gray-400 shrink-0">
+                                                    <Calendar className="w-3.5 h-3.5" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-tight">
+                                                        {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(review.created_at))}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <span className="text-xs text-gray-400">
-                                                {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(review.created_at))}
-                                            </span>
-                                        </div>
-                                        <p className="text-gray-600 leading-relaxed italic">
-                                            &ldquo;{review.comment}&rdquo;
-                                        </p>
-                                    </motion.div>
-                                ))
-                            ) : (
-                                <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-200">
-                                    <p className="text-gray-400">No reviews yet. Be the first to review this product!</p>
+                                            
+                                            <div className="pl-0 sm:pl-[72px]">
+                                                <p className="text-gray-600 leading-relaxed text-base italic line-clamp-4 group-hover/card:line-clamp-none transition-all">
+                                                    &ldquo;{review.comment}&rdquo;
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    ))}
                                 </div>
+                            ) : (
+                                <motion.div 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="text-center py-20 bg-gray-50/50 rounded-[3rem] border-2 border-dashed border-gray-200"
+                                >
+                                    <div className="flex justify-center mb-6">
+                                        <div className="p-6 bg-white rounded-full shadow-inner">
+                                            <Star className="w-12 h-12 text-gray-200" />
+                                        </div>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Be the First to Spark!</h3>
+                                    <p className="text-gray-400 max-w-sm mx-auto font-medium">No reviews yet for this product. Share your experience and help others shop smarter.</p>
+                                    <button 
+                                        onClick={() => isAuthenticated ? setShowForm(true) : toast.error('Please login to write a review')}
+                                        className="mt-8 px-8 py-3 bg-pink-600 text-white rounded-xl font-bold hover:bg-pink-700 transition-all shadow-lg shadow-pink-100"
+                                    >
+                                        Drop a Review
+                                    </button>
+                                </motion.div>
                             )}
                         </div>
                     </div>
