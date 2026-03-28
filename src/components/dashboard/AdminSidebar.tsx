@@ -20,6 +20,7 @@ import {
     Settings,
     PlayCircle,
     LogOut,
+    Truck,
     X,
     ShieldCheck
 } from 'lucide-react';
@@ -41,6 +42,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         { name: 'Users', href: '/dashboard/admin/users', icon: Users },
         { name: 'Vendors', href: '/dashboard/admin/vendors', icon: Store },
         { name: 'Orders', href: '/dashboard/admin/orders', icon: ShoppingBag },
+        { name: 'Logistics', href: '/dashboard/admin/logistics', icon: Truck },
         { name: 'Products', href: '/dashboard/admin/products', icon: Package },
         { name: 'Blog', href: '/dashboard/admin/blog', icon: FileText },
         { name: 'Analytics', href: '/dashboard/admin/analytics', icon: BarChart3 },
