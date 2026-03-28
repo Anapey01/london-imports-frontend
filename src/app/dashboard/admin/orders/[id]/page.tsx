@@ -16,8 +16,7 @@ import {
     Phone,
     CreditCard,
     MessageCircle,
-    Clock,
-    Navigation
+    Clock
 } from 'lucide-react';
 
 
@@ -433,6 +432,7 @@ export default function AdminOrderDetailPage() {
                                 <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Street Address</label>
                                 <textarea
                                     value={editForm.delivery_address}
+                                    placeholder="Enter street address and landmarks"
                                     onChange={(e) => setEditForm({ ...editForm, delivery_address: e.target.value })}
                                     className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
                                     rows={2}
@@ -443,6 +443,7 @@ export default function AdminOrderDetailPage() {
                                     <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>City</label>
                                     <input
                                         type="text"
+                                        placeholder="City"
                                         value={editForm.delivery_city}
                                         onChange={(e) => setEditForm({ ...editForm, delivery_city: e.target.value })}
                                         className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
@@ -452,6 +453,7 @@ export default function AdminOrderDetailPage() {
                                     <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Region</label>
                                     <input
                                         type="text"
+                                        placeholder="Region"
                                         value={editForm.delivery_region}
                                         onChange={(e) => setEditForm({ ...editForm, delivery_region: e.target.value })}
                                         className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
@@ -472,6 +474,7 @@ export default function AdminOrderDetailPage() {
                                 <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Instructions</label>
                                 <textarea
                                     value={editForm.customer_notes}
+                                    placeholder="Internal instructions or delivery notes"
                                     onChange={(e) => setEditForm({ ...editForm, customer_notes: e.target.value })}
                                     className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
                                     rows={2}
