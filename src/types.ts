@@ -11,6 +11,7 @@ export interface User {
     address?: string;
     city?: string;
     region?: string;
+    ghana_post_gps?: string;
 }
 
 export interface Category {
@@ -75,6 +76,7 @@ export interface Order {
     delivery_address?: string;
     delivery_city?: string;
     delivery_region?: string;
+    delivery_gps?: string;
     customer_notes?: string;
     deposit_amount?: number;
     balance_due?: number;

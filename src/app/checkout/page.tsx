@@ -71,12 +71,20 @@ function CheckoutPage() {
     const [connectionProgress, setConnectionProgress] = useState(0);
 
     const [checkoutOrder, setCheckoutOrder] = useState<ExtendedCart | null>(null);
-    const [delivery, setDelivery] = useState({
+    const [delivery, setDelivery] = useState<{
+        address: string;
+        city: string;
+        region: string;
+        delivery_gps: string;
+        notes: string;
+    }>({
         address: '',
         city: '',
         region: '',
+        delivery_gps: '',
         notes: '',
     });
+    const [saveAddress, setSaveAddress] = useState(false);
 
     const searchParams = useSearchParams();
     const orderNumberParam = searchParams.get('order');
@@ -146,6 +154,7 @@ function CheckoutPage() {
                         address: orderData.delivery_address || '',
                         city: orderData.delivery_city || '',
                         region: orderData.delivery_region || '',
+                        delivery_gps: orderData.delivery_gps || '',
                         notes: orderData.customer_notes || '',
                     });
                     if (orderData.state === 'PARTIALLY_PAID') {
@@ -164,6 +173,7 @@ function CheckoutPage() {
                     address: user.address || '',
                     city: user.city || '',
                     region: user.region || '',
+                    delivery_gps: user.ghana_post_gps || '',
                     notes: '',
                 };
             });
@@ -260,6 +270,8 @@ function CheckoutPage() {
                     delivery_address: delivery.address,
                     delivery_city: delivery.city,
                     delivery_region: delivery.region,
+                    delivery_gps: delivery.delivery_gps,
+                    save_address: saveAddress,
                     customer_notes: delivery.notes,
                     payment_type: paymentType === 'BALANCE' ? 'FULL' : paymentType,
                     custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
@@ -355,6 +367,8 @@ function CheckoutPage() {
                             orderNumberParam={orderNumberParam}
                             delivery={delivery}
                             setDelivery={setDelivery}
+                            saveAddress={saveAddress}
+                            setSaveAddress={setSaveAddress}
                         />
 
                         <PaymentMethodSelector

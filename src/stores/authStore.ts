@@ -17,6 +17,7 @@ interface User {
     address: string;
     city: string;
     region: string;
+    ghana_post_gps: string;
     vendor_profile?: Record<string, unknown>;
     is_staff?: boolean;
     is_superuser?: boolean;

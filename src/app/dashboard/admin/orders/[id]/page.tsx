@@ -16,7 +16,8 @@ import {
     Phone,
     CreditCard,
     MessageCircle,
-    Clock
+    Clock,
+    Navigation
 } from 'lucide-react';
 
 
@@ -45,6 +46,8 @@ interface OrderDetail {
     delivery_address: string;
     delivery_city: string;
     delivery_region: string;
+    delivery_gps?: string;
+    customer_notes?: string;
     items: OrderItem[];
 }
 
@@ -56,6 +59,14 @@ export default function AdminOrderDetailPage() {
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
+    const [isEditingDelivery, setIsEditingDelivery] = useState(false);
+    const [editForm, setEditForm] = useState({
+        delivery_address: '',
+        delivery_city: '',
+        delivery_region: '',
+        delivery_gps: '',
+        customer_notes: ''
+    });
 
     const orderId = params.id as string;
 
@@ -97,6 +108,31 @@ export default function AdminOrderDetailPage() {
             await loadOrder();
         } catch {
             alert('Failed to update payment');
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const startEditing = () => {
+        if (!order) return;
+        setEditForm({
+            delivery_address: order.delivery_address || '',
+            delivery_city: order.delivery_city || '',
+            delivery_region: order.delivery_region || '',
+            delivery_gps: order.delivery_gps || '',
+            customer_notes: order.customer_notes || ''
+        });
+        setIsEditingDelivery(true);
+    };
+
+    const handleSaveDelivery = async () => {
+        setUpdating(true);
+        try {
+            await adminAPI.updateOrder(orderId, editForm);
+            await loadOrder();
+            setIsEditingDelivery(false);
+        } catch {
+            alert('Failed to update delivery details');
         } finally {
             setUpdating(false);
         }
@@ -321,25 +357,140 @@ export default function AdminOrderDetailPage() {
                     </div>
                 </div>
 
-                {/* Delivery */}
-                <div className={`p-4 rounded-xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-sm space-y-3`}>
-                    <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>DELIVERY</p>
-                    <div className={`flex items-start gap-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                        <MapPin className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-                        <div>
-                            <p>{order.delivery_address || 'No address'}</p>
-                            <p>{order.delivery_city}, {order.delivery_region}</p>
-                        </div>
+                {/* Courier Dispatch Card */}
+                <div className={`p-5 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-sm border border-gray-100 dark:border-slate-700 space-y-4`}>
+                    <div className="flex items-center justify-between">
+                        <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            Courier Dispatch
+                        </p>
+                        {!isEditingDelivery ? (
+                            <button
+                                onClick={startEditing}
+                                className="text-[10px] font-bold text-pink-500 hover:text-pink-600 uppercase tracking-tight"
+                            >
+                                Edit Details
+                            </button>
+                        ) : (
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setIsEditingDelivery(false)}
+                                    className="text-[10px] font-bold text-gray-400 hover:text-gray-500 uppercase tracking-tight"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSaveDelivery}
+                                    disabled={updating}
+                                    className="text-[10px] font-bold text-pink-600 hover:text-pink-700 uppercase tracking-tight disabled:opacity-50"
+                                >
+                                    {updating ? 'Saving...' : 'Save Changes'}
+                                </button>
+                            </div>
+                        )}
                     </div>
-                    <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        {new Date(order.created_at).toLocaleDateString('en-GB', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })}
+
+                    {!isEditingDelivery ? (
+                        <>
+                            <div className="flex items-start gap-4">
+                                <div className={`p-2.5 rounded-xl ${isDark ? 'bg-slate-700' : 'bg-gray-50'}`}>
+                                    <MapPin className="w-5 h-5 text-gray-400" />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'} leading-relaxed`}>
+                                        {order.delivery_address || 'No street address provided'}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                            {order.delivery_city}, {order.delivery_region}
+                                        </p>
+                                        {order.delivery_gps && (
+                                            <>
+                                                <span className="text-gray-300">•</span>
+                                                <p className="text-[10px] font-mono font-bold text-pink-600 bg-pink-50 dark:bg-pink-900/20 px-1.5 py-0.5 rounded border border-pink-100 dark:border-pink-800 uppercase">
+                                                    GPS: {order.delivery_gps}
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {order.customer_notes && (
+                                <div className={`p-3 rounded-xl ${isDark ? 'bg-slate-900/50' : 'bg-gray-50/50'} border border-dashed ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <MessageCircle className="w-3 h-3 text-gray-400" />
+                                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Special Instructions</span>
+                                    </div>
+                                    <p className={`text-xs italic ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                                        &quot;{order.customer_notes}&quot;
+                                    </p>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="space-y-4 transition-all animate-in fade-in slide-in-from-top-2">
+                            <div className="space-y-2">
+                                <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Street Address</label>
+                                <textarea
+                                    value={editForm.delivery_address}
+                                    onChange={(e) => setEditForm({ ...editForm, delivery_address: e.target.value })}
+                                    className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                                    rows={2}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>City</label>
+                                    <input
+                                        type="text"
+                                        value={editForm.delivery_city}
+                                        onChange={(e) => setEditForm({ ...editForm, delivery_city: e.target.value })}
+                                        className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Region</label>
+                                    <input
+                                        type="text"
+                                        value={editForm.delivery_region}
+                                        onChange={(e) => setEditForm({ ...editForm, delivery_region: e.target.value })}
+                                        className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Ghana Post GPS</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. GA-123-4567"
+                                    value={editForm.delivery_gps}
+                                    onChange={(e) => setEditForm({ ...editForm, delivery_gps: e.target.value.toUpperCase() })}
+                                    className={`w-full p-3 rounded-xl text-sm font-mono border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className={`text-[10px] font-bold uppercase ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Instructions</label>
+                                <textarea
+                                    value={editForm.customer_notes}
+                                    onChange={(e) => setEditForm({ ...editForm, customer_notes: e.target.value })}
+                                    className={`w-full p-3 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                                    rows={2}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex items-center gap-2 pt-2 text-[11px]">
+                        <Clock className="w-3.5 h-3.5 text-gray-400" />
+                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Ordered on</span>
+                        <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
+                            {new Date(order.created_at).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </span>
                     </div>
                 </div>
             </div>
