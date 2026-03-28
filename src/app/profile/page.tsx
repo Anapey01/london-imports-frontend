@@ -29,11 +29,24 @@ export default function ProfilePage() {
             router.push('/login');
             return;
         }
-        if (isAuthenticated && !user) fetchUser();
+        
+        // Refresh user data on mount to ensure fresh state (e.g. after checkout address save)
+        if (isAuthenticated) {
+            fetchUser();
+        }
+
         if (isAuthenticated) {
             ordersAPI.list().then(res => setOrders(res.data.results || res.data)).catch(console.error);
         }
-    }, [isAuthenticated, authLoading, router, user, fetchUser]);
+
+        // Handle cross-tab navigation (e.g. from Addresses to Settings)
+        const handleTabSwitch = (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            if (detail) setActiveTab(detail);
+        };
+        window.addEventListener('switch-profile-tab', handleTabSwitch);
+        return () => window.removeEventListener('switch-profile-tab', handleTabSwitch);
+    }, [isAuthenticated, authLoading, router, fetchUser]);
 
     const handleLogout = () => {
         logout();

@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Address } from '@/types';
+import { Address, User } from '@/types';
 import { MapPin, CheckCircle2, Navigation, Trash2, Edit2, Plus } from 'lucide-react';
 
 interface AddressesViewProps {
     theme: string;
-    user: any; // User type from authStore
+    user: User | null; // User type from authStore
 }
 
 const AddressesView = ({ theme, user }: AddressesViewProps) => {
@@ -79,11 +79,19 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
             </div>
 
             {/* Profile Address (The one synced from checkout) */}
-            {user?.address && (
+            {(user?.address || user?.city || user?.region) && (
                 <div className="space-y-4">
-                    <h3 className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
-                        Primary Account Address
-                    </h3>
+                    <div className="flex items-center justify-between">
+                        <h3 className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                            Primary Account Address
+                        </h3>
+                        <button 
+                            onClick={() => window.dispatchEvent(new CustomEvent('switch-profile-tab', { detail: 'settings' }))}
+                            className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-500 hover:text-white' : 'text-gray-400 hover:text-black'} transition-colors`}
+                        >
+                            Edit in Settings
+                        </button>
+                    </div>
                     <div className={`p-6 rounded-3xl border-2 hover:border-pink-500/50 transition-all ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-pink-50/30 border-pink-100/50 shadow-sm'}`}>
                         <div className="flex items-start gap-4">
                             <div className="mt-1 p-2 bg-pink-100 rounded-xl">
@@ -98,13 +106,15 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
                                     </span>
                                 </div>
                                 <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                                    {user.address}
+                                    {user.address || 'No street address provided'}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-4 mt-3">
-                                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
-                                        <Navigation className="w-3.5 h-3.5" />
-                                        {user.city}, {user.region}
-                                    </div>
+                                    {(user.city || user.region) && (
+                                        <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                                            <Navigation className="w-3.5 h-3.5" />
+                                            {user.city || 'N/A'}, {user.region || 'N/A'}
+                                        </div>
+                                    )}
                                     {user.ghana_post_gps && (
                                         <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-pink-600 bg-white px-2 py-1 rounded-lg border border-pink-100 shadow-sm">
                                             GPS: {user.ghana_post_gps}

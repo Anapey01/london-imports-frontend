@@ -58,7 +58,7 @@ declare global {
 function CheckoutPage() {
     const router = useRouter();
     const { cart, fetchCart, clearCart, selectedItemIds } = useCartStore();
-    const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
+    const { user, isAuthenticated, isLoading: authLoading, fetchUser } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
@@ -166,7 +166,16 @@ function CheckoutPage() {
                     setError('Could not load order details');
                 });
         } else if (!orderNumberParam && isAuthenticated && user) {
-            // Phase 1: Smart Pre-fill from User Profile (Only if empty)
+            // Priority 1: Check sessionStorage for in-progress checkout
+            const saved = sessionStorage.getItem('londons_checkout_delivery');
+            if (saved) {
+                try {
+                    setDelivery(JSON.parse(saved));
+                    return; 
+                } catch (e) { console.error("Failed to parse saved checkout", e); }
+            }
+
+            // Priority 2: Smart Pre-fill from User Profile (Only if session is empty)
             setDelivery(prev => {
                 if (prev.address) return prev;
                 return {
@@ -179,6 +188,13 @@ function CheckoutPage() {
             });
         }
     }, [orderNumberParam, isAuthenticated, user]);
+
+    // ABSOLUTE CERTAINTY: Persist form changes to session storage
+    useEffect(() => {
+        if (!orderNumberParam && delivery.address) {
+            sessionStorage.setItem('londons_checkout_delivery', JSON.stringify(delivery));
+        }
+    }, [delivery, orderNumberParam]);
 
     const currentOrderData = useMemo(() => {
         if (checkoutOrder) return checkoutOrder;
@@ -227,13 +243,16 @@ function CheckoutPage() {
         
         const total = selSubtotal + Number(currentOrderData.delivery_fee || 0);
         
+        // ABSOLUTE CERTAINTY: Wait for both auth and cart stores to hydrate before deciding to redirect
+        if (authLoading || isLoading) return;
+
         // Redirect if no items and not loading
-        if (!isLoading && !authLoading && !checkoutOrder && !orderNumberParam && (currentOrderData.items?.length || 0) === 0) {
+        if (!checkoutOrder && !orderNumberParam && (currentOrderData.items?.length || 0) === 0) {
             router.push('/cart');
             return;
         }
 
-        if (total <= 0 && !authLoading) {
+        if (total <= 0) {
             setCanPay(false);
         } else {
             setCanPay(true);
@@ -252,34 +271,33 @@ function CheckoutPage() {
         }
 
         try {
-            let orderToPay = checkoutOrder;
-            if (!orderToPay) {
-                const buyNowSlug = searchParams.get('buyNow');
-                let targetItemIds = Array.from(selectedItemIds);
-                
-                // If Buy Now, find that specific item in the cart to isolate it
-                if (buyNowSlug && cart) {
-                    const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
-                    if (buyNowItem) {
-                        targetItemIds = [buyNowItem.id];
-                    }
+            const buyNowSlug = searchParams.get('buyNow');
+            let targetItemIds = Array.from(selectedItemIds);
+            
+            // If Buy Now, find that specific item in the cart to isolate it
+            if (buyNowSlug && cart) {
+                const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
+                if (buyNowItem) {
+                    targetItemIds = [buyNowItem.id];
                 }
-
-                const orderPayload = {
-                    item_ids: targetItemIds.length > 0 ? targetItemIds : undefined,
-                    delivery_address: delivery.address,
-                    delivery_city: delivery.city,
-                    delivery_region: delivery.region,
-                    delivery_gps: delivery.delivery_gps,
-                    save_address: saveAddress,
-                    customer_notes: delivery.notes,
-                    payment_type: paymentType === 'BALANCE' ? 'FULL' : paymentType,
-                    custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
-                };
-                const res = await ordersAPI.checkout(orderPayload);
-                orderToPay = res.data;
-                setCheckoutOrder(orderToPay);
             }
+
+            const orderPayload = {
+                item_ids: targetItemIds.length > 0 ? targetItemIds : undefined,
+                delivery_address: delivery.address,
+                delivery_city: delivery.city,
+                delivery_region: delivery.region,
+                delivery_gps: delivery.delivery_gps,
+                save_address: saveAddress,
+                customer_notes: delivery.notes,
+                payment_type: paymentType === 'BALANCE' ? 'FULL' : paymentType,
+                custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
+            };
+
+            // Always call checkout before payment to ensure the latest delivery details are synced to the backend
+            const res = await ordersAPI.checkout(orderPayload);
+            const orderToPay = res.data.order || res.data; // Backend returns {order, ...} or just order
+            setCheckoutOrder(orderToPay);
 
             if (paymentType === 'WHATSAPP') {
                 const message = encodeURIComponent(`Hi, I'd like to pay for my order #${orderToPay?.order_number}. Total: ${formatPrice(orderToPay?.total || 0)}.`);
@@ -311,7 +329,8 @@ function CheckoutPage() {
                 },
                 onClose: () => {
                     setIsLoading(false);
-                    setError('Payment window closed');
+                    // ABSOLUTE CERTAINTY: Provide clear guidance if window is closed
+                    setError('Payment window closed. You can resume this order anytime from your dashboard.');
                 }
             });
             handler.openIframe();
@@ -326,14 +345,21 @@ function CheckoutPage() {
                         amount: paymentAmount
                     });
                     
+                    // Profile Sync: Refresh user to confirm address save
+                    if (saveAddress) {
+                        await fetchUser();
+                    }
+                    
                     if (orderToPay) {
                         trackPurchase(orderToPay, response.reference);
                     }
                     clearCart();
+                    // ABSOLUTE CERTAINTY: Clear session storage on successful completion
+                    sessionStorage.removeItem('londons_checkout_delivery');
                     router.push('/orders?success=true');
                 } catch (verifyErr) {
                     console.error('Verification failed:', verifyErr);
-                    setError('Payment verification failed. Please contact support.');
+                    setError('Payment verification failed. Please contact support via WhatsApp with your order number.');
                     setIsLoading(false);
                 }
             }

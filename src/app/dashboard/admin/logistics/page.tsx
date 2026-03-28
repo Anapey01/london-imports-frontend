@@ -12,7 +12,6 @@ import {
     ChevronLeft, 
     Truck, 
     Copy, 
-    Check, 
     MapPin, 
     Phone, 
     Search,
@@ -87,7 +86,7 @@ export default function AdminLogisticsPage() {
     const loadOrders = useCallback(async () => {
         setLoading(true);
         try {
-            const params: any = { 
+            const params: { page: number; search?: string; status?: string } = { 
                 page: currentPage,
                 search: searchQuery || undefined
             };
@@ -311,6 +310,8 @@ export default function AdminLogisticsPage() {
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1 || loading}
                             className={`p-2 rounded-xl border transition-all disabled:opacity-30 ${isDark ? 'border-slate-800 hover:bg-slate-800 text-white' : 'border-gray-100 hover:bg-gray-50'}`}
+                            title="Previous Page"
+                            aria-label="Previous Page"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
@@ -318,6 +319,8 @@ export default function AdminLogisticsPage() {
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages || loading}
                             className={`p-2 rounded-xl border transition-all disabled:opacity-30 ${isDark ? 'border-slate-800 hover:bg-slate-800 text-white' : 'border-gray-100 hover:bg-gray-50'}`}
+                            title="Next Page"
+                            aria-label="Next Page"
                         >
                             <ChevronRight className="w-4 h-4" />
                         </button>
