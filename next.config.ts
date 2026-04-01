@@ -20,7 +20,10 @@ const withPWA = withPWAInit({
           url.origin.includes('paystack.com') || 
           url.origin.includes('static.cloudflareinsights.com') ||
           url.origin.includes('google-analytics.com') ||
-          url.origin.includes('googletagmanager.com'),
+          url.origin.includes('googletagmanager.com') ||
+          url.origin.includes('google.com') ||
+          url.origin.includes('gstatic.com') ||
+          url.origin.includes('wikimedia.org'),
         handler: 'NetworkOnly',
       },
       {
@@ -93,11 +96,11 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.gstatic.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com",
-  "img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org",
+  "img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.gstatic.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://res.cloudinary.com https://london-imports-api.onrender.com https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://vercel.live",
+  "connect-src 'self' https://res.cloudinary.com https://london-imports-api.onrender.com https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://vercel.live https://*.wikimedia.org",
   "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live",
   "worker-src 'self' blob:",
   "child-src 'self' blob:",

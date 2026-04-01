@@ -63,20 +63,6 @@ const OrderSummary = ({
                         })()}
                     </span>
                 </div>
-                <div className="flex justify-between text-gray-500 font-light">
-                    <span>Delivery</span>
-                    <span className="font-medium text-gray-900">
-                        {Number(currentOrderData.delivery_fee) > 0 ? formatPrice(currentOrderData.delivery_fee) : 'FREE'}
-                    </span>
-                </div>
-
-                {checkoutOrder && Number(checkoutOrder.amount_paid || 0) > 0 && (
-                    <div className="flex justify-between text-green-600 font-light">
-                        <span>Already Paid</span>
-                        <span className="font-medium">- {formatPrice(Number(checkoutOrder.amount_paid))}</span>
-                    </div>
-                )}
-
                 <div className="border-t border-gray-100 pt-4 flex justify-between items-end">
                     <span className="text-lg text-gray-900 font-medium pb-1">Total Order Value</span>
                     <span className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
@@ -85,8 +71,7 @@ const OrderSummary = ({
                             const selSubtotal = (currentOrderData.items || [])
                                 .filter((i: CartItem | OrderItem) => selectedItemIds.has(i.id))
                                 .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
-                            const selTotal = selSubtotal + Number(currentOrderData.delivery_fee || 0);
-                            return formatPrice(selTotal);
+                            return formatPrice(selSubtotal);
                         })()}
                     </span>
                 </div>

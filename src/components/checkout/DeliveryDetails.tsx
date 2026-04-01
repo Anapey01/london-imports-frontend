@@ -134,7 +134,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 value={delivery.city}
                                 onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
                                 required
-                                className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 transition-all font-light placeholder-gray-400 px-0"
+                                className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 focus:outline-none transition-all font-light placeholder-gray-400 px-0"
                                 placeholder="Accra"
                             />
                         </div>
@@ -145,7 +145,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                     value={delivery.region}
                                     onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
                                     required
-                                    className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 transition-all font-light appearance-none px-0 cursor-pointer"
+                                    className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 focus:outline-none transition-all font-light appearance-none px-0 cursor-pointer"
                                     title="Select Region"
                                 >
                                     <option value="">Select Region</option>
@@ -175,7 +175,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                     type="text"
                                     value={delivery.delivery_gps || ''}
                                     onChange={(e) => setDelivery({ ...delivery, delivery_gps: e.target.value })}
-                                    className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 transition-all font-mono font-light placeholder-gray-400 px-0 uppercase"
+                                    className="w-full py-3 bg-transparent border-0 border-b border-gray-300 rounded-none text-gray-900 focus:border-b-black focus:ring-0 focus:outline-none transition-all font-mono font-light placeholder-gray-400 px-0 uppercase"
                                     placeholder="GA-183-9023"
                                 />
                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity">

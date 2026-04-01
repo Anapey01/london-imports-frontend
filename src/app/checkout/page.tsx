@@ -209,7 +209,7 @@ function CheckoutPage() {
                     ...cart,
                     items: [buyNowItem],
                     subtotal: buyNowItem.total_price,
-                    total: buyNowItem.total_price + cart.delivery_fee, // Approximate
+                    total: buyNowItem.total_price, // Removed delivery fee
                 };
             }
         }
@@ -224,7 +224,7 @@ function CheckoutPage() {
             .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
             .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
             
-        const totalValue = selSubtotal + Number(currentOrderData.delivery_fee || 0);
+        const totalValue = selSubtotal; // Removed delivery fee addition
         const totalPaid = checkoutOrder ? Number(checkoutOrder.amount_paid || 0) : 0;
         const balanceDue = Math.max(0, totalValue - totalPaid);
 
@@ -233,7 +233,7 @@ function CheckoutPage() {
         if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
         if (paymentType === 'WHATSAPP') return 0;
         return balanceDue;
-    }, [paymentType, currentOrderData.items, currentOrderData.delivery_fee, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
+    }, [paymentType, currentOrderData.items, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
 
 
     useEffect(() => {
@@ -241,7 +241,7 @@ function CheckoutPage() {
             .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
             .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
         
-        const total = selSubtotal + Number(currentOrderData.delivery_fee || 0);
+        const total = selSubtotal; // Removed delivery fee addition
         
         // ABSOLUTE CERTAINTY: Wait for both auth and cart stores to hydrate before deciding to redirect
         if (authLoading || isLoading) return;
@@ -257,7 +257,7 @@ function CheckoutPage() {
         } else {
             setCanPay(true);
         }
-    }, [currentOrderData.items, currentOrderData.delivery_fee, authLoading, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
+    }, [currentOrderData.items, authLoading, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
