@@ -25,7 +25,10 @@ const withPWA = withPWAInit({
           url.origin.includes('google.com.gh') ||
           url.origin.includes('gstatic.com') ||
           url.origin.includes('wikimedia.org') ||
-          url.origin.includes('posthog.com'),
+          url.origin.includes('posthog.com') ||
+          url.origin.includes('sentry.io') ||
+          url.origin.includes('vercel.live') ||
+          url.origin.includes('london-imports-api.onrender.com'),
         handler: 'NetworkOnly',
       },
       {
@@ -61,17 +64,9 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 5. API - NetworkFirst to ensure fresh basket/order data during checkout
+        // 5. API - NetworkOnly to ensure zero caching interference with auth/orders
         urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
-        handler: 'NetworkFirst',
-        options: {
-          cacheName: 'api-cache',
-          cacheableResponse: { statuses: [0, 200] },
-          expiration: {
-            maxEntries: 100,
-            maxAgeSeconds: 24 * 60 * 60,
-          },
-        },
+        handler: 'NetworkOnly',
       },
       {
         // 6. External Images (Cloudinary, Wikipedia, etc.) - SWR to allow updates
@@ -98,7 +93,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.gstatic.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.gstatic.com 'sha512-z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=='",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com",
   "img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.gstatic.com",
   "font-src 'self' https://fonts.gstatic.com",

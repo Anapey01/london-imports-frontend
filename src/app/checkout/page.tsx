@@ -264,6 +264,14 @@ function CheckoutPage() {
         setError('');
         setIsLoading(true);
 
+        console.log('Checkout Attempt:', { 
+            isAuthenticated, 
+            hasUser: !!user, 
+            hasEmail: !!user?.email, 
+            paymentType,
+            hasKey: !!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
+        });
+
         if (!isAuthenticated || !user?.email) {
             setError('Please sign in with a valid account to complete your purchase.');
             setIsLoading(false);
