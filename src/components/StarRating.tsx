@@ -67,8 +67,8 @@ export default function StarRating({
                         key={index}
                         type="button"
                         className={`
-                            cursor-pointer hover:scale-110
-                            transition-all duration-200 focus:outline-none 
+                            cursor-pointer hover:scale-110 active:scale-95
+                            transition-all duration-150 focus:outline-none 
                             relative p-1.5 sm:p-2 -ml-1 first:ml-0
                         `}
                         onClick={(e) => {

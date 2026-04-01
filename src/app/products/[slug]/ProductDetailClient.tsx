@@ -350,19 +350,27 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             />
                         </div>
 
-                        {/* Rating */}
-                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                        {/* Rating - Jump to Reviews */}
+                        <button 
+                            onClick={() => {
+                                const reviewsSection = document.getElementById('reviews');
+                                if (reviewsSection) {
+                                    reviewsSection.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }}
+                            className="flex flex-wrap items-center gap-2 mb-4 hover:opacity-80 transition-opacity group/rating-jump"
+                        >
                             <StarRating
                                 initialRating={Number(product.rating ?? 0)}
                                 readOnly={true}
                                 size="md"
                             />
-                            <span className="text-sm text-gray-600 font-medium">
+                            <span className="text-sm text-gray-600 font-medium group-hover/rating-jump:text-pink-600 transition-colors">
                                 {Number(product.rating ?? 0).toFixed(1)}
                                 <span className="mx-1.5 text-gray-300">|</span>
-                                {product.preorder_status === 'READY_TO_SHIP' ? 'Ready to Ship' : `${product.reservations_count || 0} Pre-orders (minus shipping fees)`}
+                                {product.preorder_status === 'READY_TO_SHIP' ? 'See Reviews' : `${product.reservations_count || 0} Pre-orders (See Reviews)`}
                             </span>
-                        </div>
+                        </button>
 
                         {/* Quantity & Price */}
                         <div className="flex items-center gap-8 mb-8">
