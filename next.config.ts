@@ -18,12 +18,14 @@ const withPWA = withPWAInit({
         urlPattern: ({ url }) => 
           url.origin.includes('paystack.co') || 
           url.origin.includes('paystack.com') || 
-          url.origin.includes('static.cloudflareinsights.com') ||
+          url.origin.includes('cloudflareinsights.com') ||
           url.origin.includes('google-analytics.com') ||
           url.origin.includes('googletagmanager.com') ||
           url.origin.includes('google.com') ||
+          url.origin.includes('google.com.gh') ||
           url.origin.includes('gstatic.com') ||
-          url.origin.includes('wikimedia.org'),
+          url.origin.includes('wikimedia.org') ||
+          url.origin.includes('posthog.com'),
         handler: 'NetworkOnly',
       },
       {

@@ -264,6 +264,16 @@ function CheckoutPage() {
         setError('');
         setIsLoading(true);
 
+        if (!isAuthenticated || !user?.email) {
+            setError('Please sign in with a valid account to complete your purchase.');
+            setIsLoading(false);
+            // Optionally redirect to login after a short delay
+            setTimeout(() => {
+                router.push(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+            }, 2000);
+            return;
+        }
+
         if (paymentType === 'CUSTOM' && (!customAmount || parseFloat(customAmount) <= 0)) {
             setError('Please enter a valid installment amount');
             setIsLoading(false);
