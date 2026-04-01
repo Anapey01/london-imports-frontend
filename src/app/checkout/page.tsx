@@ -264,6 +264,8 @@ function CheckoutPage() {
         setError('');
         setIsLoading(true);
 
+        const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9';
+
         console.log('Checkout Attempt:', { 
             isAuthenticated, 
             hasUser: !!user, 
@@ -272,13 +274,20 @@ function CheckoutPage() {
             hasKey: !!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
         });
 
+        if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
+            console.error('CRITICAL: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is missing from environment.');
+            setError('Payment setup incomplete. Please contact support or use the "Refresh Site Session" link below.');
+            setIsLoading(false);
+            return;
+        }
+
         if (!isAuthenticated || !user?.email) {
             setError('Please sign in with a valid account to complete your purchase.');
             setIsLoading(false);
             // Optionally redirect to login after a short delay
             setTimeout(() => {
                 router.push(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-            }, 2000);
+            }, 5000); // 5s delay to let them see error
             return;
         }
 
@@ -330,7 +339,7 @@ function CheckoutPage() {
             }
 
             const handler = paystack.setup({
-                key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9',
+                key: publicKey,
                 email: user?.email || '',
                 amount: Math.round(paymentAmount * 100),
                 currency: 'GHS',
@@ -435,12 +444,32 @@ function CheckoutPage() {
                                 paymentAmount={paymentAmount}
                             />
 
-                            {error && (
-                                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                                    <p className="text-xs font-medium">{error}</p>
+                                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="flex items-center gap-3">
+                                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                        <p className="text-sm font-medium">{error}</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+                                                const registrations = await navigator.serviceWorker.getRegistrations();
+                                                for (const registration of registrations) {
+                                                    await registration.unregister();
+                                                }
+                                                // Clear cache and reload
+                                                if ('caches' in window) {
+                                                    const cacheKeys = await caches.keys();
+                                                    await Promise.all(cacheKeys.map(key => caches.delete(key)));
+                                                }
+                                                window.location.reload();
+                                            }
+                                        }}
+                                        className="text-[10px] text-red-400 hover:text-red-600 underline text-left transition-colors duration-200"
+                                    >
+                                        Persistent issues? Click here to refresh site session
+                                    </button>
                                 </div>
-                            )}
 
                             <CheckoutSubmitButton
                                 isLoading={isLoading}
