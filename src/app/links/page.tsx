@@ -1,0 +1,192 @@
+import { Metadata } from 'next';
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { 
+  ShoppingBag, 
+  Search, 
+  Truck, 
+  Instagram, 
+  Smartphone, 
+  Star,
+  ExternalLink,
+  Ghost,
+  ChevronRight
+} from 'lucide-react';
+import { siteConfig } from '@/config/site';
+
+export const metadata: Metadata = {
+  title: "London's Imports | Your Bio Links",
+  description: "Direct links to our China-to-Ghana catalog, custom sourcing requests, and social channels. Your one-stop shop for premium imports.",
+  openGraph: {
+    title: "London's Imports Ghana | Link-in-Bio",
+    description: "Shop curated imports and request custom sourcing. Ghana's trusted logistics partner.",
+    url: 'https://londonsimports.com/links',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: "London's Imports Links" }],
+  },
+  robots: { index: false, follow: true }, // Usually good for bio links to focus on main site SEO
+};
+
+/**
+ * Editorial "Link-in-Bio" Page
+ * Design Focus: High Minimalism, Editorial Typography, Premium Whitespace
+ */
+export default function LinksPage() {
+  const primaryLinks = [
+    {
+      title: "Shop the Pre-order Catalog",
+      description: "Curated imports from China to Ghana",
+      href: "/products",
+      icon: ShoppingBag,
+      priority: true
+    },
+    {
+      title: "Request a Custom Quote",
+      description: "Our concierge team finds any product for you",
+      href: `https://wa.me/${siteConfig.concierge.replace(/\s+/g, '')}`,
+      icon: Search,
+      priority: true
+    }
+  ];
+
+  const secondaryLinks = [
+    {
+      title: "Track My Order",
+      href: "/track",
+      icon: Truck
+    },
+    {
+      title: "Read the Importation Blog",
+      href: "/blog",
+      icon: Smartphone
+    },
+    {
+      title: "Our Trustpilot Reviews",
+      href: siteConfig.socials.trustpilot,
+      icon: Star
+    }
+  ];
+
+  const socialLinks = [
+    { name: 'Instagram', icon: Instagram, href: siteConfig.socials.instagram, handle: '@londons_imports' },
+    { name: 'TikTok', icon: Smartphone, href: siteConfig.socials.tiktok, handle: '@londons_imports1' },
+    { name: 'Snapchat', icon: Ghost, href: siteConfig.socials.snapchat, handle: 'londons_imports' }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#FDFDFD] font-sans selection:bg-pink-100 selection:text-pink-900">
+      <div className="max-w-xl mx-auto px-6 py-16 md:py-24">
+        
+        {/* Editorial Header */}
+        <header className="flex flex-col items-center text-center mb-16 animate-fade-in">
+          <div className="relative w-24 h-24 mb-8 group">
+            <Image
+              src="/logo.jpg"
+              alt="London's Imports"
+              fill
+              className="object-contain rounded-2xl shadow-sm group-hover:scale-105 transition-transform duration-500"
+              priority
+            />
+          </div>
+          
+          <h1 className="font-serif text-4xl md:text-5xl font-medium tracking-tight text-gray-900 mb-2 italic">
+            London&apos;s Imports
+          </h1>
+          <p className="font-sans text-xs uppercase tracking-[0.3em] text-gray-400 font-bold mb-4">
+            Curated Sourcing & Logistics
+          </p>
+          <div className="h-px w-12 bg-gray-200 mt-2" />
+        </header>
+
+        {/* Primary High-Conversion Calls */}
+        <section className="space-y-4 mb-12">
+          {primaryLinks.map((link, idx) => (
+            <Link 
+              key={idx}
+              href={link.href}
+              className="group block relative p-1 transition-all duration-300"
+            >
+              <div className="relative border border-gray-100 bg-white p-6 rounded-xl hover:border-pink-200 hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] transition-all duration-500 overflow-hidden">
+                {/* Subtle Hover Reveal */}
+                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ExternalLink className="w-4 h-4 text-pink-300" strokeWidth={1.5} />
+                </div>
+                
+                <div className="flex items-center gap-6">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 group-hover:bg-pink-50 transition-colors">
+                    <link.icon className="w-5 h-5 text-gray-400 group-hover:text-pink-500" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h2 className="font-serif text-xl font-medium text-gray-900 group-hover:text-pink-600 transition-colors">
+                      {link.title}
+                    </h2>
+                    <p className="text-sm text-gray-400 font-sans tracking-tight">
+                      {link.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </section>
+
+        {/* Refined Secondary Links */}
+        <section className="grid grid-cols-1 gap-3 mb-16">
+          {secondaryLinks.map((link, idx) => (
+            <Link 
+              key={idx}
+              href={link.href}
+              className="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group"
+            >
+              <div className="flex items-center gap-4">
+                <link.icon className="w-4 h-4 text-gray-300 group-hover:text-gray-900" strokeWidth={1.5} />
+                <span className="font-sans text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">
+                  {link.title}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-200 group-hover:text-gray-900 group-hover:translate-x-1 transition-all" strokeWidth={1.5} />
+            </Link>
+          ))}
+        </section>
+
+        {/* Social Presence - Editorialized */}
+        <section className="mb-16">
+          <div className="flex flex-col gap-4">
+            {socialLinks.map((social, idx) => (
+              <Link 
+                key={idx}
+                href={social.href}
+                className="flex items-center gap-4 p-4 rounded-xl border border-transparent hover:border-gray-100 hover:bg-white hover:shadow-sm transition-all group"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-50 group-hover:bg-pink-50 transition-colors">
+                  <social.icon className="w-4 h-4 text-gray-400 group-hover:text-pink-500" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-widest text-gray-300 font-bold leading-none mb-1">
+                    {social.name}
+                  </div>
+                  <div className="text-sm font-medium text-gray-600 group-hover:text-gray-900">
+                    {social.handle}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Editorial Footer */}
+        <footer className="text-center">
+          <Link 
+            href="/"
+            className="inline-flex items-center gap-2 group opacity-40 hover:opacity-100 transition-opacity"
+          >
+            <span className="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-gray-500">
+              Back to ldnimports.com
+            </span>
+          </Link>
+        </footer>
+
+      </div>
+    </div>
+  );
+}

@@ -15,6 +15,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
 import { Order, OrderItem } from '@/types';
 import ShipmentTracker from '@/components/order/ShipmentTracker';
+import { siteConfig } from '@/config/site';
 
 export default function OrderDetailPage() {
     const params = useParams();
@@ -235,7 +236,7 @@ export default function OrderDetailPage() {
                                 <h3 className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-4">Support</h3>
                                 <p className="text-sm font-light text-gray-600 mb-4">Need help with this order? Contact our concierge team.</p>
                                 <a 
-                                    href={`https://wa.me/233541096372?text=${encodeURIComponent(`Hi London's Imports! I need help with Order #${order.order_number} (Status: ${order.state}).`)}`} 
+                                    href={`https://wa.me/${siteConfig.concierge}?text=${encodeURIComponent(`Hi London's Imports! I need help with Order #${order.order_number} (Status: ${order.state}).`)}`} 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
                                     className="inline-flex items-center gap-2 text-pink-600 text-sm font-medium hover:text-pink-700 transition-colors"

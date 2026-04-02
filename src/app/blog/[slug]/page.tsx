@@ -9,6 +9,8 @@ import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 
+import ShareButton from '@/components/ShareButton';
+
 // Blog post type from API
 interface BlogPost {
     id: number;
@@ -192,7 +194,7 @@ Visit londonsimports.com/customs-estimator to calculate your import costs!`,
     },
 };
 
-// Generate metadata for SEO
+// Generate metadata for SEO with Editorial Focus
 export async function generateMetadata({
     params
 }: {
@@ -207,25 +209,40 @@ export async function generateMetadata({
 
     if (!article) {
         return {
-            title: 'Article Not Found | London\'s Imports',
+            title: 'Journal Entry | London\'s Imports',
         };
     }
 
+    const title = `${article.title} | London's Imports Journal`;
+    const description = article.excerpt || "Professional sourcing and importation insights for the Ghanaian market.";
+    const ogImage = article.featured_image ? getImageUrl(article.featured_image) : `${siteConfig.baseUrl}/og-image.jpg`;
+
     return {
-        title: `${article.title} | London's Imports Blog`,
-        description: article.excerpt,
+        title,
+        description,
         openGraph: {
-            title: article.title,
-            description: article.excerpt,
+            title,
+            description,
             type: 'article',
+            url: `${siteConfig.baseUrl}/blog/${slug}`,
             publishedTime: article.published_at,
-            authors: [article.author_name],
-            images: article.featured_image ? [article.featured_image] : [],
+            authors: [article.author_name || "London's Imports Editorial"],
+            images: [
+                {
+                    url: ogImage,
+                    width: 1200,
+                    height: 630,
+                    alt: article.title,
+                }
+            ],
+            siteName: "London's Imports Ghana",
         },
         twitter: {
             card: 'summary_large_image',
-            title: article.title,
-            description: article.excerpt,
+            title,
+            description,
+            images: [ogImage],
+            creator: '@londonsimports',
         },
     };
 }
@@ -398,6 +415,14 @@ export default async function BlogArticlePage({
                         <span>{new Date(article.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                         <span className="w-1 h-1 rounded-full bg-gray-200"></span>
                         <span>{article.read_time_minutes} min read</span>
+                    </div>
+
+                    {/* Minimalist Editorial Share */}
+                    <div className="pt-4">
+                        <ShareButton 
+                            title={article.title} 
+                            url={`${siteConfig.baseUrl}/blog/${slug}`} 
+                        />
                     </div>
                 </div>
             </header>

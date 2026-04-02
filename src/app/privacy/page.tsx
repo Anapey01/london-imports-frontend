@@ -1,4 +1,5 @@
 import React from 'react';
+import { siteConfig } from '@/config/site';
 
 export const metadata = {
     title: 'Privacy Policy | London\'s Imports',
@@ -57,11 +58,11 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">7. Contact Us</h2>
                 <p>For any privacy-related questions or requests, please contact us via:</p>
                 <ul className="list-disc pl-6 space-y-2">
-                    <li>WhatsApp: +233 54 109 6372</li>
-                    <li>Email: support@londonsimports.com</li>
+                    <li>WhatsApp: +{siteConfig.concierge.replace(/(\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}</li>
+                    <li>Email: {siteConfig.supportEmail}</li>
                 </ul>
 
-                <p className="text-sm text-gray-500 dark:text-slate-500 mt-8">Last updated: January 2026</p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mt-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
         </div>
     );

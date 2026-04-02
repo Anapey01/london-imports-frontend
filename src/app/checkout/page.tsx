@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/format';
 import { trackBeginCheckout, trackPurchase } from '@/lib/analytics';
 import { ExtendedCart, BackendError, type OrderItem } from '@/types';
 import { AlertCircle } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 // New Component Imports
 import CheckoutHeader from '@/components/checkout/CheckoutHeader';
@@ -328,7 +329,7 @@ function CheckoutPage() {
 
             if (paymentType === 'WHATSAPP') {
                 const message = encodeURIComponent(`Hi, I'd like to pay for my order #${orderToPay?.order_number}. Total: ${formatPrice(orderToPay?.total || 0)}.`);
-                window.open(`https://wa.me/233535698330?text=${message}`, '_blank');
+                window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
                 router.push('/orders');
                 return;
             }

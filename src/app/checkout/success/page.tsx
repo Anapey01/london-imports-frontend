@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ordersAPI } from '@/lib/api';
 import { Check, Clock, RefreshCw } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 function CheckoutSuccessPageContent() {
     const searchParams = useSearchParams();
@@ -112,7 +113,7 @@ function CheckoutSuccessPageContent() {
                 <div className="space-y-3">
                     {orderNumber && (
                         <a
-                            href={`https://wa.me/233200000000?text=Hello%2C%20I%20just%20placed%20order%20%23${orderNumber}.%20Please%20confirm%20my%20pre-order%20status.`}
+                            href={`https://wa.me/${siteConfig.concierge}?text=Hello%2C%20I%20just%20placed%20order%20%23${orderNumber}.%20Please%20confirm%20my%20pre-order%20status.`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.98]"

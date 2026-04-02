@@ -3,7 +3,7 @@
  * Includes Navbar, providers, and global styles
  */
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Instrument_Sans } from "next/font/google";
+import { Source_Serif_4, Source_Sans_3 } from "next/font/google";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Providers from "@/providers/Providers";
 import PWAUpdater from "@/components/PWAUpdater";
 import { Analytics } from "@vercel/analytics/next";
+import { siteConfig } from "@/config/site";
 
 
 // Lazy load below-the-fold components to reduce initial bundle
@@ -23,18 +24,18 @@ const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
 
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-  variable: "--font-instrument-serif",
-});
-
-const instrumentSans = Instrument_Sans({
+const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-instrument-sans",
+  variable: "--font-source-serif",
+});
+
+const sourceSans = Source_Sans_3({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-source-sans",
 });
 
 export const metadata: Metadata = {
@@ -126,18 +127,18 @@ export default async function RootLayout({
     "description": "Ghana's leading mini-importation logistics and sourcing platform. Shop from China (1688, Alibaba, Taobao) directly to Accra, Kumasi, and Tema. Independent Ghanaian entity with local doorstep delivery.",
     "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
-    "telephone": ["+233545247009", "+233541096372"],
+    "telephone": [`+${siteConfig.whatsapp}`, `+${siteConfig.concierge}`],
     "contactPoint": [
       {
         "@type": "ContactPoint",
-        "telephone": "+233545247009",
+        "telephone": `+${siteConfig.whatsapp}`,
         "contactType": "customer support",
         "areaServed": "GH",
         "availableLanguage": "en"
       },
       {
         "@type": "ContactPoint",
-        "telephone": "+233541096372",
+        "telephone": `+${siteConfig.concierge}`,
         "contactType": "concierge and order tracking",
         "areaServed": "GH",
         "availableLanguage": "en"
@@ -190,11 +191,11 @@ export default async function RootLayout({
     "currenciesAccepted": "GHS",
     "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
     "sameAs": [
-      "https://wa.me/233545247009",
-      "https://wa.me/233541096372",
-      "https://www.instagram.com/londonimportsghana",
-      "https://www.tiktok.com/@londons_imports1",
-      "https://www.snapchat.com/add/londons_imports"
+      siteConfig.socials.whatsapp,
+      siteConfig.socials.concierge,
+      siteConfig.socials.instagram,
+      siteConfig.socials.tiktok,
+      siteConfig.socials.snapchat
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
@@ -326,7 +327,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       </head>
-      <body className={`${instrumentSerif.variable} ${instrumentSans.variable} font-sans bg-[#F9FAFB] dark:bg-[#0a0f1d] min-h-screen`} suppressHydrationWarning>
+      <body className={`${sourceSerif.variable} ${sourceSans.variable} font-sans bg-[#F9FAFB] dark:bg-[#0a0f1d] min-h-screen`} suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

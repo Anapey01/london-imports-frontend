@@ -593,7 +593,7 @@ html {
 .blog-content h1,
 .blog-content h2,
 .blog-content h3 {
-  font-family: var(--font-instrument-serif), serif;
+  font-family: var(--font-source-serif), serif;
 }
 .blog-content h2 {
   margin-top: 5rem;

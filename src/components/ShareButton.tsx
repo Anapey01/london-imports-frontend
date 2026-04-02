@@ -5,6 +5,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Check, Link as LinkIcon, MessageCircle } from 'lucide-react';
 
 interface ShareButtonProps {
     title: string;
@@ -22,17 +23,15 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
             url: url,
         };
 
-        // Try native share first (mobile)
         if (navigator.share) {
             try {
                 await navigator.share(shareData);
                 return;
             } catch {
-                // User cancelled or error, fall through to copy
+                // Ignore cancel
             }
         }
 
-        // Fallback: copy to clipboard
         try {
             await navigator.clipboard.writeText(url);
             setCopied(true);
@@ -42,26 +41,36 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
         }
     };
 
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${title} - ${url}`)}`;
+
     return (
-        <button
-            onClick={handleShare}
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all ${className}`}
-        >
-            {copied ? (
-                <>
-                    <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Link copied!
-                </>
-            ) : (
-                <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                    Share
-                </>
-            )}
-        </button>
+        <div className={`flex items-center gap-3 ${className}`}>
+            <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-gray-400 hover:text-green-500 transition-colors border border-gray-100 rounded-lg hover:border-green-100 hover:bg-green-50/30"
+                aria-label="Share on WhatsApp"
+            >
+                <MessageCircle className="w-5 h-5" strokeWidth={1.5} />
+            </a>
+
+            <button
+                onClick={handleShare}
+                className="flex items-center gap-2 pr-4 pl-3 py-2 text-[10px] uppercase tracking-widest font-bold text-gray-400 border border-gray-100 rounded-lg hover:border-gray-200 hover:text-gray-900 hover:bg-gray-50 transition-all font-sans"
+            >
+                {copied ? (
+                    <>
+                        <Check className="w-3 h-3 text-green-500" strokeWidth={3} />
+                        <span>Copied</span>
+                    </>
+                ) : (
+                    <>
+                        <LinkIcon className="w-3 h-3" strokeWidth={2} />
+                        <span>Copy Link</span>
+                    </>
+                )}
+            </button>
+        </div>
     );
 }

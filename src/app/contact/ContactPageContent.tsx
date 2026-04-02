@@ -21,6 +21,7 @@ import {
     Check
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { siteConfig } from '@/config/site';
 
 const subjectOptions = [
     { value: 'order_issue', label: 'Order Issue' },
@@ -69,7 +70,7 @@ export default function ContactPageContent() {
             desc: "The fastest way to reach our general logistics team.",
             icon: <MessageCircle className="w-8 h-8" />,
             color: "bg-green-600",
-            link: "https://wa.me/233545247009?text=Hi%20London's%20Imports!%20I%20need%20help%20with..."
+            link: `${siteConfig.socials.whatsapp}?text=Hi%20London's%20Imports!%20I%20need%20help%20with...`
         },
         {
             title: "Email Support",
@@ -77,7 +78,7 @@ export default function ContactPageContent() {
             desc: "For formal inquiries and bulk order sourcing.",
             icon: <Mail className="w-8 h-8" />,
             color: "bg-orange-600",
-            link: "mailto:info@londonsimports.com"
+            link: `mailto:${siteConfig.supportEmail}`
         },
         {
             title: "Global HQ",
@@ -265,11 +266,11 @@ export default function ContactPageContent() {
 
                         <div className="space-y-4">
                             <div
-                                onClick={() => handleCopy('+233541096372')}
+                                onClick={() => handleCopy(`+${siteConfig.concierge}`)}
                                 className="inline-flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 hover:bg-white/10 transition-colors group cursor-pointer max-w-max relative"
                             >
                                 <Phone className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform" />
-                                <span className="font-bold tracking-tight text-lg">+233 541 096 372</span>
+                                <span className="font-bold tracking-tight text-lg">+{siteConfig.concierge.replace(/(\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}</span>
                                 <div className="ml-2 pl-3 border-l border-white/10">
                                     {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-gray-500 group-hover:text-white transition-colors" />}
                                 </div>
