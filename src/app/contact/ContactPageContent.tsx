@@ -64,9 +64,9 @@ export default function ContactPageContent() {
 
     const supportChannels = [
         {
-            title: "WhatsApp",
-            label: "Instant Messaging",
-            desc: "The fastest way to reach our logistics team.",
+            title: "WhatsApp Support",
+            label: "Main Logistics Line",
+            desc: "The fastest way to reach our general logistics team.",
             icon: <MessageCircle className="w-8 h-8" />,
             color: "bg-green-600",
             link: "https://wa.me/233545247009?text=Hi%20London's%20Imports!%20I%20need%20help%20with..."
@@ -258,9 +258,9 @@ export default function ContactPageContent() {
                 <div className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-20">
                     <div className="flex flex-col justify-center">
                         <div className="w-10 h-1 bg-orange-600 mb-10" />
-                        <h2 className="text-5xl font-bold mb-8 italic">Direct Inquiries</h2>
+                        <h2 className="text-5xl font-bold mb-8 italic">Order Concierge</h2>
                         <p className="text-gray-400 text-lg mb-10 leading-relaxed">
-                            Have a specific sourcing request or a bulk wholesale inquiry? Use our direct line for priority handling.
+                            Already have an order or seeking a VIP sourcing request? Use our dedicated concierge line for priority handling.
                         </p>
 
                         <div className="space-y-4">

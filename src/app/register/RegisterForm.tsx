@@ -44,8 +44,8 @@ export default function RegisterForm() {
             // Clear the automatic login session
             logout();
 
-            // Redirect to login with email pre-filled
-            router.push(`/login?email=${encodeURIComponent(formData.email)}&registered=true`);
+            // Redirect to login with email pre-filled and welcome flag
+            router.push(`/login?email=${encodeURIComponent(formData.email)}&registered=true&welcome=true`);
         } catch (error: unknown) {
             console.error('Registration Error Full Object:', JSON.stringify(error, null, 2));
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };

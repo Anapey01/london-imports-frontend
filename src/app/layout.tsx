@@ -126,7 +126,23 @@ export default async function RootLayout({
     "description": "Ghana's leading mini-importation logistics and sourcing platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Independent Ghanaian entity.",
     "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
-    "telephone": "+233545247009",
+    "telephone": ["+233545247009", "+233541096372"],
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+233545247009",
+        "contactType": "customer support",
+        "areaServed": "GH",
+        "availableLanguage": "en"
+      },
+      {
+        "@type": "ContactPoint",
+        "telephone": "+233541096372",
+        "contactType": "concierge and order tracking",
+        "areaServed": "GH",
+        "availableLanguage": "en"
+      }
+    ],
     "email": "info@londonsimports.com",
     "address": {
       "@type": "PostalAddress",
@@ -175,6 +191,7 @@ export default async function RootLayout({
     "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
     "sameAs": [
       "https://wa.me/233545247009",
+      "https://wa.me/233541096372",
       "https://www.instagram.com/londonimportsghana",
       "https://www.tiktok.com/@londons_imports1",
       "https://www.snapchat.com/add/londons_imports"

@@ -4,29 +4,24 @@
  */
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import NextImage from 'next/image';
+import toast from 'react-hot-toast';
 import { ordersAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
 import { Order, OrderItem } from '@/types';
-
-const statusSteps = [
-    { key: 'PAID', label: 'Paid' },
-    { key: 'OPEN_FOR_BATCH', label: 'Order Confirmed' },
-    { key: 'CUTOFF_REACHED', label: 'Processing' },
-    { key: 'IN_FULFILLMENT', label: 'In Fulfillment' },
-    { key: 'IN_TRANSIT', label: 'In Transit' },
-    { key: 'OUT_FOR_DELIVERY', label: 'Out for Delivery' },
-    { key: 'DELIVERED', label: 'Delivered' },
-];
+import ShipmentTracker from '@/components/order/ShipmentTracker';
 
 export default function OrderDetailPage() {
     const params = useParams();
     const orderNumber = params.orderNumber as string;
     const { isAuthenticated } = useAuthStore();
+    const queryClient = useQueryClient();
+    const [isVerifying, setIsVerifying] = useState(false);
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['order', orderNumber],
@@ -36,9 +31,23 @@ export default function OrderDetailPage() {
 
     const order: Order | undefined = data?.data;
 
-    const getCurrentStep = () => {
-        const stateIndex = statusSteps.findIndex(s => s.key === order?.state);
-        return stateIndex >= 0 ? stateIndex : 0;
+    const handleVerifyPayment = async () => {
+        if (!orderNumber) return;
+        
+        setIsVerifying(true);
+        const loadingToast = toast.loading('Verifying your payment with Paystack...');
+        
+        try {
+            const response = await ordersAPI.verifyPayment(orderNumber);
+            toast.success(response.data.message || 'Payment verified successfully!', { id: loadingToast });
+            // Invalidate query to refresh order details
+            queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.error || 'Verification failed. Please try again later.';
+            toast.error(errorMessage, { id: loadingToast });
+        } finally {
+            setIsVerifying(false);
+        }
     };
 
     if (isLoading) {
@@ -63,7 +72,6 @@ export default function OrderDetailPage() {
         );
     }
 
-    const currentStep = getCurrentStep();
     const balanceDue = parseFloat(order.balance_due?.toString() || '0');
     const isPendingPayment = order.state === 'PENDING_PAYMENT' || balanceDue > 0;
 
@@ -113,63 +121,31 @@ export default function OrderDetailPage() {
                                 </p>
                             </div>
                         </div>
-                        <Link
-                            href={`/checkout?order=${order.order_number}`}
-                            className="w-full sm:w-auto px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-pink-600 transition-colors text-center shadow-sm"
-                        >
-                            {balanceDue > 0 ? 'Pay Balance' : 'Complete Payment'}
-                        </Link>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                            <button
+                                onClick={handleVerifyPayment}
+                                disabled={isVerifying}
+                                className="px-6 py-3 bg-white border border-gray-200 text-gray-900 font-medium rounded-full hover:bg-gray-50 transition-colors text-center shadow-sm disabled:opacity-50"
+                            >
+                                {isVerifying ? 'Verifying...' : 'Verify My Payment'}
+                            </button>
+                            <Link
+                                href={`/checkout?order=${order.order_number}`}
+                                className="px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-pink-600 transition-colors text-center shadow-sm"
+                            >
+                                {balanceDue > 0 ? 'Pay Balance' : 'Complete Payment'}
+                            </Link>
+                        </div>
                     </div>
                 )}
 
-                {/* Progress Tracker */}
+                {/* High-Fidelity Logistics Tracker */}
                 {!['CANCELLED', 'REFUNDED', 'PENDING_PAYMENT'].includes(order.state) && (
-                    <div className="bg-white rounded-2xl p-8 mb-8 shadow-sm border border-gray-100">
-                        <h2 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-8">Order Lifecycle</h2>
-
-                        <div className="overflow-x-auto pb-4 -mx-2 px-2 scrollbar-hide">
-                            <div className="flex justify-between relative min-w-[600px] pt-2 mb-2">
-                                <div className="absolute top-6 left-4 right-4 h-0.5 bg-gray-100">
-                                    <div
-                                        className={`h-full bg-gray-900 transition-all duration-700 ease-out ${currentStep === 0 ? 'w-0' :
-                                            currentStep === 1 ? 'w-[16.6%]' :
-                                                currentStep === 2 ? 'w-[33.3%]' :
-                                                    currentStep === 3 ? 'w-[50%]' :
-                                                        currentStep === 4 ? 'w-[66.6%]' :
-                                                            currentStep === 5 ? 'w-[83.3%]' :
-                                                                'w-full'
-                                            }`}
-                                    />
-                                </div>
-
-                                {statusSteps.map((step, index) => (
-                                    <div key={step.key} className="relative z-10 flex flex-col items-center flex-1">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-500 mb-4 ${index <= currentStep
-                                            ? 'bg-gray-900 text-white shadow-md'
-                                            : 'bg-white border-2 border-gray-100 text-gray-300'
-                                            }`}>
-                                            {index < currentStep ? (
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            ) : (
-                                                <span className="text-xs font-semibold">{index + 1}</span>
-                                            )}
-                                        </div>
-                                        <div className="h-10 flex items-start justify-center text-center">
-                                            <span className={`text-[10px] leading-tight uppercase tracking-wider px-2 font-semibold ${index <= currentStep ? 'text-gray-900' : 'text-gray-400 font-normal'
-                                                }`}>
-                                                {step.label}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex justify-center mt-2 md:hidden">
-                            <p className="text-[10px] text-gray-400 italic">Scroll left/right to view all steps</p>
-                        </div>
+                    <div className="mb-8">
+                        <ShipmentTracker 
+                            currentState={order.state} 
+                            timelineEvents={order.timeline_events}
+                        />
                     </div>
                 )}
 
@@ -258,7 +234,12 @@ export default function OrderDetailPage() {
                             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                                 <h3 className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-4">Support</h3>
                                 <p className="text-sm font-light text-gray-600 mb-4">Need help with this order? Contact our concierge team.</p>
-                                <a href="https://wa.me/233543944686" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-pink-600 text-sm font-medium hover:text-pink-700 transition-colors">
+                                <a 
+                                    href={`https://wa.me/233541096372?text=${encodeURIComponent(`Hi London's Imports! I need help with Order #${order.order_number} (Status: ${order.state}).`)}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="inline-flex items-center gap-2 text-pink-600 text-sm font-medium hover:text-pink-700 transition-colors"
+                                >
                                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.484 8.412-.003 6.557-5.338 11.892-11.893 11.892-1.996-.001-3.951-.5-5.688-1.448l-6.309 1.656zm6.29-4.739c1.53.91 3.041 1.389 4.828 1.389 5.288 0 9.589-4.301 9.593-9.59 0-2.565-1.001-4.973-2.812-6.784s-4.219-2.812-6.783-2.812c-5.276 0-9.577 4.302-9.581 9.591-.001 1.905.508 3.454 1.47 4.904l-1.026 3.738 3.837-1.006z" /></svg>
                                     WhatsApp Concierge
                                 </a>

@@ -7,10 +7,7 @@
 // Default placeholder if image is missing or invalid
 const PLACEHOLDER_IMAGE = '/assets/placeholder-product.png'; // Make sure this exists or use a data URI
 
-// Cloudinary Base URL (Fallback)
-// We try to guess the cloud name if the backend sends a raw path
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
-const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
 
 export const getImageUrl = (path: string | null | undefined): string => {
     if (!path) return PLACEHOLDER_IMAGE;
@@ -41,7 +38,8 @@ export const getImageUrl = (path: string | null | undefined): string => {
     // If it looks like a Cloudinary ID (e.g. products/shoe1), try to construct full URL
     // prioritizing the backend fix, but this is the "Last Resort" frontend fix
     if (path.includes('/') && !path.startsWith('/')) {
-        return `${CLOUDINARY_BASE}${path}`;
+        // Inject optimization flags for better performance in Ghana (f_auto=auto format, q_auto=auto quality)
+        return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/${path}`;
     }
 
     return path;

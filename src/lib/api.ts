@@ -155,6 +155,8 @@ export const ordersAPI = {
   track: (orderNumber: string) => api.get(`/orders/${orderNumber}/track/`),
   cancelOrder: (orderNumber: string, reason?: string) => 
     api.post(`/orders/${orderNumber}/cancel/`, { reason }),
+  verifyPayment: (orderNumber: string) => 
+    api.post(`/orders/${orderNumber}/verify-payment/`, {}),
 };
 
 export const paymentsAPI = {

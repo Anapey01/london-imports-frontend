@@ -14,12 +14,19 @@ function LoginFormContent() {
     const role = searchParams.get('role'); // 'vendor' | 'partner' | 'admin'
     const emailParam = searchParams.get('email');
     const isRegistered = searchParams.get('registered') === 'true';
+    const hasWelcome = searchParams.get('welcome') === 'true';
 
     const { login, isLoading } = useAuthStore();
     const [username, setUsername] = useState(emailParam || '');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(isRegistered ? 'Registration successful! Please sign in with your account.' : '');
+    const [success, setSuccess] = useState(
+        isRegistered 
+            ? hasWelcome 
+                ? "Welcome aboard! Registration successful. We've sent a getting-started guide to your email." 
+                : "Registration successful! Please sign in with your account." 
+            : ""
+    );
 
     const getTitle = () => {
         switch (role) {
