@@ -2,6 +2,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import withPWAInit from "@ducanh2912/next-pwa";
+import { siteConfig } from './src/config/site';
+
+const API_ROOT = siteConfig.apiUrl.replace('/api/v1', '');
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -200,7 +203,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/feed/google/:path*',
-        destination: 'https://london-imports-api.onrender.com/api/feed/google/:path*',
+        destination: `${API_ROOT}/api/feed/google/:path*`,
       },
     ];
   },

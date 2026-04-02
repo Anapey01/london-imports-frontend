@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
+import { siteConfig } from '@/config/site';
 
 // Blog post type from API
 interface BlogPost {
@@ -29,7 +30,7 @@ interface BlogPost {
 // Fetch blog post from API
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
-        const res = await fetch(`https://london-imports-api.onrender.com/api/v1/blog/${slug}/`, {
+        const res = await fetch(`${siteConfig.apiUrl}/blog/${slug}/`, {
             next: { revalidate: 86400 }
         });
         if (!res.ok) return null;
@@ -50,7 +51,7 @@ export async function generateStaticParams() {
     ];
 
     try {
-        const res = await fetch('https://london-imports-api.onrender.com/api/v1/blog/', {
+        const res = await fetch(`${siteConfig.apiUrl}/blog/`, {
             next: { revalidate: 86400 }
         });
         if (res.ok) {
@@ -256,16 +257,16 @@ export default async function BlogArticlePage({
         "image": article.featured_image ? [getImageUrl(article.featured_image)] : [],
         "author": {
             "@type": "Organization",
-            "name": "London's Imports",
-            "url": "https://londonsimports.com",
-            "logo": "https://londonsimports.com/logo.jpg"
+            "name": siteConfig.name,
+            "url": siteConfig.baseUrl,
+            "logo": `${siteConfig.baseUrl}/logo.jpg`
         },
         "publisher": {
             "@type": "Organization",
-            "name": "London's Imports",
+            "name": siteConfig.name,
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://londonsimports.com/logo.jpg"
+                "url": `${siteConfig.baseUrl}/logo.jpg`
             }
         },
     } as Record<string, unknown>;
@@ -334,19 +335,19 @@ export default async function BlogArticlePage({
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://londonsimports.com"
+                "item": siteConfig.baseUrl
             },
             {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Blog",
-                "item": "https://londonsimports.com/blog"
+                "item": `${siteConfig.baseUrl}/blog`
             },
             {
                 "@type": "ListItem",
                 "position": 3,
                 "name": article.title,
-                "item": `https://londonsimports.com/blog/${slug}`
+                "item": `${siteConfig.baseUrl}/blog/${slug}`
             }
         ]
     };

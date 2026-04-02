@@ -1,9 +1,6 @@
-/**
- * Server-Side Fetchers for SEO/SSG
- * Uses native fetch for Next.js caching and revalidation
- */
+import { siteConfig } from '@/config/site';
 
-const API_BASE_URL = 'https://london-imports-api.onrender.com/api/v1';
+const API_BASE_URL = siteConfig.apiUrl;
 
 /**
  * Robust fetch with timeout and retry logic for Render's Cold Starts

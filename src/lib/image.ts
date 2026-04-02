@@ -1,3 +1,4 @@
+import { siteConfig } from '@/config/site';
 
 /**
  * London's Imports - Image Utilities
@@ -16,9 +17,10 @@ export const getImageUrl = (path: string | null | undefined): string => {
     if (path.startsWith('http')) {
         // Fix: If the DB has localhost URLs (from dev), rewrite them to the prod API
         if (path.includes('localhost:8000') || path.includes('127.0.0.1:8000')) {
+            const backendUrl = siteConfig.apiUrl.replace('/api/v1', '');
             return path
-                .replace('http://localhost:8000', 'https://london-imports-api.onrender.com')
-                .replace('http://127.0.0.1:8000', 'https://london-imports-api.onrender.com');
+                .replace('http://localhost:8000', backendUrl)
+                .replace('http://127.0.0.1:8000', backendUrl);
         }
 
         // FORCE HTTPS to prevent Mixed Content warnings/blocking on Vercel
@@ -27,12 +29,14 @@ export const getImageUrl = (path: string | null | undefined): string => {
 
     // If it's a relative path starting with /media/ (Local backend)
     if (path.startsWith('/media/')) {
-        return `${process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com'}${path}`;
+        const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
+        return `${rootUrl}${path}`;
     }
 
     // If it's a relative path starting with media/ (without slash)
     if (path.startsWith('media/')) {
-        return `${process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com'}/${path}`;
+        const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
+        return `${rootUrl}/${path}`;
     }
 
     // If it looks like a Cloudinary ID (e.g. products/shoe1), try to construct full URL

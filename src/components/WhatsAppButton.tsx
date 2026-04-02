@@ -1,10 +1,10 @@
 'use client';
 
-
+import { siteConfig } from '@/config/site';
 
 export default function WhatsAppButton() {
-    const whatsappNumber = '233545247009';
-    const message = encodeURIComponent('Hi! I have a question about London\'s Imports pre-orders.');
+    const whatsappNumber = siteConfig.whatsapp;
+    const message = encodeURIComponent(`Hi! I have a question about ${siteConfig.name} pre-orders.`);
 
     // Function to handle click based on device
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

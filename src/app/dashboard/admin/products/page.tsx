@@ -144,9 +144,10 @@ export default function AdminProductsPage() {
             const response = await adminAPI.products();
             setProducts(response.data.results || response.data || []);
             alert('All products activated successfully!');
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed bulk activation:', err);
-            alert('Bulk activation failed');
+            const errorMessage = err.response?.data?.error || err.response?.data?.detail || err.message || 'Unknown error';
+            alert(`Bulk activation failed: ${errorMessage}`);
         } finally {
             setLoading(false);
         }

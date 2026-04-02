@@ -19,6 +19,7 @@ import { formatPrice } from '@/lib/format';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { useToast } from '@/components/Toast';
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
+import { siteConfig } from '@/config/site';
 
 // Lazy Load components to improve initial page load performance
 const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
@@ -182,7 +183,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
             const fetchProduct = async () => {
                 try {
-                    const API_BASE = 'https://london-imports-api.onrender.com/api/v1';
+                    const API_BASE = siteConfig.apiUrl;
                     // Add timestamp to prevent browser caching
                     const res = await fetch(`${API_BASE}/products/${slug}/?t=${Date.now()}`);
                     if (!res.ok) throw new Error('Failed to fetch');
@@ -382,7 +383,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </h1>
                             <ShareButton
                                 title={product.name}
-                                url={`https://londonsimports.com/products/${slug}`}
+                                url={`${siteConfig.baseUrl}/products/${slug}`}
                             />
                         </div>
 

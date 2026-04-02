@@ -1,3 +1,5 @@
+import { siteConfig } from '@/config/site';
+
 /**
  * Global Image Loader for Next.js
  * Bypasses Vercel's built-in image optimization to stay within Hobby plan limits.
@@ -27,14 +29,16 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
         return src;
     }
 
-    // For backend media URLs (https://london-imports-api.onrender.com/media/...)
-    if (src.includes('onrender.com') && src.includes('/media/')) {
+    // For backend media URLs (siteConfig root)
+    const backendRoot = siteConfig.apiUrl.replace('/api/v1', '');
+    if (src.includes(backendRoot) && src.includes('/media/')) {
         return src;
     }
 
     // Safety: If it starts with /media/, prepend the backend host
     if (src.startsWith('/media/')) {
-        return `https://london-imports-api.onrender.com${src}`;
+        const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
+        return `${rootUrl}${src}`;
     }
 
     // For local assets (e.g. /assets/logo.png), return as-is

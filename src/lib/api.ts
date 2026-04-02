@@ -3,8 +3,9 @@
  * Axios instance with JWT token handling
  */
 import axios from 'axios';
+import { siteConfig } from '@/config/site';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com/api/v1';
+const API_BASE_URL = siteConfig.apiUrl;
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
