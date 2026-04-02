@@ -159,31 +159,38 @@ export default async function ProductsPage({ searchParams }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             {/* Header - Editorial Style */}
-            <div className="bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-900">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center animate-fade-in">
-                    <span className="inline-block px-4 py-1.5 mb-6 text-[10px] font-black tracking-[0.5em] uppercase text-slate-400 dark:text-slate-500">
-                        {isAvailableItems
-                            ? 'Instant Availability'
-                            : featured
-                                ? 'Exclusive Drop'
-                                : 'Pre-Order Collection'}
-                    </span>
-                    <h1 className="text-4xl md:text-6xl font-serif font-black text-slate-950 dark:text-white mb-6 tracking-tight leading-[1.1]">
-                        {isAvailableItems
-                            ? 'Available Items'
-                            : featured
-                                ? <>Upcoming <span className="italic opacity-20 px-1">&amp;</span> Drops</>
-                                : category
-                                    ? <>{categoryTitle} <span className="italic opacity-20 px-1">&amp;</span> Imports</>
-                                    : <>Pre-order <span className="italic opacity-20 px-1">&amp;</span> Products</>}
-                    </h1>
-                    <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-sans">
-                        {isAvailableItems
-                            ? 'Authentic items sourced from London, ready for immediate dispatch across Ghana.'
-                            : featured
-                                ? 'Limited-run collections arriving soon. Reserve yours today to guarantee availability.'
-                                : 'Bespoke logistics meet high-end global retail. Browse and reserve your products before the next shipment arrives.'}
-                    </p>
+            <div className="bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-900 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center animate-fade-in relative">
+                    {/* Background Decorative Text */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-serif font-black text-slate-50 dark:text-slate-900/40 select-none pointer-events-none whitespace-nowrap opacity-50 italic">
+                        {category || 'Collection'}
+                    </div>
+
+                    <div className="relative z-10">
+                        <span className="inline-block px-4 py-1.5 mb-8 text-[11px] font-black tracking-[0.8em] uppercase text-slate-400 dark:text-slate-500 border-x border-slate-100 dark:border-slate-800">
+                            {isAvailableItems
+                                ? 'Instant Availability'
+                                : featured
+                                    ? 'Exclusive Drop'
+                                    : 'The Sourcing House'}
+                        </span>
+                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-medium text-slate-950 dark:text-white mb-8 tracking-tighter leading-[0.85]">
+                            {isAvailableItems
+                                ? 'Ready to Ship'
+                                : featured
+                                    ? <>The <span className="italic font-light">Featured</span> Drop</>
+                                    : category
+                                        ? <>{categoryTitle} <span className="italic font-light opacity-40 px-2">&amp;</span> Arrivals</>
+                                        : <>Pre-order <span className="italic font-light opacity-40 px-2">&amp;</span> Products</>}
+                        </h1>
+                        <p className="text-base md:text-xl text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed font-sans font-light">
+                            {isAvailableItems
+                                ? 'Selected items from the London inventory, authenticated and ready for dispatch in Ghana.'
+                                : featured
+                                    ? 'Ultra-limited collections meticulously sourced. Reserve yours before the window closes.'
+                                    : 'A bespoke selection of global retail, brought to Ghana through the Protocol.'}
+                        </p>
+                    </div>
                 </div>
             </div>
 

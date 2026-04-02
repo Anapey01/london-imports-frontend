@@ -327,7 +327,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       </head>
-      <body className={`${sourceSerif.variable} ${sourceSans.variable} font-sans bg-[#F9FAFB] dark:bg-[#0a0f1d] min-h-screen`} suppressHydrationWarning>
+      <body className={`${sourceSerif.variable} ${sourceSans.variable} font-sans bg-stationery dark:bg-[#0a0f1d] min-h-screen shadow-inner`} suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

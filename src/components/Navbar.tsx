@@ -89,20 +89,20 @@ export default function Navbar() {
                                 </div>
                             </div>
 
-                            <Link href="/" className="flex items-center gap-2 group">
+                            <Link href="/" className="flex items-center gap-3 group">
                                 <Image
                                     src="/logo.jpg"
                                     alt="London's Imports"
-                                    width={40}
-                                    height={40}
-                                    className="h-10 w-10 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform"
+                                    width={44}
+                                    height={44}
+                                    className="h-11 w-11 object-contain rounded-xl shadow-diffusion group-hover:scale-110 transition-transform duration-500"
                                     priority
                                 />
                                 <div className="flex flex-col leading-none">
-                                    <span className="text-lg font-black tracking-tight text-slate-950">
+                                    <span className="text-xl font-serif font-medium tracking-tight text-slate-950 dark:text-white">
                                         LONDON&apos;S
                                     </span>
-                                    <span className="text-[10px] font-bold text-green-600 tracking-[0.3em] uppercase">Imports</span>
+                                    <span className="text-[10px] font-black text-green-600 tracking-[0.4em] uppercase opacity-80">Sourcing House</span>
                                 </div>
                             </Link>
                         </div>
@@ -230,12 +230,12 @@ export default function Navbar() {
                                 alt="London's Imports"
                                 width={32}
                                 height={32}
-                                className="rounded-lg shadow-sm"
+                                className="rounded-lg shadow-diffusion"
                                 priority
                             />
                             <div className="flex flex-col leading-none">
-                                <span className="text-sm font-black tracking-tight text-gray-900">LONDON&apos;S</span>
-                                <span className="text-[10px] font-bold text-green-600 tracking-[0.2em] uppercase">Imports</span>
+                                <span className="text-sm font-serif font-medium tracking-tight text-slate-900 border-b border-green-600/20">LONDON&apos;S</span>
+                                <span className="text-[10px] font-black text-green-600 tracking-[0.2em] uppercase opacity-70">Agency</span>
                             </div>
                         </Link>
 
