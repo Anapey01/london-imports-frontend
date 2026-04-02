@@ -192,7 +192,7 @@ function LinksContent() {
             className="inline-flex items-center gap-2 group opacity-40 hover:opacity-100 transition-opacity"
           >
             <span className="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-gray-500">
-              Back to ldnimports.com
+              Back to londonsimports.com
             </span>
           </Link>
         </footer>
