@@ -135,6 +135,23 @@ export default function AdminProductsPage() {
         }
     };
 
+    const handleBulkActivate = async () => {
+        if (!confirm('This will set ALL products to ACTIVE and 3 weeks delivery. Continue?')) return;
+        
+        try {
+            setLoading(true);
+            await adminAPI.bulkActivateProducts(3);
+            const response = await adminAPI.products();
+            setProducts(response.data.results || response.data || []);
+            alert('All products activated successfully!');
+        } catch (err) {
+            console.error('Failed bulk activation:', err);
+            alert('Bulk activation failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleDeleteProduct = async (id: number) => {
         if (confirm('Remove this product from the catalog?')) {
             try {
@@ -189,15 +206,26 @@ export default function AdminProductsPage() {
                         Manage your inventory and pre-order listings
                     </p>
                 </div>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="px-4 py-2.5 rounded-lg bg-pink-500 text-white font-medium text-sm flex items-center gap-2 hover:bg-pink-600 transition-colors"
-                >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    New Product
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleBulkActivate}
+                        className={`px-4 py-2.5 rounded-lg border font-medium text-sm flex items-center gap-2 transition-colors ${isDark ? 'border-amber-500/50 text-amber-500 hover:bg-amber-500/10' : 'border-amber-200 text-amber-700 hover:bg-amber-50'}`}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Bulk Active (3 Weeks)
+                    </button>
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="px-4 py-2.5 rounded-lg bg-pink-500 text-white font-medium text-sm flex items-center gap-2 hover:bg-pink-600 transition-colors"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        New Product
+                    </button>
+                </div>
             </div>
 
             <ProductStats products={products} isDark={isDark} />

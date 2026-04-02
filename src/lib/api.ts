@@ -212,6 +212,7 @@ export const adminAPI = {
   featureProduct: (id: string, featured: boolean) => api.post(`/admin/products/${id}/feature/`, { featured }),
   getProduct: (id: string) => api.get(`/admin/products/${id}/`),
   deleteProduct: (id: string) => api.delete(`/admin/products/${id}/`),
+  bulkActivateProducts: (weeks: number = 3) => api.post('/admin/products/bulk-activate/', { weeks }),
 
   // Analytics
   analytics: (params?: unknown) => api.get('/admin/analytics/', { params }),
