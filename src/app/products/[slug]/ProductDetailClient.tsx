@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
@@ -318,7 +319,42 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     return (
         <div className="bg-white min-h-screen pb-20">
-            <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
+                {/* Visual Breadcrumbs for SEO and Navigation */}
+                <nav className="flex items-center text-xs sm:text-sm text-gray-500 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
+                    <Link href="/" className="hover:text-pink-600 transition-colors flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001-1m-6 0h6" />
+                        </svg>
+                        Home
+                    </Link>
+                    <svg className="w-4 h-4 mx-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <Link href="/products" className="hover:text-pink-600 transition-colors">
+                        Products
+                    </Link>
+                    {product.category && (
+                        <>
+                            <svg className="w-4 h-4 mx-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                            <Link 
+                                href={`/products/category/${product.category.slug || ''}`} 
+                                className="hover:text-pink-600 transition-colors"
+                            >
+                                {product.category.name}
+                            </Link>
+                        </>
+                    )}
+                    <svg className="w-4 h-4 mx-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-none">
+                        {product.name}
+                    </span>
+                </nav>
+
                 {/* Two Column Grid: Image Left, Details Right */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
