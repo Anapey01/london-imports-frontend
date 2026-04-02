@@ -1,7 +1,9 @@
-import { Metadata } from 'next';
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { 
   ShoppingBag, 
   Search, 
@@ -15,23 +17,26 @@ import {
 } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
-export const metadata: Metadata = {
-  title: "London's Imports | Your Bio Links",
-  description: "Direct links to our China-to-Ghana catalog, custom sourcing requests, and social channels. Your one-stop shop for premium imports.",
-  openGraph: {
-    title: "London's Imports Ghana | Link-in-Bio",
-    description: "Shop curated imports and request custom sourcing. Ghana's trusted logistics partner.",
-    url: 'https://londonsimports.com/links',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: "London's Imports Links" }],
-  },
-  robots: { index: false, follow: true }, // Usually good for bio links to focus on main site SEO
-};
-
 /**
- * Editorial "Link-in-Bio" Page
+ * Editorial "Link-in-Bio" Page with Micro-Analytics
  * Design Focus: High Minimalism, Editorial Typography, Premium Whitespace
  */
 export default function LinksPage() {
+  const searchParams = useSearchParams();
+  const ref = searchParams.get('ref') || 'direct'; // Capture source (tiktok, ig, etc)
+
+  // GA4 Micro-Analytics Trigger
+  const trackInteraction = (label: string) => {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'social_hub_click', {
+        'event_category': 'Conversion Funnel',
+        'event_label': label,
+        'source_platform': ref,
+        'page_location': window.location.href
+      });
+    }
+  };
+
   const primaryLinks = [
     {
       title: "Shop the Pre-order Catalog",
@@ -104,10 +109,10 @@ export default function LinksPage() {
             <Link 
               key={idx}
               href={link.href}
+              onClick={() => trackInteraction(link.title)}
               className="group block relative p-1 transition-all duration-300"
             >
               <div className="relative border border-gray-100 bg-white p-6 rounded-xl hover:border-pink-200 hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] transition-all duration-500 overflow-hidden">
-                {/* Subtle Hover Reveal */}
                 <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <ExternalLink className="w-4 h-4 text-pink-300" strokeWidth={1.5} />
                 </div>
@@ -121,7 +126,7 @@ export default function LinksPage() {
                       {link.title}
                     </h2>
                     <p className="text-sm text-gray-400 font-sans tracking-tight">
-                      {link.description}
+                       {link.description}
                     </p>
                   </div>
                 </div>
@@ -136,6 +141,7 @@ export default function LinksPage() {
             <Link 
               key={idx}
               href={link.href}
+              onClick={() => trackInteraction(link.title)}
               className="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group"
             >
               <div className="flex items-center gap-4">
@@ -153,9 +159,12 @@ export default function LinksPage() {
         <section className="mb-16">
           <div className="flex flex-col gap-4">
             {socialLinks.map((social, idx) => (
-              <Link 
+              <a 
                 key={idx}
                 href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackInteraction(`Social: ${social.name}`)}
                 className="flex items-center gap-4 p-4 rounded-xl border border-transparent hover:border-gray-100 hover:bg-white hover:shadow-sm transition-all group"
               >
                 <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-50 group-hover:bg-pink-50 transition-colors">
@@ -169,7 +178,7 @@ export default function LinksPage() {
                     {social.handle}
                   </div>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         </section>
@@ -178,6 +187,7 @@ export default function LinksPage() {
         <footer className="text-center">
           <Link 
             href="/"
+            onClick={() => trackInteraction('Back to Site')}
             className="inline-flex items-center gap-2 group opacity-40 hover:opacity-100 transition-opacity"
           >
             <span className="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-gray-500">

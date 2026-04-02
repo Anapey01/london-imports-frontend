@@ -95,6 +95,7 @@ const Footer = () => {
                             <li><Link href="/faq" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
                             <li><Link href="/blog" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold">Blog</Link></li>
                             <li><Link href="/track" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold text-pink-500">Track China Shipping</Link></li>
+                            <li><Link href="/links" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold text-cyan-400 italic">Social Hub & Bio Links</Link></li>
                         </ul>
                     </div>
 
