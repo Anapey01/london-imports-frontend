@@ -12,7 +12,7 @@ export default function HowItWorksBar() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:gap-24">
                     {/* Step 1 */}
-                    <div className="flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                    <div className="flex flex-col items-center text-center animate-fade-in [animation-delay:0.1s]">
                         <div className="w-12 h-12 flex items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 mb-6 group transition-all hover:bg-slate-950 hover:text-white duration-500">
                             <ShoppingBag className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" strokeWidth={1.5} />
                         </div>
@@ -24,7 +24,7 @@ export default function HowItWorksBar() {
                     </div>
 
                     {/* Step 2 */}
-                    <div className="flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <div className="flex flex-col items-center text-center animate-fade-in [animation-delay:0.2s]">
                         <div className="w-12 h-12 flex items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 mb-6 group transition-all hover:bg-slate-950 hover:text-white duration-500">
                             <PackageCheck className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" strokeWidth={1.5} />
                         </div>
@@ -36,7 +36,7 @@ export default function HowItWorksBar() {
                     </div>
 
                     {/* Step 3 */}
-                    <div className="flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                    <div className="flex flex-col items-center text-center animate-fade-in [animation-delay:0.3s]">
                         <div className="w-12 h-12 flex items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 mb-6 group transition-all hover:bg-slate-950 hover:text-white duration-500">
                             <Plane className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" strokeWidth={1.5} />
                         </div>

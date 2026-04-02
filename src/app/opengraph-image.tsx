@@ -41,49 +41,108 @@ export default async function Image() {
         console.error('OG Image fetch failed', e);
     }
 
+    // Image component styling
+    const styles = {
+        container: {
+            background: 'white',
+            width: '100%',
+            height: '100%',
+            display: 'flex' as const,
+            flexDirection: 'row' as const,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '60px',
+        },
+        leftPanel: {
+            display: 'flex' as const,
+            flexDirection: 'column' as const,
+            width: '55%',
+            height: '100%',
+            justifyContent: 'center',
+        },
+        brand: {
+            fontSize: '24px',
+            color: '#666',
+            fontFamily: 'monospace',
+            margin: '0 0 30px 0',
+        },
+        header: {
+            fontSize: '56px',
+            fontWeight: 'bold',
+            color: '#1a1a1a',
+            margin: 0,
+            lineHeight: 1.2,
+            display: 'flex' as const,
+            flexDirection: 'column' as const,
+        },
+        accent: {
+            color: '#7c3aed',
+        },
+        badgeContainer: {
+            display: 'flex' as const,
+            alignItems: 'center',
+            marginTop: '40px',
+        },
+        logo: {
+            borderRadius: '50%',
+            marginRight: '20px',
+        },
+        badgeText: {
+            fontSize: '24px',
+            color: '#444',
+        },
+        rightPanel: {
+            display: 'flex' as const,
+            flexDirection: 'row' as const,
+            gap: '20px',
+            width: '45%',
+            justifyContent: 'center',
+        },
+        productFrame: {
+            display: 'flex' as const,
+            width: '220px',
+            height: '380px',
+            borderRadius: '20px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+        },
+        productImage: {
+            objectFit: 'cover' as const,
+        }
+    };
+
     return new ImageResponse(
         (
-            <div
-                style={{
-                    background: 'white',
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '60px',
-                }}
-            >
+            <div {...{ style: styles.container }}>
                 {/* Left Side: Branding */}
-                <div style={{ display: 'flex', flexDirection: 'column', width: '55%', height: '100%', justifyContent: 'center' }}>
-                    <p style={{ fontSize: '24px', color: '#666', fontFamily: 'monospace', margin: '0 0 30px 0' }}>
+                <div {...{ style: styles.leftPanel }}>
+                    <p {...{ style: styles.brand }}>
                         londonsimports.com
                     </p>
 
-                    <h1 style={{ fontSize: '56px', fontWeight: 'bold', color: '#1a1a1a', margin: 0, lineHeight: 1.2, display: 'flex', flexDirection: 'column' }}>
+                    <h1 {...{ style: styles.header }}>
                         <span>Mini Importation Ghana |</span>
                         <span>Ship from China to Accra |</span>
-                        <span style={{ color: '#7c3aed' }}>London&apos;s Imports</span>
+                        <span {...{ style: styles.accent }}>London&apos;s Imports</span>
                     </h1>
 
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '40px' }}>
+                    <div {...{ style: styles.badgeContainer }}>
                         <img
-                            src="https://londonsimports.com/logo.jpg"
+                            src={`${siteConfig.baseUrl}/logo.jpg`}
                             alt="Logo"
                             width="60"
                             height="60"
-                            style={{ borderRadius: '50%', marginRight: '20px' }}
+                            {...{ style: styles.logo }}
                         />
-                        <span style={{ fontSize: '24px', color: '#444' }}>Trusted by 1000+ businesses</span>
+                        <span {...{ style: styles.badgeText }}>Trusted by 1000+ businesses</span>
                     </div>
                 </div>
 
                 {/* Right Side: Product Collage */}
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '45%', justifyContent: 'center' }}>
+                <div {...{ style: styles.rightPanel }}>
                     {products.map((img, i) => (
-                        <div key={i} style={{ display: 'flex', width: '220px', height: '380px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
-                            <img src={img} alt="Featured product" width="220" height="380" style={{ objectFit: 'cover' }} />
+                        <div key={i} {...{ style: styles.productFrame }}>
+                            <img src={img} alt="Featured product" width="220" height="380" {...{ style: styles.productImage }} />
                         </div>
                     )).slice(0, 2)}
                 </div>
