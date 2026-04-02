@@ -117,13 +117,13 @@ export default async function RootLayout({
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "LocalBusiness"],
     "@id": "https://londonsimports.com/#organization",
     "name": "London's Imports Ghana",
     "legalName": "London's Imports Ghana Limited",
     "alternateName": ["Mini Importation Ghana", "Londons Imports GH"],
     "url": "https://londonsimports.com",
-    "description": "Ghana's leading mini-importation logistics and sourcing platform. Ship goods from China to Accra, Kumasi, and Tema with door-to-door delivery. Independent Ghanaian entity.",
+    "description": "Ghana's leading mini-importation logistics and sourcing platform. Shop from China (1688, Alibaba, Taobao) directly to Accra, Kumasi, and Tema. Independent Ghanaian entity with local doorstep delivery.",
     "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
     "telephone": ["+233545247009", "+233541096372"],
@@ -154,8 +154,8 @@ export default async function RootLayout({
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 5.6771,
-      "longitude": -0.2113
+      "latitude": 5.7821, // Updated for Danfa, Accra more precisely
+      "longitude": -0.1517
     },
     "openingHoursSpecification": [
       {
@@ -186,7 +186,7 @@ export default async function RootLayout({
       { "@type": "AdministrativeArea", "name": "Greater Accra Region" },
       { "@type": "Country", "name": "Ghana" }
     ],
-    "priceRange": "GHS 50 - GHS 10000",
+    "priceRange": "$$", // $ - $$$$ format is more standard for Google Search
     "currenciesAccepted": "GHS",
     "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
     "sameAs": [
@@ -214,6 +214,14 @@ export default async function RootLayout({
             "@type": "Service",
             "name": "Customs Clearance",
             "description": "We handle all Ghana customs duties and clearance"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sourcing Agent",
+            "description": "Find suppliers on 1688 and Alibaba for Ghana businesses"
           }
         }
       ]

@@ -57,7 +57,7 @@ export default function ProductImageGallery({
             <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm transition-all duration-300">
                 <Image
                     src={currentImage}
-                    alt={`${productName} - China Import to Ghana`}
+                    alt={`Buy ${productName} in Ghana - Authentic China Import`}
                     fill
                     className="object-contain drop-shadow-2xl"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -82,7 +82,7 @@ export default function ProductImageGallery({
                             >
                                 <Image
                                     src={imgUrl}
-                                    alt={img.alt || productName}
+                                    alt={`${img.alt || productName} - London's Imports Ghana`}
                                     fill
                                     className="object-cover"
                                     sizes="80px"
@@ -150,7 +150,7 @@ export default function ProductImageGallery({
                             >
                                 <Image
                                     src={currentImage}
-                                    alt="Video thumbnail"
+                                    alt={`${productName} Video Preview - London's Imports`}
                                     fill
                                     className="object-cover opacity-80 group-hover:opacity-60 transition-opacity"
                                 />
