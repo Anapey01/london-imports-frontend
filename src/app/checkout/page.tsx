@@ -267,13 +267,7 @@ function CheckoutPage() {
 
         const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9';
 
-        console.log('Checkout Attempt:', { 
-            isAuthenticated, 
-            hasUser: !!user, 
-            hasEmail: !!user?.email, 
-            paymentType,
-            hasKey: !!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
-        });
+
 
         if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
             console.error('CRITICAL: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is missing from environment.');

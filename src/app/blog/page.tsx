@@ -5,6 +5,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Metadata } from 'next';
+import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
     title: 'Mini Importation Blog | London\'s Imports Ghana',
@@ -33,7 +34,7 @@ interface BlogPost {
 // Fetch blog posts from API (server-side)
 async function getBlogPosts(): Promise<BlogPost[]> {
     try {
-        const res = await fetch('https://london-imports-api.onrender.com/api/v1/blog/', {
+        const res = await fetch(`${siteConfig.apiUrl}/blog/`, {
             next: { revalidate: 86400 } // Revalidate every 24 hours to save Vercel limits
         });
         if (!res.ok) return [];
@@ -153,11 +154,11 @@ export default async function BlogPage() {
             {/* Craft-Style Centered Hero */}
             <div className="relative pt-48 pb-32 overflow-hidden bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-900">
                 <div className="max-w-4xl mx-auto px-6 text-center animate-fade-in">
-                    <span className="inline-block px-4 py-1.5 mb-10 text-[10px] font-black tracking-[0.4em] uppercase text-gray-400 dark:text-slate-500">
-                        The Craft of Logistics
+                    <span className="inline-block px-4 py-1.5 mb-10 text-[10px] font-black tracking-[0.5em] uppercase text-slate-400 dark:text-slate-500">
+                        Editorial Publication
                     </span>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-black mb-10 tracking-tight text-gray-900 dark:text-white leading-[1.05]">
-                        Logistics <span className="italic opacity-30 px-2">&amp;</span> <br />
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-black mb-10 tracking-tight text-slate-950 dark:text-white leading-[1.05]">
+                        Logistics <span className="italic opacity-20 px-2">&amp;</span> <br />
                         <span className="text-pink-600">Scaling</span>
                     </h1>
                     <p className="text-lg md:text-xl text-gray-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-12">

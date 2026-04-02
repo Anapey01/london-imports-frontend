@@ -1,5 +1,6 @@
 import { getProducts } from '@/lib/fetchers';
 import { getImageUrl } from '@/lib/image';
+import { siteConfig } from '@/config/site';
 
 const BASE_URL = 'https://londonsimports.com';
 
@@ -11,8 +12,7 @@ export async function GET() {
     // 2. Fetch Blog Posts
     let blogPosts: { slug: string; title: string; featured_image?: string }[] = [];
     try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com';
-        const blogRes = await fetch(`${apiUrl}/api/v1/blog/`, {
+        const blogRes = await fetch(`${siteConfig.apiUrl}/blog/`, {
             next: { revalidate: 86400 }
         });
         if (blogRes.ok) {

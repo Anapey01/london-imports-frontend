@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 // Note: Inline styles are REQUIRED for Next.js ImageResponse API - CSS files are not supported
 import { ImageResponse } from 'next/og';
+import { siteConfig } from '@/config/site';
 
 export const runtime = 'edge';
 
@@ -25,7 +26,7 @@ export default async function Image() {
     ];
 
     try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com';
+        const apiUrl = siteConfig.apiUrl.replace(/\/api\/v1$/, '');
         const res = await fetch(`${apiUrl}/api/v1/products/?is_featured=true&limit=2`, { next: { revalidate: 86400 } });
         if (res.ok) {
             const data = await res.json();

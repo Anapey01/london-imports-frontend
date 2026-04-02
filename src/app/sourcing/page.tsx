@@ -8,6 +8,7 @@ import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { siteConfig } from '@/config/site';
 import {
     Upload,
     Camera,
@@ -23,7 +24,7 @@ import {
     Clock,
 } from 'lucide-react';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com';
+const API_BASE = siteConfig.apiUrl.replace(/\/api\/v1$/, '');
 
 interface AIAnalysis {
     product_name: string;
@@ -159,14 +160,13 @@ export default function SourcingPage() {
             {/* Hero — Clean black bar */}
             <section className="bg-black text-white">
                 <div className="max-w-3xl mx-auto px-6 py-16 sm:py-20">
-                    <div className="flex items-center gap-2 text-xs font-medium tracking-widest uppercase text-gray-400 mb-6">
+                    <div className="flex items-center gap-2 text-[10px] font-black tracking-[0.5em] uppercase text-slate-500 mb-8">
                         <Sparkles className="w-3.5 h-3.5" />
                         AI-Powered Sourcing
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
-                        See it. Screenshot it.
-                        <br />
-                        <span className="text-gray-400">We&apos;ll find it for you.</span>
+                    <h1 className="text-4xl sm:text-6xl font-serif font-black leading-[1.1] tracking-tight">
+                        See it. <span className="italic opacity-30 text-white/50">&amp;</span> <br />
+                        <span className="text-slate-400">We&apos;ll find it.</span>
                     </h1>
                     <p className="mt-4 text-gray-400 max-w-lg leading-relaxed">
                         Upload a product screenshot from any platform. Our AI identifies it,

@@ -48,7 +48,7 @@ const Footer = () => {
 
                             {/* TikTok */}
                             <a
-                                href="https://www.tiktok.com/@londons_imports1"
+                                href={siteConfig.socials.tiktok}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group"
@@ -61,7 +61,7 @@ const Footer = () => {
 
                             {/* Snapchat */}
                             <a
-                                href="https://www.snapchat.com/add/londons_imports"
+                                href={siteConfig.socials.snapchat}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-[#FFFC00] hover:text-black hover:border-[#FFFC00] transition-all duration-300 group"

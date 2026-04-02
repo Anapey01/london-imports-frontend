@@ -313,7 +313,7 @@ export default async function RootLayout({
       <head>
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
-        <link rel="dns-prefetch" href="https://london-imports-api.onrender.com" />
+        <link rel="dns-prefetch" href={new URL(siteConfig.apiUrl).origin} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

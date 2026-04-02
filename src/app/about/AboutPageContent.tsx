@@ -45,7 +45,7 @@ export default function AboutPageContent() {
                         regions: response.data.regions || 16,
                         authenticity: response.data.authenticity_rate || 100,
                     });
-                    console.log('About stats fetched successfully:', response.data);
+
                 }
                 setIsLoaded(true);
             } catch (error) {
