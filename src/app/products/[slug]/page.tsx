@@ -63,25 +63,33 @@ export async function generateMetadata(
 
     // 4. Construct Metadata
     const productImageUrl = getAbsoluteImageUrl(product.image);
-    const productTitle = `${product.name} - London's Imports`;
+    
+    // Format Price for SEO
+    const formattedPrice = new Intl.NumberFormat('en-GH', {
+        style: 'currency',
+        currency: 'GHS',
+        maximumFractionDigits: 0
+    }).format(product.price);
+
+    const productTitle = `Buy ${product.name} - ${formattedPrice} | London's Imports Ghana`;
 
     // Dynamic Description
     const isReadyToShip = product.preorder_status === 'READY_TO_SHIP';
     const descriptionPrefix = isReadyToShip ? 'Buy' : 'Pre-order';
-    const productDescription = product.description?.substring(0, 160) || `${descriptionPrefix} ${product.name} from London's Imports. Authentic products delivered to Ghana.`;
+    const productDescription = product.description?.substring(0, 140) || `${descriptionPrefix} ${product.name} from London's Imports. Authentic products delivered to Ghana. Pay with Momo.`;
 
     const pageUrl = `https://londonsimports.com/products/${slug}`;
 
     return {
         metadataBase: new URL('https://londonsimports.com'),
         title: productTitle,
-        description: productDescription,
+        description: `${productDescription} | Best Price in Ghana: ${formattedPrice}`,
 
         openGraph: {
             title: productTitle,
             description: productDescription,
             url: pageUrl,
-            siteName: "London's Imports",
+            siteName: "London's Imports Ghana",
             images: [
                 {
                     url: productImageUrl,
@@ -105,6 +113,15 @@ export async function generateMetadata(
         alternates: {
             canonical: pageUrl,
         },
+        
+        // Advanced e-commerce tags
+        other: {
+            'product:price:amount': product.price.toString(),
+            'product:price:currency': 'GHS',
+            'product:availability': product.preorder_status === 'READY_TO_SHIP' ? 'instock' : 'oos',
+            'og:price:amount': product.price.toString(),
+            'og:price:currency': 'GHS',
+        }
     };
 }
 
