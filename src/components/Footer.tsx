@@ -15,7 +15,7 @@ const Footer = () => {
     }
 
     return (
-        <footer className="hidden md:block bg-slate-950 text-slate-400 py-16 border-t border-slate-900 relative overflow-hidden">
+        <footer className="hidden md:block bg-slate-950/70 backdrop-blur-xl text-slate-400 py-24 border-t border-white/5 relative overflow-hidden">
             {/* Ambient Background Glow */}
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-900/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
 
