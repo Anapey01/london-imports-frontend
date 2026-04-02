@@ -55,6 +55,7 @@ export default function AdminProductsPage() {
         featured: false,
         preOrder: true,
         expectedDate: '',
+        estimatedWeeks: 3,
     });
 
     useEffect(() => {
@@ -110,6 +111,7 @@ export default function AdminProductsPage() {
                 featured: false,
                 preOrder: true,
                 expectedDate: '',
+                estimatedWeeks: 3,
             });
             alert('Product added successfully');
         } catch (err) {

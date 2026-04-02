@@ -167,4 +167,5 @@ export interface AdminProduct {
     description: string;
     createdAt?: string;
     expectedDate?: string;
+    estimatedWeeks?: number;
 }

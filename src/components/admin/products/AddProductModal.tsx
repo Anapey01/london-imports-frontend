@@ -12,6 +12,7 @@ interface NewProduct {
     status: string;
     preOrder: boolean;
     featured: boolean;
+    estimatedWeeks: number;
 }
 
 interface AddProductModalProps {
@@ -73,17 +74,23 @@ const AddProductModal = ({
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="add-date" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
+                            <label htmlFor="add-date" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Pre-order Cutoff Date</label>
                             <input id="add-date" type="date" value={newProduct.expectedDate || ''} onChange={(e) => setNewProduct({ ...newProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                            <p className="text-[11px] mt-1 text-slate-500">When pre-orders close</p>
                         </div>
                         <div>
-                            <label htmlFor="add-status" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
-                            <select id="add-status" value={newProduct.status || ''} onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
-                                <option value="DRAFT">Draft</option>
-                                <option value="PENDING">Pending Review</option>
-                                <option value="ACTIVE">Active</option>
-                            </select>
+                            <label htmlFor="add-weeks" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Delivery Time (Weeks)</label>
+                            <input id="add-weeks" type="number" min="1" max="52" value={newProduct.estimatedWeeks || 3} onChange={(e) => setNewProduct({ ...newProduct, estimatedWeeks: parseInt(e.target.value) || 3 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                            <p className="text-[11px] mt-1 text-slate-500">Weeks after cutoff</p>
                         </div>
+                    </div>
+                    <div>
+                        <label htmlFor="add-status" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Status</label>
+                        <select id="add-status" value={newProduct.status || ''} onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+                            <option value="DRAFT">Draft</option>
+                            <option value="PENDING">Pending Review</option>
+                            <option value="ACTIVE">Active</option>
+                        </select>
                     </div>
                     <div className={`flex items-center gap-6 py-2 px-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
                         <label className="flex items-center gap-2 cursor-pointer">

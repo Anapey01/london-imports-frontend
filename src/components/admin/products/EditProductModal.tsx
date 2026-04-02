@@ -75,9 +75,17 @@ const EditProductModal = ({
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label htmlFor="edit-date" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Expected Arrival</label>
-                        <input id="edit-date" type="date" value={selectedProduct.expectedDate || ''} onChange={(e) => setSelectedProduct({ ...selectedProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="edit-date" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Pre-order Cutoff Date</label>
+                            <input id="edit-date" type="date" value={selectedProduct.expectedDate || ''} onChange={(e) => setSelectedProduct({ ...selectedProduct, expectedDate: e.target.value })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                            <p className="text-[11px] mt-1 text-slate-500">When pre-orders close</p>
+                        </div>
+                        <div>
+                            <label htmlFor="edit-weeks" className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Delivery Time (Weeks)</label>
+                            <input id="edit-weeks" type="number" min="1" max="52" value={selectedProduct.estimatedWeeks || 3} onChange={(e) => setSelectedProduct({ ...selectedProduct, estimatedWeeks: parseInt(e.target.value) || 3 })} className={`w-full px-4 py-2.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'}`} />
+                            <p className="text-[11px] mt-1 text-slate-500">Weeks after cutoff</p>
+                        </div>
                     </div>
                     <div className={`flex items-center gap-6 py-2 px-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
                         <label htmlFor="edit-preorder" className="flex items-center gap-2 cursor-pointer">
