@@ -196,6 +196,14 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/feed/google/:path*',
+        destination: 'https://london-imports-api.onrender.com/api/feed/google/:path*',
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(
