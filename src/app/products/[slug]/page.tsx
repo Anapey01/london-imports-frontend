@@ -2,6 +2,7 @@ import { getProduct, getProductMetadata, getProducts } from '@/lib/fetchers';
 import ProductDetailClient from './ProductDetailClient';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
+import { siteConfig } from '@/config/site';
 
 // ISR: Revalidate product pages every 24 hours (to stay within Vercel 1,000 writes/month limit)
 export const revalidate = 86400;
@@ -21,7 +22,7 @@ type Props = {
 
 // Helper to ensure absolute URL
 function getAbsoluteImageUrl(imageUrl: string | null | undefined): string {
-    if (!imageUrl) return 'https://londonsimports.com/og-image.jpg';
+    if (!imageUrl) return `${siteConfig.baseUrl}/og-image.jpg`;
 
     const processedUrl = getImageUrl(imageUrl);
 
@@ -31,10 +32,10 @@ function getAbsoluteImageUrl(imageUrl: string | null | undefined): string {
 
     // If relative, make absolute
     if (processedUrl.startsWith('/')) {
-        return `https://londonsimports.com${processedUrl}`;
+        return `${siteConfig.baseUrl}${processedUrl}`;
     }
 
-    return `https://londonsimports.com/${processedUrl}`;
+    return `${siteConfig.baseUrl}/${processedUrl}`;
 }
 
 
@@ -78,13 +79,13 @@ export async function generateMetadata(
     const descriptionPrefix = isReadyToShip ? 'Buy' : 'Pre-order';
     const productDescription = product.description?.substring(0, 140) || `${descriptionPrefix} ${product.name} from London's Imports. Authentic products delivered to Ghana. Pay with Momo.`;
 
-    const pageUrl = `https://londonsimports.com/products/${slug}`;
+    const pageUrl = `${siteConfig.baseUrl}/products/${slug}`;
 
     // High-Editorial Dynamic Social Card URL
-    const dynamicOgImage = `https://londonsimports.com/api/og?title=${encodeURIComponent(product.name)}&price=${encodeURIComponent(formattedPrice)}&image=${encodeURIComponent(productImageUrl)}&type=${encodeURIComponent(isReadyToShip ? 'Available Now' : 'Pre-Order')}`;
+    const dynamicOgImage = `${siteConfig.baseUrl}/api/og?title=${encodeURIComponent(product.name)}&price=${encodeURIComponent(formattedPrice)}&image=${encodeURIComponent(productImageUrl)}&type=${encodeURIComponent(isReadyToShip ? 'Available Now' : 'Pre-Order')}`;
 
     return {
-        metadataBase: new URL('https://londonsimports.com'),
+        metadataBase: new URL(siteConfig.baseUrl),
         title: productTitle,
         description: `${productDescription} | Best Price in Ghana: ${formattedPrice}`,
 

@@ -158,24 +158,31 @@ export default async function ProductsPage({ searchParams }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            {/* Header */}
-            <div className="bg-white border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {/* Header - Editorial Style */}
+            <div className="bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-900">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center animate-fade-in">
+                    <span className="inline-block px-4 py-1.5 mb-6 text-[10px] font-black tracking-[0.5em] uppercase text-slate-400 dark:text-slate-500">
+                        {isAvailableItems
+                            ? 'Instant Availability'
+                            : featured
+                                ? 'Exclusive Drop'
+                                : 'Pre-Order Collection'}
+                    </span>
+                    <h1 className="text-4xl md:text-6xl font-serif font-black text-slate-950 dark:text-white mb-6 tracking-tight leading-[1.1]">
                         {isAvailableItems
                             ? 'Available Items'
                             : featured
-                                ? 'Upcoming Drops'
+                                ? <>Upcoming <span className="italic opacity-20 px-1">&amp;</span> Drops</>
                                 : category
-                                    ? `${category.charAt(0).toUpperCase() + category.slice(1)}`
-                                    : 'Pre-order Products'}
+                                    ? <>{categoryTitle} <span className="italic opacity-20 px-1">&amp;</span> Imports</>
+                                    : <>Pre-order <span className="italic opacity-20 px-1">&amp;</span> Products</>}
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-sans">
                         {isAvailableItems
-                            ? 'Instant purchase available. Order now for quick delivery.'
+                            ? 'Authentic items sourced from London, ready for immediate dispatch across Ghana.'
                             : featured
-                                ? 'Exclusive limited releases arriving soon. Reserve yours now.'
-                                : 'Browse upcoming products and reserve yours before stock arrives'}
+                                ? 'Limited-run collections arriving soon. Reserve yours today to guarantee availability.'
+                                : 'Bespoke logistics meet high-end global retail. Browse and reserve your products before the next shipment arrives.'}
                     </p>
                 </div>
             </div>
