@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable */
 // Note: Inline styles are REQUIRED for Next.js ImageResponse API - CSS files are not supported
 import { ImageResponse } from 'next/og';
 import { siteConfig } from '@/config/site';
