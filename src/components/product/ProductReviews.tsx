@@ -121,7 +121,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
     return (
         <section className="py-20 border-t border-gray-100 bg-white" id="reviews">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+                <div className="flex flex-col lg:flex-row gap-10 lg:gap-24">
                     
                     {/* Left: Professional Summary */}
                     <div className="lg:w-1/3">
@@ -131,11 +131,11 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                 <p className="text-sm text-gray-500 font-medium">Real reviews from our community.</p>
                             </div>
                             
-                            <div className="bg-gray-50/50 p-8 sm:p-10 rounded-[1.5rem] border border-gray-100 relative overflow-hidden">
+                            <div className="bg-gray-50/50 p-6 sm:p-10 rounded-[1.5rem] border border-gray-100 relative overflow-hidden">
                                 <div className="relative z-10">
                                     <div className="mb-8 pb-8 border-b border-gray-100">
-                                        <div className="flex items-end gap-3 mb-4">
-                                            <div className="text-6xl font-bold text-gray-900 leading-none">
+                                        <div className="flex items-center sm:items-end gap-3 mb-4">
+                                            <div className="text-5xl sm:text-6xl font-bold text-gray-900 leading-none">
                                                 {Number(rating || 0).toFixed(1)}
                                             </div>
                                             <div className="pb-1">
@@ -155,7 +155,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{item.star} Stars</span>
                                                     <span className="text-[10px] font-bold text-gray-900">{Math.round(item.percentage)}%</span>
                                                 </div>
-                                                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                                                     <motion.div 
                                                         initial={{ width: 0 }}
                                                         whileInView={{ width: `${item.percentage}%` }}
@@ -221,7 +221,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                                     initialRating={Number(newRating)} 
                                                     onRate={(r) => setNewRating(r)}
                                                     size="lg" 
-                                                    readOnly={!isAuthenticated}
+                                                    readOnly={false} // Allow interaction even if not logged in for better UX (submit blocks it anyway)
                                                 />
                                             </div>
                                         </div>

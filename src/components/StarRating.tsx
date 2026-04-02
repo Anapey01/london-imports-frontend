@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface StarRatingProps {
     initialRating?: number;
@@ -22,6 +22,11 @@ export default function StarRating({
     const [rating, setRating] = useState(initialRating);
     const [hover, setHover] = useState(0);
     const [hasRated, setHasRated] = useState(false);
+
+    // Sync state when prop changes (Crucial for Parent -> Child reactivity)
+    useEffect(() => {
+        setRating(initialRating);
+    }, [initialRating]);
 
     const handleRate = (value: number) => {
         if (readOnly) return;
