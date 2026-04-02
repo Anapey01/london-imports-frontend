@@ -80,6 +80,9 @@ export async function generateMetadata(
 
     const pageUrl = `https://londonsimports.com/products/${slug}`;
 
+    // High-Editorial Dynamic Social Card URL
+    const dynamicOgImage = `https://londonsimports.com/api/og?title=${encodeURIComponent(product.name)}&price=${encodeURIComponent(formattedPrice)}&image=${encodeURIComponent(productImageUrl)}&type=${encodeURIComponent(isReadyToShip ? 'Available Now' : 'Pre-Order')}`;
+
     return {
         metadataBase: new URL('https://londonsimports.com'),
         title: productTitle,
@@ -92,7 +95,7 @@ export async function generateMetadata(
             siteName: "London's Imports Ghana",
             images: [
                 {
-                    url: productImageUrl,
+                    url: dynamicOgImage,
                     width: 1200,
                     height: 630,
                     alt: productTitle,
@@ -106,7 +109,7 @@ export async function generateMetadata(
             card: 'summary_large_image',
             title: productTitle,
             description: productDescription,
-            images: [productImageUrl],
+            images: [dynamicOgImage],
             creator: '@londonsimports',
         },
 

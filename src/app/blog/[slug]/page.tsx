@@ -215,7 +215,10 @@ export async function generateMetadata({
 
     const title = `${article.title} | London's Imports Journal`;
     const description = article.excerpt || "Professional sourcing and importation insights for the Ghanaian market.";
-    const ogImage = article.featured_image ? getImageUrl(article.featured_image) : `${siteConfig.baseUrl}/og-image.jpg`;
+    const baseOgImage = article.featured_image ? getImageUrl(article.featured_image) : `${siteConfig.baseUrl}/og-image.jpg`;
+    
+    // High-Editorial Dynamic Social Card URL
+    const dynamicOgImage = `${siteConfig.baseUrl}/api/og?title=${encodeURIComponent(article.title)}&image=${encodeURIComponent(baseOgImage)}&type=${encodeURIComponent(article.category_display || 'Journal Entry')}`;
 
     return {
         title,
@@ -229,7 +232,7 @@ export async function generateMetadata({
             authors: [article.author_name || "London's Imports Editorial"],
             images: [
                 {
-                    url: ogImage,
+                    url: dynamicOgImage,
                     width: 1200,
                     height: 630,
                     alt: article.title,
@@ -241,7 +244,7 @@ export async function generateMetadata({
             card: 'summary_large_image',
             title,
             description,
-            images: [ogImage],
+            images: [dynamicOgImage],
             creator: '@londonsimports',
         },
     };
