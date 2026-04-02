@@ -16,8 +16,10 @@ interface StickyMobileCartProps {
 
 export default function StickyMobileCart({ product, isAdding, onAddToCart, triggerRef }: StickyMobileCartProps) {
     const [isVisible, setIsVisible] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const trigger = triggerRef.current;
         if (!trigger) return;
 
@@ -42,7 +44,7 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
     }, [triggerRef]);
 
     // Use Portal to render at document body level (avoids z-index issues with parents)
-    if (typeof window === 'undefined') return null;
+    if (!mounted || typeof window === 'undefined') return null;
 
     return createPortal(
         <div

@@ -31,6 +31,7 @@ api.interceptors.request.use((config) => {
       '/products/', // Public product listings & categories
       '/vendors/', // Public vendor profiles
       '/blog/', // Public blog articles
+      '/orders/stats/', // Public platform statistics
     ];
 
     // Check if URL starts with a public endpoint (use startsWith to avoid matching /admin/products/ as public)
@@ -158,6 +159,7 @@ export const ordersAPI = {
     api.post(`/orders/${orderNumber}/cancel/`, { reason }),
   verifyPayment: (orderNumber: string) => 
     api.post(`/orders/${orderNumber}/verify-payment/`, {}),
+  getPublicStats: () => api.get('/orders/stats/'),
 };
 
 export const paymentsAPI = {

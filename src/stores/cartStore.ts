@@ -21,6 +21,8 @@ export interface Product {
     available_sizes?: string[];
     available_colors?: string[];
     target_quantity?: number;
+    rating?: number;
+    rating_count?: number;
 }
 
 export interface CartItem {

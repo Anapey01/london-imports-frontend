@@ -13,10 +13,12 @@ export const siteConfig = {
         deliveryWeeks: 3,
         preOrderCutoffDays: 14,
     },
+    address: "danfa road nearTwinkle angle school, Danfa",
+    addressMapLink: "https://maps.app.goo.gl/Lv3YVgXy8nvyWeHbA",
     socials: {
         whatsapp: 'https://wa.me/233545247009',
         concierge: 'https://wa.me/233541096372',
-        instagram: 'https://instagram.com/londons_imports',
+        instagram: 'https://www.instagram.com/londonimportsghana',
         tiktok: 'https://www.tiktok.com/@londons_imports1',
         snapchat: 'https://www.snapchat.com/add/londons_imports',
         trustpilot: 'https://www.trustpilot.com/review/londonsimports.com',

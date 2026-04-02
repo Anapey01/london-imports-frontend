@@ -28,8 +28,9 @@ function LinksContent() {
 
   // GA4 Micro-Analytics Trigger
   const trackInteraction = (label: string) => {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'social_hub_click', {
+    const gtag = (window as typeof window & { gtag?: (event: string, action: string, params: Record<string, unknown>) => void }).gtag;
+    if (typeof window !== 'undefined' && gtag) {
+      gtag('event', 'social_hub_click', {
         'event_category': 'Conversion Funnel',
         'event_label': label,
         'source_platform': ref,

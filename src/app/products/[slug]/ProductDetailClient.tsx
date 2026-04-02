@@ -499,51 +499,48 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         <div className="space-y-4 mb-8 bg-white/50 p-6 rounded-2xl border border-slate-100">
                             {/* Product Type/Category */}
                             <div className="flex items-center gap-3">
-                                <span className="w-8 flex justify-center text-[#006B5A]">
+                                <span className="w-8 flex justify-center text-slate-400">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                     </svg>
                                 </span>
                                 <div>
-                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Product Type</p>
-                                    <p className="text-gray-900 font-semibold">{product.category?.name}</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Product Type</p>
+                                    <p className="text-gray-900 font-semibold text-sm">{product.category?.name}</p>
                                 </div>
                             </div>
 
                             {/* Origin Country */}
                             <div className="flex items-center gap-3">
-                                <span className="w-8 flex justify-center text-[#006B5A]">
+                                <span className="w-8 flex justify-center text-slate-400">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </span>
                                 <div>
-                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Origin</p>
-                                    <p className="text-gray-900 font-semibold">{product.origin_country || 'China'}</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Origin</p>
+                                    <p className="text-gray-900 font-semibold text-sm">{product.origin_country || 'China'}</p>
                                 </div>
                             </div>
 
-                            {/* Brand / Verification */}
-                            <div className="flex items-center gap-3">
-                                <span className="w-8 flex justify-center text-[#006B5A]">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Authenticity</p>
-                                    <p className="text-gray-900 font-semibold">100% Authentic & Verified</p>
+                            {/* Trust Badges - MOMO & VERIFIED */}
+                            <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-50">
+                                <div className="flex flex-col items-center p-3 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-xl border border-white/20 dark:border-slate-700/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group/badge">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center mb-2 shadow-sm group-hover/badge:scale-110 transition-transform">
+                                        <svg className="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <span className="text-[9px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest text-center">Verified by London&apos;s</span>
                                 </div>
-                            </div>
-
-                            {/* Trust Badge */}
-                            <div className="mt-2 pt-2 border-t border-slate-200">
-                                <p className="text-xs text-slate-500 flex items-center gap-1.5">
-                                    <svg className="w-4 h-4 text-[#F5A623]" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    Verified by London&apos;s Imports
-                                </p>
+                                <div className="flex flex-col items-center p-3 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-xl border border-white/20 dark:border-slate-700/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group/badge">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center mb-2 shadow-sm group-hover/badge:scale-110 transition-transform">
+                                        <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+                                        </svg>
+                                    </div>
+                                    <span className="text-[9px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest text-center">Secured by MOMO</span>
+                                </div>
                             </div>
                         </div>
 

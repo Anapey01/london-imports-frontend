@@ -45,9 +45,9 @@ export default function ProductGrid({
 }: ProductGridProps) {
     const searchParams = useSearchParams();
     // Derived state from URL - always reactive
-    const category = searchParams.get('category') ?? initialCategory;
-    const status = searchParams.get('status') ?? initialStatus;
-    const search = searchParams.get('search') ?? initialSearch;
+    const category = searchParams.get('category') || initialCategory;
+    const status = searchParams.get('status') || initialStatus;
+    const search = searchParams.get('search') || initialSearch;
     const featured = searchParams.get('featured') === 'true' || initialFeatured;
     const minPrice = searchParams.get('min_price') ?? '';
     const maxPrice = searchParams.get('max_price') ?? '';

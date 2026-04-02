@@ -3,7 +3,7 @@ import { getProducts, getCategories, getCategory } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronRight, Home, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 // ISR: Revalidate category pages every 24 hours
 export const revalidate = 86400;
@@ -66,8 +66,8 @@ export default async function CategoryPage({ params }: Props) {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": `${category.name} Imports Ghana`,
-        "description": `Premium ${category.name} products imported from China to Ghana.`,
+        "name": `${category.name} Collection | London's Imports`,
+        "description": `Shop the curated ${category.name} collection at London's Imports. Premium products sourced from China delivered to Ghana.`,
         "url": `https://londonsimports.com/products/category/${slug}`,
         "breadcrumb": {
             "@type": "BreadcrumbList",
@@ -101,48 +101,96 @@ export default async function CategoryPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             
-            {/* Header / Hero */}
-            <div className="bg-white border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Breadcrumbs UI */}
-                    <nav className="flex items-center text-sm text-gray-500 mb-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                        <Link href="/" className="hover:text-pink-500 transition-colors flex items-center gap-1">
-                            <Home className="w-3 h-3" /> Home
+            {/* Slim Editorial Header */}
+            <div className="bg-white border-b border-slate-50 relative overflow-hidden">
+                {/* Background Decorative Initial (Ultra-Faint) */}
+                <div className="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 text-[20vw] font-black text-slate-500/[0.03] select-none pointer-events-none uppercase">
+                    {category.name.charAt(0)}
+                </div>
+
+                <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-20 relative z-10">
+                    {/* Minimalist Breadcrumbs */}
+                    <nav className="flex items-center text-[9px] font-bold uppercase tracking-[0.3em] text-slate-300 mb-6 overflow-x-auto whitespace-nowrap no-scrollbar">
+                        <Link href="/" className="hover:text-slate-900 transition-colors">
+                            HOME
                         </Link>
-                        <ChevronRight className="w-4 h-4 mx-2" />
-                        <Link href="/products" className="hover:text-pink-500 transition-colors">
-                            Products
+                        <div className="w-1 h-1 rounded-full bg-slate-100 mx-3 shrink-0" />
+                        <Link href="/products" className="hover:text-slate-900 transition-colors">
+                            ALL PRODUCTS
                         </Link>
-                        <ChevronRight className="w-4 h-4 mx-2" />
-                        <span className="text-gray-900 font-medium">{category.name}</span>
+                        <div className="w-1 h-1 rounded-full bg-slate-100 mx-3 shrink-0" />
+                        <span className="text-slate-900 font-black">{category.name}</span>
                     </nav>
 
-                    <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 flex items-center gap-3">
-                        <Package className="text-pink-500" />
-                        {category.name} <span className="text-pink-400">Hub</span>
-                    </h1>
-                    <p className="text-lg text-slate-600 max-w-3xl">
-                        Shop high-quality <span className="font-bold">{category.name}</span> products directly from suppliers in China. 
-                        We handle all shipping, customs, and delivery to <span className="text-pink-500 font-semibold">Accra, Kumasi, and Tema</span>.
-                    </p>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
+                        <div className="space-y-3">
+                            <h1 className="text-4xl md:text-6xl font-bold text-slate-950 tracking-tight leading-tight">
+                                {category.name}
+                                <div className="mt-1 text-xl md:text-2xl font-light text-slate-300 tracking-normal italic flex items-center gap-2">
+                                    <div className="h-px w-6 bg-slate-100" /> Collection
+                                </div>
+                            </h1>
+                        </div>
+                        <div className="flex flex-col items-start md:items-end">
+                            <span className="text-[9px] font-black text-slate-900 border-b border-pink-500/20 pb-0.5 uppercase tracking-widest mb-2">
+                                EXCLUSIVE ACCESS
+                            </span>
+                            <p className="text-[13px] md:text-right text-slate-400 font-medium max-w-[240px] leading-relaxed">
+                                Professional logistics and doorstep delivery across <span className="text-slate-900 font-semibold">Ghana</span>.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Product Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Available Collections</h2>
-                        <p className="text-gray-500 font-medium">{products.length} products found in this category</p>
-                    </div>
-                </div>
+            {/* Product Grid Section */}
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16">
+                {products.length > 0 ? (
+                    <>
+                        {/* Refined Stats Bar */}
+                        <div className="flex items-center gap-3 mb-10 border-b border-slate-50 pb-4">
+                            <div className="px-2.5 py-0.5 bg-slate-950 text-white text-[9px] font-black tracking-widest rounded-full">
+                                {products.length} PRODUCTS
+                            </div>
+                            <div className="hidden sm:block h-px flex-1 bg-slate-100/50" />
+                            <div className="text-[9px] font-bold text-slate-300 uppercase tracking-[0.2em]">
+                                UPDATED ARRIVALS
+                            </div>
+                        </div>
 
-                <Suspense fallback={<div className="h-96 animate-pulse bg-gray-100 rounded-2xl" />}>
-                    <ProductGrid 
-                        initialProducts={products} 
-                        hideFilters={true} // Clean view for category hub
-                    />
-                </Suspense>
+                        <Suspense fallback={<div className="h-96 animate-pulse bg-slate-50/50 rounded-[2.5rem]" />}>
+                            <ProductGrid 
+                                initialProducts={products} 
+                                initialCategory={slug}
+                                hideFilters={true} 
+                            />
+                        </Suspense>
+                    </>
+                ) : (
+                    <div className="py-20 text-center bg-white rounded-[2.5rem] border border-slate-50 shadow-sm px-6 max-w-2xl mx-auto">
+                         <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                            <Package className="w-6 h-6 text-slate-200" strokeWidth={1.5} />
+                        </div>
+                        <h2 className="text-xl font-bold text-slate-950 mb-4 tracking-[0.2em] uppercase leading-tight">Sourcing Now</h2>
+                        <p className="text-slate-400 mb-10 leading-relaxed text-[15px] font-light max-w-md mx-auto">
+                            The <span className="font-semibold text-slate-900">{category.name}</span> collection is currently in transit from our mainland suppliers. New drops every week.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                            <Link 
+                                href="/sourcing" 
+                                className="bg-slate-950 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-200 text-[11px] tracking-widest uppercase"
+                            >
+                                Custom Request
+                            </Link>
+                            <Link 
+                                href="/products" 
+                                className="text-slate-300 px-8 py-4 rounded-xl font-bold hover:text-slate-950 transition-all active:scale-95 text-[10px] tracking-widest uppercase"
+                            >
+                                Browse All
+                            </Link>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Why Choose Us Bar */}

@@ -147,7 +147,7 @@ export default async function RootLayout({
     "email": "info@londonsimports.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "GM-1739 Felchris Estate 2, Danfa",
+      "streetAddress": "danfa road nearTwinkle angle school, Danfa",
       "addressLocality": "Accra",
       "addressRegion": "Greater Accra",
       "postalCode": "GM-1739",
@@ -187,9 +187,9 @@ export default async function RootLayout({
       { "@type": "AdministrativeArea", "name": "Greater Accra Region" },
       { "@type": "Country", "name": "Ghana" }
     ],
-    "priceRange": "$$", // $ - $$$$ format is more standard for Google Search
+    "priceRange": "GHS",
     "currenciesAccepted": "GHS",
-    "paymentAccepted": "Mobile Money, Bank Transfer, Cash",
+    "paymentAccepted": "Mobile Money (Momo), MTN MoMo, Vodafone Cash, AirtelTigo Money, Bank Transfer",
     "sameAs": [
       siteConfig.socials.whatsapp,
       siteConfig.socials.concierge,

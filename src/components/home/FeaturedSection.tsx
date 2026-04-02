@@ -20,7 +20,7 @@ export default async function FeaturedSection() {
                     <h2 className="text-xl font-bold text-gray-900">Available Items</h2>
                     <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">In Stock</span>
                 </div>
-                <Link href="/products?status=READY_TO_SHIP" className="text-sm font-medium text-pink-600 hover:text-pink-700">
+                <Link href="/products?status=READY_TO_SHIP" className="text-sm font-medium text-green-600 hover:text-green-700 transition-colors">
                     View All
                 </Link>
             </div>

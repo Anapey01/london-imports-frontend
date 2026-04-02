@@ -17,7 +17,7 @@ const Footer = () => {
     return (
         <footer className="hidden md:block bg-slate-950 text-slate-400 py-16 border-t border-slate-900 relative overflow-hidden">
             {/* Ambient Background Glow */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-900/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-900/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
 
             <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                 <div className="grid md:grid-cols-12 gap-12 lg:gap-8 mb-16">
@@ -37,7 +37,7 @@ const Footer = () => {
                         <div className="flex gap-3">
                             {/* Instagram */}
                             <a
-                                href="https://www.instagram.com/londonimportsghana"
+                                href={siteConfig.socials.instagram}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-pink-600 hover:border-pink-500 hover:text-white transition-all duration-300 group"
@@ -89,23 +89,23 @@ const Footer = () => {
                     <div className="md:col-span-2 lg:col-span-2">
                         <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Shop</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/products" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Shop All China Imports</Link></li>
-                            <li><Link href="/reviews" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Reviews</Link></li>
-                            <li><Link href="/how-it-works" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">How China Imports Work</Link></li>
-                            <li><Link href="/faq" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
-                            <li><Link href="/blog" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold">Blog</Link></li>
-                            <li><Link href="/track" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold text-pink-500">Track China Shipping</Link></li>
-                            <li><Link href="/links" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block font-bold text-cyan-400 italic">Social Hub & Bio Links</Link></li>
+                            <li><Link href="/products" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Shop All China Imports</Link></li>
+                            <li><Link href="/reviews" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Reviews</Link></li>
+                            <li><Link href="/how-it-works" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">How China Imports Work</Link></li>
+                            <li><Link href="/faq" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
+                            <li><Link href="/blog" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block font-bold">Blog</Link></li>
+                            <li><Link href="/track" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block font-bold text-green-500">Track China Shipping</Link></li>
+                            <li><Link href="/links" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block font-bold text-cyan-400 italic">Social Hub & Bio Links</Link></li>
                         </ul>
                     </div>
 
                     <div className="md:col-span-3 lg:col-span-2">
                         <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Support</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/about" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Mini-Importation Story</Link></li>
-                            <li><Link href="/contact" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Contact Us</Link></li>
-                            <li><Link href="/terms" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Terms of Service</Link></li>
-                            <li><Link href="/privacy" className="hover:text-pink-400 hover:translate-x-1 transition-all inline-block">Privacy Policy</Link></li>
+                            <li><Link href="/about" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Mini-Importation Story</Link></li>
+                            <li><Link href="/contact" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Contact Us</Link></li>
+                            <li><Link href="/terms" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Terms of Service</Link></li>
+                            <li><Link href="/privacy" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
@@ -126,7 +126,7 @@ const Footer = () => {
                         <address className="text-sm not-italic space-y-3 mb-6">
                             <p className="flex items-start gap-2">
                                 <svg className="w-5 h-5 text-slate-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                <span>GM-1739 Felchris Estate 2,<br />Danfa, Accra, Ghana</span>
+                                <span>{siteConfig.address}</span>
                             </p>
                             <div className="space-y-4">
                                 <a href={siteConfig.socials.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-green-400 transition-colors group">
@@ -154,9 +154,9 @@ const Footer = () => {
                                 type="email"
                                 placeholder="Subscribe to drops..."
                                 aria-label="Email for newsletter"
-                                className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm w-full focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-slate-600"
+                                className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm w-full focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all placeholder:text-slate-600"
                             />
-                            <button className="bg-white hover:bg-pink-50 text-black px-4 py-2.5 rounded-lg transition-colors font-medium text-sm">
+                            <button className="bg-white hover:bg-green-50 text-black px-4 py-2.5 rounded-lg transition-colors font-medium text-sm">
                                 Join
                             </button>
                         </div>

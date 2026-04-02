@@ -28,8 +28,13 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
     const isWishlisted = isInWishlist(product.id);
 
-    // Stable random review count based on product ID
+    // Use real rating_count from backend, or stable random fallback
     const reviewCount = useMemo(() => {
+        if (typeof product.rating_count === 'number' && product.rating_count > 0) {
+            return product.rating_count;
+        }
+        
+        // Stable random review count based on product ID (fallback)
         const idStr = String(product.id);
         let hash = 0;
         for (let i = 0; i < idStr.length; i++) {
@@ -37,7 +42,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             hash |= 0;
         }
         return (Math.abs(hash) % 50) + 1;
-    }, [product.id]);
+    }, [product.id, product.rating_count]);
 
     const toggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -118,10 +123,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     {/* Wishlist Button */}
                     <button
                         onClick={toggleWishlist}
-                        className="p-3 rounded-full bg-white dark:bg-slate-700 text-gray-400 hover:text-pink-500 shadow-md hover:shadow-lg transition-all"
+                        className="p-3 rounded-full bg-white dark:bg-slate-700 text-gray-400 hover:text-green-500 shadow-md hover:shadow-lg transition-all"
                         aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                        <Heart className={`w-5 h-5 ${isWishlisted ? "fill-pink-500 text-pink-500" : ""}`} />
+                        <Heart className={`w-5 h-5 ${isWishlisted ? "fill-green-500 text-green-500" : ""}`} />
                     </button>
 
                     {/* Quick Add / View Options */}
@@ -140,7 +145,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                         <button
                             onClick={handleAddToCart}
                             disabled={isAdding}
-                            className="p-3 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                            className="p-3 rounded-full bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
                             aria-label="Add to cart"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
