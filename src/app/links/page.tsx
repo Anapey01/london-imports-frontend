@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -18,10 +18,11 @@ import {
 import { siteConfig } from '@/config/site';
 
 /**
- * Editorial "Link-in-Bio" Page with Micro-Analytics
- * Design Focus: High Minimalism, Editorial Typography, Premium Whitespace
+ * Editorial "Link-in-Bio" Content with Micro-Analytics
+ * Wrapped in Suspense to satisfy Next.js static generation requirements 
+ * when using useSearchParams().
  */
-export default function LinksPage() {
+function LinksContent() {
   const searchParams = useSearchParams();
   const ref = searchParams.get('ref') || 'direct'; // Capture source (tiktok, ig, etc)
 
@@ -198,5 +199,17 @@ export default function LinksPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function LinksPage() {
+  return (
+    <Suspense fallback={
+        <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
+           <div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+    }>
+      <LinksContent />
+    </Suspense>
   );
 }
