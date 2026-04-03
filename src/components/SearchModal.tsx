@@ -21,13 +21,15 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
-    // 1. Fetch Categories for "Popular Searches"
-    const { data: categoriesData } = useQuery({
-        queryKey: ['categories'],
-        queryFn: productsAPI.categories,
-        enabled: isOpen, // Only fetch when open
-        staleTime: 1000 * 60 * 60, // 1 hour
+    // 1. Fetch Trending Searches for "People are searching for..."
+    const { data: trendingData } = useQuery({
+        queryKey: ['trending-searches'],
+        queryFn: productsAPI.getTrendingSearches,
+        enabled: isOpen,
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
+
+    const trendingSearches = trendingData?.data?.results || trendingData?.data || [];
 
     // 2. Search Products (Debounced ideally, but useQuery handles caching well)
     const { data: searchData, isLoading: isSearching } = useQuery({
@@ -37,8 +39,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         staleTime: 0, // Always fresh for search
     });
 
-    const categories = categoriesData?.data?.results || categoriesData?.data || [];
     const results = searchData?.data?.results || searchData?.data || [];
+
+    const handleRecordSearch = (searchTerm: string) => {
+        if (searchTerm.trim().length >= 2) {
+            productsAPI.recordSearch(searchTerm.trim()).catch(() => {});
+        }
+    };
 
     // Focus input when modal opens
     useEffect(() => {
@@ -88,7 +95,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         </svg>
                     </button>
 
-                    <div className="flex-1 flex items-center bg-gray-100 rounded-lg px-3 py-2">
+                    <form 
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleRecordSearch(query);
+                        }}
+                        className="flex-1 flex items-center bg-gray-100 rounded-lg px-3 py-2"
+                    >
                         <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -101,13 +114,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             className="flex-1 bg-transparent border-none outline-none text-gray-900 placeholder-gray-500 text-base"
                         />
                         {query && (
-                            <button onClick={() => setQuery('')} className="p-1 text-gray-400 hover:text-gray-600" aria-label="Clear search">
+                            <button type="button" onClick={() => setQuery('')} className="p-1 text-gray-400 hover:text-gray-600" aria-label="Clear search">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         )}
-                    </div>
+                    </form>
 
                     <button
                         onClick={onClose}
@@ -141,7 +154,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         {!isSearching && results.map((product: { id: number | string; slug: string; name: string; image?: string; price: number }) => (
                             <button
                                 key={product.id}
-                                onClick={() => handleProductClick(product.slug)}
+                                onClick={() => {
+                                    handleRecordSearch(query);
+                                    handleProductClick(product.slug);
+                                }}
                                 className="w-full flex items-center gap-4 p-3 mb-2 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all text-left"
                             >
                                 <div className="w-14 h-14 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-100 relative overflow-hidden">
@@ -163,30 +179,38 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             </button>
                         ))}
 
-                        {/* Popular Searches (Categories) - Show if no query */}
+                        {/* Trending Searches - Show if no query */}
                         {query.length < 2 && (
                             <div className="mt-4 px-2">
-                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                    Popular Categories
-                                </p>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <svg className="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                    </svg>
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                        Trending Now
+                                    </p>
+                                </div>
                                 <div className="flex flex-wrap gap-2">
-                                    {categories.length > 0 ? (
-                                        categories.slice(0, 10).map((cat: { id: number | string; name: string; slug?: string }, index: number) => (
+                                    {trendingSearches.length > 0 ? (
+                                        trendingSearches.map((item: { query: string }, index: number) => (
                                             <button
-                                                key={cat.id || cat.slug || index}
-                                                onClick={() => setQuery(cat.name)}
-                                                className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-pink-500 hover:text-pink-600 transition-colors shadow-sm"
+                                                key={index}
+                                                onClick={() => {
+                                                    setQuery(item.query);
+                                                    handleRecordSearch(item.query);
+                                                }}
+                                                className="px-4 py-2 bg-white border border-gray-100 rounded-full text-sm font-medium text-gray-600 hover:border-pink-500 hover:text-pink-600 transition-all shadow-sm"
                                             >
-                                                {cat.name}
+                                                {item.query}
                                             </button>
                                         ))
                                     ) : (
-                                        // Fallback if no categories loaded yet
-                                        ['Electronics', 'Fashion', 'Home', 'Beauty'].map(term => (
+                                        // Real-World Sourcing Discovery Fallbacks
+                                        ['Compressed Mattresses', 'Solar Panels', 'Furniture', 'Laptops', 'Home Appliances'].map(term => (
                                             <button
                                                 key={term}
                                                 onClick={() => setQuery(term)}
-                                                className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:border-pink-500 hover:text-pink-600 transition-colors shadow-sm"
+                                                className="px-4 py-2 bg-slate-50 border border-slate-100 rounded-full text-xs font-black uppercase tracking-widest text-slate-900 hover:border-slate-300 hover:bg-slate-100 transition-all shadow-sm"
                                             >
                                                 {term}
                                             </button>

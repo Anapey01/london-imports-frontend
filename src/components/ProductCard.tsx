@@ -7,42 +7,38 @@
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
 import { useCartStore, Product } from '@/stores/cartStore';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart } from 'lucide-react';
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 import { formatPrice } from '@/lib/format';
+import { trackAddToCart, trackSelectItem } from '@/lib/analytics';
 
 interface ProductCardProps {
     product: Product;
     priority?: boolean;
+    hideProgress?: boolean;
+    hideRating?: boolean;
+    variant?: 'default' | 'compact';
 }
 
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
 
-export default function ProductCard({ product, priority = false }: ProductCardProps) {
+export default function ProductCard({ 
+    product, 
+    priority = false, 
+    hideProgress = false, 
+    hideRating = false,
+    variant = 'default'
+}: ProductCardProps) {
     const [isAdding, setIsAdding] = useState(false);
     const [imageError, setImageError] = useState(false);
     const addToCart = useCartStore(state => state.addToCart);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
     const isWishlisted = isInWishlist(product.id);
 
-    // Use real rating_count from backend, or stable random fallback
-    const reviewCount = useMemo(() => {
-        if (typeof product.rating_count === 'number' && product.rating_count > 0) {
-            return product.rating_count;
-        }
-        
-        // Stable random review count based on product ID (fallback)
-        const idStr = String(product.id);
-        let hash = 0;
-        for (let i = 0; i < idStr.length; i++) {
-            hash = ((hash << 5) - hash) + idStr.charCodeAt(i);
-            hash |= 0;
-        }
-        return (Math.abs(hash) % 50) + 1;
-    }, [product.id, product.rating_count]);
+    // Review count logic removed as label is hidden
 
     const toggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -52,7 +48,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         } else {
             // Ensure product matches expected interface
             const wishlistProduct = {
-                ...product,
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                price: product.price,
                 image: product.image || product.primary_image || ""
             };
             addToWishlist(wishlistProduct);
@@ -69,6 +68,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                 ...product,
                 image: product.image || ""
             });
+            trackAddToCart(product);
         } catch (error: unknown) {
             console.error("Add to cart error:", error);
             // Safe alignment with potentially complex error objects
@@ -95,9 +95,13 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         <div className="bg-white dark:bg-slate-900 rounded-lg hover:shadow-diffusion-lg transition-all duration-500 flex flex-col h-full overflow-hidden group/card relative">
 
             <div className="relative overflow-hidden">
-                <Link href={`/products/${product.slug}`} className="block">
+                <Link 
+                    href={`/products/${product.slug}`} 
+                    className="block"
+                    onClick={() => trackSelectItem(product)}
+                >
                     {/* Image Section */}
-                    <div className="relative aspect-[3/4] p-6 bg-white dark:bg-slate-950 flex items-center justify-center transition-colors">
+                    <div className={`relative aspect-[4/5] p-3 ${variant === 'compact' ? 'bg-slate-50/50' : 'bg-white'} dark:bg-slate-950 flex items-center justify-center transition-colors`}>
                         {!imageError ? (
                             <Image
                                 src={imageUrl}
@@ -105,7 +109,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                                 fill
                                 priority={priority}
                                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                                className="object-contain group-hover/card:scale-110 transition-transform duration-700 ease-out"
+                                className="object-contain group-hover/card:scale-105 transition-transform duration-700 ease-out"
                                 onError={() => setImageError(true)}
                             />
                         ) : (
@@ -118,73 +122,94 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                     </div>
                 </Link>
 
-                {/* Minimalist Floating Action Tray */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/20 shadow-lg opacity-0 translate-y-4 group-hover/card:opacity-100 group-hover/card:translate-y-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
-                    {/* Wishlist Button */}
-                    <button
-                        onClick={toggleWishlist}
-                        className={`p-2.5 rounded-full transition-all duration-300 ${isWishlisted ? "bg-red-50 text-red-500" : "hover:bg-gray-100 text-slate-500 hover:text-black dark:hover:text-white"}`}
-                        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                        <Heart className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`} />
-                    </button>
-
-                    <div className="w-[1px] h-4 bg-gray-200 dark:bg-slate-700" />
-
-                    {/* Quick Add / View Options */}
-                    {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
-                        <Link
-                            href={`/products/${product.slug}`}
-                            className="p-2.5 rounded-full hover:bg-gray-100 text-slate-500 hover:text-black dark:hover:text-white transition-all flex items-center justify-center"
-                            aria-label="View options"
-                        >
-                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </Link>
-                    ) : (
+                {/* Pure Floating Icons - Top Right Precision */}
+                {variant !== 'compact' && (
+                    <div className="absolute top-3 right-3 z-20 flex flex-col items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 transition-all duration-500 ease-out">
+                        {/* Wishlist Button */}
                         <button
-                            onClick={handleAddToCart}
-                            disabled={isAdding}
-                            className="p-2.5 rounded-full hover:bg-green-50 text-slate-500 hover:text-green-600 transition-all flex items-center justify-center"
-                            aria-label="Add to cart"
+                            onClick={toggleWishlist}
+                            className={`w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 shadow-sm border border-white/40 ${isWishlisted ? "bg-red-50 text-red-500 border-red-100" : "bg-white/90 backdrop-blur-md text-slate-400 hover:text-[#006B5A] hover:bg-white"}`}
+                            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
+                            <Heart className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`} strokeWidth={1.5} />
                         </button>
-                    )}
-                </div>
+
+                        {/* Quick Add / View Options */}
+                        {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
+                            <Link
+                                href={`/products/${product.slug}`}
+                                onClick={() => trackSelectItem(product)}
+                                className="w-9 h-9 bg-white/90 backdrop-blur-md flex items-center justify-center rounded-full shadow-sm border border-white/40 text-slate-400 hover:text-[#006B5A] hover:bg-white transition-all"
+                                aria-label="View options"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isAdding}
+                                className="w-9 h-9 bg-white/90 backdrop-blur-md flex items-center justify-center rounded-full shadow-sm border border-white/40 text-slate-400 hover:text-[#006B5A] hover:bg-white transition-all"
+                                aria-label="Add to cart"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
-            <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col">
+            <Link 
+                href={`/products/${product.slug}`} 
+                className="flex-1 flex flex-col"
+                onClick={() => trackSelectItem(product)}
+            >
                 {/* Details Section */}
-                <div className="px-4 pb-6 pt-2 flex flex-col gap-2 flex-1 bg-white dark:bg-slate-900 transition-colors text-center">
+                <div className={`${variant === 'compact' ? 'px-3 pb-4 pt-1 gap-1' : 'px-3.5 pb-5 pt-1.5 gap-1'} flex flex-col flex-1 bg-white dark:bg-slate-900 transition-colors text-center`}>
                     {/* Star Rating */}
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                        <StarRating size="xs" />
-                        <span className="text-[10px] uppercase tracking-widest text-slate-400 font-medium">{reviewCount} Reviews</span>
+                    {!hideRating && (
+                        <div className="flex items-center justify-center gap-1 mb-0.5 opacity-60">
+                            <StarRating size="xs" />
+                        </div>
+                    )}
+
+                    {/* Title with Architectural Marquee (Desktop: Hover | Mobile: Ambient) */}
+                    <div className="title-marquee-container overflow-hidden relative w-full h-5">
+                        <h3 className={`
+                            ${variant === 'compact' 
+                                ? 'text-[10px] font-sans font-bold tracking-[0.2em] uppercase text-slate-500' 
+                                : 'text-[13px] font-sans font-bold text-slate-800 tracking-tight leading-[1.3]'
+                            } 
+                            dark:text-slate-100 transition-colors whitespace-nowrap
+                            lg:group-hover/card:animate-[title-scroll_6s_linear_infinite_alternate] 
+                            max-lg:animate-mobile-marquee w-max block
+                        `}>
+                            {product.name}
+                        </h3>
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-[15px] font-serif font-medium text-slate-900 dark:text-slate-100 line-clamp-2 h-11 leading-[1.2] tracking-tight italic">
-                        {product.name}
-                    </h3>
-
                     {/* Price */}
-                    <div className="text-slate-900 dark:text-white font-bold text-lg mt-1 tracking-tighter">
+                    <div className={`
+                        text-[#006B5A] ${variant === 'compact' ? 'text-sm' : 'text-base'} 
+                        dark:text-white font-bold tracking-tighter tabular-nums transition-colors
+                    `}>
                         {formatPrice(product.price)}
                     </div>
 
                     {/* Progress Bar (Innovation) */}
-                    <div className="mt-3">
-                        <GroupBuyProgress
-                            current={product.reservations_count || 0}
-                            target={product.target_quantity || 100}
-                            variant="compact"
-                        />
-                    </div>
+                    {!hideProgress && (
+                        <div className="mt-2.5">
+                            <GroupBuyProgress
+                                current={product.reservations_count || 0}
+                                target={product.target_quantity || 100}
+                                variant="micro"
+                            />
+                        </div>
+                    )}
                 </div>
             </Link>
         </div>

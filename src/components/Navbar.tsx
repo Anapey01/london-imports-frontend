@@ -18,6 +18,7 @@ const MegaMenu = dynamic(() => import('./MegaMenu'));
 import ThemeToggle from './ThemeToggle';
 import { Search, Menu, Heart, ChevronRight } from 'lucide-react';
 import { useWishlistStore } from '@/stores/wishlistStore';
+import { trackViewSearchResults } from '@/lib/analytics';
 
 export default function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
@@ -102,7 +103,7 @@ export default function Navbar() {
                                     <span className="text-xl font-serif font-medium tracking-tight text-slate-950 dark:text-white">
                                         LONDON&apos;S
                                     </span>
-                                    <span className="text-[10px] font-black text-green-600 tracking-[0.4em] uppercase opacity-80">Sourcing House</span>
+                                    <span className="text-[10px] font-black text-green-600 tracking-[0.4em] uppercase opacity-80">Imports</span>
                                 </div>
                             </Link>
                         </div>
@@ -110,11 +111,14 @@ export default function Navbar() {
                         {/* MIDDLE: Search Bar (Refined & Subtle) */}
                         <div className="flex-1 max-w-md mx-12">
                             <div className="relative group">
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const term = (e.currentTarget.elements.namedItem('search') as HTMLInputElement).value;
-                                    if (term) window.location.href = `/products?search=${encodeURIComponent(term)}`;
-                                }}>
+                                    <form onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const term = (e.currentTarget.elements.namedItem('search') as HTMLInputElement).value;
+                                        if (term) {
+                                            trackViewSearchResults(term, 0); // Count is unknown here, but term is captured
+                                            window.location.href = `/products?search=${encodeURIComponent(term)}`;
+                                        }
+                                    }}>
                                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-600 transition-colors">
                                         <Search className="w-4 h-4" />
                                     </div>
@@ -235,7 +239,7 @@ export default function Navbar() {
                             />
                             <div className="flex flex-col leading-none">
                                 <span className="text-sm font-serif font-medium tracking-tight text-slate-900 border-b border-green-600/20">LONDON&apos;S</span>
-                                <span className="text-[10px] font-black text-green-600 tracking-[0.2em] uppercase opacity-70">Agency</span>
+                                <span className="text-[10px] font-black text-green-600 tracking-[0.2em] uppercase opacity-70">Imports</span>
                             </div>
                         </Link>
 

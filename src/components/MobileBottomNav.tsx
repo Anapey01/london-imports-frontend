@@ -71,21 +71,21 @@ export default function MobileBottomNav() {
                         >
                             {/* Active Indicator Dot */}
                             {isActive && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-slate-900 rounded-full dark:bg-white" />
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#006B5A] rounded-full" />
                             )}
 
                             {/* Icon container */}
                             <div className="relative">
                                 <item.icon
-                                    className={`w-6 h-6 transition-all duration-300 ${isActive
-                                        ? 'text-slate-900 dark:text-white stroke-[1.5] scale-110'
-                                        : 'text-slate-400 stroke-[1.25] group-hover:text-slate-600'
+                                    className={`w-5 h-5 transition-all duration-300 ${isActive
+                                        ? 'text-[#006B5A] stroke-[2] scale-110'
+                                        : 'text-slate-400 stroke-[1.5] group-hover:text-slate-600'
                                         }`}
                                 />
 
                                 {/* Badge for cart */}
                                 {item.badge !== undefined && item.badge > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1 border-2 border-white dark:border-slate-800 transition-colors">
+                                    <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-[8px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1 border-2 border-white transition-colors">
                                         {item.badge}
                                     </span>
                                 )}
@@ -93,7 +93,7 @@ export default function MobileBottomNav() {
 
                             {/* Label */}
                             <span
-                                className={`text-[10px] mt-1 font-medium tracking-tight transition-all duration-300 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400 opacity-70 group-hover:opacity-100'
+                                className={`text-[9px] mt-1.5 font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? 'text-[#006B5A]' : 'text-slate-400 opacity-70 group-hover:opacity-100'
                                     }`}
                             >
                                 {item.name}

@@ -5,7 +5,7 @@ import { formatNumber } from '@/lib/format';
 interface GroupBuyProgressProps {
     current: number;
     target: number;
-    variant?: 'compact' | 'detailed';
+    variant?: 'compact' | 'detailed' | 'micro';
 }
 
 /**
@@ -28,37 +28,51 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
         }
     }, [percentage]);
 
+    if (variant === 'micro') {
+        return (
+            <div className="flex items-center gap-3 w-full">
+                <span className="text-[9px] font-black text-slate-900 tabular-nums min-w-[24px]">{percentage}%</span>
+                <div className="flex-1 bg-slate-100 dark:bg-slate-800 h-0.5 rounded-full overflow-hidden">
+                    <div
+                        ref={progressRef}
+                        className="bg-[#006B5A] h-full transition-all duration-1000 ease-out"
+                    />
+                </div>
+                <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    {remaining > 0 ? `${formatNumber(remaining)} more` : 'Ready'}
+                </span>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col gap-2 w-full">
-            <div className="flex justify-between items-end text-sm">
-                <span className="font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+        <div className="flex flex-col gap-3 w-full">
+            <div className="flex justify-between items-end">
+                <span className="text-[10px] font-bold text-slate-900 dark:text-slate-100 uppercase tracking-[0.2em]">
                     {variant === 'detailed' ? 'Group Buy Progress' : 'Batch Status'}
                 </span>
-                <span className="font-black text-pink-600 tabular-nums">{percentage}%</span>
+                <span className="text-[10px] font-bold text-slate-900 tabular-nums tracking-widest">{percentage}%</span>
             </div>
 
-            <div className="w-full bg-gray-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden shadow-inner border border-gray-200 dark:border-slate-600">
+            <div className="w-full bg-slate-100 dark:bg-slate-800 h-1 rounded-sm overflow-hidden border border-slate-100 dark:border-slate-700">
                 <div
                     ref={progressRef}
-                    className="bg-pink-600 h-full transition-all duration-1000 ease-out relative"
-                >
-                    {/* Subtle shine effect */}
-                    <div className="absolute inset-0 bg-white/20 skew-x-[-20deg] animate-[shimmer_2s_infinite]" />
-                </div>
+                    className="bg-[#006B5A] h-full transition-all duration-1000 ease-out relative"
+                />
             </div>
 
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[11px] font-bold tracking-tight">
-                <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 italic font-medium">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[8px] font-bold tracking-[0.3em] uppercase">
+                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
                     <span>{formatNumber(current)} {current === 1 ? 'item' : 'items'} ordered</span>
                 </div>
 
                 <div className="text-right">
                     {remaining > 0 ? (
-                        <span className="text-gray-400 dark:text-gray-500 font-medium italic">
+                        <span className="text-slate-300 dark:text-slate-600">
                             {formatNumber(remaining)} more to ship
                         </span>
                     ) : (
-                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-black">
+                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black">
                             <Package className="w-3 h-3" />
                             Ready to Ship
                         </span>

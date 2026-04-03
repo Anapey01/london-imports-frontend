@@ -1,6 +1,6 @@
 /**
  * London's Imports - Cart Page
- * Redesigned to match the premium, editorial aesthetic of the luxury sourcing house.
+ * Redesigned to match the premium, editorial aesthetic of London's Imports.
  */
 'use client';
 
@@ -140,10 +140,10 @@ export default function CartPage() {
                                                     <p className="font-black text-slate-950 text-lg tabular-nums">GHS {item.total_price?.toLocaleString()}</p>
                                                 </div>
                                                 {item.product.delivery_window_text && (
-                                                    <p className="text-[10px] text-green-600 font-black uppercase tracking-[0.2em] mb-2 flex items-center gap-1.5">
-                                                        <div className="w-1 h-1 bg-green-600 rounded-full animate-pulse" />
+                                                    <div className="text-[10px] text-[#006B5A] font-black uppercase tracking-[0.2em] mb-2 flex items-center gap-1.5">
+                                                        <div className="w-1 h-1 bg-[#006B5A] rounded-full animate-pulse" />
                                                         {item.product.delivery_window_text}
-                                                    </p>
+                                                    </div>
                                                 )}
                                                 <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
                                                     Unit Price: GHS {item.unit_price?.toLocaleString()}
@@ -186,45 +186,49 @@ export default function CartPage() {
                             </div>
                         </div>
 
-                        {/* Order Summary */}
+                        {/* Order Summary - Deconstructed Editorial Refinement */}
                         <div className="lg:col-span-4 mt-8 lg:mt-0">
-                            <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 sticky top-32">
-                                <h2 className="text-base font-bold text-slate-950 mb-10 tracking-[0.3em] uppercase">Order Summary</h2>
+                            <div className="bg-white p-8 rounded-2xl shadow-diffusion border border-slate-100/50 sticky top-32">
+                                <h2 className="text-[10px] font-bold text-slate-900 mb-8 tracking-[0.3em] uppercase opacity-50">Order Summary</h2>
 
-                                <div className="space-y-8 mb-12">
-                                    <div className="flex justify-between text-slate-400 text-[10px] uppercase font-bold tracking-widest">
+                                <div className="space-y-6 mb-10">
+                                    <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-slate-400">
                                         <span>Subtotal</span>
-                                        <span className="font-black text-slate-950 tabular-nums">GHS {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="text-slate-950 tabular-nums">GHS {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
-                                    <div className="border-t border-slate-50 pt-8 flex justify-between items-end">
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest pb-1.5">Total Amount</span>
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-3xl font-black text-slate-950 tracking-tight leading-none tabular-nums">
-                                                GHS {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                            </span>
-                                        </div>
+                                    <div className="pt-6 border-t border-slate-50 flex justify-between items-end">
+                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest pb-1">Total Amount</span>
+                                        <span className="text-xl font-bold text-[#006B5A] tracking-tight leading-none tabular-nums">
+                                            GHS {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </span>
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={handleCheckout}
                                     disabled={selectedItems.length === 0 || isLoading}
-                                    className={`w-full py-6 rounded-[1.2rem] font-bold transition-all shadow-2xl active:scale-[0.98] duration-300 uppercase tracking-[0.4em] text-[10px] ${selectedItems.length === 0
-                                        ? 'bg-slate-50 text-slate-300 cursor-not-allowed shadow-none'
-                                        : 'bg-slate-950 text-white hover:bg-green-600 shadow-slate-950/20'
+                                    className={`w-full h-14 flex items-center justify-center gap-3 rounded-xl font-bold transition-all active:scale-[0.98] duration-500 uppercase tracking-[0.3em] text-[10px] ${selectedItems.length === 0
+                                        ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                                        : 'bg-slate-950 text-white hover:bg-[#006B5A] shadow-diffusion'
                                         }`}
                                 >
+                                    <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
                                     {selectedItems.length === 0 ? 'Select items' : 'Secure Checkout'}
                                 </button>
 
-                                <div className="mt-8 flex flex-col items-center gap-4">
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">
+                                <div className="mt-8 flex flex-col items-center gap-6">
+                                    <p className="text-[9px] text-slate-400 font-medium uppercase tracking-[0.2em] text-center opacity-60">
                                         Shipping & taxes calculated at checkout
                                     </p>
-                                    <div className="flex items-center gap-2 opacity-30 grayscale scale-75">
-                                        <div className="w-8 h-5 bg-slate-900 rounded-sm" />
-                                        <div className="w-8 h-5 bg-slate-700 rounded-sm" />
-                                        <div className="w-8 h-5 bg-slate-500 rounded-sm" />
+                                    {/* Minimalist Trust Badges */}
+                                    <div className="flex items-center gap-4 grayscale opacity-20 hover:opacity-40 transition-opacity duration-500">
+                                        <div className="w-6 h-6 rounded-full border border-slate-900 flex items-center justify-center">
+                                            <div className="w-1.5 h-1.5 bg-slate-900 rounded-full" />
+                                        </div>
+                                        <div className="flex gap-1.5">
+                                            <div className="w-4 h-1 bg-slate-900 rounded-full" />
+                                            <div className="w-1.5 h-1 bg-slate-900 rounded-full" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

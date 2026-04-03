@@ -56,7 +56,12 @@ export default function WishlistPage() {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
                         {items.map((product) => (
-                            <ProductCard key={product.id} product={product} />
+                            <ProductCard 
+                                key={product.id} 
+                                product={product} 
+                                hideProgress={true}
+                                hideRating={true}
+                            />
                         ))}
                     </div>
                 )}

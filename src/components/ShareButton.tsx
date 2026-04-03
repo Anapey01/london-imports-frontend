@@ -44,30 +44,30 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${title} - ${url}`)}`;
 
     return (
-        <div className={`flex items-center gap-3 ${className}`}>
+        <div className={`flex items-center gap-1.5 ${className}`}>
             <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-gray-400 hover:text-green-500 transition-colors border border-gray-100 rounded-lg hover:border-green-100 hover:bg-green-50/30"
+                className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-slate-400 hover:text-green-600 transition-all border border-slate-100 rounded-lg hover:border-green-100 hover:bg-green-50/30"
                 aria-label="Share on WhatsApp"
             >
-                <MessageCircle className="w-5 h-5" strokeWidth={1.5} />
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.2} />
             </a>
 
             <button
                 onClick={handleShare}
-                className="flex items-center gap-2 pr-4 pl-3 py-2 text-[10px] uppercase tracking-widest font-bold text-gray-400 border border-gray-100 rounded-lg hover:border-gray-200 hover:text-gray-900 hover:bg-gray-50 transition-all font-sans"
+                className="h-9 sm:h-11 flex items-center gap-2 px-3 sm:pr-5 sm:pl-4 text-[9px] uppercase tracking-[0.3em] font-semibold text-slate-400 border border-slate-100 rounded-lg hover:border-slate-200 hover:text-slate-900 transition-all font-sans whitespace-nowrap"
             >
                 {copied ? (
                     <>
-                        <Check className="w-3 h-3 text-green-500" strokeWidth={3} />
+                        <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500" strokeWidth={2} />
                         <span>Copied</span>
                     </>
                 ) : (
                     <>
-                        <LinkIcon className="w-3 h-3" strokeWidth={2} />
-                        <span>Copy Link</span>
+                        <LinkIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={1.2} />
+                        <span>Copy</span>
                     </>
                 )}
             </button>

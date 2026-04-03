@@ -14,7 +14,7 @@ const withPWA = withPWAInit({
     document: "/offline",
   },
   workboxOptions: {
-    skipWaiting: true,
+    skipWaiting: false, // Control updates via UI (ReloadPrompt)
     clientsClaim: true,
     runtimeCaching: [
       {
@@ -25,17 +25,37 @@ const withPWA = withPWAInit({
           url.origin.includes('google-analytics.com') ||
           url.origin.includes('googletagmanager.com') ||
           url.origin.includes('google.com') ||
-          url.origin.includes('google.com.gh') ||
           url.origin.includes('gstatic.com') ||
-          url.origin.includes('wikimedia.org') ||
-          url.origin.includes('posthog.com') ||
           url.origin.includes('sentry.io') ||
-          url.origin.includes('vercel.live') ||
-          url.origin.includes('london-imports-api.onrender.com'),
+          url.origin.includes('vercel.live'),
         handler: 'NetworkOnly',
       },
       {
-        // 2. HTML documents (initial page loads) - NetworkFirst to avoid broken offline states
+        // 2. Product API - SWR for Instant loading on flaky networks (GET ONLY)
+        urlPattern: ({ url, request }) => 
+          url.origin === 'https://london-imports-api.onrender.com' && 
+          url.pathname.startsWith('/api/v1/') &&
+          request.method === 'GET' &&
+          !url.pathname.includes('/auth/'),
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'api-data-swr',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 15 * 60, // 15 mins for data
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+      {
+        // 3. API - Other methods (Auth, Orders POST) - NetworkOnly
+        urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
+        handler: 'NetworkOnly',
+      },
+      {
+        // 4. HTML documents (initial page loads) - NetworkFirst
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'NetworkFirst',
         options: {
@@ -47,7 +67,7 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 3. RSC Payloads & Data - MUST be NetworkFirst to prevent navigation hangs (304 issues)
+        // 5. RSC Payloads & Data - NetworkFirst with shorter expiration
         urlPattern: ({ url }) => url.searchParams.has('_rsc') || url.pathname.includes('/_next/data/'),
         handler: 'NetworkFirst',
         options: {
@@ -59,7 +79,7 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 4. Static Assets - SWR is fine here
+        // 6. Static Assets - SWR
         urlPattern: ({ url }) => url.pathname.includes('/_next/static/') || url.pathname.includes('/_next/image'),
         handler: 'StaleWhileRevalidate',
         options: {
@@ -67,12 +87,7 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 5. API - NetworkOnly to ensure zero caching interference with auth/orders
-        urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
-        handler: 'NetworkOnly',
-      },
-      {
-        // 6. External Images (Cloudinary, Wikipedia, etc.) - SWR to allow updates
+        // 7. External Images (Cloudinary, Wikipedia, etc.) - SWR
         urlPattern: ({ url }) =>
           url.origin === 'https://res.cloudinary.com' ||
           url.origin.includes('wikimedia.org') ||

@@ -172,7 +172,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                                 ? 'Instant Availability'
                                 : featured
                                     ? 'Exclusive Drop'
-                                    : 'The Sourcing House'}
+                                    : 'London\'s Imports'}
                         </span>
                         <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-medium text-slate-950 dark:text-white mb-8 tracking-tighter leading-[0.85]">
                             {isAvailableItems

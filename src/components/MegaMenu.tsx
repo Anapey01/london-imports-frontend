@@ -2,6 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { siteConfig } from '@/config/site';
 import {
@@ -31,28 +33,39 @@ import {
     IceCream,
 } from 'lucide-react';
 
-export const CATEGORY_GROUPS = [
-    { id: 'all', name: 'SHOP ALL', icon: LayoutGrid },
-    { id: 'lightenings', name: 'Lightenings', icon: Sun },
-    { id: 'kids-shoes', name: 'Kids shoes', icon: Footprints },
-    { id: 'air-care-products', name: 'Air care products', icon: Wind },
-    { id: 'electronics', name: 'Electronics', icon: Tv },
-    { id: 'shein-ladies-dress-bale', name: 'SHEIN ladies dress bale', icon: Package },
-    { id: 'perfumes', name: 'Arabian perfumes', icon: Droplet },
-    { id: 'kitchen-appliances', name: 'Home and kitchen', icon: Utensils },
-    { id: 'outfits', name: 'Outfits', icon: Shirt },
-    { id: 'business-finance-books', name: 'Business & Finance', icon: Briefcase },
-    { id: 'hair-and-accessories', name: 'Hair and accessories', icon: Crown },
-    { id: 'bags', name: 'Bags', icon: ShoppingBag },
-    { id: 'accessories', name: 'Jewelry and accessories', icon: Gem },
-    { id: 'body-care-and-beauty', name: 'Body care and beauty', icon: Sparkles },
-    { id: 'heels-and-shoes', name: 'Heels and shoes', icon: Footprints },
-    { id: 'snacks', name: 'Snacks', icon: IceCream },
-    { id: 'mobile-phones-and-gadgets', name: 'Mobile phones and gadgets', icon: Smartphone },
-];
+// Mapping category names/keywords to Lucide icons for dynamic categories
+export const getCategoryIcon = (categoryName: string) => {
+    const name = categoryName.toLowerCase();
+    if (name.includes('shop all')) return LayoutGrid;
+    if (name.includes('shoe') || name.includes('heel') || name.includes('footwear')) return Footprints;
+    if (name.includes('electronics') || name.includes('tv') || name.includes('gadget')) return Tv;
+    if (name.includes('kitchen') || name.includes('home') || name.includes('appliance')) return Utensils;
+    if (name.includes('perfume') || name.includes('fragrance') || name.includes('scent')) return Droplet;
+    if (name.includes('dress') || name.includes('outfit') || name.includes('cloth') || name.includes('apparel')) return Shirt;
+    if (name.includes('bag') || name.includes('purse')) return ShoppingBag;
+    if (name.includes('jewelry') || name.includes('accessory')) return Gem;
+    if (name.includes('beauty') || name.includes('care') || name.includes('skin')) return Sparkles;
+    if (name.includes('snack') || name.includes('food')) return IceCream;
+    if (name.includes('phone') || name.includes('mobile')) return Smartphone;
+    if (name.includes('business') || name.includes('book')) return Briefcase;
+    if (name.includes('air') || name.includes('wind')) return Wind;
+    if (name.includes('sun') || name.includes('light')) return Sun;
+    if (name.includes('hair')) return Crown;
+    
+    return Package; // Default fallback
+};
 
 export default function MegaMenu() {
     const { isAuthenticated } = useAuthStore();
+
+    // Fetch dynamic categories from API
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: productsAPI.categories,
+        staleTime: 1000 * 60 * 60, // 1 hour caching
+    });
+
+    const categories = categoriesData?.data?.results || categoriesData?.data || [];
 
     return (
         <div
@@ -121,13 +134,26 @@ export default function MegaMenu() {
                 <div className="h-px bg-gray-50 dark:bg-slate-800 mx-6 mb-4" />
 
                 <div className="flex-1 overflow-y-auto scrollbar-hide">
-                    {CATEGORY_GROUPS.map((category) => {
-                        const Icon = category.icon;
+                    {/* Always show "Shop All" at the top */}
+                    <Link
+                        href="/products"
+                        className="flex items-center justify-between px-6 py-2.5 cursor-pointer transition-all group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                    >
+                        <div className="flex items-center gap-3">
+                            <LayoutGrid className="w-5 h-5 transition-transform" strokeWidth={1.5} />
+                            <span className="text-[13px] font-bold tracking-wider uppercase">SHOP ALL</span>
+                        </div>
+                        <ChevronRight className="w-3 h-3 transition-transform opacity-0 group-hover:opacity-100 group-hover:translate-x-1" />
+                    </Link>
+
+                    {/* Render Category List */}
+                    {categories.map((category: { id: string; name: string; slug: string }) => {
+                        const Icon = getCategoryIcon(category.name);
 
                         return (
                             <Link
                                 key={category.id}
-                                href={category.id === 'all' ? '/products' : `/products/category/${category.id}`}
+                                href={`/products?category=${category.slug}`}
                                 className="flex items-center justify-between px-6 py-2.5 cursor-pointer transition-all group text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50"
                             >
                                 <div className="flex items-center gap-3">

@@ -60,7 +60,7 @@ export default function ProductImageGallery({
                     alt={`Buy ${productName} in Ghana - Authentic China Import`}
                     fill
                     className="object-contain drop-shadow-2xl"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                     priority
                 />
             </div>
@@ -93,48 +93,62 @@ export default function ProductImageGallery({
                 </div>
             )}
 
-            {/* Product Specs Row - below image */}
-            <div className="flex justify-center gap-8 mt-4 pt-4 border-t border-gray-100">
-                <div className="flex flex-col items-center text-center">
-                    <svg className={`w-7 h-7 mb-2 ${preorderStatus === 'READY_TO_SHIP' ? 'text-green-600' : 'text-[#006B5A]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={preorderStatus === 'READY_TO_SHIP' ? "M5 13l4 4L19 7" : "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"} />
-                    </svg>
-                    <span className="text-sm font-bold text-gray-900">
-                        {preorderStatus === 'READY_TO_SHIP' ? 'Ships within 24h' : deliveryWindowText}
-                    </span>
-                    <span className="text-xs text-gray-500">Delivery</span>
+            {/* Product Specs Row - High-Fidelity Discovery Units */}
+            <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-100">
+                {/* Delivery Unit */}
+                <div className="flex flex-col items-center text-center gap-3 group">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#006B5A]/5 text-[#006B5A] transition-transform duration-500 group-hover:scale-110">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={preorderStatus === 'READY_TO_SHIP' ? "M5 13l4 4L19 7" : "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"} />
+                        </svg>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
+                            {preorderStatus === 'READY_TO_SHIP' ? 'Ships within 24h' : deliveryWindowText}
+                        </p>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold">Delivery</p>
+                    </div>
                 </div>
 
-                <div className="flex flex-col items-center text-center">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-green-600' : 'bg-[#006B5A]'}`}>
-                        <span className="text-white text-[10px] font-bold">{preorderStatus === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}</span>
+                {/* Category Unit */}
+                <div className="flex flex-col items-center text-center gap-3 group">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-[#006B5A]/20 transition-transform duration-500 group-hover:scale-110 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-green-600' : 'bg-[#006B5A]'}`}>
+                        <span className="text-white text-[11px] font-black tracking-tighter">{preorderStatus === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}</span>
                     </div>
-                    <span className="text-sm font-bold text-gray-900">{categoryName}</span>
-                    <span className="text-xs text-gray-500">Category</span>
+                    <div className="space-y-1">
+                        <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight line-clamp-1">{categoryName}</p>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold">Category</p>
+                    </div>
                 </div>
 
-                {/* Show Reserved only if not fully available or if we want social proof? Maybe hide for available items to reduce clutter? */}
-                {/* User requested differentiation, so let's keep it clean for Available Items unless high demand */}
-                {reservationsCount > 0 && preorderStatus !== 'READY_TO_SHIP' && (
-                    <div className="flex flex-col items-center text-center">
-                        <svg className="w-7 h-7 text-[#F5A623] mb-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
-                        </svg>
-                        <span className="text-sm font-bold text-gray-900">{reservationsCount}+</span>
-                        <span className="text-xs text-gray-500">Reserved</span>
-                    </div>
-                )}
-
-                {/* Stock Count for Ready Items */}
-                {preorderStatus === 'READY_TO_SHIP' && (
-                    <div className="flex flex-col items-center text-center">
-                        <svg className="w-7 h-7 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="text-sm font-bold text-gray-900">In Stock</span>
-                        <span className="text-xs text-gray-500">Available</span>
-                    </div>
-                )}
+                {/* Status Unit (Reserved or In Stock) */}
+                <div className="flex flex-col items-center text-center gap-3 group">
+                    {preorderStatus === 'READY_TO_SHIP' ? (
+                        <>
+                            <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-green-50 text-green-600 transition-transform duration-500 group-hover:scale-110">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">In Stock</p>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold text-center">Available</p>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-amber-50 text-amber-500 transition-transform duration-500 group-hover:scale-110">
+                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">{reservationsCount}+</p>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold text-center">Reserved</p>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
 
             {/* Video Section */}

@@ -6,7 +6,7 @@ import { useCartStore, type CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
-import { trackBeginCheckout, trackPurchase } from '@/lib/analytics';
+import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymentInfo, trackWhatsAppContact, trackCheckoutError } from '@/lib/analytics';
 import { ExtendedCart, BackendError, type OrderItem } from '@/types';
 import { AlertCircle } from 'lucide-react';
 import { siteConfig } from '@/config/site';
@@ -87,6 +87,11 @@ function CheckoutPage() {
     });
     const [saveAddress, setSaveAddress] = useState(false);
 
+    // Trackers for GA4 funnel
+    const hasTrackedCheckout = useRef(false);
+    const hasTrackedShipping = useRef(false);
+    const hasTrackedPayment = useRef(false);
+
     const searchParams = useSearchParams();
     const orderNumberParam = searchParams.get('order');
 
@@ -97,8 +102,9 @@ function CheckoutPage() {
     }, [isAuthenticated, fetchCart]);
 
     useEffect(() => {
-        if (cart && cart.items.length > 0) {
+        if (cart && cart.items.length > 0 && !hasTrackedCheckout.current) {
             trackBeginCheckout(cart);
+            hasTrackedCheckout.current = true;
         }
     }, [cart]);
 
@@ -267,8 +273,6 @@ function CheckoutPage() {
 
         const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9';
 
-
-
         if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
             console.error('CRITICAL: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is missing from environment.');
             setError('Payment setup incomplete. Please contact support or use the "Refresh Site Session" link below.');
@@ -279,10 +283,9 @@ function CheckoutPage() {
         if (!isAuthenticated || !user?.email) {
             setError('Please sign in with a valid account to complete your purchase.');
             setIsLoading(false);
-            // Optionally redirect to login after a short delay
             setTimeout(() => {
                 router.push(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-            }, 5000); // 5s delay to let them see error
+            }, 5000);
             return;
         }
 
@@ -296,7 +299,6 @@ function CheckoutPage() {
             const buyNowSlug = searchParams.get('buyNow');
             let targetItemIds = Array.from(selectedItemIds);
             
-            // If Buy Now, find that specific item in the cart to isolate it
             if (buyNowSlug && cart) {
                 const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
                 if (buyNowItem) {
@@ -316,12 +318,23 @@ function CheckoutPage() {
                 custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
             };
 
-            // Always call checkout before payment to ensure the latest delivery details are synced to the backend
             const res = await ordersAPI.checkout(orderPayload);
-            const orderToPay = res.data.order || res.data; // Backend returns {order, ...} or just order
+            const orderToPay = res.data.order || res.data;
             setCheckoutOrder(orderToPay);
 
+            if (currentOrderData) {
+                if (!hasTrackedShipping.current) {
+                    trackAddShippingInfo(currentOrderData);
+                    hasTrackedShipping.current = true;
+                }
+                if (!hasTrackedPayment.current) {
+                    trackAddPaymentInfo(currentOrderData, paymentType);
+                    hasTrackedPayment.current = true;
+                }
+            }
+
             if (paymentType === 'WHATSAPP') {
+                trackWhatsAppContact(orderToPay?.items?.[0]?.product?.name || 'Order', 'purchase');
                 const message = encodeURIComponent(`Hi, I'd like to pay for my order #${orderToPay?.order_number}. Total: ${formatPrice(orderToPay?.total || 0)}.`);
                 window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
                 router.push('/orders');
@@ -346,12 +359,10 @@ function CheckoutPage() {
                     ]
                 },
                 callback: (response: PaystackResponse) => {
-                    // Refactored to non-async for library compatibility
                     handleVerification(response);
                 },
                 onClose: () => {
                     setIsLoading(false);
-                    // ABSOLUTE CERTAINTY: Provide clear guidance if window is closed
                     setError('Payment window closed. You can resume this order anytime from your dashboard.');
                 }
             });
@@ -367,16 +378,10 @@ function CheckoutPage() {
                         amount: paymentAmount
                     });
                     
-                    // Profile Sync: Refresh user to confirm address save
-                    if (saveAddress) {
-                        await fetchUser();
-                    }
+                    if (saveAddress) await fetchUser();
+                    if (orderToPay) trackPurchase(orderToPay, response.reference);
                     
-                    if (orderToPay) {
-                        trackPurchase(orderToPay, response.reference);
-                    }
                     clearCart();
-                    // ABSOLUTE CERTAINTY: Clear session storage on successful completion
                     sessionStorage.removeItem('londons_checkout_delivery');
                     router.push('/orders?success=true');
                 } catch (verifyErr) {
@@ -385,19 +390,23 @@ function CheckoutPage() {
                     setIsLoading(false);
                 }
             }
-
         } catch (err: unknown) {
             console.error("Checkout Error:", err);
             const backendError = err as BackendError;
             const errorData = backendError.response?.data;
+            let errorMessage = 'Error processing request';
+
             if (errorData && typeof errorData === 'object') {
                 const detailedError = errorData as { error?: string; message?: string; detail?: string };
-                setError(detailedError.error || detailedError.message || detailedError.detail || 'Checkout failed');
+                errorMessage = detailedError.error || detailedError.message || detailedError.detail || 'Checkout failed';
             } else if (typeof errorData === 'string') {
-                setError(errorData);
-            } else {
-                setError(err instanceof Error ? err.message : 'Error processing request');
+                errorMessage = errorData;
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
             }
+            
+            setError(errorMessage);
+            trackCheckoutError('submission_error', errorMessage);
             setIsLoading(false);
         }
     };

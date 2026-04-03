@@ -9,9 +9,14 @@ import dynamic from "next/dynamic";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Providers from "@/providers/Providers";
+import { Toaster } from 'react-hot-toast';
 import PWAUpdater from "@/components/PWAUpdater";
 import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/config/site";
+
+import ReloadPrompt from '@/components/pwa/ReloadPrompt';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { Suspense } from "react";
 
 
 // Lazy load below-the-fold components to reduce initial bundle
@@ -314,15 +319,24 @@ export default async function RootLayout({
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href={new URL(siteConfig.apiUrl).origin} />
+        
+        {/* Global Organization Schema */}
         <script
+          id="organization-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        
+        {/* Sitelink Search Schema */}
         <script
+          id="search-box-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
+
+        {/* FAQ Schema for People Also Ask */}
         <script
+          id="faq-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
@@ -331,23 +345,47 @@ export default async function RootLayout({
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
-        <Script id="google-analytics" strategy="lazyOnload">
+        <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              send_page_view: false
+            });
           `}
         </Script>
 
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
+
         <Providers>
+          <Toaster 
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#ffffff',
+                color: '#0f172a',
+                fontSize: '12px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                borderRadius: '12px',
+                border: '1px solid #f1f5f9',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
+              },
+            }}
+          />
           <PWAUpdater />
           <Navbar />
           <main className="pb-20 md:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
+          <ReloadPrompt />
         </Providers>
         <Analytics />
 

@@ -140,9 +140,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                             </div>
                                             <div className="pb-1">
                                                 <StarRating initialRating={Number(rating || 0)} readOnly size="sm" />
-                                                <p className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">
-                                                    {ratingCount || reviews.length} REVIEWS
-                                                </p>
+                                                {/* Removed reviews count label */}
                                             </div>
                                         </div>
                                     </div>

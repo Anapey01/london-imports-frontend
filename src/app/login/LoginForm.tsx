@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { setAnalyticsUser } from '@/lib/analytics';
+import { setAnalyticsUser, trackLogin } from '@/lib/analytics';
 import { User, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 function LoginFormContent() {
@@ -45,7 +45,10 @@ function LoginFormContent() {
         try {
             await login(username, password);
             const user = useAuthStore.getState().user;
-            if (user?.id) setAnalyticsUser(user.id);
+            if (user?.id) {
+                setAnalyticsUser(user.id);
+                trackLogin();
+            }
             router.push(redirect);
         } catch (error: unknown) {
             const err = error as { response?: { data?: { detail?: string } }, message?: string };

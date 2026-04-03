@@ -1,6 +1,7 @@
 'use client';
 
 import { siteConfig } from '@/config/site';
+import { trackWhatsAppContact } from '@/lib/analytics';
 
 export default function WhatsAppButton() {
     const whatsappNumber = siteConfig.whatsapp;
@@ -14,9 +15,11 @@ export default function WhatsAppButton() {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         if (isMobile) {
+            trackWhatsAppContact('General Question', 'support');
             window.location.href = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${message}`;
         } else {
             // Desktop: Open WhatsApp Web directly to skip the landing page
+            trackWhatsAppContact('General Question', 'support');
             window.open(`https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${message}`, '_blank');
         }
     };

@@ -567,6 +567,51 @@ html {
   animation-play-state: paused;
 }
 
+@keyframes title-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(0);
+  }
+  80% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.title-marquee-container {
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.group-hover-marquee:hover {
+  animation: title-scroll 6s linear infinite alternate;
+  width: max-content;
+  display: inline-block;
+}
+
+@keyframes mobile-marquee-ambient {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  45%, 70% {
+    transform: translateX(-50%);
+  }
+  95%, 100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-mobile-marquee {
+  animation: mobile-marquee-ambient 12s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  display: inline-block;
+  white-space: nowrap;
+  width: max-content;
+}
+
 /* ===== PREMIUM TEXTURE & SHADOWS ===== */
 .bg-stationery {
   position: relative;

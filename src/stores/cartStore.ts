@@ -4,6 +4,7 @@
  */
 import { create } from 'zustand';
 import { ordersAPI } from '@/lib/api';
+import { trackRemoveFromCart } from '@/lib/analytics';
 
 export interface Product {
     id: string;
@@ -236,6 +237,13 @@ export const useCartStore = create<CartState>()((set, get) => ({
             try {
                 const response = await ordersAPI.removeFromCart(itemId);
                 const cart = response.data;
+
+                // GA4: Track removal
+                const itemToRemove = get().cart?.items.find(i => i.id === itemId);
+                if (itemToRemove) {
+                    trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
+                }
+
                 set({
                     cart,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
@@ -247,6 +255,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
             }
         } else {
             // Guest remove or fallback if ID was guest_ even if logged in
+            const itemToRemove = get().guestItems.find(i => i.id === itemId);
+            if (itemToRemove) {
+                trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
+            }
+
             const newGuest = get().guestItems.filter(i => i.id !== itemId);
             localStorage.setItem('guest_cart', JSON.stringify(newGuest));
             set({

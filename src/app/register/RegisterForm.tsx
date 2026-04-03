@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { User, Lock, Mail, Phone, ArrowRight } from 'lucide-react';
+import { trackSignUp } from '@/lib/analytics';
 
 export default function RegisterForm() {
     const router = useRouter();
@@ -40,6 +41,8 @@ export default function RegisterForm() {
                 ...formData,
                 username: formData.email
             });
+
+            trackSignUp();
 
             // Clear the automatic login session
             logout();

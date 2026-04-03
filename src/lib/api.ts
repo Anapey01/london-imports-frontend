@@ -139,6 +139,8 @@ export const productsAPI = {
   preview: (params?: unknown) => api.get('/products/preview/', { params }),
   categories: () => api.get('/products/categories/'),
   detail: (slug: string) => api.get(`/products/${slug}/`),
+  getTrendingSearches: () => api.get('/products/trending/'),
+  recordSearch: (query: string) => api.post('/products/record-search/', { query }),
   addReview: (slug: string, data: { rating: number; comment: string }) => 
     api.post(`/products/${slug}/reviews/`, data),
 };

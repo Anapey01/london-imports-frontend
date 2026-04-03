@@ -6,6 +6,8 @@ import { productsAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
 import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
+import { trackViewItemList, trackViewSearchResults } from '@/lib/analytics';
+import { useEffect, useRef } from 'react';
 
 interface Category {
     id: number;
@@ -96,6 +98,30 @@ export default function ProductGrid({
     };
 
     const products = getProducts();
+
+    // GA4: Track List Impressions and Search Results
+    const lastTrackedParams = useRef('');
+    useEffect(() => {
+        if (!isLoading && products.length > 0) {
+            const currentParams = `${category}-${status}-${search}-${featured}-${vendorSlug}`;
+            if (lastTrackedParams.current !== currentParams) {
+                // Determine list name
+                let listName = 'General Product List';
+                if (category) listName = `Category: ${category}`;
+                if (featured) listName = 'Featured Products';
+                if (status === 'READY_TO_SHIP') listName = 'Ready to Ship';
+                if (vendorSlug) listName = `Vendor: ${vendorSlug}`;
+
+                trackViewItemList(products, listName);
+
+                if (search) {
+                    trackViewSearchResults(search as string, products.length);
+                }
+
+                lastTrackedParams.current = currentParams;
+            }
+        }
+    }, [products, isLoading, category, status, search, featured, vendorSlug]);
 
     return (
         <div className="flex flex-col lg:flex-row gap-8">

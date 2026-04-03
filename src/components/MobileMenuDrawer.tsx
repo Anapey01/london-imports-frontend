@@ -8,6 +8,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
 import { useAuthStore } from '@/stores/authStore';
 import ThemeToggle from './ThemeToggle';
@@ -33,7 +35,7 @@ import {
     ChevronDown,
     LayoutGrid,
 } from 'lucide-react';
-import { CATEGORY_GROUPS } from './MegaMenu';
+import { getCategoryIcon } from './MegaMenu';
 
 interface MobileMenuDrawerProps {
     isOpen: boolean;
@@ -60,7 +62,15 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
     const [shopOpen, setShopOpen] = useState(false);
     const [productsOpen, setProductsOpen] = useState(false);
     const [supportOpen, setSupportOpen] = useState(false);
-    const categories = CATEGORY_GROUPS;
+
+    // Fetch dynamic categories from API
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: productsAPI.categories,
+        staleTime: 1000 * 60 * 60, // 1 hour caching
+    });
+
+    const categories = categoriesData?.data?.results || categoriesData?.data || [];
 
     // Prevent body scroll when menu is open
     useEffect(() => {
@@ -228,21 +238,20 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
                         <div className={`overflow-hidden transition-all duration-300 ease-in-out ${productsOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                             <div className="px-2 pb-2">
-                                {categories.map((category) => {
-                                    const Icon = category.icon;
-                                    if (category.id === 'all') return null;
+                                {categories.map((category: { id: string; name: string; slug: string }) => {
+                                    const Icon = getCategoryIcon(category.name);
 
                                     return (
                                         <Link
                                             key={category.id}
-                                            href={`/products/category/${category.id}`}
+                                            href={`/products?category=${category.slug}`}
                                             onClick={onClose}
                                             className="flex items-center justify-between px-6 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group"
                                         >
                                             <div
-                                                className="flex items-center gap-4 text-[14px] font-medium group-hover:text-green-600 transition-colors text-slate-600"
+                                                className="flex items-center gap-4 text-[14px] font-medium group-hover:text-pink-600 transition-colors text-slate-600 dark:text-slate-400"
                                             >
-                                                <Icon className="w-5 h-5 group-hover:text-green-600 text-slate-400" strokeWidth={1.5} />
+                                                <Icon className="w-5 h-5 group-hover:text-pink-600 text-slate-400" strokeWidth={1.5} />
                                                 {category.name}
                                             </div>
                                             <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-slate-300" strokeWidth={1.5} />

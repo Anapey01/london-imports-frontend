@@ -27,19 +27,19 @@ const OrderSummary = ({
     paymentAmount
 }: OrderSummaryProps) => {
     return (
-        <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl p-6 sm:p-10 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/20 dark:border-slate-800/50 sticky top-32">
-            <h2 className="text-[12px] font-black text-slate-400 mb-10 tracking-[0.4em] uppercase">Order Summary</h2>
+        <div className="bg-white p-8 rounded-2xl shadow-diffusion border border-slate-100/50 sticky top-32">
+            <h2 className="text-[10px] font-bold text-slate-900 mb-8 tracking-[0.3em] uppercase opacity-50">Order Summary</h2>
 
-            <div className="space-y-6 mb-10 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                 {(currentOrderData.items || [])
                     .filter((item: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
                     .map((item: CartItem | OrderItem) => (
-                        <div key={item.id} className="flex justify-between items-start text-sm group">
-                            <div className="flex items-start gap-4 flex-1 min-w-0">
-                                <span className="text-[10px] font-black text-slate-300 mt-1 tabular-nums">
+                        <div key={item.id} className="flex justify-between items-start text-xs group">
+                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                <span className="text-[9px] font-bold text-slate-300 mt-0.5 tabular-nums">
                                     0{item.quantity}
                                 </span>
-                                <span className="text-slate-600 font-medium group-hover:text-slate-950 transition-colors truncate">
+                                <span className="text-slate-500 font-medium group-hover:text-slate-950 transition-colors truncate">
                                     {item.product?.name}
                                 </span>
                             </div>
@@ -50,7 +50,7 @@ const OrderSummary = ({
                     ))}
             </div>
 
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-8 space-y-4">
+            <div className="border-t border-slate-50 pt-8 space-y-4">
                 <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                     <span>Subtotal</span>
                     <span className="text-slate-950 tabular-nums">
@@ -64,9 +64,9 @@ const OrderSummary = ({
                     </span>
                 </div>
                 
-                <div className="pt-2 flex justify-between items-end">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest pb-1.5">Total Amount</span>
-                    <span className="text-3xl font-black text-slate-950 tracking-tight tabular-nums">
+                <div className="pt-2 flex justify-between items-end border-b border-slate-50 pb-6">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest pb-1">Total Amount</span>
+                    <span className="text-xl font-bold text-[#006B5A] tracking-tight tabular-nums">
                         {(() => {
                             if (checkoutOrder || orderNumberParam) return formatPrice(currentOrderData.total || 0);
                             const selSubtotal = (currentOrderData.items || [])
@@ -77,29 +77,32 @@ const OrderSummary = ({
                     </span>
                 </div>
 
-                <div className="bg-slate-950 dark:bg-white rounded-2xl p-5 mt-6 flex justify-between items-center text-white dark:text-slate-950 shadow-xl shadow-slate-950/10">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Due Now</span>
-                    <span className="text-xl font-black tabular-nums">{formatPrice(paymentAmount)}</span>
+                <div className="pt-4 flex justify-between items-center group/due">
+                    <div className="flex items-center gap-2">
+                        <div className="w-1 h-1 bg-[#006B5A] rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover/due:text-[#006B5A] transition-colors">Due Now</span>
+                    </div>
+                    <span className="text-lg font-black text-slate-950 tabular-nums">{formatPrice(paymentAmount)}</span>
                 </div>
             </div>
 
-            {/* EDITORIAL TRUST SECTION */}
-            <div className="mt-12 flex items-center justify-center gap-8 opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700 cursor-default">
-                <div className="flex flex-col items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-950">Verified</span>
+            {/* DECONSTRUCTED TRUST SECTION */}
+            <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700 cursor-default">
+                <div className="flex flex-col items-center gap-2 flex-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-slate-900" strokeWidth={1} />
+                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-950">Verified</span>
                 </div>
-                <div className="w-[1px] h-4 bg-slate-200" />
-                <div className="flex flex-col items-center gap-2">
-                    <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-                    </svg>
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-950">Secure</span>
+                <div className="w-[1px] h-3 bg-slate-100" />
+                <div className="flex flex-col items-center gap-2 flex-1">
+                    <div className="w-3.5 h-3.5 rounded-full border border-slate-900 flex items-center justify-center">
+                        <div className="w-[3px] h-[3px] bg-slate-900 rounded-full" />
+                    </div>
+                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-950">Secure</span>
                 </div>
-                <div className="w-[1px] h-4 bg-slate-200" />
-                <div className="flex flex-col items-center gap-2">
-                    <Truck className="w-4 h-4 text-slate-950" strokeWidth={1.5} />
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-950">Global</span>
+                <div className="w-[1px] h-3 bg-slate-100" />
+                <div className="flex flex-col items-center gap-2 flex-1">
+                    <Truck className="w-3.5 h-3.5 text-slate-900" strokeWidth={1} />
+                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-950">Global</span>
                 </div>
             </div>
         </div>
