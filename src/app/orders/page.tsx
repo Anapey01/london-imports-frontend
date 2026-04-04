@@ -27,18 +27,7 @@ const getStatusColor = (state: string) => {
     }
 };
 
-const getStatusBg = (state: string) => {
-    switch (state) {
-        case 'PAID':
-        case 'IN_TRANSIT':
-        case 'DELIVERED': return 'bg-green-500';
-        case 'PENDING_PAYMENT':
-        case 'DRAFT': return 'bg-amber-500';
-        case 'CANCELLED':
-        case 'FAILED': return 'bg-red-500';
-        default: return 'bg-gray-400';
-    }
-};
+
 
 export default function OrdersPage() {
     const router = useRouter();
@@ -99,15 +88,15 @@ export default function OrdersPage() {
                             const isPending = order.state === 'PENDING_PAYMENT' || (balanceDue > 0 && order.state !== 'CANCELLED');
 
                             return (
-                                <div key={order.order_number} className="bg-primary-surface/40 p-6 sm:p-8 rounded-[2rem] border border-primary-surface shadow-diffusion-lg hover:shadow-diffusion-xl transition-all duration-500 group">
-                                    <div className="flex flex-col md:flex-row justify-between gap-6">
-                                        <div className="flex gap-6">
-                                            {/* Image Stack */}
-                                            <div className="flex -space-x-8 flex-shrink-0">
+                                <div key={order.order_number} className="bg-white dark:bg-slate-950 p-5 sm:p-8 rounded-[1.5rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-500 group">
+                                    <div className="flex flex-col sm:flex-row justify-between gap-8">
+                                        <div className="flex flex-col sm:flex-row gap-6">
+                                            {/* Image Stack - Grid on mobile, Stack on desktop */}
+                                            <div className="flex -space-x-12 sm:-space-x-8 flex-shrink-0 justify-center sm:justify-start mb-2 sm:mb-0">
                                                 {order.items?.slice(0, 3).map((item: OrderItem, idx: number) => {
                                                     const zIndexMap = ['z-30', 'z-20', 'z-10'];
                                                     return (
-                                                        <div key={item.id} className={`relative w-24 h-32 rounded-lg overflow-hidden border-2 border-white shadow-sm bg-gray-100 ${zIndexMap[idx] || 'z-0'}`}>
+                                                        <div key={item.id} className={`relative w-28 h-36 sm:w-24 sm:h-32 rounded-xl overflow-hidden border border-white dark:border-slate-800 shadow-xl bg-gray-50 ${zIndexMap[idx] || 'z-0'}`}>
                                                             {item.product.image ? (
                                                                 <NextImage
                                                                     src={getImageUrl(item.product.image)}
@@ -117,7 +106,7 @@ export default function OrdersPage() {
                                                                 />
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" strokeWidth={1.5} /></svg>
+                                                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" strokeWidth={1} /></svg>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -125,47 +114,46 @@ export default function OrdersPage() {
                                                 })}
                                             </div>
 
-                                            <div className="flex flex-col justify-between py-1">
+                                            <div className="flex flex-col justify-between py-1 text-center sm:text-left">
                                                 <div>
-                                                    <div className="flex items-center gap-3 mb-1">
-                                                        <div className={`w-2 h-2 rounded-full ${getStatusBg(order.state)}`} />
-                                                        <h3 className="text-lg font-black nuclear-text uppercase tracking-tight">Order #{order.order_number}</h3>
+                                                    <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                                                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded border ${getStatusColor(order.state).replace('text-', 'border-').replace('600', '200')} ${getStatusColor(order.state)}`}>
+                                                            {order.state_display}
+                                                        </span>
                                                     </div>
-                                                    <p className="text-sm text-gray-500 font-light">
-                                                        Placed on {new Date(order.created_at).toLocaleDateString(undefined, {
+                                                    <h3 className="text-sm sm:text-lg font-black font-sans text-slate-900 dark:text-white uppercase tracking-widest leading-relaxed">
+                                                        Order #{order.order_number}
+                                                    </h3>
+                                                    <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-light mt-1">
+                                                        Placed {new Date(order.created_at).toLocaleDateString(undefined, {
                                                             day: 'numeric',
                                                             month: 'short',
                                                             year: 'numeric'
                                                         })}
                                                     </p>
                                                 </div>
-                                                <div className="mt-4">
-                                                    <p className="text-[10px] nuclear-text opacity-40 font-black uppercase tracking-widest">{order.items_count} item{order.items_count !== 1 ? 's' : ''}</p>
-                                                    <p className="text-2xl font-serif font-bold nuclear-text tracking-tighter tabular-nums mt-1">GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}</p>
+                                                <div className="mt-6 sm:mt-4">
+                                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-700">{order.items_count} item{order.items_count !== 1 ? 's' : ''}</p>
+                                                    <p className="text-2xl sm:text-3xl font-serif font-black text-slate-900 dark:text-white tracking-tighter tabular-nums mt-1">GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}</p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-row md:flex-col justify-between md:justify-center items-end gap-3">
-                                            <span className={`text-[10px] font-black uppercase tracking-[0.3em] mb-4 ${getStatusColor(order.state)}`}>
-                                                {order.state_display}
-                                            </span>
-                                            <div className="flex flex-wrap gap-3">
+                                        <div className="flex flex-col justify-end gap-3 min-w-[140px]">
+                                            {isPending && (
                                                 <Link
-                                                    href={`/orders/${order.order_number}`}
-                                                    className="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border border-slate-950/10 dark:border-white/10 nuclear-text hover:bg-slate-950 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all duration-500"
+                                                    href={`/checkout?order=${order.order_number}`}
+                                                    className="w-full text-center px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-emerald-600 dark:hover:bg-emerald-50 transition-all duration-500 shadow-sm"
                                                 >
-                                                    Details
+                                                    {balanceDue > 0 ? 'Pay Balance' : 'Pay Now'}
                                                 </Link>
-                                                {isPending && (
-                                                    <Link
-                                                        href={`/checkout?order=${order.order_number}`}
-                                                        className="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] bg-slate-950 text-white dark:bg-white dark:text-slate-900 hover:bg-emerald-600 dark:hover:bg-emerald-50 transition-all duration-500 shadow-diffusion"
-                                                    >
-                                                        {balanceDue > 0 ? 'Pay Balance' : 'Pay Now'}
-                                                    </Link>
-                                                )}
-                                            </div>
+                                            )}
+                                            <Link
+                                                href={`/orders/${order.order_number}`}
+                                                className="w-full text-center px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-950 dark:hover:border-white hover:text-slate-950 dark:hover:text-white transition-all duration-500"
+                                            >
+                                                Details
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
