@@ -28,17 +28,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setThemeState] = useState<Theme>('light');
     const [mounted, setMounted] = useState(false);
 
-    // Initialize theme from localStorage or system preference
+    // Initialize theme from localStorage only (Ignore system preference)
     useEffect(() => {
         const stored = localStorage.getItem('theme') as Theme | null;
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         const timer = setTimeout(() => {
             setMounted(true);
+            // If the user has explicitly chosen a theme before, respect it.
+            // Otherwise, ALWAYS default to 'light', even if their phone is in dark mode.
             if (stored) {
                 setThemeState(stored);
-            } else if (systemPrefersDark) {
-                setThemeState('dark');
             } else {
                 setThemeState('light');
             }
