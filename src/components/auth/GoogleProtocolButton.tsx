@@ -1,26 +1,25 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import Script from 'next/script';
 
 const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => {
     const { googleLogin, isLoading } = useAuthStore();
     const router = useRouter();
     const googleButtonRef = useRef<HTMLDivElement>(null);
+    const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
-    useEffect(() => {
-        const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-        
+    const initializeGoogle = useCallback(() => {
         if (!clientID) {
             console.error('Google Client ID is missing in environment.');
             return;
         }
 
-        // Initialize Google Identity Services
-        const initializeGoogle = () => {
-            if ((window as any).google) {
+        if ((window as any).google && googleButtonRef.current) {
+            try {
                 (window as any).google.accounts.id.initialize({
                     client_id: clientID,
                     callback: handleGoogleResponse,
@@ -29,7 +28,7 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                 });
 
                 (window as any).google.accounts.id.renderButton(
-                    googleButtonRef.current!,
+                    googleButtonRef.current,
                     { 
                         type: 'standard',
                         theme: 'outline', 
@@ -40,22 +39,13 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                         logo_alignment: 'center'
                     }
                 );
+            } catch (error) {
+                console.error('Error rendering Google button:', error);
             }
-        };
+        }
+    }, [clientID, mode]);
 
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.onload = initializeGoogle;
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, [mode]);
-
-    const handleGoogleResponse = async (response: any) => {
+    const handleGoogleResponse = useCallback(async (response: any) => {
         try {
             await googleLogin(response.credential);
             toast.success('Success! Signed in with Google');
@@ -64,10 +54,16 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
             console.error('Google Login Error:', error);
             toast.error('Google sign-in failed. Please try again.');
         }
-    };
+    }, [googleLogin, router]);
 
     return (
         <div className="w-full">
+            <Script
+                src="https://accounts.google.com/gsi/client"
+                strategy="afterInteractive"
+                onLoad={initializeGoogle}
+            />
+            
             <div className="relative mb-10 mt-10">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-slate-100"></div>
@@ -79,7 +75,7 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
             
             <div 
                 ref={googleButtonRef} 
-                className="w-full overflow-hidden rounded-xl h-14 flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity border border-slate-100" 
+                className="w-full overflow-hidden rounded-xl min-h-14 flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity border border-slate-100" 
             />
             
             <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 opacity-20">

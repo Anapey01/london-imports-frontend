@@ -187,7 +187,7 @@ export default function CartPage() {
                                                     ? (item.product.preorder_status === 'CLOSING_SOON' ? 'Cutoff Soon' : 'Pre-order')
                                                     : (item.product.stock_quantity !== undefined && item.product.stock_quantity > 0 
                                                         ? 'Ready' 
-                                                        : 'Closed')
+                                                        : 'FEW UNITS LEFT')
                                                 }
                                             </p>
                                             
