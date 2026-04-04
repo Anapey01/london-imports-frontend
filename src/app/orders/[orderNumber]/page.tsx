@@ -24,6 +24,7 @@ export default function OrderDetailPage() {
     const { isAuthenticated } = useAuthStore();
     const queryClient = useQueryClient();
     const [isVerifying, setIsVerifying] = useState(false);
+    const [hasCheckedAuto, setHasCheckedAuto] = useState(false);
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['order', orderNumber],
@@ -50,6 +51,21 @@ export default function OrderDetailPage() {
             setIsVerifying(false);
         }
     };
+
+    // Institutional Robustness: Auto-Verification on Load
+    useEffect(() => {
+        if (order && order.state === 'PENDING_PAYMENT' && !hasCheckedAuto && !isVerifying) {
+            setHasCheckedAuto(true);
+            // Silent, robust check in the background for Paystack reconciliation
+            ordersAPI.verifyPayment(orderNumber)
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
+                })
+                .catch(() => {
+                    // Fail silently for background checks to avoid intrusive toasts
+                });
+        }
+    }, [order, orderNumber, hasCheckedAuto, isVerifying, queryClient]);
 
     if (isLoading) {
         return (

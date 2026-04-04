@@ -84,8 +84,9 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Attempt refresh (cookies handled automatically, but SimpleJWT often returns new access token)
-        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
+        const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+        // Attempt refresh (cookies handled automatically, but SimpleJWT often requires refresh token in body)
+        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh: refreshToken }, { withCredentials: true });
 
         const { access } = response.data;
         if (access && typeof window !== 'undefined') {
