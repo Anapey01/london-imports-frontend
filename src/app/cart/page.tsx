@@ -177,6 +177,8 @@ export default function CartPage() {
                                             <button
                                                 onClick={() => removeFromCart(item.id)}
                                                 className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors"
+                                                title="Remove item"
+                                                aria-label="Remove item"
                                             >
                                                 Remove
                                             </button>
@@ -186,6 +188,8 @@ export default function CartPage() {
                                                     onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                                                     className="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500"
                                                     disabled={isLoading}
+                                                    title="Decrease quantity"
+                                                    aria-label="Decrease quantity"
                                                 >
                                                     <Minus className="w-3 h-3" />
                                                 </button>
@@ -194,6 +198,8 @@ export default function CartPage() {
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                     className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center"
                                                     disabled={isLoading}
+                                                    title="Increase quantity"
+                                                    aria-label="Increase quantity"
                                                 >
                                                     <Plus className="w-3 h-3" />
                                                 </button>
@@ -207,22 +213,25 @@ export default function CartPage() {
                 )}
             </div>
 
-            {/* FIXED BOTTOM NAVIGATION BAR */}
+            {/* FIXED BOTTOM NAVIGATION BAR - REFINED SIZE & SOFTER BLACK */}
             {items.length > 0 && (
-                <div className="fixed md:bottom-0 bottom-[64px] left-0 right-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-100 dark:border-slate-900 p-4 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.05)]">
-                    <div className="max-w-3xl mx-auto flex items-center gap-4">
+                <div className="fixed md:bottom-0 bottom-[64px] left-0 right-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-t border-slate-100 dark:border-slate-900 p-3 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.04)]">
+                    <div className="max-w-2xl mx-auto flex items-center gap-3">
                         <Link
                             href={`https://wa.me/${siteConfig.whatsapp}`}
-                            className="w-14 h-14 rounded-2xl border-2 border-slate-950 dark:border-white flex items-center justify-center text-slate-950 dark:text-white"
+                            className="w-12 h-12 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-900 dark:text-white hover:bg-slate-50 transition-colors"
+                            title="Contact Concierge"
+                            aria-label="WhatsApp Support"
                         >
-                            <Phone className="w-6 h-6" />
+                            <Phone className="w-5 h-5" />
                         </Link>
                         <button
                             onClick={handleCheckout}
                             disabled={isLoading}
-                            className="flex-1 h-14 bg-slate-950 dark:bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3"
+                            className="flex-1 h-12 bg-slate-900 dark:bg-emerald-600 text-white rounded-xl font-black uppercase tracking-[0.25em] text-[10px] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-lg shadow-slate-900/10"
+                            title="Proceed to Logistics Hub"
                         >
-                            <ShieldCheck className="w-5 h-5" />
+                            <ShieldCheck className="w-4 h-4" />
                             Checkout (GHS {subtotal.toLocaleString()})
                         </button>
                     </div>
