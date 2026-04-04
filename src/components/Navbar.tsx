@@ -91,7 +91,7 @@ export default function Navbar() {
                         </div>
 
                         {/* MIDDLE: Search (Minimalist) */}
-                        <div className="flex-1 max-w-xl mx-20">
+                        <div className="flex-1 max-w-xl mx-8 xl:mx-20 transition-all duration-300">
                             <form 
                                 onSubmit={(e) => {
                                     e.preventDefault();
@@ -108,7 +108,7 @@ export default function Navbar() {
                                     name="search"
                                     type="text"
                                     placeholder="Search for products..."
-                                    className="w-full h-12 pl-10 pr-12 bg-transparent text-xs font-black uppercase tracking-widest outline-none placeholder:text-slate-300 dark:placeholder:text-slate-700 text-slate-950 dark:text-white"
+                                    className="w-full h-12 pl-10 pr-20 bg-transparent text-[10px] font-black uppercase tracking-widest outline-none placeholder:text-slate-200 dark:placeholder:text-slate-800 text-slate-950 dark:text-white"
                                 />
                                 <button 
                                     type="submit"
