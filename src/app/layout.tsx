@@ -34,6 +34,7 @@ const sourceSerif = Source_Serif_4({
   weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-source-serif",
+  preload: false,
 });
 
 const sourceSans = Source_Sans_3({
@@ -41,6 +42,7 @@ const sourceSans = Source_Sans_3({
   weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-source-sans",
+  preload: false,
 });
 
 export const metadata: Metadata = {

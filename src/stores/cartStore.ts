@@ -333,9 +333,28 @@ export const useCartStore = create<CartState>()((set, get) => ({
         }
     },
 
-    clearCart: () => {
+    clearCart: async () => {
+        const isAuthenticated = useAuthStore.getState().isAuthenticated;
+        const currentCart = get().cart;
+
+        // Reset local state immediately for snappy UX
         set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: new Set() });
         localStorage.removeItem('guest_cart');
+
+        if (isAuthenticated && currentCart?.items) {
+            console.info("[CartStore] Clearing server-side cart...");
+            try {
+                // Remove each item from the server in parallel
+                await Promise.all(
+                    currentCart.items.map(item => ordersAPI.removeFromCart(item.id))
+                );
+                console.info("[CartStore] Server-side cart cleared successfully.");
+            } catch (error) {
+                console.error("[CartStore] Failed to clear server-side cart items completely:", error);
+                // Fallback: trigger a fetch to show current server state if cleanup failed
+                get().fetchCart();
+            }
+        }
     },
 }));
 

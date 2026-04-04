@@ -58,7 +58,7 @@ export default function GuidePage() {
             </div>
 
             {/* 2. SUBTLE NOISE OVERLAY */}
-            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-0" />
+            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.svg')] z-0" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10 pt-24">
                 {/* Header Context */}

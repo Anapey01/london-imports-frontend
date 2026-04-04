@@ -156,7 +156,7 @@ export default function SourcingPage() {
             </div>
 
             {/* 2. SUBTLE NOISE OVERLAY */}
-            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-0" />
+            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.svg')] z-0" />
 
             {/* Header Content */}
             <section className="relative z-10 pt-24 pb-16 px-6 max-w-7xl mx-auto">

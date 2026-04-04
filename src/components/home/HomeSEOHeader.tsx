@@ -11,7 +11,7 @@ export default function HomeSEOHeader() {
     return (
         <section className="relative bg-white dark:bg-slate-950 pt-16 pb-12 overflow-hidden border-b border-slate-50 dark:border-slate-900">
             {/* Subtle Grainy Overlay for Premium Texture */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('/noise.svg')] mix-blend-overlay" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
