@@ -28,7 +28,7 @@ export default function HomeSEOHeader() {
                         </div>
 
                         {/* Refined H1: High-Contrast Editorial Size */}
-                        <h1 className="text-3xl md:text-5xl font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white mb-6">
+                        <h1 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight text-slate-900 dark:text-white mb-6">
                             Mini Importation <span className="italic font-light text-slate-300 dark:text-slate-600 mx-1">&amp;</span> <br className="hidden md:block" />
                             Chinese Logistics for <span className="relative">
                                 Accra.

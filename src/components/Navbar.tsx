@@ -66,7 +66,7 @@ export default function Navbar() {
                                     <div className="w-10 h-10 border border-slate-200/60 dark:border-slate-800 flex items-center justify-center group-hover:border-slate-950 dark:group-hover:border-white transition-colors">
                                          <Menu className="w-5 h-5 text-slate-500 dark:text-slate-400 group-hover:text-slate-950 dark:group-hover:text-white" strokeWidth={1} />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 group-hover:text-slate-950 dark:group-hover:text-white">Menu</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 group-hover:text-slate-950 dark:group-hover:text-white">Menu</span>
                                 </button>
                             </div>
 
@@ -85,7 +85,7 @@ export default function Navbar() {
                                     <span className="text-2xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white group-hover:italic transition-all">
                                         LONDON&apos;S
                                     </span>
-                                    <span className="text-[9px] font-black tracking-[0.3em] uppercase text-slate-300 dark:text-slate-700 italic">Imports</span>
+                                    <span className="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-300 dark:text-slate-700 italic">Imports</span>
                                 </div>
                             </Link>
                         </div>
@@ -108,11 +108,11 @@ export default function Navbar() {
                                     name="search"
                                     type="text"
                                     placeholder="Search for products..."
-                                    className="w-full h-12 pl-10 pr-20 bg-transparent text-[10px] font-black uppercase tracking-widest outline-none placeholder:text-slate-200 dark:placeholder:text-slate-800 text-slate-950 dark:text-white"
+                                    className="w-full h-12 pl-10 pr-20 bg-transparent text-[10px] font-bold uppercase tracking-widest outline-none placeholder:text-slate-200 dark:placeholder:text-slate-800 text-slate-950 dark:text-white"
                                 />
                                 <button 
                                     type="submit"
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 hover:text-slate-950 dark:hover:text-white transition-colors"
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 hover:text-slate-950 dark:hover:text-white transition-colors"
                                 >
                                     Submit
                                 </button>
@@ -127,7 +127,7 @@ export default function Navbar() {
                             {isAuthenticated ? (
                                 <Link href="/profile" className="flex items-center gap-4 group hover:italic transition-all" aria-label="My Account">
                                     <div className="flex flex-col text-right">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">{user?.first_name}</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-900 dark:text-white">{user?.first_name}</span>
                                         <span className="text-[8px] font-bold text-slate-300 dark:text-slate-700 uppercase tracking-widest">Account Active</span>
                                     </div>
                                     <div className="w-10 h-10 border border-slate-50 dark:border-slate-900 flex items-center justify-center group-hover:border-slate-900 dark:group-hover:border-white transition-colors">
@@ -136,7 +136,7 @@ export default function Navbar() {
                                 </Link>
                             ) : (
                                 <Link href="/login" className="flex items-center gap-4 group hover:italic transition-all" aria-label="Sign In">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white">Sign In</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white">Sign In</span>
                                     <div className="w-10 h-10 border border-slate-50 dark:border-slate-900 flex items-center justify-center group-hover:border-slate-900 dark:group-hover:border-white transition-colors">
                                         <UserPlus className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-slate-900 dark:group-hover:text-white" strokeWidth={1.5} />
                                     </div>
@@ -161,7 +161,7 @@ export default function Navbar() {
                                                 <span className="absolute -top-2 -right-2 text-[8px] font-black text-slate-950 dark:text-white">{itemCount}</span>
                                             )}
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white hidden lg:block">Shopping Bag</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-900 dark:text-white hidden lg:block">Shopping Bag</span>
                                     </div>
                                 </Link>
                             </div>
@@ -180,7 +180,7 @@ export default function Navbar() {
                             </div>
                             <div className="flex flex-col leading-none">
                                 <span className="text-sm font-serif font-bold tracking-tight text-slate-900 dark:text-white">LONDON&apos;S</span>
-                                <span className="text-[8px] font-black tracking-[0.2em] uppercase text-emerald-500 italic">Imports</span>
+                                <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-emerald-500 italic">Imports</span>
                             </div>
                         </Link>
 

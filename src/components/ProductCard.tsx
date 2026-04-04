@@ -95,7 +95,7 @@ export default function ProductCard({
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-100 dark:text-slate-800">
-                             <span className="text-[10px] font-black uppercase tracking-widest">[ IMAGE_PENDING ]</span>
+                             <span className="text-[10px] font-medium uppercase tracking-widest">[ IMAGE_PENDING ]</span>
                         </div>
                     )}
                 </NextLink>
@@ -129,17 +129,17 @@ export default function ProductCard({
                 <div>
                      {!hideProgress && (
                          <div className="flex items-start justify-between gap-4 mb-2">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-600">Premium Import</span>
+                            <span className="text-[9px] font-medium uppercase tracking-[0.3em] text-emerald-600">Premium Import</span>
                             <ArrowUpRight className="w-3 h-3 text-slate-200 dark:text-slate-800 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
                          </div>
                      )}
-                     <h3 className={`font-bold text-slate-900 dark:text-white tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                     <h3 className={`font-medium text-slate-900 dark:text-white tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
                          {product.name}
                      </h3>
                 </div>
 
                 <div className={`flex flex-wrap items-baseline justify-between gap-1 pt-2 border-t border-slate-50 dark:border-slate-900 ${variant === 'compact' ? 'mt-auto' : ''}`}>
-                    <div className={`font-serif font-bold text-slate-900 dark:text-white tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
+                    <div className={`font-semibold text-slate-900 dark:text-white tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
                         {formatPrice(product.price)}
                     </div>
                     {!hideRating && (
