@@ -1,7 +1,6 @@
 /**
  * London's Imports - Cart Page
- * Redesigned to match the premium, editorial aesthetic of London's Imports.
- * Utilizing Source Serif 4 and Slate-500 for high-end consistency.
+ * Restored to original layout with updated Lux Sans typography.
  */
 'use client';
 
@@ -13,7 +12,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
-import { ShoppingBag, Minus, Plus, ArrowLeft, ShieldCheck, Phone, Trash2 } from 'lucide-react';
+import { ShoppingBag, Minus, Plus, ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
 
 export default function CartPage() {
     const router = useRouter();
@@ -42,8 +41,8 @@ export default function CartPage() {
 
     if (!mounted) {
         return (
-            <div className="min-h-screen bg-white pt-32 pb-20 flex justify-center selection:bg-emerald-100">
-                <div className="w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen bg-primary-surface pt-32 pb-20 flex justify-center">
+                <div className="w-8 h-8 border-4 border-slate-950 dark:border-white border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -57,201 +56,178 @@ export default function CartPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 pb-32 transition-all duration-500 selection:bg-emerald-100">
-            {/* Subtle Texture Overlay */}
-            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.svg')] z-0" />
-
-            {/* EDITORIAL HEADER */}
-            <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 px-6 h-20 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                    <Link
-                        href="/"
-                        className="p-2 -ml-2 rounded-full hover:bg-slate-50 transition-colors group"
-                        aria-label="Go to homepage"
-                    >
-                        <ArrowLeft className="w-5 h-5 text-slate-900 dark:text-white group-hover:-translate-x-1 transition-transform" />
-                    </Link>
-                    <h1 className="text-xl font-black uppercase tracking-[0.25em] text-slate-900 dark:text-white leading-none">
-                        Procurement <span className="text-slate-300 dark:text-slate-700 font-light italic font-serif">Intake</span>
-                    </h1>
-                </div>
-                {items.length > 0 && (
-                    <button
-                        onClick={() => clearCart()}
-                        className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-red-600 transition-colors flex items-center gap-2"
-                    >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Clear Manifest
-                    </button>
-                )}
+        <div className="min-h-screen bg-white dark:bg-slate-950 pb-32 transition-all duration-500">
+            {/* Sticky Header */}
+            <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 px-4 h-16 flex items-center gap-4">
+                <Link
+                    href="/"
+                    className="p-2 -ml-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                    aria-label="Go to homepage"
+                    title="Return Home"
+                >
+                    <ArrowLeft className="w-6 h-6 text-slate-950 dark:text-white" />
+                </Link>
+                <h1 className="text-xl font-black uppercase tracking-[0.25em] text-slate-950 dark:text-white">
+                    Cart
+                </h1>
             </header>
 
-            <div className="max-w-6xl mx-auto px-6 pt-12 relative z-10">
+            <div className="max-w-3xl mx-auto">
                 {items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-32 text-center">
-                        <div className="w-24 h-24 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-8">
-                            <ShoppingBag className="w-10 h-10 text-slate-200" strokeWidth={1} />
+                    <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
+                        <div className="mb-8 opacity-10">
+                            <ShoppingBag className="w-20 h-20" strokeWidth={1} />
                         </div>
-                        <h2 className="text-3xl font-serif font-black mb-4 tracking-tighter text-slate-900 dark:text-white">Empty Manifest.</h2>
-                        <p className="text-slate-500 mb-12 max-w-xs font-medium">Your sourcing list is currently blank. Start your procurement journey today.</p>
+                        <h2 className="text-xl font-medium mb-4 tracking-widest uppercase text-slate-950 dark:text-white">Your basket is empty</h2>
                         <Link
                             href="/products"
-                            className="inline-flex items-center gap-4 bg-slate-900 text-white px-10 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 hover:bg-emerald-600 transition-all hover:scale-[1.02]"
+                            className="inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-950/20"
                         >
-                            Explore Portfolio <ArrowLeft className="w-4 h-4 rotate-180" />
+                            Start Sourcing
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid lg:grid-cols-12 gap-16 items-start">
-                        
-                        {/* ITEM LISTING (8 Cols) */}
-                        <div className="lg:col-span-8 space-y-12">
-                            <div className="flex items-center gap-3 mb-8">
-                                <span className="h-px w-8 bg-emerald-600/30" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-800 dark:text-emerald-400">
-                                    Pending Procurement ({items.length} units)
-                                </span>
+                    <div className="space-y-0">
+                        {/* CART SUMMARY - JUMIA STYLE REF */}
+                        <div className="bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-900">
+                            <div className="bg-slate-50 dark:bg-slate-900 px-4 py-2 border-y border-slate-100 dark:border-slate-800">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
+                                    Cart Summary
+                                </h2>
                             </div>
-
-                            <div className="divide-y divide-slate-50 dark:divide-slate-900">
-                                {items.map((item) => (
-                                    <div key={item.id} className="grid grid-cols-[120px_1fr] gap-8 py-10 first:pt-0 last:pb-0 group">
-                                        <Link href={`/products/${item.product.slug}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                                            {item.product?.image ? (
-                                                <Image
-                                                    src={getImageUrl(item.product.image)}
-                                                    alt={item.product.name}
-                                                    fill
-                                                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                                                    unoptimized
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                                    <ShoppingBag className="w-8 h-8" strokeWidth={1} />
-                                                </div>
-                                            )}
-                                        </Link>
-
-                                        <div className="flex flex-col justify-between py-1">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-start">
-                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase line-clamp-1">
-                                                        {item.product.name}
-                                                    </h3>
-                                                    <button
-                                                        onClick={() => removeFromCart(item.id)}
-                                                        className="p-2 text-slate-300 hover:text-red-500 transition-colors"
-                                                        aria-label="Remove item"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                                
-                                                <div className="flex flex-wrap gap-8 items-center">
-                                                    <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                                                        <button
-                                                            onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                                                            className="text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-20"
-                                                            disabled={isLoading || item.quantity <= 1}
-                                                        >
-                                                            <Minus className="w-3.5 h-3.5" strokeWidth={3} />
-                                                        </button>
-                                                        <span className="text-xs font-black min-w-[20px] text-center text-slate-900 dark:text-white">{item.quantity}</span>
-                                                        <button
-                                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                            className="text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                                                            disabled={isLoading}
-                                                        >
-                                                            <Plus className="w-3.5 h-3.5" strokeWidth={3} />
-                                                        </button>
-                                                    </div>
-                                                    
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <span className="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">Base Rate</span>
-                                                        <span className="text-sm font-bold text-slate-500 dark:text-slate-400">GHS {Number(item.unit_price).toLocaleString()}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex justify-between items-baseline pt-8">
-                                                <span className="text-[10px] font-black text-emerald-700/40 uppercase tracking-widest flex items-center gap-2">
-                                                    <ShieldCheck className="w-3.5 h-3.5" />
-                                                    Verified SKU
-                                                </span>
-                                                <div className="text-right">
-                                                    <span className="text-[10px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest block mb-1">Item Total</span>
-                                                    <span className="text-2xl font-black text-slate-900 dark:text-white tracking-widest uppercase tabular-nums">
-                                                        GHS {(Number(item.unit_price) * item.quantity).toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                            
+                            <div className="px-4 py-3 space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Cart ({items.length})</span>
+                                    <span className="text-sm font-bold text-slate-950 dark:text-white tabular-nums">GHS {subtotal.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-3 border-y border-slate-50 dark:border-slate-900">
+                                    <span className="text-sm font-black uppercase tracking-[0.25em] text-slate-950 dark:text-white">Subtotal</span>
+                                    <span className="text-lg font-black text-slate-950 dark:text-white tabular-nums italic">GHS {subtotal.toLocaleString()}</span>
+                                </div>
+                                
+                                <div className="pt-1">
+                                    {subtotal < siteConfig.defaults.freeShippingThreshold ? (
+                                        <p className="text-[11px] font-medium text-slate-500 italic">
+                                            Missing GHS {(siteConfig.defaults.freeShippingThreshold - subtotal).toLocaleString()} to reach <span className="underline decoration-emerald-500">free delivery</span>.
+                                        </p>
+                                    ) : (
+                                        <p className="text-[11px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                                            Success! Free Delivery Unlocked
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        {/* FINANCIAL SUMMARY (4 Cols) */}
-                        <aside className="lg:col-span-4 lg:sticky lg:top-32">
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm relative overflow-hidden">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 mb-10 pb-4 border-b border-slate-200/50 dark:border-slate-800 flex items-center gap-3">
-                                    Financial Summary
-                                </h3>
+                        {/* Basket Divider Bar */}
+                        <div className="bg-slate-50 dark:bg-slate-900 px-4 py-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
+                                Basket ({items.length})
+                            </h3>
+                            <button
+                                onClick={() => clearCart()}
+                                className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors"
+                            >
+                                Clear All
+                            </button>
+                        </div>
 
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-baseline">
-                                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Sourcing Subtotal</span>
-                                        <span className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">GHS {subtotal.toLocaleString()}</span>
-                                    </div>
-                                    
-                                    <div className="pt-8 border-t border-slate-200/50 dark:border-slate-800">
-                                        <div className="flex justify-between items-end mb-10">
-                                            <div>
-                                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-1">Estimated Liability</span>
-                                                <span className="text-[9px] font-medium text-slate-300 uppercase tracking-tighter">Logistics fees updated at checkout</span>
+                        {/* Item List */}
+                        <div className="divide-y divide-slate-100 dark:divide-slate-900">
+                            {items.map((item) => (
+                                <div key={item.id} className="p-4 flex gap-4 transition-all duration-300">
+                                    <Link href={`/products/${item.product.slug}`} className="w-24 h-24 flex-shrink-0 bg-slate-50 dark:bg-slate-900 rounded-lg overflow-hidden relative border border-slate-100 dark:border-slate-800">
+                                        {item.product?.image ? (
+                                            <Image
+                                                src={getImageUrl(item.product.image)}
+                                                alt={item.product.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                <ShoppingBag className="w-6 h-6" strokeWidth={1} />
                                             </div>
-                                            <span className="text-4xl font-black text-slate-900 dark:text-white tracking-widest tabular-nums leading-none">
-                                                GHS {subtotal.toLocaleString()}
-                                            </span>
+                                        )}
+                                    </Link>
+
+                                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                                        <div className="space-y-1">
+                                            <h3 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight uppercase tracking-tight">
+                                                {item.product.name}
+                                            </h3>
+                                            <div className="flex flex-col pt-1">
+                                                <span className="text-lg font-black text-slate-950 dark:text-white tabular-nums leading-none">
+                                                    GHS {Number(item.unit_price).toLocaleString()}
+                                                </span>
+                                            </div>
+                                            
+                                            <p className={`text-[10px] font-black uppercase tracking-[0.2em] pt-1 ${
+                                                (!item.product.is_preorder && item.product.stock_quantity === 0) ? 'text-red-500' : 'text-emerald-600'
+                                            }`}>
+                                                {item.product.is_preorder 
+                                                    ? 'Pre-order'
+                                                    : 'Ready'
+                                                }
+                                            </p>
                                         </div>
 
-                                        <button
-                                            onClick={handleCheckout}
-                                            disabled={isLoading}
-                                            className="w-full h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-950/20 dark:shadow-none hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
-                                        >
-                                            <ShieldCheck className="w-4 h-4" />
-                                            Proceed to Sourcing
-                                        </button>
-                                        
-                                        <Link 
-                                            href={`https://wa.me/${siteConfig.whatsapp}`}
-                                            className="w-full mt-6 h-14 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all group"
-                                        >
-                                            <Phone className="w-3.5 h-3.5" />
-                                            Concierge Inquiry <ArrowLeft className="w-3 h-3 rotate-180 group-hover:translate-x-1 transition-transform" />
-                                        </Link>
+                                        <div className="flex items-center justify-between mt-4">
+                                            <button
+                                                onClick={() => removeFromCart(item.id)}
+                                                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors"
+                                            >
+                                                Remove
+                                            </button>
+                                            
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                                                    className="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500"
+                                                    disabled={isLoading}
+                                                >
+                                                    <Minus className="w-3 h-3" />
+                                                </button>
+                                                <span className="text-xs font-black w-4 text-center text-slate-900 dark:text-white">{item.quantity}</span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center"
+                                                    disabled={isLoading}
+                                                >
+                                                    <Plus className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-
-                                {subtotal < siteConfig.defaults.freeShippingThreshold && (
-                                    <div className="mt-8 px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <p className="text-[10px] font-bold text-slate-400 leading-relaxed italic text-center">
-                                            Source GHS {(siteConfig.defaults.freeShippingThreshold - subtotal).toLocaleString()} more for <span className="text-emerald-600 underline">Free Global Logistics</span>.
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="mt-12 px-8 opacity-40">
-                                <p className="text-[9px] text-slate-400 leading-relaxed uppercase tracking-widest italic grayscale">
-                                    Institutional Procurement record. London's Imports Global Hub 2026. Data encrypted via SSL.
-                                </p>
-                            </div>
-                        </aside>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
+
+            {/* FIXED BOTTOM NAVIGATION BAR */}
+            {items.length > 0 && (
+                <div className="fixed md:bottom-0 bottom-[64px] left-0 right-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-100 dark:border-slate-900 p-4 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.05)]">
+                    <div className="max-w-3xl mx-auto flex items-center gap-4">
+                        <Link
+                            href={`https://wa.me/${siteConfig.whatsapp}`}
+                            className="w-14 h-14 rounded-2xl border-2 border-slate-950 dark:border-white flex items-center justify-center text-slate-950 dark:text-white"
+                        >
+                            <Phone className="w-6 h-6" />
+                        </Link>
+                        <button
+                            onClick={handleCheckout}
+                            disabled={isLoading}
+                            className="flex-1 h-14 bg-slate-950 dark:bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3"
+                        >
+                            <ShieldCheck className="w-5 h-5" />
+                            Checkout (GHS {subtotal.toLocaleString()})
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
