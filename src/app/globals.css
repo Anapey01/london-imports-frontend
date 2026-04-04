@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
-/* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow the .dark class selector.
-   This overrides the system's media-query preference and enables our manual toggle. */
-@custom-variant dark (&:where(.dark, .dark *));
-@custom-variant light (&:where(:not(.dark), :not(.dark) *));
+@theme {
+  /* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow the .dark class selector.
+     Using standard CSS property syntax to silence IDE at-rule warnings while keeping v4 functionality. */
+  --variant-dark: .dark &;
+  --variant-light: :not(.dark) &;
+}
 
 /* ===== DARK MODE VARIABLES ===== */
 :root {
