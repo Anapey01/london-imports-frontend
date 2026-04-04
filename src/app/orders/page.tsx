@@ -45,7 +45,8 @@ export default function OrdersPage() {
         }
     }, [isAuthenticated, router]);
 
-    const orders = data?.data?.results || data?.data || [];
+    const rawOrders = data?.data?.results || data?.data || [];
+    const orders = rawOrders.filter((order: Order) => (order.items_count || 0) > 0);
 
     return (
         <div className="min-h-screen bg-primary-surface pt-24 pb-20 md:pt-32 font-sans transition-all duration-500">
