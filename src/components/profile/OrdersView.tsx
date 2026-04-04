@@ -100,13 +100,13 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className="group p-6 rounded-3xl border border-primary-surface bg-primary-surface/40 transition-all duration-300 hover:shadow-xl">
-                                <div className="flex flex-col md:flex-row justify-between gap-6">
-                                    <div className="flex flex-col sm:flex-row gap-6">
-                                        {/* Images Stack */}
-                                        <div className="flex -space-x-10 flex-shrink-0">
+                            <div key={order.order_number} className="group p-5 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 transition-all duration-500 hover:shadow-md">
+                                <div className="flex flex-col md:flex-row justify-between gap-8">
+                                    <div className="flex flex-col sm:flex-row gap-8">
+                                        {/* Images Stack - Refined Editorial Flow */}
+                                        <div className="flex -space-x-12 sm:-space-x-10 flex-shrink-0 justify-center sm:justify-start">
                                             {order.items?.slice(0, 3).map((item, idx) => (
-                                                <div key={item.id} className={`relative w-24 h-32 rounded-2xl overflow-hidden border-4 ${isDark ? 'border-slate-900' : 'border-white'} shadow-lg bg-gray-100 z-[${30 - idx}] transform transition-transform group-hover:translate-x-${idx * 2}`}>
+                                                <div key={item.id} className={`relative w-28 h-36 sm:w-24 sm:h-32 rounded-xl overflow-hidden border border-white dark:border-slate-800 shadow-xl bg-slate-50 z-[${30 - idx}] transform transition-transform group-hover:translate-x-1`}>
                                                     {item.product.image ? (
                                                         <NextImage
                                                             src={getImageUrl(item.product.image)}
@@ -116,44 +116,44 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" strokeWidth={1.5} /></svg>
+                                                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" strokeWidth={1} /></svg>
                                                         </div>
                                                     )}
                                                 </div>
                                             ))}
                                             {order.items && order.items.length > 3 && (
-                                                <div className={`relative w-24 h-32 rounded-2xl flex items-center justify-center border-4 ${isDark ? 'border-slate-900' : 'border-white'} shadow-lg ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-500'} text-sm font-bold z-10`}>
+                                                <div className={`relative w-28 h-36 sm:w-24 sm:h-32 rounded-xl flex items-center justify-center border border-white dark:border-slate-800 shadow-xl ${isDark ? 'bg-slate-900 text-slate-500' : 'bg-gray-100 text-gray-400'} text-xs font-black z-10`}>
                                                     +{order.items.length - 3}
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="flex flex-col justify-between py-1">
+                                        <div className="flex flex-col justify-between py-1 text-center sm:text-left">
                                             <div>
-                                                <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                    <p className="text-lg font-bold tracking-tight nuclear-text">
-                                                        Order #{order.order_number}
-                                                    </p>
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusStyles.lightBg} ${statusStyles.text}`}>
+                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-3">
+                                                    <span className={`px-2 py-0.5 rounded border text-[9px] font-black uppercase tracking-[0.2em] ${statusStyles.text} ${statusStyles.text.replace('text-', 'border-').replace('500', '200')}`}>
                                                         {order.state_display}
                                                     </span>
+                                                    <h3 className="text-base sm:text-lg font-black font-serif text-slate-950 dark:text-white uppercase tracking-tight">
+                                                        Order #{order.order_number}
+                                                    </h3>
                                                 </div>
-                                                <p className="text-sm font-medium nuclear-text opacity-50">
-                                                    Placed on {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(order.created_at))}
+                                                <p className="text-[10px] font-black font-sans uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                                                    Established {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(order.created_at))}
                                                 </p>
                                             </div>
 
-                                            <div className="mt-4 flex items-center gap-6">
+                                            <div className="mt-8 sm:mt-4 flex flex-col sm:flex-row sm:items-end gap-6 sm:gap-10">
                                                 <div>
-                                                    <p className="text-[10px] uppercase tracking-widest font-bold mb-1 nuclear-text opacity-40">Total Amount</p>
-                                                    <p className="text-xl font-bold nuclear-text">
+                                                    <p className="text-[9px] uppercase tracking-[0.3em] font-black mb-1 text-slate-300 dark:text-slate-700">Total Amount</p>
+                                                    <p className="text-2xl sm:text-3xl font-serif font-black text-slate-950 dark:text-white tracking-tighter tabular-nums">
                                                         GHS {parseFloat(order.total.toString()).toLocaleString()}
                                                     </p>
                                                 </div>
                                                 {balanceDue > 0 && order.state !== 'CANCELLED' && (
                                                     <div>
-                                                        <p className="text-[10px] uppercase tracking-widest font-bold mb-1 text-red-400">Balance Due</p>
-                                                        <p className="text-xl font-bold text-red-500">
+                                                        <p className="text-[9px] uppercase tracking-[0.3em] font-black mb-1 text-slate-400 dark:text-slate-600">Balance Due</p>
+                                                        <p className="text-2xl sm:text-3xl font-serif font-black text-slate-950 dark:text-white tracking-tighter tabular-nums">
                                                             GHS {balanceDue.toLocaleString()}
                                                         </p>
                                                     </div>
@@ -162,10 +162,10 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col justify-center gap-3 min-w-[140px]">
+                                    <div className="flex flex-col justify-end gap-3 min-w-[160px]">
                                         <Link
                                             href={`/track?order=${order.order_number}`}
-                                            className="w-full py-3 rounded-xl text-xs font-bold text-center transition-all bg-emerald-500 text-white hover:bg-emerald-600 active:scale-95 shadow-lg"
+                                            className="w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-center transition-all bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:opacity-90 shadow-sm"
                                         >
                                             Track Shipment
                                         </Link>
@@ -173,27 +173,28 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                                         {isPending && (
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="w-full py-3 rounded-xl text-xs font-bold text-center bg-black text-white hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+                                                className="w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-center bg-transparent border border-slate-950 dark:border-white text-slate-950 dark:text-white hover:bg-slate-950 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shadow-sm"
                                             >
                                                 {balanceDue > 0 ? 'Pay Balance' : 'Complete Payment'}
                                             </Link>
                                         )}
 
-                                        {canCancel && (
-                                            <button
-                                                onClick={() => setCancellingOrder(order.order_number)}
-                                                className={`w-full py-3 rounded-xl text-xs font-bold text-center transition-all border ${isDark ? 'border-red-900/30 text-red-400 hover:bg-red-950/20' : 'border-red-100 text-red-500 hover:bg-red-50'} active:scale-95`}
+                                        <div className="flex items-center justify-center gap-6 mt-2 pt-2 border-t border-slate-50 dark:border-slate-900">
+                                            <Link
+                                                href={`/orders/${order.order_number}`}
+                                                className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors"
                                             >
-                                                Cancel Order
-                                            </button>
-                                        )}
-
-                                        <Link
-                                            href={`/orders/${order.order_number}`}
-                                            className={`w-full py-2 text-xs font-bold text-center transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}
-                                        >
-                                            View Invoice
-                                        </Link>
+                                                Invoice
+                                            </Link>
+                                            {canCancel && (
+                                                <button
+                                                    onClick={() => setCancellingOrder(order.order_number)}
+                                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-red-500 transition-colors"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
