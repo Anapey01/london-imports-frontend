@@ -18,26 +18,24 @@ export const api = axios.create({
 // Request interceptor to add Auth token
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { useAuthStore } = require('@/stores/authStore');
-    const token = useAuthStore.getState().accessToken || localStorage.getItem('access_token');
+    // Reading directly from localStorage to avoid circular store dependencies and race conditions
+    const token = localStorage.getItem('access_token');
 
     // List of public endpoints where we should NOT send the token
-    // This prevents 401 errors if the stored token is invalid/expired
     const publicEndpoints = [
       '/auth/register/',
       '/auth/login/',
       '/auth/google/',
       '/auth/register/vendor/',
       '/auth/register/partner/',
-      '/auth/password/reset/', // Covers request and confirm
-      '/products/', // Public product listings & categories
-      '/vendors/', // Public vendor profiles
-      '/blog/', // Public blog articles
-      '/orders/stats/', // Public platform statistics
+      '/auth/password/reset/', 
+      '/products/',
+      '/vendors/',
+      '/blog/',
+      '/orders/stats/',
     ];
 
-    // Check if URL starts with a public endpoint (use startsWith to avoid matching /admin/products/ as public)
+    // Check if URL starts with a public endpoint
     const isPublicEndpoint = publicEndpoints.some(endpoint =>
       config.url && config.url.startsWith(endpoint)
     );
@@ -107,7 +105,9 @@ api.interceptors.response.use(
         // Refresh failed - User must login ONLY if it's an auth error (401/403)
         const err = refreshError as { response?: { status?: number } };
         if (typeof window !== 'undefined' && err.response && (err.response.status === 401 || err.response.status === 403)) {
-          import('@/stores/authStore').then(m => m.useAuthStore.getState().logout());
+          // Clear tokens directly as fallback
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
 
           if (!window.location.pathname.includes('/login')) {
             window.location.href = '/login?expired=true';

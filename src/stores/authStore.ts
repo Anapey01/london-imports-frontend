@@ -113,8 +113,13 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     const response = await authAPI.me();
                     set({ user: response.data, isAuthenticated: true });
-                } catch {
-                    set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
+                } catch (error: any) {
+                    // Only logout if it's a definitive auth failure (401 or 403)
+                    // If it's a network error (no response), keep the session for retry
+                    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                        get().logout();
+                    }
+                    throw error;
                 }
             },
 

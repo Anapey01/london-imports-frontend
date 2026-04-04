@@ -16,12 +16,14 @@ export default function AuthRehydration() {
 
         // If we have a token but state says not authenticated (or just to be sure on boot)
         if (token) {
+            console.debug('[AuthRehydration] Token found, initiating session refresh');
             fetchUser().then(() => {
                 const user = useAuthStore.getState().user;
                 if (user?.id) setAnalyticsUser(user.id);
-            }).catch(() => {
-                // Verification failed, store will clear itself
-                console.warn('Auth rehydration failed: Session potentially expired');
+                console.debug('[AuthRehydration] Session refreshed:', user?.email);
+            }).catch((err) => {
+                // Verification failed - already handled in fetchUser() if 401
+                console.warn('[AuthRehydration] Session refresh failed:', err.message);
             });
         }
     }, [fetchUser]);
