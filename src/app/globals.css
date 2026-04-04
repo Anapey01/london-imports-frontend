@@ -10,7 +10,7 @@
   --bg-primary: #ffffff;
   --bg-secondary: #faf9f6; /* Off-white stationery feel */
   --bg-card: #ffffff;
-  --text-primary: #0f172a;
+  --text-primary: #1e293b;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
   --border-color: #f1f5f9;
@@ -18,10 +18,8 @@
   --accent-secondary: #334155;
   --brand-accent: #006B5A;
   --brand-logo-accent: #006B5A;
-  --text-high-contrast: #0f172a;
+  --text-high-contrast: #1e293b;
   --text-med-contrast: #475569;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
 }
 
 @layer base {
@@ -82,7 +80,7 @@ body {
 
 /* Nuclear Contrast Utilities for Mobile Drawer visibility */
 .nuclear-text {
-  color: #0f172a !important;
+  color: #1e293b !important;
 }
 
 .dark .nuclear-text,
