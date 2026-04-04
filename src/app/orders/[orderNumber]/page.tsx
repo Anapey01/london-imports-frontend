@@ -128,7 +128,7 @@ export default function OrderDetailPage() {
                         <div className="bg-slate-900 dark:bg-white p-8 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-8 border border-white/5 dark:border-slate-100">
                             <div>
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 dark:text-emerald-600 mb-1">Status: Arrears Pending</h4>
-                                <p className="text-white dark:text-slate-900 text-sm font-medium tracking-tight">GHS {balanceDue.toLocaleString()} remains outstanding.</p>
+                                <p className="text-white dark:text-slate-900 text-sm font-medium tracking-tight">GHS {Number(balanceDue).toLocaleString()} remains outstanding.</p>
                             </div>
                             <div className="flex gap-3">
                                 <button
@@ -265,11 +265,11 @@ export default function OrderDetailPage() {
                             <div className="space-y-6">
                                 <div className="flex justify-between items-baseline">
                                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Subtotal</span>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white">GHS {order.subtotal.toLocaleString()}</span>
+                                    <span className="text-lg font-bold text-slate-900 dark:text-white">GHS {Number(order.subtotal).toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-baseline">
                                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Global Logistics</span>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white">GHS {order.delivery_fee.toLocaleString()}</span>
+                                    <span className="text-lg font-bold text-slate-900 dark:text-white">GHS {Number(order.delivery_fee).toLocaleString()}</span>
                                 </div>
                                 
                                 <div className="pt-8 border-t border-slate-200 dark:border-slate-800">
@@ -278,19 +278,19 @@ export default function OrderDetailPage() {
                                             <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Liability Total</span>
                                             <span className="text-xs font-medium text-slate-300 lowercase">All fees inclusive</span>
                                         </div>
-                                        <span className="text-4xl font-serif font-black text-slate-900 dark:text-white tracking-tighter">GHS {order.total.toLocaleString()}</span>
+                                        <span className="text-4xl font-serif font-black text-slate-900 dark:text-white tracking-tighter">GHS {Number(order.total).toLocaleString()}</span>
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="flex justify-between items-center px-6 py-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
                                             <span className="text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-400 tracking-widest">Settled</span>
-                                            <span className="text-base font-black text-emerald-900 dark:text-emerald-100">GHS {order.amount_paid.toLocaleString()}</span>
+                                            <span className="text-base font-black text-emerald-900 dark:text-emerald-100">GHS {Number(order.amount_paid).toLocaleString()}</span>
                                         </div>
 
                                         {balanceDue > 0 && (
                                             <div className="flex justify-between items-center px-6 py-4 bg-slate-900 dark:bg-white rounded-2xl">
                                                 <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Arrears</span>
-                                                <span className="text-base font-black text-white dark:text-slate-900">GHS {balanceDue.toLocaleString()}</span>
+                                                <span className="text-base font-black text-white dark:text-slate-900">GHS {Number(balanceDue).toLocaleString()}</span>
                                             </div>
                                         )}
                                     </div>
