@@ -138,12 +138,12 @@ export default function ProductCard({
                      </h3>
                 </div>
 
-                <div className={`flex items-baseline justify-between pt-2 border-t border-slate-50 dark:border-slate-900 ${variant === 'compact' ? 'mt-auto' : ''}`}>
-                    <div className={`font-serif font-bold text-slate-900 dark:text-white tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-2xl'}`}>
+                <div className={`flex flex-wrap items-baseline justify-between gap-1 pt-2 border-t border-slate-50 dark:border-slate-900 ${variant === 'compact' ? 'mt-auto' : ''}`}>
+                    <div className={`font-serif font-bold text-slate-900 dark:text-white tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
                         {formatPrice(product.price)}
                     </div>
                     {!hideRating && (
-                        <span className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2em] transition-colors">
+                        <span className="text-[8px] sm:text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-colors whitespace-nowrap">
                             {product.preorder_status === 'READY_TO_SHIP' ? 'INSTANT' : 'PRE-ORDER'}
                         </span>
                     )}
