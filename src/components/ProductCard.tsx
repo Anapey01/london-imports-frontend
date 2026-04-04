@@ -1,44 +1,44 @@
-/**
- * London's Imports - Product Card Component (Redesigned)
- * Matching the screenshot design: White card, Faint Pink Button, Clean Typography
- */
 'use client';
 
-import Link from 'next/link';
-import StarRating from '@/components/StarRating';
 import { useCartStore, Product } from '@/stores/cartStore';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
-import { Heart } from 'lucide-react';
-import { GroupBuyProgress } from '@/components/GroupBuyProgress';
+import { Heart, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
 import { trackAddToCart, trackSelectItem } from '@/lib/analytics';
+import Image from 'next/image';
+import { getImageUrl } from '@/lib/image';
+import NextLink from 'next/link';
 
 interface ProductCardProps {
     product: Product;
     priority?: boolean;
-    hideProgress?: boolean;
-    hideRating?: boolean;
     variant?: 'default' | 'compact';
+    hideRating?: boolean;
+    hideProgress?: boolean;
 }
-
-import Image from 'next/image';
-import { getImageUrl } from '@/lib/image';
 
 export default function ProductCard({ 
     product, 
     priority = false, 
-    hideProgress = false, 
+    variant = 'default',
     hideRating = false,
-    variant = 'default'
+    hideProgress = false,
 }: ProductCardProps) {
     const [isAdding, setIsAdding] = useState(false);
     const [imageError, setImageError] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Prevent hydration mismatch for wishlist state
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const addToCart = useCartStore(state => state.addToCart);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
-    const isWishlisted = isInWishlist(product.id);
-
-    // Review count logic removed as label is hidden
+    
+    // Only determine wishlist status after mount to avoid server/client mismatch
+    const isWishlisted = isMounted ? isInWishlist(product.id) : false;
 
     const toggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -46,44 +46,25 @@ export default function ProductCard({
         if (isWishlisted) {
             removeFromWishlist(product.id);
         } else {
-            // Ensure product matches expected interface
-            const wishlistProduct = {
+            addToWishlist({
                 id: product.id,
                 name: product.name,
                 slug: product.slug,
                 price: product.price,
-                image: product.image || product.primary_image || ""
-            };
-            addToWishlist(wishlistProduct);
+                image: product.image || ""
+            });
         }
     };
 
     const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-
         try {
             setIsAdding(true);
-            await addToCart({
-                ...product,
-                image: product.image || ""
-            });
+            await addToCart({ ...product, image: product.image || "" });
             trackAddToCart(product);
-        } catch (error: unknown) {
+        } catch (error) {
             console.error("Add to cart error:", error);
-            // Safe alignment with potentially complex error objects
-            interface ApiError {
-                response?: {
-                    data?: {
-                        detail?: string;
-                        error?: string;
-                    };
-                };
-                message?: string;
-            }
-            const apiError = error as ApiError;
-            const errorMessage = apiError.response?.data?.detail || apiError.response?.data?.error || "Failed to add to cart. Please try again.";
-            alert(errorMessage);
         } finally {
             setIsAdding(false);
         }
@@ -92,126 +73,82 @@ export default function ProductCard({
     const imageUrl = getImageUrl(product.image);
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-lg hover:shadow-diffusion-lg transition-all duration-500 flex flex-col h-full overflow-hidden group/card relative">
-
-            <div className="relative overflow-hidden">
-                <Link 
+        <div className="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-6 transition-all duration-500 flex flex-col h-full group/card relative">
+            
+            {/* 1. ARCHITECTURAL IMAGE DISPLAY */}
+            <div className="relative overflow-hidden mb-6 aspect-[4/5] bg-slate-50/30 dark:bg-slate-900/30">
+                <NextLink 
                     href={`/products/${product.slug}`} 
-                    className="block"
+                    className="block h-full"
                     onClick={() => trackSelectItem(product)}
                 >
-                    {/* Image Section */}
-                    <div className={`relative aspect-[4/5] p-3 ${variant === 'compact' ? 'bg-slate-50/50' : 'bg-white'} dark:bg-slate-950 flex items-center justify-center transition-colors`}>
-                        {!imageError ? (
-                            <Image
-                                src={imageUrl}
-                                alt={`${product.name} - China Import to Ghana`}
-                                fill
-                                priority={priority}
-                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                                className="object-contain group-hover/card:scale-105 transition-transform duration-700 ease-out"
-                                onError={() => setImageError(true)}
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-200 dark:text-slate-800">
-                                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                </svg>
-                            </div>
-                        )}
-                    </div>
-                </Link>
+                    {!imageError ? (
+                        <Image
+                            src={imageUrl}
+                            alt={`${product.name} - China Import to Ghana`}
+                            fill
+                            priority={priority}
+                            unoptimized={imageUrl.startsWith('http')}
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                            className="object-contain group-hover/card:scale-110 transition-transform duration-700 ease-in-out px-4 py-8"
+                            onError={() => setImageError(true)}
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-100 dark:text-slate-800">
+                             <span className="text-[10px] font-black uppercase tracking-widest">[ IMAGE_PENDING ]</span>
+                        </div>
+                    )}
+                </NextLink>
 
-                {/* Pure Floating Icons - Top Right Precision */}
-                {variant !== 'compact' && (
-                    <div className="absolute top-3 right-3 z-20 flex flex-col items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 transition-all duration-500 ease-out">
-                        {/* Wishlist Button */}
-                        <button
-                            onClick={toggleWishlist}
-                            className={`w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 shadow-sm border border-white/40 ${isWishlisted ? "bg-red-50 text-red-500 border-red-100" : "bg-white/90 backdrop-blur-md text-slate-400 hover:text-[#006B5A] hover:bg-white"}`}
-                            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                        >
-                            <Heart className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`} strokeWidth={1.5} />
-                        </button>
-
-                        {/* Quick Add / View Options */}
-                        {((product.available_sizes?.length ?? 0) > 0 || (product.available_colors?.length ?? 0) > 0) ? (
-                            <Link
-                                href={`/products/${product.slug}`}
-                                onClick={() => trackSelectItem(product)}
-                                className="w-9 h-9 bg-white/90 backdrop-blur-md flex items-center justify-center rounded-full shadow-sm border border-white/40 text-slate-400 hover:text-[#006B5A] hover:bg-white transition-all"
-                                aria-label="View options"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </Link>
-                        ) : (
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={isAdding}
-                                className="w-9 h-9 bg-white/90 backdrop-blur-md flex items-center justify-center rounded-full shadow-sm border border-white/40 text-slate-400 hover:text-[#006B5A] hover:bg-white transition-all"
-                                aria-label="Add to cart"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-                )}
+                {/* Action Overlay (Static on Mobile, Hover on Desktop) */}
+                <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover/card:opacity-100 transition-all duration-300">
+                    <button
+                        onClick={toggleWishlist}
+                        title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                        className={`w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm transition-colors ${isWishlisted ? "text-rose-500" : "text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white"}`}
+                    >
+                        <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-current" : ""}`} strokeWidth={2} />
+                    </button>
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={isAdding}
+                        title="Add to cart"
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white transition-colors"
+                    >
+                        <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2} />
+                    </button>
+                </div>
             </div>
 
-            <Link 
+            {/* 2. MINIMALIST DETAILS (Left Aligned) */}
+            <NextLink 
                 href={`/products/${product.slug}`} 
-                className="flex-1 flex flex-col"
+                className={`flex flex-col gap-3 group/link ${variant === 'compact' ? 'px-1' : ''}`}
                 onClick={() => trackSelectItem(product)}
             >
-                {/* Details Section */}
-                <div className={`${variant === 'compact' ? 'px-3 pb-4 pt-1 gap-1' : 'px-3.5 pb-5 pt-1.5 gap-1'} flex flex-col flex-1 bg-white dark:bg-slate-900 transition-colors text-center`}>
-                    {/* Star Rating */}
-                    {!hideRating && (
-                        <div className="flex items-center justify-center gap-1 mb-0.5 opacity-60">
-                            <StarRating size="xs" />
-                        </div>
-                    )}
+                <div>
+                     {!hideProgress && (
+                         <div className="flex items-start justify-between gap-4 mb-2">
+                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-600">Premium Import</span>
+                            <ArrowUpRight className="w-3 h-3 text-slate-200 dark:text-slate-800 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                         </div>
+                     )}
+                     <h3 className={`font-bold text-slate-900 dark:text-white tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                         {product.name}
+                     </h3>
+                </div>
 
-                    {/* Title with Architectural Marquee (Desktop: Hover | Mobile: Ambient) */}
-                    <div className="title-marquee-container overflow-hidden relative w-full h-5">
-                        <h3 className={`
-                            ${variant === 'compact' 
-                                ? 'text-[10px] font-sans font-bold tracking-[0.2em] uppercase text-slate-500' 
-                                : 'text-[13px] font-sans font-bold text-slate-800 tracking-tight leading-[1.3]'
-                            } 
-                            dark:text-slate-100 transition-colors whitespace-nowrap
-                            lg:group-hover/card:animate-[title-scroll_6s_linear_infinite_alternate] 
-                            max-lg:animate-mobile-marquee w-max block
-                        `}>
-                            {product.name}
-                        </h3>
-                    </div>
-
-                    {/* Price */}
-                    <div className={`
-                        text-[#006B5A] ${variant === 'compact' ? 'text-sm' : 'text-base'} 
-                        dark:text-white font-bold tracking-tighter tabular-nums transition-colors
-                    `}>
+                <div className={`flex items-baseline justify-between pt-2 border-t border-slate-50 dark:border-slate-900 ${variant === 'compact' ? 'mt-auto' : ''}`}>
+                    <div className={`font-serif font-bold text-slate-900 dark:text-white tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-2xl'}`}>
                         {formatPrice(product.price)}
                     </div>
-
-                    {/* Progress Bar (Innovation) */}
-                    {!hideProgress && (
-                        <div className="mt-2.5">
-                            <GroupBuyProgress
-                                current={product.reservations_count || 0}
-                                target={product.target_quantity || 100}
-                                variant="micro"
-                            />
-                        </div>
+                    {!hideRating && (
+                        <span className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2em] transition-colors">
+                            {product.preorder_status === 'READY_TO_SHIP' ? 'INSTANT' : 'PRE-ORDER'}
+                        </span>
                     )}
                 </div>
-            </Link>
+            </NextLink>
         </div>
     );
 }

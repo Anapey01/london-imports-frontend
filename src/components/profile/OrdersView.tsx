@@ -44,27 +44,27 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
             case 'PAID':
             case 'DELIVERED':
             case 'COMPLETED':
-                return { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-500', lightBg: 'bg-green-50 dark:bg-green-900/20' };
+                return { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-500/10' };
             case 'PENDING_PAYMENT':
             case 'DRAFT':
             case 'OPEN_FOR_BATCH':
-                return { text: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-900/20' };
+                return { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-500/10' };
             case 'CANCELLED':
             case 'FAILED':
-                return { text: 'text-red-600 dark:text-red-400', bg: 'bg-red-500', lightBg: 'bg-red-50 dark:bg-red-900/20' };
+                return { text: 'text-red-500', bg: 'bg-red-500', lightBg: 'bg-red-500/10' };
             case 'SHIPPED':
             case 'ARRIVED_IN_GHANA':
-                return { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500', lightBg: 'bg-blue-50 dark:bg-blue-900/20' };
+                return { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-500/10' };
             default:
-                return { text: 'text-gray-500', bg: 'bg-gray-400', lightBg: 'bg-gray-50 dark:bg-gray-900/20' };
+                return { text: 'nuclear-text opacity-60', bg: 'bg-slate-400', lightBg: 'bg-slate-500/10' };
         }
     };
 
     return (
         <div className="space-y-10 pb-20">
-            <div className={`border-b pb-4 ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+            <div className="border-b pb-4 border-primary-surface">
                 <div className="flex flex-wrap items-end justify-between gap-4">
-                    <h2 className={`text-2xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <h2 className="text-2xl font-light tracking-tight nuclear-text">
                         My Orders
                     </h2>
                     <div className="flex items-center gap-4">
@@ -73,8 +73,8 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                                 key={status}
                                 onClick={() => setFilter(status)}
                                 className={`text-xs uppercase tracking-wide transition-colors ${filter === status
-                                    ? `${isDark ? 'text-white' : 'text-gray-900'} font-medium`
-                                    : `${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'} font-light`
+                                    ? 'nuclear-text font-bold'
+                                    : 'nuclear-text opacity-40 hover:opacity-100 font-light'
                                     }`}
                             >
                                 {status === 'ALL' ? 'All' : status.charAt(0) + status.slice(1).toLowerCase()}
@@ -100,7 +100,7 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className={`group p-6 rounded-3xl border transition-all duration-300 hover:shadow-xl ${isDark ? 'bg-slate-900/40 border-slate-800 hover:border-slate-700' : 'bg-white border-gray-100 hover:border-gray-200'}`}>
+                            <div key={order.order_number} className="group p-6 rounded-3xl border border-primary-surface bg-primary-surface/40 transition-all duration-300 hover:shadow-xl">
                                 <div className="flex flex-col md:flex-row justify-between gap-6">
                                     <div className="flex flex-col sm:flex-row gap-6">
                                         {/* Images Stack */}
@@ -131,22 +131,22 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                                         <div className="flex flex-col justify-between py-1">
                                             <div>
                                                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                    <p className={`text-lg font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                    <p className="text-lg font-bold tracking-tight nuclear-text">
                                                         Order #{order.order_number}
                                                     </p>
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusStyles.lightBg} ${statusStyles.text}`}>
                                                         {order.state_display}
                                                     </span>
                                                 </div>
-                                                <p className={`text-sm font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                                <p className="text-sm font-medium nuclear-text opacity-50">
                                                     Placed on {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(order.created_at))}
                                                 </p>
                                             </div>
 
                                             <div className="mt-4 flex items-center gap-6">
                                                 <div>
-                                                    <p className={`text-[10px] uppercase tracking-widest font-bold mb-1 ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>Total Amount</p>
-                                                    <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                    <p className="text-[10px] uppercase tracking-widest font-bold mb-1 nuclear-text opacity-40">Total Amount</p>
+                                                    <p className="text-xl font-bold nuclear-text">
                                                         GHS {parseFloat(order.total.toString()).toLocaleString()}
                                                     </p>
                                                 </div>
@@ -165,7 +165,7 @@ const OrdersView = ({ orders, theme }: { orders: Order[]; theme: string }) => {
                                     <div className="flex flex-col justify-center gap-3 min-w-[140px]">
                                         <Link
                                             href={`/track?order=${order.order_number}`}
-                                            className={`w-full py-3 rounded-xl text-xs font-bold text-center transition-all ${isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'} active:scale-95`}
+                                            className="w-full py-3 rounded-xl text-xs font-bold text-center transition-all bg-emerald-500 text-white hover:bg-emerald-600 active:scale-95 shadow-lg"
                                         >
                                             Track Shipment
                                         </Link>

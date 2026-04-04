@@ -4,7 +4,7 @@ export default function SEOAccordion() {
     return (
         <section className="absolute -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden" aria-hidden="true">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1>Import Goods from China to Ghana - Fast Shipping & Customs Clearance</h1>
+                <h2>Import Goods from China to Ghana - Fast Shipping & Customs Clearance</h2>
                 <p>
                     Looking for reliable shipping from China to Ghana? London&apos;s Imports simplifies the process.
                     Whether you want to buy from 1688 to Ghana, Alibaba, or Taobao, we act as your trusted bridge.

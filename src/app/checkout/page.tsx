@@ -275,13 +275,13 @@ function CheckoutPage() {
 
         if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
             console.error('CRITICAL: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is missing from environment.');
-            setError('Payment setup incomplete. Please contact support or use the "Refresh Site Session" link below.');
+            setError('Something went wrong with the payment setup. Please contact us.');
             setIsLoading(false);
             return;
         }
 
         if (!isAuthenticated || !user?.email) {
-            setError('Please sign in with a valid account to complete your purchase.');
+            setError('Please sign in to finish your purchase.');
             setIsLoading(false);
             setTimeout(() => {
                 router.push(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
@@ -337,7 +337,7 @@ function CheckoutPage() {
                 trackWhatsAppContact(orderToPay?.items?.[0]?.product?.name || 'Order', 'purchase');
                 const message = encodeURIComponent(`Hi, I'd like to pay for my order #${orderToPay?.order_number}. Total: ${formatPrice(orderToPay?.total || 0)}.`);
                 window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
-                router.push('/orders');
+                router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=whatsapp`);
                 return;
             }
 
@@ -383,10 +383,10 @@ function CheckoutPage() {
                     
                     clearCart();
                     sessionStorage.removeItem('londons_checkout_delivery');
-                    router.push('/orders?success=true');
+                    router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
                 } catch (verifyErr) {
                     console.error('Verification failed:', verifyErr);
-                    setError('Payment verification failed. Please contact support via WhatsApp with your order number.');
+                    setError('Payment check failed. Please message us on WhatsApp with your order number.');
                     setIsLoading(false);
                 }
             }
@@ -412,12 +412,12 @@ function CheckoutPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-primary-surface md:bg-secondary-surface pt-16 pb-12 md:pt-20 px-4 sm:px-6 lg:px-8 font-sans transition-all duration-500 relative overflow-hidden">
+            <div className="max-w-6xl mx-auto relative z-10">
                 <CheckoutHeader />
 
-                <form ref={formRef} onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-8 lg:gap-12">
-                    <div className="lg:col-span-7 space-y-6 lg:space-y-8">
+                <form ref={formRef} onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+                    <div className="lg:col-span-7 space-y-4 lg:space-y-5">
                         {orderNumberParam && <ResumeOrderNotice orderNumber={orderNumberParam} />}
 
                         <DeliveryDetails
@@ -439,7 +439,7 @@ function CheckoutPage() {
                     </div>
 
                     <div className="lg:col-span-5">
-                        <div className="lg:sticky lg:top-32 space-y-6">
+                        <div className="lg:sticky lg:top-24 space-y-5">
                             <OrderSummary
                                 currentOrderData={currentOrderData}
                                 selectedItemIds={selectedItemIds}
@@ -448,6 +448,7 @@ function CheckoutPage() {
                                 paymentAmount={paymentAmount}
                             />
 
+                            {error && (
                                 <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl border border-red-100 flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                     <div className="flex items-center gap-3">
                                         <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -461,7 +462,6 @@ function CheckoutPage() {
                                                 for (const registration of registrations) {
                                                     await registration.unregister();
                                                 }
-                                                // Clear cache and reload
                                                 if ('caches' in window) {
                                                     const cacheKeys = await caches.keys();
                                                     await Promise.all(cacheKeys.map(key => caches.delete(key)));
@@ -471,9 +471,10 @@ function CheckoutPage() {
                                         }}
                                         className="text-[10px] text-red-400 hover:text-red-600 underline text-left transition-colors duration-200"
                                     >
-                                        Persistent issues? Click here to refresh site session
+                                        Still having trouble? Click here to fix errors and refresh
                                     </button>
                                 </div>
+                            )}
 
                             <CheckoutSubmitButton
                                 isLoading={isLoading}

@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/Toast";
 import dynamic from "next/dynamic";
 
 const AuthRehydration = dynamic(() => import("@/components/AuthRehydration"), { ssr: false });
+const CookieBanner = dynamic(() => import("@/components/CookieBanner"), { ssr: false });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -14,6 +15,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 <ToastProvider>
                     <AuthRehydration />
                     {children}
+                    <CookieBanner />
                 </ToastProvider>
             </QueryProvider>
         </ThemeProvider>

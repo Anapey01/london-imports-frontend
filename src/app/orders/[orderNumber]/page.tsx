@@ -77,19 +77,18 @@ export default function OrderDetailPage() {
     const isPendingPayment = order.state === 'PENDING_PAYMENT' || balanceDue > 0;
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-24 pb-20">
-            <div className="max-w-4xl mx-auto px-4">
+        <div className="min-h-screen bg-primary-surface pt-24 pb-20 font-sans transition-all duration-500">
+            <div className="max-w-4xl mx-auto px-6">
                 {/* Header */}
-                <div className="flex justify-between items-start mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-slate-50 dark:border-slate-900 pb-8 gap-6">
                     <div>
-                        <Link href="/orders" className="text-gray-500 hover:text-black text-sm mb-2 inline-flex items-center gap-1 transition-colors">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                            Back to Orders
+                        <Link href="/orders" className="text-emerald-700 dark:text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4 inline-flex items-center gap-2 transition-colors group">
+                            <svg className="w-3 h-3 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                            Back to Sourcing Portfolio
                         </Link>
-                        <h1 className="text-3xl font-light text-gray-900 tracking-tight mt-2">Order #{order.order_number}</h1>
-                        <p className="text-gray-500 font-light mt-1">
-                            Placed on {new Date(order.created_at).toLocaleDateString(undefined, {
-                                weekday: 'long',
+                        <h1 className="text-4xl md:text-6xl font-serif font-black nuclear-text tracking-tighter">Order #{order.order_number}</h1>
+                        <p className="text-[10px] font-black nuclear-text opacity-40 uppercase tracking-[0.2em] mt-3">
+                            Established on {new Date(order.created_at).toLocaleDateString(undefined, {
                                 day: 'numeric',
                                 month: 'long',
                                 year: 'numeric'
@@ -106,19 +105,19 @@ export default function OrderDetailPage() {
 
                 {/* Status Alert */}
                 {isPendingPayment && order.state !== 'CANCELLED' && (
-                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-amber-100 rounded-full text-amber-600">
+                    <div className="bg-slate-900 dark:bg-white rounded-2xl p-8 mb-12 flex flex-col sm:flex-row items-center justify-between gap-8 shadow-diffusion-xl">
+                        <div className="flex items-center gap-6">
+                            <div className="p-4 bg-white/10 dark:bg-slate-950/5 rounded-full text-white dark:text-slate-900">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                             <div>
-                                <h2 className="font-medium text-gray-900">Payment Required</h2>
-                                <p className="text-sm text-gray-600 font-light">
+                                <h2 className="text-sm font-black text-white dark:text-slate-900 uppercase tracking-widest mb-1">Payment Action Required</h2>
+                                <p className="text-xs text-white/60 dark:text-slate-900/40 font-bold tracking-tight">
                                     {balanceDue > 0
-                                        ? `A balance of GHS ${balanceDue.toLocaleString()} remains on this order.`
-                                        : 'Please complete your payment to process this order.'}
+                                        ? `A lingering balance of GHS ${balanceDue.toLocaleString()} remains.`
+                                        : 'Finalize your transaction to secure this shipment.'}
                                 </p>
                             </div>
                         </div>
@@ -126,15 +125,15 @@ export default function OrderDetailPage() {
                             <button
                                 onClick={handleVerifyPayment}
                                 disabled={isVerifying}
-                                className="px-6 py-3 bg-white border border-gray-200 text-gray-900 font-medium rounded-full hover:bg-gray-50 transition-colors text-center shadow-sm disabled:opacity-50"
+                                className="px-8 py-3 bg-white/10 dark:bg-slate-950/5 text-white dark:text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white/20 transition-all disabled:opacity-50"
                             >
-                                {isVerifying ? 'Verifying...' : 'Verify My Payment'}
+                                {isVerifying ? 'Verifying...' : 'Verify Transfer'}
                             </button>
                             <Link
                                 href={`/checkout?order=${order.order_number}`}
-                                className="px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-pink-600 transition-colors text-center shadow-sm"
+                                className="px-10 py-3 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-emerald-600 transition-all shadow-diffusion"
                             >
-                                {balanceDue > 0 ? 'Pay Balance' : 'Complete Payment'}
+                                {balanceDue > 0 ? 'Clear Balance' : 'Finalize Now'}
                             </Link>
                         </div>
                     </div>
@@ -152,8 +151,8 @@ export default function OrderDetailPage() {
 
                 {/* Granular Timeline Events */}
                 {order.timeline_events && order.timeline_events.length > 0 && (
-                    <div className="bg-white rounded-2xl p-8 mb-8 shadow-sm border border-gray-100">
-                        <h2 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-6">Tracking Updates</h2>
+                    <div className="bg-primary-surface/40 rounded-3xl p-8 mb-12 shadow-diffusion-lg border border-primary-surface backdrop-blur-xl">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] nuclear-text opacity-40 mb-8 border-b border-primary-surface/20 pb-4">Logistics Timeline</h2>
                         <div className="space-y-6">
                             {order.timeline_events?.map((event, index) => (
                                 <div key={event.id} className="flex gap-4">
@@ -184,9 +183,9 @@ export default function OrderDetailPage() {
 
                 <div className="grid lg:grid-cols-12 gap-8">
                     {/* Items */}
-                    <div className="lg:col-span-8 space-y-6">
-                        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
-                            <h2 className="text-lg font-light text-gray-900 mb-6">Order Items</h2>
+                    <div className="lg:col-span-8 space-y-8">
+                        <div className="bg-primary-surface/40 rounded-3xl p-8 shadow-diffusion-lg border border-primary-surface backdrop-blur-xl">
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] nuclear-text opacity-40 mb-8 border-b border-primary-surface/20 pb-4">Sourcing Manifest</h2>
                             <div className="divide-y divide-gray-100">
                                 {order.items?.map((item: OrderItem) => (
                                     <div key={item.id} className="flex gap-4 py-6 first:pt-0 last:pb-0">
@@ -250,8 +249,8 @@ export default function OrderDetailPage() {
 
                     {/* Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-28">
-                            <h2 className="text-lg font-light text-gray-900 mb-6">Financial Summary</h2>
+                        <div className="bg-primary-surface/40 rounded-3xl p-8 shadow-diffusion-xl border border-primary-surface backdrop-blur-3xl sticky top-28">
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] nuclear-text opacity-40 mb-8 border-b border-primary-surface/20 pb-4">Financial Ledger</h2>
 
                             <div className="space-y-4 text-sm font-light">
                                 <div className="flex justify-between text-gray-500">
@@ -262,18 +261,18 @@ export default function OrderDetailPage() {
                                     <span>Delivery</span>
                                     <span>GHS {order.delivery_fee.toLocaleString()}</span>
                                 </div>
-                                <div className="pt-4 border-t border-gray-50 flex justify-between text-base font-normal text-gray-900">
-                                    <span>Order Total</span>
-                                    <span>GHS {order.total.toLocaleString()}</span>
+                                <div className="pt-6 border-t border-primary-surface/20 flex justify-between items-end">
+                                    <span className="text-[10px] font-black uppercase tracking-widest nuclear-text opacity-40">Order Total</span>
+                                    <span className="text-2xl font-serif font-black nuclear-text tracking-tighter leading-none tabular-nums">GHS {order.total.toLocaleString()}</span>
                                 </div>
-                                <div className="flex justify-between text-green-600 font-medium">
-                                    <span>Amount Paid</span>
-                                    <span>GHS {(order.amount_paid || 0).toLocaleString()}</span>
+                                <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-bold">
+                                    <span className="text-[10px] uppercase tracking-widest opacity-40">Settled Amount</span>
+                                    <span className="text-lg tabular-nums">GHS {(order.amount_paid || 0).toLocaleString()}</span>
                                 </div>
                                 {balanceDue > 0 && (
-                                    <div className="flex justify-between text-amber-600 font-medium pt-2">
-                                        <span>Balance Due</span>
-                                        <span>GHS {balanceDue.toLocaleString()}</span>
+                                    <div className="flex justify-between items-center text-amber-600 font-bold pt-2">
+                                        <span className="text-[10px] uppercase tracking-widest opacity-40">Outstanding</span>
+                                        <span className="text-lg tabular-nums">GHS {balanceDue.toLocaleString()}</span>
                                     </div>
                                 )}
                             </div>

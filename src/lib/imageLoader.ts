@@ -32,20 +32,21 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     // For backend media URLs (siteConfig root)
     const backendRoot = siteConfig.apiUrl.replace('/api/v1', '');
     if (src.includes(backendRoot) && src.includes('/media/')) {
-        return src;
+        return `${src}${src.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
     }
 
     // Safety: If it starts with /media/, prepend the backend host
     if (src.startsWith('/media/')) {
         const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
-        return `${rootUrl}${src}`;
+        const fullUrl = `${rootUrl}${src}`;
+        return `${fullUrl}${fullUrl.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
     }
 
-    // For local assets (e.g. /assets/logo.png), return as-is
+    // For local assets (e.g. /assets/logo.png), return as-is but with width param for Next.js validation
     if (src.startsWith('/')) {
-        return src;
+        return `${src}${src.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
     }
 
-    // For any other external URL, return as-is
-    return src;
+    // For any other external URL, return as-is but with width param to satisfy Next.js loader requirements
+    return `${src}${src.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
 }

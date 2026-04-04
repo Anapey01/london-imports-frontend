@@ -28,14 +28,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setThemeState] = useState<Theme>('light');
     const [mounted, setMounted] = useState(false);
 
-    // Initialize theme from localStorage or default to light
+    // Initialize theme from localStorage or system preference
     useEffect(() => {
         const stored = localStorage.getItem('theme') as Theme | null;
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         const timer = setTimeout(() => {
             setMounted(true);
             if (stored) {
                 setThemeState(stored);
+            } else if (systemPrefersDark) {
+                setThemeState('dark');
             } else {
                 setThemeState('light');
             }
@@ -49,15 +52,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         if (!mounted) return;
 
         const root = document.documentElement;
-        // Set both class and data attribute for maximum compatibility
+        const bodyWithThemeClass = document.body;
+
+        // Force both html/body to be purgeable
         if (theme === 'dark') {
             root.classList.add('dark');
             root.setAttribute('data-theme', 'dark');
             root.style.colorScheme = 'dark';
+            // Also ensure the body has it for nested selectors
+            bodyWithThemeClass.classList.add('dark');
         } else {
             root.classList.remove('dark');
             root.setAttribute('data-theme', 'light');
             root.style.colorScheme = 'light';
+            bodyWithThemeClass.classList.remove('dark');
         }
         localStorage.setItem('theme', theme);
     }, [theme, mounted]);

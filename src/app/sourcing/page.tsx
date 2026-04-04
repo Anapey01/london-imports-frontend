@@ -1,6 +1,6 @@
 /**
- * London's Imports — AI Sourcing
- * Clean, editorial black & white design with professional SVG icons.
+ * London's Imports — Premium AI Sourcing (Redesigned)
+ * Editorial, asymmetrical layout with a focus on 'Human-First' logistics.
  */
 'use client';
 
@@ -10,18 +10,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { siteConfig } from '@/config/site';
 import {
-    Upload,
     Camera,
     Sparkles,
-    Search,
     ArrowRight,
-    CheckCircle2,
-    Tag,
-    Palette,
-    DollarSign,
-    Layers,
     X,
-    Clock,
+    Briefcase,
+    ShieldCheck,
 } from 'lucide-react';
 
 const API_BASE = siteConfig.apiUrl.replace(/\/api\/v1$/, '');
@@ -133,13 +127,10 @@ export default function SourcingPage() {
                 }
                 setResult(data);
             } else {
-                const text = await res.text();
-                console.error('Non-JSON response:', text);
-                throw new Error(`Server returned non-JSON response (${res.status}). Check backend logs.`);
+                throw new Error(`Server returned non-JSON response (${res.status}).`);
             }
         } catch (err: unknown) {
             const error = err as Error;
-            console.error('Sourcing upload error:', error);
             setError(error.message || 'Something went wrong. Please try again.');
         } finally {
             setIsUploading(false);
@@ -156,303 +147,204 @@ export default function SourcingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* Hero — Clean black bar */}
-            <section className="bg-black text-white">
-                <div className="max-w-3xl mx-auto px-6 py-16 sm:py-20">
-                    <div className="flex items-center gap-2 text-[10px] font-black tracking-[0.5em] uppercase text-slate-500 mb-8">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        AI-Powered Sourcing
+        <div className="min-h-screen bg-white selection:bg-emerald-100 relative">
+            {/* 1. LAYERED BACKGROUND TYPOGRAPHY */}
+            <div className="absolute top-10 right-0 pointer-events-none select-none overflow-hidden aria-hidden opacity-10">
+                <span className="text-[15rem] md:text-[30rem] font-black text-slate-100 uppercase leading-none tracking-tighter block -mr-20">
+                    SOURCE
+                </span>
+            </div>
+
+            {/* 2. SUBTLE NOISE OVERLAY */}
+            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-0" />
+
+            {/* Header Content */}
+            <section className="relative z-10 pt-24 pb-16 px-6 max-w-7xl mx-auto">
+                <div className="grid lg:grid-cols-12 gap-12 items-start">
+                    
+                    {/* LEFT COLUMN: Editorial Context (5 cols) */}
+                    <div className="lg:col-span-12 flex flex-col items-start mb-16">
+                        <div className="flex items-center gap-4 mb-8">
+                            <span className="h-px w-10 bg-emerald-700/30" />
+                            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-800">
+                                Beyond Simple Search <span className="text-slate-200 mx-1">/</span> Direct Factory Access
+                            </span>
+                        </div>
+                        <h1 className="text-5xl md:text-8xl font-serif font-black leading-[0.9] tracking-tighter text-slate-900 mb-8 max-w-4xl">
+                            The Sourcing <br />
+                            <span className="italic font-light text-slate-400 opacity-40">Intelligence</span> Engine.
+                        </h1>
+                        <p className="max-w-xl text-xl text-slate-600 font-medium leading-relaxed">
+                            Upload a single screenshot from TikTok, Instagram, or 1688. 
+                            Our Vision AI extracts the DNA, while our Guangzhou team handles the human negotiation.
+                        </p>
                     </div>
-                    <h1 className="text-4xl sm:text-6xl font-serif font-black leading-[1.1] tracking-tight">
-                        See it. <span className="italic opacity-30 text-white/50">&amp;</span> <br />
-                        <span className="text-slate-400">We&apos;ll find it.</span>
-                    </h1>
-                    <p className="mt-4 text-gray-400 max-w-lg leading-relaxed">
-                        Upload a product screenshot from any platform. Our AI identifies it,
-                        and our team sources the best supplier.
-                    </p>
-                </div>
-            </section>
 
-            {/* Main Content */}
-            <div className="max-w-3xl mx-auto px-6 py-12">
-                {!result ? (
-                    <>
-                        {/* Upload Card */}
-                        <div className="border border-gray-200 rounded-xl overflow-hidden">
-                            <div
-                                onClick={() => fileInputRef.current?.click()}
-                                onDrop={handleDrop}
-                                onDragOver={(e) => e.preventDefault()}
-                                className={`relative p-10 sm:p-14 text-center cursor-pointer transition-colors
-                                    ${previewUrl
-                                        ? 'bg-gray-50'
-                                        : 'bg-white hover:bg-gray-50'
-                                    }`}
-                            >
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileSelect}
-                                    className="hidden"
-                                    aria-label="Upload product screenshot"
-                                />
-
-                                {previewUrl ? (
-                                    <div className="space-y-5">
-                                        <div className="relative w-full max-w-[240px] mx-auto aspect-square rounded-lg overflow-hidden border border-gray-200">
-                                            <Image src={previewUrl} alt="Preview" fill className="object-cover" unoptimized />
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); resetForm(); }}
-                                                className="absolute top-2 right-2 w-7 h-7 bg-black/70 rounded-full flex items-center justify-center hover:bg-black transition-colors"
-                                                aria-label="Remove image"
-                                            >
-                                                <X className="w-3.5 h-3.5 text-white" />
-                                            </button>
-                                        </div>
-                                        <p className="text-xs text-gray-400">
-                                            {selectedFile?.name} · {((selectedFile?.size || 0) / 1024 / 1024).toFixed(1)} MB
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        <div className="w-12 h-12 mx-auto rounded-full border-2 border-gray-200 flex items-center justify-center">
-                                            <Upload className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-gray-900">Drop your screenshot here</p>
-                                            <p className="text-xs text-gray-400 mt-1">or click to browse · PNG, JPG, WEBP · Max 10 MB</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Description */}
-                            {previewUrl && (
-                                <div className="border-t border-gray-200 p-6">
-                                    <label htmlFor="sourcing-desc" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                        Additional context <span className="text-gray-300 font-normal normal-case">(optional)</span>
-                                    </label>
-                                    <textarea
-                                        id="sourcing-desc"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        placeholder="e.g. Saw this on TikTok, it's a portable charger..."
-                                        rows={2}
-                                        maxLength={500}
-                                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 placeholder:text-gray-300 focus:ring-1 focus:ring-black focus:border-black resize-none"
+                    {/* MAIN UPLOAD INTERFACE (Asymmetrical Split) */}
+                    <div className="lg:col-span-7 relative">
+                        {!result ? (
+                            <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                                {/* Glassmorphism accent */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-3xl transition-transform group-hover:scale-150 duration-700" />
+                                
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    onDrop={handleDrop}
+                                    onDragOver={(e) => e.preventDefault()}
+                                    className={`relative z-10 border-2 border-dashed rounded-3xl p-10 md:p-16 text-center cursor-pointer transition-all duration-300
+                                        ${previewUrl
+                                            ? 'bg-slate-50/50 border-emerald-200'
+                                            : 'bg-white border-slate-100 hover:border-emerald-300 hover:bg-emerald-50/20'
+                                        }`}
+                                >
+                                    <input 
+                                        ref={fileInputRef} 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={handleFileSelect} 
+                                        className="hidden" 
+                                        title="Upload product image" 
+                                        aria-label="Upload product image"
                                     />
-                                </div>
-                            )}
 
-                            {/* Error */}
-                            {error && (
-                                <div className="border-t border-gray-200 px-6 py-4 bg-red-50 text-red-700 text-sm">
-                                    {error}
-                                </div>
-                            )}
-
-                            {/* Submit */}
-                            {previewUrl && (
-                                <div className="border-t border-gray-200 p-6">
-                                    <button
-                                        onClick={handleSubmit}
-                                        disabled={isUploading}
-                                        className="w-full py-3.5 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                    >
-                                        {isUploading ? (
-                                            <>
-                                                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                                </svg>
-                                                Analyzing...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Search className="w-4 h-4" />
-                                                Analyze with AI
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* How It Works */}
-                        <div className="mt-16">
-                            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-8">How it works</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                                {[
-                                    { icon: Camera, title: 'Screenshot', desc: 'Capture the product from Instagram, TikTok, or any platform.' },
-                                    { icon: Sparkles, title: 'AI Analysis', desc: 'Our AI identifies the product, colors, materials, and price range.' },
-                                    { icon: ArrowRight, title: 'We Source It', desc: 'Our team finds the best supplier and ships directly to Ghana.' },
-                                ].map((item, i) => (
-                                    <div key={i} className="group">
-                                        <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center mb-4 group-hover:bg-black group-hover:border-black transition-colors">
-                                            <item.icon className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+                                    {previewUrl ? (
+                                        <div className="space-y-6">
+                                            <div className="relative w-full max-w-[280px] mx-auto aspect-square rounded-[2rem] overflow-hidden border-4 border-white shadow-xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+                                                <Image src={previewUrl} alt="Product Preview" fill className="object-cover" unoptimized />
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); resetForm(); }}
+                                                    title="Remove image"
+                                                    aria-label="Remove image"
+                                                    className="absolute top-4 right-4 w-10 h-10 bg-slate-900/90 text-white rounded-full flex items-center justify-center hover:bg-slate-900 transition-colors shadow-lg"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-xs font-black uppercase text-emerald-800 tracking-widest">Image Loaded Sucessfully</span>
+                                                <span className="text-[10px] text-slate-400">{selectedFile?.name}</span>
+                                            </div>
                                         </div>
-                                        <h3 className="text-sm font-semibold text-gray-900">{item.title}</h3>
-                                        <p className="text-sm text-gray-400 mt-1 leading-relaxed">{item.desc}</p>
+                                    ) : (
+                                        <div className="space-y-6">
+                                            <div className="w-16 h-16 mx-auto rounded-full bg-slate-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                <Camera className="w-6 h-6 text-white" strokeWidth={1.5} />
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <h3 className="text-lg font-bold text-slate-900">Drop your reference here</h3>
+                                                <p className="text-sm text-slate-500 max-w-[240px] mx-auto">Upload a screenshot from Instagram, 1688, or TikTok.</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {previewUrl && (
+                                    <div className="mt-10 space-y-8 relative z-10">
+                                        <div>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-4">Manual Context (Optional)</label>
+                                            <textarea
+                                                value={description}
+                                                onChange={(e) => setDescription(e.target.value)}
+                                                placeholder="e.g. 'I'm looking for the 2026 version with the gold trim...'"
+                                                rows={3}
+                                                className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"
+                                            />
+                                        </div>
+
+                                        {error && (
+                                            <div className="p-4 bg-red-50 text-red-700 text-xs font-bold rounded-xl border border-red-100 animate-shake">
+                                                {error}
+                                            </div>
+                                        )}
+
+                                        <button
+                                            onClick={handleSubmit}
+                                            disabled={isUploading}
+                                            className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-slate-900/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                        >
+                                            {isUploading ? (
+                                                <span className="animate-pulse">Deep Matching in Progress...</span>
+                                            ) : (
+                                                <>
+                                                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                                                    Initiate AI Sourcing
+                                                </>
+                                            )}
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    /* Results */
-                    <div className="space-y-8">
-                        {/* Success header */}
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                                {result.status === 'ANALYZED' ? (
-                                    <CheckCircle2 className="w-4 h-4 text-white" />
-                                ) : (
-                                    <Clock className="w-4 h-4 text-white animate-pulse" />
                                 )}
                             </div>
-                            <div>
-                                <p className="text-sm font-semibold text-gray-900">
-                                    {result.status === 'ANALYZED' && result.ai_analysis?.product_name
-                                        ? `Found: ${result.ai_analysis.product_name}`
-                                        : result.status === 'PENDING'
-                                            ? 'Request Received'
-                                            : 'Analysis in Progress'}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                    {result.status === 'ANALYZED'
-                                        ? 'We successfully identified your item'
-                                        : 'Our team will manually review this request shortly'}
-                                </p>
-                            </div>
-                        </div>
+                        ) : (
+                            /* RESULTS DESIGN (Premium Card) */
+                            <div className="bg-slate-50 border border-slate-100 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className={`w-3 h-3 rounded-full ${result.status === 'ANALYZED' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse'}`} />
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Analysis Fragment #{result.id.slice(-4)}</span>
+                                </div>
 
-                        {/* Result card */}
-                        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
-                            {/* Product header */}
-                            <div className="p-6 flex gap-5 items-start border-b border-gray-100">
-                                {result.image_url && (
-                                    <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+                                <div className="flex gap-8 items-start mb-12">
+                                     <div className="relative w-32 h-40 rounded-2xl overflow-hidden border border-white shadow-xl flex-shrink-0">
                                         <Image src={result.image_url} alt="Uploaded" fill className="object-cover" unoptimized />
                                     </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <h2 className="text-lg font-bold text-gray-900 leading-tight">
-                                            {result.ai_analysis?.product_name || 'Processing Request...'}
+                                    <div className="flex-1">
+                                         <h2 className="text-2xl font-black text-slate-900 leading-tight mb-4">
+                                            {result.ai_analysis?.product_name || 'Manual Review Pending'}
                                         </h2>
-                                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${result.status === 'ANALYZED'
-                                            ? 'bg-green-50 text-green-700 border-green-100'
-                                            : 'bg-blue-50 text-blue-700 border-blue-100'
-                                            }`}>
-                                            {result.status}
-                                        </span>
+                                        <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
+                                            {result.ai_analysis?.description || 'Our logistics team is currently verifying this product match with our trusted GZ supplier network.'}
+                                        </p>
+                                        <div className="flex gap-4">
+                                             <div className="flex flex-col gap-1">
+                                                <span className="text-[9px] font-black uppercase text-slate-400 mb-0.5 tracking-widest">Est. Market Price</span>
+                                                <span className="text-lg font-bold">${result.ai_analysis?.estimated_price_usd || '—'}</span>
+                                            </div>
+                                             <div className="flex flex-col gap-1">
+                                                <span className="text-[9px] font-black uppercase text-slate-400 mb-0.5 tracking-widest">Category ID</span>
+                                                <span className="text-lg font-bold">{result.ai_analysis?.category || 'Sourcing'}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
-                                        {result.ai_analysis?.description || 'We are currently analyzing your image to extract product details. If AI analysis is taking longer than expected, our team will source it manually based on your screenshot.'}
+                                </div>
+
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-50 mb-10">
+                                    <h4 className="text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Our Global Verdict</h4>
+                                    <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                                        Status: <span className="text-slate-900 font-bold ml-1">{result.status}</span>. 
+                                        {result.status === 'ANALYZED' 
+                                            ? ' Our sourcing desk has confirmed this item is available. We will contact you on WhatsApp with the direct factory quote.' 
+                                            : ' Received. Our human agents in China are checking availability with secondary suppliers.'}
                                     </p>
-                                    {result.ai_analysis?.confidence && (
-                                        <span className={`inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border
-                                            ${result.ai_analysis.confidence === 'HIGH'
-                                                ? 'text-gray-900 bg-gray-100 border-gray-200'
-                                                : result.ai_analysis.confidence === 'MEDIUM'
-                                                    ? 'text-gray-600 bg-gray-50 border-gray-200'
-                                                    : 'text-gray-400 bg-gray-50 border-gray-100'
-                                            }`}>
-                                            {result.ai_analysis.confidence} match
-                                        </span>
-                                    )}
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <button onClick={resetForm} className="flex-1 h-14 bg-white border border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-50 transition-all">New Search</button>
+                                    <Link href="/" className="flex-1 h-14 bg-slate-900 text-white flex items-center justify-center rounded-xl font-bold text-xs hover:opacity-90 transition-all">Home</Link>
                                 </div>
                             </div>
+                        )}
+                    </div>
 
-                            {/* Details */}
-                            {result.ai_analysis && (
-                                <div className="divide-y divide-gray-100">
-                                    <div className="grid grid-cols-2 divide-x divide-gray-100">
-                                        <div className="p-5">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Tag className="w-3.5 h-3.5 text-gray-300" />
-                                                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Category</p>
-                                            </div>
-                                            <p className="text-sm font-medium text-gray-900">{result.ai_analysis.category}</p>
-                                        </div>
-                                        <div className="p-5">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <DollarSign className="w-3.5 h-3.5 text-gray-300" />
-                                                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Est. Price</p>
-                                            </div>
-                                            <p className="text-sm font-medium text-gray-900">${result.ai_analysis.estimated_price_usd}</p>
-                                        </div>
+                    {/* RIGHT COLUMN: Service Value (5 cols) */}
+                    <div className="lg:col-span-12 mt-20">
+                         <div className="grid md:grid-cols-3 gap-12 border-t border-slate-100 pt-16">
+                            {[
+                                { icon: Briefcase, title: "Expert Negotiation", text: "Our staff in Guangzhou doesn't just find links—they negotiate bulk MOQs for you." },
+                                { icon: ShieldCheck, title: "Fraud Protection", text: "We verify the factory's physical existence before a single Cent is paid." },
+                                { icon: ArrowRight, title: "Momo Conversion", text: "Forget USD/CNY rates. Pay entirely in Cedis via Mobile Money at fixed rates." }
+                            ].map((item, i) => (
+                                <div key={i} className="flex flex-col gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                                        <item.icon className="w-4 h-4 text-emerald-600" />
                                     </div>
-                                    <div className="grid grid-cols-2 divide-x divide-gray-100">
-                                        <div className="p-5">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Palette className="w-3.5 h-3.5 text-gray-300" />
-                                                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Colors</p>
-                                            </div>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {result.ai_analysis.colors?.join(', ') || '—'}
-                                            </p>
-                                        </div>
-                                        <div className="p-5">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Layers className="w-3.5 h-3.5 text-gray-300" />
-                                                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Materials</p>
-                                            </div>
-                                            <p className="text-sm font-medium text-gray-900">
-                                                {result.ai_analysis.materials?.join(', ') || '—'}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Keywords */}
-                                    {result.ai_analysis.keywords?.length > 0 && (
-                                        <div className="p-5">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <Search className="w-3.5 h-3.5 text-gray-300" />
-                                                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Search Keywords</p>
-                                            </div>
-                                            <div className="flex flex-wrap gap-1.5">
-                                                {result.ai_analysis.keywords.map((kw, i) => (
-                                                    <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-medium">
-                                                        {kw}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+                                    <h4 className="font-bold text-slate-900 tracking-tight underline decoration-emerald-100 decoration-4 underline-offset-4">{item.title}</h4>
+                                    <p className="text-xs text-slate-500 font-medium leading-relaxed">{item.text}</p>
                                 </div>
-                            )}
-
-                            {/* Next steps */}
-                            <div className="border-t border-gray-200 bg-gray-50 p-5">
-                                <p className="text-xs font-semibold text-gray-500 mb-1">What happens next?</p>
-                                <p className="text-xs text-gray-400 leading-relaxed">
-                                    Our sourcing team will review this request and find the best supplier. We&apos;ll notify you when it&apos;s available.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex gap-3">
-                            <button
-                                onClick={resetForm}
-                                className="flex-1 py-3 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-900 transition-colors"
-                            >
-                                Upload Another
-                            </button>
-                            <Link
-                                href="/"
-                                className="flex-1 py-3 border border-gray-200 text-gray-700 text-sm font-semibold rounded-lg text-center hover:bg-gray-50 transition-colors"
-                            >
-                                Browse Products
-                            </Link>
+                            ))}
                         </div>
                     </div>
-                )}
-            </div>
+
+                </div>
+            </section>
         </div>
     );
 }

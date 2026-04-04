@@ -24,6 +24,10 @@ export interface Product {
     target_quantity?: number;
     rating?: number;
     rating_count?: number;
+    old_price?: number | string;
+    discount_percentage?: number;
+    is_preorder?: boolean;
+    stock_quantity?: number;
 }
 
 export interface CartItem {

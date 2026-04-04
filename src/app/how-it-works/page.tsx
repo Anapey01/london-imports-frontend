@@ -1,47 +1,46 @@
-/**
- * London's Imports - How It Works Page
- * Explains the pre-order process with animated phone mockup
- */
 'use client';
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { sounds } from '@/lib/sounds';
-import FAQAccordion from '@/components/FAQAccordion';
 import { PhoneMockup } from '@/components/how-it-works/PhoneMockup';
-
+import { ArrowUpRight, Zap, ShieldCheck, Globe, Truck } from 'lucide-react';
 
 export default function HowItWorksPage() {
     const [activeStep, setActiveStep] = useState(0);
 
-    // Auto-rotate steps
+    // Auto-rotate steps (Logistics heartbeat)
     useEffect(() => {
         const interval = setInterval(() => {
             setActiveStep((prev) => (prev + 1) % 4);
-        }, 3000);
+        }, 4000);
         return () => clearInterval(interval);
     }, []);
 
     const steps = [
         {
-            step: '01',
-            title: 'Browse & Choose',
-            desc: 'Explore our curated selection of products from international suppliers.',
+            id: 'STEP 01',
+            title: 'Pick Your Items',
+            desc: 'Find the best products from China, picked for quality and price.',
+            icon: <Globe className="w-5 h-5" strokeWidth={1} />
         },
         {
-            step: '02',
-            title: 'Reserve Your Spot',
-            desc: 'Pay a small deposit to secure your order. Your money is held safely.',
+            id: 'STEP 02',
+            title: 'Book Your Spot',
+            desc: 'Pay a small deposit to save your items. Your money is protected by our safety guarantee.',
+            icon: <ShieldCheck className="w-5 h-5" strokeWidth={1} />
         },
         {
-            step: '03',
-            title: 'We Handle Shipping',
-            desc: 'We batch orders and ship directly from suppliers. Get SMS updates.',
+            id: 'STEP 03',
+            title: 'Shipping on its Way',
+            desc: 'We group your orders together for fast and safe shipping from China to Ghana.',
+            icon: <Zap className="w-5 h-5 text-emerald-500" strokeWidth={1} />
         },
         {
-            step: '04',
-            title: 'Receive & Pay',
-            desc: 'Get it delivered to your door. Pay the rest. Not happy? Full refund.',
+            id: 'STEP 04',
+            title: 'Inspection & Pickup',
+            desc: 'Check your items at our Accra Hub. Pay the final balance when you collect them.',
+            icon: <Truck className="w-5 h-5" strokeWidth={1} />
         }
     ];
 
@@ -49,7 +48,7 @@ export default function HowItWorksPage() {
         "@context": "https://schema.org",
         "@type": "HowTo",
         "name": "How to Import from China to Ghana",
-        "description": "A 4-step guide on using London's Imports to ship goods from China (1688, Alibaba) to Ghana.",
+        "description": "A 4-step architectural protocol for international logistics and sourcing via London's Imports.",
         "step": steps.map((s, i) => ({
             "@type": "HowToStep",
             "position": i + 1,
@@ -57,118 +56,126 @@ export default function HowItWorksPage() {
             "text": s.desc,
             "url": "https://londonsimports.com/how-it-works"
         })),
-        "totalTime": "P14D",
+        "totalTime": "P56D",
         "supply": [
-            { "@type": "HowToSupply", "name": "Mobile Money Account" },
-            { "@type": "HowToSupply", "name": "London's Imports Account" }
-        ],
-        "tool": [
-            { "@type": "HowToTool", "name": "Smartphone or Computer" }
+            { "@type": "HowToSupply", "name": "Digital Payment Interface" },
+            { "@type": "HowToSupply", "name": "London's Imports Service Access" }
         ]
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white relative pb-32 selection:bg-emerald-100">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
-            {/* Hero */}
-            <section className="bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 py-16">
-                <div className="max-w-5xl mx-auto px-6 lg:px-8 text-center">
-                    <h1 className="text-4xl md:text-6xl font-black mb-4 text-slate-900">
-                        How It Works
-                    </h1>
-                    <p className="text-xl text-slate-600 max-w-xl mx-auto">
-                        4 easy steps to get international products delivered to Ghana.
-                    </p>
+
+            {/* 1. ARCHITECTURAL HEADER */}
+            <header className="relative z-10 pt-24 pb-16 px-6 max-w-7xl mx-auto border-b border-slate-50">
+                <div className="flex items-center gap-4 mb-12">
+                    <span className="h-px w-12 bg-slate-900" />
+                    <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">
+                        How We Help You / London&apos;s
+                    </span>
                 </div>
-            </section>
+                
+                <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 mb-16">
+                    Direct <br />
+                    To Your <br />
+                    <span className="italic font-light text-slate-200">Doorstep.</span>
+                </h1>
 
-            {/* Main Content - Split Layout */}
-            <section className="py-20">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    {/* Mobile: Phone mockup above steps */}
-                    <div className="lg:hidden flex justify-center mb-12">
-                        <PhoneMockup activeStep={activeStep} />
-                    </div>
+                <p className="max-w-2xl text-xl md:text-2xl text-slate-500 font-medium leading-relaxed">
+                    A simple 4-step way to bring quality products from the world&apos;s biggest factories directly to you in Ghana.
+                </p>
+            </header>
 
-                    <div className="grid lg:grid-cols-2 gap-16 items-start">
-                        {/* Left: Steps */}
-                        <div className="space-y-6">
-                            {steps.map((item, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => {
-                                        sounds.click();
-                                        setActiveStep(i);
-                                    }}
-                                    className={`w-full text-left p-6 rounded-2xl transition-all ${activeStep === i
-                                        ? 'bg-rose-50 border-2 border-pink-200 shadow-md'
-                                        : 'bg-slate-50 border-2 border-transparent hover:bg-slate-100'
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-4">
-                                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl ${activeStep === i
-                                            ? 'bg-pink-400 text-white'
-                                            : 'bg-slate-200 text-slate-500'
-                                            }`}>
-                                            {item.step}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className={`text-xl font-semibold mb-1 ${activeStep === i ? 'text-pink-500' : 'text-slate-900'}`}>
-                                                {item.title}
-                                            </h3>
-                                            <p className="text-gray-600">{item.desc}</p>
+            {/* 2. THE PROTOCOL EXECUTION (Animated Split Grid) */}
+            <section className="pt-24 max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="grid lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+                    
+                    {/* Left: Interactive Step Ledger */}
+                    <div className="lg:col-span-7 space-y-px bg-slate-100 border border-slate-100">
+                        {steps.map((item, i) => (
+                            <button
+                                key={i}
+                                onClick={() => {
+                                    sounds.click();
+                                    setActiveStep(i);
+                                }}
+                                className={`w-full text-left p-10 md:p-14 transition-all group relative overflow-hidden ${activeStep === i 
+                                    ? 'bg-white' 
+                                    : 'bg-slate-50/50 hover:bg-white'
+                                    }`}
+                            >
+                                {activeStep === i && (
+                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-900" />
+                                )}
+                                <div className="flex items-start gap-10">
+                                    <div className="flex flex-col gap-4 pt-1">
+                                        <span className={`text-[10px] font-black uppercase tracking-[0.3em] transition-colors ${activeStep === i ? 'text-emerald-500' : 'text-slate-200'}`}>
+                                            {item.id}
+                                        </span>
+                                        <div className={`transition-opacity duration-700 ${activeStep === i ? 'opacity-100' : 'opacity-20'}`}>
+                                            {item.icon}
                                         </div>
                                     </div>
-                                </button>
-                            ))}
-                        </div>
+                                    <div className="flex-1">
+                                        <h3 className={`text-3xl md:text-4xl font-serif font-bold mb-6 tracking-tight leading-none transition-colors ${activeStep === i ? 'text-slate-900' : 'text-slate-300'}`}>
+                                            {item.title}
+                                        </h3>
+                                        <p className={`text-sm md:text-base leading-relaxed font-medium transition-all duration-700 ${activeStep === i ? 'text-slate-400 opacity-100' : 'text-slate-300 opacity-0 h-0 overflow-hidden'}`}>
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
 
-                        {/* Right: Animated Phone (Desktop only) */}
-                        <div className="hidden lg:flex justify-center sticky top-24">
-                            <PhoneMockup activeStep={activeStep} />
-                        </div>
+                    {/* Right: Phone Mockup (Strategic Anchor) */}
+                    <div className="lg:col-span-5 flex justify-center lg:sticky lg:top-32 py-12 lg:py-0 border-l border-slate-50">
+                        <PhoneMockup activeStep={activeStep} />
                     </div>
                 </div>
             </section>
 
-            {/* FAQ Section */}
-            <section className="py-20 bg-gray-50">
-                <div className="max-w-3xl mx-auto px-6 lg:px-8">
-                    <h2 className="text-3xl md:text-4xl font-black text-center text-gray-900 mb-4">
-                        Frequently Asked Questions
-                    </h2>
-                    <p className="text-xl text-gray-500 text-center mb-12">
-                        Everything you need to know about pre-ordering.
-                    </p>
-                    <FAQAccordion />
-                </div>
-            </section>
+            {/* 3. ARCHITECTURAL CTA SECTION */}
+            <section className="mt-48 pt-32 border-t border-slate-100 max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100 mb-24">
+                    <div className="bg-white p-12 md:p-20 flex flex-col justify-between group">
+                        <div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-10 block">Action Step 01</span>
+                            <h3 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-10 tracking-tighter leading-[0.85]">
+                                Ready to <br /> 
+                                <span className="italic font-light text-slate-200">Place an Order?</span>
+                            </h3>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-12 items-start sm:items-center">
+                            <Link href="/products" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-slate-900 border-b border-black pb-2 hover:opacity-60 transition-all uppercase tracking-widest">
+                                Browse New Items
+                                <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+                            </Link>
+                            <Link href="/register" className="text-[11px] font-black text-slate-300 hover:text-slate-900 transition-colors uppercase tracking-widest leading-none">
+                                Sign Up Now
+                            </Link>
+                        </div>
+                    </div>
 
-            {/* CTA */}
-            <section className="py-20 bg-slate-800 text-white">
-                <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl md:text-4xl font-black mb-6">
-                        Ready to start?
-                    </h2>
-                    <p className="text-xl text-gray-400 mb-10">
-                        Browse our upcoming pre-orders and reserve your products today.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            href="/products"
-                            className="inline-flex items-center justify-center px-8 py-4 bg-pink-400 text-white font-semibold rounded-full hover:bg-pink-500 transition-all text-lg"
-                        >
-                            Browse Pre-orders
-                        </Link>
-                        <Link
-                            href="/register"
-                            className="inline-flex items-center justify-center px-8 py-4 border border-slate-600 text-white font-semibold rounded-full hover:border-slate-400 transition-all text-lg"
-                        >
-                            Create Account
-                        </Link>
+                    <div className="bg-slate-50 p-12 md:p-20 border-l border-slate-100">
+                        <div className="space-y-12">
+                             <div className="pb-10 border-b border-slate-100">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-4">Our Guarantee</span>
+                                <p className="text-xl font-serif font-bold text-slate-900 leading-tight">Your order is safe. We use secure payments and local insurance for every box.</p>
+                             </div>
+                             <div className="pb-10 border-b border-slate-100">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-4">Direct Delivery</span>
+                                <p className="text-xl font-serif font-bold text-slate-900 leading-tight">No middlemen. We go straight to the factory to bring you the best Price.</p>
+                             </div>
+                             <p className="text-[11px] text-slate-300 italic font-medium leading-relaxed">
+                                London&apos;s Imports handles all the difficult logistics work so you can focus on growing your business.
+                             </p>
+                        </div>
                     </div>
                 </div>
             </section>

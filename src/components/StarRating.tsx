@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 
 interface StarRatingProps {
     initialRating?: number;
@@ -42,6 +42,29 @@ export default function StarRating({
         lg: 'w-6 h-6'
     };
 
+    const fillRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+    useLayoutEffect(() => {
+        [...Array(5)].forEach((_, index) => {
+            const starValue = index + 1;
+            let fillPercent = 0;
+            if (rating >= starValue) {
+                fillPercent = 100;
+            } else if (rating > index) {
+                fillPercent = (rating - index) * 100;
+            }
+
+            if (hover > 0 && !readOnly) {
+                fillPercent = hover >= starValue ? 100 : 0;
+            }
+
+            const el = fillRefs.current.get(index);
+            if (el) {
+                el.style.width = `${fillPercent}%`;
+            }
+        });
+    }, [rating, hover, readOnly]);
+
     return (
         <div className="flex items-center gap-0.5">
             {[...Array(5)].map((_, index) => {
@@ -68,7 +91,7 @@ export default function StarRating({
                     >
                         {/* Background Star (Empty) */}
                         <svg
-                            className={`${sizeClasses[size]} text-gray-200 fill-gray-100 dark:text-gray-600 dark:fill-gray-800`}
+                            className={`${sizeClasses[size]} nuclear-text opacity-10 fill-primary-surface border border-primary-surface`}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                         >
@@ -77,11 +100,14 @@ export default function StarRating({
 
                         {/* Foreground Star (Filled) */}
                         <div 
+                            ref={(el) => {
+                                if (el) fillRefs.current.set(index, el);
+                                else fillRefs.current.delete(index);
+                            }}
                             className="absolute inset-0 overflow-hidden" 
-                            style={{ width: `${fillPercent}%` }}
                         >
                             <svg
-                                className={`${sizeClasses[size]} text-yellow-400 fill-yellow-400`}
+                                className={`${sizeClasses[size]} text-emerald-500 fill-emerald-500`}
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
                             >
@@ -92,8 +118,8 @@ export default function StarRating({
                 );
             })}
             {!readOnly && hasRated && (
-                <span className="text-xs text-green-600 font-bold ml-1 animate-fade-in">
-                    Thanks!
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 ml-2 animate-fade-in">
+                    Thank You
                 </span>
             )}
         </div>

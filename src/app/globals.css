@@ -1,5 +1,9 @@
-/* Tailwind v4 CSS imports */
 @import "tailwindcss";
+
+/* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow the .dark class selector.
+   This overrides the system's media-query preference and enables our manual toggle. */
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant light (&:where(:not(.dark), :not(.dark) *));
 
 /* ===== DARK MODE VARIABLES ===== */
 :root {
@@ -12,117 +16,94 @@
   --border-color: #f1f5f9;
   --accent-primary: #000000;
   --accent-secondary: #334155;
+  --brand-accent: #006B5A;
+  --brand-logo-accent: #006B5A;
+  --text-high-contrast: #0f172a;
+  --text-med-contrast: #475569;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
 }
 
 @layer base {
+  :root {
+    --font-source-serif: var(--font-source-serif);
+    --font-source-sans: var(--font-source-sans);
+  }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    letter-spacing: -0.025em;
+  body {
+    font-family: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-source-serif), ui-serif, Georgia, serif;
+    letter-spacing: -0.01em;
   }
 
   h1 {
-    font-weight: 300;
+    font-weight: 400;
   }
 }
 
 /* Font family managed by tailwind.config.ts */
 
-[data-theme='dark'] {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #1e293b;
+[data-theme='dark'],
+.dark {
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-card: #0f172a;
+  --border-color: #1e293b;
+  --accent-primary: #10b981;
+  --accent-secondary: #059669;
+  --brand-accent: #10b981; 
+  --brand-logo-accent: #34d399;
+  --text-high-contrast: #ffffff;
+  --text-med-contrast: #e2e8f0;
   --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --border-color: #334155;
-  --accent-primary: #f472b6;
-  --accent-secondary: #ec4899;
+  --text-secondary: #94a3b8;
 }
 
-/* Dark mode body */
-[data-theme='dark'] body {
-  background-color: #0f172a !important;
+/* Dark mode body state */
+[data-theme='dark'] body,
+.dark body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Removed aggressive global overrides - handled by component dark: variants */
+
+/* Dark mode borders (Transitioned to component-level variants) */
+
+/* Nuclear Contrast Utilities for Mobile Drawer visibility */
+.nuclear-text {
+  color: #0f172a !important;
+}
+
+.dark .nuclear-text,
+[data-theme='dark'] .nuclear-text {
   color: #f8fafc !important;
 }
 
-/* Dark mode backgrounds */
-[data-theme='dark'] .bg-white {
-  background-color: #1e293b !important;
+.nuclear-svg {
+  color: #475569 !important;
 }
 
-[data-theme='dark'] .bg-gray-50 {
-  background-color: #0f172a !important;
-}
-
-[data-theme='dark'] .bg-gray-100 {
-  background-color: #1e293b !important;
-}
-
-/* Dark mode text */
-[data-theme='dark'] .text-gray-900 {
-  color: #f8fafc !important;
-}
-
-[data-theme='dark'] .text-gray-800 {
-  color: #f1f5f9 !important;
-}
-
-[data-theme='dark'] .text-gray-700 {
-  color: #e2e8f0 !important;
-}
-
-[data-theme='dark'] .text-gray-600 {
+.dark .nuclear-svg,
+[data-theme='dark'] .nuclear-svg {
   color: #cbd5e1 !important;
-}
-
-[data-theme='dark'] .text-gray-500 {
-  color: #94a3b8 !important;
-}
-
-[data-theme='dark'] .text-gray-400 {
-  color: #64748b !important;
-}
-
-/* Dark mode borders */
-[data-theme='dark'] .border-gray-100,
-[data-theme='dark'] .border-gray-200,
-[data-theme='dark'] .border-gray-300 {
-  border-color: #334155 !important;
-}
-
-/* Nuclear Contrast Utility for Mobile Drawer visibility */
-.nuclear-black {
-  color: #000000 !important;
-}
-
-.dark .nuclear-black,
-[data-theme='dark'] .nuclear-black {
-  color: #ffffff !important;
-}
-
-.nuclear-icon-black {
-  color: #000000 !important;
-}
-
-.dark .nuclear-icon-black,
-[data-theme='dark'] .nuclear-icon-black {
-  color: #ffffff !important;
 }
 
 .bg-primary-surface {
   background-color: var(--bg-primary) !important;
 }
 
-/* Dark mode navbar */
-[data-theme='dark'] nav {
-  background-color: #1e293b !important;
-  border-color: #334155 !important;
-}
+/* Removed nav override - handled by component dark: variants */
 
 /* Glassmorphism for MegaMenu */
 .glass-menu {
@@ -148,70 +129,13 @@
   border-color: var(--border-color);
 }
 
-/* Dark mode cards */
-[data-theme='dark'] .rounded-2xl.bg-white,
-[data-theme='dark'] .bg-white.rounded-xl,
-[data-theme='dark'] .bg-white.rounded-lg {
-  background-color: #1e293b !important;
-}
+/* DEMILITARIZED: All aggressive global overrides removed. 
+   Theme-aware styles are now handled via:
+   1. CSS Variables (--bg-primary, --text-primary)
+   2. Surgical Tailwind 'dark:' variants within components
+*/
 
-/* Dark mode inputs */
-[data-theme='dark'] input,
-[data-theme='dark'] textarea,
-[data-theme='dark'] select {
-  background-color: #1e293b !important;
-  color: #f8fafc !important;
-  border-color: #475569 !important;
-}
-
-[data-theme='dark'] input::placeholder,
-[data-theme='dark'] textarea::placeholder {
-  color: #64748b !important;
-}
-
-/* Dark mode hover states */
-[data-theme='dark'] .hover\:bg-gray-50:hover {
-  background-color: #334155 !important;
-}
-
-[data-theme='dark'] .hover\:bg-gray-100:hover {
-  background-color: #334155 !important;
-}
-
-/* Catch-all for gray backgrounds */
-[data-theme='dark'] [class*='bg-gray'] {
-  background-color: var(--bg-secondary) !important;
-}
-
-/* Ensure all text is readable */
-[data-theme='dark'] [class*='text-gray'] {
-  color: var(--text-secondary) !important;
-}
-
-/* Dark mode emerald color overrides */
-[data-theme='dark'] .text-emerald-900 {
-  color: #6ee7b7 !important;
-  /* emerald-300 */
-}
-
-[data-theme='dark'] .text-emerald-800 {
-  color: #6ee7b7 !important;
-  /* emerald-300 */
-}
-
-[data-theme='dark'] .text-emerald-700 {
-  color: #a7f3d0 !important;
-  /* emerald-200 */
-}
-
-[data-theme='dark'] .border-emerald-900 {
-  border-color: #34d399 !important;
-  /* emerald-400 */
-}
-
-[data-theme='dark'] .bg-emerald-900 {
-  background-color: #064e3b !important;
-}
+/* Transitioned to component-level variants for specific colors */
 
 /* Dark mode - Reviews section gradient masks */
 [data-theme='dark'] .from-white {
@@ -335,14 +259,19 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Focus styles - only show on keyboard navigation */
-/* *:focus-visible {
-  outline: 2px solid #000000;
-  outline-offset: 2px;
-} */
+/* Focus styles - strictly disabled per user request to eliminate 'blue lines' or 'green stuff' */
+*:focus, 
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  box-shadow: 0 0 0 0 transparent !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
 
-*:focus:not(:focus-visible) {
-  outline: none;
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
 }
 
 /* ===== ANIMATIONS ===== */
@@ -653,4 +582,10 @@ html {
 [data-theme='dark'] .bg-stationery::before {
   opacity: 0.04;
   filter: invert(1);
+}
+
+/* Institutional Utilities - Mobile Interaction Hardening */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent !important;
+  box-shadow: none !important;
 }

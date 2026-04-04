@@ -104,6 +104,8 @@ export default async function ProductDetailPage({ params }: Props) {
                 'name': product.name,
                 'image': getAbsoluteImageUrl(product.image),
                 'description': product.description,
+                'sku': `LI-${product.id}`,
+                'mpn': product.id?.toString() || `LI-${product.id}`,
                 'brand': {
                     '@type': 'Brand',
                     'name': "London's Imports Ghana"

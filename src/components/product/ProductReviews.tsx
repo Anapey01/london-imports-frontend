@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { productsAPI } from '@/lib/api';
 import StarRating from '@/components/StarRating';
@@ -119,7 +120,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
     };
 
     return (
-        <section className="py-20 border-t border-gray-100 bg-white" id="reviews">
+        <section className="py-20 border-t border-primary-surface bg-primary-surface/20" id="reviews">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-10 lg:gap-24">
                     
@@ -127,20 +128,19 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                     <div className="lg:w-1/3">
                         <div className="sticky top-32">
                             <div className="mb-10">
-                                <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">Customer Feedback</h2>
-                                <p className="text-sm text-gray-500 font-medium">Real reviews from our community.</p>
+                                <h2 className="text-3xl font-black nuclear-text tracking-tight mb-2">Customer Feedback</h2>
+                                <p className="text-sm nuclear-text opacity-40 font-black uppercase tracking-widest">Real reviews from our community.</p>
                             </div>
                             
-                            <div className="bg-gray-50/50 p-6 sm:p-10 rounded-[1.5rem] border border-gray-100 relative overflow-hidden">
+                            <div className="bg-primary-surface p-6 sm:p-10 rounded-[1.5rem] border border-primary-surface relative overflow-hidden shadow-diffusion-lg">
                                 <div className="relative z-10">
-                                    <div className="mb-8 pb-8 border-b border-gray-100">
+                                    <div className="mb-8 pb-8 border-b border-primary-surface/40">
                                         <div className="flex items-center sm:items-end gap-3 mb-4">
-                                            <div className="text-5xl sm:text-6xl font-bold text-gray-900 leading-none">
+                                            <div className="text-5xl sm:text-6xl font-black nuclear-text leading-none">
                                                 {Number(rating || 0).toFixed(1)}
                                             </div>
                                             <div className="pb-1">
                                                 <StarRating initialRating={Number(rating || 0)} readOnly size="sm" />
-                                                {/* Removed reviews count label */}
                                             </div>
                                         </div>
                                     </div>
@@ -150,16 +150,16 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                         {distribution.map((item) => (
                                             <div key={item.star} className="group/bar">
                                                 <div className="flex items-center justify-between mb-1.5">
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{item.star} Stars</span>
-                                                    <span className="text-[10px] font-bold text-gray-900">{Math.round(item.percentage)}%</span>
+                                                    <span className="text-[10px] font-black nuclear-text opacity-30 uppercase tracking-widest">{item.star} Stars</span>
+                                                    <span className="text-[10px] font-black nuclear-text">{Math.round(item.percentage)}%</span>
                                                 </div>
-                                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                <div className="h-2 bg-primary-surface/40 rounded-full overflow-hidden border border-primary-surface">
                                                     <motion.div 
                                                         initial={{ width: 0 }}
                                                         whileInView={{ width: `${item.percentage}%` }}
                                                         viewport={{ once: true }}
                                                         transition={{ duration: 0.8, ease: "easeOut" }}
-                                                        className="h-full bg-gray-900 rounded-full"
+                                                        className="h-full bg-emerald-500 rounded-full"
                                                     />
                                                 </div>
                                             </div>
@@ -169,7 +169,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                     {!showForm && (
                                         <button 
                                             onClick={handleShareClick}
-                                            className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all active:scale-[0.98] group/btn"
+                                            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-[0.98] group/btn shadow-xl shadow-emerald-500/20"
                                         >
                                             Share My Experience
                                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -180,7 +180,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                         </div>
                     </div>
 
-                    {/* Right: Reviews List & Form */}
+                {/* Right: Reviews List & Form */}
                     <div className="lg:w-2/3">
                         <AnimatePresence mode="wait">
                             {showForm && (
@@ -188,11 +188,11 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 20 }}
-                                    className="bg-white p-8 sm:p-12 rounded-[2rem] border-2 border-gray-900 mb-16 relative"
+                                    className="bg-primary-surface p-8 sm:p-12 rounded-[2rem] border border-primary-surface mb-16 relative shadow-diffusion-xl"
                                 >
                                     <button 
                                         onClick={() => setShowForm(false)} 
-                                        className="absolute top-8 right-8 p-2 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-colors"
+                                        className="absolute top-8 right-8 p-2 rounded-full hover:bg-primary-surface/10 nuclear-text opacity-40 hover:opacity-100 transition-all"
                                         aria-label="Close review form"
                                         title="Close"
                                     >
@@ -200,20 +200,20 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                     </button>
 
                                     <div className="mb-10">
-                                        <h3 className="text-2xl font-bold text-gray-900">Your Opinion Matters</h3>
-                                        <p className="text-sm text-gray-500 mt-1.5">How was your overall experience with this item?</p>
+                                        <h3 className="text-2xl font-black nuclear-text">Your Opinion Matters</h3>
+                                        <p className="text-sm nuclear-text opacity-40 mt-1.5">How was your overall experience with this item?</p>
                                     </div>
 
                                     <form onSubmit={handleSubmit} className="space-y-8">
                                         {!isAuthenticated && (
-                                            <div className="p-6 bg-red-50 rounded-2xl border border-red-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                                <p className="text-sm text-red-600 font-medium">Please login to submit your review.</p>
-                                                <a href="/login" className="px-6 py-2.5 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-black transition-colors">Login Now</a>
+                                            <div className="p-6 bg-red-500/10 rounded-2xl border border-red-500/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                                <p className="text-sm text-red-500 font-black">Authentication Required</p>
+                                                <Link href="/login" className="px-6 py-2.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-colors">Login Now</Link>
                                             </div>
                                         )}
 
                                         <div className="space-y-3">
-                                            <label className="text-[11px] font-extrabold text-gray-900 uppercase tracking-widest">Select Rating</label>
+                                            <label className="text-[11px] font-black nuclear-text uppercase tracking-widest opacity-40">Select Rating</label>
                                             <div className="pt-1">
                                                 <StarRating 
                                                     initialRating={Number(newRating)} 
@@ -226,8 +226,8 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
 
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-end">
-                                                <label className="text-[11px] font-extrabold text-gray-900 uppercase tracking-widest">Write Detail</label>
-                                                <span className={`text-[10px] font-bold ${comment.length > 500 ? 'text-red-600' : 'text-gray-300'}`}>
+                                                <label className="text-[11px] font-black nuclear-text uppercase tracking-widest opacity-40">Write Detail</label>
+                                                <span className={`text-[10px] font-black ${comment.length > 500 ? 'text-red-500' : 'nuclear-text opacity-20'}`}>
                                                     {comment.length} / 500
                                                 </span>
                                             </div>
@@ -238,17 +238,17 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                                 onChange={(e) => setComment(e.target.value.slice(0, 500))}
                                                 placeholder="Help others by sharing your honest feedback..."
                                                 rows={5}
-                                                className="w-full px-6 py-5 bg-gray-50 border-2 border-transparent focus:border-gray-900 focus:bg-white rounded-2xl outline-none transition-all text-base text-gray-900 placeholder:text-gray-400"
+                                                className="w-full px-6 py-5 bg-primary-surface/20 border border-primary-surface/40 focus:border-emerald-500 focus:bg-primary-surface/30 rounded-2xl outline-none transition-all text-base nuclear-text placeholder:nuclear-text placeholder:opacity-20"
                                             />
                                             {comment && (
-                                                <p className="text-[9px] text-gray-400 italic">Draft saved automatically.</p>
+                                                <p className="text-[9px] nuclear-text opacity-30 italic">Draft saved automatically.</p>
                                             )}
                                         </div>
 
                                         <button
                                             type="submit"
                                             disabled={isSubmitting || comment.length < 5 || !isAuthenticated}
-                                            className="w-full py-5 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-20 active:scale-[0.98] shadow-xl shadow-gray-200"
+                                            className="w-full py-5 bg-emerald-600 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all disabled:opacity-20 active:scale-[0.98] shadow-xl shadow-emerald-500/20"
                                         >
                                             {isSubmitting ? 'Posting...' : 'Submit Review'}
                                         </button>
@@ -268,20 +268,20 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                             viewport={{ once: true }}
                                             transition={{ delay: idx * 0.05 }}
                                             key={review.id} 
-                                            className="pb-10 border-b border-gray-100 last:border-0"
+                                            className="pb-10 border-b border-primary-surface last:border-0"
                                         >
                                             <div className="flex justify-between items-start gap-4 mb-5">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400">
+                                                    <div className="w-12 h-12 bg-primary-surface rounded-full flex items-center justify-center nuclear-text opacity-20">
                                                         <User className="w-6 h-6" />
                                                     </div>
                                                     <div>
                                                         <div className="flex items-center gap-3 mb-1">
-                                                            <h4 className="font-bold text-gray-900 text-base">
+                                                            <h4 className="font-black nuclear-text text-base">
                                                                 {review.user_name || 'Verified Customer'}
                                                             </h4>
                                                             {review.is_verified && (
-                                                                <span className="text-[8px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm uppercase tracking-wider border border-emerald-100">
+                                                                <span className="text-[8px] font-black text-white bg-emerald-600 px-2 py-0.5 rounded-sm uppercase tracking-wider border border-emerald-500/40 shadow-sm">
                                                                     Verified
                                                                 </span>
                                                             )}
@@ -289,28 +289,28 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                                         <StarRating initialRating={review.rating} readOnly size="xs" />
                                                     </div>
                                                 </div>
-                                                <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest pt-1">
+                                                <span className="text-[10px] font-black nuclear-text opacity-20 uppercase tracking-widest pt-1">
                                                     {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(review.created_at))}
                                                 </span>
                                             </div>
                                             
-                                            <p className="text-gray-600 leading-relaxed text-base italic ml-16">
+                                            <p className="nuclear-text opacity-60 leading-relaxed text-base italic ml-16">
                                                 &quot;{review.comment}&quot;
                                             </p>
                                         </motion.div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-24 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
-                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100">
-                                        <MessageSquare className="w-8 h-8 text-gray-200" />
+                                <div className="text-center py-24 bg-primary-surface/20 rounded-[2rem] border border-dashed border-primary-surface/40 shadow-diffusion">
+                                    <div className="w-20 h-20 bg-primary-surface/40 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary-surface/60">
+                                        <MessageSquare className="w-8 h-8 nuclear-text opacity-20" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Be the First to Spark!</h3>
-                                    <p className="text-sm text-gray-400 max-w-[240px] mx-auto mb-10 leading-relaxed">Your feedback helps thousands of shoppers make better choices.</p>
+                                    <h3 className="text-2xl font-black nuclear-text mb-2">Be the First to Spark!</h3>
+                                    <p className="text-sm nuclear-text opacity-40 max-w-[240px] mx-auto mb-10 leading-relaxed uppercase tracking-widest text-[10px] font-black">Your feedback helps thousands of shoppers make better choices.</p>
                                     {!showForm && (
                                         <button 
                                             onClick={handleShareClick}
-                                            className="px-10 py-4 bg-gray-900 border border-gray-900 text-white text-sm font-bold rounded-full hover:bg-black transition-all shadow-xl shadow-gray-200"
+                                            className="px-10 py-4 bg-emerald-600 border border-emerald-600 text-white text-xs font-black uppercase tracking-[0.2em] rounded-full hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20"
                                         >
                                             Drop a Review
                                         </button>

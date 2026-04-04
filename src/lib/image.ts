@@ -13,17 +13,27 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
 export const getImageUrl = (path: string | null | undefined): string => {
     if (!path) return PLACEHOLDER_IMAGE;
 
+    // ABSOLUTE FAIL-SAFE for truncated database links
+    if (path === 'https://images.unsplash') {
+        return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000';
+    }
+
     // If it's already a full URL (Http/Https), return it
+    // If it's already a full URL (Http/Https), process it
     if (path.startsWith('http')) {
-        // Fix: If the DB has localhost URLs (from dev), rewrite them to the prod API
-        if (path.includes('localhost:8000') || path.includes('127.0.0.1:8000')) {
-            const backendUrl = siteConfig.apiUrl.replace('/api/v1', '');
-            return path
-                .replace('http://localhost:8000', backendUrl)
-                .replace('http://127.0.0.1:8000', backendUrl);
+        // Rewrite production URL to local backend for development testing
+        const backendUrl = siteConfig.apiUrl.replace('/api/v1', '');
+        
+        // Handle production API re-routing
+        if (path.includes('london-imports-api.onrender.com')) {
+            return path.replace('https://london-imports-api.onrender.com', backendUrl);
         }
 
         // FORCE HTTPS to prevent Mixed Content warnings/blocking on Vercel
+        // But NOT for local development as Django doesn't have SSL enabled by default
+        const isLocal = path.includes('localhost') || path.includes('127.0.0.1');
+        if (isLocal) return path;
+        
         return path.replace('http:', 'https:');
     }
 

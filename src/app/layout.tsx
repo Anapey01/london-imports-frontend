@@ -21,7 +21,7 @@ import { Suspense } from "react";
 
 // Lazy load below-the-fold components to reduce initial bundle
 const Footer = dynamic(() => import("@/components/Footer"), {
-  loading: () => <div className="h-64 bg-gray-100" />,
+  loading: () => <div className="h-64 bg-primary-surface dark:bg-slate-950 animate-pulse" />,
 });
 const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 
@@ -46,7 +46,7 @@ const sourceSans = Source_Sans_3({
 export const metadata: Metadata = {
   metadataBase: new URL('https://londonsimports.com'), // Update with actual domain if custom
   title: "Ghana's #1 Mini Importation Service | Buy from China to Accra & Kumasi | London's Imports Ghana",
-  description: "Ghana's most trusted platform for mini-importation. Ship from China (1688, Alibaba, Taobao) directly to Accra, Kumasi, and Tema. Pay with Momo. Local expertise, door-to-door delivery.",
+  description: "London's Imports is Ghana's premier sourcing house and logistics protocol for mini-importation. We bridge the gap between China’s factory floors (1688, Alibaba) and your doorstep in Accra, Kumasi, and Tema. Secure, transparent, and built for the sophisticated Ghanaian importer.",
   keywords: [
     // Primary - Ghana Geographic Focus
     "Mini Importation Ghana", "Buy from China to Ghana", "Shipping from China to Accra",
@@ -109,7 +109,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#ffffff',
+  // themeColor removed to allow dynamic theme-provider control
 };
 
 
@@ -313,6 +313,17 @@ export default async function RootLayout({
     }
   };
 
+  const globalBreadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://londonsimports.com" },
+      { "@type": "ListItem", "position": 2, "name": "Products", "item": "https://londonsimports.com/products" },
+      { "@type": "ListItem", "position": 3, "name": "How it Works", "item": "https://londonsimports.com/how-it-works" },
+      { "@type": "ListItem", "position": 4, "name": "Sourcing Hub", "item": "https://londonsimports.com/blog" }
+    ]
+  };
+
   return (
     <html lang="en-GH" suppressHydrationWarning>
       <head>
@@ -340,8 +351,15 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
+
+        {/* Global Breadcrumb Schema */}
+        <script
+          id="breadcrumb-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalBreadcrumbSchema) }}
+        />
       </head>
-      <body className={`${sourceSerif.variable} ${sourceSans.variable} font-sans bg-stationery dark:bg-[#0a0f1d] min-h-screen shadow-inner`} suppressHydrationWarning>
+      <body className={`${sourceSerif.variable} ${sourceSans.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
@@ -368,15 +386,15 @@ export default async function RootLayout({
             toastOptions={{
               duration: 3000,
               style: {
-                background: '#ffffff',
-                color: '#0f172a',
+                background: '#020617',
+                color: '#ffffff',
                 fontSize: '12px',
                 fontWeight: '700',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
                 borderRadius: '12px',
-                border: '1px solid #f1f5f9',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #1e293b',
+                boxShadow: '0 10px 30px 0 rgba(0, 0, 0, 0.4)',
               },
             }}
           />

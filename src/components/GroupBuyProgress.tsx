@@ -31,14 +31,14 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
     if (variant === 'micro') {
         return (
             <div className="flex items-center gap-3 w-full">
-                <span className="text-[9px] font-black text-slate-900 tabular-nums min-w-[24px]">{percentage}%</span>
-                <div className="flex-1 bg-slate-100 dark:bg-slate-800 h-0.5 rounded-full overflow-hidden">
+                <span className="text-[9px] font-black nuclear-text tabular-nums min-w-[24px]">{percentage}%</span>
+                <div className="flex-1 bg-primary-surface h-0.5 rounded-full overflow-hidden border border-primary-surface/40 shadow-inner">
                     <div
                         ref={progressRef}
-                        className="bg-[#006B5A] h-full transition-all duration-1000 ease-out"
+                        className="h-full bg-emerald-500 transition-all duration-1000 ease-out"
                     />
                 </div>
-                <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                <span className="text-[7px] font-black nuclear-text opacity-40 uppercase tracking-widest whitespace-nowrap">
                     {remaining > 0 ? `${formatNumber(remaining)} more` : 'Ready'}
                 </span>
             </div>
@@ -48,27 +48,27 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
     return (
         <div className="flex flex-col gap-3 w-full">
             <div className="flex justify-between items-end">
-                <span className="text-[10px] font-bold text-slate-900 dark:text-slate-100 uppercase tracking-[0.2em]">
+                <span className="text-[10px] font-bold nuclear-text uppercase tracking-[0.2em]">
                     {variant === 'detailed' ? 'Group Buy Progress' : 'Batch Status'}
                 </span>
-                <span className="text-[10px] font-bold text-slate-900 tabular-nums tracking-widest">{percentage}%</span>
+                <span className="text-[10px] font-bold nuclear-text tabular-nums tracking-widest">{percentage}%</span>
             </div>
 
-            <div className="w-full bg-slate-100 dark:bg-slate-800 h-1 rounded-sm overflow-hidden border border-slate-100 dark:border-slate-700">
+            <div className="w-full bg-primary-surface h-1 rounded-sm overflow-hidden border border-primary-surface/60 shadow-inner">
                 <div
                     ref={progressRef}
-                    className="bg-[#006B5A] h-full transition-all duration-1000 ease-out relative"
+                    className="h-full bg-emerald-500 transition-all duration-1000 ease-out relative"
                 />
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[8px] font-bold tracking-[0.3em] uppercase">
-                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
+                <div className="flex items-center gap-1.5 nuclear-text opacity-40">
                     <span>{formatNumber(current)} {current === 1 ? 'item' : 'items'} ordered</span>
                 </div>
 
                 <div className="text-right">
                     {remaining > 0 ? (
-                        <span className="text-slate-300 dark:text-slate-600">
+                        <span className="nuclear-text opacity-30">
                             {formatNumber(remaining)} more to ship
                         </span>
                     ) : (

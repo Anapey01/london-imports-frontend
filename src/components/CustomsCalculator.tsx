@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowUpRight, Zap } from 'lucide-react';
 
 export default function CustomsCalculator() {
     const router = useRouter();
@@ -23,7 +24,6 @@ export default function CustomsCalculator() {
         const cif = fob + freight;
 
         const selectedRate = RATES[category as keyof typeof RATES].duty;
-
         const duty = cif * selectedRate;
 
         // Duty Inclusive Value for other taxes
@@ -53,104 +53,139 @@ export default function CustomsCalculator() {
     const results = calculate();
 
     return (
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-            {/* Header */}
-            <div className="bg-[#006B5A] p-6 text-white text-center">
-                <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-white">
-                    Import Duty Calculator
-                </h2>
-                <p className="text-sm opacity-80 mt-1 uppercase tracking-wide">Unofficial Estimate</p>
-            </div>
-
-            <div className="p-6 md:p-8 grid md:grid-cols-2 gap-8">
-                {/* Inputs */}
-                <div className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Product Value (GHS)</label>
-                        <input
-                            type="number"
-                            value={fobValue}
-                            onChange={(e) => setFobValue(Number(e.target.value))}
-                            placeholder="e.g. 1000"
-                            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#006B5A] outline-none transition font-mono text-lg"
-                        />
+        <div className="bg-white max-w-5xl mx-auto py-12 px-6 md:px-12 border border-slate-50">
+            {/* 1. EDITORIAL HEADER (Minimalist & Serif) */}
+            <header className="border-b border-slate-900 pb-12 mb-16">
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
+                    <div className="max-w-2xl">
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-600 block mb-6 italic">Fiscal Audit CP-2026</span>
+                        <h2 className="text-4xl md:text-7xl font-serif font-bold tracking-tight text-slate-900 leading-[0.85]">
+                            Projected Tax <br />
+                            Assessment.
+                        </h2>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Shipping Cost (GHS)</label>
-                        <input
-                            type="number"
-                            value={shippingCost}
-                            onChange={(e) => setShippingCost(Number(e.target.value))}
-                            placeholder="e.g. 200"
-                            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#006B5A] outline-none transition font-mono text-lg"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#006B5A] outline-none transition"
-                        >
-                            {Object.entries(RATES).map(([key, val]) => (
-                                <option key={key} value={key}>{val.name}</option>
-                            ))}
-                        </select>
+                    <div className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 space-y-1 text-right tabular-nums">
+                        <div>Ref: LI-ACCRA-EST</div>
+                        <div>Protocol: GH-CET-2026/27</div>
                     </div>
                 </div>
+            </header>
 
-                {/* Results */}
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 flex flex-col justify-between">
-                    <div className="space-y-3 text-sm">
-                        <div className="flex justify-between text-gray-600">
-                            <span>CIF Value:</span>
-                            <span className="font-mono">GHS {results.cif.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+            <div className="grid lg:grid-cols-12 gap-16 md:gap-24">
+                {/* 2. PARAMETERS (Minimalist Underline Inputs) */}
+                <div className="lg:col-span-7 space-y-16">
+                    <div className="space-y-16">
+                        {/* 01. FOB */}
+                        <div className="group border-b border-slate-200 focus-within:border-slate-900 transition-colors pb-6">
+                            <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">01. Original Invoice Value (FOB GHS)</label>
+                            <input
+                                type="number"
+                                value={fobValue}
+                                onChange={(e) => setFobValue(e.target.value === '' ? '' : Number(e.target.value))}
+                                placeholder="0.00"
+                                className="w-full bg-transparent text-4xl font-serif text-slate-900 outline-none placeholder:text-slate-100 tabular-nums"
+                            />
                         </div>
-                        <div className="h-px bg-gray-200 my-2"></div>
 
-                        <div className="flex justify-between text-gray-800">
-                            <span>Import Duty ({(RATES[category as keyof typeof RATES].duty * 100).toFixed(0)}%):</span>
-                            <span className="font-mono font-bold">GHS {results.duty.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                        {/* 02. Freight */}
+                        <div className="group border-b border-slate-200 focus-within:border-slate-900 transition-colors pb-6">
+                            <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">02. Combined Logistics & Insurance (GHS)</label>
+                            <input
+                                type="number"
+                                value={shippingCost}
+                                onChange={(e) => setShippingCost(e.target.value === '' ? '' : Number(e.target.value))}
+                                placeholder="0.00"
+                                className="w-full bg-transparent text-4xl font-serif text-slate-900 outline-none placeholder:text-slate-100 tabular-nums"
+                            />
                         </div>
-                        <div className="flex justify-between text-gray-800">
-                            <span>VAT (15%):</span>
-                            <span className="font-mono font-bold">GHS {results.vat.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-800">
-                            <span>Other Levies (~6%):</span>
-                            <span className="font-mono font-bold">GHS {results.levies.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+
+                        {/* 03. Category */}
+                        <div className="group border-b border-slate-200 focus-within:border-slate-900 transition-colors pb-6">
+                             <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">03. Tariff Band Classification</label>
+                             <div className="relative">
+                                <select
+                                    value={category}
+                                    title="Classification"
+                                    onChange={(e) => setCategory(e.target.value)}
+                                    className="w-full bg-transparent text-[11px] font-black tracking-[0.3em] uppercase text-slate-900 outline-none appearance-none cursor-pointer pr-10"
+                                >
+                                    {Object.entries(RATES).map(([key, val]) => (
+                                        <option key={key} value={key}>{val.name}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-20">
+                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
+                                </div>
+                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-6 pt-6 border-t-2 border-[#006B5A]/20">
-                        <div className="flex justify-between items-end mb-1">
-                            <span className="text-gray-900 font-bold">Total Taxes to Pay:</span>
-                            <span className="text-2xl font-black text-red-600">
-                                GHS {results.totalTaxes.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                            </span>
-                        </div>
-                        <p className="text-xs text-right text-gray-500 mb-4">
-                            *Excludes clearance agent fees & handling charges
-                        </p>
+                    <p className="text-[10px] leading-relaxed text-slate-300 max-w-sm italic">
+                        Calculations derived from the prevailing WTO valuation principles used by the Ghana Revenue Authority (GRA). Projections are indicative.
+                    </p>
+                </div>
 
-                        <div className="bg-[#006B5A]/5 border border-[#006B5A]/20 p-4 rounded-lg">
-                            <h4 className="font-bold text-[#006B5A] flex items-center gap-2 mb-2">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                                Save with London's Imports
-                            </h4>
-                            <p className="text-sm text-gray-700 mb-3">
-                                Don't pay these high individual taxes. We consolidate shipping so you pay one low flat rate!
-                            </p>
-                            <button
-                                onClick={() => router.push('/products')}
-                                className="w-full bg-[#006B5A] text-white font-bold py-2 rounded-lg hover:bg-[#005a4b] transition shadow-md"
-                            >
-                                Shop Duty-Free Items
-                            </button>
+                {/* 3. ASSESSMENT (High-Contrast Clean Vertical Summary) */}
+                <div className="lg:col-span-5 flex flex-col">
+                    <div className="bg-slate-50 p-10 md:p-12 h-full flex flex-col">
+                        <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-300 mb-12 block">Assessment Summary</span>
+                        
+                        <div className="flex-1 space-y-8">
+                            <div className="flex justify-between items-baseline border-b border-white pb-6">
+                                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">CIF Base</span>
+                                <span className="text-xl font-bold text-slate-900 font-mono tracking-tight tabular-nums">
+                                    {results.cif.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-baseline border-b border-white pb-6">
+                                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">Import Duty</span>
+                                <span className="text-xl font-bold text-slate-900 font-mono tracking-tight tabular-nums">
+                                    {results.duty.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-baseline border-b border-white pb-6">
+                                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">VAT Component</span>
+                                <span className="text-xl font-bold text-slate-900 font-mono tracking-tight tabular-nums">
+                                    {results.vat.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-baseline border-b border-white pb-6">
+                                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">Total Levies</span>
+                                <span className="text-xl font-bold text-slate-900 font-mono tracking-tight tabular-nums">
+                                    {results.levies.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-16 pt-12 border-t border-slate-200">
+                            <div className="flex flex-col gap-4 mb-16 px-2">
+                                <span className="text-[10px] font-black tracking-widest uppercase text-emerald-600 block italic leading-none">Total Expenditure Liability (EST)</span>
+                                <div className="text-6xl md:text-8xl font-serif font-bold tracking-tighter text-slate-900 leading-[0.8]">
+                                    {results.totalTaxes.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                    <span className="text-2xl ml-1 font-mono opacity-20">.{(results.totalTaxes % 1).toFixed(2).substring(2)}</span>
+                                </div>
+                            </div>
+
+                            {/* SAVINGS CALLOUT */}
+                            <div className="pt-10 border-t border-slate-100 group/cta">
+                                <h5 className="text-3xl font-serif font-bold italic mb-6 text-slate-900 leading-tight">
+                                    Why pay individual <br /> 
+                                    <span className="text-slate-300">obstacles?</span>
+                                </h5>
+                                <p className="text-[12px] text-slate-400 font-medium leading-relaxed mb-10">
+                                    Our consolidation service slashes total liability by grouping high-value items within commercial shipments.
+                                </p>
+                                <button
+                                    onClick={() => router.push('/products')}
+                                    className="group/link inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 border-b border-black pb-2 hover:opacity-60 transition-all"
+                                >
+                                    <Zap className="w-4 h-4 fill-emerald-500 text-emerald-500" />
+                                    Optimize Now
+                                    <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

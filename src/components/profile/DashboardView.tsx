@@ -19,11 +19,11 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
             {/* Page Title */}
             <div className="flex items-center justify-between mb-2">
                 <div>
-                    <h2 className={`text-4xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        Overview
+                    <h2 className="text-4xl font-light tracking-tight nuclear-text">
+                        My Activity
                     </h2>
-                    <p className={`text-sm font-light mt-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        A snapshot of your account and recent activity.
+                    <p className="text-sm font-light mt-1 nuclear-text opacity-60">
+                        A quick look at your orders and profile.
                     </p>
                 </div>
             </div>
@@ -32,17 +32,17 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                     { label: 'Total Orders', value: orders.length, icon: ShoppingBag, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                    { label: 'In Progress', value: pendingCount, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+                    { label: 'On its way', value: pendingCount, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
                     { label: 'Completed', value: completedCount, icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
                     { label: 'Total Spent', value: `GHS ${totalSpent.toLocaleString()}`, icon: TrendingUp, color: 'text-pink-500', bg: 'bg-pink-500/10' },
                 ].map((stat, i) => (
-                    <div key={i} className={`p-6 rounded-3xl border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} transition-all hover:scale-[1.02] duration-300`}>
+                    <div key={i} className={`p-6 rounded-3xl border border-primary-surface bg-primary-surface/40 transition-all hover:scale-[1.02] duration-300`}>
                         <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4`}>
                             <stat.icon size={22} strokeWidth={1.5} />
                         </div>
                         <div>
-                            <p className={`text-2xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{stat.value}</p>
-                            <p className={`text-xs mt-1 uppercase tracking-widest font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{stat.label}</p>
+                            <p className="text-2xl font-light tracking-tight nuclear-text">{stat.value}</p>
+                            <p className="text-xs mt-1 uppercase tracking-widest font-medium nuclear-text opacity-40">{stat.label}</p>
                         </div>
                     </div>
                 ))}
@@ -54,8 +54,8 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
                 <div className="lg:col-span-7 xl:col-span-8 space-y-6">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                            <ShoppingBag size={18} className="text-pink-500" />
-                            <h3 className={`text-sm font-semibold uppercase tracking-widest ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>Recent Orders</h3>
+                            <ShoppingBag size={18} className="text-emerald-500" />
+                            <h3 className="text-sm font-semibold uppercase tracking-widest nuclear-text opacity-70">Recent Orders</h3>
                         </div>
                         {orders.length > 5 && (
                             <button className={`text-xs font-medium px-4 py-1.5 rounded-full border border-gray-200 transition-all ${isDark ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800' : 'border-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>
@@ -74,7 +74,7 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
                                     <Link
                                         key={order.order_number}
                                         href={`/orders/${order.order_number}`}
-                                        className={`group flex items-center gap-4 p-4 rounded-3xl border transition-all duration-300 ${isDark ? 'bg-slate-900/40 border-slate-800 hover:bg-slate-800/60' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md'}`}
+                                        className="group flex items-center gap-4 p-4 rounded-3xl border border-primary-surface bg-primary-surface/40 hover:bg-primary-surface transition-all duration-300 shadow-sm hover:shadow-md"
                                     >
                                         <div className="relative w-16 h-20 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
                                             {firstItem?.product.image ? (
@@ -98,7 +98,7 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>#{order.order_number}</span>
+                                                <span className="text-sm font-medium nuclear-text">#{order.order_number}</span>
                                                 <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter font-bold ${isPaid
                                                     ? 'bg-emerald-500/10 text-emerald-500'
                                                     : 'bg-amber-500/10 text-amber-500'
@@ -113,7 +113,7 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
                                         </div>
 
                                         <div className="text-right">
-                                            <p className={`text-base font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                            <p className="text-base font-light tracking-tight nuclear-text">
                                                 GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}
                                             </p>
                                             <div className={`mt-1 inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-tighter ${isDark ? 'text-slate-500' : 'text-gray-400'} group-hover:text-pink-500 transition-colors`}>
@@ -138,8 +138,8 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
                 {/* Recent Activity - Side column on desktop */}
                 <div className="lg:col-span-5 xl:col-span-4 space-y-6">
                     <div className="flex items-center gap-2 mb-2">
-                        <Clock size={18} className="text-pink-500" />
-                        <h3 className={`text-sm font-semibold uppercase tracking-widest ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>Activity</h3>
+                        <Clock size={18} className="text-emerald-500" />
+                        <h3 className="text-sm font-semibold uppercase tracking-widest nuclear-text opacity-70">Activity</h3>
                     </div>
 
                     <div className="grid gap-4">
@@ -157,7 +157,7 @@ const DashboardView = ({ orders, theme }: { orders: Order[]; theme: string }) =>
                                                 {isCompleted ? <CheckCircle size={14} /> : <Package size={14} />}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-800'} mb-0.5`}>
+                                                <p className="text-xs font-medium nuclear-text mb-0.5">
                                                     {isCompleted ? 'Order Delivered' : 'Order Placed'}
                                                 </p>
                                                 <div className={`text-[10px] font-light ${isDark ? 'text-slate-500' : 'text-gray-500'} flex items-center justify-between`}>

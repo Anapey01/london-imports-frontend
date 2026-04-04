@@ -32,10 +32,7 @@ const SettingsView = ({ user, theme }: { user: User; theme: string }) => {
         ghana_post_gps: user?.ghana_post_gps || '',
     });
 
-    const inputClass = `w-full px-4 py-3 rounded-lg border outline-none transition-colors text-sm ${isDark
-        ? 'bg-slate-900 border-slate-700 text-white focus:border-pink-500 placeholder:text-slate-600'
-        : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 placeholder:text-gray-400'
-        }`;
+    const inputClass = `w-full px-4 py-3 rounded-lg border outline-none transition-all text-sm bg-primary-surface border-primary-surface nuclear-text focus:border-emerald-500 placeholder:opacity-30`;
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -60,8 +57,8 @@ const SettingsView = ({ user, theme }: { user: User; theme: string }) => {
     return (
         <div className="space-y-10">
             {/* Header */}
-            <div className={`border-b pb-4 ${isDark ? 'border-slate-800' : 'border-gray-200'} flex items-center justify-between`}>
-                <h2 className={`text-2xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <div className="border-b pb-4 border-primary-surface flex items-center justify-between">
+                <h2 className="text-2xl font-light tracking-tight nuclear-text">
                     Settings
                 </h2>
                 {saveStatus === 'success' && (
@@ -74,25 +71,25 @@ const SettingsView = ({ user, theme }: { user: User; theme: string }) => {
 
             {/* Personal Information */}
             <div>
-                <h3 className={`text-sm font-medium uppercase tracking-wide mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                <h3 className="text-sm font-medium uppercase tracking-wide mb-4 nuclear-text opacity-50">
                     Account & Delivery Information
                 </h3>
-                <div className={`p-6 rounded-xl border ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                <div className="p-6 rounded-xl border border-primary-surface">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label htmlFor="firstName" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>First Name</label>
+                            <label htmlFor="firstName" className="block text-xs font-light mb-2 nuclear-text opacity-40">First Name</label>
                             <input id="firstName" type="text" value={profileData.first_name} onChange={e => setProfileData({...profileData, first_name: e.target.value})} className={inputClass} />
                         </div>
                         <div>
-                            <label htmlFor="lastName" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Last Name</label>
+                            <label htmlFor="lastName" className="block text-xs font-light mb-2 nuclear-text opacity-40">Last Name</label>
                             <input id="lastName" type="text" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
                         </div>
                         <div>
-                            <label htmlFor="email" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Email Address</label>
+                            <label htmlFor="email" className="block text-xs font-light mb-2 nuclear-text opacity-40">Email Address</label>
                             <input id="email" type="email" defaultValue={user?.email} className={`${inputClass} cursor-not-allowed opacity-60`} readOnly />
                         </div>
                         <div>
-                            <label htmlFor="phone" className={`block text-xs font-light mb-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Phone Number</label>
+                            <label htmlFor="phone" className="block text-xs font-light mb-2 nuclear-text opacity-40">Phone Number</label>
                             <input id="phone" type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} placeholder="Add phone number" className={inputClass} />
                         </div>
                         
@@ -143,10 +140,10 @@ const SettingsView = ({ user, theme }: { user: User; theme: string }) => {
 
             {/* Notifications */}
             <div>
-                <h3 className={`text-sm font-medium uppercase tracking-wide mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                <h3 className="text-sm font-medium uppercase tracking-wide mb-4 nuclear-text opacity-50">
                     Notifications
                 </h3>
-                <div className={`px-6 rounded-xl border divide-y ${isDark ? 'border-slate-800 divide-slate-800' : 'border-gray-200 divide-gray-100'}`}>
+                <div className="px-6 rounded-xl border divide-y border-primary-surface divide-primary-surface">
                     <ToggleSwitch
                         enabled={notifications.orders}
                         onChange={() => setNotifications({ ...notifications, orders: !notifications.orders })}
@@ -173,23 +170,23 @@ const SettingsView = ({ user, theme }: { user: User; theme: string }) => {
 
             {/* Security */}
             <div>
-                <h3 className={`text-sm font-medium uppercase tracking-wide mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                <h3 className="text-sm font-medium uppercase tracking-wide mb-4 nuclear-text opacity-50">
                     Security
                 </h3>
-                <div className={`rounded-xl border ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                <div className="rounded-xl border border-primary-surface overflow-hidden">
                     <Link
                         href="/reset-password"
-                        className={`flex items-center justify-between p-5 transition-colors ${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'}`}
+                        className="flex items-center justify-between p-5 transition-all hover:bg-primary-surface"
                     >
                         <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
-                                <svg className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary-surface">
+                                <svg className="w-5 h-5 nuclear-text opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                 </svg>
                             </div>
                             <div>
-                                <p className={`font-light ${isDark ? 'text-white' : 'text-gray-900'}`}>Change Password</p>
-                                <p className={`text-xs font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Update your password securely</p>
+                                <p className="font-light nuclear-text">Change Password</p>
+                                <p className="text-xs font-light nuclear-text opacity-50">Update your password securely</p>
                             </div>
                         </div>
                         <svg className={`w-5 h-5 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>

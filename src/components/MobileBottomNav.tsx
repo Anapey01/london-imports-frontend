@@ -55,7 +55,7 @@ export default function MobileBottomNav() {
     }
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-xl border-t border-white/20 z-50 safe-area-bottom shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.08)]">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-t border-slate-100 dark:border-slate-900 z-50 safe-area-bottom shadow-diffusion">
             <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
                 {navItems.map((item) => {
                     const isActive =
@@ -67,25 +67,18 @@ export default function MobileBottomNav() {
                         <Link
                             key={item.name}
                             href={item.href}
-                            className="flex flex-col items-center justify-center flex-1 py-1 group relative transition-all active:scale-90"
+                            className="flex flex-col items-center justify-center flex-1 py-1 group relative outline-none focus:outline-none border-none ring-0 focus:ring-0 tap-highlight-none shadow-none"
                         >
-                            {/* Active Indicator Dot */}
-                            {isActive && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#006B5A] rounded-full" />
-                            )}
-
                             {/* Icon container */}
                             <div className="relative">
                                 <item.icon
-                                    className={`w-5 h-5 transition-all duration-300 ${isActive
-                                        ? 'text-[#006B5A] stroke-[2] scale-110'
-                                        : 'text-slate-400 stroke-[1.5] group-hover:text-slate-600'
-                                        }`}
+                                    className={`w-5 h-5 ${isActive ? 'text-emerald-500' : 'nuclear-text opacity-60 dark:opacity-80'}`}
+                                    strokeWidth={1.5}
                                 />
 
                                 {/* Badge for cart */}
                                 {item.badge !== undefined && item.badge > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-[8px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1 border-2 border-white transition-colors">
+                                    <span className="absolute -top-2 -right-2 bg-emerald-600 text-white text-[8px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1 border-2 border-white dark:border-slate-950 transition-colors shadow-sm">
                                         {item.badge}
                                     </span>
                                 )}
@@ -93,8 +86,7 @@ export default function MobileBottomNav() {
 
                             {/* Label */}
                             <span
-                                className={`text-[9px] mt-1.5 font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? 'text-[#006B5A]' : 'text-slate-400 opacity-70 group-hover:opacity-100'
-                                    }`}
+                                className={`text-[9px] mt-1.5 font-black uppercase tracking-[0.2em] ${isActive ? 'text-emerald-500' : 'nuclear-text opacity-60 dark:opacity-80'}`}
                             >
                                 {item.name}
                             </span>

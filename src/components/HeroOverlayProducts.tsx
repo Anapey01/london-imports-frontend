@@ -34,7 +34,7 @@ export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverla
             <div className="flex justify-center mt-8">
                 <Link
                     href="/products"
-                    className="bg-white border border-gray-300 text-gray-800 px-8 py-3 rounded-full font-bold hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm flex items-center gap-2"
+                    className="bg-white border border-slate-950 dark:bg-slate-950 dark:border-white text-slate-950 dark:text-white px-10 py-4 rounded-none text-xs font-black uppercase tracking-[0.3em] hover:bg-slate-950 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shadow-sm flex items-center gap-4 group"
                 >
                     See More Deals
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

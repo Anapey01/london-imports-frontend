@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Instagram, Star } from 'lucide-react';
+import { Instagram, Star, ArrowUpRight, MapPin, ShieldCheck } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 const Footer = () => {
@@ -15,175 +15,164 @@ const Footer = () => {
     }
 
     return (
-        <footer className="hidden md:block bg-slate-950/70 backdrop-blur-xl text-slate-400 py-24 border-t border-white/5 relative overflow-hidden">
-            {/* Ambient Background Glow */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-900/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
-
+        <footer className="hidden md:block bg-white dark:bg-slate-950 pt-40 pb-16 border-t border-slate-50 dark:border-slate-900 relative overflow-hidden selection:bg-emerald-100 font-sans">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-                <div className="grid md:grid-cols-12 gap-12 lg:gap-8 mb-16">
-                    {/* Brand Column */}
-                    <div className="md:col-span-4 lg:col-span-3">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Image src="/logo.jpg" alt="London's Imports" width={48} height={48} className="rounded-xl shadow-2xl ring-1 ring-white/10" />
-                            <div>
-                                <span className="text-white font-bold text-lg tracking-tight block">London&apos;s Imports</span>
-                                <span className="text-xs text-slate-500 font-medium">EST. 2024</span>
-                            </div>
+                
+                {/* 1. BRAND HEADER */}
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-12 mb-24 border-b border-slate-900 dark:border-white pb-16">
+                    <div className="max-w-xl">
+                        <div className="flex items-center gap-6 mb-12">
+                             <div className="relative w-16 h-16 border border-slate-900 dark:border-white overflow-hidden bg-white">
+                                 <Image 
+                                    src="/logo.jpg" 
+                                    alt="London's Imports" 
+                                    fill 
+                                    className="object-cover" 
+                                 />
+                             </div>
+                             <div className="flex flex-col gap-1">
+                                 <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                                 <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-500 dark:text-slate-500">
+                                     China to Ghana Sourcing / 2026
+                                 </span>
+                             </div>
                         </div>
-                        <p className="text-sm leading-relaxed text-slate-400 mb-6 max-w-sm">
-                            Ghana&apos;s premier pre-order platform. Bridging the gap between you and international trends with authentic products at unbeatable prices.
-                        </p>
-
-                        <div className="flex gap-3">
-                            {/* Instagram */}
-                            <a
-                                href={siteConfig.socials.instagram}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-pink-600 hover:border-pink-500 hover:text-white transition-all duration-300 group"
-                                aria-label="Follow us on Instagram"
-                            >
-                                <Instagram className="w-5 h-5" />
-                            </a>
-
-                            {/* TikTok */}
-                            <a
-                                href={siteConfig.socials.tiktok}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 group"
-                                aria-label="Follow us on TikTok"
-                            >
-                                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                                </svg>
-                            </a>
-
-                            {/* Snapchat */}
-                            <a
-                                href={siteConfig.socials.snapchat}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-[#FFFC00] hover:text-black hover:border-[#FFFC00] transition-all duration-300 group"
-                                aria-label="Add us on Snapchat"
-                            >
-                                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12.003 1.996a9.982 9.982 0 0 0-2.835.405c-.172.05-.38.125-.572.247-.468.298-1.298 1.096-1.55 1.488-.042.064-.096.112-.132.193-.075.163-.075.335.003.493.078.158.21.325.753.642.617.362 1.25.82 1.444 1.25.132.296.136.634.02 1.05-.164.58-.592 1.03-1.09 1.554-.344.364-.783.827-1.11 1.464-.325.633-.42 1.29-.272 1.956.12.535.418 1 .892 1.392.215.178.232.228.214.3-.04.168-.5.736-1.042.825-.37.06-.708.016-1.487-.194l-.3-.082c-.37-.098-.553-.146-.66-.146-.223 0-.323.078-.507.22l-.088.067c-.206.158-.45.346-.86.346-.51 0-.91-.32-1.127-.9-.057-.15-.157-.222-.258-.222-.43 0-.66.82-.445 1.6.14.506.58.796 1.463 1.03.11.03.353.088.756.184.444.106.84.2 1.157.34.62.274.965.738.965 1.305 0 .805-.623 1.21-1.855 1.21-.297 0-.638-.024-1.002-.072-.82-.107-1.493-.195-2.022.253a.853.853 0 0 0-.27.65c-.012.873 1.077 1.838 2.5 2.214 2 1.114 4.887 1.114 7.214 0 1.423-.376 2.512-1.34 2.5-2.214a.853.853 0 0 0-.27-.65c-.53-.448-1.202-.36-2.022-.253-.364.048-.705.072-1.002.072-1.232 0-1.855-.405-1.855-1.21 0-.568.345-1.03.965-1.306.317-.14.713-.233 1.157-.34.403-.095.646-.153.756-.183.882-.234 1.323-.524 1.463-1.03.215-.78-.016-1.6-.446-1.6-.1 0-.2.07-.257.22-.217.58-.617.9-1.127.9-.41 0-.654-.188-.86-.346l-.088-.067c-.183-.142-.284-.22-.507-.22-.107 0-.29.048-.66.146l-.3.082c-.78.21-1.117.254-1.488.194-.54-.09-1-.657-1.04-1.825-.02-.073 0-.123.213-.3.473-.392.772-.857.892-1.392.148-.665.053-1.323-.272-1.956-.327-.637-.766-1.1-1.11-1.464-.498-.523-.926-.974-1.09-1.554-.116-.416-.112-.754.02-1.05.193-.43.827-.888 1.444-1.25.543-.317.675-.484.753-.642.08-.158.078-.33.003-.493-.036-.08-.09-.128-.132-.193-.252-.392-1.082-1.19-1.55-1.488-.192-.122-.4-.197-.572-.247a9.98 9.98 0 0 0-2.835-.405z" />
-                                </svg>
-                            </a>
-
-                            {/* Trustpilot */}
-                            <a
-                                href="https://www.trustpilot.com/review/londonsimports.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-[#00b67a] hover:text-white hover:border-[#00b67a] transition-all duration-300 group"
-                                aria-label="Review us on Trustpilot"
-                            >
-                                <Star className="w-5 h-5 fill-current" />
-                            </a>
-                        </div>
+                        <h2 className="text-6xl md:text-8xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white">
+                            London&apos;s <br />
+                            <span className="italic font-light text-slate-300 dark:text-slate-700">Imports.</span>
+                        </h2>
                     </div>
 
-                    {/* Links Columns */}
-                    <div className="md:col-span-2 lg:col-span-2">
-                        <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Shop</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li><Link href="/products" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Shop All China Imports</Link></li>
-                            <li><Link href="/reviews" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Reviews</Link></li>
-                            <li><Link href="/how-it-works" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">How China Imports Work</Link></li>
-                            <li><Link href="/faq" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">FAQs</Link></li>
-                            <li><Link href="/blog" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block font-bold">Blog</Link></li>
-                            <li><Link href="/track" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block font-bold text-green-500">Track China Shipping</Link></li>
-                            <li><Link href="/links" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block font-bold text-cyan-400 italic">Social Hub & Bio Links</Link></li>
+                    <div className="text-right">
+                         <div className="flex items-center justify-end gap-6 mb-8">
+                             {/* High-Contrast Social Matrix */}
+                             <a href={siteConfig.socials.instagram} target="_blank" rel="noopener" className="text-slate-400 dark:text-slate-600 hover:text-slate-900 dark:hover:text-white transition-colors" title="Instagram" aria-label="Instagram">
+                                <Instagram className="w-5 h-5" strokeWidth={1.5} />
+                             </a>
+                             <a href={siteConfig.socials.tiktok} target="_blank" rel="noopener" className="text-slate-400 dark:text-slate-600 hover:text-slate-900 dark:hover:text-white transition-colors" title="TikTok" aria-label="TikTok">
+                                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+                             </a>
+                             <a href={siteConfig.socials.snapchat} target="_blank" rel="noopener" className="text-slate-400 dark:text-slate-600 hover:text-slate-900 dark:hover:text-white transition-colors" title="Snapchat" aria-label="Snapchat">
+                                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.003 1.996a9.982 9.982 0 0 0-2.835.405c-.172.05-.38.125-.572.247-.468.298-1.298 1.096-1.55 1.488-.042.064-.096.112-.132.193-.075.163-.075.335.003.493.078.158.21.325.753.642.617.362 1.25.82 1.444 1.25.132.296.136.634.02 1.05-.164.58-.592 1.03-1.09 1.554-.344.364-.783.827-1.11 1.464-.325.633-.42 1.29-.272 1.956.12.535.418 1 .892 1.392.215.178.232.228.214.3-.04.168-.5.736-1.042.825-.37.06-.708.016-1.487-.194l-.3-.082c-.37-.098-.553-.146-.66-.146-.223 0-.323.078-.507.22l-.088.067c-.206.158-.45.346-.86.346-.51 0-.91-.32-1.127-.9-.057-.15-.157-.222-.258-.222-.43 0-.66.82-.445 1.6.14.506.58.796 1.463 1.03.11.03.353.088.756.184.444.106.84.2 1.157.34.62.274.965.738.965 1.305 0 .805-.623 1.21-1.855 1.21-.297 0-.638-.024-1.002-.072-.82-.107-1.493-.195-2.022.253a.853.853 0 0 0-.27.65c-.012.873 1.077 1.838 2.5 2.214 2 1.114 4.887 1.114 7.214 0 1.423-.376 2.512-1.34 2.5-2.214a.853.853 0 0 0-.27-.65c-.53-.448-1.202-.36-2.022-.253-.364.048-.705.072-1.002.072-1.232 0-1.855-.405-1.855-1.21 0-.568.345-1.03.965-1.306.317-.14.713-.233 1.157-.34.403-.095.646-.153.756-.183.882-.234 1.323-.524 1.463-1.03.215-.78-.016-1.6-.446-1.6-.1 0-.2.07-.257.22-.217.58-.617.9-1.127.9-.41 0-.654-.188-.86-.346l-.088-.067c-.183-.142-.284-.22-.507-.22-.107 0-.29.048-.66.146l-.3.082c-.78.21-1.117.254-1.488.194-.54-.09-1-.657-1.04-1.825-.02-.073 0-.123.213-.3.473-.392.772-.857.892-1.392.148-.665.053-1.323-.272-1.956-.327-.637-.766-1.1-1.11-1.464-.498-.523-.926-.974-1.09-1.554-.116-.416-.112-.754.02-1.05.193-.43.827-.888 1.444-1.25.543-.317.675-.484.753-.642.08-.158.078-.33.003-.493-.036-.08-.09-.128-.132-.193-.252-.392-1.082-1.19-1.55-1.488-.192-.122-.4-.197-.572-.247a9.98 9.98 0 0 0-2.835-.405z" /></svg>
+                             </a>
+                             <a href="https://www.trustpilot.com/review/londonsimports.com" target="_blank" rel="noopener" className="text-slate-400 dark:text-slate-600 hover:text-slate-900 dark:hover:text-white transition-colors" title="Trustpilot" aria-label="Trustpilot">
+                                <Star className="w-5 h-5" strokeWidth={1.5} />
+                             </a>
+                         </div>
+                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 italic">Trusted Sourcing</p>
+                    </div>
+                </div>
+
+                {/* 2. QUICK LINKS */}
+                <div className="grid md:grid-cols-12 gap-px bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-900 mb-24 font-sans">
+                    {/* Column 01: Shop */}
+                    <div className="bg-white dark:bg-slate-950 p-12 md:col-span-3">
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-600 mb-8 block">Shopping Hub</span>
+                        <ul className="space-y-4">
+                            <li><Link href="/products" className="text-sm font-black text-slate-900 dark:text-white hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest">China Shop</Link></li>
+                            <li><Link href="/reviews" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Customer Reviews</Link></li>
+                            <li><Link href="/how-it-works" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">How it Works</Link></li>
+                            <li><Link href="/faq" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Answer Hub (FAQ)</Link></li>
+                            <li><Link href="/blog" className="text-sm font-black text-slate-900 dark:text-white hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-4">Our Blog</Link></li>
                         </ul>
                     </div>
 
-                    <div className="md:col-span-3 lg:col-span-2">
-                        <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Support</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li><Link href="/about" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Mini-Importation Story</Link></li>
-                            <li><Link href="/contact" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Contact Us</Link></li>
-                            <li><Link href="/terms" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Terms of Service</Link></li>
-                            <li><Link href="/privacy" className="hover:text-green-500 hover:translate-x-1 transition-all inline-block">Privacy Policy</Link></li>
+                    {/* Column 02: Support */}
+                    <div className="bg-white dark:bg-slate-950 p-12 md:col-span-3 border-l border-slate-50 dark:border-slate-900">
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-600 mb-8 block">Our Company</span>
+                        <ul className="space-y-4">
+                            <li><Link href="/about" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">About London&apos;s Imports</Link></li>
+                            <li><Link href="/contact" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Contact Support</Link></li>
+                            <li><Link href="/terms" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Terms of Use</Link></li>
+                            <li><Link href="/privacy" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
-                    {/* Regional Hubs - SEO Booster (Hidden visually, kept for crawlers) */}
-                    <div className="absolute -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden" aria-hidden="true">
-                        <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">Regional Hubs</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li><Link href="/products?search=Accra">Mini Importation Accra</Link></li>
-                            <li><Link href="/products?search=Kumasi">Mini Importation Kumasi</Link></li>
-                            <li><Link href="/products?search=Tema">Mini Importation Tema</Link></li>
-                            <li><Link href="/blog?tag=Guides">Shipping Guides</Link></li>
+                    {/* Column 03: Logistics */}
+                    <div className="bg-white dark:bg-slate-950 p-12 md:col-span-3 border-l border-slate-50 dark:border-slate-900">
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-600 mb-8 block">Shipping & Delivery</span>
+                        <ul className="space-y-4">
+                            <li><Link href="/shipping" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Shipping Services</Link></li>
+                            <li><Link href="/customs" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">Customs Help</Link></li>
+                            <li><Link href="/guide" className="text-sm font-semibold text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors block">How to Start Business</Link></li>
+                            <li><Link href="/track" className="text-sm font-black text-emerald-600 dark:text-emerald-500 hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-4">Track My Items</Link></li>
                         </ul>
                     </div>
 
-                    {/* Contact Column */}
-                    <div className="md:col-span-3 lg:col-span-3">
-                        <h4 className="text-white font-semibold mb-6 text-xs uppercase tracking-widest text-opacity-80">We&apos;re Here</h4>
-                        <address className="text-sm not-italic space-y-3 mb-6">
-                            <p className="flex items-start gap-2">
-                                <svg className="w-5 h-5 text-slate-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                <span>{siteConfig.address}</span>
+                    {/* Column 04: Newsletter */}
+                    <div className="bg-slate-50 dark:bg-slate-900 p-12 md:col-span-3 border-l border-slate-50 dark:border-slate-900 flex flex-col justify-between">
+                        <div>
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white mb-6 block italic">Join our Newsletter</span>
+                            <p className="text-xs font-bold text-slate-600 dark:text-slate-500 leading-relaxed mb-10">
+                                Subscribe to monthly supply chain briefings and high-performance logistics items.
                             </p>
-                            <div className="space-y-4">
-                                <a href={siteConfig.socials.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-green-400 transition-colors group">
-                                    <span className="w-5 h-5 flex items-center justify-center rounded bg-green-900/20 group-hover:bg-green-500/20 text-green-500 transition-colors">
-                                        <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.21-3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                                    </span>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Main Support</span>
-                                        <span className="text-sm">+{siteConfig.whatsapp.replace(/(\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}</span>
-                                    </div>
-                                </a>
-                                <a href={siteConfig.socials.concierge} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-green-400 transition-colors group">
-                                    <span className="w-5 h-5 flex items-center justify-center rounded bg-green-900/20 group-hover:bg-green-500/20 text-green-500 transition-colors">
-                                        <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.21-3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                                    </span>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Concierge & Orders</span>
-                                        <span className="text-sm">+{siteConfig.concierge.replace(/(\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </address>
-                        <div className="flex gap-2">
+                        </div>
+                        <div className="flex flex-col gap-6">
                             <input
                                 type="email"
-                                placeholder="Subscribe to drops..."
-                                aria-label="Email for newsletter"
-                                className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm w-full focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all placeholder:text-slate-600"
+                                title="Email Address"
+                                placeholder="Enter your email..."
+                                className="bg-transparent border-b border-slate-900 dark:border-white text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white py-3 outline-none focus:border-slate-900 dark:focus:border-white transition-colors placeholder-slate-300 dark:placeholder-slate-700"
                             />
-                            <button className="bg-white hover:bg-green-50 text-black px-4 py-2.5 rounded-lg transition-colors font-medium text-sm">
-                                Join
+                            <button className="group/btn relative h-12 overflow-hidden border border-slate-900 dark:border-white px-8 transition-all hover:bg-slate-900 dark:hover:bg-white self-start">
+                                <span className="relative z-10 text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest group-hover/btn:text-white dark:group-hover/btn:text-slate-950 transition-colors">Subscribe</span>
+                                <div className="absolute inset-0 bg-slate-900 dark:bg-white transition-transform translate-y-full group-hover/btn:translate-y-0" />
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-xs text-slate-500" suppressHydrationWarning>
-                        &copy; {new Date().getFullYear()} London&apos;s Imports. All rights reserved.
-                    </p>
-
-                    {/* Payment Icons - Styled Uniformly */}
-                    <div className="flex items-center gap-3 opacity-75 hover:opacity-100 transition-opacity grayscale hover:grayscale-0 duration-500">
-                        <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="MTN Mobile Money">
-                            <span className="text-[#FFCC00] text-[10px] font-black tracking-tight">MTN<span className="text-[8px]">MoMo</span></span>
+                {/* 3. OUR LOCATION & PAYMENTS */}
+                <div className="flex flex-col md:flex-row items-start justify-between gap-16 pt-16 border-t border-slate-50 dark:border-slate-900">
+                    <div className="max-w-md">
+                        <div className="flex items-center gap-3 mb-8">
+                             <MapPin className="w-4 h-4 text-slate-900 dark:text-white" strokeWidth={1.5} />
+                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Our Location</span>
                         </div>
-                        <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="Visa">
-                            <Image src="/logos/visa.svg" alt="Visa" width={30} height={10} className="h-3 w-auto" />
-                        </div>
-                        <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="Mastercard">
-                            <Image src="/logos/mastercard.svg" alt="Mastercard" width={40} height={24} className="h-4 w-auto" />
-                        </div>
-                        <div className="h-7 px-2 bg-slate-900/50 rounded flex items-center border border-slate-800" title="Paystack">
-                            <span className="text-cyan-400 text-xs font-bold">Paystack</span>
+                        <address className="text-xl md:text-2xl font-serif font-bold text-slate-900 dark:text-white leading-tight not-italic">
+                            {siteConfig.address}
+                        </address>
+                        <div className="flex gap-12 mt-10">
+                             <div className="border-l border-slate-900 dark:border-white pl-6 group transition-opacity">
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600 block mb-2">Customer Support</span>
+                                  <span className="text-sm font-black text-slate-900 dark:text-white tracking-tighter">+{siteConfig.whatsapp}</span>
+                             </div>
+                             <div className="border-l border-slate-900 dark:border-white pl-6 group transition-opacity">
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600 block mb-2">Order Help</span>
+                                  <span className="text-sm font-black text-slate-900 dark:text-white tracking-tighter">+{siteConfig.concierge}</span>
+                             </div>
                         </div>
                     </div>
+
+                    <div className="text-right flex flex-col items-end gap-16">
+                         <div className="flex items-center justify-end gap-12 group transition-opacity">
+                              <div className="text-right">
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600 block mb-1">Accra & Kumasi Hubs</span>
+                                  <p className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-tighter">Ghana Sourcing Expert</p>
+                              </div>
+                              <ShieldCheck className="w-8 h-8 text-slate-900 dark:text-white" strokeWidth={1} />
+                         </div>
+
+                         {/* Payment Ledger (High Contrast Monochrome) */}
+                         <div className="flex items-center gap-8 border-t border-slate-50 dark:border-slate-900 pt-8 mt-4 grayscale group-hover:grayscale-0 transition-all duration-700">
+                              <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">MTN MOMO</span>
+                              <div className="h-px w-8 bg-slate-900 dark:bg-white" />
+                              <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">VISA / MC</span>
+                              <div className="h-px w-8 bg-slate-900 dark:bg-white" />
+                              <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">PAYSTACK</span>
+                         </div>
+                    </div>
+                </div>
+
+                {/* Final Legal Bar (Increased Opacity) */}
+                <div className="mt-32 pt-16 border-t border-slate-50 dark:border-slate-900 flex items-center justify-between">
+                     <p className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.4em] selection:text-white">
+                        &copy; {new Date().getFullYear()} London&apos;s Imports / All Rights Reserved.
+                     </p>
+                     <div className="flex items-center gap-8">
+                         <span className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest italic">Trusted Since 2020</span>
+                         <ArrowUpRight className="w-3 h-3 text-slate-400 dark:text-slate-600" />
+                     </div>
                 </div>
             </div>
         </footer>

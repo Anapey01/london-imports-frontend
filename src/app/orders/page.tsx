@@ -59,10 +59,10 @@ export default function OrdersPage() {
     const orders = data?.data?.results || data?.data || [];
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-24 pb-20 md:pt-32">
+        <div className="min-h-screen bg-primary-surface pt-24 pb-20 md:pt-32 font-sans transition-all duration-500">
             <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                <div className="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
-                    <h1 className="text-3xl font-light text-gray-900 tracking-tight">My Orders</h1>
+                <div className="flex items-end justify-between mb-12 border-b border-slate-50 dark:border-slate-900 pb-8">
+                    <h1 className="text-4xl md:text-6xl font-serif font-black nuclear-text tracking-tighter">My Orders</h1>
                 </div>
 
                 {isLoading ? (
@@ -99,7 +99,7 @@ export default function OrdersPage() {
                             const isPending = order.state === 'PENDING_PAYMENT' || (balanceDue > 0 && order.state !== 'CANCELLED');
 
                             return (
-                                <div key={order.order_number} className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-all">
+                                <div key={order.order_number} className="bg-primary-surface/40 p-6 sm:p-8 rounded-[2rem] border border-primary-surface shadow-diffusion-lg hover:shadow-diffusion-xl transition-all duration-500 group">
                                     <div className="flex flex-col md:flex-row justify-between gap-6">
                                         <div className="flex gap-6">
                                             {/* Image Stack */}
@@ -129,7 +129,7 @@ export default function OrdersPage() {
                                                 <div>
                                                     <div className="flex items-center gap-3 mb-1">
                                                         <div className={`w-2 h-2 rounded-full ${getStatusBg(order.state)}`} />
-                                                        <h3 className="text-lg font-medium text-gray-900">Order #{order.order_number}</h3>
+                                                        <h3 className="text-lg font-black nuclear-text uppercase tracking-tight">Order #{order.order_number}</h3>
                                                     </div>
                                                     <p className="text-sm text-gray-500 font-light">
                                                         Placed on {new Date(order.created_at).toLocaleDateString(undefined, {
@@ -140,27 +140,27 @@ export default function OrdersPage() {
                                                     </p>
                                                 </div>
                                                 <div className="mt-4">
-                                                    <p className="text-sm text-gray-500 font-light">{order.items_count} item{order.items_count !== 1 ? 's' : ''}</p>
-                                                    <p className="text-lg font-light text-gray-900">GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}</p>
+                                                    <p className="text-[10px] nuclear-text opacity-40 font-black uppercase tracking-widest">{order.items_count} item{order.items_count !== 1 ? 's' : ''}</p>
+                                                    <p className="text-2xl font-serif font-bold nuclear-text tracking-tighter tabular-nums mt-1">GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}</p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="flex flex-row md:flex-col justify-between md:justify-center items-end gap-3">
-                                            <span className={`text-sm font-medium ${getStatusColor(order.state)}`}>
+                                            <span className={`text-[10px] font-black uppercase tracking-[0.3em] mb-4 ${getStatusColor(order.state)}`}>
                                                 {order.state_display}
                                             </span>
-                                            <div className="flex gap-2">
+                                            <div className="flex flex-wrap gap-3">
                                                 <Link
                                                     href={`/orders/${order.order_number}`}
-                                                    className="px-6 py-2 rounded-full text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                                                    className="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border border-slate-950/10 dark:border-white/10 nuclear-text hover:bg-slate-950 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all duration-500"
                                                 >
                                                     Details
                                                 </Link>
                                                 {isPending && (
                                                     <Link
                                                         href={`/checkout?order=${order.order_number}`}
-                                                        className="px-6 py-2 rounded-full text-xs font-medium bg-gray-900 text-white hover:bg-pink-600 transition-colors shadow-sm"
+                                                        className="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] bg-slate-950 text-white dark:bg-white dark:text-slate-900 hover:bg-emerald-600 dark:hover:bg-emerald-50 transition-all duration-500 shadow-diffusion"
                                                     >
                                                         {balanceDue > 0 ? 'Pay Balance' : 'Pay Now'}
                                                     </Link>

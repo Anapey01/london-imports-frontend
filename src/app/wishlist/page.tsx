@@ -23,31 +23,31 @@ export default function WishlistPage() {
     }, []);
 
     if (!mounted) {
-        return <div className="min-h-screen bg-white pt-32 pb-20 flex justify-center"><div className="w-8 h-8 border-4 border-slate-950 border-t-transparent rounded-full animate-spin"></div></div>;
+        return <div className="min-h-screen bg-primary-surface pt-32 pb-20 flex justify-center"><div className="w-8 h-8 border-4 border-slate-950 dark:border-white border-t-transparent rounded-full animate-spin"></div></div>;
     }
 
     return (
-        <div className="min-h-screen bg-white md:bg-gray-50 pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8 font-sans">
+        <div className="min-h-screen bg-primary-surface md:bg-secondary-surface pt-24 pb-20 md:pt-32 px-4 sm:px-6 lg:px-8 font-sans transition-all duration-500">
             <div className="max-w-7xl mx-auto">
-                <div className="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
-                    <h1 className="text-2xl md:text-3xl font-bold text-slate-950 uppercase tracking-[0.3em]">
+                <div className="flex items-end justify-between mb-8 border-b border-primary-surface pb-4">
+                    <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-[0.3em] nuclear-text">
                         My Wishlist
-                        <sup className="ml-2 text-[10px] font-black text-slate-400">{items.length}</sup>
+                        <sup className="ml-2 text-[10px] font-black opacity-50"> {items.length} </sup>
                     </h1>
                 </div>
 
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center">
                         <div className="mb-6 opacity-30">
-                            <Heart className="w-16 h-16 text-slate-950" strokeWidth={1} />
+                            <Heart className="w-16 h-16 nuclear-svg" strokeWidth={1} />
                         </div>
-                        <h2 className="text-xl font-medium text-slate-950 mb-3 tracking-wide uppercase">Your wishlist is empty</h2>
-                        <p className="text-slate-500 mb-8 max-w-md font-light uppercase text-[10px] tracking-widest leading-relaxed">
+                        <h2 className="text-xl font-medium mb-3 tracking-wide uppercase nuclear-text">Your wishlist is empty</h2>
+                        <p className="mb-8 max-w-md font-light uppercase text-[10px] tracking-widest leading-relaxed nuclear-text opacity-50">
                             Items you save will appear here. <br /> Start browsing to build your collection.
                         </p>
                         <Link
                             href="/products"
-                            className="group inline-flex items-center gap-2 border-b border-slate-900 pb-1 text-slate-950 hover:text-green-600 hover:border-green-600 transition-colors uppercase text-[10px] tracking-widest font-black"
+                            className="group inline-flex items-center gap-2 border-b border-primary-surface pb-1 transition-colors uppercase text-[10px] tracking-widest font-black nuclear-text hover:text-emerald-500"
                         >
                             Start Shopping
                             <ShoppingBag className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform duration-300" />

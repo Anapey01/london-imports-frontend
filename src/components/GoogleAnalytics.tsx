@@ -13,12 +13,28 @@ export default function GoogleAnalytics() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.gtag) {
-            const url = pathname + searchParams.toString();
-            window.gtag('config', GA_MEASUREMENT_ID, {
-                page_path: url,
-            });
-        }
+        const handleConsent = () => {
+            const stored = localStorage.getItem('london_imports_cookie_consent_v2');
+            if (stored) {
+                try {
+                    const consent = JSON.parse(stored);
+                    if (consent.analytics) {
+                        const url = window.location.pathname + window.location.search;
+                        if (typeof window !== 'undefined' && window.gtag) {
+                            window.gtag('config', GA_MEASUREMENT_ID, {
+                                page_path: url,
+                            });
+                        }
+                    }
+                } catch (e) { console.error('Consent Parse Error:', e); }
+            } else {
+                // Default fallback: No tracking until ack
+            }
+        };
+
+        handleConsent();
+        window.addEventListener('cookieConsentUpdate', handleConsent);
+        return () => window.removeEventListener('cookieConsentUpdate', handleConsent);
     }, [pathname, searchParams]);
 
     return null;

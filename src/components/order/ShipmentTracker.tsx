@@ -76,15 +76,15 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
     const effectiveIndex = currentMilestoneIndex >= 0 ? currentMilestoneIndex : 0;
 
     return (
-        <div className="w-full bg-white rounded-[2.5rem] p-8 sm:p-12 border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Shipment Journey</h2>
-                    <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mt-1">GZ → ACCRA Tracking</p>
+        <div className="w-full bg-primary-surface/40 p-8 sm:p-12 rounded-[3rem] border border-primary-surface shadow-diffusion-xl overflow-hidden backdrop-blur-xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-16">
+                <div className="flex flex-col gap-2">
+                    <h2 className="text-4xl md:text-5xl font-serif font-black nuclear-text tracking-tighter leading-none">Shipment Journey</h2>
+                    <p className="text-[10px] font-black nuclear-text uppercase tracking-[0.3em] opacity-40">GZ <span className="mx-2">→</span> Accra Logistics Pipeline</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
-                    <Globe className="w-4 h-4 text-indigo-500 animate-pulse" />
-                    <span className="text-[10px] font-bold text-gray-900 uppercase tracking-tighter">Real-Time Logistics Link</span>
+                <div className="flex items-center gap-3 px-6 py-2.5 bg-slate-900 dark:bg-white rounded-xl shadow-diffusion-lg transform hover:scale-[1.02] transition-all duration-500">
+                    <Globe className="w-4 h-4 text-emerald-400 dark:text-emerald-600 animate-pulse" strokeWidth={2.5} />
+                    <span className="text-[9px] font-black text-white dark:text-slate-900 uppercase tracking-widest">Live Logistics Link</span>
                 </div>
             </div>
 
@@ -131,12 +131,11 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
                                     )}
                                 </div>
 
-                                {/* Label Content */}
                                 <div className="text-left md:text-center">
-                                    <h3 className={`text-sm font-extrabold uppercase tracking-tight transition-colors duration-300 ${isPast ? 'text-gray-900' : 'text-gray-300'}`}>
+                                    <h3 className={`text-sm font-serif font-black tracking-tight leading-tight transition-colors duration-500 ${isPast ? 'nuclear-text' : 'nuclear-text opacity-20'}`}>
                                         {milestone.label}
                                     </h3>
-                                    <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isActive ? 'text-indigo-600' : 'text-gray-400'}`}>
+                                    <p className={`text-[9px] font-black uppercase tracking-[0.2em] mt-1.5 ${isActive ? 'text-emerald-600' : 'nuclear-text opacity-40'}`}>
                                         {milestone.sublabel}
                                     </p>
                                     
@@ -144,7 +143,7 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
                                         <motion.div 
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            className="mt-3 px-3 py-1 bg-gray-900 text-white text-[9px] font-bold rounded-lg inline-block whitespace-nowrap"
+                                            className="mt-4 px-4 py-1 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[8px] font-black rounded-lg inline-block whitespace-nowrap tracking-widest shadow-diffusion"
                                         >
                                             CURRENT STATUS
                                         </motion.div>

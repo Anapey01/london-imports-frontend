@@ -49,15 +49,15 @@ export default function FAQAccordion() {
             {faqs.map((faq, index) => (
                 <div
                     key={index}
-                    className="border border-gray-200 rounded-xl overflow-hidden bg-white"
+                    className="border border-primary-surface/40 rounded-xl overflow-hidden bg-primary-surface/40 backdrop-blur-xl"
                 >
                     <button
                         onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-primary-surface/20 transition-all"
                     >
-                        <span className="font-semibold text-gray-900">{faq.question}</span>
+                        <span className="font-black nuclear-text">{faq.question}</span>
                         <svg
-                            className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''}`}
+                            className={`w-5 h-5 nuclear-text opacity-40 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''}`}
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ export default function FAQAccordion() {
                     <div
                         className={`overflow-hidden transition-all duration-200 ${openIndex === index ? 'max-h-48' : 'max-h-0'}`}
                     >
-                        <p className="px-6 pb-4 text-gray-600 leading-relaxed">
+                        <p className="px-6 pb-4 nuclear-text opacity-40 font-bold leading-relaxed">
                             {faq.answer}
                         </p>
                     </div>

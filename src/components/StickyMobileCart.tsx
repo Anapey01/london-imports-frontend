@@ -49,7 +49,7 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
     return createPortal(
         <div
             className={`
-                fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-slate-100 shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.08)]
+                fixed bottom-0 left-0 right-0 z-50 bg-primary-surface/90 backdrop-blur-xl border-t border-primary-surface shadow-diffusion-lg
                 px-4 py-2 pb-safe transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden
                 ${isVisible ? 'translate-y-0' : 'translate-y-full'}
             `}
@@ -58,10 +58,10 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
             <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
                 {/* Product Info (Truncated) */}
                 <div className="flex-1 min-w-0">
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] font-sans truncate mb-0.5">
+                    <p className="text-[9px] font-black nuclear-text opacity-40 uppercase tracking-[0.2em] truncate mb-0.5">
                         {product.name}
                     </p>
-                    <p className="text-sm font-bold text-[#006B5A] tabular-nums">
+                    <p className="text-[15px] font-black nuclear-text tabular-nums tracking-tighter leading-none">
                         {product.price?.toLocaleString('en-GH', { style: 'currency', currency: 'GHS' })}
                     </p>
                 </div>
@@ -71,20 +71,20 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
                     onClick={onAddToCart}
                     disabled={isAdding || (product.preorder_status === 'SOLD_OUT')}
                     className="
-                        bg-[#006B5A] text-white px-5 h-9 rounded-lg font-bold text-xs shadow-sm 
-                        active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100
-                        flex items-center gap-2
+                        bg-slate-950 text-white dark:bg-white dark:text-slate-950 px-6 h-10 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-diffusion
+                        active:scale-95 transition-all disabled:opacity-30 disabled:active:scale-100
+                        flex items-center gap-3
                     "
                     aria-label={`Add ${product.name} to cart`}
                 >
                     {isAdding ? (
-                        <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white dark:border-slate-950/30 dark:border-t-slate-950 rounded-full animate-spin" />
                     ) : (
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     )}
-                    <span className="uppercase tracking-[0.1em]">Add</span>
+                    <span>Add</span>
                 </button>
             </div>
         </div>,

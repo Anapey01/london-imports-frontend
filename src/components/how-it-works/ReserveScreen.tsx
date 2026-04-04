@@ -34,17 +34,19 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
 
     if (phase === 'success') {
         return (
-            <div key="reserve-success" className="h-full rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-white text-gray-900">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 animate-scale-in bg-green-100">
-                    <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div key="reserve-success" className="h-full p-6 flex flex-col items-center justify-center text-center bg-white text-slate-900">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mb-8 animate-[scale-in_0.5s_ease-out] bg-emerald-50 border border-emerald-100">
+                    <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <div className="text-sm font-bold mb-1 text-gray-900">Payment Successful!</div>
-                <div className="text-xs mb-3 text-gray-500">GHS 150 received</div>
-                <div className="rounded-xl p-3 w-full bg-gray-100">
-                    <div className="text-xs mb-1 text-gray-500">Order Reference</div>
-                    <div className="text-sm font-bold text-rose-500">#LI-2024-0847</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-2 italic">Success / Confirmed</div>
+                <div className="text-2xl font-serif font-black mb-1 text-slate-900 tracking-tight leading-none">Protocol Secure.</div>
+                <div className="text-[10px] mb-8 text-slate-400 font-bold uppercase tracking-widest leading-relaxed">Deposit of GHS 150.00 confirmed and batch locked.</div>
+                
+                <div className="bg-slate-50 border border-slate-100 p-4 w-full">
+                    <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1 leading-none">Order Reference</div>
+                    <div className="text-[11px] font-black text-slate-900 tabular-nums">#LI-EST-2026-0847</div>
                 </div>
             </div>
         );
@@ -52,45 +54,45 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
 
     if (phase === 'processing') {
         return (
-            <div key="reserve-processing" className="h-full rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-white text-gray-900">
-                <div className="w-12 h-12 border-4 rounded-full animate-spin mb-4 border-rose-200 border-t-rose-500"></div>
-                <div className="text-sm font-bold mb-1 text-gray-900">Processing Payment...</div>
-                <div className="text-xs text-gray-500">Waiting for MoMo confirmation</div>
+            <div key="reserve-processing" className="h-full p-6 flex flex-col items-center justify-center text-center bg-white text-slate-900">
+                <div className="w-10 h-10 border-[3px] border-slate-100 border-t-slate-900 rounded-full animate-spin mb-8"></div>
+                <div className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-900 animate-pulse">Processing Protocol...</div>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Waiting for MoMo confirmation</div>
             </div>
         );
     }
 
     return (
-        <div key="reserve" className="h-full rounded-2xl p-4 flex flex-col bg-white text-gray-900">
-            <div className="text-center mb-3">
-                <div className="text-sm font-bold text-gray-900">Mobile Money Payment</div>
-                <div className="text-xs text-gray-500">Deposit: GHS 150</div>
-            </div>
+        <div key="reserve" className="h-full p-6 flex flex-col bg-white text-slate-900">
+            <header className="border-b border-slate-900 pb-6 mb-8 text-center">
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">MoMo Payment / Batch 024</div>
+                <div className="text-xl font-serif font-black text-slate-900 tracking-tight">Reserve Slot</div>
+            </header>
 
-            <div className="rounded-xl p-3 mb-3 flex items-center gap-3 bg-yellow-50">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs bg-yellow-400">MTN</div>
+            <div className="border border-slate-100 p-6 mb-6 flex items-center gap-4 bg-slate-50 transition-colors">
+                <div className="w-10 h-10 bg-slate-900 flex items-center justify-center text-white font-black text-[10px] uppercase tracking-tighter">MTN</div>
                 <div className="flex-1">
-                    <div className="text-xs text-gray-500">Phone Number</div>
-                    <div className="text-sm font-bold flex items-center text-gray-900">
+                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Interface Number</div>
+                    <div className="text-[13px] font-black flex items-center text-slate-900 tabular-nums">
                         {phoneNumber}
-                        <span className="inline-block w-0.5 h-4 ml-0.5 animate-pulse bg-pink-500"></span>
+                        <span className="inline-block w-0.5 h-4 ml-0.5 animate-pulse bg-slate-900"></span>
                     </div>
                 </div>
             </div>
 
-            <div className="rounded-xl p-3 mb-3 bg-gray-50">
-                <div className="flex justify-between text-xs mb-2">
-                    <span className="text-gray-500">Item</span>
-                    <span className="text-gray-900">iPhone 15 Pro Max</span>
+            <div className="border-t border-slate-100 pt-6 mb-8">
+                <div className="flex justify-between items-baseline mb-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Inventory</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">iPhone 15 Pro Max</span>
                 </div>
-                <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Deposit</span>
-                    <span className="font-bold text-pink-500">GHS 150</span>
+                <div className="flex justify-between items-baseline">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initial Deposit</span>
+                    <span className="text-xl font-serif font-black text-emerald-600 tabular-nums tracking-tighter">GHS 150.00</span>
                 </div>
             </div>
 
-            <div className="mt-auto rounded-xl py-2.5 text-center bg-gradient-to-r from-yellow-400 to-yellow-500">
-                <span className="text-xs font-bold text-white">Pay with MoMo →</span>
+            <div className="mt-auto bg-slate-900 py-3 text-center shadow-xl shadow-slate-900/10">
+                <span className="text-white text-[10px] font-black uppercase tracking-[0.4em]">Execute Payment →</span>
             </div>
         </div>
     );

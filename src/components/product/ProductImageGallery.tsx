@@ -54,7 +54,7 @@ export default function ProductImageGallery({
     return (
         <div className="space-y-6">
             {/* Main Image - directly on cream background */}
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm transition-all duration-300">
+            <div className="relative aspect-square rounded-3xl overflow-hidden bg-primary-surface border border-primary-surface/40 shadow-diffusion-lg transition-all duration-300">
                 <Image
                     src={currentImage}
                     alt={`Buy ${productName} in Ghana - Authentic China Import`}
@@ -77,7 +77,7 @@ export default function ProductImageGallery({
                                 onClick={() => onImageSelect(imgUrl)}
                                 aria-label={`View image of ${img.alt || productName}`}
                                 className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 snap-start
-                                    ${isSelected ? 'border-pink-600 ring-2 ring-pink-100 scale-105' : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'}
+                                    ${isSelected ? 'border-emerald-500 ring-2 ring-emerald-500/20 scale-105' : 'border-primary-surface/40 hover:border-primary-surface opacity-60 hover:opacity-100'}
                                 `}
                             >
                                 <Image
@@ -94,30 +94,32 @@ export default function ProductImageGallery({
             )}
 
             {/* Product Specs Row - High-Fidelity Discovery Units */}
-            <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-100">
+            <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-primary-surface/40">
                 {/* Delivery Unit */}
                 <div className="flex flex-col items-center text-center gap-3 group">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#006B5A]/5 text-[#006B5A] transition-transform duration-500 group-hover:scale-110">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-primary-surface/60 border border-primary-surface text-emerald-500 transition-transform duration-500 group-hover:scale-110">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={preorderStatus === 'READY_TO_SHIP' ? "M5 13l4 4L19 7" : "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"} />
                         </svg>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
+                        <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">
                             {preorderStatus === 'READY_TO_SHIP' ? 'Ships within 24h' : deliveryWindowText}
                         </p>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold">Delivery</p>
+                        <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold">Delivery</p>
                     </div>
                 </div>
 
                 {/* Category Unit */}
                 <div className="flex flex-col items-center text-center gap-3 group">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-[#006B5A]/20 transition-transform duration-500 group-hover:scale-110 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-green-600' : 'bg-[#006B5A]'}`}>
-                        <span className="text-white text-[11px] font-black tracking-tighter">{preorderStatus === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}</span>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-500/40 transition-transform duration-500 group-hover:scale-110 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-emerald-600' : 'bg-primary-surface'}`}>
+                        <span className={`text-[11px] font-black tracking-tighter ${preorderStatus === 'READY_TO_SHIP' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                            {preorderStatus === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}
+                        </span>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight line-clamp-1">{categoryName}</p>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold">Category</p>
+                        <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight line-clamp-1">{categoryName}</p>
+                        <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold">Category</p>
                     </div>
                 </div>
 
@@ -125,26 +127,26 @@ export default function ProductImageGallery({
                 <div className="flex flex-col items-center text-center gap-3 group">
                     {preorderStatus === 'READY_TO_SHIP' ? (
                         <>
-                            <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-green-50 text-green-600 transition-transform duration-500 group-hover:scale-110">
+                            <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-500 transition-transform duration-500 group-hover:scale-110">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">In Stock</p>
-                                <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold text-center">Available</p>
+                                <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">In Stock</p>
+                                <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold text-center">Available</p>
                             </div>
                         </>
                     ) : (
                         <>
-                            <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-amber-50 text-amber-500 transition-transform duration-500 group-hover:scale-110">
+                            <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-500 transition-transform duration-500 group-hover:scale-110">
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                                 </svg>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">{reservationsCount}+</p>
-                                <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold text-center">Reserved</p>
+                                <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">{reservationsCount}+</p>
+                                <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold text-center">Reserved</p>
                             </div>
                         </>
                     )}
@@ -154,7 +156,7 @@ export default function ProductImageGallery({
             {/* Video Section */}
             {(video || videoUrl) && (
                 <div className="mt-8">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Product Video</h3>
+                    <h3 className="text-lg font-bold nuclear-text mb-4">Product Video</h3>
                     <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-lg group">
                         {!isPlaying ? (
                             <button
@@ -171,7 +173,7 @@ export default function ProductImageGallery({
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center pl-1 shadow-lg">
-                                            <svg className="w-6 h-6 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z" />
                                             </svg>
                                         </div>

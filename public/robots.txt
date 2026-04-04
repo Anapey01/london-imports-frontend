@@ -10,19 +10,28 @@ Disallow: /register/
 Disallow: /login
 Disallow: /register
 
-# Block AI Bots & Scrapers (Standard Syntax)
+# WELCOME AI SEARCH CRAWLERS (Optimized for LLM Discovery)
+# This allows ChatGPT, Claude, and Perplexity to summarize our logistics and products.
+
 User-agent: GPTBot
-Disallow: /
+Allow: /
 
 User-agent: ChatGPT-User
-Disallow: /
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
 
 User-agent: Google-Extended
-Disallow: /
+Allow: /
 
 User-agent: CCBot
-Disallow: /
+Allow: /
 
+# Keep scrapers restricted
 User-agent: Omgilibot
 Disallow: /
 

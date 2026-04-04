@@ -49,27 +49,24 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
     //    saveAddresses(addresses.map(a => ({ ...a, isDefault: a.id === id })));
     // };
 
-    const inputClass = `w-full px-4 py-3 rounded-xl border outline-none transition-all text-sm ${isDark
-        ? 'bg-slate-900 border-slate-700 text-white focus:border-pink-500 placeholder:text-slate-600'
-        : 'bg-white border-gray-100 text-gray-900 focus:border-pink-500 placeholder:text-gray-400 focus:ring-2 focus:ring-pink-500/10'
-        }`;
+    const inputClass = `w-full px-4 py-3 rounded-xl border outline-none transition-all text-sm bg-primary-surface border-primary-surface nuclear-text focus:border-emerald-500 placeholder:opacity-30`;
 
     return (
         <div className="space-y-10 animate-fade-in-up">
-            <div className={`border-b pb-6 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+            <div className="border-b pb-6 border-primary-surface">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <h2 className="text-2xl font-bold tracking-tight nuclear-text">
                             Your Addresses
                         </h2>
-                        <p className={`text-sm mt-1 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                        <p className="text-sm mt-1 nuclear-text opacity-50">
                             Manage your delivery locations and primary shipping info
                         </p>
                     </div>
                     {!showForm && (
                         <button
                             onClick={() => setShowForm(true)}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 text-white text-xs font-bold rounded-xl hover:bg-pink-700 transition-all active:scale-95 shadow-lg shadow-pink-500/20"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-xl hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
                         >
                             <Plus className="w-3 h-3" />
                             Add Address
@@ -82,25 +79,25 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
             {(user?.address || user?.city || user?.region) && (
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h3 className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                        <h3 className="text-xs font-bold uppercase tracking-widest nuclear-text opacity-40">
                             Primary Account Address
                         </h3>
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('switch-profile-tab', { detail: 'settings' }))}
-                            className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-500 hover:text-white' : 'text-gray-400 hover:text-black'} transition-colors`}
+                            className="text-[10px] font-bold uppercase tracking-widest nuclear-text opacity-50 hover:opacity-100 transition-opacity"
                         >
                             Edit in Settings
                         </button>
                     </div>
-                    <div className={`p-6 rounded-3xl border-2 hover:border-pink-500/50 transition-all ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-pink-50/30 border-pink-100/50 shadow-sm'}`}>
+                    <div className="p-6 rounded-3xl border border-primary-surface bg-primary-surface/40 hover:border-emerald-500/50 transition-all">
                         <div className="flex items-start gap-4">
-                            <div className="mt-1 p-2 bg-pink-100 rounded-xl">
-                                <MapPin className="w-5 h-5 text-pink-600" />
+                            <div className="mt-1 p-2 bg-emerald-500/10 rounded-xl">
+                                <MapPin className="w-5 h-5 text-emerald-500" />
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h4 className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Official Shipping Info</h4>
-                                    <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase truncate">
+                                    <h4 className="font-bold nuclear-text">Official Shipping Info</h4>
+                                    <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase truncate">
                                         <CheckCircle2 className="w-3 h-3" />
                                         Synced from Checkout
                                     </span>
@@ -137,7 +134,7 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Label</label>
+                            <label className="text-xs font-bold uppercase tracking-wider ml-1 nuclear-text opacity-40">Label</label>
                             <input type="text" placeholder="e.g. Home, Office" value={formData.label} onChange={e => setFormData({ ...formData, label: e.target.value })} className={inputClass} required />
                         </div>
                         <div className="space-y-1.5">

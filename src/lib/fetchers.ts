@@ -6,7 +6,7 @@ const API_BASE_URL = siteConfig.apiUrl;
  * Robust fetch with timeout and retry logic for Render's Cold Starts
  */
 async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 2) {
-    const timeout = 15000; // 15 seconds timeout
+    const timeout = 60000; // 60 seconds timeout (to handle Render.com cold starts)
     
     for (let i = 0; i <= retries; i++) {
         const controller = new AbortController();
@@ -54,15 +54,29 @@ export async function getProducts(params: Record<string, string> = {}) {
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 86400 },
+            next: { revalidate: 0 }, // Force fresh data for development & sync
         });
 
-        if (!res.ok) {
-            console.error(`[SSR] Error fetching products list: ${res.status} ${res.statusText}`);
-            return { count: 0, results: [] }; // Return empty instead of throwing to prevent page crash
+        const data = await res.json();
+        
+        // Final Gatekeeper: Archive Exclusion Filter
+        if (process.env.NODE_ENV === 'production' && data.results) {
+            const originalCount = data.results.length;
+            data.results = data.results.filter((product: any) => {
+                const name = (product.name || '').toLowerCase();
+                const hasImage = !!product.image;
+                const isTestProduct = name === 'shoe' || name === 'test';
+                
+                // Exclude if it's a known placeholder name OR has no image in production
+                return !isTestProduct && hasImage;
+            });
+            
+            if (data.results.length !== originalCount) {
+                console.log(`[SSR] Archive Filter: Purged ${originalCount - data.results.length} test artifacts from the production feed.`);
+            }
         }
 
-        return res.json();
+        return data;
     } catch (error) {
         console.error("Error fetching products:", error);
         return { count: 0, results: [] };
@@ -73,16 +87,14 @@ export async function getFeaturedProducts() {
     return getProducts({
         featured: 'true',
         limit: '10',
-        ordering: '-created_at',
-        is_vendor: 'false'
+        ordering: '-created_at'
     });
 }
 
-export async function getRecentProducts(limit = 20, isVendor = false) {
+export async function getRecentProducts(limit = 20) {
     return getProducts({
         limit: limit.toString(),
-        ordering: '-created_at',
-        is_vendor: isVendor.toString()
+        ordering: '-created_at'
     });
 }
 
@@ -98,8 +110,7 @@ export async function getAvailableProducts(limit = 10) {
     return getProducts({
         status: 'READY_TO_SHIP',
         limit: limit.toString(),
-        ordering: '-created_at',
-        is_vendor: 'false'
+        ordering: '-created_at'
     });
 }
 
@@ -199,6 +210,26 @@ export async function getAllVendors() {
         return data.results || data;
     } catch (e) {
         console.error("[SSR] Exception fetching all vendors:", e);
+        return [];
+    }
+}
+
+export async function getHeroBanners() {
+    const url = `${API_BASE_URL}/products/banners/`;
+    try {
+        const res = await fetchWithRetry(url, {
+            next: { revalidate: 86400 } // Cache for 24 hours, but revalidates
+        });
+
+        if (!res.ok) {
+            console.error(`[SSR] Error fetching banners: ${res.status}`);
+            return [];
+        }
+
+        const data = await res.json();
+        return data.results || data || [];
+    } catch (e) {
+        console.error("[SSR] Exception fetching banners:", e);
         return [];
     }
 }

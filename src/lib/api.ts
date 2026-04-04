@@ -25,6 +25,7 @@ api.interceptors.request.use((config) => {
     const publicEndpoints = [
       '/auth/register/',
       '/auth/login/',
+      '/auth/google/',
       '/auth/register/vendor/',
       '/auth/register/partner/',
       '/auth/password/reset/', // Covers request and confirm
@@ -132,6 +133,7 @@ export const authAPI = {
   registerAdmin: (data: unknown) => api.post('/auth/register/admin/', data),
   requestPasswordReset: (data: unknown) => api.post('/auth/password/reset/', data),
   confirmPasswordReset: (data: unknown) => api.post('/auth/password/reset/confirm/', data),
+  googleLogin: (idToken: string) => api.post('/auth/google/', { id_token: idToken }),
 };
 
 export const productsAPI = {

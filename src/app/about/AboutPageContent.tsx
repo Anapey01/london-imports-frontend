@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import {
     Globe,
-    ArrowRight,
+    ArrowUpRight,
     ShieldCheck,
     Zap,
-    MapPin,
-    Star,
-    Briefcase
+    Briefcase,
+    Plus
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -45,15 +43,13 @@ export default function AboutPageContent() {
                         regions: response.data.regions || 16,
                         authenticity: response.data.authenticity_rate || 100,
                     });
-
                 }
                 setIsLoaded(true);
             } catch (error) {
                 console.error('Failed to fetch stats:', error);
-                setIsLoaded(true); // Still trigger animations with fallback
+                setIsLoaded(true); 
             }
         };
-
         fetchStats();
     }, []);
 
@@ -64,287 +60,273 @@ export default function AboutPageContent() {
     ];
 
     return (
-        <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-100 selection:text-slate-950">
-            {/* 1. Welcome & Mission */}
-            <section className="pt-24 pb-20 max-w-7xl mx-auto px-6">
-                <div className="text-center mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        className="w-10 h-0.5 bg-slate-950 mx-auto mb-6"
-                    />
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-3xl md:text-4xl font-bold text-slate-950 leading-tight uppercase tracking-[0.3em]"
-                    >
-                        Our Story
-                    </motion.h1>
-                </div>
-
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
-                    <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} className="space-y-8">
-                        <h2 className="text-4xl md:text-5xl font-light text-slate-950 leading-tight tracking-tight uppercase">Our mission</h2>
-                        <p className="text-lg md:text-xl text-slate-500 leading-relaxed font-light">
-                            We believe that <span className="text-slate-950 font-medium">technology</span> has the potential to transform life in <span className="font-bold text-slate-950 uppercase tracking-widest text-sm">Ghana</span>. We get premium stuff from <span className="text-slate-950 underline decoration-slate-200 decoration-4 underline-offset-8">China</span> and make it available in every corner of the country.
-                        </p>
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        className="relative rounded-[2rem] overflow-hidden shadow-2xl h-[400px] border border-slate-100"
-                    >
-                        <Image
-                            src="/assets/about/logistics-tech.png"
-                            alt="Logistics Technology"
-                            fill
-                            className="object-cover"
-                        />
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* 2. Leadership Spotlight */}
-            <section className="py-20 bg-slate-50 border-y border-slate-100">
+        <div className="min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-200 selection:bg-slate-100 italic-selection:bg-emerald-100">
+            
+            {/* 1. INSTITUTIONAL HEADER & MISSION */}
+            <section className="pt-40 pb-32 border-b border-slate-50 dark:border-slate-900">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col lg:flex-row items-center gap-16">
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-100 relative group"
-                        >
-                            <Image
-                                src="/assets/about/ceo.png"
-                                alt="Abagail - Founder & CEO"
-                                fill
-                                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent z-10" />
-                            <div className="absolute bottom-6 left-6 z-20 text-white">
-                                <h4 className="text-xl font-bold">Abagail</h4>
-                                <p className="text-white/70 text-[10px] uppercase font-bold tracking-widest">Founder & CEO</p>
-                            </div>
-                        </motion.div>
-                        <div className="w-full lg:w-2/3 space-y-6">
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                className="inline-flex items-center gap-2 bg-slate-950 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
-                            >
-                                <Star className="w-3 h-3" /> Leadership
-                            </motion.div>
-                            <motion.h3
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="text-2xl md:text-3xl font-light text-slate-950 tracking-tight"
-                            >
-                                &quot;Our goal is to create a seamless link between global manufacturing and local demand.&quot;
-                            </motion.h3>
-                            {/* Timeline Snippet */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                whileInView={{ opacity: 1 }}
-                                transition={{ delay: 0.2 }}
-                                className="grid grid-cols-2 gap-4 pt-6 border-t border-slate-200"
-                            >
-                                <div className="space-y-1">
-                                    <div className="text-slate-950 font-black text-xs uppercase tracking-widest">JAN 2024</div>
-                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Foundation & China Hub Launch</div>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="text-slate-950 font-black text-xs uppercase tracking-widest">JUNE 2024</div>
-                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Expansion to 16 Regions</div>
-                                </div>
-                            </motion.div>
+                    <div className="mb-24">
+                        <div className="flex items-center gap-4 mb-12">
+                            <div className="h-px w-12 bg-slate-900 dark:bg-slate-100" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Institutional Narrative / 01</span>
+                        </div>
+                        <h1 className="text-7xl md:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white mb-12">
+                            The Sourcing <br />
+                            <span className="italic font-light text-slate-200 dark:text-slate-800 uppercase tracking-widest text-[0.4em] block mt-4">Legacy.</span>
+                        </h1>
+                    </div>
+
+                    <div className="grid lg:grid-cols-12 gap-24 items-start">
+                        <div className="lg:col-span-7 space-y-12">
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white leading-tight tracking-tighter italic">Our Mission</h2>
+                            <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 leading-[1.8] font-medium max-w-2xl">
+                                We believe that <span className="text-slate-900 dark:text-white border-b-2 border-slate-900 dark:border-white pb-1 italic">technology</span> has the potential to transform life in Ghana. Our architecture is designed to bridge the 12,000km gap between Chinese manufacturing excellence and Ghanaian retail demand.
+                            </p>
+                        </div>
+                        <div className="lg:col-span-5 relative">
+                             <div className="aspect-square relative grayscale border border-slate-900 overflow-hidden group">
+                                <Image
+                                    src="/assets/about/logistics-tech.png"
+                                    alt="Logistics Technology"
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
+                                />
+                             </div>
+                             <div className="absolute -bottom-6 -right-6 p-8 bg-slate-900 text-white hidden md:block">
+                                  <span className="text-[9px] font-black uppercase tracking-[0.5em] block mb-2 opacity-50">Node Mapping</span>
+                                  <p className="text-[10px] font-bold">16 Regional Expansion Protocols Active.</p>
+                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* 3. Verticals */}
-            <section className="py-24 bg-white">
-                <div className="max-w-7xl mx-auto px-6 text-center">
-                    <div className="w-10 h-0.5 bg-slate-950 mx-auto mb-6" />
-                    <h2 className="text-3xl font-bold mb-16 text-slate-950 uppercase tracking-[0.3em]">Verticals</h2>
-                    <div className="grid md:grid-cols-2 gap-10">
-                        {/* Pillar 1 */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 text-left group"
-                        >
-                            <div className="h-56 relative overflow-hidden">
+            {/* 2. LEADERSHIP AUDIT (CE Profiles) */}
+            <section className="py-32 border-b border-slate-50 dark:border-slate-900 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="flex flex-col lg:flex-row items-center gap-24">
+                        <div className="w-full lg:w-1/3 aspect-[4/5] h-[600px] relative border border-slate-900 grayscale">
+                            <Image
+                                src="/assets/about/ceo.png"
+                                alt="Abagail - Founder & CEO"
+                                fill
+                                className="object-cover opacity-90"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-20" />
+                            <div className="absolute bottom-12 left-12">
+                                <h4 className="text-3xl font-serif font-bold text-white mb-2 leading-none">Abagail</h4>
+                                <p className="text-[9px] text-white/60 uppercase font-black tracking-[0.5em]">Executive Director / Founder</p>
+                            </div>
+                        </div>
+                        
+                        <div className="w-full lg:w-2/3 space-y-12">
+                            <div className="flex items-center gap-4 opacity-30 dark:opacity-10">
+                                <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white">Leadership Strategy</span>
+                            </div>
+                            <h3 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white leading-[1.1] tracking-tighter italic">
+                                &quot;We guide the direct sourcing corridor between factory floors and final delivery.&quot;
+                            </h3>
+                            
+                            {/* Timeline Ledger */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-20 border-t border-slate-50 italic uppercase">
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                                        <span className="text-[10px] font-black text-slate-300 tracking-widest">JAN. 2024</span>
+                                        <Plus className="w-3 h-3 text-slate-200" strokeWidth={3} />
+                                    </div>
+                                    <p className="text-xs font-black text-slate-900 tracking-widest leading-relaxed">Foundation & Guangzhou (GZ) Sourcing Node Launch</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                                        <span className="text-[10px] font-black text-slate-300 tracking-widest">JUN. 2024</span>
+                                        <Plus className="w-3 h-3 text-slate-200" strokeWidth={3} />
+                                    </div>
+                                    <p className="text-xs font-black text-slate-900 tracking-widest leading-relaxed">Integrated 16-Region Logistics Expansion Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 3. OPERATING PILLARS (Verticals) */}
+            <section className="py-32 border-b border-slate-50 dark:border-slate-900 bg-slate-50/30 dark:bg-slate-900/10">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="mb-24 flex flex-col items-center text-center">
+                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-8">Operational Verticals</span>
+                        <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter">Strategic Impact</h2>
+                    </header>
+
+                    <div className="grid md:grid-cols-2 gap-px bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                        {/* Pillar 1: Consumers */}
+                        <div className="bg-white dark:bg-slate-950 p-12 md:p-20 flex flex-col group">
+                            <div className="aspect-video relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 mb-12">
                                 <Image
                                     src="/assets/about/consumers.png"
                                     alt="Serving Consumers"
                                     fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-1000 opacity-30 group-hover:opacity-100"
                                 />
-                                <div className="absolute inset-0 bg-slate-950/10 group-hover:bg-transparent transition-colors" />
                             </div>
-                            <div className="p-8 space-y-4">
-                                <h3 className="text-2xl font-light text-slate-950 uppercase tracking-tight">Serving Consumers</h3>
-                                <p className="text-slate-500 text-sm leading-relaxed font-light">Connecting individuals to high-quality international products with doorstep delivery.</p>
-                                <Link href="/products" className="inline-flex items-center gap-2 text-[10px] font-bold text-slate-950 border-b border-slate-900 pb-0.5 transition-all uppercase tracking-widest">Shop Collection <ArrowRight className="w-3.5 h-3.5" /></Link>
-                            </div>
-                        </motion.div>
-                        {/* Pillar 2 */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 text-left group"
-                        >
-                            <div className="h-56 relative overflow-hidden">
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 mb-6 block">Target Group 01</span>
+                            <h3 className="text-3xl font-serif font-bold text-slate-900 dark:text-white mb-8 italic">Verified Retail Nodes</h3>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.8] mb-12 max-w-sm">
+                                Connecting individual consumers directly to factory-sealed international products with verified doorstep delivery protocols.
+                            </p>
+                            <Link href="/products" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-slate-900 dark:text-white border-b border-black dark:border-white pb-2 self-start hover:opacity-60 transition-all uppercase tracking-[0.3em]">
+                                Browse Inventory Index
+                                <ArrowUpRight className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+                            </Link>
+                        </div>
+                        
+                        {/* Pillar 2: Businesses */}
+                        <div className="bg-white dark:bg-slate-950 p-12 md:p-20 flex flex-col group border-l border-slate-50 dark:border-slate-900">
+                            <div className="aspect-video relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 mb-12">
                                 <Image
                                     src="/assets/about/businesses.png"
                                     alt="Empowering Businesses"
                                     fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-1000 opacity-30 group-hover:opacity-100"
                                 />
-                                <div className="absolute inset-0 bg-slate-950/10 group-hover:bg-transparent transition-colors" />
                             </div>
-                            <div className="p-8 space-y-4">
-                                <h3 className="text-2xl font-light text-slate-950 uppercase tracking-tight">Enterprise Sourcing</h3>
-                                <p className="text-slate-500 text-sm leading-relaxed font-light">Providing retailers with factory-direct sourcing and scaling logistics.</p>
-                                <Link href="/contact" className="inline-flex items-center gap-2 text-[10px] font-bold text-slate-950 border-b border-slate-900 pb-0.5 transition-all uppercase tracking-widest">Inquire Wholesale <ArrowRight className="w-3.5 h-3.5" /></Link>
-                            </div>
-                        </motion.div>
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 mb-6 block">Target Group 02</span>
+                            <h3 className="text-3xl font-serif font-bold text-slate-900 dark:text-white mb-8 italic">Enterprise Sourcing</h3>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.8] mb-12 max-w-sm">
+                                Providing Ghanaian retailers with integrated factory-direct sourcing lanes and scalable cross-border logistics infrastructures.
+                            </p>
+                            <Link href="/contact" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-slate-900 dark:text-white border-b border-black dark:border-white pb-2 self-start hover:opacity-60 transition-all uppercase tracking-[0.3em]">
+                                Wholesale Audit Inquiry
+                                <ArrowUpRight className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* 4. Key Figures */}
-            <section className="relative py-32 bg-gray-900 text-white text-center overflow-hidden">
-                <div className="absolute inset-0 z-0 select-none pointer-events-none">
-                    <Image
-                        src="/banners/logistics-bg.png"
-                        alt="Logistics Background"
-                        fill
-                        className="object-cover opacity-30 grayscale blur-[2px]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900/40 to-gray-900 z-10" />
-                    <div className="absolute inset-0 flex items-center justify-center font-black text-white/[0.03] text-[18vw] uppercase italic leading-none z-0">
-                        GLOBAL
-                    </div>
+            {/* 4. STATISTICAL AUDIT (High-Contrast Digital Ledger) */}
+            <section className="py-40 bg-slate-900 text-white overflow-hidden relative">
+                <div className="absolute inset-0 opacity-10 grayscale blur-sm pointer-events-none">
+                     <Image src="/banners/logistics-bg.png" alt="Logistics Background" fill className="object-cover" />
                 </div>
+                <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+                    <header className="mb-32">
+                         <div className="h-px w-10 bg-emerald-500 mx-auto mb-10" />
+                         <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-500 mb-6 block">Statistical Audit Ledger</span>
+                         <h2 className="text-4xl md:text-6xl font-serif font-bold italic tracking-tighter leading-none opacity-80 decoration-emerald-500/20 underline underline-offset-8">Institutional Scale</h2>
+                    </header>
 
-                 <div className="max-w-7xl mx-auto px-6 relative z-20">
-                    <div className="w-10 h-0.5 bg-green-600 mx-auto mb-10" />
-                    <h2 className="text-2xl font-bold text-white uppercase tracking-[0.4em] mb-16 opacity-80">Empowerment in numbers</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-y-16">
-                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                            <div className="text-6xl font-black text-white mb-2 tabular-nums">{isLoaded ? stats.regions : '..'}</div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-green-500">Regions Covered</div>
-                        </motion.div>
-                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                            <div className="text-6xl font-black text-white mb-2 tabular-nums">{isLoaded ? stats.products + "+" : '..'}</div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-green-500">Sourced Products</div>
-                        </motion.div>
-                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                            <div className="text-6xl font-black text-white mb-2 tabular-nums">{isLoaded ? (stats.orders >= 1000 ? (stats.orders / 1000).toFixed(1) + "k+" : stats.orders) : '..'}</div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-green-500">Orders</div>
-                        </motion.div>
-                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                            <div className="text-6xl font-black text-white mb-2">{isLoaded ? stats.authenticity + "%" : '..'}</div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-green-500">Authenticity Rate</div>
-                        </motion.div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-24">
+                        <div className="space-y-6">
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500 block">Verified Regions</span>
+                            <div className="text-8xl font-serif font-black tracking-tighter text-white tabular-nums border-b border-white/10 pb-8">{isLoaded ? stats.regions : '--'}</div>
+                            <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-relaxed italic">Strategic Reach 100%</p>
+                        </div>
+                        <div className="space-y-6">
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500 block">Sourced Items</span>
+                            <div className="text-8xl font-serif font-black tracking-tighter text-white tabular-nums border-b border-white/10 pb-8">{isLoaded ? stats.products + "+" : '--'}</div>
+                            <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-relaxed italic">Direct Factory Access</p>
+                        </div>
+                        <div className="space-y-6">
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500 block">Fulfilled Orders</span>
+                            <div className="text-8xl font-serif font-black tracking-tighter text-white tabular-nums border-b border-white/10 pb-8">{isLoaded ? (stats.orders >= 1000 ? (stats.orders / 1000).toFixed(1) + "k" : stats.orders) : '--'}</div>
+                            <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-relaxed italic">Verified Success Rate</p>
+                        </div>
+                        <div className="space-y-6">
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500 block">Integrity Index</span>
+                            <div className="text-8xl font-serif font-black tracking-tighter text-white tabular-nums border-b border-white/10 pb-8">{isLoaded ? stats.authenticity + "%" : '--'}</div>
+                            <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-relaxed italic">Authentic Guarantee</p>
+                        </div>
                     </div>
                 </div>
             </section>
 
-             {/* 5. Operating Units */}
-            <section className="py-24 bg-white text-center">
+             {/* 5. OPERATING HUBS (Institutional Linear Directory) */}
+            <section className="py-32 border-b border-slate-50 dark:border-slate-900">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="w-10 h-0.5 bg-slate-950 mx-auto mb-6" />
-                    <h2 className="text-3xl font-bold mb-16 uppercase tracking-[0.2em] text-slate-950">Operating Units</h2>
-                    <div className="flex flex-wrap justify-center gap-8">
+                    <header className="mb-24">
+                        <div className="flex items-center gap-4 mb-8">
+                             <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Institutional Hubs</span>
+                        </div>
+                        <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Global Infrastructure</h2>
+                    </header>
+                    
+                    <div className="flex flex-col border-t border-slate-900 dark:border-slate-800">
                         {[
-                            { name: "China (GZ)", color: "bg-red-600", icon: "🇨🇳", label: "Sourcing" },
-                            { name: "Ghana (ACC)", color: "bg-green-600", icon: "🇬🇭", label: "HQ" }
-                        ].map((loc, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="w-72 bg-white shadow-sm hover:shadow-xl rounded-[1.5rem] overflow-hidden group transition-all border border-slate-100"
-                            >
-                                <div className={`${loc.color} h-36 flex items-center justify-center relative transition-transform group-hover:scale-105 duration-500`}>
-                                    <h3 className="text-xl font-black text-white uppercase tracking-tight">{loc.name}</h3>
-                                    <div className="absolute top-2 right-4 text-3xl opacity-20">{loc.icon}</div>
+                            { name: "Guangzhou (GZ)", status: "China Node", role: "Primary Factory Sourcing Hub", code: "GZ-001" },
+                            { name: "Accra (ACC)", status: "Ghana Node", role: "Institutional Operational HQ", code: "ACC-HQ" }
+                        ].map((hub, idx) => (
+                            <div key={idx} className="flex flex-col md:flex-row items-start md:items-center justify-between py-12 border-b border-slate-50 dark:border-slate-900 group hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors px-6">
+                                <div className="flex items-center gap-12">
+                                     <span className="text-sm font-black text-slate-200 dark:text-slate-800 uppercase tracking-tighter group-hover:text-slate-900 dark:group-hover:text-white transition-colors">0{idx+1}</span>
+                                     <div>
+                                         <h3 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-white italic tracking-tighter">{hub.name}</h3>
+                                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-2">{hub.status}</p>
+                                     </div>
                                 </div>
-                                <div className="h-40 bg-[#fdfdfd] flex flex-col items-center justify-center p-6 grayscale group-hover:grayscale-0 transition-opacity">
-                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center border border-gray-200 mb-2">
-                                        <Globe className="w-6 h-6 text-gray-300 group-hover:text-green-600" />
-                                    </div>
-                                    <p className="text-[10px] font-black uppercase text-gray-400 group-hover:text-slate-950 tracking-widest">{loc.label}</p>
+                                <div className="mt-8 md:mt-0 flex flex-col md:items-end">
+                                     <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">{hub.role}</span>
+                                     <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-300 dark:text-slate-700 italic group-hover:text-slate-900 dark:group-hover:text-white">{hub.code}</span>
                                 </div>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* 6. Logistics Hubs */}
-            <section className="py-24 bg-gray-900 text-white overflow-hidden">
+            {/* 6. REGIONAL DIRECTORY (Vertical Minimalist Index) */}
+            <section className="py-32 bg-slate-900 text-white">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="text-2xl font-bold uppercase tracking-[0.4em] text-green-600 mb-4"
-                        >
-                            Logistics Hubs
-                        </motion.h2>
-                        <motion.p
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="text-slate-400 max-w-2xl mx-auto text-[10px] uppercase tracking-widest leading-relaxed"
-                        >
-                            We deliver authentic electronics and lifestyle products to all 16 regions of Ghana with guaranteed safety.
-                        </motion.p>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {ghanaRegions.map((region, idx) => (
-                            <motion.div
-                                key={idx}
-                                whileHover={{ scale: 1.05 }}
-                                initial={{ opacity: 0, y: 10 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: (idx % 4) * 0.1 }}
-                                className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-green-600/20 hover:border-green-600/50 transition-all cursor-default group"
-                            >
-                                <MapPin className="w-4 h-4 text-green-600 group-hover:scale-125 transition-transform" />
-                                <span className="text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-white">{region}</span>
-                            </motion.div>
-                        ))}
+                    <div className="grid lg:grid-cols-12 gap-24">
+                        <div className="lg:col-span-4 sticky top-32 h-fit">
+                             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-emerald-500 mb-8 block">Operational Scope</span>
+                             <h2 className="text-5xl font-serif font-bold text-white mb-8 leading-none tracking-tighter">Regional <br /> Distribution Index.</h2>
+                             <p className="text-xs font-medium text-slate-400 leading-relaxed max-w-xs italic border-l border-white/10 pl-8">
+                                Institutional distribution protocols active in all 16 districts of the Ghanaian republic. 
+                                High-performance logistics guaranteed across every node.
+                             </p>
+                        </div>
+                        <div className="lg:col-span-8 flex flex-col border-t border-white/10">
+                            {ghanaRegions.map((region, idx) => (
+                                <div key={idx} className="flex items-center justify-between py-6 border-b border-white/10 group hover:px-6 transition-all duration-500">
+                                     <div className="flex items-center gap-8">
+                                         <span className="text-[10px] font-black text-white/20 group-hover:text-emerald-500">{String(idx+1).padStart(2, '0')}</span>
+                                         <span className="text-sm font-black uppercase tracking-widest text-slate-400 group-hover:text-white">{region}</span>
+                                     </div>
+                                     <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <div className="h-px w-12 bg-white/20" />
+                                          <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic">Verified Node</span>
+                                     </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* 7. Corporate DNA / Values */}
-            <section className="py-24 bg-white border-t border-slate-100">
-                <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="space-y-3">
-                        <Zap className="w-8 h-8 text-green-600 mx-auto" strokeWidth={1} />
-                        <h4 className="font-bold text-[10px] uppercase tracking-widest">Sourcing Speed</h4>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Fastest lead times from Guangzhou factories.</p>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-3">
-                        <ShieldCheck className="w-8 h-8 text-green-600 mx-auto" strokeWidth={1} />
-                        <h4 className="font-bold text-[10px] uppercase tracking-widest">Absolute Integrity</h4>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">100% authenticity or money back guarantee.</p>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-3">
-                        <Briefcase className="w-8 h-8 text-green-600 mx-auto" strokeWidth={1} />
-                        <h4 className="font-bold text-[10px] uppercase tracking-widest">Local Empowerment</h4>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Helping local SMEs scale with global inventory.</p>
-                    </motion.div>
+            {/* 7. INSTITUTIONAL DNA (Core Values) */}
+            <section className="py-32 bg-white dark:bg-slate-950 flex flex-col md:flex-row items-start justify-between max-w-7xl mx-auto px-6 gap-24 font-sans">
+                <div className="max-w-xs">
+                     <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-8 block italic">Strategic Philosophy</span>
+                     <h2 className="text-4xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Operational Institutional DNA.</h2>
+                </div>
+                <div className="grid md:grid-cols-3 gap-16 lg:col-span-9 flex-1">
+                    <div className="space-y-4">
+                        <Zap className="w-8 h-8 text-slate-900 dark:text-white" strokeWidth={1} />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white">Sourcing Index / Speed</h4>
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-relaxed italic">Fastest verified lead times from GZ factory floors to Accra distribution hubs.</p>
+                    </div>
+                    <div className="space-y-4">
+                        <ShieldCheck className="w-8 h-8 text-slate-900 dark:text-white" strokeWidth={1} />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white">Absolute Integrity Audit</h4>
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-relaxed italic">100% authenticity guarantee verified by statutory institutional protocols.</p>
+                    </div>
+                    <div className="space-y-4">
+                        <Briefcase className="w-8 h-8 text-slate-900 dark:text-white" strokeWidth={1} />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white">Enterprise Empowerment</h4>
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-relaxed italic">Empowering local SMEs to scale with factory-direct global inventory access.</p>
+                    </div>
                 </div>
             </section>
         </div>

@@ -4,23 +4,22 @@
  */
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import ShareButton from '@/components/ShareButton';
 import StarRating from '@/components/StarRating';
 import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
 import VariantSelector from '@/components/product/VariantSelector';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
-import { MessageCircle, ShoppingBag, Zap, Send } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { toast } from 'react-hot-toast';
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 import { siteConfig } from '@/config/site';
+import { ShoppingBag } from 'lucide-react';
 
 // Lazy Load components to improve initial page load performance
 const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
@@ -253,9 +252,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     if (error || !product) {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
-                <p className="text-gray-600 mb-6">Could not load product details. Please try again.</p>
-                <button onClick={() => window.location.reload()} className="bg-pink-600 text-white px-6 py-2 rounded-full">Retry</button>
+                <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2">Product Not Found</h2>
+                <p className="text-slate-400 mb-6">Could not load product details. Please try again.</p>
+                <button onClick={() => window.location.reload()} className="text-[11px] font-black uppercase tracking-widest border-b border-slate-900 pb-1">Retry View</button>
             </div>
         );
     }
@@ -328,39 +327,30 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     };
 
     return (
-        <div className="bg-white min-h-screen pb-20">
+        <div className="bg-white dark:bg-slate-950 min-h-screen pb-20">
             <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
                 {/* Visual Breadcrumbs for SEO and Navigation */}
-                <nav className="flex items-center text-xs sm:text-sm text-gray-500 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
-                    <Link href="/" className="hover:text-pink-600 transition-colors flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001-1m-6 0h6" />
-                        </svg>
+                <nav className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300 dark:text-slate-700 mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide py-4 border-b border-slate-50 dark:border-slate-900">
+                    <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                         Home
                     </Link>
-                    <svg className="w-4 h-4 mx-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    <Link href="/products" className="hover:text-pink-600 transition-colors">
+                    <span className="mx-4 text-slate-100 dark:text-slate-900">/</span>
+                    <Link href="/products" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                         Products
                     </Link>
                     {product.category && (
                         <>
-                            <svg className="w-4 h-4 mx-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
+                            <span className="mx-4 text-slate-100 dark:text-slate-900">/</span>
                             <Link 
                                 href={`/products/category/${product.category.slug || ''}`} 
-                                className="hover:text-pink-600 transition-colors"
+                                className="hover:text-slate-900 dark:hover:text-white transition-colors"
                             >
                                 {product.category.name}
                             </Link>
                         </>
                     )}
-                    <svg className="w-4 h-4 mx-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    <span className="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-none">
+                    <span className="mx-4 text-slate-100 dark:text-slate-900">/</span>
+                    <span className="text-slate-900 dark:text-white">
                         {product.name}
                     </span>
                 </nav>
@@ -384,53 +374,43 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     />
 
                     {/* RIGHT COLUMN: Product Info/Selection (Mastered Architecture) */}
-                    <div className="flex flex-col gap-10 flex-1">
-                        {/* High-Fidelity Header Section */}
-                        <div className="space-y-8">
-                            <h1 className="text-3xl lg:text-5xl font-black text-slate-900 leading-none tracking-tighter uppercase break-words">
+                    <div className="flex flex-col gap-12 flex-1">
+                        {/* 1. Header: Source Serif Authority */}
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700">Original Product / London&apos;s</span>
+                            <h1 className="text-4xl lg:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
                             
-                            {/* Impact Price & Rating Row */}
-                            <div className="flex items-center flex-wrap gap-6 pt-2">
-                                <span className="text-4xl lg:text-6xl font-black text-[#006B5A] tracking-tighter tabular-nums leading-none">
+                            {/* 2. Pricing Architecture (Solid Black) */}
+                            <div className="flex items-center flex-wrap gap-8 pt-4">
+                                <span className="text-5xl lg:text-7xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
                                     {formatPrice(currentPrice)}
                                 </span>
                                 
                                 <button 
-                                    onClick={() => {
-                                        const reviewsSection = document.getElementById('reviews');
-                                        if (reviewsSection) {
-                                            reviewsSection.scrollIntoView({ behavior: 'smooth' });
-                                        }
-                                    }}
-                                    className="flex items-center gap-3 py-2 hover:opacity-80 transition-all group/rating"
+                                    onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="flex items-center gap-3 py-2 hover:opacity-60 transition-all"
                                 >
                                     <StarRating initialRating={Number(product.rating ?? 0)} readOnly size="sm" />
-                                    <span className="text-xs font-black text-slate-400 tabular-nums pb-0.5">
-                                        {Number(product.rating ?? 0).toFixed(1)}
+                                    <span className="text-[10px] font-black text-slate-200 dark:text-slate-800 tracking-widest tabular-nums pb-0.5">
+                                        ({Number(product.rating ?? 0).toFixed(1)})
                                     </span>
                                 </button>
-                                
-                                <div className="ml-auto hidden sm:block">
-                                    <ShareButton
-                                        title={product.name}
-                                        url={`${siteConfig.baseUrl}/products/${slug}`}
-                                        className="shrink-0"
-                                    />
-                                </div>
                             </div>
                         </div>
 
-                        {/* Batch Progress - Micro Ledger */}
-                        <GroupBuyProgress
-                            current={product.reservations_count || 0}
-                            target={product.target_quantity || 100}
-                            variant="compact"
-                        />
+                        {/* Batch Progress - Minimal Line */}
+                        <div className="border-y border-slate-50 dark:border-slate-900 py-0">
+                            <GroupBuyProgress
+                                current={product.reservations_count || 0}
+                                target={product.target_quantity || 100}
+                                variant="compact"
+                            />
+                        </div>
 
                         {/* Selection Phase: Side-by-Side Variants */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {product.available_colors && product.available_colors.length > 0 && (
                                 <VariantSelector
                                     label="Color"
@@ -456,87 +436,60 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             })()}
                         </div>
 
-                        {/* Action Phase: Qty & CTAs - Floating Iconic Refinement */}
-                        <div className="flex flex-col sm:flex-row items-end gap-10 mt-6">
-                            <div className="w-full sm:w-32">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Quantity</p>
-                                <div className="flex items-center h-11 w-full">
+                        {/* 4. Action Phase: Minimal CTAs */}
+                        <div className="flex flex-col sm:flex-row items-end gap-12 border-t border-slate-50 dark:border-slate-900 pt-0">
+                            <div className="w-full sm:w-40">
+                                <p className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.3em] mb-1 text-center sm:text-left">Quantity</p>
+                                <div className="flex items-center h-10 w-full border border-slate-100 dark:border-slate-800 px-4">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="flex-1 h-full flex items-center justify-center text-slate-300 hover:text-slate-900 transition-all duration-500"
+                                        className="flex-1 h-full flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                                         aria-label="Decrease quantity"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 12H4"/></svg>
+                                        -
                                     </button>
-                                    <span className="w-10 text-center font-bold text-slate-900 text-xs tracking-tighter">{quantity}</span>
+                                    <span className="w-12 text-center font-bold text-slate-900 dark:text-white text-xs tracking-tighter">{quantity}</span>
                                     <button
                                         onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                                        className="flex-1 h-full flex items-center justify-center text-slate-300 hover:text-slate-900 transition-all duration-500"
+                                        className="flex-1 h-full flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                                         aria-label="Increase quantity"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 4v16m8-8H4"/></svg>
+                                        +
                                     </button>
                                 </div>
                             </div>
                             
                             <div 
                                 ref={setCtaRef}
-                                className="flex-1 flex items-center gap-10 w-full h-11"
+                                className="flex items-center gap-12 mt-0"
                             >
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={isAdding || isSoldOut}
-                                    className="w-11 h-11 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-all duration-500 group/cart"
-                                    aria-label="Add to cart"
+                                    className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white border-b border-black dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20"
                                 >
-                                    <ShoppingBag className="w-5 h-5 group-hover/cart:scale-110 transition-transform" strokeWidth={1} />
+                                    {isAdding ? 'Sourcing...' : 'Add to Basket'}
                                 </button>
-                                <a
-                                    href="/contact"
-                                    className="flex items-center gap-3 h-11 px-0 text-slate-400 hover:text-slate-900 transition-all duration-500 group/chat"
-                                    aria-label="Enquire about this product"
-                                >
-                                    <MessageCircle className="w-5 h-5 group-hover/chat:scale-110 transition-transform" strokeWidth={1} />
-                                    <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
-                                        Enquire
-                                    </span>
-                                </a>
+                                
                                 <button
                                     onClick={product.preorder_status === 'READY_TO_SHIP' ? handleBuyNow : handleAddToCart}
                                     disabled={isAdding || isBuyingNow || isSoldOut}
-                                    className={`flex-[3] h-full flex items-center justify-center transition-all duration-500 group/order`}
-                                    aria-label={isSoldOut ? "Sold Out" : (product.preorder_status === 'READY_TO_SHIP' ? "Buy Now" : "Start Order")}
+                                    className="flex items-center gap-3 text-slate-900 dark:text-white text-[11px] font-black uppercase tracking-[0.3em] border-b border-slate-900 dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20"
                                 >
-                                    {isSoldOut ? (
-                                        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-300">Sold Out</span>
-                                    ) : (isBuyingNow || isAdding) ? (
-                                        <span className="w-5 h-5 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
-                                    ) : (
-                                        <div className="flex items-center gap-4 relative">
-                                            {product.preorder_status === 'READY_TO_SHIP' ? (
-                                                <Zap className="w-5 h-5 text-pink-600 group-hover/order:scale-110 transition-transform" strokeWidth={2} fill="currentColor" />
-                                            ) : (
-                                                <Send className="w-4 h-4 text-[#006B5A] group-hover/order:rotate-12 transition-transform" strokeWidth={1.5} />
-                                            )}
-                                            <span className={`text-[10px] font-bold uppercase tracking-[0.3em] ${product.preorder_status === 'READY_TO_SHIP' ? 'text-pink-600' : 'text-[#006B5A]'}`}>
-                                                {product.preorder_status === 'READY_TO_SHIP' ? 'Buy Now' : 'Start Order'}
-                                            </span>
-                                            <div className={`absolute -bottom-1 left-0 right-0 h-[1px] ${product.preorder_status === 'READY_TO_SHIP' ? 'bg-pink-600/30' : 'bg-[#006B5A]/30'} scale-x-0 group-hover/order:scale-x-100 transition-transform origin-left`} />
-                                        </div>
-                                    )}
+                                    {!isSoldOut && !isBuyingNow && <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2.5} />}
+                                    <span>{isSoldOut ? "Sold Out" : (isBuyingNow ? "Processing..." : (product.preorder_status === 'READY_TO_SHIP' ? "Buy Now" : "Order Now"))}</span>
                                 </button>
                             </div>
                         </div>
 
-                        {/* Description - Precision Collapsible */}
                         <div className="mt-12 mb-8 group/desc">
-                            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-4">Description</h2>
+                            <h2 className="text-[10px] font-bold text-slate-900 dark:text-white opacity-40 dark:opacity-60 uppercase tracking-[0.3em] mb-4">Description</h2>
                             <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6 opacity-80'}`}>
-                                <p className="text-slate-600 leading-relaxed text-sm select-none">
+                                <p className="text-slate-900 dark:text-white opacity-60 dark:opacity-80 leading-relaxed text-sm select-none">
                                     {product.description}
                                 </p>
                                 {!isDescriptionExpanded && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-white via-white/40 to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-white via-white/40 to-transparent dark:from-slate-950 dark:via-slate-950/40 dark:to-transparent pointer-events-none" />
                                 )}
                             </div>
                             <button
@@ -551,53 +504,30 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         </div>
 
                         {/* Trust & Product Details - Curated Horizontal Row */}
-                        <div className="mb-0 bg-white/50 p-6 rounded-2xl border border-slate-100/50">
-                            <div className="flex flex-wrap items-center gap-x-12 gap-y-6">
-                                {/* Product Type/Category */}
-                                <div className="flex items-center gap-3 group">
-                                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:text-slate-900 transition-colors duration-300">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p className="text-[8px] text-slate-400 uppercase tracking-[0.3em] mb-0.5">Product Type</p>
-                                        <p className="text-slate-900 font-bold text-[11px] uppercase tracking-wide">{product.category?.name}</p>
-                                    </div>
-                                </div>
-
-                                {/* Origin Country */}
-                                <div className="flex items-center gap-3 group">
-                                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:text-slate-900 transition-colors duration-300">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p className="text-[8px] text-slate-400 uppercase tracking-[0.3em] mb-0.5">Origin</p>
-                                        <p className="text-slate-900 font-bold text-[11px] uppercase tracking-wide">{product.origin_country || 'China'}</p>
-                                    </div>
-                                </div>
+                        {/* 5. Details: Flat Architectural Grid */}
+                        <div className="grid grid-cols-2 gap-px bg-slate-50 dark:bg-slate-900 border-y border-slate-50 dark:border-slate-900 mt-12 mb-12">
+                            {/* Type */}
+                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3">
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Category</span>
+                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">{product.category?.name}</span>
                             </div>
-
-                            {/* Trust Badges - MOMO & VERIFIED (Forced Horizontal Row) */}
-                            <div className="flex flex-row items-center gap-6 sm:gap-12 mt-8 pt-6 border-t border-slate-100/80 overflow-x-auto no-scrollbar whitespace-nowrap">
-                                <div className="flex items-center gap-3 group/badge shrink-0">
-                                    <div className="w-5 h-5 flex items-center justify-center">
-                                        <svg className="w-4 h-4 text-slate-400 group-hover/badge:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <span className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.3em]">Verified by London&apos;s</span>
-                                </div>
-                                <div className="flex items-center gap-3 group/badge shrink-0">
-                                    <div className="w-5 h-5 flex items-center justify-center">
-                                        <svg className="w-4 h-4 text-slate-400 group-hover/badge:text-blue-500 transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-                                        </svg>
-                                    </div>
-                                    <span className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.3em]">Secured by MOMO</span>
-                                </div>
+                            {/* Origin */}
+                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3 pl-8">
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Made In</span>
+                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">{product.origin_country || 'Guangzhou, CN'}</span>
+                            </div>
+                            {/* Verification */}
+                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900">
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Quality Check</span>
+                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                    Safe Delivery
+                                </span>
+                            </div>
+                            {/* Secured */}
+                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3 pl-8 border-t border-slate-50 dark:border-slate-900">
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Payment</span>
+                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">MOMO SECURED</span>
                             </div>
                         </div>
 

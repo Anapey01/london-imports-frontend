@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import HowItWorksBar from '@/components/HowItWorksBar';
 import { getCategories, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
-import StatsBar from '@/components/StatsBar';
 import { Metadata } from 'next';
 
 // ISR: Revalidate every 24 hours (to stay within Vercel 1,000 writes/month limit)
@@ -153,42 +152,38 @@ export default async function ProductsPage({ searchParams }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-white dark:bg-slate-950">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            {/* Header - Editorial Style */}
-            <div className="bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-900 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center animate-fade-in relative">
-                    {/* Background Decorative Text */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-serif font-black text-slate-50 dark:text-slate-900/40 select-none pointer-events-none whitespace-nowrap opacity-50 italic">
-                        {category || 'Collection'}
-                    </div>
+            {/* Header - Editorial Pro (London Style) */}
+            <div className="bg-white dark:bg-slate-950 border-b-2 border-black dark:border-white overflow-hidden sticky top-0 md:relative z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-32 text-center animate-fade-in relative">
 
                     <div className="relative z-10">
-                        <span className="inline-block px-4 py-1.5 mb-8 text-[11px] font-black tracking-[0.8em] uppercase text-slate-400 dark:text-slate-500 border-x border-slate-100 dark:border-slate-800">
+                        <span className="inline-block px-4 py-1.5 mb-10 text-[10px] font-black tracking-[0.5em] uppercase border-x border-slate-100 nuclear-text">
                             {isAvailableItems
                                 ? 'Instant Availability'
                                 : featured
                                     ? 'Exclusive Drop'
-                                    : 'London\'s Imports'}
+                                    : 'A Global Journal'}
                         </span>
-                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-medium text-slate-950 dark:text-white mb-8 tracking-tighter leading-[0.85]">
+                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-black mb-10 tracking-tighter leading-[0.85] dark:text-white">
                             {isAvailableItems
                                 ? 'Ready to Ship'
                                 : featured
                                     ? <>The <span className="italic font-light">Featured</span> Drop</>
                                     : category
-                                        ? <>{categoryTitle} <span className="italic font-light opacity-40 px-2">&amp;</span> Arrivals</>
-                                        : <>Pre-order <span className="italic font-light opacity-40 px-2">&amp;</span> Products</>}
+                                        ? <>{categoryTitle} <span className="italic font-light opacity-40 dark:opacity-20 px-2">&amp;</span> Arrivals</>
+                                        : <>Pre-order <span className="italic font-light opacity-40 dark:opacity-20 px-2">&amp;</span> Products</>}
                         </h1>
-                        <p className="text-base md:text-xl text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed font-sans font-light">
+                        <p className="text-base md:text-xl max-w-xl mx-auto leading-relaxed font-sans font-medium dark:text-slate-400">
                             {isAvailableItems
                                 ? 'Selected items from the London inventory, authenticated and ready for dispatch in Ghana.'
                                 : featured
                                     ? 'Ultra-limited collections meticulously sourced. Reserve yours before the window closes.'
-                                    : 'A bespoke selection of global retail, brought to Ghana through the Protocol.'}
+                                    : 'A bespoke selection of global retail, brought to Ghana through the London Protocol.'}
                         </p>
                     </div>
                 </div>
@@ -212,7 +207,6 @@ export default async function ProductsPage({ searchParams }: Props) {
             </div>
 
             {/* Trust Badges & Stats */}
-            <StatsBar />
         </div>
     );
 }

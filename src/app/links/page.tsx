@@ -86,12 +86,13 @@ function LinksContent() {
         
         {/* Editorial Header */}
         <header className="flex flex-col items-center text-center mb-16 animate-fade-in">
-          <div className="relative w-24 h-24 mb-8 group">
+          <div className="relative w-24 h-24 mb-8 group p-1 bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
             <Image
               src="/logo.jpg"
               alt="London's Imports"
-              fill
-              className="object-contain rounded-2xl shadow-sm group-hover:scale-105 transition-transform duration-500"
+              width={96}
+              height={96}
+              className="object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
               priority
             />
           </div>

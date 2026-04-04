@@ -26,22 +26,26 @@ export const TrackScreen: React.FC<TrackScreenProps> = ({ activeStep }) => {
     }, [activeStep]);
 
     const steps = [
-        { label: 'Order Confirmed', icon: 'check' },
-        { label: 'Shipped from China', icon: 'plane' },
-        { label: 'Arrived in Ghana', icon: 'box' },
-        { label: 'Out for Delivery', icon: 'truck' },
+        { label: 'Order Confirmed', id: 'LOG-01' },
+        { label: 'Shipped (Guangzhou)', id: 'LOG-02' },
+        { label: 'Arrival (Accra Hub)', id: 'LOG-03' },
+        { label: 'Local Dispatch', id: 'LOG-04' },
     ];
 
     return (
-        <div key="track" className="h-full rounded-2xl p-4 flex flex-col relative bg-white text-gray-900">
-            <div className="text-sm font-bold mb-1 text-gray-900">Order #LI-2024-0847</div>
-            <div className="text-xs mb-4 text-gray-500">iPhone 15 Pro Max</div>
+        <div key="track" className="h-full p-6 flex flex-col relative bg-white text-slate-900">
+            <header className="border-b border-slate-900 pb-6 mb-8">
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 italic">Tracking Protocol #LI-0847</div>
+                <div className="text-xl font-serif font-black text-slate-900 tracking-tight">iPhone 15 Pro Max</div>
+            </header>
 
-            <div className="flex-1 space-y-3">
+            <div className="flex-1 space-y-6">
                 {steps.map((s, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                    <div key={i} className="flex items-start gap-4 group">
                         <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500 ${i < completedSteps ? 'bg-pink-500 scale-100' : i === completedSteps ? 'bg-pink-200 scale-100' : 'bg-gray-200 scale-90'
+                            className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-700 mt-1 ${i < completedSteps 
+                                ? 'bg-emerald-500 scale-100' 
+                                : i === completedSteps ? 'bg-slate-100 scale-100' : 'bg-slate-50 scale-90 opacity-20'
                                 }`}
                         >
                             {i < completedSteps && (
@@ -50,35 +54,42 @@ export const TrackScreen: React.FC<TrackScreenProps> = ({ activeStep }) => {
                                 </svg>
                             )}
                         </div>
-                        <span className={`text-xs ${i < completedSteps ? 'text-gray-900 font-medium' : 'text-gray-400 font-normal'}`}>
-                            {s.label}
-                        </span>
-                        {i === completedSteps - 1 && i < 3 && (
-                            <span className="text-xs ml-auto text-pink-500">Just now</span>
-                        )}
+                        <div className="flex-1">
+                             <div className="flex justify-between items-baseline mb-1">
+                                <span className={`text-[9px] font-black uppercase tracking-widest ${i < completedSteps ? 'text-slate-400' : 'text-slate-200'}`}>
+                                    {s.id}
+                                </span>
+                                {i === completedSteps - 1 && i < 3 && (
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic animate-pulse">Just now</span>
+                                )}
+                             </div>
+                             <span className={`text-sm font-bold tracking-tight ${i < completedSteps ? 'text-slate-900' : 'text-slate-300'}`}>
+                                {s.label}
+                            </span>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            {/* SMS Notification Pop-up */}
+            {/* SMS Notification Pop-up (Editorial Strategy) */}
             {showSMS && (
-                <div className="absolute -top-2 left-2 right-2 rounded-xl p-3 shadow-xl animate-fade-in-up z-10 bg-gray-800 text-white">
-                    <div className="flex items-start gap-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500">
+                <div className="absolute top-4 left-4 right-4 bg-slate-950 text-white p-4 shadow-2xl animate-fade-in-up z-10 ring-1 ring-white/10">
+                    <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded bg-emerald-600 flex items-center justify-center flex-shrink-0 animate-bounce">
                             <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
                                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
                             </svg>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-xs font-bold text-white">London&apos;s Imports</div>
-                            <div className="text-xs text-gray-300">Your order has arrived in Ghana! Delivery tomorrow</div>
+                            <div className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 mb-1 leading-none">PROTOCOL UPDATE</div>
+                            <div className="text-[10px] font-bold text-white leading-tight uppercase tracking-tight">Your order #LI-0847 has reached the Accra Hub Hub.</div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className="rounded-lg p-2 text-center text-xs mt-2 bg-pink-50 text-pink-700">
-                📍 Estimated delivery: Tomorrow, 2PM
+            <div className="border border-slate-100 p-3 text-center text-[9px] font-black uppercase tracking-widest mt-6 bg-slate-50 text-slate-400 italic">
+                📍 Scheduled Arrival: Tomorrow, 14:00
             </div>
         </div>
     );

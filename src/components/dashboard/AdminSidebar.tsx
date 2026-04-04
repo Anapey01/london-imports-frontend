@@ -22,7 +22,8 @@ import {
     LogOut,
     Truck,
     X,
-    ShieldCheck
+    ShieldCheck,
+    LayoutPanelTop
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -46,6 +47,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         { name: 'Products', href: '/dashboard/admin/products', icon: Package },
         { name: 'Blog', href: '/dashboard/admin/blog', icon: FileText },
         { name: 'Analytics', href: '/dashboard/admin/analytics', icon: BarChart3 },
+        { name: 'Hero Banners', href: '/dashboard/admin/banners', icon: LayoutPanelTop },
         { name: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
         { name: 'Tutorials', href: '/dashboard/admin/tutorials', icon: PlayCircle },
     ];

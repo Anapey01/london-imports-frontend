@@ -31,7 +31,7 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
     }, []);
 
     return (
-        <div className={`w-full border-b ${isDark ? 'border-slate-800' : 'border-gray-200'} transition-all pt-24 md:pt-28`}>
+        <div className="w-full border-b border-primary-surface transition-all pt-24 md:pt-28">
             <div className="max-w-6xl mx-auto px-6 py-10">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
 
@@ -59,7 +59,7 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
                                         />
                                     </div>
                                 ) : (
-                                    <svg className={`w-10 h-10 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                                    <svg className="w-10 h-10 nuclear-svg opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                     </svg>
                                 )}
@@ -75,10 +75,10 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
 
                     {/* User Info */}
                     <div className="flex-1 text-center sm:text-left min-w-0">
-                        <h1 className={`text-2xl sm:text-3xl font-light tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <h1 className="text-2xl sm:text-3xl font-light tracking-tight nuclear-text">
                             {user.first_name} {user.last_name}
                         </h1>
-                        <div className={`mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        <div className="mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-sm nuclear-text opacity-60">
                             <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wide ${user.role === 'VENDOR'
                                 ? 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
                                 : 'bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400'
@@ -92,7 +92,7 @@ const ProfileHeader = ({ user, isDark }: { user: User; isDark: boolean }) => {
                         {/* Contact Info (expandable) */}
                         <button
                             onClick={() => setShowInfo(!showInfo)}
-                            className={`mt-3 text-xs flex items-center gap-1.5 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+                            className="mt-3 text-xs flex items-center gap-1.5 nuclear-text opacity-40 hover:opacity-100 transition-opacity"
                         >
                             <svg className={`w-3.5 h-3.5 transition-transform ${showInfo ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
