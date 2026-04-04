@@ -44,8 +44,8 @@ export default function OrderDetailPage() {
             const response = await ordersAPI.verifyPayment(orderNumber);
             toast.success(response.data.message || 'Payment verified!', { id: loadingToast });
             queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
-        } catch (err: any) {
-            const errorMessage = err.response?.data?.error || 'Verification failed. Please try again.';
+        } catch (err: unknown) {
+            const errorMessage = (err as any).response?.data?.error || 'Verification failed. Please try again.';
             toast.error(errorMessage, { id: loadingToast });
         } finally {
             setIsVerifying(false);
