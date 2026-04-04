@@ -18,7 +18,9 @@ export const api = axios.create({
 // Request interceptor to add Auth token
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('access_token');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { useAuthStore } = require('@/stores/authStore');
+    const token = useAuthStore.getState().accessToken || localStorage.getItem('access_token');
 
     // List of public endpoints where we should NOT send the token
     // This prevents 401 errors if the stored token is invalid/expired

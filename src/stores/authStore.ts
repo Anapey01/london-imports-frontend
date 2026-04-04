@@ -26,6 +26,8 @@ interface User {
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
+    accessToken: string | null;
+    refreshToken: string | null;
     isLoading: boolean;
 
     login: (username: string, password: string) => Promise<void>;
@@ -41,6 +43,8 @@ export const useAuthStore = create<AuthState>()(
         (set, get) => ({
             user: null,
             isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
             isLoading: false,
 
             login: async (username: string, password: string) => {
@@ -48,14 +52,13 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     const response = await authAPI.login({ username, password });
 
-                    // Save tokens if returned (New robust flow)
                     const { access, refresh } = response.data.tokens || response.data;
                     if (access) {
                         localStorage.setItem('access_token', access);
                         localStorage.setItem('refresh_token', refresh);
+                        set({ accessToken: access, refreshToken: refresh });
                     }
 
-                    // Fetch user info to confirm auth
                     await get().fetchUser();
                 } finally {
                     set({ isLoading: false });
@@ -71,6 +74,7 @@ export const useAuthStore = create<AuthState>()(
                     if (tokens?.access) {
                         localStorage.setItem('access_token', tokens.access);
                         localStorage.setItem('refresh_token', tokens.refresh);
+                        set({ accessToken: tokens.access, refreshToken: tokens.refresh });
                     }
 
                     set({ user, isAuthenticated: true });
@@ -87,6 +91,7 @@ export const useAuthStore = create<AuthState>()(
                     if (access) {
                         localStorage.setItem('access_token', access);
                         localStorage.setItem('refresh_token', refresh);
+                        set({ accessToken: access, refreshToken: refresh });
                     }
                     await get().fetchUser();
                 } finally {
@@ -101,7 +106,7 @@ export const useAuthStore = create<AuthState>()(
 
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
-                set({ user: null, isAuthenticated: false });
+                set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
             },
 
             fetchUser: async () => {
@@ -109,7 +114,7 @@ export const useAuthStore = create<AuthState>()(
                     const response = await authAPI.me();
                     set({ user: response.data, isAuthenticated: true });
                 } catch {
-                    set({ user: null, isAuthenticated: false });
+                    set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
                 }
             },
 
@@ -119,7 +124,9 @@ export const useAuthStore = create<AuthState>()(
             name: 'auth-storage',
             partialize: (state) => ({
                 user: state.user,
-                isAuthenticated: state.isAuthenticated
+                isAuthenticated: state.isAuthenticated,
+                accessToken: state.accessToken,
+                refreshToken: state.refreshToken
             }),
         }
     )

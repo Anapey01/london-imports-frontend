@@ -14,10 +14,15 @@ export default function CookieBanner() {
     });
 
     useEffect(() => {
-        const stored = localStorage.getItem('london_imports_cookie_consent_v2');
-        if (!stored) {
-            const timer = setTimeout(() => setIsVisible(true), 2000);
-            return () => clearTimeout(timer);
+        // Initial check for consent state
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem('london_imports_cookie_consent_v2');
+            if (stored) {
+                setIsVisible(false);
+            } else {
+                const timer = setTimeout(() => setIsVisible(true), 1500);
+                return () => clearTimeout(timer);
+            }
         }
     }, []);
 

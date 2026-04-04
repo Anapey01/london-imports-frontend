@@ -128,11 +128,13 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                 <div className="absolute inset-0 z-10 pointer-events-none opacity-20 sm:opacity-100">
                                      <div className="absolute right-0 top-0 h-full w-full sm:w-[50%] overflow-hidden">
                                         <Image
-                                            src={slide.image}
+                                            src={getImageUrl(slide.image)}
                                             alt={slide.title}
                                             fill
                                             className={`object-cover object-center`}
                                             priority={index === 0}
+                                            sizes="(max-width: 768px) 100vw, 50vw"
+                                            quality={90}
                                         />
                                      </div>
                                 </div>
