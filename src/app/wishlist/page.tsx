@@ -7,7 +7,7 @@
 import { useWishlistStore } from '@/stores/wishlistStore';
 import ProductCard from '@/components/ProductCard';
 import Link from 'next/link';
-import { Heart, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { Heart, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function WishlistPage() {
@@ -63,15 +63,15 @@ export default function WishlistPage() {
                         <div className="w-24 h-24 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-8">
                             <Heart className="w-10 h-10 text-slate-200" strokeWidth={1} />
                         </div>
-                        <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-4">Portfolio Empty.</h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-4">Collection Empty.</h2>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 max-w-xs mb-12">
-                            Secure your interests by saving products to your curated portfolio.
+                            Save the styles you love to your wishlist and find them here later.
                         </p>
                         <Link
                             href="/products"
                             className="inline-flex items-center gap-4 bg-slate-900 text-white px-10 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 hover:bg-emerald-600 transition-all hover:scale-[1.02]"
                         >
-                            Explore Global Hub <ArrowLeft className="w-4 h-4 rotate-180" />
+                            Continue Shopping <ArrowLeft className="w-4 h-4 rotate-180" />
                         </Link>
                     </div>
                 ) : (
