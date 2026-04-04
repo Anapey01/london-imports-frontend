@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import HowItWorksBar from '@/components/HowItWorksBar';
 import { getCategories, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
+import ShopHeader from '@/components/ShopHeader';
 import { Metadata } from 'next';
 
 // ISR: Revalidate every 24 hours (to stay within Vercel 1,000 writes/month limit)
@@ -157,37 +158,13 @@ export default async function ProductsPage({ searchParams }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            {/* Header - Editorial Pro (London Style) */}
-            <div className="bg-white dark:bg-slate-950 border-b-2 border-black dark:border-white overflow-hidden sticky top-0 md:relative z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-32 text-center animate-fade-in relative">
-
-                    <div className="relative z-10">
-                        <span className="inline-block px-4 py-1.5 mb-10 text-[10px] font-black tracking-[0.5em] uppercase border-x border-slate-100 nuclear-text">
-                            {isAvailableItems
-                                ? 'Instant Availability'
-                                : featured
-                                    ? 'Exclusive Drop'
-                                    : 'A Global Journal'}
-                        </span>
-                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-black mb-10 tracking-tighter leading-[0.85] dark:text-white">
-                            {isAvailableItems
-                                ? 'Ready to Ship'
-                                : featured
-                                    ? <>The <span className="italic font-light">Featured</span> Drop</>
-                                    : category
-                                        ? <>{categoryTitle} <span className="italic font-light opacity-40 dark:opacity-20 px-2">&amp;</span> Arrivals</>
-                                        : <>Pre-order <span className="italic font-light opacity-40 dark:opacity-20 px-2">&amp;</span> Products</>}
-                        </h1>
-                        <p className="text-base md:text-xl max-w-xl mx-auto leading-relaxed font-sans font-medium dark:text-slate-400">
-                            {isAvailableItems
-                                ? 'Selected items from the London inventory, authenticated and ready for dispatch in Ghana.'
-                                : featured
-                                    ? 'Ultra-limited collections meticulously sourced. Reserve yours before the window closes.'
-                                    : 'A bespoke selection of global retail, brought to Ghana through the London Protocol.'}
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <ShopHeader 
+                isAvailableItems={isAvailableItems}
+                featured={featured}
+                category={category}
+                categoryTitle={categoryTitle}
+                pageDescription={pageDescription}
+            />
 
             {/* Trust Signal: How it Works */}
             <HowItWorksBar />
