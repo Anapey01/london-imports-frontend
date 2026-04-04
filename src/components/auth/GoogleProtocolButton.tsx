@@ -41,9 +41,9 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                         theme: 'outline', 
                         size: 'large', 
                         text: mode === 'signin' ? 'signin_with' : 'signup_with',
-                        shape: 'pill', // Matching the rounder look in reference
+                        shape: 'rectangular',
                         width: '100%',
-                        logo_alignment: 'left'
+                        logo_alignment: 'center'
                     }
                 );
             } catch (error) {
