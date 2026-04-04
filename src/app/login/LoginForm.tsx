@@ -114,7 +114,7 @@ function LoginFormContent() {
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
-                                    className="block w-full text-[13px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-4 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200 uppercase tracking-widest"
+                                    className="block w-full text-[13px] font-black text-slate-600 bg-transparent border-0 border-b border-slate-100 rounded-none py-4 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200 uppercase tracking-widest"
                                     placeholder="Enter your email..."
                                 />
                             </div>
@@ -133,7 +133,7 @@ function LoginFormContent() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="block w-full text-[13px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-4 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200"
+                                    className="block w-full text-[13px] font-black text-slate-600 bg-transparent border-0 border-b border-slate-100 rounded-none py-4 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200"
                                     placeholder="••••••••"
                                 />
                             </div>
