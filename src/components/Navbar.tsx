@@ -186,19 +186,19 @@ export default function Navbar() {
 
                         <div className="flex items-center gap-3 w-20 justify-end">
                             <button
-                                onClick={() => setMobileMenuOpen(true)}
-                                className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
-                                aria-label="Open Menu"
-                            >
-                                <Menu className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
-                            </button>
-
-                            <button
                                 onClick={() => setSearchOpen(true)}
                                 className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
                                 aria-label="Execute search"
                             >
                                 <Search className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
+                            </button>
+
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
+                                aria-label="Open Menu"
+                            >
+                                <Menu className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
                             </button>
                         </div>
                     </div>
