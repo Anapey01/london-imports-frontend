@@ -169,16 +169,10 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* MOBILE PROTOCOL */}
                 <div className="md:hidden">
                     <div className="flex items-center justify-between px-6 h-20">
-                        <button
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
-                            aria-label="Open Menu"
-                        >
-                            <Menu className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
-                        </button>
+                        {/* Ghost container to balance the right actions and keep logo centered */}
+                        <div className="w-20" aria-hidden="true" />
 
                         <Link href="/" className="flex items-center gap-3">
                             <div className="relative w-8 h-8 border border-slate-900 dark:border-white overflow-hidden">
@@ -190,13 +184,23 @@ export default function Navbar() {
                             </div>
                         </Link>
 
-                        <button
-                            onClick={() => setSearchOpen(true)}
-                            className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
-                            aria-label="Execute search"
-                        >
-                            <Search className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
-                        </button>
+                        <div className="flex items-center gap-3 w-20 justify-end">
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
+                                aria-label="Open Menu"
+                            >
+                                <Menu className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
+                            </button>
+
+                            <button
+                                onClick={() => setSearchOpen(true)}
+                                className="w-10 h-10 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center active:scale-95 transition-all"
+                                aria-label="Execute search"
+                            >
+                                <Search className="w-5 h-5 text-slate-950 dark:text-white" strokeWidth={1} />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
