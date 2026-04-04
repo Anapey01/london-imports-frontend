@@ -215,8 +215,8 @@ export default function OrderDetailPage() {
                                                 </div>
                                             </div>
                                             <div className="flex justify-between items-baseline pt-8">
-                                                <span className="text-[10px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">Unit Price: GHS {item.unit_price.toLocaleString()}</span>
-                                                <span className="text-xl font-serif font-black text-slate-900 dark:text-white tracking-tighter">GHS {item.total_price.toLocaleString()}</span>
+                                                <span className="text-[10px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">Unit Price: GHS {Number(item.unit_price).toLocaleString()}</span>
+                                                <span className="text-xl font-serif font-black text-slate-900 dark:text-white tracking-tighter">GHS {Number(item.total_price).toLocaleString()}</span>
                                             </div>
                                         </div>
                                     </div>
