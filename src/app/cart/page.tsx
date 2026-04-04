@@ -71,8 +71,8 @@ export default function CartPage() {
                     >
                         <ArrowLeft className="w-5 h-5 text-slate-900 dark:text-white group-hover:-translate-x-1 transition-transform" />
                     </Link>
-                    <h1 className="text-2xl font-serif font-black tracking-tighter text-slate-900 dark:text-white leading-none">
-                        Procurement <span className="italic font-light text-slate-300 dark:text-slate-700">Intake</span>
+                    <h1 className="text-xl font-black uppercase tracking-[0.25em] text-slate-900 dark:text-white leading-none">
+                        Procurement <span className="text-slate-300 dark:text-slate-700 font-light italic font-serif">Intake</span>
                     </h1>
                 </div>
                 {items.length > 0 && (
@@ -135,7 +135,7 @@ export default function CartPage() {
                                         <div className="flex flex-col justify-between py-1">
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-start">
-                                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight uppercase line-clamp-1">
+                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase line-clamp-1">
                                                         {item.product.name}
                                                     </h3>
                                                     <button
@@ -180,7 +180,7 @@ export default function CartPage() {
                                                 </span>
                                                 <div className="text-right">
                                                     <span className="text-[10px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest block mb-1">Item Total</span>
-                                                    <span className="text-2xl font-serif font-black text-slate-900 dark:text-white tracking-tighter tabular-nums">
+                                                    <span className="text-2xl font-black text-slate-900 dark:text-white tracking-widest uppercase tabular-nums">
                                                         GHS {(Number(item.unit_price) * item.quantity).toLocaleString()}
                                                     </span>
                                                 </div>
@@ -210,7 +210,7 @@ export default function CartPage() {
                                                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-1">Estimated Liability</span>
                                                 <span className="text-[9px] font-medium text-slate-300 uppercase tracking-tighter">Logistics fees updated at checkout</span>
                                             </div>
-                                            <span className="text-4xl font-serif font-black text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
+                                            <span className="text-4xl font-black text-slate-900 dark:text-white tracking-widest tabular-nums leading-none">
                                                 GHS {subtotal.toLocaleString()}
                                             </span>
                                         </div>
