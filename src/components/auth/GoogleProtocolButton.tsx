@@ -1,25 +1,32 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import Script from 'next/script';
 
 const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => {
-    const { googleLogin, isLoading } = useAuthStore();
+    const { googleLogin } = useAuthStore();
     const router = useRouter();
     const googleButtonRef = useRef<HTMLDivElement>(null);
     const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
     const initializeGoogle = useCallback(() => {
         if (!clientID) {
-            console.error('Google Client ID is missing in environment.');
+            if (process.env.NODE_ENV === 'development') {
+                console.error('DEBUG: Google Client ID is missing in environment.');
+            }
             return;
         }
 
         if ((window as any).google && googleButtonRef.current) {
             try {
+                // Remove existing button if any to prevent duplicates on remount
+                if (googleButtonRef.current.hasChildNodes()) {
+                    googleButtonRef.current.innerHTML = '';
+                }
+
                 (window as any).google.accounts.id.initialize({
                     client_id: clientID,
                     callback: handleGoogleResponse,
@@ -34,9 +41,9 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                         theme: 'outline', 
                         size: 'large', 
                         text: mode === 'signin' ? 'signin_with' : 'signup_with',
-                        shape: 'rectangular',
+                        shape: 'pill', // Matching the rounder look in reference
                         width: '100%',
-                        logo_alignment: 'center'
+                        logo_alignment: 'left'
                     }
                 );
             } catch (error) {
@@ -44,6 +51,18 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
             }
         }
     }, [clientID, mode]);
+
+    // Handle initial script mount and subsequent navigations
+    useEffect(() => {
+        const checkInterval = setInterval(() => {
+            if ((window as any).google) {
+                initializeGoogle();
+                clearInterval(checkInterval);
+            }
+        }, 100);
+
+        return () => clearInterval(checkInterval);
+    }, [initializeGoogle]);
 
     const handleGoogleResponse = useCallback(async (response: any) => {
         try {
@@ -73,11 +92,18 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                 </div>
             </div>
             
+            {/* Clean container without manual border/opacity that was masking failures */}
             <div 
                 ref={googleButtonRef} 
-                className="w-full overflow-hidden rounded-xl min-h-14 flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity border border-slate-100" 
+                className="w-full flex items-center justify-center min-h-[50px] transition-all duration-300" 
             />
             
+            {!clientID && process.env.NODE_ENV === 'development' && (
+                <p className="mt-4 text-center text-[10px] font-black text-amber-500 uppercase tracking-widest border border-amber-500/20 p-2 rounded">
+                    [ DEVELOPER_MODE: CLIENT_ID_MISSING ]
+                </p>
+            )}
+
             <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 opacity-20">
                 Official Google Security
             </p>
