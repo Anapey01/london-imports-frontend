@@ -129,7 +129,7 @@ const Footer = () => {
                              <MapPin className="w-4 h-4 text-slate-900 dark:text-white" strokeWidth={1.5} />
                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Our Location</span>
                         </div>
-                        <address className="text-xl md:text-2xl font-serif font-bold text-slate-900 dark:text-white leading-tight not-italic">
+                        <address className="text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight not-italic">
                             {siteConfig.address}
                         </address>
                         <div className="flex gap-12 mt-10">

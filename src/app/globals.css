@@ -27,17 +27,17 @@
 @layer base {
   :root {
     --font-source-serif: var(--font-source-serif);
-    --font-source-sans: var(--font-source-sans);
+    --font-montserrat: var(--font-montserrat);
   }
 
   body {
-    font-family: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-source-serif), ui-serif, Georgia, serif;
+    font-family: var(--font-montserrat), ui-sans-serif, Helvetica, Arial, sans-serif;
     letter-spacing: -0.01em;
   }
 

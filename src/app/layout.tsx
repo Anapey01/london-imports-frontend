@@ -3,7 +3,7 @@
  * Includes Navbar, providers, and global styles
  */
 import type { Metadata, Viewport } from "next";
-import { Source_Serif_4, Source_Sans_3 } from "next/font/google";
+import { Source_Serif_4, Montserrat } from "next/font/google";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
@@ -37,11 +37,11 @@ const sourceSerif = Source_Serif_4({
   preload: false,
 });
 
-const sourceSans = Source_Sans_3({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
-  variable: "--font-source-sans",
+  variable: "--font-montserrat",
   preload: false,
 });
 
@@ -361,7 +361,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(globalBreadcrumbSchema) }}
         />
       </head>
-      <body className={`${sourceSerif.variable} ${sourceSans.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
+      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

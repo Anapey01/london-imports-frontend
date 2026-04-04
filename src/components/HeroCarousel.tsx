@@ -107,7 +107,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                             <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 mb-4 animate-slide-right">
                                                 London&apos;s Imports / 0{index + 1}
                                             </span>
-                                            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-[0.9] tracking-tighter mb-8 max-w-md">
+                                            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[0.9] tracking-tighter mb-8 max-w-md">
                                                 {slide.title}
                                             </h2>
                                             <p className="text-sm md:text-lg text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-sm mb-12">
