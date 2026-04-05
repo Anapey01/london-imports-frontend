@@ -16,6 +16,8 @@ export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverla
 
     return (
         <section className="relative z-20 px-2 lg:px-4 max-w-7xl mx-auto pb-12">
+            {/* 0. Semantic Section Header - Visually Hidden H2 for WCAG 1.3.1 */}
+            <h2 className="sr-only">Today&apos;s Top Import Deals from China factories</h2>
             {/* 
                 Unified Grid:
                 - Overlaps Hero (-mt)
@@ -34,7 +36,7 @@ export default function HeroOverlayProducts({ initialProducts = [] }: HeroOverla
             <div className="flex justify-center mt-8">
                 <Link
                     href="/products"
-                    className="bg-white border border-slate-950 dark:bg-slate-950 dark:border-white text-slate-950 dark:text-white px-10 py-4 rounded-none text-xs font-black uppercase tracking-[0.3em] hover:bg-slate-950 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shadow-sm flex items-center gap-4 group"
+                    className="bg-content-primary text-surface px-10 py-4 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-brand-emerald transition-all shadow-sm flex items-center gap-4 group"
                 >
                     See More Deals
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

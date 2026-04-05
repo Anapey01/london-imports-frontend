@@ -21,6 +21,8 @@ interface User {
     vendor_profile?: Record<string, unknown>;
     is_staff?: boolean;
     is_superuser?: boolean;
+    date_joined?: string;
+    order_count?: number;
 }
 
 interface AuthState {

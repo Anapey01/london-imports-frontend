@@ -3,21 +3,20 @@ interface ToggleSwitchProps {
     onChange: () => void;
     label: string;
     description: string;
-    isDark: boolean;
 }
 
-const ToggleSwitch = ({ enabled, onChange, label, description, isDark }: ToggleSwitchProps) => (
-    <div className="flex items-center justify-between py-4">
-        <div>
-            <p className={`font-light ${isDark ? 'text-white' : 'text-gray-900'}`}>{label}</p>
-            <p className={`text-xs font-light ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{description}</p>
+const ToggleSwitch = ({ enabled, onChange, label, description }: ToggleSwitchProps) => (
+    <div className="flex items-center justify-between py-6">
+        <div className="space-y-1">
+            <p className="text-[11px] font-black uppercase tracking-widest text-content-primary">{label}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/60 italic">{description}</p>
         </div>
         <button
             onClick={onChange}
             aria-label={label}
-            className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? 'bg-pink-500' : isDark ? 'bg-slate-700' : 'bg-gray-200'}`}
+            className={`relative w-12 h-6 rounded-full transition-all duration-300 ${enabled ? 'bg-brand-emerald shadow-lg shadow-brand-emerald/20' : 'bg-surface-card border border-border-standard'}`}
         >
-            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${enabled ? 'translate-x-5' : ''}`} />
+            <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 ${enabled ? 'translate-x-6' : 'bg-content-secondary/40'}`} />
         </button>
     </div>
 );

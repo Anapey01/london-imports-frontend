@@ -5,10 +5,12 @@ import { useState, useEffect } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
-import { trackAddToCart, trackSelectItem } from '@/lib/analytics';
+import { trackAddToCart, trackSelectItem, trackAddToWishlist } from '@/lib/analytics';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
 import NextLink from 'next/link';
+import { useToast } from './Toast';
+import { Check } from 'lucide-react';
 
 interface ProductCardProps {
     product: Product;
@@ -28,6 +30,9 @@ export default function ProductCard({
     const [isAdding, setIsAdding] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    
+    const { showToast } = useToast();
 
     // Prevent hydration mismatch for wishlist state
     useEffect(() => {
@@ -53,18 +58,31 @@ export default function ProductCard({
                 price: product.price,
                 image: product.image || ""
             });
+            trackAddToWishlist(product);
         }
     };
 
     const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        
+        // Instant Feedback: Toast + Icon Swap
+        setShowSuccess(true);
+        showToast(`Added ${product.name} to basket`, 'success');
+        
+        // Reset success state after 2 seconds
+        setTimeout(() => setShowSuccess(false), 2000);
+
         try {
             setIsAdding(true);
-            await addToCart({ ...product, image: product.image || "" });
+            // We don't await the store call for the UI feedback, 
+            // the store handles its own optimism.
+            addToCart({ ...product, image: product.image || "" });
             trackAddToCart(product);
         } catch (error) {
             console.error("Add to cart error:", error);
+            showToast("Failed to add to basket", "error");
+            setShowSuccess(false);
         } finally {
             setIsAdding(false);
         }
@@ -73,10 +91,10 @@ export default function ProductCard({
     const imageUrl = getImageUrl(product.image);
 
     return (
-        <div className="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-6 transition-all duration-500 flex flex-col h-full group/card relative">
+        <div className="bg-surface-card border-t border-border-standard pt-6 transition-all duration-500 flex flex-col h-full group/card relative">
             
             {/* 1. ARCHITECTURAL IMAGE DISPLAY */}
-            <div className="relative overflow-hidden mb-6 aspect-[4/5] bg-slate-50/30 dark:bg-slate-900/30">
+            <div className="relative overflow-hidden mb-6 aspect-[4/5] bg-surface/30">
                 <NextLink 
                     href={`/products/${product.slug}`} 
                     className="block h-full"
@@ -94,8 +112,8 @@ export default function ProductCard({
                             onError={() => setImageError(true)}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-100 dark:text-slate-800">
-                             <span className="text-[10px] font-medium uppercase tracking-widest">[ IMAGE_PENDING ]</span>
+                        <div className="w-full h-full flex items-center justify-center text-content-secondary">
+                             <span className="text-[10px] font-black uppercase tracking-widest">[ IMAGE_PENDING ]</span>
                         </div>
                     )}
                 </NextLink>
@@ -105,7 +123,8 @@ export default function ProductCard({
                     <button
                         onClick={toggleWishlist}
                         title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                        className={`w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm transition-colors ${isWishlisted ? "text-rose-500" : "text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white"}`}
+                        aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+                        className={`w-11 h-11 flex items-center justify-center rounded-full bg-surface-card border border-border-standard shadow-sm transition-all institutional-focus ${isWishlisted ? "text-rose-500" : "text-content-secondary hover:text-content-primary"}`}
                     >
                         <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-current" : ""}`} strokeWidth={2} />
                     </button>
@@ -113,9 +132,14 @@ export default function ProductCard({
                         onClick={handleAddToCart}
                         disabled={isAdding}
                         title="Add to cart"
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white transition-colors"
+                        aria-label={showSuccess ? `Successfully added ${product.name} to basket` : `Add ${product.name} to basket`}
+                        className={`w-11 h-11 flex items-center justify-center rounded-full border shadow-sm transition-all duration-300 institutional-focus ${showSuccess ? "bg-brand-emerald border-brand-emerald text-white" : "bg-surface-card border-border-standard text-content-secondary hover:text-content-primary"}`}
                     >
-                        <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2} />
+                        {showSuccess ? (
+                            <Check className="w-3.5 h-3.5 animate-in zoom-in duration-300" strokeWidth={3} />
+                        ) : (
+                            <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2} />
+                        )}
                     </button>
                 </div>
             </div>
@@ -129,21 +153,21 @@ export default function ProductCard({
                 <div>
                      {!hideProgress && (
                          <div className="flex items-start justify-between gap-4 mb-2">
-                            <span className="text-[9px] font-medium uppercase tracking-[0.3em] text-emerald-600">Premium Import</span>
-                            <ArrowUpRight className="w-3 h-3 text-slate-200 dark:text-slate-800 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-500">Premium Import</span>
+                            <ArrowUpRight className="w-3 h-3 text-content-secondary group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
                          </div>
                      )}
-                     <h3 className={`font-medium text-slate-900 dark:text-white tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                     <h3 className={`product-name-weight text-content-primary tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
                          {product.name}
                      </h3>
                 </div>
 
-                <div className={`flex flex-wrap items-baseline justify-between gap-1 pt-2 border-t border-slate-50 dark:border-slate-900 ${variant === 'compact' ? 'mt-auto' : ''}`}>
-                    <div className={`font-semibold text-slate-900 dark:text-white tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
+                <div className={`flex flex-wrap items-baseline justify-between gap-1 pt-2 border-t border-border-standard ${variant === 'compact' ? 'mt-auto' : ''}`}>
+                    <div className={`font-semibold text-content-primary tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
                         {formatPrice(product.price)}
                     </div>
                     {!hideRating && (
-                        <span className="text-[8px] sm:text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-colors whitespace-nowrap">
+                        <span className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors whitespace-nowrap ${product.preorder_status === 'READY_TO_SHIP' ? 'text-emerald-500' : 'text-content-secondary'}`}>
                             {product.preorder_status === 'READY_TO_SHIP' ? 'INSTANT' : 'PRE-ORDER'}
                         </span>
                     )}

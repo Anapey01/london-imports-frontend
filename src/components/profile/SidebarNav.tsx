@@ -1,7 +1,7 @@
 'use client';
 
 // Sidebar Navigation Component
-const SidebarNav = ({ activeTab, setActiveTab, isDark, handleLogout }: { activeTab: string; setActiveTab: (tab: string) => void; isDark: boolean; handleLogout: () => void }) => {
+const SidebarNav = ({ activeTab, setActiveTab, handleLogout }: { activeTab: string; setActiveTab: (tab: string) => void; handleLogout: () => void }) => {
     const navItems = [
         { id: 'dashboard', label: 'My Profile', icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z' },
         { id: 'orders', label: 'My Orders', icon: 'M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z' },
@@ -13,20 +13,20 @@ const SidebarNav = ({ activeTab, setActiveTab, isDark, handleLogout }: { activeT
     ];
 
     return (
-        <div className="w-full lg:w-52 shrink-0 py-6 lg:pr-8 lg:border-r border-primary-surface transition-all">
+        <div className="w-full lg:w-52 shrink-0 py-6 lg:pr-8 lg:border-r border-border-standard transition-all">
             <nav className="space-y-0.5">
                 {navItems.map((item) => (
                     <button
                         key={item.id}
                         onClick={() => setActiveTab(item.id)}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-all relative ${activeTab === item.id
-                            ? 'nuclear-text font-bold'
-                            : 'nuclear-text opacity-40 hover:opacity-100'
+                            ? 'text-content-primary font-black uppercase tracking-widest'
+                            : 'text-content-secondary hover:text-content-primary'
                             }`}
                     >
                         {/* Left border indicator */}
                         <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full transition-all ${activeTab === item.id
-                            ? 'bg-emerald-500'
+                            ? 'bg-brand-emerald'
                             : 'bg-transparent'
                             }`} />
                         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -36,12 +36,12 @@ const SidebarNav = ({ activeTab, setActiveTab, isDark, handleLogout }: { activeT
                     </button>
                 ))}
             </nav>
-
-            <div className="my-6 border-t border-primary-surface"></div>
-
+ 
+            <div className="my-6 border-t border-border-standard"></div>
+ 
             <button
                 onClick={handleLogout}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-600'}`}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors text-rose-600 hover:text-rose-500 font-black uppercase tracking-widest"
             >
                 <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />

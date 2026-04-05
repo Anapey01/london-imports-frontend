@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { sounds } from '@/lib/sounds';
 import { PhoneMockup } from '@/components/how-it-works/PhoneMockup';
 import { ArrowUpRight, Zap, ShieldCheck, Globe, Truck } from 'lucide-react';
+import ScrollDepthTracker from '@/components/analytics/ScrollDepthTracker';
 
 export default function HowItWorksPage() {
     const [activeStep, setActiveStep] = useState(0);
@@ -65,6 +66,7 @@ export default function HowItWorksPage() {
 
     return (
         <div className="min-h-screen bg-white relative pb-32 selection:bg-emerald-100">
+            <ScrollDepthTracker pageName="how_it_works" />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}

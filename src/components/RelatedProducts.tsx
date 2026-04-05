@@ -8,9 +8,10 @@ import { Product } from '@/stores/cartStore';
 interface RelatedProductsProps {
     currentSlug: string;
     categorySlug?: string;
+    onProductClick?: (product: Product) => void;
 }
 
-export default function RelatedProducts({ currentSlug, categorySlug }: RelatedProductsProps) {
+export default function RelatedProducts({ currentSlug, categorySlug, onProductClick }: RelatedProductsProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -71,7 +72,11 @@ export default function RelatedProducts({ currentSlug, categorySlug }: RelatedPr
                 ) : (
                     <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 gap-4 sm:gap-6 animate-fade-in pb-8 md:pb-0 scrollbar-hide">
                         {products.map(product => (
-                            <div key={product.id} className="flex-none w-[72%] md:w-auto snap-center">
+                            <div 
+                                key={product.id} 
+                                className="flex-none w-[72%] md:w-auto snap-center"
+                                onClick={() => onProductClick?.(product)}
+                            >
                                 <ProductCard 
                                     product={product} 
                                     variant="compact"

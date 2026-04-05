@@ -16,7 +16,9 @@ import { siteConfig } from "@/config/site";
 
 import ReloadPrompt from '@/components/pwa/ReloadPrompt';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
 import { Suspense } from "react";
+import SkipToContent from "@/components/SkipToContent";
 
 
 // Lazy load below-the-fold components to reduce initial bundle
@@ -46,7 +48,6 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://londonsimports.com'), // Update with actual domain if custom
   title: "Ghana's #1 Mini Importation Service | Buy from China to Accra & Kumasi | London's Imports Ghana",
   description: "London's Imports is Ghana's premier sourcing house and logistics protocol for mini-importation. We bridge the gap between China’s factory floors (1688, Alibaba) and your doorstep in Accra, Kumasi, and Tema. Secure, transparent, and built for the sophisticated Ghanaian importer.",
   keywords: [
@@ -90,8 +91,9 @@ export const metadata: Metadata = {
     locale: 'en_GH',
     type: 'website',
   },
+  metadataBase: new URL('https://londonsimports.com'),
   alternates: {
-    canonical: 'https://londonsimports.com',
+    canonical: '/',
     languages: {
       'en-GH': 'https://londonsimports.com',
       'x-default': 'https://londonsimports.com',
@@ -105,13 +107,21 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.json',
+  twitter: {
+    card: 'summary_large_image',
+    title: "Ghana's #1 Mini Importation Service | London's Imports Ghana",
+    description: "Ghana's premier sourcing house and logistics protocol for mini-importation. Secure, transparent, and built for the sophisticated Ghanaian importer.",
+    site: '@londonsimports',
+    creator: '@londonsimports',
+    images: ['https://londonsimports.com/og-image.jpg'],
+  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  // themeColor removed to allow dynamic theme-provider control
+  themeColor: '#020617',
 };
 
 
@@ -194,15 +204,16 @@ export default async function RootLayout({
       { "@type": "AdministrativeArea", "name": "Greater Accra Region" },
       { "@type": "Country", "name": "Ghana" }
     ],
-    "priceRange": "GHS",
+    "priceRange": "GH₵₵",
     "currenciesAccepted": "GHS",
     "paymentAccepted": "Mobile Money (Momo), MTN MoMo, Vodafone Cash, AirtelTigo Money, Bank Transfer",
     "sameAs": [
+      "https://instagram.com/londonsimports",
+      "https://tiktok.com/@londonsimports",
+      "https://snapchat.com/add/londonsimports",
+      "https://x.com/londonsimports",
       siteConfig.socials.whatsapp,
       siteConfig.socials.concierge,
-      siteConfig.socials.instagram,
-      siteConfig.socials.tiktok,
-      siteConfig.socials.snapchat
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
@@ -332,6 +343,8 @@ export default async function RootLayout({
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href={new URL(siteConfig.apiUrl).origin} />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         
         {/* Global Organization Schema */}
         <script
@@ -362,6 +375,7 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
+        <SkipToContent />
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
@@ -380,6 +394,7 @@ export default async function RootLayout({
 
         <Suspense fallback={null}>
           <GoogleAnalytics />
+          <WebVitalsReporter />
         </Suspense>
 
         <Providers>
@@ -402,7 +417,7 @@ export default async function RootLayout({
           />
           <PWAUpdater />
           <Navbar />
-          <main className="pb-20 md:pb-0">{children}</main>
+          <main id="main-content" className="pb-20 md:pb-0 outline-none">{children}</main>
           <Footer />
           <MobileBottomNav />
           <ReloadPrompt />

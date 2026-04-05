@@ -1,18 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  /* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow the .dark class selector.
-     Using standard CSS property syntax to silence IDE at-rule warnings while keeping v4 functionality. */
+  /* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow the .dark class selector. */
   --variant-dark: .dark &;
   --variant-light: :not(.dark) &;
+
+  /* SEMANTIC COLOR MAPPING: Maps variable-driven tokens to standard Tailwind utility names.
+     This allows components to use 'bg-surface' instead of hardcoded 'bg-white dark:bg-slate-900'. */
+  --color-surface: var(--bg-primary);
+  --color-surface-card: var(--bg-card);
+  --color-content-primary: var(--text-primary);
+  --color-content-secondary: var(--text-secondary);
+  --color-border-standard: var(--border-color);
+  --color-brand-emerald: var(--brand-accent);
 }
 
-/* ===== DARK MODE VARIABLES ===== */
+/* ===== LIGHT MODE VARIABLES (STATIONERY PROTOCOL) ===== */
 :root {
   --bg-primary: #ffffff;
   --bg-secondary: #faf9f6; /* Off-white stationery feel */
   --bg-card: #ffffff;
-  --text-primary: #64748b;
+  --text-primary: #1e293b; /* Slate 900 for Light Mode */
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
   --border-color: #f1f5f9;
@@ -20,8 +28,23 @@
   --accent-secondary: #334155;
   --brand-accent: #006B5A;
   --brand-logo-accent: #006B5A;
-  --text-high-contrast: #64748b;
-  --text-med-contrast: #64748b;
+  --font-weight-product-name: 400; /* Normal, non-bold for Light Mode */
+}
+
+/* ===== DEEP MIDNIGHT VARIABLES (GLOBAL PROTOCOL) ===== */
+[data-theme='dark'],
+.dark {
+  --bg-primary: #020617; /* Midnight Base (Slate 950) */
+  --bg-secondary: #0f172a; /* Deep Navy (Slate 900) */
+  --bg-card: #0f172a;
+  --border-color: #1e293b; /* Slate 800 */
+  --accent-primary: #10b981; /* Emerald 500 */
+  --accent-secondary: #059669;
+  --brand-accent: #10b981; 
+  --brand-logo-accent: #34d399;
+  --text-primary: #f8fafc; /* Pure White (Slate 50) */
+  --text-secondary: #94a3b8;
+  --font-weight-product-name: 700; /* High-contrast Bold for Dark Mode */
 }
 
 @layer base {
@@ -32,80 +55,47 @@
 
   body {
     font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.5s ease, color 0.5s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-montserrat), ui-sans-serif, Helvetica, Arial, sans-serif;
     letter-spacing: -0.01em;
+    color: var(--text-primary);
   }
 
-  h1 {
-    font-weight: 400;
+  .product-name-weight {
+    font-weight: var(--font-weight-product-name);
   }
 }
 
-/* Font family managed by tailwind.config.ts */
-
-[data-theme='dark'],
-.dark {
-  --bg-primary: #020617;
-  --bg-secondary: #0f172a;
-  --bg-card: #0f172a;
-  --border-color: #1e293b;
-  --accent-primary: #10b981;
-  --accent-secondary: #059669;
-  --brand-accent: #10b981; 
-  --brand-logo-accent: #34d399;
-  --text-high-contrast: #ffffff;
-  --text-med-contrast: #e2e8f0;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-}
-
-/* Dark mode body state */
-[data-theme='dark'] body,
-.dark body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Removed aggressive global overrides - handled by component dark: variants */
-
-/* Dark mode borders (Transitioned to component-level variants) */
-
-/* Nuclear Contrast Utilities for Mobile Drawer visibility */
+/* NUCLEAR CONTRAST UTILITIES: Forced visibility for critical UX elements */
 .nuclear-text {
-  color: #64748b !important;
-}
-
-.dark .nuclear-text,
-[data-theme='dark'] .nuclear-text {
-  color: #f8fafc !important;
+  color: var(--text-primary) !important;
 }
 
 .nuclear-svg {
-  color: #475569 !important;
+  color: var(--text-secondary) !important;
 }
 
-.dark .nuclear-svg,
-[data-theme='dark'] .nuclear-svg {
+.dark .nuclear-svg {
   color: #cbd5e1 !important;
+}
+
+/* INSTITUTIONAL FOCUS PROTOCOL: Perceivable visibility for keyboard users */
+.institutional-focus:focus-visible {
+  @apply outline-none ring-2 ring-content-primary ring-offset-2 ring-offset-surface rounded-full transition-all duration-200;
 }
 
 .bg-primary-surface {
   background-color: var(--bg-primary) !important;
 }
 
-/* Removed nav override - handled by component dark: variants */
-
-/* Glassmorphism for MegaMenu */
+/* Glassmorphism for MegaMenu - Variable Bound */
 .glass-menu {
   background: rgba(var(--bg-card-rgb, 255, 255, 255), 0.9);
   -webkit-backdrop-filter: blur(12px);
@@ -113,14 +103,8 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-[data-theme='dark'] .glass-menu {
-  background: rgba(30, 41, 59, 0.85);
-  /* Slate 800 with opacity */
-}
-
-.megamenu-container {
-  left: 50%;
-  transform: translateX(-50%);
+.dark .glass-menu {
+  background: rgba(15, 23, 42, 0.85); /* Deep Navy Translucent */
 }
 
 /* Navbar theme utility */
@@ -298,6 +282,17 @@ a, button, [role="button"] {
   to {
     opacity: 1;
   }
+}
+
+/* Progress bar animation for silent loaders */
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-progress {
+  animation: progress 1.5s ease-in-out infinite;
 }
 
 /* Scale in animation */

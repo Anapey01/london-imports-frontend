@@ -9,7 +9,7 @@ export default async function HeroSection() {
     let products = [];
     if (!banners || banners.length === 0) {
         const preorderData = await getProducts({
-            limit: '15',
+            limit: '40',
             ordering: '-created_at'
         });
         products = preorderData?.results || [];

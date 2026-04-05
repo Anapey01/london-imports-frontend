@@ -1,7 +1,11 @@
+/**
+ * London's Imports - Delivery Details (Checkout)
+ * Hardened for WCAG 'Understandable' & 'Operable' Compliance
+ */
 'use client';
 
-import { MapPin, Edit2, CheckCircle2, Navigation } from 'lucide-react';
-import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
+import React from 'react';
 
 interface DeliveryDetailsProps {
     orderNumberParam: string | null;
@@ -15,131 +19,89 @@ interface DeliveryDetailsProps {
     setDelivery: (delivery: { address: string; city: string; region: string; delivery_gps: string; notes: string; }) => void;
     saveAddress: boolean;
     setSaveAddress: (val: boolean) => void;
+    activeStep: number;
+    setActiveStep: (step: number) => void;
 }
 
-const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress, setSaveAddress }: DeliveryDetailsProps) => {
-    const [isEditing, setIsEditing] = useState(!delivery.address);
-
+const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress, setSaveAddress, activeStep, setActiveStep }: DeliveryDetailsProps) => {
+    const isExpanded = activeStep === 1;
     const hasAddress = delivery.address && delivery.city && delivery.region;
 
     return (
-        <div className="bg-primary-surface/40 p-6 sm:p-7 rounded-2xl shadow-diffusion-xl border border-primary-surface/40 backdrop-blur-3xl transition-all duration-300 relative overflow-hidden group/details">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-primary-surface/20">
-                <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center opacity-10">
-                        <MapPin className="w-3.5 h-3.5" strokeWidth={2.5} />
+        <div className={`bg-surface-card rounded-2xl border transition-all duration-500 overflow-hidden ${isExpanded ? 'border-brand-emerald/30 shadow-diffusion-lg ring-1 ring-brand-emerald/10' : 'border-border-standard opacity-90'}`}>
+            {/* Header Section */}
+            <div className="flex items-center justify-between p-6 sm:p-7 border-b border-border-standard/50">
+                <div className="flex items-center gap-4">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all duration-500 ${isExpanded ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface text-content-secondary'}`}>
+                        1
                     </div>
-                    <h2 className="text-[10px] font-black nuclear-text uppercase tracking-[0.4em] opacity-40">Delivery Details</h2>
+                    <div>
+                        <h2 className={`font-black uppercase tracking-widest text-[11px] transition-colors ${isExpanded ? 'text-content-primary' : 'text-content-secondary'}`}>
+                            Shipping Address
+                        </h2>
+                        {!isExpanded && hasAddress && (
+                            <p className="text-[10px] font-medium text-content-secondary mt-0.5 truncate max-w-[250px]">
+                                {delivery.address}, {delivery.city}
+                            </p>
+                        )}
+                    </div>
                 </div>
-                {!orderNumberParam && hasAddress && !isEditing && (
+                
+                {!isExpanded && hasAddress && !orderNumberParam && (
                     <button 
-                        onClick={() => setIsEditing(true)}
-                        className="text-[9px] font-black uppercase tracking-widest nuclear-text opacity-20 hover:opacity-100 transition-opacity flex items-center gap-2 group/edit"
+                        onClick={() => setActiveStep(1)}
+                        className="text-[10px] font-black uppercase tracking-widest text-brand-emerald hover:opacity-80 transition-all px-4 py-2 bg-brand-emerald/10 rounded-lg institutional-focus"
                     >
-                        <Edit2 className="w-3 h-3 group-hover/edit:scale-110 transition-transform" />
-                        Modify
+                        Change Address
                     </button>
-                )}
-                {orderNumberParam && (
-                    <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                        <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Manifest Locked</span>
-                    </div>
                 )}
             </div>
 
-            {orderNumberParam ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
-                    <div>
-                        <label className="block text-[8px] uppercase tracking-[0.4em] nuclear-text opacity-20 font-black mb-1.5">Destination Sourcing Node</label>
-                        <p className="text-sm font-black nuclear-text leading-relaxed">{delivery.address}</p>
-                    </div>
-                    <div>
-                        <label className="block text-[8px] uppercase tracking-[0.4em] nuclear-text opacity-20 font-black mb-1.5">Logistics Hub</label>
-                        <p className="text-sm font-black nuclear-text leading-relaxed tracking-tight">{delivery.city}, {delivery.region}</p>
-                        {delivery.delivery_gps && (
-                            <p className="text-[9px] nuclear-text opacity-40 mt-2 font-mono uppercase bg-primary-surface/10 px-2 py-0.5 rounded inline-block">GPS: {delivery.delivery_gps}</p>
-                        )}
-                    </div>
-                    {delivery.notes && (
-                        <div className="sm:col-span-2">
-                            <label className="block text-[8px] uppercase tracking-[0.4em] nuclear-text opacity-20 font-black mb-1.5">Sourcing Brief</label>
-                            <p className="text-xs font-black nuclear-text opacity-60 italic tracking-wider leading-relaxed">&quot;{delivery.notes}&quot;</p>
-                        </div>
-                    )}
-                </div>
-            ) : hasAddress && !isEditing ? (
-                <div className="bg-primary-surface/10 rounded-xl p-5 border border-primary-surface/20 relative overflow-hidden group/card hover:bg-primary-surface/20 transition-all duration-500">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/card:opacity-10 transition-all rotate-12 -mr-2 -mt-2">
-                        <Navigation className="w-12 h-12 nuclear-text" />
-                    </div>
-                    
-                    <div className="relative z-10 space-y-4">
-                        <div className="flex items-start gap-4">
-                            <div className="mt-8">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-sm font-black nuclear-text leading-relaxed tracking-tight">
-                                    {delivery.address}
-                                </p>
-                                <div className="flex flex-wrap items-center gap-3 mt-1.5">
-                                    <p className="text-[10px] font-black nuclear-text opacity-40 uppercase tracking-widest">
-                                        {delivery.city} • {delivery.region}
-                                    </p>
-                                    {delivery.delivery_gps && (
-                                        <p className="text-[9px] font-mono nuclear-text opacity-40 bg-primary-surface/40 px-1.5 py-0.5 rounded border border-primary-surface/40">
-                                            {delivery.delivery_gps}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {delivery.notes && (
-                            <div className="pt-3 border-t border-primary-surface/10">
-                                <p className="text-[9px] font-black nuclear-text opacity-40 italic tracking-widest">
-                                    BRIEF: &quot;{delivery.notes}&quot;
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-500">
+            {/* Expandable Content Body */}
+            <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+                <div className="p-6 sm:p-7 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                         <div>
-                            <label className="block text-[8px] font-black nuclear-text uppercase tracking-[0.3em] mb-2 opacity-30">Destination Node</label>
+                            <label htmlFor="ship-address" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">Full Street Address</label>
                             <input
+                                id="ship-address"
                                 type="text"
+                                name="address"
+                                autoComplete="shipping street-address"
                                 value={delivery.address}
                                 onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
-                                placeholder="ENTER SHIPPING ADDRESS"
+                                placeholder="E.G. HOUSE NUMBER / STREET NAME"
                                 required
-                                className="w-full bg-transparent border-0 border-b border-slate-900/10 dark:border-white/10 py-2 focus:border-slate-900 dark:focus:border-white outline-none transition-all nuclear-text font-black text-sm placeholder:opacity-10 tracking-wider"
+                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider institutional-focus"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-[8px] font-black nuclear-text uppercase tracking-[0.3em] mb-2 opacity-30">Logistics Hub (City)</label>
+                            <label htmlFor="ship-city" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">City / Town</label>
                             <input
+                                id="ship-city"
                                 type="text"
+                                name="city"
+                                autoComplete="shipping address-level2"
                                 value={delivery.city}
                                 onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
-                                placeholder="CITY / TOWN"
+                                placeholder="ACCRA"
                                 required
-                                className="w-full bg-transparent border-0 border-b border-slate-900/10 dark:border-white/10 py-2 focus:border-slate-900 dark:focus:border-white outline-none transition-all nuclear-text font-black text-sm placeholder:opacity-10 tracking-wider"
+                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider institutional-focus"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-[8px] font-black nuclear-text uppercase tracking-[0.3em] mb-2 opacity-30">Administrative Region</label>
+                            <label htmlFor="ship-region" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">Region</label>
                             <select
+                                id="ship-region"
+                                name="region"
+                                autoComplete="shipping address-level1"
                                 value={delivery.region}
                                 onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
                                 required
                                 title="Select Delivery Region"
-                                className="w-full bg-transparent border-0 border-b border-slate-900/10 dark:border-white/10 py-2 focus:border-slate-900 dark:focus:border-white outline-none transition-all nuclear-text font-black text-sm tracking-wider appearance-none cursor-pointer"
+                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all nuclear-text font-black text-sm tracking-wider appearance-none cursor-pointer institutional-focus"
                             >
                                 <option value="">SELECT REGION</option>
                                 <option value="Greater Accra">Greater Accra</option>
@@ -156,33 +118,37 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                         </div>
 
                         <div>
-                            <label className="block text-[8px] font-black nuclear-text uppercase tracking-[0.3em] mb-2 opacity-30">Precise GPS (Optional)</label>
+                            <label htmlFor="ship-gps" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">GHANA POST GPS (OPTIONAL)</label>
                             <input
+                                id="ship-gps"
                                 type="text"
+                                name="delivery_gps"
                                 value={delivery.delivery_gps || ''}
                                 onChange={(e) => setDelivery({ ...delivery, delivery_gps: e.target.value })}
                                 placeholder="GA-183-9023"
-                                className="w-full bg-transparent border-0 border-b border-slate-900/10 dark:border-white/10 py-2 focus:border-slate-900 dark:focus:border-white outline-none transition-all nuclear-text font-black text-sm placeholder:opacity-10 tracking-wider font-mono uppercase"
+                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider font-mono uppercase institutional-focus"
                             />
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block text-[8px] font-black nuclear-text uppercase tracking-[0.3em] mb-2 opacity-30">Sourcing Brief / Notes</label>
-                            <div className="flex items-center gap-6">
-                                <textarea
-                                    value={delivery.notes}
-                                    onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
-                                    rows={1}
-                                    className="w-full bg-transparent border-0 border-b border-slate-900/10 dark:border-white/10 py-2 focus:border-slate-900 dark:focus:border-white outline-none transition-all nuclear-text font-black text-sm placeholder:opacity-10 tracking-wider resize-none italic"
-                                    placeholder="SPECIAL HANDLING INSTRUCTIONS..."
-                                />
+                            <label htmlFor="ship-notes" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">Delivery Notes</label>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                                    <textarea
+                                        id="ship-notes"
+                                        name="notes"
+                                        value={delivery.notes}
+                                        onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
+                                        rows={1}
+                                        className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider resize-none italic institutional-focus"
+                                        placeholder="LEAVE WITH SECURITY / CALL ON ARRIVAL..."
+                                    />
                                 {hasAddress && (
                                     <button 
                                         type="button"
-                                        onClick={() => setIsEditing(false)}
-                                        className="px-6 py-2 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[9px] uppercase tracking-[0.3em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all h-fit shadow-diffusion-lg"
+                                        onClick={() => setActiveStep(2)}
+                                        className="px-8 py-3 bg-content-primary text-surface text-[10px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all h-fit shadow-lg institutional-focus"
                                     >
-                                        Execute
+                                        Use address
                                     </button>
                                 )}
                             </div>
@@ -190,25 +156,26 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                     </div>
 
                     {!orderNumberParam && (
-                        <div className="pt-4 border-t border-primary-surface/10">
-                            <label className="flex items-center gap-3 cursor-pointer group/save w-fit">
+                        <div className="pt-4 border-t border-border-standard">
+                            <label htmlFor="save-address" className="flex items-center gap-3 cursor-pointer group/save w-fit">
                                 <div className="relative flex items-center">
                                     <input
+                                        id="save-address"
                                         type="checkbox"
                                         checked={saveAddress}
                                         onChange={(e) => setSaveAddress(e.target.checked)}
                                         className="sr-only"
                                     />
-                                    <div className={`w-4 h-4 rounded border-2 transition-all flex items-center justify-center ${saveAddress ? 'bg-slate-950 border-slate-950 dark:bg-white dark:border-white' : 'bg-transparent border-slate-900/20'}`}>
-                                        {saveAddress && <CheckCircle2 className="w-2.5 h-2.5 text-white dark:text-slate-950" />}
+                                    <div className={`w-4 h-4 rounded border-2 transition-all flex items-center justify-center institutional-focus ${saveAddress ? 'bg-content-primary border-content-primary' : 'bg-transparent border-border-standard'}`}>
+                                        {saveAddress && <CheckCircle2 className="w-2.5 h-2.5 text-surface" />}
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-black nuclear-text opacity-40 group-hover/save:opacity-100 uppercase tracking-widest transition-opacity">Save to Manifest Profile</span>
+                                <span className="text-[9px] font-black text-content-secondary uppercase tracking-widest transition-opacity">Save as default address</span>
                             </label>
                         </div>
                     )}
                 </div>
-            )}
+            </div>
         </div>
     );
 };

@@ -6,10 +6,12 @@ import { useCartStore, type CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
-import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymentInfo, trackWhatsAppContact, trackCheckoutError } from '@/lib/analytics';
+import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymentInfo, trackWhatsAppContact, trackCheckoutError, trackPaymentLifecycle, trackEvent } from '@/lib/analytics';
 import { ExtendedCart, BackendError, type OrderItem } from '@/types';
 import { AlertCircle } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+
+import CheckoutSkeleton from '@/components/checkout/CheckoutSkeleton';
 
 // New Component Imports
 import CheckoutHeader from '@/components/checkout/CheckoutHeader';
@@ -17,8 +19,6 @@ import ResumeOrderNotice from '@/components/checkout/ResumeOrderNotice';
 import DeliveryDetails from '@/components/checkout/DeliveryDetails';
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector';
 import OrderSummary from '@/components/checkout/OrderSummary';
-import CheckoutSubmitButton from '@/components/checkout/CheckoutSubmitButton';
-
 
 // Paystack types for global window
 interface PaystackResponse {
@@ -58,19 +58,17 @@ declare global {
 
 function CheckoutPage() {
     const router = useRouter();
+    const formRef = useRef<HTMLFormElement>(null);
     const { cart, fetchCart, clearCart, selectedItemIds } = useCartStore();
     const { user, isAuthenticated, isLoading: authLoading, fetchUser } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
-    const [canPay, setCanPay] = useState(true);
-    const formRef = useRef<HTMLFormElement>(null);
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
-    const [connectionTimeout, setConnectionTimeout] = useState(false);
-    const [connectionProgress, setConnectionProgress] = useState(0);
 
+    const [activeStep, setActiveStep] = useState(1);
     const [checkoutOrder, setCheckoutOrder] = useState<ExtendedCart | null>(null);
     const [delivery, setDelivery] = useState<{
         address: string;
@@ -85,15 +83,48 @@ function CheckoutPage() {
         delivery_gps: '',
         notes: '',
     });
-    const [saveAddress, setSaveAddress] = useState(false);
 
-    // Trackers for GA4 funnel
     const hasTrackedCheckout = useRef(false);
     const hasTrackedShipping = useRef(false);
     const hasTrackedPayment = useRef(false);
+    
+    // 4. Conversion Velocity: Step Timers
+    const stepStartTime = useRef(Date.now());
+    const prevStep = useRef(activeStep);
 
     const searchParams = useSearchParams();
     const orderNumberParam = searchParams.get('order');
+
+    const currentOrderData = useMemo((): any => {
+        if (checkoutOrder) return checkoutOrder;
+        
+        const buyNowSlug = searchParams.get('buyNow');
+        if (cart && buyNowSlug) {
+            const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
+            if (buyNowItem) {
+                return {
+                    ...cart,
+                    items: [buyNowItem],
+                    subtotal: buyNowItem.total_price,
+                    total: buyNowItem.total_price,
+                };
+            }
+        }
+        
+        if (cart) return cart;
+        return { items: [], total: 0, subtotal: 0, delivery_fee: 0 };
+    }, [checkoutOrder, cart, searchParams]);
+
+    useEffect(() => {
+        if (delivery.address && delivery.city && delivery.region && activeStep === 1) {
+            if (!hasTrackedShipping.current) {
+                trackAddShippingInfo(currentOrderData);
+                hasTrackedShipping.current = true;
+            }
+        }
+    }, [delivery, activeStep, currentOrderData]);
+
+    const [saveAddress, setSaveAddress] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -109,31 +140,7 @@ function CheckoutPage() {
     }, [cart]);
 
     useEffect(() => {
-        let timer: NodeJS.Timeout;
-        let progressInterval: NodeJS.Timeout;
-
-        if (isLoading && !isPaystackLoaded && paymentType !== 'WHATSAPP') {
-            setConnectionTimeout(false);
-            setConnectionProgress(0);
-
-            progressInterval = setInterval(() => {
-                setConnectionProgress(prev => Math.min(prev + 1, 95));
-            }, 100);
-
-            timer = setTimeout(() => {
-                setConnectionTimeout(true);
-                setConnectionProgress(100);
-            }, 10000);
-        }
-
-        return () => {
-            if (timer) clearTimeout(timer);
-            if (progressInterval) clearInterval(progressInterval);
-        };
-    }, [isLoading, isPaystackLoaded, paymentType]);
-
-    useEffect(() => {
-        if (!formRef.current || isPaystackLoaded) return;
+        if (isPaystackLoaded) return;
 
         const scriptId = 'paystack-inline-js';
         if (document.getElementById(scriptId)) {
@@ -143,95 +150,68 @@ function CheckoutPage() {
 
         const script = document.createElement('script');
         script.id = scriptId;
-        script.src = "https://js.paystack.co/v1/inline.js";
+        script.src = 'https://js.paystack.co/v1/inline.js';
         script.async = true;
         script.onload = () => {
             setIsPaystackLoaded(true);
         };
-        formRef.current.appendChild(script);
+        document.body.appendChild(script);
     }, [isPaystackLoaded]);
 
     useEffect(() => {
         if (orderNumberParam && isAuthenticated) {
             ordersAPI.detail(orderNumberParam)
-                .then(res => {
-                    const orderData = res.data;
-                    setCheckoutOrder(orderData);
-                    setDelivery({
-                        address: orderData.delivery_address || '',
-                        city: orderData.delivery_city || '',
-                        region: orderData.delivery_region || '',
-                        delivery_gps: orderData.delivery_gps || '',
-                        notes: orderData.customer_notes || '',
-                    });
-                    if (orderData.state === 'PARTIALLY_PAID') {
-                        setPaymentType('BALANCE');
+                .then((res: any) => {
+                    const orderItem = res.data;
+                    setCheckoutOrder(orderItem);
+                    if (orderItem.delivery_address) {
+                        setDelivery({
+                            address: orderItem.delivery_address,
+                            city: orderItem.delivery_city || '',
+                            region: orderItem.delivery_region || '',
+                            delivery_gps: orderItem.delivery_gps || '',
+                            notes: orderItem.customer_notes || ''
+                        });
+                        setActiveStep(2);
                     }
                 })
-                .catch(err => {
-                    console.error("Order Load Error:", err);
+                .catch((err: any) => {
+                    console.error("Order fetch error:", err);
                     setError('Could not load order details');
                 });
         } else if (!orderNumberParam && isAuthenticated && user) {
-            // Priority 1: Check sessionStorage for in-progress checkout
             const saved = sessionStorage.getItem('londons_checkout_delivery');
             if (saved) {
                 try {
                     setDelivery(JSON.parse(saved));
-                    return; 
                 } catch (e) { console.error("Failed to parse saved checkout", e); }
             }
 
-            // Priority 2: Smart Pre-fill from User Profile (Only if session is empty)
             setDelivery(prev => {
                 if (prev.address) return prev;
                 return {
+                    ...prev,
                     address: user.address || '',
                     city: user.city || '',
                     region: user.region || '',
-                    delivery_gps: user.ghana_post_gps || '',
-                    notes: '',
+                    delivery_gps: user.ghana_post_gps || ''
                 };
             });
         }
     }, [orderNumberParam, isAuthenticated, user]);
 
-    // ABSOLUTE CERTAINTY: Persist form changes to session storage
     useEffect(() => {
         if (!orderNumberParam && delivery.address) {
             sessionStorage.setItem('londons_checkout_delivery', JSON.stringify(delivery));
         }
     }, [delivery, orderNumberParam]);
 
-    const currentOrderData = useMemo(() => {
-        if (checkoutOrder) return checkoutOrder;
-        
-        const buyNowSlug = searchParams.get('buyNow');
-        if (cart && buyNowSlug) {
-            // Find the item added by Buy Now
-            // We look for the most recently updated item matching this slug
-            const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
-            if (buyNowItem) {
-                return {
-                    ...cart,
-                    items: [buyNowItem],
-                    subtotal: buyNowItem.total_price,
-                    total: buyNowItem.total_price, // Removed delivery fee
-                };
-            }
-        }
-        
-        if (cart) return cart;
-        return { items: [], total: 0, subtotal: 0, delivery_fee: 0 };
-    }, [checkoutOrder, cart, searchParams]);
-
     const paymentAmount = useMemo(() => {
-        // Calculate total of ONLY selected items
         const selSubtotal = (currentOrderData.items || [])
             .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
             .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
             
-        const totalValue = selSubtotal; // Removed delivery fee addition
+        const totalValue = selSubtotal;
         const totalPaid = checkoutOrder ? Number(checkoutOrder.amount_paid || 0) : 0;
         const balanceDue = Math.max(0, totalValue - totalPaid);
 
@@ -241,41 +221,41 @@ function CheckoutPage() {
         if (paymentType === 'WHATSAPP') return 0;
         return balanceDue;
     }, [paymentType, currentOrderData.items, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
-
+    useEffect(() => {
+        const now = Date.now();
+        const duration = Math.round((now - stepStartTime.current) / 1000);
+        
+        if (prevStep.current !== activeStep) {
+            trackEvent('checkout_step_duration', {
+                step_number: prevStep.current,
+                step_name: prevStep.current === 1 ? 'Delivery' : prevStep.current === 2 ? 'Payment' : 'Review',
+                duration_seconds: duration
+            });
+            stepStartTime.current = now;
+            prevStep.current = activeStep;
+        }
+    }, [activeStep]);
 
     useEffect(() => {
-        const selSubtotal = (currentOrderData.items || [])
-            .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
-            .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
-        
-        const total = selSubtotal; // Removed delivery fee addition
-        
-        // ABSOLUTE CERTAINTY: Wait for both auth and cart stores to hydrate before deciding to redirect
         if (authLoading || isLoading) return;
 
-        // Redirect if no items and not loading
         if (!checkoutOrder && !orderNumberParam && (currentOrderData.items?.length || 0) === 0) {
             router.push('/cart');
             return;
         }
-
-        if (total <= 0) {
-            setCanPay(false);
-        } else {
-            setCanPay(true);
-        }
     }, [currentOrderData.items, authLoading, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        
+        if (isLoading) return;
         setError('');
         setIsLoading(true);
 
         const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9';
 
-        if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
-            console.error('CRITICAL: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is missing from environment.');
-            setError('Something went wrong with the payment setup. Please contact us.');
+        if (!publicKey) {
+            setError('Payment configuration is missing. Please contact support.');
             setIsLoading(false);
             return;
         }
@@ -285,7 +265,7 @@ function CheckoutPage() {
             setIsLoading(false);
             setTimeout(() => {
                 router.push(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-            }, 5000);
+            }, 3000);
             return;
         }
 
@@ -343,8 +323,11 @@ function CheckoutPage() {
 
             const paystack = window.PaystackPop;
             if (!paystack) {
+                trackPaymentLifecycle('failure', { error_code: 'paystack_not_found', provider: 'paystack' });
                 throw new Error("Payment gateway not ready. Please try again or use WhatsApp.");
             }
+
+            trackPaymentLifecycle('selection', { provider: 'paystack', amount: paymentAmount });
 
             const handler = paystack.setup({
                 key: publicKey,
@@ -359,6 +342,7 @@ function CheckoutPage() {
                     ]
                 },
                 callback: (response: PaystackResponse) => {
+                    trackPaymentLifecycle('authorization', { reference: response.reference, provider: 'paystack' });
                     handleVerification(response);
                 },
                 onClose: () => {
@@ -380,12 +364,14 @@ function CheckoutPage() {
                     
                     if (saveAddress) await fetchUser();
                     if (orderToPay) trackPurchase(orderToPay, response.reference);
+                    trackPaymentLifecycle('success', { order_number: orderToPay?.order_number, provider: 'paystack' });
                     
                     clearCart();
                     sessionStorage.removeItem('londons_checkout_delivery');
                     router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
                 } catch (verifyErr) {
                     console.error('Verification failed:', verifyErr);
+                    trackPaymentLifecycle('failure', { step: 'verification', error: String(verifyErr), provider: 'paystack' });
                     setError('Payment check failed. Please message us on WhatsApp with your order number.');
                     setIsLoading(false);
                 }
@@ -412,7 +398,7 @@ function CheckoutPage() {
     };
 
     return (
-        <div className="min-h-screen bg-primary-surface md:bg-secondary-surface pt-16 pb-12 md:pt-20 px-4 sm:px-6 lg:px-8 font-sans transition-all duration-500 relative overflow-hidden">
+        <div className="min-h-screen bg-surface pt-16 pb-12 md:pt-20 px-4 sm:px-6 lg:px-8 font-sans transition-all duration-500 relative overflow-hidden">
             <div className="max-w-6xl mx-auto relative z-10">
                 <CheckoutHeader />
 
@@ -426,6 +412,8 @@ function CheckoutPage() {
                             setDelivery={setDelivery}
                             saveAddress={saveAddress}
                             setSaveAddress={setSaveAddress}
+                            activeStep={activeStep}
+                            setActiveStep={setActiveStep}
                         />
 
                         <PaymentMethodSelector
@@ -435,7 +423,69 @@ function CheckoutPage() {
                             customAmount={customAmount}
                             setCustomAmount={setCustomAmount}
                             selectedItemIds={selectedItemIds}
+                            activeStep={activeStep}
+                            setActiveStep={(step: number) => {
+                                if (step === 3 && activeStep === 2 && !hasTrackedPayment.current) {
+                                    trackAddPaymentInfo(currentOrderData, paymentType);
+                                    hasTrackedPayment.current = true;
+                                }
+                                setActiveStep(step);
+                            }}
                         />
+
+                        {/* Step 3: Review items and shipping */}
+                        <div className={`bg-surface rounded-2xl border transition-all duration-500 overflow-hidden ${activeStep === 3 ? 'border-emerald-500/30 shadow-diffusion-lg ring-1 ring-emerald-500/10' : 'border-border-standard opacity-90'}`}>
+                            <div className="flex items-center gap-4 p-6 sm:p-7 border-b border-border-standard">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all duration-500 ${activeStep === 3 ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface border border-border-standard text-content-secondary'}`}>
+                                    3
+                                </div>
+                                <h2 className={`font-black uppercase tracking-widest text-[11px] transition-colors ${activeStep === 3 ? 'text-content-primary' : 'text-content-secondary'}`}>
+                                    Review items and shipping
+                                </h2>
+                            </div>
+
+                            <div className={`transition-all duration-500 ease-in-out ${activeStep === 3 ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+                                <div className="p-6 sm:p-7 space-y-6">
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {(currentOrderData.items || [])
+                                            .filter((item: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
+                                            .map((item: CartItem | OrderItem) => (
+                                                <div key={item.id} className="flex gap-4 items-center p-4 bg-surface border border-border-standard rounded-xl">
+                                                    <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-standard p-1">
+                                                        <img 
+                                                            src={(item.product as any)?.image || (item.product as any)?.image_url} 
+                                                            alt={item.product?.name}
+                                                            className="w-full h-full object-contain rounded-md"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-[11px] font-black text-content-primary truncate">{item.product?.name}</p>
+                                                        <p className="text-[10px] text-content-secondary font-bold">Qty: {item.quantity}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-[11px] font-black text-content-primary">{formatPrice(item.total_price)}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                    </div>
+                                    
+                                    <div className="pt-6 border-t border-border-standard flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Ready for dispatch</span>
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleSubmit()}
+                                            disabled={isLoading}
+                                            className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                                        >
+                                            {isLoading ? 'Processing...' : 'Place your order'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="lg:col-span-5">
@@ -446,6 +496,9 @@ function CheckoutPage() {
                                 checkoutOrder={checkoutOrder}
                                 orderNumberParam={orderNumberParam}
                                 paymentAmount={paymentAmount}
+                                onSubmit={handleSubmit}
+                                isSubmitting={isLoading}
+                                activeStep={activeStep}
                             />
 
                             {error && (
@@ -475,17 +528,6 @@ function CheckoutPage() {
                                     </button>
                                 </div>
                             )}
-
-                            <CheckoutSubmitButton
-                                isLoading={isLoading}
-                                isPaystackLoaded={isPaystackLoaded}
-                                canPay={canPay}
-                                paymentType={paymentType}
-                                paymentAmount={paymentAmount}
-                                connectionTimeout={connectionTimeout}
-                                connectionProgress={connectionProgress}
-                                setPaymentType={setPaymentType}
-                            />
                         </div>
                     </div>
                 </form>
@@ -496,7 +538,7 @@ function CheckoutPage() {
 
 export default function CheckoutPageWrapper() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-black/10 border-t-black rounded-full animate-spin" /></div>}>
+        <Suspense fallback={<CheckoutSkeleton />}>
             <CheckoutPage />
         </Suspense>
     );

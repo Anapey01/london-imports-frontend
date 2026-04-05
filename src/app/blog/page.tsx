@@ -3,10 +3,9 @@
  * Verified Logistics Strategy & International Sourcing.
  */
 import Link from 'next/link';
-import Image from 'next/image';
 import { Metadata } from 'next';
+import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
-import { ArrowUpRight, MessageSquare, Clock, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'Logistics & Scaling | Editorial Publication',
@@ -94,6 +93,21 @@ export default async function BlogPage() {
 
     return (
         <div className="min-h-screen bg-white relative pb-32 selection:bg-emerald-100">
+            {/* Structured Data: Breadcrumb */}
+            <script
+                id="blog-index-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                            { "@type": "ListItem", "position": 1, "name": "Home", "item": siteConfig.baseUrl },
+                            { "@type": "ListItem", "position": 2, "name": "Journal", "item": `${siteConfig.baseUrl}/blog` }
+                        ]
+                    })
+                }}
+            />
             {/* 1. EDITORIAL HERO SECTION */}
             <header className="relative z-10 pt-24 pb-16 px-6 max-w-7xl mx-auto border-b border-slate-50">
                 <div className="flex items-center gap-4 mb-12">

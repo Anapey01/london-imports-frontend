@@ -62,12 +62,12 @@ function StatItem({
     return (
         <div className="group flex flex-col items-center px-4 py-3 sm:py-0 transition-all duration-300 hover:scale-105">
             <div className="flex items-center gap-3 mb-2">
-                <Icon strokeWidth={1.5} className="w-6 h-6 sm:w-8 sm:h-8 nuclear-svg group-hover:opacity-100 transition-opacity" />
-                <span className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight tabular-nums nuclear-text">
+                <Icon strokeWidth={1.5} className="w-6 h-6 sm:w-8 sm:h-8 text-content-primary transition-opacity" />
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight tabular-nums text-content-primary">
                     {prefix}{animatedValue.toLocaleString()}{suffix}
                 </span>
             </div>
-            <span className="font-medium text-xs sm:text-sm text-center leading-tight uppercase tracking-wide nuclear-text opacity-60">
+            <span className="font-medium text-xs sm:text-sm text-center leading-tight uppercase tracking-wide text-content-secondary">
                 {label}
             </span>
         </div>
@@ -108,13 +108,13 @@ export default function StatsBar() {
     // Show skeleton while loading
     if (!stats) {
         return (
-            <section className="bg-primary-surface/20 border-y border-primary-surface/40 py-8 sm:py-10 md:py-12">
+            <section className="bg-surface border-y border-border-standard py-8 sm:py-10 md:py-12">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y divide-primary-surface/40 sm:divide-y-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y divide-border-standard sm:divide-y-0">
                         {[...Array(4)].map((_, i) => (
                             <div key={i} className="flex flex-col items-center justify-center py-6 sm:py-0 animate-pulse">
-                                <div className="h-10 w-24 bg-primary-surface/40 rounded mb-2"></div>
-                                <div className="h-4 w-20 bg-primary-surface/20 rounded"></div>
+                                <div className="h-10 w-24 bg-surface-card rounded mb-2"></div>
+                                <div className="h-4 w-20 bg-surface rounded"></div>
                             </div>
                         ))}
                     </div>
@@ -151,14 +151,14 @@ export default function StatsBar() {
     ];
 
     return (
-        <section className="bg-[#0f172a] border-y border-white/5 py-8 sm:py-10 md:py-12 overflow-hidden relative">
+        <section className="bg-surface border-y border-border-standard py-8 sm:py-10 md:py-12 overflow-hidden relative">
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Mobile: Flex Column, Desktop: Grid */}
-                <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 divide-y divide-primary-surface/40 sm:divide-y-0">
+                <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 divide-y divide-border-standard sm:divide-y-0">
                     {statItems.map((stat, i) => {
                         // Responsive border logic
-                        let borderClass = 'border-primary-surface/40';
+                        let borderClass = 'border-border-standard';
                         if (i === 0) borderClass += ' sm:border-r sm:border-b lg:border-b-0';
                         if (i === 1) borderClass += ' sm:border-b lg:border-b-0 lg:border-r';
                         if (i === 2) borderClass += ' sm:border-r lg:border-r'; // sm:border-r persists to lg

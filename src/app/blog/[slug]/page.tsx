@@ -9,7 +9,7 @@ import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
-import { ArrowUpRight, ArrowLeft, Clock, MessageSquare } from 'lucide-react';
+import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
 
 interface BlogPost {
     id: number;
@@ -90,6 +90,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return {
         title: `${article.title} | Journal Index`,
         description: article.excerpt,
+        alternates: {
+            canonical: `/blog/${slug}`,
+        }
     };
 }
 
@@ -142,6 +145,47 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                     </div>
                 </div>
             </header>
+
+            {/* Structured Data: Article & Breadcrumb */}
+            <script
+                id="blog-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@graph": [
+                            {
+                                "@type": "BlogPosting",
+                                "@id": `${siteConfig.baseUrl}/blog/${slug}/#article`,
+                                "isPartOf": { "@id": `${siteConfig.baseUrl}/blog/${slug}/` },
+                                "author": {
+                                    "@type": "Person",
+                                    "name": article.author_name || "London's Imports Hub",
+                                    "url": `${siteConfig.baseUrl}/blog`
+                                },
+                                "headline": article.title,
+                                "datePublished": article.published_at,
+                                "dateModified": article.updated_at || article.published_at,
+                                "mainEntityOfPage": { "@id": `${siteConfig.baseUrl}/blog/${slug}/` },
+                                "wordCount": article.content?.split(/\s+/).length,
+                                "publisher": { "@id": `${siteConfig.baseUrl}/#organization` },
+                                "image": article.featured_image ? getImageUrl(article.featured_image) : `${siteConfig.baseUrl}/og-image.jpg`,
+                                "description": article.excerpt,
+                                "articleSection": article.category_display
+                            },
+                            {
+                                "@type": "BreadcrumbList",
+                                "@id": `${siteConfig.baseUrl}/blog/${slug}/#breadcrumb`,
+                                "itemListElement": [
+                                    { "@type": "ListItem", "position": 1, "name": "Home", "item": siteConfig.baseUrl },
+                                    { "@type": "ListItem", "position": 2, "name": "Journal", "item": `${siteConfig.baseUrl}/blog` },
+                                    { "@type": "ListItem", "position": 3, "name": article.title, "item": `${siteConfig.baseUrl}/blog/${slug}` }
+                                ]
+                            }
+                        ]
+                    })
+                }}
+            />
 
             {/* 2. DOCUMENT PAYLOAD (Single Column Architecture) */}
             <main className="max-w-3xl mx-auto px-6 py-24">

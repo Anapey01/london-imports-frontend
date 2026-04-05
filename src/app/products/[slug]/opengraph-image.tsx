@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { getProductMetadata } from '@/lib/fetchers';
 import { getImageUrl } from '@/lib/image';
 import React, { CSSProperties } from 'react';
+import { siteConfig } from '@/config/site';
 
 /**
  * London's Imports - High-Density Precision OG Generator
@@ -43,11 +44,29 @@ const STYLES: Record<string, CSSProperties> = {
   },
   brandingStrip: {
     display: 'flex',
-    width: '80px',
+    flexDirection: 'column',
+    width: '100px',
     height: '100%',
     backgroundColor: '#006B5A',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    padding: '40px 0',
     alignItems: 'center',
+  },
+  logoContainer: {
+    display: 'flex',
+    width: '60px',
+    height: '60px',
+    backgroundColor: 'white',
+    borderRadius: '12px',
+    marginBottom: '20px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   brandingText: {
     transform: 'rotate(-90deg)',
@@ -142,10 +161,13 @@ export default async function Image({ params }: { params: { slug: string } }) {
   return new ImageResponse(
     (
       Surface(STYLES.container, [
-        /* Left Branding Strip - "London's Imports" Identity */
-        Surface(STYLES.brandingStrip, 
+        /* Left Branding Strip - Logo & Identity */
+        Surface(STYLES.brandingStrip, [
+          Surface(STYLES.logoContainer, 
+            Photo(`${siteConfig.baseUrl}/logo.jpg`, "Logo", STYLES.logo)
+          ),
           Surface(STYLES.brandingText, "LONDON'S IMPORTS")
-        ),
+        ]),
 
         /* Main Context Content Section */
         Surface(STYLES.main, [

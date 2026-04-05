@@ -77,9 +77,9 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
 
     if (products.length === 0) {
         return (
-            <div className="text-center py-16 bg-slate-50 rounded-2xl">
-                <p className="text-slate-600 mb-4">No upcoming drops at the moment.</p>
-                <p className="text-slate-500 text-sm">Check back soon!</p>
+            <div className="text-center py-16 bg-surface-card/50 border border-border-standard rounded-2xl">
+                <p className="text-content-secondary mb-4 opacity-60">No upcoming drops at the moment.</p>
+                <p className="text-content-secondary text-sm opacity-40">Check back soon!</p>
             </div>
         );
     }
@@ -94,7 +94,7 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
             {canScrollLeft && (
                 <button
                     onClick={() => scroll('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-lg border border-slate-100 text-slate-700 hover:text-pink-500 hover:border-pink-200 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 hidden md:flex"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 flex items-center justify-center bg-surface-card rounded-full shadow-lg border border-border-standard text-content-primary hover:text-brand-emerald hover:border-brand-emerald transition-all focus:outline-none hidden md:flex"
                     aria-label="Previous items"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
             {canScrollRight && (
                 <button
                     onClick={() => scroll('right')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-lg border border-slate-100 text-slate-700 hover:text-pink-500 hover:border-pink-200 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 hidden md:flex"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 flex items-center justify-center bg-surface-card rounded-full shadow-lg border border-border-standard text-content-primary hover:text-brand-emerald hover:border-brand-emerald transition-all focus:outline-none hidden md:flex"
                     aria-label="Next items"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,8 +116,8 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
             )}
 
             {/* Gradient Fade Masks (Premium Touch) */}
-            <div className={`absolute top-0 bottom-8 left-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`} />
-            <div className={`absolute top-0 bottom-8 right-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`absolute top-0 bottom-8 left-0 w-12 bg-gradient-to-r from-surface to-transparent z-10 pointer-events-none transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`absolute top-0 bottom-8 right-0 w-12 bg-gradient-to-l from-surface to-transparent z-10 pointer-events-none transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`} />
 
             {/* Scroll Container */}
             <div
@@ -139,7 +139,7 @@ export default function PreorderCarousel({ products }: PreorderCarouselProps) {
                 {products.slice(0, 5).map((_, i) => (
                     <div
                         key={i}
-                        className={`h-1 rounded-full transition-all duration-300 ${i === 0 ? 'w-6 bg-pink-500' : 'w-1.5 bg-slate-200'}`}
+                        className={`h-1 rounded-full transition-all duration-300 ${i === 0 ? 'w-6 bg-brand-emerald' : 'w-1.5 bg-border-standard'}`}
                     />
                 ))}
             </div>

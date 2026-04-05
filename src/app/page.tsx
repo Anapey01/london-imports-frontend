@@ -3,7 +3,33 @@ import dynamic from 'next/dynamic';
 
 import HeroSection from '@/components/home/HeroSection';
 import ProductGridSection from '@/components/home/ProductGridSection';
-import { HeroSkeleton, ProductGridSkeleton } from '@/components/skeletons/HomeSkeletons';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "China to Ghana Sourcing & Logistics Hub",
+  description: "The premier sourcing house and logistics protocol bridging China manufacturing and Ghana retail. Buy from 1688 and Alibaba with Mobile Money.",
+  openGraph: {
+    title: "London's Imports | Premium China to Ghana Sourcing",
+    description: "Secure, factory-direct sourcing from Guangzhou to Accra. Pay with Momo, track your batch in real-time.",
+    url: 'https://londonsimports.com',
+    siteName: "London's Imports",
+    images: [
+      {
+        url: 'https://londonsimports.com/og-home.jpg',
+        width: 1200,
+        height: 630,
+        alt: "London's Imports - China to Ghana Logistics",
+      },
+    ],
+    locale: 'en_GH',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@londonsimports',
+    creator: '@londonsimports',
+  },
+};
 
 // Lazy load below-the-fold components to reduce initial bundle
 const FeaturedSection = dynamic(() => import('@/components/home/FeaturedSection'), {
@@ -24,22 +50,18 @@ import HomeSEOHeader from '@/components/home/HomeSEOHeader';
  */
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-surface pb-20 transition-colors duration-500">
       {/* WhatsApp Floating Button - Homepage Only */}
       <WhatsAppButton />
 
-      {/* 1. Hero Carousel (Landing visuals) */}
-      <Suspense fallback={<HeroSkeleton />}>
-        <HeroSection />
-      </Suspense>
+      {/* 1. Hero Carousel (Landing visuals) - EAGER SSR (No Suspense to prevent Skeleton Flash) */}
+      <HeroSection />
 
-      {/* 2. SALES FIRST: Immediate Product Feed (Amazon-style grid) */}
-      <Suspense fallback={<ProductGridSkeleton />}>
-        <ProductGridSection />
-      </Suspense>
+      {/* 2. SALES FIRST: Immediate Product Feed (Amazon-style grid) - EAGER SSR */}
+      <ProductGridSection />
 
       {/* 3. Featured Horizontal Carousel (Urgency Protocol) */}
-      <Suspense fallback={<div className="h-64 bg-gray-50 animate-pulse rounded-lg mx-4" />}>
+      <Suspense fallback={<div className="h-64 bg-surface-card animate-pulse rounded-lg mx-4" />}>
         <FeaturedSection />
       </Suspense>
 

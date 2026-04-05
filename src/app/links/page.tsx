@@ -13,7 +13,8 @@ import {
   Star,
   ExternalLink,
   Ghost,
-  ChevronRight
+  ChevronRight,
+  Facebook
 } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
@@ -77,7 +78,8 @@ function LinksContent() {
   const socialLinks = [
     { name: 'Instagram', icon: Instagram, href: siteConfig.socials.instagram, handle: '@londons_imports' },
     { name: 'TikTok', icon: Smartphone, href: siteConfig.socials.tiktok, handle: '@londons_imports1' },
-    { name: 'Snapchat', icon: Ghost, href: siteConfig.socials.snapchat, handle: 'londons_imports' }
+    { name: 'Snapchat', icon: Ghost, href: siteConfig.socials.snapchat, handle: 'londons_imports' },
+    { name: 'Facebook', icon: Facebook, href: siteConfig.socials.facebook, handle: 'Naa Atswei London' }
   ];
 
   return (

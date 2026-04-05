@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { GA_MEASUREMENT_ID } from '@/lib/analytics';
+import { GA_MEASUREMENT_ID, trackException } from '@/lib/analytics';
 
 /**
  * London's Imports - Google Analytics Tracker
@@ -34,7 +34,17 @@ export default function GoogleAnalytics() {
 
         handleConsent();
         window.addEventListener('cookieConsentUpdate', handleConsent);
-        return () => window.removeEventListener('cookieConsentUpdate', handleConsent);
+
+        // 3. Robustness Hardening: Global Error Listener
+        const handleError = (event: ErrorEvent) => {
+            trackException(event.message, false);
+        };
+        window.addEventListener('error', handleError);
+
+        return () => {
+            window.removeEventListener('cookieConsentUpdate', handleConsent);
+            window.removeEventListener('error', handleError);
+        };
     }, [pathname, searchParams]);
 
     return null;

@@ -15,11 +15,12 @@ import StickyMobileCart from '@/components/StickyMobileCart';
 import VariantSelector from '@/components/product/VariantSelector';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import { formatPrice } from '@/lib/format';
-import { trackViewItem, trackAddToCart } from '@/lib/analytics';
+import { trackViewItem, trackAddToCart, trackWhatsAppContact, trackEvent, trackProductAffinity } from '@/lib/analytics';
 import { toast } from 'react-hot-toast';
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 import { siteConfig } from '@/config/site';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Share2, Phone, Download } from 'lucide-react';
+import PropensityTracker from '@/components/analytics/PropensityTracker';
 
 // Lazy Load components to improve initial page load performance
 const RelatedProducts = dynamic(() => import('@/components/RelatedProducts'), {
@@ -91,6 +92,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
     const [isBuyingNow, setIsBuyingNow] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [product, setProduct] = useState(initialProduct);
@@ -216,6 +218,15 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             if (lastTrackedSlug.current !== product.slug) {
                 trackViewItem(product);
                 lastTrackedSlug.current = product.slug;
+
+                // Product Development: Demand Forecasting for OOS
+                if (isSoldOut) {
+                    trackEvent('view_out_of_stock', {
+                        item_id: product.id,
+                        item_name: product.name,
+                        item_category: product.category?.name
+                    });
+                }
             }
 
             // ADDED: Save to Recently Viewed
@@ -237,7 +248,35 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 console.error("Failed to save recently viewed", e);
             }
         }
-    }, [product]);
+    }, [product, isSoldOut]);
+
+    const handleDownloadFlyer = async () => {
+        if (!product) return;
+        setIsDownloading(true);
+        try {
+            const flyerUrl = `${window.location.origin}/products/${product.slug}/opengraph-image`;
+            const response = await fetch(flyerUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `LondonsImports-${product.slug}-Flyer.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            trackEvent('file_download', {
+                file_name: `${product.slug}-flyer`,
+                file_extension: 'png',
+                item_id: product.id
+            });
+        } catch (error) {
+            console.error('Flyer download failed', error);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     const currentImage = displayedImage || getImageUrl(product?.image);
 
@@ -326,11 +365,44 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         }
     };
 
+    const handleWhatsAppContact = () => {
+        if (!product) return;
+        trackWhatsAppContact(`${product.name} (${formatPrice(currentPrice)})`, 'concierge');
+        const message = encodeURIComponent(`Hi London's, I'm interested in the ${product.name} (${formatPrice(currentPrice)}). Can you help me with the sourcing details?`);
+        window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
+    };
+
+    const handleShare = async () => {
+        if (!product) return;
+        const shareData = {
+            title: product.name,
+            text: `Check out this ${product.name} on London's Imports!`,
+            url: window.location.href
+        };
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+                trackEvent('product_share', { item_id: product.id, item_name: product.name, method: 'native_share' });
+            } else {
+                await navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard');
+                trackEvent('product_share', { item_id: product.id, item_name: product.name, method: 'copy_link' });
+            }
+        } catch (err) {
+            console.debug('Share failed', err);
+        }
+    };
+
     return (
-        <div className="bg-white dark:bg-slate-950 min-h-screen pb-20">
+        <div className="bg-surface min-h-screen pb-20">
+            <PropensityTracker 
+                productId={product.id} 
+                productName={product.name} 
+                category={product.category?.name} 
+            />
             <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
                 {/* Visual Breadcrumbs for SEO and Navigation */}
-                <nav className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300 dark:text-slate-700 mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide py-4 border-b border-slate-50 dark:border-slate-900">
+                <nav className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-content-secondary mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide py-4 border-b border-border-standard">
                     <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                         Home
                     </Link>
@@ -340,7 +412,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     </Link>
                     {product.category && (
                         <>
-                            <span className="mx-4 text-slate-100 dark:text-slate-900">/</span>
+                    <span className="mx-4 text-border-standard">/</span>
                             <Link 
                                 href={`/products/category/${product.category.slug || ''}`} 
                                 className="hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -349,7 +421,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </Link>
                         </>
                     )}
-                    <span className="mx-4 text-slate-100 dark:text-slate-900">/</span>
+                    <span className="mx-4 text-border-standard">/</span>
                     <span className="text-slate-900 dark:text-white">
                         {product.name}
                     </span>
@@ -377,7 +449,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     <div className="flex flex-col gap-12 flex-1">
                         {/* 1. Header: Source Serif Authority */}
                         <div className="space-y-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700">Original Product / London&apos;s</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
                             <h1 className="text-4xl lg:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
@@ -393,7 +465,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     className="flex items-center gap-3 py-2 hover:opacity-60 transition-all"
                                 >
                                     <StarRating initialRating={Number(product.rating ?? 0)} readOnly size="sm" />
-                                    <span className="text-[10px] font-black text-slate-200 dark:text-slate-800 tracking-widest tabular-nums pb-0.5">
+                                    <span className="text-[10px] font-black text-content-secondary tracking-widest tabular-nums pb-0.5">
                                         ({Number(product.rating ?? 0).toFixed(1)})
                                     </span>
                                 </button>
@@ -439,11 +511,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 4. Action Phase: Minimal CTAs */}
                         <div className="flex flex-col sm:flex-row items-end gap-12 border-t border-slate-50 dark:border-slate-900 pt-0">
                             <div className="w-full sm:w-40">
-                                <p className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.3em] mb-1 text-center sm:text-left">Quantity</p>
-                                <div className="flex items-center h-10 w-full border border-slate-100 dark:border-slate-800 px-4">
+                                <p className="text-[9px] font-black text-content-secondary uppercase tracking-[0.3em] mb-1 text-center sm:text-left">Quantity</p>
+                                <div className="flex items-center h-10 w-full border border-border-standard px-4">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="flex-1 h-full flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                        className="flex-1 h-full flex items-center justify-center text-content-secondary hover:text-content-primary transition-colors"
                                         aria-label="Decrease quantity"
                                     >
                                         -
@@ -479,13 +551,39 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     {!isSoldOut && !isBuyingNow && <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2.5} />}
                                     <span>{isSoldOut ? "Sold Out" : (isBuyingNow ? "Processing..." : (product.preorder_status === 'READY_TO_SHIP' ? "Buy Now" : "Order Now"))}</span>
                                 </button>
+
+                                <button
+                                    onClick={handleWhatsAppContact}
+                                    className="flex items-center gap-3 text-[#006B5A] text-[11px] font-black uppercase tracking-[0.3em] border-b border-[#006B5A] pb-1 hover:opacity-60 transition-all"
+                                >
+                                    <Phone className="w-3.5 h-3.5" strokeWidth={2.5} />
+                                    <span>Concierge</span>
+                                </button>
+
+                                <button
+                                    onClick={handleDownloadFlyer}
+                                    disabled={isDownloading}
+                                    className={`flex items-center gap-3 text-[#006B5A] text-[11px] font-black uppercase tracking-[0.3em] border-b border-[#006B5A]/30 pb-1 hover:border-[#006B5A] transition-all disabled:opacity-50 ${isDownloading ? 'animate-pulse' : ''}`}
+                                    title="Download professional social flyer"
+                                >
+                                    <Download className={`w-3.5 h-3.5 ${isDownloading ? 'animate-bounce' : ''}`} strokeWidth={2.5} />
+                                    <span>{isDownloading ? 'Flyer...' : 'Flyer'}</span>
+                                </button>
+
+                                <button
+                                    onClick={handleShare}
+                                    className="flex items-center gap-3 text-slate-400 text-[11px] font-black uppercase tracking-[0.3em] border-b border-slate-200 dark:border-slate-800 pb-1 hover:opacity-60 transition-all"
+                                    aria-label="Share product"
+                                >
+                                    <Share2 className="w-3.5 h-3.5" strokeWidth={2.5} />
+                                </button>
                             </div>
                         </div>
 
                         <div className="mt-12 mb-8 group/desc">
-                            <h2 className="text-[10px] font-bold text-slate-900 dark:text-white opacity-40 dark:opacity-60 uppercase tracking-[0.3em] mb-4">Description</h2>
-                            <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6 opacity-80'}`}>
-                                <p className="text-slate-900 dark:text-white opacity-60 dark:opacity-80 leading-relaxed text-sm select-none">
+                            <h2 className="text-[10px] font-bold text-content-secondary uppercase tracking-[0.3em] mb-4">Description</h2>
+                            <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6'}`}>
+                                <p className="text-content-primary leading-relaxed text-sm select-none">
                                     {product.description}
                                 </p>
                                 {!isDescriptionExpanded && (
@@ -505,29 +603,29 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                         {/* Trust & Product Details - Curated Horizontal Row */}
                         {/* 5. Details: Flat Architectural Grid */}
-                        <div className="grid grid-cols-2 gap-px bg-slate-50 dark:bg-slate-900 border-y border-slate-50 dark:border-slate-900 mt-12 mb-12">
+                        <div className="grid grid-cols-2 gap-px bg-border-standard border-y border-border-standard mt-12 mb-12">
                             {/* Type */}
-                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Category</span>
-                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">{product.category?.name}</span>
+                            <div className="bg-surface py-10 flex flex-col gap-3">
+                                <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Category</span>
+                                <span className="text-xs font-bold text-content-primary uppercase tracking-widest">{product.category?.name}</span>
                             </div>
                             {/* Origin */}
-                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3 pl-8">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Made In</span>
-                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">{product.origin_country || 'Guangzhou, CN'}</span>
+                            <div className="bg-surface py-10 flex flex-col gap-3 pl-8">
+                                <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Made In</span>
+                                <span className="text-xs font-bold text-content-primary uppercase tracking-widest">{product.origin_country || 'Guangzhou, CN'}</span>
                             </div>
                             {/* Verification */}
-                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Quality Check</span>
-                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                            <div className="bg-surface py-10 flex flex-col gap-3 border-t border-border-standard">
+                                <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Quality Check</span>
+                                <span className="text-xs font-bold text-content-primary uppercase tracking-widest flex items-center gap-2">
                                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                                     Safe Delivery
                                 </span>
                             </div>
                             {/* Secured */}
-                            <div className="bg-white dark:bg-slate-950 py-10 flex flex-col gap-3 pl-8 border-t border-slate-50 dark:border-slate-900">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.4em]">Payment</span>
-                                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">MOMO SECURED</span>
+                            <div className="bg-surface py-10 flex flex-col gap-3 pl-8 border-t border-border-standard">
+                                <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Payment</span>
+                                <span className="text-xs font-bold text-content-primary uppercase tracking-widest">MOMO SECURED</span>
                             </div>
                         </div>
 
@@ -545,6 +643,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             <RelatedProducts
                 currentSlug={product.slug}
                 categorySlug={product.category?.slug}
+                onProductClick={(p) => trackProductAffinity(product.name, p)}
             />
 
             <ProductReviews

@@ -35,6 +35,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
     const [reviews, setReviews] = useState<Review[]>(initialReviews);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showForm, setShowForm] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     
     // Form state with draft persistence
     const [newRating, setNewRating] = useState(5);
@@ -134,44 +135,66 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                             
                             <div className="bg-primary-surface p-6 sm:p-10 rounded-[1.5rem] border border-primary-surface relative overflow-hidden shadow-diffusion-lg">
                                 <div className="relative z-10">
-                                    <div className="mb-8 pb-8 border-b border-primary-surface/40">
-                                        <div className="flex items-center sm:items-end gap-3 mb-4">
-                                            <div className="text-5xl sm:text-6xl font-black nuclear-text leading-none">
+                                    <div className="pb-8 border-b border-primary-surface/40 flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-4xl sm:text-5xl font-black nuclear-text leading-none tracking-tighter">
                                                 {Number(rating || 0).toFixed(1)}
                                             </div>
-                                            <div className="pb-1">
-                                                <StarRating initialRating={Number(rating || 0)} readOnly size="sm" />
+                                            <div className="flex flex-col gap-1">
+                                                <StarRating initialRating={Number(rating || 0)} readOnly size="xs" />
+                                                <span className="text-[9px] font-black nuclear-text opacity-40 uppercase tracking-widest">{ratingCount} Verified Reviews</span>
                                             </div>
                                         </div>
+                                        
+                                        <button 
+                                            onClick={() => setShowDetails(!showDetails)}
+                                            className="text-[9px] font-black nuclear-text uppercase tracking-widest border-b border-nuclear-text py-1 opacity-40 hover:opacity-100 transition-all"
+                                        >
+                                            {showDetails ? 'Hide Details' : 'View Details'}
+                                        </button>
                                     </div>
+                                </div>
 
-                                    {/* Distribution Bars - Minimal & Solid */}
-                                    <div className="space-y-4 mb-10">
-                                        {distribution.map((item) => (
-                                            <div key={item.star} className="group/bar">
-                                                <div className="flex items-center justify-between mb-1.5">
-                                                    <span className="text-[10px] font-black nuclear-text opacity-30 uppercase tracking-widest">{item.star} Stars</span>
-                                                    <span className="text-[10px] font-black nuclear-text">{Math.round(item.percentage)}%</span>
-                                                </div>
-                                                <div className="h-2 bg-primary-surface/40 rounded-full overflow-hidden border border-primary-surface">
-                                                    <motion.div 
-                                                        initial={{ width: 0 }}
-                                                        whileInView={{ width: `${item.percentage}%` }}
-                                                        viewport={{ once: true }}
-                                                        transition={{ duration: 0.8, ease: "easeOut" }}
-                                                        className="h-full bg-emerald-500 rounded-full"
-                                                    />
-                                                </div>
+                                {/* Distribution Bars - NOW COLLAPSIBLE */}
+                                <AnimatePresence>
+                                    {(showDetails || reviews.length > 0) && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="space-y-4 py-8 mb-10 border-b border-primary-surface/40">
+                                                {distribution.map((item) => (
+                                                    <div key={item.star} className="group/bar">
+                                                        <div className="flex items-center justify-between mb-1.5">
+                                                            <span className="text-[10px] font-black nuclear-text opacity-30 uppercase tracking-widest">{item.star} Stars</span>
+                                                            <span className="text-[10px] font-black nuclear-text">{Math.round(item.percentage)}%</span>
+                                                        </div>
+                                                        <div className="h-1.5 bg-primary-surface/40 rounded-full overflow-hidden border border-primary-surface">
+                                                            <motion.div 
+                                                                initial={{ width: 0 }}
+                                                                whileInView={{ width: `${item.percentage}%` }}
+                                                                viewport={{ once: true }}
+                                                                transition={{ duration: 0.8, ease: "easeOut" }}
+                                                                className="h-full bg-emerald-500 rounded-full"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                <div className="mt-8">
 
                                     {!showForm && (
                                         <button 
                                             onClick={handleShareClick}
-                                            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-[0.98] group/btn shadow-xl shadow-emerald-500/20"
+                                            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-[0.98] group/btn shadow-xl shadow-emerald-500/10"
                                         >
-                                            Share My Experience
+                                            Post Experience
                                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     )}
@@ -301,16 +324,16 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-24 bg-primary-surface/20 rounded-[2rem] border border-dashed border-primary-surface/40 shadow-diffusion">
-                                    <div className="w-20 h-20 bg-primary-surface/40 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary-surface/60">
-                                        <MessageSquare className="w-8 h-8 nuclear-text opacity-20" />
+                                <div className="text-center py-12 bg-primary-surface/20 rounded-[1.5rem] border border-dashed border-primary-surface/40">
+                                    <div className="w-12 h-12 bg-primary-surface/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary-surface/60">
+                                        <MessageSquare className="w-5 h-5 nuclear-text opacity-20" />
                                     </div>
-                                    <h3 className="text-2xl font-black nuclear-text mb-2">Be the First to Spark!</h3>
-                                    <p className="text-sm nuclear-text opacity-40 max-w-[240px] mx-auto mb-10 leading-relaxed uppercase tracking-widest text-[10px] font-black">Your feedback helps thousands of shoppers make better choices.</p>
+                                    <h3 className="text-lg font-black nuclear-text mb-1">Be the First to Spark!</h3>
+                                    <p className="text-sm nuclear-text opacity-40 max-w-[200px] mx-auto mb-6 leading-relaxed uppercase tracking-widest text-[9px] font-black">Feedback helps shoppers choose better.</p>
                                     {!showForm && (
                                         <button 
                                             onClick={handleShareClick}
-                                            className="px-10 py-4 bg-emerald-600 border border-emerald-600 text-white text-xs font-black uppercase tracking-[0.2em] rounded-full hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20"
+                                            className="px-8 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/10"
                                         >
                                             Drop a Review
                                         </button>

@@ -5,12 +5,10 @@ import { Address, User } from '@/types';
 import { MapPin, CheckCircle2, Navigation, Trash2, Edit2, Plus } from 'lucide-react';
 
 interface AddressesViewProps {
-    theme: string;
     user: User | null; // User type from authStore
 }
 
-const AddressesView = ({ theme, user }: AddressesViewProps) => {
-    const isDark = theme === 'dark';
+const AddressesView = ({ user }: AddressesViewProps) => {
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -45,21 +43,17 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
         saveAddresses(addresses.filter(a => a.id !== id));
     };
 
-    // Unused: const setDefault = (id: string) => {
-    //    saveAddresses(addresses.map(a => ({ ...a, isDefault: a.id === id })));
-    // };
-
-    const inputClass = `w-full px-4 py-3 rounded-xl border outline-none transition-all text-sm bg-primary-surface border-primary-surface nuclear-text focus:border-emerald-500 placeholder:opacity-30`;
+    const inputClass = "w-full px-4 py-3 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-surface-card border-border-standard text-content-primary focus:border-brand-emerald placeholder:text-content-secondary";
 
     return (
         <div className="space-y-10 animate-fade-in-up">
-            <div className="border-b pb-6 border-primary-surface">
+            <div className="border-b pb-6 border-border-standard">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight nuclear-text">
+                        <h2 className="text-2xl font-black tracking-tight text-content-primary uppercase">
                             Your Addresses
                         </h2>
-                        <p className="text-sm mt-1 nuclear-text opacity-50">
+                        <p className="text-[10px] uppercase mt-1 tracking-widest font-black text-content-secondary">
                             Manage your delivery locations and primary shipping info
                         </p>
                     </div>
@@ -79,41 +73,41 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
             {(user?.address || user?.city || user?.region) && (
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-xs font-bold uppercase tracking-widest nuclear-text opacity-40">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-content-secondary">
                             Primary Account Address
                         </h3>
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('switch-profile-tab', { detail: 'settings' }))}
-                            className="text-[10px] font-bold uppercase tracking-widest nuclear-text opacity-50 hover:opacity-100 transition-opacity"
+                            className="text-[10px] font-black uppercase tracking-widest text-content-secondary hover:text-content-primary transition-all pb-0.5 border-b border-border-standard hover:border-content-primary"
                         >
                             Edit in Settings
                         </button>
                     </div>
-                    <div className="p-6 rounded-3xl border border-primary-surface bg-primary-surface/40 hover:border-emerald-500/50 transition-all">
+                    <div className="p-6 rounded-3xl border border-border-standard bg-surface-card hover:border-brand-emerald/50 transition-all">
                         <div className="flex items-start gap-4">
-                            <div className="mt-1 p-2 bg-emerald-500/10 rounded-xl">
-                                <MapPin className="w-5 h-5 text-emerald-500" />
+                            <div className="mt-1 p-2 bg-brand-emerald/10 rounded-xl">
+                                <MapPin className="w-5 h-5 text-brand-emerald" />
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h4 className="font-bold nuclear-text">Official Shipping Info</h4>
-                                    <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase truncate">
+                                    <h4 className="font-black uppercase tracking-widest text-[11px] text-content-primary">Official Shipping Info</h4>
+                                    <span className="flex items-center gap-1 text-[10px] font-black text-brand-emerald bg-brand-emerald/10 px-2 py-0.5 rounded-full uppercase truncate">
                                         <CheckCircle2 className="w-3 h-3" />
                                         Synced from Checkout
                                     </span>
                                 </div>
-                                <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                                <p className="text-[11px] font-black uppercase tracking-widest text-content-secondary leading-relaxed">
                                     {user.address || 'No street address provided'}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-4 mt-3">
                                     {(user.city || user.region) && (
-                                        <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-content-secondary">
                                             <Navigation className="w-3.5 h-3.5" />
                                             {user.city || 'N/A'}, {user.region || 'N/A'}
                                         </div>
                                     )}
                                     {user.ghana_post_gps && (
-                                        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-pink-600 bg-white px-2 py-1 rounded-lg border border-pink-100 shadow-sm">
+                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-rose-600 bg-surface px-2 py-1 rounded-lg border border-border-standard shadow-sm uppercase tracking-widest">
                                             GPS: {user.ghana_post_gps}
                                         </div>
                                     )}
@@ -125,20 +119,20 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
             )}
 
             {showForm && (
-                <form onSubmit={handleSubmit} className={`p-8 rounded-3xl border shadow-xl ${isDark ? 'border-slate-800 bg-slate-900/80 shadow-slate-950/50' : 'border-gray-100 bg-white shadow-gray-100'}`}>
+                <form onSubmit={handleSubmit} className="p-8 rounded-3xl border shadow-xl bg-surface-card border-border-standard">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className="text-sm font-black uppercase tracking-widest text-content-primary">
                             {editingId ? 'Edit Address' : 'New Delivery Location'}
                         </h3>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold uppercase tracking-wider ml-1 nuclear-text opacity-40">Label</label>
+                            <label className="text-xs font-bold uppercase tracking-wider ml-1 text-content-primary">Label</label>
                             <input type="text" placeholder="e.g. Home, Office" value={formData.label} onChange={e => setFormData({ ...formData, label: e.target.value })} className={inputClass} required />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">City</label>
+                            <label className="text-xs font-bold text-content-secondary uppercase tracking-wider ml-1">City</label>
                             <input type="text" placeholder="e.g. Accra" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} className={inputClass} required />
                         </div>
                         <div className="space-y-1.5">
@@ -155,11 +149,11 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
                         </div>
                     </div>
                     
-                    <div className="flex gap-4 mt-10 p-4 bg-gray-50/50 dark:bg-slate-800/30 rounded-2xl">
-                        <button type="submit" className="flex-1 py-3.5 bg-pink-600 text-white text-sm font-bold rounded-xl hover:bg-pink-700 transition-all hover:shadow-lg hover:shadow-pink-500/20 active:scale-[0.98]">
+                    <div className="flex gap-4 mt-10 p-4 bg-surface rounded-2xl border border-border-standard">
+                        <button type="submit" className="flex-1 py-3.5 bg-rose-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-rose-700 transition-all hover:shadow-lg hover:shadow-rose-500/20 active:scale-[0.98]">
                             {editingId ? 'Save Changes' : 'Add to Collection'}
                         </button>
-                        <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className={`px-6 text-sm font-bold rounded-xl transition-all ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}>
+                        <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-6 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all text-content-secondary hover:text-content-primary">
                             Cancel
                         </button>
                     </div>
@@ -167,37 +161,37 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
             )}
 
             <div className="space-y-4">
-                <h3 className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-content-secondary">
                     Additional saved address
                 </h3>
                 
                 {addresses.length === 0 && !showForm ? (
-                    <div className={`p-12 text-center rounded-[2.5rem] border-2 border-dashed ${isDark ? 'border-slate-800 bg-slate-900/20' : 'border-gray-200 bg-gray-50/50'}`}>
-                        <Plus className={`w-12 h-12 mx-auto mb-4 opacity-20 ${isDark ? 'text-white' : 'text-black'}`} />
-                        <p className={`text-sm font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>No additional addresses saved</p>
+                    <div className="p-12 text-center rounded-[2.5rem] border-2 border-dashed border-border-standard bg-surface-card">
+                        <Plus className="w-12 h-12 mx-auto mb-4 text-content-secondary opacity-20" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary">No additional addresses saved</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {addresses.map(address => (
-                            <div key={address.id} className={`p-6 rounded-3xl border group transition-all duration-300 ${isDark ? 'border-slate-800 bg-slate-900/30 hover:bg-slate-800/50' : 'border-gray-100 bg-white hover:shadow-xl hover:shadow-gray-200/50'}`}>
+                            <div key={address.id} className="p-6 rounded-3xl border border-border-standard bg-surface-card group transition-all duration-300 hover:bg-surface">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-2">
-                                        <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                                        <div className="p-2 rounded-lg bg-surface text-content-secondary">
                                             <MapPin className="w-4 h-4" />
                                         </div>
-                                        <p className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{address.label}</p>
+                                        <p className="font-black uppercase tracking-widest text-[11px] text-content-primary">{address.label}</p>
                                     </div>
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button 
                                             onClick={() => { setFormData({ label: address.label, city: address.city, area: address.area, landmark: address.landmark, phone: address.phone }); setEditingId(address.id); setShowForm(true); }} 
-                                            className={`p-2 rounded-lg hover:bg-pink-50 hover:text-pink-600 transition-all ${isDark ? 'text-slate-400' : 'text-gray-400'}`}
+                                            className="p-2 rounded-lg hover:bg-pink-50 hover:text-pink-600 transition-all text-content-secondary"
                                             title="Edit"
                                         >
                                             <Edit2 className="w-3.5 h-3.5" />
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(address.id)} 
-                                            className="p-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-gray-400"
+                                            className="p-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-content-secondary"
                                             title="Delete"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />
@@ -205,13 +199,13 @@ const AddressesView = ({ theme, user }: AddressesViewProps) => {
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className={`text-xs font-medium ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                                    <p className="text-xs font-medium text-content-secondary">
                                         {address.area}, {address.city}
                                     </p>
                                     {address.landmark && (
-                                        <p className="text-[10px] text-gray-400 italic">Near {address.landmark}</p>
+                                        <p className="text-[10px] text-content-secondary/60 italic">Near {address.landmark}</p>
                                     )}
-                                    <p className={`text-[10px] font-bold mt-2 ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>{address.phone}</p>
+                                    <p className="text-[10px] font-bold mt-2 text-content-secondary/40">{address.phone}</p>
                                 </div>
                             </div>
                         ))}

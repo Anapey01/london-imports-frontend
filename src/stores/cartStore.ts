@@ -141,8 +141,10 @@ export const useCartStore = create<CartState>()((set, get) => ({
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         if (isAuthenticated) {
-            // Server Side
-            set({ isLoading: true });
+            // Optimistic Update: Increment itemCount immediately for snappy UI
+            const previousCount = get().itemCount;
+            set({ itemCount: previousCount + quantity });
+
             try {
                 // Combine variant and size if both exist, as backend only has selected_size field
                 let sizeParam = selectedSize || "";
@@ -169,9 +171,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
                 });
             } catch (err) {
                 console.error("[CartStore] Server addToCart failed:", err);
+                // Rollback: Revert the count if the request fails
+                set({ itemCount: get().itemCount - quantity });
                 throw err; // Rethrow to allow component-level catch/toast
-            } finally {
-                set({ isLoading: false });
             }
         } else {
             // Guest Side
@@ -221,48 +223,58 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             // Save
             localStorage.setItem('guest_cart', JSON.stringify(newGuest));
-            set({
+            // Instant Local Response
+            set({ 
                 guestItems: newGuest,
                 itemCount: newGuest.reduce((sum, i) => sum + i.quantity, 0)
             });
-
-            // Simulate API delay for UX consistency
-            set({ isLoading: true });
-            setTimeout(() => set({ isLoading: false }), 300);
         }
     },
 
     removeFromCart: async (itemId: string) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
+        
+        // Snapshot for rollback
+        const previousCart = get().cart;
+        const previousCount = get().itemCount;
 
-        // Guard: Never send guest_ IDs to server
         if (isAuthenticated && !itemId.startsWith('guest_')) {
-            set({ isLoading: true });
-            try {
-                const response = await ordersAPI.removeFromCart(itemId);
-                const cart = response.data;
-
-                // GA4: Track removal
-                const itemToRemove = get().cart?.items.find(i => i.id === itemId);
+            // OPTIMISTIC REMOVAL
+            if (previousCart) {
+                const itemToRemove = previousCart.items.find(i => i.id === itemId);
                 if (itemToRemove) {
                     trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
+                    
+                    const newItems = previousCart.items.filter(i => i.id !== itemId);
+                    const newSubtotal = newItems.reduce((sum, i) => sum + (Number(i.unit_price) * i.quantity), 0);
+                    
+                    set({
+                        cart: { 
+                            ...previousCart, 
+                            items: newItems, 
+                            subtotal: newSubtotal, 
+                            total: newSubtotal + previousCart.delivery_fee 
+                        },
+                        itemCount: newItems.reduce((sum, i) => sum + i.quantity, 0)
+                    });
                 }
+            }
 
+            try {
+                const response = await ordersAPI.removeFromCart(itemId);
                 set({
-                    cart,
-                    itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
+                    cart: response.data,
+                    itemCount: response.data.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
             } catch (error) {
-                console.error("Failed to remove from cart", error);
-            } finally {
-                set({ isLoading: false });
+                console.error("Failed to remove from cart, rolling back.", error);
+                set({ cart: previousCart, itemCount: previousCount });
+                throw error;
             }
         } else {
-            // Guest remove or fallback if ID was guest_ even if logged in
+            // Guest side
             const itemToRemove = get().guestItems.find(i => i.id === itemId);
-            if (itemToRemove) {
-                trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
-            }
+            if (itemToRemove) trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
 
             const newGuest = get().guestItems.filter(i => i.id !== itemId);
             localStorage.setItem('guest_cart', JSON.stringify(newGuest));
@@ -275,33 +287,50 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
     updateQuantity: async (itemId: string, quantity: number) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
+        
+        // Snapshot for rollback
+        const previousCart = get().cart;
+        const previousCount = get().itemCount;
 
         if (isAuthenticated && !itemId.startsWith('guest_')) {
-            set({ isLoading: true });
-            try {
-                // ATOMIC UPDATE: Use the new PATCH endpoint
-                const response = await ordersAPI.updateCartItem(itemId, quantity);
-                const cart = response.data;
+            // OPTIMISTIC QUANTITY
+            if (previousCart) {
+                const newItems = previousCart.items.map(item => {
+                    if (item.id === itemId) {
+                        return { ...item, quantity, total_price: Number(item.unit_price) * quantity };
+                    }
+                    return item;
+                }).filter(i => i.quantity > 0);
+
+                const newSubtotal = newItems.reduce((sum, i) => sum + (Number(i.unit_price) * i.quantity), 0);
+                
                 set({
-                    cart,
-                    itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
+                    cart: { 
+                        ...previousCart, 
+                        items: newItems, 
+                        subtotal: newSubtotal, 
+                        total: newSubtotal + previousCart.delivery_fee 
+                    },
+                    itemCount: newItems.reduce((sum, i) => sum + i.quantity, 0)
+                });
+            }
+
+            try {
+                const response = await ordersAPI.updateCartItem(itemId, quantity);
+                set({
+                    cart: response.data,
+                    itemCount: response.data.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
             } catch (error) {
-                console.error("Failed to update quantity", error);
-                // Fallback: If it's a 404 or 400, maybe the cart is out of sync, trigger refresh
-                get().fetchCart();
-            } finally {
-                set({ isLoading: false });
+                console.error("Failed to update quantity, rolling back.", error);
+                set({ cart: previousCart, itemCount: previousCount });
+                throw error;
             }
         } else {
-            // Guest update
+            // Guest side
             const newGuest = get().guestItems.map(item => {
                 if (item.id === itemId) {
-                    return {
-                        ...item,
-                        quantity,
-                        total_price: item.unit_price * quantity
-                    };
+                    return { ...item, quantity, total_price: item.unit_price * quantity };
                 }
                 return item;
             }).filter(i => i.quantity > 0);

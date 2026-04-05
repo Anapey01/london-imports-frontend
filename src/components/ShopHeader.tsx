@@ -42,7 +42,7 @@ export default function ShopHeader({
                 paddingBottom: isScrolled ? '1rem' : '4rem'
             }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className={`bg-white dark:bg-slate-950 border-b-2 border-black dark:border-white overflow-hidden sticky top-0 md:relative z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl transition-all duration-300`}
+            className={`bg-surface border-b-2 border-border-standard overflow-hidden sticky top-0 md:relative z-40 backdrop-blur-xl transition-all duration-300`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
                 <div className="relative z-10 flex flex-col items-center">
@@ -54,7 +54,7 @@ export default function ShopHeader({
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="inline-block px-4 py-1.5 mb-4 md:mb-10 text-[10px] font-black tracking-[0.5em] uppercase border-x border-slate-100 nuclear-text overflow-hidden"
+                                className="inline-block px-4 py-1.5 mb-4 md:mb-10 text-[10px] font-black tracking-[0.5em] uppercase border-x border-border-standard text-content-secondary overflow-hidden"
                             >
                                 {isAvailableItems
                                     ? 'Instant Availability'
@@ -74,15 +74,15 @@ export default function ShopHeader({
                             lineHeight: isScrolled ? 1.2 : 0.85
                         }}
                         transition={{ duration: 0.3 }}
-                        className="font-serif font-black tracking-tighter leading-[0.85] dark:text-white md:text-8xl lg:text-9xl transition-all"
+                        className="font-serif font-black tracking-tighter leading-[0.85] text-content-primary md:text-8xl lg:text-9xl transition-all"
                     >
                         {isAvailableItems
                             ? 'Ready to Ship'
                             : featured
                                 ? <>The <span className="italic font-light">Featured</span> Drop</>
                                 : category
-                                    ? <>{categoryTitle} <span className="italic font-light opacity-40 dark:opacity-20 px-2">&amp;</span> Arrivals</>
-                                    : <>Pre-order <span className="italic font-light opacity-40 dark:opacity-20 px-2">&amp;</span> Products</>}
+                                    ? <>{categoryTitle} <span className="italic font-light text-content-secondary px-2">&amp;</span> Arrivals</>
+                                    : <>Pre-order <span className="italic font-light text-content-secondary px-2">&amp;</span> Products</>}
                     </motion.h1>
 
                     {/* Description - Semi-hidden on mobile scroll */}
@@ -92,7 +92,7 @@ export default function ShopHeader({
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="hidden md:block text-base md:text-xl max-w-xl mx-auto leading-relaxed font-sans font-medium dark:text-slate-400 overflow-hidden mt-4"
+                                className="hidden md:block text-base md:text-xl max-w-xl mx-auto leading-relaxed font-sans font-medium text-content-secondary overflow-hidden mt-4"
                             >
                                 {pageDescription}
                             </motion.p>

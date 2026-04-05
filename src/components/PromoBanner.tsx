@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { Package } from 'lucide-react';
+import { useEffect } from 'react';
+import { trackViewPromotion, trackSelectPromotion } from '@/lib/analytics';
 
 interface PromoBannerProps {
     title?: string;
@@ -16,6 +18,14 @@ export default function PromoBanner({
     href = "/products",
     bgColor = "bg-[#feeef6]", // Specific light pink from image
 }: PromoBannerProps) {
+    useEffect(() => {
+        trackViewPromotion({
+            id: `promo_${title.toLowerCase().replace(/\s+/g, '_')}`,
+            name: title,
+            position: 'homepage_banner'
+        });
+    }, [title]);
+
     return (
         <div className={`w-full ${bgColor} rounded-lg p-6 sm:p-8 flex items-center justify-between relative overflow-hidden mb-6 shadow-sm`}>
 
@@ -29,6 +39,13 @@ export default function PromoBanner({
                 </p>
                 <Link
                     href={href}
+                    onClick={() => {
+                        trackSelectPromotion({
+                            id: `promo_${title.toLowerCase().replace(/\s+/g, '_')}`,
+                            name: title,
+                            position: 'homepage_banner'
+                        });
+                    }}
                     className="text-[#008f87] hover:text-[#006e68] text-sm font-bold uppercase tracking-wide hover:underline transition-all"
                 >
                     {linkText}

@@ -17,6 +17,9 @@ interface OrderSummaryProps {
     checkoutOrder: ExtendedCart | null;
     orderNumberParam: string | null;
     paymentAmount: number;
+    onSubmit: () => void;
+    isSubmitting: boolean;
+    activeStep: number;
 }
 
 const OrderSummary = ({
@@ -24,97 +27,81 @@ const OrderSummary = ({
     selectedItemIds,
     checkoutOrder,
     orderNumberParam,
-    paymentAmount
+    paymentAmount,
+    onSubmit,
+    isSubmitting,
+    activeStep
 }: OrderSummaryProps) => {
+    const subtotalValue = checkoutOrder || orderNumberParam ? (currentOrderData.subtotal || 0) : (currentOrderData.items || [])
+        .filter((i: CartItem | OrderItem) => selectedItemIds.has(i.id))
+        .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
+
+    const deliveryValue = currentOrderData.delivery_fee || 0;
+    const totalValue = subtotalValue + deliveryValue;
+
     return (
-        <div className="bg-primary-surface/40 p-6 sm:p-7 rounded-2xl shadow-diffusion-xl border border-primary-surface/40 backdrop-blur-3xl sticky top-32 overflow-hidden group/summary">
-            <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/summary:opacity-[0.05] transition-all duration-700 pointer-events-none">
-                <div className="text-[100px] font-serif font-black leading-none select-none">M</div>
-            </div>
+        <div className="bg-surface-card p-6 sm:p-7 rounded-2xl border border-border-standard shadow-diffusion-lg sticky top-32">
+            <h2 className="text-base font-black text-content-primary mb-6">Order Summary</h2>
             
-            <div className="flex items-center justify-between mb-8 pb-3 border-b border-primary-surface/20">
-                <h2 className="text-[9px] font-black nuclear-text tracking-[0.4em] uppercase opacity-40">Sourcing Manifest</h2>
-                <span className="text-[7px] font-black nuclear-text opacity-20 tabular-nums">v2.4.LI</span>
+            <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-[11px] font-medium text-content-secondary">
+                    <span>Items:</span>
+                    <span className="tabular-nums font-bold text-content-primary">{formatPrice(subtotalValue)}</span>
+                </div>
+                <div className="flex justify-between text-[11px] font-medium text-content-secondary">
+                    <span>Shipping & handling:</span>
+                    <span className="tabular-nums font-bold text-content-primary italic">{deliveryValue > 0 ? formatPrice(deliveryValue) : 'GHS 0.00'}</span>
+                </div>
+                <div className="pt-3 border-t border-border-standard">
+                    <div className="flex justify-between text-base font-black text-content-primary">
+                        <span>Order Total:</span>
+                        <span className="tabular-nums text-brand-emerald">{formatPrice(totalValue)}</span>
+                    </div>
+                </div>
+                {paymentAmount < totalValue && (
+                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-content-primary pt-2">
+                        <span>Payment Due Now:</span>
+                        <span className="tabular-nums">{formatPrice(paymentAmount)}</span>
+                    </div>
+                )}
             </div>
 
-            <div className="space-y-5 mb-8 max-h-52 overflow-y-auto pr-3 custom-scrollbar">
-                {(currentOrderData.items || [])
-                    .filter((item: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
-                    .map((item: CartItem | OrderItem) => (
-                        <div key={item.id} className="flex justify-between items-start text-xs group">
-                            <div className="flex items-start gap-4 flex-1 min-w-0">
-                                <span className="text-[9px] font-black nuclear-text opacity-20 mt-0.5 tabular-nums">
-                                    {item.quantity < 10 ? `0${item.quantity}` : item.quantity}
-                                </span>
-                                <span className="nuclear-text opacity-60 font-medium group-hover:opacity-100 transition-all truncate">
-                                    {item.product?.name}
-                                </span>
-                            </div>
-                            <span className="font-black nuclear-text tabular-nums ml-4 opacity-80 group-hover:opacity-100 transition-opacity">
-                                {formatPrice(item.total_price)}
-                            </span>
+            <div className="space-y-4">
+                <button
+                    onClick={onSubmit}
+                    disabled={isSubmitting || (activeStep < 3 && !orderNumberParam)}
+                    className={`w-full py-4 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all relative overflow-hidden ${
+                        isSubmitting || (activeStep < 3 && !orderNumberParam)
+                        ? 'bg-surface text-content-secondary cursor-not-allowed border border-border-standard'
+                        : 'bg-content-primary text-surface hover:scale-[1.02] active:scale-[0.98] shadow-xl'
+                    }`}
+                >
+                    {isSubmitting ? (
+                        <div className="flex items-center justify-center gap-3">
+                            <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" />
+                            <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:0.2s]" />
+                            <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:0.4s]" />
                         </div>
-                    ))}
+                    ) : (
+                        'Place your order'
+                    )}
+                </button>
+
+                <p className="text-[9px] text-content-secondary text-center leading-relaxed font-medium">
+                    By placing your order, you agree to our <span className="underline cursor-pointer">Terms of Use</span> and <span className="underline cursor-pointer">Privacy Policy</span>.
+                </p>
             </div>
 
-            <div className="border-t border-primary-surface/20 pt-8 space-y-4">
-                <div className="flex justify-between text-[9px] nuclear-text opacity-40 font-black uppercase tracking-[0.2em]">
-                    <span>Sourcing Subtotal</span>
-                    <span className="nuclear-text tabular-nums opacity-100">
-                        {(() => {
-                            if (checkoutOrder || orderNumberParam) return formatPrice(currentOrderData.subtotal || 0);
-                            const selSubtotal = (currentOrderData.items || [])
-                                .filter((i: CartItem | OrderItem) => selectedItemIds.has(i.id))
-                                .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
-                            return formatPrice(selSubtotal);
-                        })()}
-                    </span>
+            {/* Lean Security Trust */}
+            <div className="mt-8 pt-6 border-t border-border-standard flex items-center justify-center gap-6">
+                <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-3.5 h-3.5 text-brand-emerald" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-content-secondary">Secure</span>
                 </div>
-                
-                <div className="flex justify-between text-[9px] nuclear-text opacity-40 font-black uppercase tracking-[0.2em]">
-                    <span>Logistics Allocation</span>
-                    <span className="nuclear-text tabular-nums opacity-100 italic">Gratis</span>
-                </div>
-                
-                <div className="pt-3 flex justify-between items-end border-b border-primary-surface/10 pb-6">
-                    <span className="text-[9px] nuclear-text opacity-40 font-black uppercase tracking-[0.3em] pb-1">Total Amount</span>
-                    <span className="text-2xl font-serif font-black nuclear-text tracking-tighter leading-none tabular-nums">
-                        {(() => {
-                            if (checkoutOrder || orderNumberParam) return formatPrice(currentOrderData.total || 0);
-                            const selSubtotal = (currentOrderData.items || [])
-                                .filter((i: CartItem | OrderItem) => selectedItemIds.has(i.id))
-                                .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
-                            return formatPrice(selSubtotal);
-                        })()}
-                    </span>
-                </div>
-
-                <div className="pt-5 flex justify-between items-center group/due">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-[3px] h-[3px] bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] nuclear-text opacity-40 group-hover/due:opacity-100 group-hover/due:text-emerald-500 transition-all">Due Now</span>
-                    </div>
-                    <span className="text-xl font-black nuclear-text tabular-nums tracking-tight">{formatPrice(paymentAmount)}</span>
-                </div>
-            </div>
-
-            {/* LEAN TRUST SECTION */}
-            <div className="mt-10 pt-8 border-t border-primary-surface/10 flex items-center justify-between opacity-10 grayscale hover:opacity-40 transition-all duration-700 cursor-default">
-                <div className="flex flex-col items-center gap-2 flex-1">
-                    <ShieldCheck className="w-3.5 h-3.5 nuclear-text" strokeWidth={2} />
-                    <span className="text-[6px] font-black uppercase tracking-[0.4em] nuclear-text text-center">Verified</span>
-                </div>
-                <div className="w-[1px] h-3 bg-primary-surface/40" />
-                <div className="flex flex-col items-center gap-2 flex-1">
-                    <div className="w-3 h-3 rounded-full border border-current flex items-center justify-center opacity-40">
-                        <div className="w-[1.5px] h-[1.5px] bg-current rounded-full" />
-                    </div>
-                    <span className="text-[6px] font-black uppercase tracking-[0.4em] nuclear-text text-center">SECURE</span>
-                </div>
-                <div className="w-[1px] h-3 bg-primary-surface/40" />
-                <div className="flex flex-col items-center gap-2 flex-1">
-                    <Truck className="w-3.5 h-3.5 nuclear-text" strokeWidth={2} />
-                    <span className="text-[6px] font-black uppercase tracking-[0.4em] nuclear-text text-center">GLOBAL</span>
+                <div className="w-px h-3 bg-border-standard" />
+                <div className="flex items-center gap-2">
+                    <Truck className="w-3.5 h-3.5 text-content-secondary" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-content-secondary">Insured</span>
                 </div>
             </div>
         </div>

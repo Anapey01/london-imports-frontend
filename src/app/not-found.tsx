@@ -1,17 +1,18 @@
-import { Metadata } from 'next';
+'use client';
+
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Home, Search, ShieldAlert } from 'lucide-react';
-
-export const metadata: Metadata = {
-    title: 'Disruption: Page Not Found | London\'s Imports',
-    description: 'The requested sourcing protocol could not be located.',
-    robots: {
-        index: false,
-        follow: true,
-    },
-};
+import { trackEvent } from '@/lib/analytics';
 
 export default function NotFound() {
+    useEffect(() => {
+        trackEvent('page_not_found', {
+            page_path: window.location.pathname,
+            referrer: document.referrer
+        });
+    }, []);
+
     return (
         <div className="min-h-screen bg-primary-surface flex items-center justify-center px-4 py-12 transition-all duration-500 font-sans">
             <div className="max-w-xl w-full text-center">

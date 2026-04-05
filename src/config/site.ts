@@ -23,6 +23,9 @@ export const siteConfig = {
         instagram: 'https://www.instagram.com/londonimportsghana',
         tiktok: 'https://www.tiktok.com/@londons_imports1',
         snapchat: 'https://www.snapchat.com/add/londons_imports',
+        twitter: 'https://x.com/londonsimports',
+        twitterHandle: '@londonsimports',
+        facebook: 'https://www.facebook.com/NaaAtsweiLondon',
         trustpilot: 'https://www.trustpilot.com/review/londonsimports.com',
     }
 };

@@ -1,16 +1,24 @@
+/**
+ * London's Imports - Registration Form
+ * Hardened for WCAG 'Understandable' & 'Perceivable' Compliance
+ */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { trackSignUp } from '@/lib/analytics';
-import { ArrowUpRight, ArrowRight, AlertCircle } from 'lucide-react';
+import { trackSignUp, trackEvent } from '@/lib/analytics';
+import { ArrowUpRight, ArrowRight, AlertCircle, ShieldCheck } from 'lucide-react';
 import GoogleProtocolButton from '@/components/auth/GoogleProtocolButton';
 
 export default function RegisterForm() {
     const router = useRouter();
     const { register, logout, isLoading } = useAuthStore();
+
+    useEffect(() => {
+        trackEvent('form_start', { form_id: 'register' });
+    }, []);
 
     const [formData, setFormData] = useState({
         username: '',
@@ -30,6 +38,7 @@ export default function RegisterForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        trackEvent('form_submit', { form_id: 'register' });
 
         if (formData.password !== formData.password_confirm) {
             setError('Error: Passwords do not match');
@@ -42,7 +51,7 @@ export default function RegisterForm() {
                 username: formData.email
             });
             trackSignUp();
-            logout(); // Clear the automatic login session for immediate verification
+            logout(); 
             router.push(`/login?email=${encodeURIComponent(formData.email)}&registered=true&welcome=true`);
         } catch (error: unknown) {
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
@@ -58,142 +67,180 @@ export default function RegisterForm() {
         }
     };
 
+    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-all placeholder:text-content-secondary/30 text-content-primary uppercase tracking-widest";
+
     return (
-        <div className="min-h-screen bg-white grid lg:grid-cols-2 selection:bg-emerald-100">
-            {/* 1. EDITORIAL BRAND PANE (Hidden on Mobile) */}
-            <div className="hidden lg:flex flex-col justify-between p-20 bg-slate-900 text-white relative overflow-hidden">
+        <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
+            {/* 1. EDITORIAL BRAND PANE (Signature Dark Anchor) */}
+            <div className="hidden lg:flex flex-col justify-between p-20 bg-[#0a0f1d] text-white relative overflow-hidden border-r border-white/5">
                 <div className="relative z-10">
                     <div className="flex items-center gap-4 mb-16 opacity-30">
                         <div className="h-px w-12 bg-white" />
                         <span className="text-[10px] font-black uppercase tracking-[0.5em]">London&apos;s Imports / 2026 Edition</span>
                     </div>
+                    <h2 className="text-7xl lg:text-9xl font-serif font-bold leading-[0.8] tracking-tighter mb-20 italic opacity-20">
                         Direct From <br /> Factory.
+                    </h2>
                     <p className="max-w-xs text-sm font-medium text-slate-400 leading-relaxed italic border-l border-slate-700 pl-8">
-                        From the factory in China to your home in Ghana, made simple for everyone.
+                        From the factory in China to your home in Ghana, made simple for everyone. Reliability as a protocol.
                     </p>
                 </div>
                 
-                <div className="relative z-10 pt-20 border-t border-slate-800 opacity-20">
-                     <span className="text-[9px] font-black uppercase tracking-widest block mb-4">Safe & Secure</span>
-                     <p className="text-xs font-medium">Safe login and verified accounts required for your protection.</p>
+                <div className="relative z-10 pt-20 border-t border-white/10 opacity-40">
+                      <span className="text-[9px] font-black uppercase tracking-widest block mb-4 text-brand-emerald">Secure Membership</span>
+                      <p className="text-xs font-medium text-slate-300">Safe login and verified accounts are required for your protection and order integrity.</p>
                 </div>
 
                 {/* Subtle Radial Architecture */}
-                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.05),transparent_70%)] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
             </div>
 
             {/* 2. PROTOCOL FORM PANE */}
-            <div className="flex items-center justify-center p-8 md:p-16 lg:p-24 bg-white">
+            <div className="flex items-center justify-center p-8 md:p-16 lg:p-24 bg-surface">
                 <div className="w-full max-w-sm">
                     <header className="mb-16">
-                        <div className="flex items-center gap-3 mb-8 opacity-20">
-                             <div className="h-px w-8 bg-slate-900" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">Join Us</span>
+                        <div className="flex items-center gap-3 mb-8 opacity-40">
+                             <ShieldCheck className="w-3 h-3 text-content-primary" />
+                             <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Join the Network</span>
                         </div>
-                        <h1 className="text-5xl font-serif font-bold text-slate-900 mb-6 tracking-tighter leading-none">Create Account</h1>
-                        <p className="text-sm font-medium text-slate-400 italic">
-                            Sign up to start shopping from China.
+                        <h1 className="text-5xl font-serif font-bold text-content-primary mb-6 tracking-tighter leading-none">Create Account</h1>
+                        <p className="text-sm font-medium text-content-secondary italic">
+                            Sign up to start shopping directly from China and tracking your shipments.
                         </p>
                     </header>
 
                     <form onSubmit={handleSubmit} className="space-y-10">
                         {error && (
-                            <div className="p-6 bg-slate-50 border border-slate-900/10 flex items-start gap-4 mb-10">
-                                <AlertCircle className="w-4 h-4 text-slate-900 mt-0.5" />
-                                <p className="text-xs font-bold text-slate-900 leading-relaxed uppercase tracking-tighter">{error}</p>
+                            <div className="p-6 bg-rose-500/10 border border-rose-500/20 flex items-start gap-4 rounded-2xl animate-in shake duration-500 mb-10" role="alert" aria-live="polite">
+                                <AlertCircle className="w-4 h-4 text-rose-500 mt-0.5" />
+                                <p className="text-xs font-black text-rose-500 leading-relaxed uppercase tracking-widest">{error}</p>
                             </div>
                         )}
 
                         <div className="space-y-8">
-                            <div className="grid grid-cols-2 gap-8">
+                            <div className="grid grid-cols-2 gap-6">
                                 <div className="group">
-                                    <label className="block text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 transition-colors group-focus-within:text-slate-900">
+                                    <label 
+                                        htmlFor="reg-first-name"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                    >
                                         First Name
                                     </label>
                                     <input
+                                        id="reg-first-name"
                                         type="text"
                                         name="first_name"
+                                        autoComplete="given-name"
                                         value={formData.first_name}
                                         onChange={handleChange}
                                         required
-                                        className="block w-full text-[12px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-3 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200 uppercase tracking-widest"
+                                        className={inputClass}
                                         placeholder="Your name..."
                                     />
                                 </div>
                                 <div className="group">
-                                    <label className="block text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 transition-colors group-focus-within:text-slate-900">
+                                    <label 
+                                        htmlFor="reg-last-name"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                    >
                                         Last Name
                                     </label>
                                     <input
+                                        id="reg-last-name"
                                         type="text"
                                         name="last_name"
+                                        autoComplete="family-name"
                                         value={formData.last_name}
                                         onChange={handleChange}
                                         required
-                                        className="block w-full text-[12px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-3 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200 uppercase tracking-widest"
+                                        className={inputClass}
                                         placeholder="Surname..."
                                     />
                                 </div>
                             </div>
 
                             <div className="group">
-                                <label className="block text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 transition-colors group-focus-within:text-slate-900">
+                                <label 
+                                    htmlFor="reg-email"
+                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                >
                                     Email Address
                                 </label>
                                 <input
+                                    id="reg-email"
                                     type="email"
                                     name="email"
+                                    autoComplete="email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="block w-full text-[12px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-3 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200 uppercase tracking-widest"
+                                    className={inputClass}
                                     placeholder="Enter your email..."
                                 />
                             </div>
 
                             <div className="group">
-                                <label className="block text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 transition-colors group-focus-within:text-slate-900">
+                                <label 
+                                    htmlFor="reg-phone"
+                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                >
                                     Phone Number
                                 </label>
                                 <input
+                                    id="reg-phone"
                                     type="tel"
                                     name="phone"
+                                    autoComplete="tel"
                                     value={formData.phone}
                                     onChange={handleChange}
                                     required
-                                    className="block w-full text-[12px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-3 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200 uppercase tracking-widest"
+                                    className={inputClass}
                                     placeholder="0XX XXX XXXX"
                                 />
                             </div>
 
                             <div className="space-y-8">
                                 <div className="group">
-                                    <label className="block text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 transition-colors group-focus-within:text-slate-900">
+                                    <label 
+                                        htmlFor="reg-password"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                    >
                                         Create Password
                                     </label>
                                     <input
+                                        id="reg-password"
                                         type="password"
                                         name="password"
+                                        autoComplete="new-password"
                                         value={formData.password}
                                         onChange={handleChange}
                                         required
                                         minLength={8}
-                                        className="block w-full text-[12px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-3 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200"
+                                        className={inputClass}
                                         placeholder="••••••••"
+                                        aria-describedby="password-hint"
                                     />
+                                    <p id="password-hint" className="mt-2 text-[9px] font-bold text-content-secondary/40 uppercase tracking-widest italic">
+                                        Must be at least 8 characters.
+                                    </p>
                                 </div>
 
                                 <div className="group">
-                                    <label className="block text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 transition-colors group-focus-within:text-slate-900">
+                                    <label 
+                                        htmlFor="reg-password-confirm"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                    >
                                         Confirm Password
                                     </label>
                                     <input
+                                        id="reg-password-confirm"
                                         type="password"
                                         name="password_confirm"
+                                        autoComplete="new-password"
                                         value={formData.password_confirm}
                                         onChange={handleChange}
                                         required
-                                        className="block w-full text-[12px] font-black text-slate-900 bg-transparent border-0 border-b border-slate-100 rounded-none py-3 focus:border-slate-900 focus:ring-0 focus:outline-none transition-all placeholder-slate-200"
+                                        className={inputClass}
                                         placeholder="Confirm password..."
                                     />
                                 </div>
@@ -203,24 +250,23 @@ export default function RegisterForm() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group/btn relative w-full h-16 border border-slate-900 transition-all hover:bg-slate-900 flex items-center justify-center gap-4 overflow-hidden mt-6"
+                            className="group/btn relative w-full h-16 bg-content-primary rounded-none transition-all hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-4 overflow-hidden shadow-2xl shadow-content-primary/10 mt-6"
                         >
-                            <span className="relative z-10 text-[11px] font-black text-slate-900 uppercase tracking-[0.5em] group-hover/btn:text-white transition-colors">
-                                {isLoading ? 'Creating...' : 'Create My Account'}
+                            <span className="relative z-10 text-[11px] font-black text-surface uppercase tracking-[0.5em]">
+                                {isLoading ? 'Building Account...' : 'Continue'}
                             </span>
-                            {!isLoading && <ArrowUpRight className="relative z-10 w-4 h-4 text-slate-900 group-hover/btn:text-white transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />}
-                            <div className="absolute inset-0 bg-slate-900 transition-transform translate-y-full group-hover/btn:translate-y-0" />
+                            {!isLoading && <ArrowUpRight className="relative z-10 w-4 h-4 text-surface group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />}
                         </button>
 
-                        <div className="pt-4">
+                        <div className="pt-4 border-t border-border-standard">
                             <GoogleProtocolButton mode="signup" />
                         </div>
                     </form>
 
-                    <footer className="mt-16 pt-12 border-t border-slate-50 flex flex-col items-center gap-6">
-                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Already have an account?</p>
-                         <Link href="/login" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-slate-900 border-b border-black pb-1 hover:opacity-60 transition-all uppercase tracking-[0.3em]">
-                            Sign In Now
+                    <footer className="mt-16 pt-12 border-t border-border-standard flex flex-col items-center gap-6">
+                         <p className="text-[10px] font-black text-content-secondary/40 uppercase tracking-widest">Already a member?</p>
+                         <Link href="/login" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-content-primary hover:text-brand-emerald transition-all uppercase tracking-[0.3em] pb-1 border-b border-border-standard hover:border-brand-emerald">
+                            Sign In Instead
                             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
                          </Link>
                     </footer>

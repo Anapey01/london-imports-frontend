@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import HowItWorksBar from '@/components/HowItWorksBar';
 import { getCategories, getProducts } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
@@ -153,7 +152,7 @@ export default async function ProductsPage({ searchParams }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950">
+        <div className="min-h-screen bg-surface">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -171,16 +170,14 @@ export default async function ProductsPage({ searchParams }: Props) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Client Side Search/Filter Component which takes initial data */}
-                <Suspense fallback={<div className="h-96 animate-pulse bg-gray-100 rounded-2xl" />}>
-                    <ProductGrid
-                        initialProducts={initialProducts}
-                        categories={categories}
-                        initialSearch={search}
-                        initialCategory={category}
-                        initialFeatured={featured}
-                        initialStatus={status}
-                    />
-                </Suspense>
+                <ProductGrid
+                    initialProducts={initialProducts}
+                    categories={categories}
+                    initialSearch={search}
+                    initialCategory={category}
+                    initialFeatured={featured}
+                    initialStatus={status}
+                />
             </div>
 
             {/* Trust Badges & Stats */}

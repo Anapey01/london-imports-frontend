@@ -1,3 +1,7 @@
+/**
+ * London's Imports - Product Grid
+ * Hardened for WCAG 'Understandable' & 'Operable' Compliance
+ */
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -8,7 +12,7 @@ import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
 import { trackViewItemList, trackViewSearchResults } from '@/lib/analytics';
 import { useEffect, useRef } from 'react';
-import { Zap, ArrowRight } from 'lucide-react';
+import { Zap, ArrowRight, Search, ListFilter } from 'lucide-react';
 
 interface Category {
     id: number;
@@ -112,7 +116,7 @@ export default function ProductGrid({
                 if (vendorSlug) listName = `Vendor: ${vendorSlug}`;
 
                 trackViewItemList(products, listName);
-                if (search) trackViewSearchResults(search as string, products.length);
+                if (search) trackViewSearchResults(search as string, products.length, products);
                 lastTrackedParams.current = currentParams;
             }
         }
@@ -124,28 +128,38 @@ export default function ProductGrid({
             {!hideFilters && (
                 <aside className="hidden lg:block w-72 flex-shrink-0 space-y-16 sticky top-32 self-start">
                     
-                    {/* Search Registry */}
-                    <div className="pb-10 border-b border-slate-100 group">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-6">Search Registry</h3>
+                    {/* Search Registry Hardened for Understandability */}
+                    <div className="pb-10 border-b border-border-standard group">
+                        <label 
+                            htmlFor="grid-search"
+                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 group-focus-within:opacity-100 transition-opacity mb-6"
+                        >
+                            <Search className="w-3 h-3" />
+                            Search Collection
+                        </label>
                         <div className="relative">
                             <input
+                                id="grid-search"
                                 type="text"
                                 placeholder="FIND PIECE..."
                                 defaultValue={search}
                                 onBlur={(e) => updateSearch({ search: e.target.value })}
                                 onKeyDown={(e) => { if (e.key === 'Enter') updateSearch({ search: (e.target as HTMLInputElement).value }); }}
-                                className="w-full bg-transparent border-b border-slate-200 focus:border-black dark:border-slate-800 dark:focus:border-white rounded-none text-xs font-bold uppercase tracking-widest py-2 outline-none transition-colors placeholder:opacity-20 dark:text-white"
+                                className="w-full bg-transparent border-b border-border-standard focus:border-brand-emerald rounded-none text-xs font-bold uppercase tracking-widest py-2 outline-none transition-all placeholder:opacity-20 text-content-primary institutional-focus"
                             />
                         </div>
                     </div>
 
-                    {/* Collections */}
-                    <div className="pb-10 border-b border-slate-100">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-8">Collections</h3>
+                    {/* Collections - Hardened Labels */}
+                    <div className="pb-10 border-b border-border-standard">
+                        <h3 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 mb-8">
+                            <ListFilter className="w-3 h-3" />
+                            Product Categories
+                        </h3>
                         <div className="space-y-4">
                             <button
                                 onClick={() => updateSearch({ category: '' })}
-                                className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all ${!category ? 'text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-600 dark:border-emerald-400 pl-4' : 'text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white hover:pl-2 pl-0'}`}
+                                className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${!category ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-content-secondary opacity-40 hover:opacity-100 hover:text-content-primary hover:pl-2 pl-0'}`}
                             >
                                 All Arrivals
                             </button>
@@ -153,7 +167,7 @@ export default function ProductGrid({
                                 <button
                                     key={cat.id}
                                     onClick={() => updateSearch({ category: cat.slug })}
-                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all ${category === cat.slug ? 'text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-600 dark:border-emerald-400 pl-4' : 'text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white hover:pl-2 pl-0'}`}
+                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${category === cat.slug ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-content-secondary opacity-40 hover:opacity-100 hover:text-content-primary hover:pl-2 pl-0'}`}
                                 >
                                     {cat.name}
                                 </button>
@@ -161,9 +175,9 @@ export default function ProductGrid({
                         </div>
                     </div>
 
-                    {/* Pipeline / Status */}
-                    <div className="pb-10 border-b border-slate-100">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-8">Pipeline</h3>
+                    {/* Pipeline / Status - Hardened Labels */}
+                    <div className="pb-10 border-b border-border-standard">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 mb-8">Order Status</h3>
                         <div className="space-y-4">
                             {[
                                 { label: 'All Items', value: '' },
@@ -174,7 +188,7 @@ export default function ProductGrid({
                                 <button
                                     key={s.value}
                                     onClick={() => updateSearch({ status: s.value })}
-                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all ${status === s.value ? 'text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-600 dark:border-emerald-400 pl-4' : 'text-slate-400 dark:text-slate-600 hover:text-black dark:hover:text-white hover:pl-2 pl-0'}`}
+                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${status === s.value ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-content-secondary opacity-40 hover:opacity-100 hover:text-content-primary hover:pl-2 pl-0'}`}
                                 >
                                     {s.label}
                                 </button>
@@ -182,46 +196,54 @@ export default function ProductGrid({
                         </div>
                     </div>
 
-                    {/* Valuation (Price Range) */}
+                    {/* Valuation (Price Range) - Hardened Labels & Links */}
                     <div>
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-8">Valuation (GHS)</h3>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 mb-8">Price Range (GHS)</h3>
                         <div className="flex items-center gap-4">
-                            <input
-                                type="number"
-                                placeholder="MIN"
-                                defaultValue={minPrice}
-                                onBlur={(e) => updateSearch({ min_price: e.target.value })}
-                                className="w-full bg-transparent border-b border-slate-100 dark:border-slate-800 focus:border-black dark:focus:border-white rounded-none text-xs font-bold py-1 outline-none transition-colors dark:text-white"
-                            />
-                            <span className="text-slate-200">/</span>
-                            <input
-                                type="number"
-                                placeholder="MAX"
-                                defaultValue={maxPrice}
-                                onBlur={(e) => updateSearch({ max_price: e.target.value })}
-                                className="w-full bg-transparent border-b border-slate-100 dark:border-slate-800 focus:border-black dark:focus:border-white rounded-none text-xs font-bold py-1 outline-none transition-colors dark:text-white"
-                            />
+                            <div className="flex-1">
+                                <label htmlFor="price-min" className="sr-only">Minimum Price</label>
+                                <input
+                                    id="price-min"
+                                    type="number"
+                                    placeholder="MIN"
+                                    defaultValue={minPrice}
+                                    onBlur={(e) => updateSearch({ min_price: e.target.value })}
+                                    className="w-full bg-transparent border-b border-border-standard focus:border-brand-emerald rounded-none text-xs font-bold py-1 outline-none transition-colors text-content-primary institutional-focus"
+                                />
+                            </div>
+                            <span className="text-content-secondary opacity-20" aria-hidden="true">/</span>
+                            <div className="flex-1">
+                                <label htmlFor="price-max" className="sr-only">Maximum Price</label>
+                                <input
+                                    id="price-max"
+                                    type="number"
+                                    placeholder="MAX"
+                                    defaultValue={maxPrice}
+                                    onBlur={(e) => updateSearch({ max_price: e.target.value })}
+                                    className="w-full bg-transparent border-b border-border-standard focus:border-brand-emerald rounded-none text-xs font-bold py-1 outline-none transition-colors text-content-primary institutional-focus"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Reset Action */}
                     <button
                         onClick={clearFilters}
-                        className="w-full pt-10 text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-left"
+                        className="w-full pt-10 text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-20 hover:opacity-100 hover:text-brand-emerald transition-all text-left institutional-focus rounded-sm"
                     >
-                        [ Reset Archives ]
+                        [ Reset Filters ]
                     </button>
                 </aside>
             )}
 
             {/* 2. PRODUCT GRID (Editorial Layout) */}
-            <main className="flex-1">
+            <main className="flex-1" id="main-content">
                 {/* Mobile Collections Bar */}
                 {!hideFilters && (
-                    <div className="lg:hidden mb-12 flex items-center gap-6 overflow-x-auto pb-4 no-scrollbar border-b border-slate-100">
+                    <div className="lg:hidden mb-12 flex items-center gap-6 overflow-x-auto pb-4 no-scrollbar border-b border-border-standard">
                         <button
                             onClick={clearFilters}
-                            className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${!category ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'}`}
+                            className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all institutional-focus px-2 py-1 rounded ${!category ? 'text-brand-emerald' : 'text-content-secondary opacity-40'}`}
                         >
                             All
                         </button>
@@ -229,7 +251,7 @@ export default function ProductGrid({
                             <button
                                 key={cat.id}
                                 onClick={() => updateSearch({ category: cat.slug })}
-                                className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${category === cat.slug ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'}`}
+                                className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all institutional-focus px-2 py-1 rounded ${category === cat.slug ? 'text-brand-emerald' : 'text-content-secondary opacity-40'}`}
                             >
                                 {cat.name}
                             </button>
@@ -237,14 +259,19 @@ export default function ProductGrid({
                     </div>
                 )}
 
-                {/* Filter Breadcrumbs */}
+                {/* Filter Breadcrumbs - Hardened for Robust Status Announcements */}
                 {(category || status || search || minPrice || maxPrice) && (
-                    <div className="flex flex-wrap items-center gap-3 mb-10 text-[10px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-700">
-                        <span>Registry:</span>
-                        {category && <span className="text-slate-900 dark:text-white border-b border-slate-900 dark:border-white">CAT_{category}</span>}
-                        {status && <span className="text-slate-900 dark:text-white border-b border-slate-900 dark:border-white">STS_{status}</span>}
-                        {search && <span className="text-slate-900 dark:text-white border-b border-slate-900 dark:border-white">&quot;{search}&quot;</span>}
-                        <button onClick={clearFilters} className="ml-4 text-emerald-600 dark:text-emerald-400 hover:text-black dark:hover:text-white transition-colors">[ Clear ]</button>
+                    <div 
+                        className="flex flex-wrap items-center gap-3 mb-10 text-[10px] font-bold uppercase tracking-widest text-content-secondary opacity-40" 
+                        role="status"
+                        aria-live="polite"
+                        aria-atomic="true"
+                    >
+                        <span>Active Filters:</span>
+                        {category && <span className="text-content-primary border-b border-current">CAT_{category}</span>}
+                        {status && <span className="text-content-primary border-b border-current">STS_{status}</span>}
+                        {search && <span className="text-content-primary border-b border-current">&quot;{search}&quot;</span>}
+                        <button onClick={clearFilters} className="ml-4 text-brand-emerald hover:text-content-primary transition-colors text-xs institutional-focus">[ × ]</button>
                     </div>
                 )}
 
@@ -255,15 +282,19 @@ export default function ProductGrid({
                     </div>
                 ) : products.length > 0 ? (
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 animate-fade-in">
-                        {products.map((product: Product) => (
-                            <ProductCard key={product.id} product={product} />
+                        {products.map((product: Product, index: number) => (
+                            <ProductCard 
+                                key={product.id} 
+                                product={product} 
+                                priority={index < 6} 
+                            />
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-40 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
-                         <Zap className="w-10 h-10 text-slate-200 dark:text-slate-800 mx-auto mb-8 opacity-40" />
-                         <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4">Archives Empty.</h3>
-                         <p className="text-xs text-slate-400 dark:text-slate-600 font-medium max-w-xs mx-auto leading-relaxed mb-10">
+                    <div className="text-center py-40 bg-surface-card/50 border border-border-standard rounded-2xl">
+                         <Zap className="w-10 h-10 text-content-secondary mx-auto mb-8 opacity-10" />
+                         <h3 className="text-2xl font-serif font-bold text-content-primary mb-4">No results found.</h3>
+                         <p className="text-xs text-content-secondary font-medium max-w-xs mx-auto leading-relaxed mb-10 opacity-60">
                             Our scouts are currently in the field. Let our sourcing team find your specific piece directly.
                          </p>
                          <div className="flex justify-center">
@@ -271,7 +302,7 @@ export default function ProductGrid({
                                 href={siteConfig.socials.concierge}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white border-b-2 border-black dark:border-white pb-2 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-600 dark:hover:border-emerald-400 transition-all group"
+                                className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-content-primary border-b-2 border-content-primary pb-2 hover:text-brand-emerald hover:border-brand-emerald transition-all institutional-focus group"
                             >
                                 Request Custom Sourcing
                                 <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-2 transition-transform" />
