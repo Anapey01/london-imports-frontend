@@ -162,10 +162,17 @@ export default async function Image({ params }: { params: { slug: string } }) {
 
   const productImageUrl = getImageUrl(product.image);
 
-  // Load font for currency symbol support
-  const fontData = await fetch(
-    new URL('https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm453RRn7g.ttf', import.meta.url)
-  ).then((res) => res.arrayBuffer());
+  // Load font from local assets for reliability and GHS symbol support
+  let fontData;
+  try {
+    const fontUrl = new URL('../../../assets/Montserrat-Bold.ttf', import.meta.url);
+    const res = await fetch(fontUrl);
+    if (res.ok) {
+       fontData = await res.arrayBuffer();
+    }
+  } catch (e) {
+    console.error('Local font fetch failed, falling back to default sans-serif', e);
+  }
 
   const formattedPrice = new Intl.NumberFormat('en-GH', {
     style: 'currency',
@@ -205,14 +212,14 @@ export default async function Image({ params }: { params: { slug: string } }) {
     ),
     {
       ...size,
-      fonts: [
+      fonts: fontData ? [
         {
           name: 'Montserrat',
           data: fontData,
           style: 'normal',
           weight: 700,
         },
-      ],
+      ] : [],
     }
   );
 }
