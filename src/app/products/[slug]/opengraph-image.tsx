@@ -49,8 +49,27 @@ const STYLES: Record<string, CSSProperties> = {
     height: '100%',
     backgroundColor: '#006B5A',
     justifyContent: 'space-between',
-    padding: '40px 0',
+    padding: '60px 0',
     alignItems: 'center',
+  },
+  brandingTextContainer: {
+    display: 'flex',
+    width: '400px',
+    height: '100px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: 'rotate(-90deg)',
+    marginTop: 'auto',
+    marginBottom: '80px',
+  },
+  brandingText: {
+    color: 'white',
+    fontSize: '24px',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    letterSpacing: '0.1em',
+    textAlign: 'center',
   },
   logoContainer: {
     display: 'flex',
@@ -58,7 +77,6 @@ const STYLES: Record<string, CSSProperties> = {
     height: '60px',
     backgroundColor: 'white',
     borderRadius: '12px',
-    marginBottom: '20px',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -67,15 +85,6 @@ const STYLES: Record<string, CSSProperties> = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-  },
-  brandingText: {
-    transform: 'rotate(-90deg)',
-    color: 'white',
-    fontSize: '24px',
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap',
-    letterSpacing: '0.1em',
   },
   main: {
     display: 'flex',
@@ -152,11 +161,17 @@ export default async function Image({ params }: { params: { slug: string } }) {
   if (!product) return new Response('Not Found', { status: 404 });
 
   const productImageUrl = getImageUrl(product.image);
+
+  // Load font for currency symbol support
+  const fontData = await fetch(
+    new URL('https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm453RRn7g.ttf', import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
   const formattedPrice = new Intl.NumberFormat('en-GH', {
     style: 'currency',
     currency: 'GHS',
     maximumFractionDigits: 0
-  }).format(product.price);
+  }).format(product.price).replace('GHS', 'GH₵');
 
   return new ImageResponse(
     (
@@ -166,7 +181,9 @@ export default async function Image({ params }: { params: { slug: string } }) {
           Surface(STYLES.logoContainer, 
             Photo(`${siteConfig.baseUrl}/logo.jpg`, "Logo", STYLES.logo)
           ),
-          Surface(STYLES.brandingText, "LONDON'S IMPORTS")
+          Surface(STYLES.brandingTextContainer, [
+             Surface(STYLES.brandingText, "LONDON'S IMPORTS")
+          ])
         ]),
 
         /* Main Context Content Section */
@@ -188,6 +205,14 @@ export default async function Image({ params }: { params: { slug: string } }) {
     ),
     {
       ...size,
+      fonts: [
+        {
+          name: 'Montserrat',
+          data: fontData,
+          style: 'normal',
+          weight: 700,
+        },
+      ],
     }
   );
 }
