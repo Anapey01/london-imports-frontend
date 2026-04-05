@@ -73,7 +73,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
             subtitle: product.category_name || "New Arrival / Top Tier Sourcing",
             ctaText: "Source Now",
             ctaLink: `/products/${product.slug}`,
-            image: product.image || "/assets/images/placeholder.webp",
+            image: product.image || "/assets/placeholder-product.png",
             bgClass: "bg-surface",
             isProduct: true,
             creative: `product_hero_fallback_${idx + 1}`
@@ -125,7 +125,8 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                     return (
                         <div
                             key={slide.id}
-                            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${isActive ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 pointer-events-auto z-20' : 'opacity-0 pointer-events-none z-10'}`}
+                            style={{ visibility: isActive ? 'visible' : 'hidden' }}
                         >
                             <div className={`h-full w-full flex items-center relative overflow-hidden ${slide.bgClass}`}>
                                 {/* 1. Editorial Text - Left Aligned Composition */}

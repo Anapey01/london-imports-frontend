@@ -165,7 +165,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
   // Load font from local assets for reliability and GHS symbol support
   let fontData;
   try {
-    const fontUrl = new URL('../../../assets/Montserrat-Bold.ttf', import.meta.url);
+    const fontUrl = new URL('../../../../assets/Montserrat-Bold.ttf', import.meta.url);
     const res = await fetch(fontUrl);
     if (res.ok) {
        fontData = await res.arrayBuffer();
