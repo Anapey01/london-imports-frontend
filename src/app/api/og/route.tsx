@@ -4,10 +4,9 @@ import { getProductMetadata } from '@/lib/fetchers';
 import { getAbsoluteImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 
-export const runtime = 'edge';
-
-// Cache configuration for Edge
-export const revalidate = 3600;
+// Use standard Node.js runtime for increased memory (fixed 0-byte flyer issue)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; 
 
 /**
  * London's Imports - Unified Global OpenGraph Image API

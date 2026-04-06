@@ -62,11 +62,9 @@ export const styles = {
     fontWeight: 800,
     color: '#111827',
     lineHeight: 1.1,
-    display: '-webkit-box',
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical' as const,
     overflow: 'hidden',
     letterSpacing: '-0.02em',
+    height: '180px', // Fixed height instead of line-clamp for Satori stability
   },
   price: {
     marginTop: '30px',
