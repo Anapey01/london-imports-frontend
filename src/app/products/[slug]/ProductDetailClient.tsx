@@ -260,8 +260,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             let response = await fetch(flyerUrl);
             
             if (!response.ok) {
-                const errorBody = await response.text().catch(() => 'No error body');
-                throw new Error(`Server status ${response.status}: ${errorBody}`);
+                const errorBody = await response.text();
+                throw new Error(errorBody || `Server status ${response.status}`);
             }
 
             let blob = await response.blob();

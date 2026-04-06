@@ -21,39 +21,42 @@ export async function GET(request: Request) {
     let price = searchParams.get('price');
     let type = searchParams.get('type') || 'Sourcing & Logistics';
 
-    // 1. DYNAMIC PRODUCT RESOLUTION
+    // 1. DYNAMIC PRODUCT RESOLUTION (Hardened with try/catch for 401/500 backend fails)
     if (slug) {
-        const product = await getProductMetadata(slug);
-        if (product) {
-            title = product.name;
-            image = getAbsoluteImageUrl(product.image);
-            type = product.category_name || 'Premium Sourcing';
-            
-            // Format price to GHS standards
-            price = new Intl.NumberFormat('en-GH', {
-              style: 'currency',
-              currency: 'GHS',
-              maximumFractionDigits: 0
-            }).format(product.price || 0).replace('GHS', 'GH₵');
+        try {
+            const product = await getProductMetadata(slug);
+            if (product) {
+                title = product.name;
+                image = getAbsoluteImageUrl(product.image);
+                type = product.category_name || 'Premium Sourcing';
+                
+                // Format price to GHS standards
+                if (product.price) {
+                    price = new Intl.NumberFormat('en-GH', {
+                      style: 'currency',
+                      currency: 'GHS',
+                      maximumFractionDigits: 0
+                    }).format(product.price).replace('GHS', 'GH₵');
+                }
+            }
+        } catch (error) {
+            console.error(`Metadata fetch failed for ${slug}:`, error);
+            // Non-fatal, continue with defaults
         }
     }
 
-    // 2. Load Fonts with absolute paths for Edge environment
+    // 2. Load Fonts (Force strictly absolute for Node.js runtime on Vercel)
     let fontData;
     try {
-       // Attempt local file fetch first, then fallback to hosted absolute URL
-       const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
+       const fontUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
        const fontRes = await fetch(fontUrl);
        if (fontRes.ok) {
          fontData = await fontRes.arrayBuffer();
        } else {
-         // DEFINITIVE FALLBACK: Hosted absolute URL
-         const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
-         const fallbackRes = await fetch(fallbackUrl);
-         if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
+         console.warn(`Font fetch failed (${fontRes.status}), falling back to default`);
        }
     } catch (e) {
-      console.warn('Font loading failed (using defaults)', e);
+      console.warn('Font loading exception (using defaults)', e);
     }
 
     return new ImageResponse(
@@ -73,9 +76,13 @@ export async function GET(request: Request) {
     );
   } catch (e) {
     const error = e as Error;
-    console.error(`OG API generation failed: ${error.message}`);
-    return new Response(`Failed to generate the image`, {
+    const errorMessage = `OG API Error: ${error.message}`;
+    console.error(errorMessage);
+    
+    // Return detailed error in response body for client-side diagnostics
+    return new Response(errorMessage, {
       status: 500,
+      headers: { 'Content-Type': 'text/plain' }
     });
   }
 }
