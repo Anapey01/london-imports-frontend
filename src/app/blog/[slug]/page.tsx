@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         title: `${article.title} | Journal Index`,
         description: article.excerpt,
         alternates: {
-            canonical: `/blog/${slug}`,
+            canonical: `${siteConfig.baseUrl}/blog/${slug}`,
         }
     };
 }

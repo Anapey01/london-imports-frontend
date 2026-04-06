@@ -13,9 +13,8 @@ export default function robots(): MetadataRoute.Robots {
         '/login/',
         '/register/',
         '/profile/',
-        '/*?search=',    // Save crawl budget for clean search URLs
-        '/*?sort=',      // Avoid duplicate content from sorting
-        '/*?category=',  // Category pages are handled via slugs
+        '/*?*',        // Block all query parameters to prevent duplicate indexing
+        '/*_rsc*',     // Block Next.js internal data payloads
       ],
     },
     sitemap: 'https://londonsimports.com/sitemap.xml',

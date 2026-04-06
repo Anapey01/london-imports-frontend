@@ -3,6 +3,7 @@ import ProductDetailClient from './ProductDetailClient';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
+import { notFound } from 'next/navigation';
 
 // ISR: Revalidate product pages every 24 hours
 export const revalidate = 86400;
@@ -93,7 +94,7 @@ export default async function ProductDetailPage({ params }: Props) {
     const { slug } = await params;
     const product = await getProduct(slug);
 
-    if (!product) return null;
+    if (!product) notFound();
 
     // Consolidated Product & Breadcrumb Schema for Rich Results
     const productJsonLd = {

@@ -9,6 +9,8 @@ Disallow: /login/
 Disallow: /register/
 Disallow: /login
 Disallow: /register
+Disallow: /*?*
+Disallow: /*_rsc*
 
 # WELCOME AI SEARCH CRAWLERS (Optimized for LLM Discovery)
 # This allows ChatGPT, Claude, and Perplexity to summarize our logistics and products.
