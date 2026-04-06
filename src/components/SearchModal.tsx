@@ -113,15 +113,15 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                 <h2 id="search-modal-title" className="sr-only">Search our products</h2>
 
                 {/* Search Header - 'Perceivable' Hardened for Smaller Screens */}
-                <div className="flex items-center gap-2 p-4 sm:p-6 border-b border-border-standard bg-surface">
+                <div className="flex items-center gap-1 sm:gap-2 p-2 sm:p-6 border-b border-border-standard bg-surface">
                     <form 
                         onSubmit={(e) => {
                             e.preventDefault();
                             handleRecordSearch(query);
                         }}
-                        className="flex-1 flex items-center bg-surface-card border border-border-standard rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 focus-within:border-brand-emerald transition-colors min-w-0"
+                        className="flex-1 flex items-center bg-surface-card border border-border-standard rounded-lg px-2 py-2 sm:px-4 sm:py-3 focus-within:border-brand-emerald transition-colors min-w-0"
                     >
-                        <Search className="w-4 h-4 text-content-secondary mr-2 sm:mr-3 flex-shrink-0" strokeWidth={1.5} />
+                        <Search className="w-4 h-4 text-content-secondary mr-1.5 sm:mr-3 flex-shrink-0" strokeWidth={1.5} />
                         <label htmlFor="modal-search-input" className="sr-only">Keywords</label>
                         <input
                             id="modal-search-input"
@@ -130,7 +130,7 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                             placeholder="Search products..."
-                            className="flex-1 bg-transparent border-none outline-none text-content-primary placeholder:text-content-secondary/40 text-base font-medium min-w-0"
+                            className="flex-1 bg-transparent border-none outline-none text-content-primary placeholder:text-content-secondary/40 text-sm sm:text-base font-medium min-w-0"
                         />
                         {query && (
                             <button type="button" onClick={() => setQuery('')} className="p-1 text-content-secondary hover:text-content-primary institutional-focus flex-shrink-0" aria-label="Clear search terms">
@@ -141,7 +141,7 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
 
                     <button
                         onClick={onClose}
-                        className="text-content-secondary hover:text-content-primary px-2 sm:px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest institutional-focus flex-shrink-0 active:scale-95 transition-all"
+                        className="text-content-secondary hover:text-content-primary px-1.5 sm:px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest institutional-focus flex-shrink-0 active:scale-95 transition-all"
                         aria-label="Close search"
                     >
                         Cancel
