@@ -141,113 +141,121 @@ const STYLES: Record<string, CSSProperties> = {
 };
 
 export default async function Image({ params }: { params: { slug: string } }) {
-  const { slug } = await params;
-  
-  // 1. Fetch Product Metadata (Next.js Data Cache)
-  const product = await getProductMetadata(slug);
-  
-  if (!product) {
-      return new Response('Product Not Found', { status: 404 });
-  }
-
-  const productImageUrl = getImageUrl(product.image);
-  
-  // Ensure we have an absolute URL for the logo
-  const logoUrl = `${siteConfig.baseUrl}/logo.jpg`;
-
-  // 2. Load Montserrat Font for Brand Consistency
-  let fontData;
   try {
-     // Resolution via import.meta.url is robust for both local and edge deployments
-     const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
-     const fontRes = await fetch(fontUrl);
-     if (fontRes.ok) {
-       fontData = await fontRes.arrayBuffer();
-     } else {
-       console.error(`Font fetch failed with status: ${fontRes.status}`);
-       // Fallback attempt via baseUrl if relative path fails in certain edge environments
-       const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
-       const fallbackRes = await fetch(fallbackUrl);
-       if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
-     }
-  } catch (e) {
-    console.error('Font fetch exception caught', e);
-  }
+    const { slug } = await params;
+    
+    // 1. Fetch Product Metadata (Next.js Data Cache)
+    const product = await getProductMetadata(slug);
+    
+    if (!product) {
+        return new Response('Product Not Found', { status: 404 });
+    }
 
-  const formattedPrice = new Intl.NumberFormat('en-GH', {
-    style: 'currency',
-    currency: 'GHS',
-    maximumFractionDigits: 0
-  }).format(product.price || 0).replace('GHS', 'GH₵');
+    const productImageUrl = getImageUrl(product.image);
+    
+    // Ensure we have an absolute URL for the logo (Fallback to standard LI logo if config fails)
+    const logoUrl = `${siteConfig.baseUrl}/logo.jpg`;
 
-  return new ImageResponse(
-    (
-      <div style={STYLES.container}>
-        {/* Left Branding Strip */}
-        <div style={STYLES.brandingStrip}>
-          <div style={STYLES.logoContainer}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={logoUrl} 
-              alt="Logo" 
-              style={STYLES.logo} 
-            />
-          </div>
-          
-          <div style={STYLES.brandingTextContainer}>
-            <span style={STYLES.brandingText}>
-              LONDON&apos;S IMPORTS
-            </span>
-          </div>
-        </div>
+    // 2. Load Montserrat Font for Brand Consistency
+    let fontData;
+    try {
+       // Resolution via nested relative path (Works in many edge deployments)
+       const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
+       const fontRes = await fetch(fontUrl);
+       
+       if (fontRes.ok) {
+         fontData = await fontRes.arrayBuffer();
+       } else {
+         console.warn(`Font fetch failed (${fontRes.status}), attempting absolute fallback...`);
+         // Fallback attempt via baseUrl if relative path fails in certain edge environments
+         const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
+         const fallbackRes = await fetch(fallbackUrl);
+         if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
+       }
+    } catch (e) {
+      console.warn('Font loading skipped (using system defaults)', e);
+    }
 
-        {/* Main Content */}
-        <div style={STYLES.mainContent}>
-          {/* Product Image */}
-          <div style={STYLES.imageWrapper}>
-            {productImageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
+    const formattedPrice = new Intl.NumberFormat('en-GH', {
+      style: 'currency',
+      currency: 'GHS',
+      maximumFractionDigits: 0
+    }).format(product.price || 0).replace('GHS', 'GH₵');
+
+    return new ImageResponse(
+      (
+        <div style={STYLES.container}>
+          {/* Left Branding Strip */}
+          <div style={STYLES.brandingStrip}>
+            <div style={STYLES.logoContainer}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
-                src={productImageUrl} 
-                alt={product.name} 
-                style={STYLES.productImage} 
+                src={logoUrl} 
+                alt="Logo" 
+                style={STYLES.logo} 
               />
-            ) : (
-                <div style={STYLES.imagePlaceholder}>No Image</div>
-            )}
-          </div>
-
-          {/* Details */}
-          <div style={STYLES.detailsColumn}>
-            <div style={STYLES.label}>
-              PREMIUM SOURCING
             </div>
             
-            <div style={STYLES.title}>
-              {product.name}
+            <div style={STYLES.brandingTextContainer}>
+              <span style={STYLES.brandingText}>
+                LONDON&apos;S IMPORTS
+              </span>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div style={STYLES.mainContent}>
+            {/* Product Image */}
+            <div style={STYLES.imageWrapper}>
+              {productImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img 
+                  src={productImageUrl} 
+                  alt={product.name} 
+                  style={STYLES.productImage} 
+                />
+              ) : (
+                  <div style={STYLES.imagePlaceholder}>No Image</div>
+              )}
             </div>
 
-            <div style={STYLES.priceBadge}>
-              {formattedPrice}
-            </div>
+            {/* Details */}
+            <div style={STYLES.detailsColumn}>
+              <div style={STYLES.label}>
+                PREMIUM SOURCING
+              </div>
+              
+              <div style={STYLES.title}>
+                {product.name}
+              </div>
 
-            <div style={STYLES.footer}>
-              londonsimports.com • Ghana HQ
+              <div style={STYLES.priceBadge}>
+                {formattedPrice}
+              </div>
+
+              <div style={STYLES.footer}>
+                londonsimports.com • Ghana HQ
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    ),
-    {
-      ...size,
-      fonts: fontData ? [
-        {
-          name: 'Montserrat',
-          data: fontData,
-          style: 'normal',
-          weight: 700,
-        },
-      ] : [],
-    }
-  );
+      ),
+      {
+        ...size,
+        fonts: fontData ? [
+          {
+            name: 'Montserrat',
+            data: fontData,
+            style: 'normal',
+            weight: 700,
+          },
+        ] : [],
+      }
+    );
+  } catch (error) {
+    const err = error as Error;
+    console.error(`OG Image generation CRASH: ${err.message}`);
+    // Return a basic branding response instead of a 0-byte result to prevent UI death
+    return new Response('Generation Error', { status: 500 });
+  }
 }

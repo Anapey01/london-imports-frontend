@@ -260,7 +260,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             const response = await fetch(flyerUrl);
             
             if (!response.ok) {
-                throw new Error(`Server returned ${response.status}`);
+                const errorBody = await response.text().catch(() => 'No error body');
+                throw new Error(`Server status ${response.status}: ${errorBody}`);
             }
 
             const blob = await response.blob();
@@ -273,13 +274,13 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `LondonsImports-${product.slug}-Flyer.png`;
+            link.download = `LondonsImports-${product.slug}.png`; // Cleaner filename
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
-            toast.success('Flyer downloaded successfully!', { id: toastId });
+            toast.success('Flyer downloaded!', { id: toastId });
             
             trackEvent('file_download', {
                 file_name: `${product.slug}-flyer`,
