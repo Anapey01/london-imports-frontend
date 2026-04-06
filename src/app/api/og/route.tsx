@@ -60,7 +60,8 @@ export async function GET(request: Request) {
     let currentLine = '';
     
     words.forEach(word => {
-        if ((currentLine + word).length < 20) {
+        // Reduced threshold and font size for better fit
+        if ((currentLine + word).length < 18) {
             currentLine += (currentLine ? ' ' : '') + word;
         } else {
             lines.push(currentLine);
@@ -77,19 +78,22 @@ export async function GET(request: Request) {
             <rect width="600" height="630" />
           </clipPath>
           <clipPath id="logoClip">
-            <circle cx="300" cy="315" r="150" />
+            <rect width="120" height="120" rx="20" />
           </clipPath>
         </defs>
         
         <rect width="1200" height="630" fill="#FAFAFA"/>
         
-        {/* Left Panel: Image or Brand Background */}
+        {/* Left Panel: Image with Brand Overlay */}
         <g clip-path="url(#imageClip)">
             ${image ? `
                <image href="${image}" width="600" height="630" preserveAspectRatio="xMidYMid slice" />
+               {/* Premium Logo Overlay (Top-Left) */}
+               <rect x="30" y="30" width="100" height="100" rx="12" fill="white" fill-opacity="0.9" />
+               <image href="${logoUrl}" x="40" y="40" width="80" height="80" preserveAspectRatio="xMidYMid meet" />
             ` : `
                <rect width="600" height="630" fill="#000000"/>
-               <image href="${logoUrl}" x="150" y="165" width="300" height="300" clip-path="url(#logoClip)" />
+               <image href="${logoUrl}" x="150" y="165" width="300" height="300" preserveAspectRatio="xMidYMid meet" />
             `}
         </g>
         
@@ -97,26 +101,23 @@ export async function GET(request: Request) {
         <line x1="600" y1="0" x2="600" y2="630" stroke="#E5E7EB" stroke-width="2"/>
         
         {/* Type / Category */}
-        <text x="680" y="100" font-family="sans-serif" font-weight="700" font-size="16" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
+        <text x="660" y="80" font-family="sans-serif" font-weight="700" font-size="14" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
         
-        {/* Brand Logo inside content area */}
-        <image href="${logoUrl}" x="680" y="440" width="120" height="60" preserveAspectRatio="xMidYMid meet" />
-
-        {/* Title (Wrapped via TSPAN) */}
-        <text x="680" y="180" font-family="sans-serif" font-weight="800" font-size="54" fill="#111827">
-           ${displayLines.map((line, i) => `<tspan x="680" dy="${i === 0 ? 0 : 65}">${line}</tspan>`).join('')}
+        {/* Title (Wrapped via TSPAN - Adjusted for 0-truncation) */}
+        <text x="660" y="160" font-family="sans-serif" font-weight="800" font-size="48" fill="#111827">
+           ${displayLines.map((line, i) => `<tspan x="660" dy="${i === 0 ? 0 : 58}">${line}</tspan>`).join('')}
         </text>
         
         {/* Price Tag (Shifted down for wrapped title) */}
         ${price ? `
-          <rect x="680" y="360" width="280" height="80" rx="4" fill="#FDE68A"/>
-          <text x="820" y="415" font-family="sans-serif" font-weight="800" font-size="48" fill="#000000" text-anchor="middle">${price}</text>
+          <rect x="660" y="360" width="280" height="90" rx="4" fill="#FDE68A"/>
+          <text x="800" y="420" font-family="sans-serif" font-weight="800" font-size="52" fill="#000000" text-anchor="middle">${price}</text>
         ` : ''}
         
         {/* Footer Branding */}
-        <text x="680" y="580" font-family="sans-serif" font-style="italic" font-size="20" fill="#111827">London's Imports Ghana</text>
-        <line x1="920" y1="575" x2="960" y2="575" stroke="#D1D5DB" stroke-width="1"/>
-        <text x="980" y="580" font-family="sans-serif" font-size="14" fill="#6B7280">londonsimports.com</text>
+        <text x="660" y="560" font-family="sans-serif" font-style="italic" font-size="22" fill="#111827">London's Imports Ghana</text>
+        <line x1="910" y1="552" x2="950" y2="552" stroke="#D1D5DB" stroke-width="1"/>
+        <text x="970" y="560" font-family="sans-serif" font-size="16" fill="#6B7280">londonsimports.com</text>
       </svg>
     `.trim();
     
