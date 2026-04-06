@@ -52,11 +52,32 @@ export async function GET(request: Request) {
 
     // --- 2. THE ATOMIC SVG CONSTRUCTOR ---
     // Pure SVG is 100% stable on the Edge. No Satori/PNG-binary dependencies.
+    const logoUrl = getAbsoluteImageUrl('/logo.jpg');
+    
+    // Simple text wrapping logic for SVG
+    const words = title.split(' ');
+    const lines = [];
+    let currentLine = '';
+    
+    words.forEach(word => {
+        if ((currentLine + word).length < 20) {
+            currentLine += (currentLine ? ' ' : '') + word;
+        } else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    });
+    lines.push(currentLine);
+    const displayLines = lines.slice(0, 3); // Max 3 lines
+
     const svgFlyer = `
       <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <clipPath id="imageClip">
             <rect width="600" height="630" />
+          </clipPath>
+          <clipPath id="logoClip">
+            <circle cx="300" cy="315" r="150" />
           </clipPath>
         </defs>
         
@@ -68,7 +89,7 @@ export async function GET(request: Request) {
                <image href="${image}" width="600" height="630" preserveAspectRatio="xMidYMid slice" />
             ` : `
                <rect width="600" height="630" fill="#000000"/>
-               <text x="300" y="340" font-family="sans-serif" font-weight="900" font-size="120" fill="#FFFFFF" text-anchor="middle">LI.</text>
+               <image href="${logoUrl}" x="150" y="165" width="300" height="300" clip-path="url(#logoClip)" />
             `}
         </g>
         
@@ -76,25 +97,26 @@ export async function GET(request: Request) {
         <line x1="600" y1="0" x2="600" y2="630" stroke="#E5E7EB" stroke-width="2"/>
         
         {/* Type / Category */}
-        <text x="680" y="120" font-family="sans-serif" font-weight="700" font-size="18" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
+        <text x="680" y="100" font-family="sans-serif" font-weight="700" font-size="16" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
         
-        {/* Title (Multi-line approximation for SVG) */}
-        <text x="680" y="200" font-family="sans-serif" font-weight="800" font-size="54" fill="#111827">
-           ${title.length > 22 ? `
-             <tspan x="680" dy="0">${title.substring(0, 20)}...</tspan>
-           ` : title}
+        {/* Brand Logo inside content area */}
+        <image href="${logoUrl}" x="680" y="440" width="120" height="60" preserveAspectRatio="xMidYMid meet" />
+
+        {/* Title (Wrapped via TSPAN) */}
+        <text x="680" y="180" font-family="sans-serif" font-weight="800" font-size="54" fill="#111827">
+           ${displayLines.map((line, i) => `<tspan x="680" dy="${i === 0 ? 0 : 65}">${line}</tspan>`).join('')}
         </text>
         
-        {/* Price Tag */}
+        {/* Price Tag (Shifted down for wrapped title) */}
         ${price ? `
-          <rect x="680" y="280" width="280" height="80" rx="4" fill="#FDE68A"/>
-          <text x="820" y="335" font-family="sans-serif" font-weight="800" font-size="48" fill="#000000" text-anchor="middle">${price}</text>
+          <rect x="680" y="360" width="280" height="80" rx="4" fill="#FDE68A"/>
+          <text x="820" y="415" font-family="sans-serif" font-weight="800" font-size="48" fill="#000000" text-anchor="middle">${price}</text>
         ` : ''}
         
         {/* Footer Branding */}
-        <text x="680" y="550" font-family="sans-serif" font-style="italic" font-size="24" fill="#111827">London's Imports</text>
-        <line x1="880" y1="542" x2="920" y2="542" stroke="#D1D5DB" stroke-width="1"/>
-        <text x="940" y="550" font-family="sans-serif" font-size="16" fill="#6B7280">londonsimports.com</text>
+        <text x="680" y="580" font-family="sans-serif" font-style="italic" font-size="20" fill="#111827">London's Imports Ghana</text>
+        <line x1="920" y1="575" x2="960" y2="575" stroke="#D1D5DB" stroke-width="1"/>
+        <text x="980" y="580" font-family="sans-serif" font-size="14" fill="#6B7280">londonsimports.com</text>
       </svg>
     `.trim();
     
