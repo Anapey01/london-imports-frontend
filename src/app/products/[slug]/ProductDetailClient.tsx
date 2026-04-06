@@ -255,8 +255,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         setIsDownloading(true);
         const toastId = toast.loading('Generating promotional flyer...');
         try {
-            // Add a timestamp to bypass stale cache and ensure fresh generation
-            const flyerUrl = `${window.location.origin}/products/${product.slug}/opengraph-image?t=${Date.now()}`;
+            // THE SOURCE OF TRUTH: Targeted dynamic OG route for this product via robust API
+            const flyerUrl = `${window.location.origin}/api/og?slug=${product.slug}&t=${Date.now()}`;
             const response = await fetch(flyerUrl);
             
             if (!response.ok) {

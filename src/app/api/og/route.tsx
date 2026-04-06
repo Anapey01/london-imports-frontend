@@ -1,32 +1,79 @@
- 
 import { ImageResponse } from 'next/og';
 import { OGTemplate } from './styles';
+import { getProductMetadata } from '@/lib/fetchers';
+import { getImageUrl } from '@/lib/image';
+import { siteConfig } from '@/config/site';
 
 export const runtime = 'edge';
 
 /**
- * London's Imports - Dynamic OpenGraph Image API
- * NOTE: This route uses Satori (next/og) which REQUIRES inline styles for SVG generation.
- * We encapsulate styling and templates into a separate module to satisfy IDE linting.
+ * London's Imports - Unified Global OpenGraph Image API
+ * 
+ * Target this endpoint for both branding and specific product flyers:
+ * Branding: /api/og
+ * Product:  /api/og?slug=...
  */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const title = searchParams.get('title') || "London's Imports";
-    const image = searchParams.get('image');
-    const price = searchParams.get('price');
-    const type = searchParams.get('type') || 'Sourcing & Logistics';
+    const slug = searchParams.get('slug');
+    
+    let title = searchParams.get('title') || "London's Imports";
+    let image = searchParams.get('image');
+    let price = searchParams.get('price');
+    let type = searchParams.get('type') || 'Sourcing & Logistics';
+
+    // 1. DYNAMIC PRODUCT RESOLUTION (Universal Source of Truth)
+    if (slug) {
+        const product = await getProductMetadata(slug);
+        if (product) {
+            title = product.name;
+            image = getImageUrl(product.image);
+            type = product.category_name || 'Premium Sourcing';
+            
+            // Format price to GHS standards
+            price = new Intl.NumberFormat('en-GH', {
+              style: 'currency',
+              currency: 'GHS',
+              maximumFractionDigits: 0
+            }).format(product.price || 0).replace('GHS', 'GH₵');
+        }
+    }
+
+    // 2. Load Fonts (Montserrat-Bold) with fallback logic identical to the hardened opengraph-image
+    let fontData;
+    try {
+       const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
+       const fontRes = await fetch(fontUrl);
+       if (fontRes.ok) {
+         fontData = await fontRes.arrayBuffer();
+       } else {
+         const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
+         const fallbackRes = await fetch(fallbackUrl);
+         if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
+       }
+    } catch (e) {
+      console.warn('Font loading failed (using defaults)', e);
+    }
 
     return new ImageResponse(
       <OGTemplate title={title} image={image} price={price} type={type} />,
       {
         width: 1200,
         height: 630,
+        fonts: fontData ? [
+            {
+              name: 'Montserrat',
+              data: fontData,
+              style: 'normal',
+              weight: 700,
+            },
+          ] : [],
       }
     );
   } catch (e) {
     const error = e as Error;
-    console.error(`OG Image generation failed: ${error.message}`);
+    console.error(`OG API generation failed: ${error.message}`);
     return new Response(`Failed to generate the image`, {
       status: 500,
     });
