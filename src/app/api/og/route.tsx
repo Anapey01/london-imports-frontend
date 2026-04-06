@@ -4,13 +4,12 @@ import { getProductMetadata } from '@/lib/fetchers';
 import { getAbsoluteImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 
-// Use standard Node.js runtime for increased memory (fixed 0-byte flyer issue)
-export const dynamic = 'force-dynamic';
-export const revalidate = 0; 
+// Use Edge runtime for native image generation (resolves Node/Sharp conflicts)
+export const runtime = 'edge';
+export const revalidate = 3600;
 
 /**
  * London's Imports - Unified Global OpenGraph Image API
- * Refined for Next.js 16 Node.js Runtime Stability
  */
 export async function GET(request: Request) {
   try {
@@ -47,16 +46,16 @@ export async function GET(request: Request) {
     // 2. Load Fonts (Next.js File Trace - NFT Hinting)
     let fontData;
     try {
-       // Using new URL() with import.meta.url provides the necessary NFT hint for Vercel
-       const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
-       const fontRes = await fetch(fontUrl);
-       if (fontRes.ok) {
-         fontData = await fontRes.arrayBuffer();
+       // Primary: Host-qualified URL (Bypasses bundling issues)
+       const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
+       const fallbackRes = await fetch(fallbackUrl);
+       if (fallbackRes.ok) {
+           fontData = await fallbackRes.arrayBuffer();
        } else {
-         // DEFINITIVE FALLBACK: Hosted absolute URL
-         const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
-         const fallbackRes = await fetch(fallbackUrl);
-         if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
+           // Secondary: Asset-relative URL (NFT hint)
+           const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
+           const fontRes = await fetch(fontUrl);
+           if (fontRes.ok) fontData = await fontRes.arrayBuffer();
        }
     } catch (e) {
       console.warn('Font loading failed (using defaults)', e);
@@ -79,12 +78,10 @@ export async function GET(request: Request) {
     );
   } catch (e) {
     const error = e as Error;
-    const errorMessage = `OG API Error: ${error.message}`;
-    console.error(errorMessage);
+    console.error(`OG API Error: ${error.message}`);
     
-    return new Response(errorMessage, {
-      status: 500,
-      headers: { 'Content-Type': 'text/plain' }
+    return new Response(`Error: ${error.message}`, {
+      status: 200, // Return text to prevent download loop
     });
   }
 }
