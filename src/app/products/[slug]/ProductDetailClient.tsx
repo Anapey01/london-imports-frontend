@@ -264,38 +264,49 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 throw new Error(errorBody || `Server status ${response.status}`);
             }
 
-            let blob = await response.blob();
+            const blob = await response.blob();
+            if (blob.size === 0) throw new Error('Generated flyer is empty.');
+
+            // --- PNG BRIDGE: Convert SVG Blob to PNG for Social Sharing ---
+            const svgUrl = URL.createObjectURL(blob);
+            const img = new Image();
             
-            // AUTOMATIC RETRY: If Edge returns 0 bytes (transient cold start / memory limit error)
-            if (blob.size === 0) {
-                console.warn('First OG attempt returned 0 bytes, retrying...');
-                // Small delay before retry
-                await new Promise(r => setTimeout(r, 800));
-                response = await fetch(`${flyerUrl}&retry=1`);
-                if (response.ok) {
-                    blob = await response.blob();
-                }
-            }
+            // Wait for image to load
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = svgUrl;
+            });
 
-            // CRITICAL FIX: Check for 0-byte or corrupted blobs after retry
-            if (blob.size === 0) {
-                throw new Error('Generated flyer is empty (0 bytes). This may be a temporary server limit. Please try again in a few seconds.');
-            }
+            // Draw to Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 1200;
+            canvas.height = 630;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) throw new Error('Canvas context failed');
+            
+            ctx.drawImage(img, 0, 0, 1200, 630);
+            
+            // Export as PNG
+            const pngBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+            if (!pngBlob) throw new Error('PNG conversion failed');
 
-            const url = window.URL.createObjectURL(blob);
+            // Trigger Download
+            const url = window.URL.createObjectURL(pngBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `LondonsImports-${product.slug}.svg`; // Atomic SVG Alignment
+            link.download = `LondonsImports-${product.slug}.png`; // Back to shareable PNG
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
+            window.URL.revokeObjectURL(svgUrl); // Clean up original SVG url
             
-            toast.success('Flyer downloaded!', { id: toastId });
+            toast.success('Flyer ready for sharing!', { id: toastId });
             
             trackEvent('file_download', {
                 file_name: `${product.slug}-flyer`,
-                file_extension: 'svg',
+                file_extension: 'png',
                 item_id: product.id
             });
         } catch (error) {

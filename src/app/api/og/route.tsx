@@ -87,13 +87,13 @@ export async function GET(request: Request) {
         {/* Left Panel: Image with Brand Overlay */}
         <g clip-path="url(#imageClip)">
             ${image ? `
-               <image href="${image}" width="600" height="630" preserveAspectRatio="xMidYMid slice" />
+               <image href="${image}" width="600" height="630" preserveAspectRatio="xMidYMid slice" crossorigin="anonymous" />
                {/* Premium Logo Overlay (Top-Left) */}
                <rect x="30" y="30" width="100" height="100" rx="12" fill="white" fill-opacity="0.9" />
-               <image href="${logoUrl}" x="40" y="40" width="80" height="80" preserveAspectRatio="xMidYMid meet" />
+               <image href="${logoUrl}" x="40" y="40" width="80" height="80" preserveAspectRatio="xMidYMid meet" crossorigin="anonymous" />
             ` : `
                <rect width="600" height="630" fill="#000000"/>
-               <image href="${logoUrl}" x="150" y="165" width="300" height="300" preserveAspectRatio="xMidYMid meet" />
+               <image href="${logoUrl}" x="150" y="165" width="300" height="300" preserveAspectRatio="xMidYMid meet" crossorigin="anonymous" />
             `}
         </g>
         
