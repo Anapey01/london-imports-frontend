@@ -17,36 +17,35 @@ interface ImageLoaderParams {
 }
 
 export default function imageLoader({ src, width, quality }: ImageLoaderParams): string {
-    // If it's a Cloudinary URL, apply on-the-fly transformations
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
+
+    // 1. If it's already a Cloudinary URL, apply on-the-fly transformations
     if (src.includes('cloudinary.com') && src.includes('/image/upload/')) {
         const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`];
         const [base, rest] = src.split('/image/upload/');
         return `${base}/image/upload/${params.join(',')}/${rest}`;
     }
 
-    // For Cloudinary paths that don't have /image/upload/ (raw cloud IDs)
-    if (src.includes('cloudinary.com')) {
-        return src;
+    // 2. PERFORMANCE POWER-UP: Use Cloudinary Fetch for backend media
+    // This resizes and optimizes raw images from Render.com on the fly.
+    const isBackendImage = src.includes('london-imports-api.onrender.com') || src.includes('/media/');
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (isBackendImage && isProduction) {
+        // Ensure we have a full URL for the fetch API
+        let fullSrc = src;
+        if (src.startsWith('/')) {
+            const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
+            fullSrc = `${rootUrl}${src}`;
+        }
+        
+        // Cloudinary Fetch URL pattern
+        const params = ['f_auto', 'q_auto', 'c_limit', `w_${width}`];
+        return `https://res.cloudinary.com/${cloudName}/image/fetch/${params.join(',')}/${encodeURIComponent(fullSrc)}`;
     }
 
-    // For backend media URLs (siteConfig root)
-    const backendRoot = siteConfig.apiUrl.replace('/api/v1', '');
-    if (src.includes(backendRoot) && src.includes('/media/')) {
-        return `${src}${src.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
-    }
-
-    // Safety: If it starts with /media/, prepend the backend host
-    if (src.startsWith('/media/')) {
-        const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
-        const fullUrl = `${rootUrl}${src}`;
-        return `${fullUrl}${fullUrl.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
-    }
-
-    // For local assets (e.g. /assets/logo.png), return as-is but with width param for Next.js validation
-    if (src.startsWith('/')) {
-        return `${src}${src.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
-    }
-
-    // For any other external URL, return as-is but with width param to satisfy Next.js loader requirements
-    return `${src}${src.includes('?') ? '&' : '?'}w=${width}&q=${quality || 75}`;
+    // 3. Fallback for Local Development or other assets
+    // We append params just to satisfy Next.js loader requirements, even if ignored by local server
+    const connector = src.includes('?') ? '&' : '?';
+    return `${src}${connector}w=${width}&q=${quality || 75}`;
 }

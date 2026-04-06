@@ -18,7 +18,6 @@ export const getImageUrl = (path: string | null | undefined): string => {
         return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000';
     }
 
-    // If it's already a full URL (Http/Https), return it
     // If it's already a full URL (Http/Https), process it
     if (path.startsWith('http')) {
         // Rewrite production URL to local backend for development testing
@@ -30,7 +29,6 @@ export const getImageUrl = (path: string | null | undefined): string => {
         }
 
         // FORCE HTTPS to prevent Mixed Content warnings/blocking on Vercel
-        // But NOT for local development as Django doesn't have SSL enabled by default
         const isLocal = path.includes('localhost') || path.includes('127.0.0.1');
         if (isLocal) return path;
         
@@ -38,22 +36,16 @@ export const getImageUrl = (path: string | null | undefined): string => {
     }
 
     // If it's a relative path starting with /media/ (Local backend)
-    if (path.startsWith('/media/')) {
+    if (path.startsWith('/media/') || path.startsWith('media/')) {
         const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
-        return `${rootUrl}${path}`;
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        return `${rootUrl}${normalizedPath}`;
     }
 
-    // If it's a relative path starting with media/ (without slash)
-    if (path.startsWith('media/')) {
-        const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
-        return `${rootUrl}/${path}`;
-    }
-
-    // If it looks like a Cloudinary ID (e.g. products/shoe1), try to construct full URL
-    // prioritizing the backend fix, but this is the "Last Resort" frontend fix
+    // If it looks like a Cloudinary Public ID (e.g. products/shoe1)
+    // We return a CLEAN Cloudinary URL so the loader can inject params correctly
     if (path.includes('/') && !path.startsWith('/')) {
-        // Inject optimization flags for better performance in Ghana (f_auto=auto format, q_auto=auto quality)
-        return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/${path}`;
+        return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${path}`;
     }
 
     return path;

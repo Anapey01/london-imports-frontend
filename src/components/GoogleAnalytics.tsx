@@ -5,8 +5,9 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { GA_MEASUREMENT_ID, trackException } from '@/lib/analytics';
 
 /**
- * London's Imports - Google Analytics Tracker
- * Manually tracks page_view events on navigation in Next.js App Router
+ * London's Imports - Consent & Error Tracker
+ * Synchronizes cookie consent with GTM/GA4 and tracks client-side exceptions.
+ * Page views are handled automatically by @next/third-parties/google.
  */
 export default function GoogleAnalytics() {
     const pathname = usePathname();
@@ -15,27 +16,34 @@ export default function GoogleAnalytics() {
     useEffect(() => {
         const handleConsent = () => {
             const stored = localStorage.getItem('london_imports_cookie_consent_v2');
-            if (stored) {
+            if (stored && typeof window !== 'undefined' && window.gtag) {
                 try {
                     const consent = JSON.parse(stored);
+                    
+                    // Update Google Consent Mode effectively
+                    window.gtag('consent', 'update', {
+                        'analytics_storage': consent.analytics ? 'granted' : 'denied',
+                        'ad_storage': consent.marketing ? 'granted' : 'denied',
+                        'personalization_storage': consent.personalization ? 'granted' : 'denied',
+                    });
+
+                    // Log virtual page view for SPA navigation if GTM isn't auto-tracking history
                     if (consent.analytics) {
-                        const url = window.location.pathname + window.location.search;
-                        if (typeof window !== 'undefined' && window.gtag) {
-                            window.gtag('config', GA_MEASUREMENT_ID, {
-                                page_path: url,
-                            });
-                        }
+                        window.gtag('event', 'page_view', {
+                            page_location: window.location.href,
+                            page_path: pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ''),
+                            send_to: GA_MEASUREMENT_ID
+                        });
                     }
-                } catch (e) { console.error('Consent Parse Error:', e); }
-            } else {
-                // Default fallback: No tracking until ack
+                } catch (e) { 
+                    console.error('Consent Sync Error:', e); 
+                }
             }
         };
 
         handleConsent();
         window.addEventListener('cookieConsentUpdate', handleConsent);
 
-        // 3. Robustness Hardening: Global Error Listener
         const handleError = (event: ErrorEvent) => {
             trackException(event.message, false);
         };
