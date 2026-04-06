@@ -1,17 +1,16 @@
 import { ImageResponse } from 'next/og';
 import { OGTemplate } from './styles';
 import { getProductMetadata } from '@/lib/fetchers';
-import { getImageUrl } from '@/lib/image';
+import { getAbsoluteImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 
 export const runtime = 'edge';
 
+// Cache configuration for Edge
+export const revalidate = 3600;
+
 /**
  * London's Imports - Unified Global OpenGraph Image API
- * 
- * Target this endpoint for both branding and specific product flyers:
- * Branding: /api/og
- * Product:  /api/og?slug=...
  */
 export async function GET(request: Request) {
   try {
@@ -19,16 +18,16 @@ export async function GET(request: Request) {
     const slug = searchParams.get('slug');
     
     let title = searchParams.get('title') || "London's Imports";
-    let image = searchParams.get('image');
+    let image = searchParams.get('image') || getAbsoluteImageUrl(null);
     let price = searchParams.get('price');
     let type = searchParams.get('type') || 'Sourcing & Logistics';
 
-    // 1. DYNAMIC PRODUCT RESOLUTION (Universal Source of Truth)
+    // 1. DYNAMIC PRODUCT RESOLUTION
     if (slug) {
         const product = await getProductMetadata(slug);
         if (product) {
             title = product.name;
-            image = getImageUrl(product.image);
+            image = getAbsoluteImageUrl(product.image);
             type = product.category_name || 'Premium Sourcing';
             
             // Format price to GHS standards
@@ -40,14 +39,16 @@ export async function GET(request: Request) {
         }
     }
 
-    // 2. Load Fonts (Montserrat-Bold) with fallback logic identical to the hardened opengraph-image
+    // 2. Load Fonts with absolute paths for Edge environment
     let fontData;
     try {
+       // Attempt local file fetch first, then fallback to hosted absolute URL
        const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
        const fontRes = await fetch(fontUrl);
        if (fontRes.ok) {
          fontData = await fontRes.arrayBuffer();
        } else {
+         // DEFINITIVE FALLBACK: Hosted absolute URL
          const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
          const fallbackRes = await fetch(fallbackUrl);
          if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();

@@ -59,6 +59,18 @@ export const getImageUrl = (path: string | null | undefined): string => {
     return path;
 };
 
+/**
+ * Ensures an image URL is absolute.
+ * Required for Satori/next/og rendering on Vercel Edge.
+ */
+export const getAbsoluteImageUrl = (path: string | null | undefined): string => {
+    const url = getImageUrl(path);
+    if (url.startsWith('http')) return url;
+    
+    // Prepend baseUrl for relative paths (e.g. placeholders)
+    return `${siteConfig.baseUrl}${url}`;
+};
+
 import { ImageLoaderProps } from 'next/image';
 
 export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {

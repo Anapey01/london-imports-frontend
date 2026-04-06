@@ -257,18 +257,29 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         try {
             // THE SOURCE OF TRUTH: Targeted dynamic OG route for this product via robust API
             const flyerUrl = `${window.location.origin}/api/og?slug=${product.slug}&t=${Date.now()}`;
-            const response = await fetch(flyerUrl);
+            let response = await fetch(flyerUrl);
             
             if (!response.ok) {
                 const errorBody = await response.text().catch(() => 'No error body');
                 throw new Error(`Server status ${response.status}: ${errorBody}`);
             }
 
-            const blob = await response.blob();
+            let blob = await response.blob();
             
-            // CRITICAL FIX: Check for 0-byte or corrupted blobs
+            // AUTOMATIC RETRY: If Edge returns 0 bytes (transient cold start / memory limit error)
             if (blob.size === 0) {
-                throw new Error('Generated flyer is empty (0 bytes).');
+                console.warn('First OG attempt returned 0 bytes, retrying...');
+                // Small delay before retry
+                await new Promise(r => setTimeout(r, 800));
+                response = await fetch(`${flyerUrl}&retry=1`);
+                if (response.ok) {
+                    blob = await response.blob();
+                }
+            }
+
+            // CRITICAL FIX: Check for 0-byte or corrupted blobs after retry
+            if (blob.size === 0) {
+                throw new Error('Generated flyer is empty (0 bytes). This may be a temporary server limit. Please try again in a few seconds.');
             }
 
             const url = window.URL.createObjectURL(blob);
