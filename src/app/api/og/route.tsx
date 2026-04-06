@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og';
+import { ImageResponse } from '@vercel/og';
 import { OGTemplate } from './styles';
 import { getProductMetadata } from '@/lib/fetchers';
 import { getAbsoluteImageUrl } from '@/lib/image';
