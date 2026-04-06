@@ -13,12 +13,18 @@ import { formatPrice } from '@/lib/format';
 import { Search, X, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { trackSearch, trackViewSearchResults, trackSelectPromotion } from '@/lib/analytics';
 
+import { useUIStore } from '@/stores/uiStore';
+
 interface SearchModalProps {
-    isOpen: boolean;
-    onClose: () => void;
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
-export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }: SearchModalProps) {
+    const { isSearchModalOpen, setSearchModalOpen } = useUIStore();
+    const isOpen = propIsOpen !== undefined ? propIsOpen : isSearchModalOpen;
+    const onClose = propOnClose !== undefined ? propOnClose : () => setSearchModalOpen(false);
+
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -106,16 +112,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             >
                 <h2 id="search-modal-title" className="sr-only">Search our products</h2>
 
-                {/* Search Header - 'Perceivable' Hardened */}
-                <div className="flex items-center gap-3 p-6 border-b border-border-standard bg-surface">
+                {/* Search Header - 'Perceivable' Hardened for Smaller Screens */}
+                <div className="flex items-center gap-2 p-4 sm:p-6 border-b border-border-standard bg-surface">
                     <form 
                         onSubmit={(e) => {
                             e.preventDefault();
                             handleRecordSearch(query);
                         }}
-                        className="flex-1 flex items-center bg-surface-card border border-border-standard rounded-lg px-4 py-3 focus-within:border-brand-emerald transition-colors"
+                        className="flex-1 flex items-center bg-surface-card border border-border-standard rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 focus-within:border-brand-emerald transition-colors min-w-0"
                     >
-                        <Search className="w-4 h-4 text-content-secondary mr-3" strokeWidth={1.5} />
+                        <Search className="w-4 h-4 text-content-secondary mr-2 sm:mr-3 flex-shrink-0" strokeWidth={1.5} />
                         <label htmlFor="modal-search-input" className="sr-only">Keywords</label>
                         <input
                             id="modal-search-input"
@@ -124,10 +130,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                             placeholder="Search products..."
-                            className="flex-1 bg-transparent border-none outline-none text-content-primary placeholder:text-content-secondary/40 text-base font-medium"
+                            className="flex-1 bg-transparent border-none outline-none text-content-primary placeholder:text-content-secondary/40 text-base font-medium min-w-0"
                         />
                         {query && (
-                            <button type="button" onClick={() => setQuery('')} className="p-1 text-content-secondary hover:text-content-primary institutional-focus" aria-label="Clear search terms">
+                            <button type="button" onClick={() => setQuery('')} className="p-1 text-content-secondary hover:text-content-primary institutional-focus flex-shrink-0" aria-label="Clear search terms">
                                 <X className="w-4 h-4" />
                             </button>
                         )}
@@ -135,7 +141,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
                     <button
                         onClick={onClose}
-                        className="text-content-secondary hover:text-content-primary px-4 py-2 text-xs font-black uppercase tracking-widest institutional-focus"
+                        className="text-content-secondary hover:text-content-primary px-2 sm:px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest institutional-focus flex-shrink-0 active:scale-95 transition-all"
                         aria-label="Close search"
                     >
                         Cancel

@@ -2,31 +2,28 @@
  * London's Imports - Navbar Component
  * Hardened for WCAG 'Robust' Compliance (4.1.2 & 4.1.3)
  */
-'use client';
-
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import ThemeToggle from './ThemeToggle';
+import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
-import { useEffect, useState } from 'react';
+import { useWishlistStore } from '@/stores/wishlistStore';
+import { trackViewSearchResults } from '@/lib/analytics';
+import { Search, Menu, Heart, User, UserPlus } from 'lucide-react';
 
 // Lazy load heavy interactive components
 const SearchModal = dynamic(() => import('./SearchModal'));
 const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
 
-import ThemeToggle from './ThemeToggle';
-import { Search, Menu, Heart, User, UserPlus } from 'lucide-react';
-import { useWishlistStore } from '@/stores/wishlistStore';
-import { trackViewSearchResults } from '@/lib/analytics';
-
 export default function Navbar() {
     const { isAuthenticated, user } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
     const wishlistItems = useWishlistStore(state => state.items);
+    const { isSearchModalOpen, isMobileMenuOpen, setSearchModalOpen, setMobileMenuOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -35,10 +32,6 @@ export default function Navbar() {
         fetchCart();
         return () => clearTimeout(timer);
     }, [fetchCart]);
-
-    // Decoupled ARIA states to satisfy strict IDE validation
-    const ariaMenu = mobileMenuOpen ? "true" : "false";
-    const ariaSearch = searchOpen ? "true" : "false";
 
     if (!mounted) {
         return (
@@ -63,9 +56,9 @@ export default function Navbar() {
                             <div className="relative py-4">
                                 <button
                                     onClick={() => setMobileMenuOpen(true)}
-                                    className={`flex items-center gap-4 transition-all group institutional-focus rounded-lg p-2 -m-2 ${mobileMenuOpen ? 'italic' : ''}`}
+                                    className={`flex items-center gap-4 transition-all group institutional-focus rounded-lg p-2 -m-2 ${isMobileMenuOpen ? 'italic' : ''}`}
                                     aria-label="Open Menu"
-                                    aria-expanded={ariaMenu}
+                                    aria-expanded={isMobileMenuOpen ? "true" : "false"}
                                 >
                                     <div className="w-10 h-10 border border-border-standard/60 flex items-center justify-center group-hover:border-content-primary transition-colors">
                                          <Menu className="w-5 h-5 text-content-secondary group-hover:text-content-primary" strokeWidth={1} />
@@ -192,10 +185,10 @@ export default function Navbar() {
 
                         <div className="flex items-center gap-3 w-20 justify-end">
                             <button
-                                onClick={() => setSearchOpen(true)}
+                                onClick={() => setSearchModalOpen(true)}
                                 className="w-11 h-11 border border-border-standard flex items-center justify-center active:scale-95 transition-all institutional-focus"
                                 aria-label="Open search modal"
-                                aria-expanded={ariaSearch}
+                                aria-expanded={isSearchModalOpen ? "true" : "false"}
                             >
                                 <Search className="w-5 h-5 text-content-primary" strokeWidth={1} />
                             </button>
@@ -204,7 +197,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(true)}
                                 className="w-11 h-11 border border-border-standard flex items-center justify-center active:scale-95 transition-all institutional-focus"
                                 aria-label="Open navigation menu"
-                                aria-expanded={ariaMenu}
+                                aria-expanded={isMobileMenuOpen ? "true" : "false"}
                             >
                                 <Menu className="w-5 h-5 text-content-primary" strokeWidth={1} />
                             </button>
@@ -213,11 +206,11 @@ export default function Navbar() {
                 </div>
 
                 {/* Search Modal Protocol */}
-                <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+                <SearchModal isOpen={isSearchModalOpen} onClose={() => setSearchModalOpen(false)} />
             </nav>
 
             {/* Mobile Menu */}
-            <MobileMenuDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+            <MobileMenuDrawer isOpen={isMobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
         </>
     );
 }
