@@ -9,7 +9,7 @@ export const revalidate = 3600;
 
 /**
  * London's Imports - Unified Global OpenGraph Image API
- * ATOMIC HARDENING: Zero-Dependency Strategy (CDN Fonts + Edge Runtime)
+ * ZERO-DEPENDENCY HARDENING: Default Font + Zero-Network Edge
  */
 export async function GET(request: Request) {
   try {
@@ -43,41 +43,43 @@ export async function GET(request: Request) {
         }
     }
 
-    // 2. Load Font (Official Google Fonts CDN - Extremely Stable)
-    let fontData;
-    try {
-       // Official Montserrat Bold .ttf URL from Google Fonts
-       const fontUrl = 'https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm453RRnxdRs.ttf'; 
-       const fontRes = await fetch(fontUrl);
-       if (fontRes.ok) {
-           fontData = await fontRes.arrayBuffer();
-       }
-    } catch (e) {
-      console.warn('Font loading failed (using defaults)', e);
+    // 2. Load Product Image (Harden with timeout)
+    const imageRes = await fetch(image, { signal: AbortSignal.timeout(3000) }).catch(() => null);
+    if (!imageRes || !imageRes.ok) {
+        // Fallback to absolute brand logo if product image is missing/slow
+        image = 'https://londonsimports.com/logo.png';
     }
 
+    // 3. Render Image using DEFAULT FONT (Built-in to @vercel/og)
     return new ImageResponse(
       <OGTemplate title={title} image={image} price={price} type={type} />,
       {
         width: 1200,
         height: 630,
-        fonts: fontData ? [
-            {
-              name: 'Montserrat',
-              data: fontData,
-              style: 'normal',
-              weight: 700,
-            },
-          ] : [],
+        // Empty fonts array forces it to use the built-in system font (Inter/Roboto-like)
+        fonts: [],
       }
     );
   } catch (e) {
     const error = e as Error;
     console.error(`OG API Atomic Failure: ${error.message}`);
     
-    // 3. ZERO-BYTE GATEKEEPER: Always return a valid response (Generic Logo Flyer)
-    // We fetch the default site logo to ensure a valid image is returned
-    const defaultLogoUrl = 'https://londonsimports.com/logo.png';
-    return fetch(defaultLogoUrl);
+    // 4. ZERO-NETWORK GATEKEEPER: Always return a non-zero response (Minimal SVG Logo)
+    const fallbackSvg = `
+      <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1200" height="630" fill="#000"/>
+        <text x="600" y="315" font-family="sans-serif" font-size="60" fill="#fff" text-anchor="middle">
+          LONDON'S IMPORTS - Flyer Generation Temporary Limit
+        </text>
+        <text x="600" y="380" font-family="sans-serif" font-size="24" fill="#888" text-anchor="middle">
+          Please refresh to try again
+        </text>
+      </svg>
+    `;
+    
+    return new Response(fallbackSvg, {
+      status: 200,
+      headers: { 'Content-Type': 'image/svg+xml' }
+    });
   }
 }
