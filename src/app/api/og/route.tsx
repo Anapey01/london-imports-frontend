@@ -3,6 +3,8 @@ import { OGTemplate } from './styles';
 import { getProductMetadata } from '@/lib/fetchers';
 import { getAbsoluteImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
+import fs from 'fs';
+import path from 'path';
 
 // Use standard Node.js runtime for increased memory (fixed 0-byte flyer issue)
 export const dynamic = 'force-dynamic';
@@ -45,15 +47,17 @@ export async function GET(request: Request) {
         }
     }
 
-    // 2. Load Fonts (Force strictly absolute for Node.js runtime on Vercel)
+    // 2. Load Fonts (Native FS read for absolute reliability in Node runtime)
     let fontData;
     try {
-       const fontUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
-       const fontRes = await fetch(fontUrl);
-       if (fontRes.ok) {
-         fontData = await fontRes.arrayBuffer();
+       const fontPath = path.join(process.cwd(), 'public', 'fonts', 'Montserrat-Bold.ttf');
+       if (fs.existsSync(fontPath)) {
+         fontData = fs.readFileSync(fontPath);
        } else {
-         console.warn(`Font fetch failed (${fontRes.status}), falling back to default`);
+         console.warn(`Font file not found at ${fontPath}, falling back to network`);
+         const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
+         const fallbackRes = await fetch(fallbackUrl);
+         if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
        }
     } catch (e) {
       console.warn('Font loading exception (using defaults)', e);
