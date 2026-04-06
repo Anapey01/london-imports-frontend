@@ -253,10 +253,23 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleDownloadFlyer = async () => {
         if (!product) return;
         setIsDownloading(true);
+        const toastId = toast.loading('Generating promotional flyer...');
         try {
-            const flyerUrl = `${window.location.origin}/products/${product.slug}/opengraph-image`;
+            // Add a timestamp to bypass stale cache and ensure fresh generation
+            const flyerUrl = `${window.location.origin}/products/${product.slug}/opengraph-image?t=${Date.now()}`;
             const response = await fetch(flyerUrl);
+            
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}`);
+            }
+
             const blob = await response.blob();
+            
+            // CRITICAL FIX: Check for 0-byte or corrupted blobs
+            if (blob.size === 0) {
+                throw new Error('Generated flyer is empty (0 bytes).');
+            }
+
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
@@ -266,6 +279,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
+            toast.success('Flyer downloaded successfully!', { id: toastId });
+            
             trackEvent('file_download', {
                 file_name: `${product.slug}-flyer`,
                 file_extension: 'png',
@@ -273,6 +288,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             });
         } catch (error) {
             console.error('Flyer download failed', error);
+            toast.error('Failed to generate flyer. Please try again or contact concierge.', { id: toastId });
         } finally {
             setIsDownloading(false);
         }

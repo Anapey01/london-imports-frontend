@@ -36,7 +36,7 @@ const sourceSerif = Source_Serif_4({
   weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-source-serif",
-  preload: false,
+  preload: true,
 });
 
 const montserrat = Montserrat({
@@ -44,7 +44,7 @@ const montserrat = Montserrat({
   weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-montserrat",
-  preload: false,
+  preload: true,
 });
 
 export const metadata: Metadata = {

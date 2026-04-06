@@ -59,13 +59,15 @@ export const getImageUrl = (path: string | null | undefined): string => {
     return path;
 };
 
-export const cloudinaryLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
+import { ImageLoaderProps } from 'next/image';
+
+export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
     // If it's not a Cloudinary URL, return as is (Next.js will optimize if configured, or just serve)
     if (!src.includes('cloudinary.com')) {
         return src;
     }
 
-    // Default params
+    // Default params: f_auto (auto-format), c_limit (responsive crop), w (width), q (quality)
     const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`];
 
     // If src already has transformations (e.g. /image/upload/v123/...), inject new ones after /upload/

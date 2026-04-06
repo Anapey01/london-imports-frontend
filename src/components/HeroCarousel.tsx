@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, cloudinaryLoader } from '@/lib/image';
 import { trackViewPromotion, trackSelectPromotion } from '@/lib/analytics';
 
 interface HeroSlide {
@@ -125,8 +125,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                     return (
                         <div
                             key={slide.id}
-                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 pointer-events-auto z-20' : 'opacity-0 pointer-events-none z-10'}`}
-                            style={{ visibility: isActive ? 'visible' : 'hidden' }}
+                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 pointer-events-auto z-20 visible' : 'opacity-0 pointer-events-none z-10 invisible'}`}
                         >
                             <div className={`h-full w-full flex items-center relative overflow-hidden ${slide.bgClass}`}>
                                 {/* 1. Editorial Text - Left Aligned Composition */}
@@ -167,13 +166,14 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                 <div className="absolute inset-0 z-10 pointer-events-none opacity-20 sm:opacity-100">
                                      <div className="absolute right-0 top-0 h-full w-full sm:w-[50%] overflow-hidden">
                                         <Image
+                                            loader={cloudinaryLoader}
                                             src={getImageUrl(slide.image)}
                                             alt={slide.title}
                                             fill
-                                            className={`object-cover object-center`}
+                                            className="object-cover object-center"
                                             priority={index === 0}
-                                            sizes="(max-width: 768px) 100vw, 50vw"
-                                            quality={90}
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 50vw"
+                                            quality={80}
                                         />
                                      </div>
                                 </div>
