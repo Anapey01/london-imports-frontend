@@ -3,8 +3,6 @@ import { OGTemplate } from './styles';
 import { getProductMetadata } from '@/lib/fetchers';
 import { getAbsoluteImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
-import fs from 'fs';
-import path from 'path';
 
 // Use standard Node.js runtime for increased memory (fixed 0-byte flyer issue)
 export const dynamic = 'force-dynamic';
@@ -12,6 +10,7 @@ export const revalidate = 0;
 
 /**
  * London's Imports - Unified Global OpenGraph Image API
+ * Refined for Next.js 16 Node.js Runtime Stability
  */
 export async function GET(request: Request) {
   try {
@@ -23,7 +22,7 @@ export async function GET(request: Request) {
     let price = searchParams.get('price');
     let type = searchParams.get('type') || 'Sourcing & Logistics';
 
-    // 1. DYNAMIC PRODUCT RESOLUTION (Hardened with try/catch for 401/500 backend fails)
+    // 1. DYNAMIC PRODUCT RESOLUTION (Hardened for 401/500 backend fails)
     if (slug) {
         try {
             const product = await getProductMetadata(slug);
@@ -32,7 +31,6 @@ export async function GET(request: Request) {
                 image = getAbsoluteImageUrl(product.image);
                 type = product.category_name || 'Premium Sourcing';
                 
-                // Format price to GHS standards
                 if (product.price) {
                     price = new Intl.NumberFormat('en-GH', {
                       style: 'currency',
@@ -43,24 +41,25 @@ export async function GET(request: Request) {
             }
         } catch (error) {
             console.error(`Metadata fetch failed for ${slug}:`, error);
-            // Non-fatal, continue with defaults
         }
     }
 
-    // 2. Load Fonts (Native FS read for absolute reliability in Node runtime)
+    // 2. Load Fonts (Next.js File Trace - NFT Hinting)
     let fontData;
     try {
-       const fontPath = path.join(process.cwd(), 'public', 'fonts', 'Montserrat-Bold.ttf');
-       if (fs.existsSync(fontPath)) {
-         fontData = fs.readFileSync(fontPath);
+       // Using new URL() with import.meta.url provides the necessary NFT hint for Vercel
+       const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
+       const fontRes = await fetch(fontUrl);
+       if (fontRes.ok) {
+         fontData = await fontRes.arrayBuffer();
        } else {
-         console.warn(`Font file not found at ${fontPath}, falling back to network`);
+         // DEFINITIVE FALLBACK: Hosted absolute URL
          const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
          const fallbackRes = await fetch(fallbackUrl);
          if (fallbackRes.ok) fontData = await fallbackRes.arrayBuffer();
        }
     } catch (e) {
-      console.warn('Font loading exception (using defaults)', e);
+      console.warn('Font loading failed (using defaults)', e);
     }
 
     return new ImageResponse(
@@ -83,7 +82,6 @@ export async function GET(request: Request) {
     const errorMessage = `OG API Error: ${error.message}`;
     console.error(errorMessage);
     
-    // Return detailed error in response body for client-side diagnostics
     return new Response(errorMessage, {
       status: 500,
       headers: { 'Content-Type': 'text/plain' }
