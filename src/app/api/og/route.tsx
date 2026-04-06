@@ -54,11 +54,23 @@ export async function GET(request: Request) {
     // Pure SVG is 100% stable on the Edge. No Satori/PNG-binary dependencies.
     const svgFlyer = `
       <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="imageClip">
+            <rect width="600" height="630" />
+          </clipPath>
+        </defs>
+        
         <rect width="1200" height="630" fill="#FAFAFA"/>
         
-        {/* Left Panel: Branding Background */}
-        <rect width="600" height="630" fill="#000000"/>
-        <text x="300" y="340" font-family="sans-serif" font-weight="900" font-size="120" fill="#FFFFFF" text-anchor="middle">LI.</text>
+        {/* Left Panel: Image or Brand Background */}
+        <g clip-path="url(#imageClip)">
+            ${image ? `
+               <image href="${image}" width="600" height="630" preserveAspectRatio="xMidYMid slice" />
+            ` : `
+               <rect width="600" height="630" fill="#000000"/>
+               <text x="300" y="340" font-family="sans-serif" font-weight="900" font-size="120" fill="#FFFFFF" text-anchor="middle">LI.</text>
+            `}
+        </g>
         
         {/* Right Panel: Divider */}
         <line x1="600" y1="0" x2="600" y2="630" stroke="#E5E7EB" stroke-width="2"/>
@@ -66,15 +78,17 @@ export async function GET(request: Request) {
         {/* Type / Category */}
         <text x="680" y="120" font-family="sans-serif" font-weight="700" font-size="18" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
         
-        {/* Title (Wraps naturally via SVG text anchoring) */}
-        <text x="680" y="220" font-family="sans-serif" font-weight="800" font-size="54" fill="#111827">
-           ${title.length > 25 ? title.substring(0, 22) + '...' : title}
+        {/* Title (Multi-line approximation for SVG) */}
+        <text x="680" y="200" font-family="sans-serif" font-weight="800" font-size="54" fill="#111827">
+           ${title.length > 22 ? `
+             <tspan x="680" dy="0">${title.substring(0, 20)}...</tspan>
+           ` : title}
         </text>
         
         {/* Price Tag */}
         ${price ? `
-          <rect x="680" y="280" width="220" height="80" rx="4" fill="#FDE68A"/>
-          <text x="790" y="335" font-family="sans-serif" font-weight="800" font-size="48" fill="#000000" text-anchor="middle">${price}</text>
+          <rect x="680" y="280" width="280" height="80" rx="4" fill="#FDE68A"/>
+          <text x="820" y="335" font-family="sans-serif" font-weight="800" font-size="48" fill="#000000" text-anchor="middle">${price}</text>
         ` : ''}
         
         {/* Footer Branding */}

@@ -285,7 +285,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `LondonsImports-${product.slug}.png`; // Cleaner filename
+            link.download = `LondonsImports-${product.slug}.svg`; // Atomic SVG Alignment
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -295,7 +295,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             
             trackEvent('file_download', {
                 file_name: `${product.slug}-flyer`,
-                file_extension: 'png',
+                file_extension: 'svg',
                 item_id: product.id
             });
         } catch (error) {
