@@ -107,6 +107,10 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+  },
   twitter: {
     card: 'summary_large_image',
     title: "Ghana's #1 Mini Importation Service | London's Imports Ghana",
@@ -343,7 +347,7 @@ export default async function RootLayout({
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href={new URL(siteConfig.apiUrl).origin} />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         
         {/* Global Organization Schema */}
