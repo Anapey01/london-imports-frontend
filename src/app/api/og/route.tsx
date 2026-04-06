@@ -2,14 +2,14 @@ import { ImageResponse } from 'next/og';
 import { OGTemplate } from './styles';
 import { getProductMetadata } from '@/lib/fetchers';
 import { getAbsoluteImageUrl } from '@/lib/image';
-import { siteConfig } from '@/config/site';
 
-// Use Edge runtime for native image generation (resolves Node/Sharp conflicts)
+// Use Edge runtime for native image generation (Zero-dependency)
 export const runtime = 'edge';
 export const revalidate = 3600;
 
 /**
  * London's Imports - Unified Global OpenGraph Image API
+ * ATOMIC HARDENING: Zero-Dependency Strategy (CDN Fonts + Edge Runtime)
  */
 export async function GET(request: Request) {
   try {
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     let price = searchParams.get('price');
     let type = searchParams.get('type') || 'Sourcing & Logistics';
 
-    // 1. DYNAMIC PRODUCT RESOLUTION (Hardened for 401/500 backend fails)
+    // 1. DYNAMIC PRODUCT RESOLUTION (Harden for backend fails)
     if (slug) {
         try {
             const product = await getProductMetadata(slug);
@@ -43,19 +43,14 @@ export async function GET(request: Request) {
         }
     }
 
-    // 2. Load Fonts (Next.js File Trace - NFT Hinting)
+    // 2. Load Font (Official Google Fonts CDN - Extremely Stable)
     let fontData;
     try {
-       // Primary: Host-qualified URL (Bypasses bundling issues)
-       const fallbackUrl = `${siteConfig.baseUrl}/fonts/Montserrat-Bold.ttf`;
-       const fallbackRes = await fetch(fallbackUrl);
-       if (fallbackRes.ok) {
-           fontData = await fallbackRes.arrayBuffer();
-       } else {
-           // Secondary: Asset-relative URL (NFT hint)
-           const fontUrl = new URL('../../../../public/fonts/Montserrat-Bold.ttf', import.meta.url);
-           const fontRes = await fetch(fontUrl);
-           if (fontRes.ok) fontData = await fontRes.arrayBuffer();
+       // Official Montserrat Bold .ttf URL from Google Fonts
+       const fontUrl = 'https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm453RRnxdRs.ttf'; 
+       const fontRes = await fetch(fontUrl);
+       if (fontRes.ok) {
+           fontData = await fontRes.arrayBuffer();
        }
     } catch (e) {
       console.warn('Font loading failed (using defaults)', e);
@@ -78,10 +73,11 @@ export async function GET(request: Request) {
     );
   } catch (e) {
     const error = e as Error;
-    console.error(`OG API Error: ${error.message}`);
+    console.error(`OG API Atomic Failure: ${error.message}`);
     
-    return new Response(`Error: ${error.message}`, {
-      status: 200, // Return text to prevent download loop
-    });
+    // 3. ZERO-BYTE GATEKEEPER: Always return a valid response (Generic Logo Flyer)
+    // We fetch the default site logo to ensure a valid image is returned
+    const defaultLogoUrl = 'https://londonsimports.com/logo.png';
+    return fetch(defaultLogoUrl);
   }
 }
