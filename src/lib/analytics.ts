@@ -5,12 +5,8 @@
 
 export const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
-declare global {
-    interface Window {
-        gtag: (command: string, action: string, params?: Record<string, unknown>) => void;
-        dataLayer: Record<string, unknown>[];
-    }
-}
+// Global Window augmentation is now handled by @next/third-parties/google
+// We use 'any' casting inside functions to avoid complex type merging if needed
 
 // Helper for gtag
 export const trackEvent = (eventName: string, params?: Record<string, unknown>) => {
