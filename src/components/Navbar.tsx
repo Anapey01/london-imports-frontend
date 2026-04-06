@@ -2,6 +2,8 @@
  * London's Imports - Navbar Component
  * Hardened for WCAG 'Robust' Compliance (4.1.2 & 4.1.3)
  */
+'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
