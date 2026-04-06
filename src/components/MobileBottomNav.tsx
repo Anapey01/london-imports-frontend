@@ -21,7 +21,7 @@ export default function MobileBottomNav() {
 
     const navItems = [
         { name: 'Home', href: '/', icon: Home },
-        { name: 'Search', href: '#', icon: Search, action: () => setSearchModalOpen(true) },
+        { name: 'Shop', href: '#search', icon: Search, isSearch: true },
         { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: wishlistItems.length },
         { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: itemCount },
         { name: 'Profile', href: isAuthenticated ? '/profile' : '/login', icon: User },
@@ -62,14 +62,14 @@ export default function MobileBottomNav() {
                         </>
                     );
 
-                    if (item.action) {
+                    if (item.isSearch) {
                         return (
                             <button
                                 key={item.name}
-                                onClick={item.action}
+                                onClick={() => setSearchModalOpen(true)}
                                 className={`flex flex-col items-center justify-center flex-1 py-1 group relative transition-all institutional-focus rounded-lg outline-none tap-highlight-none ${(isActive || isSearchModalOpen) ? 'text-brand-emerald' : 'text-content-secondary'}`}
                                 aria-label={item.name}
-                                aria-expanded={isSearch && isSearchModalOpen}
+                                aria-expanded={isSearchModalOpen}
                             >
                                 {content}
                             </button>
