@@ -626,7 +626,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </div>
                         </div>
 
-                        <div className="mt-12 mb-8 group/desc">
+                        <div className="mt-12 mb-4 group/desc">
                             <h2 className="text-[10px] font-bold text-content-secondary uppercase tracking-[0.3em] mb-4">Description</h2>
                             <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6'}`}>
                                 <p className="text-content-primary leading-relaxed text-sm select-none">
@@ -638,9 +638,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </div>
                             <button
                                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                                className="mt-4 text-[10px] font-bold text-[#006B5A] uppercase tracking-[0.2em] hover:opacity-70 transition-all flex items-center gap-2 group/btn"
+                                className="mt-4 text-[10px] font-bold text-[#006B5A] uppercase tracking-widest hover:opacity-70 transition-all flex items-center gap-2 group/btn"
                             >
-                                <span>{isDescriptionExpanded ? 'Collapse Description' : 'Read Full Description'}</span>
+                                <span>{isDescriptionExpanded ? 'Collapse' : 'Read Full Description'}</span>
                                 <svg className={`w-3 h-3 transition-transform duration-500 ${isDescriptionExpanded ? 'rotate-180' : 'group-hover/btn:translate-y-0.5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
@@ -649,7 +649,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                         {/* Trust & Product Details - Curated Horizontal Row */}
                         {/* 5. Details: Flat Architectural Grid */}
-                        <div className="grid grid-cols-2 gap-px bg-border-standard border-y border-border-standard mt-12 mb-12">
+                        <div className="grid grid-cols-2 gap-px bg-border-standard border-y border-border-standard mt-4 mb-12">
                             {/* Type */}
                             <div className="bg-surface py-10 flex flex-col gap-3">
                                 <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Category</span>
