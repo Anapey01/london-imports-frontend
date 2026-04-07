@@ -5,14 +5,14 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
 import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
 import { trackViewItemList, trackViewSearchResults } from '@/lib/analytics';
 import { useEffect, useRef } from 'react';
-import { Zap, ArrowRight, Search, ListFilter } from 'lucide-react';
+import { Zap, ArrowRight, Search, ListFilter, Loader2 } from 'lucide-react';
 
 interface Category {
     id: number;
@@ -63,18 +63,33 @@ export default function ProductGrid({
     const minPrice = searchParams.get('min_price') ?? '';
     const maxPrice = searchParams.get('max_price') ?? '';
 
-    // Fetch products with filters
-    const { data: productsData, isLoading } = useQuery({
-        queryKey: ['products', category, status, search, featured, minPrice, maxPrice, vendorSlug],
-        queryFn: () => productsAPI.list({
+    // Advanced Pagination Logic: Infinite Batching
+    const PAGE_SIZE = 50;
+    
+    const { 
+        data: infiniteData, 
+        fetchNextPage, 
+        hasNextPage, 
+        isFetchingNextPage, 
+        isLoading 
+    } = useInfiniteQuery({
+        queryKey: ['products-paginated', category, status, search, featured, minPrice, maxPrice, vendorSlug],
+        queryFn: ({ pageParam = 0 }) => productsAPI.list({
             category,
             status,
             search,
             featured,
             min_price: minPrice,
             max_price: maxPrice,
-            vendor: vendorSlug
-        }),
+            vendor: vendorSlug,
+            limit: PAGE_SIZE,
+            offset: pageParam
+        }).then(res => res.data),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            const currentCount = allPages.length * PAGE_SIZE;
+            return lastPage.count > currentCount ? currentCount : undefined;
+        },
     });
 
     // Helpers
@@ -94,14 +109,9 @@ export default function ProductGrid({
         router.push(pathname, { scroll: false });
     };
 
-    const getProducts = () => {
-        if (productsData?.data?.results) return productsData.data.results;
-        if (productsData?.data && Array.isArray(productsData.data)) return productsData.data;
-        if (!category && !status && !search && !featured && !minPrice && !maxPrice) return initialProducts;
-        return [];
-    };
-
-    const products = getProducts();
+    const products = infiniteData 
+        ? infiniteData.pages.flatMap(page => page.results || page) 
+        : initialProducts;
 
     // GA4 Tracking
     const lastTrackedParams = useRef('');
@@ -281,15 +291,46 @@ export default function ProductGrid({
                         {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonCard key={i} />)}
                     </div>
                 ) : products.length > 0 ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 animate-fade-in">
-                        {products.map((product: Product, index: number) => (
-                            <ProductCard 
-                                key={product.id} 
-                                product={product} 
-                                priority={index < 6} 
-                            />
-                        ))}
-                    </div>
+                    <>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 animate-fade-in">
+                            {products.map((product: Product, index: number) => (
+                                <ProductCard 
+                                    key={product.id} 
+                                    product={product} 
+                                    priority={index < 6} 
+                                />
+                            ))}
+                        </div>
+
+                        {/* Pagination Action: The 'Load More' Rectangle */}
+                        {hasNextPage && (
+                            <div className="mt-20 flex justify-center border-t border-border-standard pt-20">
+                                <button
+                                    onClick={() => fetchNextPage()}
+                                    disabled={isFetchingNextPage}
+                                    className="w-full sm:w-80 h-16 border border-content-primary hover:bg-content-primary hover:text-surface transition-all duration-500 text-[10px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isFetchingNextPage ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            <span>FETCHING PIECES...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>VIEW MORE PIECES</span>
+                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
+                        {!hasNextPage && products.length > PAGE_SIZE && (
+                            <div className="mt-20 text-center py-10 opacity-20">
+                                <p className="text-[9px] font-black uppercase tracking-[0.5em]">EndOfCollection</p>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center py-40 bg-surface-card/50 border border-border-standard rounded-2xl">
                          <Zap className="w-10 h-10 text-content-secondary mx-auto mb-8 opacity-10" />
