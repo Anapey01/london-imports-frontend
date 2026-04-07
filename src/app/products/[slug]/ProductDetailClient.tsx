@@ -557,19 +557,21 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 4. Action Phase: Minimal CTAs */}
                         <div className="flex flex-col sm:flex-row items-end gap-12 border-t border-slate-50 dark:border-slate-900 pt-0">
                             <div className="w-full sm:w-40">
-                                <p className="text-[9px] font-black text-content-secondary uppercase tracking-[0.3em] mb-1 text-center sm:text-left">Quantity</p>
-                                <div className="flex items-center h-10 w-full border border-border-standard px-4">
+                                <p className="text-[9px] font-black text-content-secondary uppercase tracking-[0.3em] mb-3 text-center sm:text-left">Quantity</p>
+                                <div className="flex items-center h-11 w-full border border-border-standard px-2 bg-surface-card">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="flex-1 h-full flex items-center justify-center text-content-secondary hover:text-content-primary transition-colors"
+                                        className="flex-1 h-full flex items-center justify-center text-content-secondary hover:text-content-primary transition-colors text-lg"
                                         aria-label="Decrease quantity"
                                     >
-                                        -
+                                        −
                                     </button>
-                                    <span className="w-12 text-center font-bold text-slate-900 dark:text-white text-xs tracking-tighter">{quantity}</span>
+                                    <span className="flex-none w-12 text-center font-bold text-content-primary text-sm tabular-nums">
+                                        {quantity}
+                                    </span>
                                     <button
                                         onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                                        className="flex-1 h-full flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                        className="flex-1 h-full flex items-center justify-center text-content-secondary hover:text-content-primary transition-colors text-lg"
                                         aria-label="Increase quantity"
                                     >
                                         +
