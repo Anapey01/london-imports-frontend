@@ -407,7 +407,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleWhatsAppContact = () => {
         if (!product) return;
         trackWhatsAppContact(`${product.name} (${formatPrice(currentPrice)})`, 'concierge');
-        const message = encodeURIComponent(`Hi London's, I'm interested in the ${product.name} (${formatPrice(currentPrice)}). Can you help me with the sourcing details?`);
+        
+        // High-Context Conversion: Product + Price + Link
+        const message = encodeURIComponent(
+            `Hi London's Imports! I'm interested in the ${product.name} priced at ${formatPrice(currentPrice)}.\n\n` + 
+            `Product Link: ${window.location.origin}/products/${product.slug}\n\n` +
+            `Can you help me with the sourcing details?`
+        );
+        
         window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
     };
 

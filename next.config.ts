@@ -242,6 +242,18 @@ const nextConfig: NextConfig = {
         destination: 'https://londonsimports.com/:path*',
         permanent: true,
       },
+      {
+        source: '/products',
+        has: [
+          {
+            type: 'query',
+            key: 'category',
+            value: '(?<slug>.*)',
+          },
+        ],
+        destination: '/products/category/:slug',
+        permanent: true,
+      },
     ];
   },
 };
