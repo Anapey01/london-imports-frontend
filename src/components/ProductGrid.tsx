@@ -74,7 +74,7 @@ export default function ProductGrid({
         isLoading 
     } = useInfiniteQuery({
         queryKey: ['products-paginated', category, status, search, featured, minPrice, maxPrice, vendorSlug],
-        queryFn: ({ pageParam = 0 }) => productsAPI.list({
+        queryFn: ({ pageParam = 1 }) => productsAPI.list({
             category,
             status,
             search,
@@ -83,12 +83,12 @@ export default function ProductGrid({
             max_price: maxPrice,
             vendor: vendorSlug,
             limit: PAGE_SIZE,
-            offset: pageParam
+            page: pageParam
         }).then(res => res.data),
-        initialPageParam: 0,
+        initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
-            const currentCount = allPages.length * PAGE_SIZE;
-            return lastPage.count > currentCount ? currentCount : undefined;
+            // Check if there are more results based on the 'next' URL from backend
+            return lastPage.next ? allPages.length + 1 : undefined;
         },
     });
 
