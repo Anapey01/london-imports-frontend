@@ -78,6 +78,7 @@ export default async function ProductsPage({ searchParams }: Props) {
         getCategories(),
         getProducts({
             category: category || '',
+            search: search || '',
             status: status || '',
             featured: featured.toString(),
             limit: '50'

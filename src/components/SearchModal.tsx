@@ -117,7 +117,11 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                     <form 
                         onSubmit={(e) => {
                             e.preventDefault();
-                            handleRecordSearch(query);
+                            if (query.trim().length >= 2) {
+                                handleRecordSearch(query);
+                                onClose();
+                                router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                            }
                         }}
                         className="flex-1 flex items-center bg-surface-card border border-border-standard rounded-lg px-2 py-2 sm:px-4 sm:py-3 focus-within:border-brand-emerald transition-colors min-w-0"
                     >
