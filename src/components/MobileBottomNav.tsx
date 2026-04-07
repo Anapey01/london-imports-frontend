@@ -69,7 +69,7 @@ export default function MobileBottomNav() {
                                 onClick={() => setSearchModalOpen(true)}
                                 className={`flex flex-col items-center justify-center flex-1 py-1 group relative transition-all institutional-focus rounded-lg outline-none tap-highlight-none ${(isActive || isSearchModalOpen) ? 'text-brand-emerald' : 'text-content-secondary'}`}
                                 aria-label={item.name}
-                                aria-expanded={isSearchModalOpen}
+                                aria-expanded={!!isSearchModalOpen}
                             >
                                 {content}
                             </button>
