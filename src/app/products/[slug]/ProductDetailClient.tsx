@@ -501,19 +501,17 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             </h1>
                             
                             {/* 2. Pricing Architecture (Solid Black) */}
-                            <div className="flex items-center flex-wrap gap-8 pt-4">
-                                <div className="flex flex-col">
-                                    <span className="text-5xl lg:text-7xl font-serif font-semibold text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
-                                        {formatPrice(currentPrice)}
-                                    </span>
-                                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-content-secondary mt-3 opacity-60 italic">
-                                        (minus shipping fees)
-                                    </span>
-                                </div>
+                            <div className="flex items-end flex-wrap gap-6 pt-4">
+                                <span className="text-5xl lg:text-7xl font-serif font-semibold text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
+                                    {formatPrice(currentPrice)}
+                                </span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-content-secondary mb-3 opacity-60 italic">
+                                    (minus shipping fees)
+                                </span>
                                 
                                 <button 
                                     onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="flex items-center gap-3 py-2 hover:opacity-60 transition-all"
+                                    className="flex items-center gap-3 py-2 hover:opacity-60 transition-all ml-auto sm:ml-0"
                                 >
                                     <StarRating initialRating={Number(product.rating ?? 0)} readOnly size="sm" />
                                     <span className="text-[10px] font-black text-content-secondary tracking-widest tabular-nums pb-0.5">
