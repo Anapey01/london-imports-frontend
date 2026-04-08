@@ -496,15 +496,20 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 1. Header: Source Serif Authority */}
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
-                            <h1 className="text-4xl lg:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-[0.95] tracking-tighter">
+                            <h1 className="text-4xl lg:text-7xl font-serif font-semibold text-slate-900 dark:text-white leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
                             
                             {/* 2. Pricing Architecture (Solid Black) */}
                             <div className="flex items-center flex-wrap gap-8 pt-4">
-                                <span className="text-5xl lg:text-7xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
-                                    {formatPrice(currentPrice)}
-                                </span>
+                                <div className="flex flex-col">
+                                    <span className="text-5xl lg:text-7xl font-serif font-semibold text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
+                                        {formatPrice(currentPrice)}
+                                    </span>
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-content-secondary mt-3 opacity-60 italic">
+                                        (minus shipping fees)
+                                    </span>
+                                </div>
                                 
                                 <button 
                                     onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
