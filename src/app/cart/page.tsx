@@ -123,20 +123,8 @@ export default function CartPage() {
                                     <span className="text-2xl font-black text-content-primary tabular-nums italic tracking-tighter">GHS {subtotal.toLocaleString()}</span>
                                 </div>
                                 
-                                <div className="pt-2">
-                                    {subtotal < siteConfig.defaults.freeShippingThreshold ? (
-                                        <p className="text-[11px] font-medium text-content-secondary leading-relaxed">
-                                            Add <span className="font-black text-content-primary">GHS {(siteConfig.defaults.freeShippingThreshold - subtotal).toLocaleString()}</span> more to unlock <span className="underline decoration-emerald-500 font-black">Free Shipping</span>.
-                                        </p>
-                                    ) : (
-                                        <p className="text-[11px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                                            <ShieldCheck className="w-3.5 h-3.5" strokeWidth={2.5} />
-                                            Free Delivery Protocol Active
-                                        </p>
-                                    )}
                                 </div>
                             </div>
-                        </div>
 
                         {/* Basket Listings Header */}
                         <div className="bg-surface px-4 py-3 border-b border-border-standard flex items-center justify-between">
