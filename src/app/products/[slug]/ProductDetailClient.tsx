@@ -496,13 +496,13 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 1. Header: Source Serif Authority */}
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
-                            <h1 className="text-4xl lg:text-7xl font-serif font-semibold text-slate-900 dark:text-white leading-[0.95] tracking-tighter">
+                            <h1 className="text-4xl lg:text-7xl font-serif font-semibold text-content-primary leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
                             
                             {/* 2. Pricing Architecture (Solid Black) */}
                             <div className="flex items-end flex-wrap gap-6 pt-4">
-                                <span className="text-5xl lg:text-7xl font-serif font-semibold text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
+                                <span className="text-5xl lg:text-7xl font-serif font-semibold text-content-primary tracking-tighter tabular-nums leading-none">
                                     {formatPrice(currentPrice)}
                                 </span>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-content-secondary mb-3 opacity-60 italic">
@@ -589,7 +589,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={isAdding || isSoldOut}
-                                    className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white border-b border-black dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20"
+                                    className="text-[11px] font-black uppercase tracking-[0.2em] text-content-primary border-b border-black dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20"
                                 >
                                     {isAdding ? 'Sourcing...' : 'Add to Basket'}
                                 </button>
@@ -597,7 +597,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 <button
                                     onClick={product.preorder_status === 'READY_TO_SHIP' ? handleBuyNow : handleAddToCart}
                                     disabled={isAdding || isBuyingNow || isSoldOut}
-                                    className="flex items-center gap-3 text-slate-900 dark:text-white text-[11px] font-black uppercase tracking-[0.3em] border-b border-slate-900 dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20"
+                                    className="flex items-center gap-3 text-content-primary text-[11px] font-black uppercase tracking-[0.3em] border-b border-slate-900 dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20"
                                 >
                                     {!isSoldOut && !isBuyingNow && <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2.5} />}
                                     <span>{isSoldOut ? "Sold Out" : (isBuyingNow ? "Processing..." : (product.preorder_status === 'READY_TO_SHIP' ? "Buy Now" : "Order Now"))}</span>
