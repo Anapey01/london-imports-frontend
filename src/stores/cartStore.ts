@@ -47,12 +47,14 @@ export interface Cart {
     subtotal: number;
     delivery_fee: number;
     total: number;
+    state: string;
 }
 
 interface CartState {
     cart: Cart | null;
     guestItems: CartItem[];
     isLoading: boolean;
+    isMerging: boolean;
     itemCount: number;
     selectedItemIds: Set<string>;
 
@@ -71,6 +73,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
     cart: null,
     guestItems: [], // Local offline items
     isLoading: false,
+    isMerging: false,
     itemCount: 0,
     selectedItemIds: new Set(),
 
@@ -84,18 +87,31 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             // MERGE LOGIC: Check for guest items to sync
             const savedGuest = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
-            if (savedGuest) {
+            if (savedGuest && !get().isMerging) {
                 try {
+                    set({ isMerging: true });
                     const guestItems: CartItem[] = JSON.parse(savedGuest);
-                    // Add each guest item to server cart
-                    await Promise.all(guestItems.map(item =>
-                        ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color)
-                    ));
-                    // Clear guest state
-                    localStorage.removeItem('guest_cart');
-                    set({ guestItems: [] });
+                    
+                    if (guestItems.length > 0) {
+                        console.info("[CartStore] Syncing guest items to server...", guestItems.length);
+                        
+                        // CRITICAL: Clear guest state IMMEDIATELY to prevent duplicate syncs 
+                        // if fetchCart is called again before this completes.
+                        localStorage.removeItem('guest_cart');
+                        set({ guestItems: [] });
+
+                        // Add each guest item to server cart
+                        await Promise.all(guestItems.map(item =>
+                            ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color)
+                        ));
+                        console.info("[CartStore] Guest sync complete.");
+                    }
                 } catch (e) {
                     console.error("Failed to merge guest cart", e);
+                    // Optional: Restore items to localStorage if it was a network error?
+                    // For now, we prefer data loss over 10x quantity multiplication loops.
+                } finally {
+                    set({ isMerging: false });
                 }
             }
 
@@ -371,17 +387,20 @@ export const useCartStore = create<CartState>()((set, get) => ({
         localStorage.removeItem('guest_cart');
 
         if (isAuthenticated && currentCart?.items) {
-            console.info("[CartStore] Clearing server-side cart...");
-            try {
-                // Remove each item from the server in parallel
-                await Promise.all(
-                    currentCart.items.map(item => ordersAPI.removeFromCart(item.id))
-                );
-                console.info("[CartStore] Server-side cart cleared successfully.");
-            } catch (error) {
-                console.error("[CartStore] Failed to clear server-side cart items completely:", error);
-                // Fallback: trigger a fetch to show current server state if cleanup failed
-                get().fetchCart();
+            // ONLY clear server items if the order is still a DRAFT.
+            // If the user just paid, the order is PENDING_PAYMENT or PAID.
+            // We MUST NOT delete items from those orders.
+            if (currentCart.state === 'DRAFT') {
+                console.info("[CartStore] Clearing DRAFT cart items from server...");
+                try {
+                    await Promise.all(
+                        currentCart.items.map(item => ordersAPI.removeFromCart(item.id))
+                    );
+                } catch (error) {
+                    console.error("[CartStore] Server-side cleanup failed:", error);
+                }
+            } else {
+                console.info("[CartStore] Order is beyond DRAFT state. Skipping server-side item deletion.");
             }
         }
     },
