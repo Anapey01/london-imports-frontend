@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCartStore, type CartItem } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
+import Image from 'next/image';
 import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymentInfo, trackWhatsAppContact, trackCheckoutError, trackPaymentLifecycle, trackEvent } from '@/lib/analytics';
@@ -55,6 +56,16 @@ declare global {
         };
     }
 }
+    
+type CheckoutViewData = {
+    items: (CartItem | OrderItem)[]; 
+    subtotal: number;
+    total: number;
+    delivery_fee: number;
+    order_number?: string;
+    id?: string;
+    amount_paid?: number;
+};
 
 function CheckoutPage() {
     const router = useRouter();
@@ -95,8 +106,8 @@ function CheckoutPage() {
     const searchParams = useSearchParams();
     const orderNumberParam = searchParams.get('order');
 
-    const currentOrderData = useMemo((): any => {
-        if (checkoutOrder) return checkoutOrder;
+    const currentOrderData = useMemo((): CheckoutViewData => {
+        if (checkoutOrder) return checkoutOrder as unknown as CheckoutViewData;
         
         const buyNowSlug = searchParams.get('buyNow');
         if (cart && buyNowSlug) {
@@ -111,8 +122,8 @@ function CheckoutPage() {
             }
         }
         
-        if (cart) return cart;
-        return { items: [], total: 0, subtotal: 0, delivery_fee: 0 };
+        if (cart) return cart as CheckoutViewData;
+        return { items: [], total: 0, subtotal: 0, delivery_fee: 0 } as CheckoutViewData;
     }, [checkoutOrder, cart, searchParams]);
 
     useEffect(() => {
@@ -161,7 +172,7 @@ function CheckoutPage() {
     useEffect(() => {
         if (orderNumberParam && isAuthenticated) {
             ordersAPI.detail(orderNumberParam)
-                .then((res: any) => {
+                .then((res: { data: ExtendedCart }) => {
                     const orderItem = res.data;
                     setCheckoutOrder(orderItem);
                     if (orderItem.delivery_address) {
@@ -175,7 +186,7 @@ function CheckoutPage() {
                         setActiveStep(2);
                     }
                 })
-                .catch((err: any) => {
+                .catch((err: BackendError) => {
                     console.error("Order fetch error:", err);
                     setError('Could not load order details');
                 });
@@ -209,7 +220,7 @@ function CheckoutPage() {
     const paymentAmount = useMemo(() => {
         const selSubtotal = (currentOrderData.items || [])
             .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
-            .reduce((sum: number, i: CartItem | OrderItem) => sum + Number(i.total_price || 0), 0);
+            .reduce((sum: number, i: CartItem | OrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
             
         const totalValue = selSubtotal;
         const totalPaid = checkoutOrder ? Number(checkoutOrder.amount_paid || 0) : 0;
@@ -451,12 +462,15 @@ function CheckoutPage() {
                                             .filter((item: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
                                             .map((item: CartItem | OrderItem) => (
                                                 <div key={item.id} className="flex gap-4 items-center p-4 bg-surface border border-border-standard rounded-xl">
-                                                    <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-standard p-1">
-                                                        <img 
-                                                            src={(item.product as any)?.image || (item.product as any)?.image_url} 
-                                                            alt={item.product?.name}
-                                                            className="w-full h-full object-contain rounded-md"
-                                                        />
+                                                    <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-standard p-1 relative">
+                                                        {(item.product.image) && (
+                                                            <Image 
+                                                                src={item.product.image} 
+                                                                alt={item.product.name}
+                                                                fill
+                                                                className="object-contain rounded-md"
+                                                            />
+                                                        )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-[11px] font-black text-content-primary truncate">{item.product?.name}</p>

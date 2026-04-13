@@ -116,11 +116,11 @@ export default function CartPage() {
                             <div className="px-4 py-6 space-y-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm font-medium text-content-secondary">Items in Cart ({items.length})</span>
-                                    <span className="text-sm font-bold text-content-primary tabular-nums italic">GHS {subtotal.toLocaleString()}</span>
+                                    <span className="text-sm font-medium text-content-primary tabular-nums italic">GHS {subtotal.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-5 border-y border-border-standard">
                                     <span className="text-sm font-black uppercase tracking-[0.25em] text-content-primary">Subtotal</span>
-                                    <span className="text-2xl font-black text-content-primary tabular-nums italic tracking-tighter">GHS {subtotal.toLocaleString()}</span>
+                                    <span className="text-2xl font-medium text-content-primary tabular-nums italic tracking-tighter">GHS {subtotal.toLocaleString()}</span>
                                 </div>
                                 
                                 </div>
@@ -160,7 +160,7 @@ export default function CartPage() {
 
                                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                                         <div className="space-y-1">
-                                            <h3 className="text-sm font-semibold text-content-primary line-clamp-2 leading-tight uppercase tracking-tight italic">
+                                            <h3 className="text-sm font-medium text-content-primary line-clamp-2 leading-tight uppercase tracking-tight italic">
                                                 {item.product.name}
                                             </h3>
                                             <div className="flex flex-col pt-1">

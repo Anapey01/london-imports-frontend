@@ -4,6 +4,8 @@ import { formatPrice } from '@/lib/format';
 
 interface BaseOrderItem {
     id: string;
+    unit_price?: number | string;
+    quantity: number;
     total_price?: number | string;
 }
 
@@ -30,7 +32,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
     const calculateSelectedTotal = () => {
         const selSubtotal = (currentOrderData.items || [])
             .filter((i: BaseOrderItem) => selectedItemIds.has(i.id))
-            .reduce((sum: number, i: BaseOrderItem) => sum + Number(i.total_price || 0), 0);
+            .reduce((sum: number, i: BaseOrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
         return selSubtotal + (currentOrderData.delivery_fee || 0);
     };
 

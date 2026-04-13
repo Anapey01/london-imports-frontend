@@ -496,16 +496,16 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 1. Header: Source Serif Authority */}
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
-                            <h1 className="text-4xl lg:text-7xl font-serif font-semibold text-content-primary leading-[0.95] tracking-tighter">
+                            <h1 className="text-4xl lg:text-7xl font-serif font-medium text-content-primary leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
                             
                             {/* 2. Pricing Architecture (Solid Black) */}
                             <div className="flex items-end flex-wrap gap-6 pt-4">
-                                <span className="text-5xl lg:text-7xl font-serif font-semibold text-content-primary tracking-tighter tabular-nums leading-none">
+                                <span className="text-5xl lg:text-7xl font-serif font-medium text-content-primary tracking-tighter tabular-nums leading-none">
                                     {formatPrice(currentPrice)}
                                 </span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-content-secondary mb-3 opacity-60 italic">
+                                <span className="text-[10px] font-medium uppercase tracking-[0.25em] text-content-secondary mb-3 opacity-60 italic">
                                     (minus shipping fees)
                                 </span>
                                 

@@ -43,8 +43,8 @@
   --brand-accent: #10b981; 
   --brand-logo-accent: #34d399;
   --text-primary: #f8fafc; /* Pure White (Slate 50) */
-  --text-secondary: #94a3b8;
-  --font-weight-product-name: 700; /* High-contrast Bold for Dark Mode */
+  --text-secondary: #cbd5e1; /* Lighter Slate for improved dark mode visibility */
+  --font-weight-product-name: 500; /* Medium, non-bold for Dark Mode */
 }
 
 @layer base {

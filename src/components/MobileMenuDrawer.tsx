@@ -264,6 +264,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <button
                             onClick={() => setProductsOpen(!productsOpen)}
                             className="w-full flex items-center justify-between p-4 group transition-all border-b border-border-standard"
+                            aria-expanded={productsOpen}
                         >
                             <div className="flex items-center gap-6">
                                 <LayoutGrid className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
@@ -296,6 +297,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <button
                             onClick={() => setShopOpen(!shopOpen)}
                             className="w-full flex items-center justify-between p-4 group transition-all border-b border-border-standard"
+                            aria-expanded={shopOpen}
                         >
                             <div className="flex items-center gap-6">
                                 <Star className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
@@ -325,6 +327,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <button
                             onClick={() => setSupportOpen(!supportOpen)}
                             className="w-full flex items-center justify-between p-4 group transition-all border-b border-border-standard"
+                            aria-expanded={supportOpen}
                         >
                             <div className="flex items-center gap-6">
                                 <Shield className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
