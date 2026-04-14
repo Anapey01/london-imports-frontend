@@ -116,8 +116,8 @@ function CheckoutPage() {
                 return {
                     ...cart,
                     items: [buyNowItem],
-                    subtotal: buyNowItem.total_price,
-                    total: buyNowItem.total_price,
+                    subtotal: Number(buyNowItem.total_price),
+                    total: Number(buyNowItem.total_price),
                 };
             }
         }
@@ -222,16 +222,20 @@ function CheckoutPage() {
             .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
             .reduce((sum: number, i: CartItem | OrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
             
-        const totalValue = selSubtotal;
+        // CRITICAL: Coerce all values to Numbers to prevent string concatenation ("860" + "0" = "8600")
+        const subtotal = Number(checkoutOrder?.subtotal || currentOrderData.subtotal || selSubtotal || 0);
+        const delivery = Number(checkoutOrder?.delivery_fee || currentOrderData.delivery_fee || 0);
+        const totalValue = subtotal + delivery;
+        
         const totalPaid = checkoutOrder ? Number(checkoutOrder.amount_paid || 0) : 0;
         const balanceDue = Math.max(0, totalValue - totalPaid);
 
         if (paymentType === 'BALANCE') return balanceDue;
-        if (paymentType === 'DEPOSIT') return totalValue * 0.3;
+        if (paymentType === 'DEPOSIT') return totalValue * 0.3; // 30% Deposit
         if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
         if (paymentType === 'WHATSAPP') return 0;
         return balanceDue;
-    }, [paymentType, currentOrderData.items, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
+    }, [paymentType, currentOrderData, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
     useEffect(() => {
         const now = Date.now();
         const duration = Math.round((now - stepStartTime.current) / 1000);

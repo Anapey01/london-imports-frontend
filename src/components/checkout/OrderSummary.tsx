@@ -32,12 +32,12 @@ const OrderSummary = ({
     isSubmitting,
     activeStep
 }: OrderSummaryProps) => {
-    const subtotalValue = checkoutOrder || orderNumberParam ? (currentOrderData.subtotal || 0) : (currentOrderData.items || [])
+    const subtotalValue = checkoutOrder || orderNumberParam ? Number(currentOrderData.subtotal || 0) : (currentOrderData.items || [])
         .filter((i: CartItem | OrderItem) => selectedItemIds.has(i.id))
         .reduce((sum: number, i: CartItem | OrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
 
-    const deliveryValue = currentOrderData.delivery_fee || 0;
-    const totalValue = subtotalValue + deliveryValue;
+    const deliveryValue = Number(currentOrderData.delivery_fee || 0);
+    const totalValue = Number(subtotalValue) + Number(deliveryValue);
 
     return (
         <div className="bg-surface-card p-6 sm:p-7 rounded-2xl border border-border-standard shadow-diffusion-lg sticky top-32">
