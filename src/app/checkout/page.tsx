@@ -349,10 +349,10 @@ function CheckoutPage() {
                 email: user?.email || '',
                 amount: Math.round(paymentAmount * 100),
                 currency: 'GHS',
-                ref: `LTRX-${Date.now()}-${orderToPay?.order_number}`,
+                ref: `LI-${Date.now()}-${orderToPay?.order_number}`,
                 metadata: {
                     custom_fields: [
-                        { display_name: "Order ID", variable_name: "order_id", value: orderToPay?.order_number || '' },
+                        { display_name: "Order Number", variable_name: "order_number", value: orderToPay?.order_number || '' },
                         { display_name: "Payment Type", variable_name: "payment_type", value: paymentType }
                     ]
                 },
@@ -384,9 +384,10 @@ function CheckoutPage() {
                     clearCart();
                     sessionStorage.removeItem('londons_checkout_delivery');
                     router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
-                } catch (verifyErr) {
-                    console.error('Verification failed:', verifyErr);
-                    trackPaymentLifecycle('failure', { step: 'verification', error: String(verifyErr), provider: 'paystack' });
+                } catch (verifyErr: any) {
+                    const serverMessage = verifyErr.response?.data?.error || verifyErr.response?.data?.message || String(verifyErr);
+                    console.error('Verification failed:', serverMessage);
+                    trackPaymentLifecycle('failure', { step: 'verification', error: serverMessage, provider: 'paystack' });
                     setError('Payment check failed. Please message us on WhatsApp with your order number.');
                     setIsLoading(false);
                 }

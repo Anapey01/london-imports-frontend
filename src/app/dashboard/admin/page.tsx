@@ -1,6 +1,6 @@
 /**
  * London's Imports - Admin Dashboard Overview
- * Mobile-first admin dashboard with stats and recent activity
+ * Refactored: Premium Operational Command Center
  */
 'use client';
 
@@ -8,80 +8,58 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Users,
     ShoppingBag,
     Package,
-    BadgeDollarSign,
     ArrowUpRight,
     Clock,
     CheckCircle2,
     XCircle,
     AlertCircle,
     ChevronRight,
-    TrendingUp,
     BarChart3,
     Trash2,
-    Mail
+    Mail,
+    LayoutDashboard,
+    Search
 } from 'lucide-react';
 
-interface DashboardStats {
-    total_users: number;
-    total_orders: number;
-    total_products: number;
-    total_revenue: number;
-    pending_orders: number;
-    new_users_today: number;
-    storage_provider: string;
-}
+// Components
+import StatsPulse from '@/components/admin/StatsPulse';
+import OperationsFunnel from '@/components/admin/OperationsFunnel';
+import PerformanceChart from '@/components/admin/PerformanceChart';
+import ActiveBatchWidget from '@/components/admin/ActiveBatchWidget';
 
-interface RecentOrder {
-    id: string;
-    order_number: string;
-    customer: {
-        name: string;
-        email: string;
-        avatar?: string;
-    };
-    total: string;
-    status: string;
-    created_at: string;
+interface DashboardData {
+    stats: any;
+    analytics: any;
+    recentOrders: any[];
 }
 
 export default function AdminDashboardPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
-    const [stats, setStats] = useState({
-        totalUsers: 0,
-        totalOrders: 0,
-        totalProducts: 0,
-        totalRevenue: 0,
-        pendingOrders: 0,
-        newUsersToday: 0,
-        storageProvider: '',
-    });
-    const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
+    const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const loadData = async () => {
         try {
-            const statsResponse = await adminAPI.stats();
-            const statsData = statsResponse.data as DashboardStats;
+            const [statsRes, analyticsRes, ordersRes] = await Promise.all([
+                adminAPI.stats(),
+                adminAPI.analytics({ period: '7d' }),
+                adminAPI.orders({ limit: 8 })
+            ]);
 
-            setStats({
-                totalUsers: statsData.total_users || 0,
-                totalOrders: statsData.total_orders || 0,
-                totalProducts: statsData.total_products || 0,
-                totalRevenue: statsData.total_revenue || 0,
-                pendingOrders: statsData.pending_orders || 0,
-                newUsersToday: statsData.new_users_today || 0,
-                storageProvider: statsData.storage_provider || 'Unknown',
+            setData({
+                stats: statsRes.data,
+                analytics: analyticsRes.data,
+                recentOrders: ordersRes.data.results || ordersRes.data || []
             });
-
-            const ordersResponse = await adminAPI.orders({ limit: 10 });
-            setRecentOrders((ordersResponse.data.results || ordersResponse.data || []) as RecentOrder[]);
         } catch (err) {
-            console.error('Failed to load admin stats:', err);
+            console.error('Failed to load dashboard data:', err);
         } finally {
             setLoading(false);
         }
@@ -92,267 +70,219 @@ export default function AdminDashboardPage() {
     }, []);
 
     const handleDeleteOrder = async (orderId: string) => {
-        if (!window.confirm('Are you sure you want to delete this order?')) return;
-
+        if (!window.confirm('Delete this order record permanently?')) return;
         try {
             await adminAPI.deleteOrder(orderId);
-            // Reload data
             loadData();
         } catch (error) {
-            console.error('Failed to delete order:', error);
-            alert('Failed to delete order');
+            console.error('Delete failed:', error);
         }
     };
 
-    const statCards = [
-        {
-            label: 'Total Users',
-            value: stats.totalUsers,
-            subtitle: `+${stats.newUsersToday} today`,
-            icon: Users,
-            color: 'blue',
-            trend: stats.newUsersToday > 0 ? 'up' : 'neutral'
-        },
-        {
-            label: 'Total Orders',
-            value: stats.totalOrders,
-            subtitle: `${stats.pendingOrders} pending`,
-            icon: ShoppingBag,
-            color: 'emerald',
-            trend: 'up'
-        },
-        {
-            label: 'Active Products',
-            value: stats.totalProducts,
-            subtitle: 'In catalog',
-            icon: Package,
-            color: 'violet',
-            trend: 'neutral'
-        },
-        {
-            label: 'Revenue',
-            value: `₵${stats.totalRevenue.toLocaleString()}`,
-            subtitle: 'Lifetime',
-            icon: BadgeDollarSign,
-            color: 'pink',
-            trend: 'up'
-        },
-    ];
-
-    const quickActions = [
-        {
-            label: 'Manage Users',
-            href: '/dashboard/admin/users',
-            icon: Users,
-            color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-        },
-        {
-            label: 'View Orders',
-            href: '/dashboard/admin/orders',
-            icon: ShoppingBag,
-            color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
-        },
-        {
-            label: 'Products',
-            href: '/dashboard/admin/products',
-            icon: Package,
-            color: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400'
-        },
-        {
-            label: 'Analytics',
-            href: '/dashboard/admin/analytics',
-            icon: BarChart3,
-            color: 'bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400'
-        },
-        {
-            label: 'Broadcast',
-            href: '/dashboard/admin/broadcast',
-            icon: Mail,
-            color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400'
-        },
-    ];
-
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'COMPLETED': return 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/20';
-            case 'PENDING': return 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20';
-            case 'PROCESSING': return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
-            case 'IN_TRANSIT': return 'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/20';
-            case 'CANCELLED': return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
-            default: return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-800';
+            case 'COMPLETED': return 'text-emerald-600 border-emerald-500/20 bg-emerald-50';
+            case 'PENDING_PAYMENT': return 'text-amber-600 border-amber-500/20 bg-amber-50';
+            case 'PAID': return 'text-blue-600 border-blue-500/20 bg-blue-50';
+            case 'IN_TRANSIT': return 'text-purple-600 border-purple-500/20 bg-purple-50';
+            case 'CANCELLED': return 'text-red-600 border-red-500/20 bg-red-50';
+            default: return 'text-gray-600 border-gray-200 bg-gray-50';
         }
     };
 
     if (loading) {
         return (
-            <div className="space-y-8 animate-pulse">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-10 animate-pulse pb-20">
+                <div className="h-10 w-48 bg-primary-surface rounded-lg mb-8" />
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className={`h-32 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}></div>
+                        <div key={i} className="h-40 rounded-[2rem] bg-primary-surface" />
                     ))}
                 </div>
-                <div className={`h-64 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}></div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 h-80 rounded-[2.5rem] bg-primary-surface" />
+                    <div className="h-80 rounded-[2.5rem] bg-primary-surface" />
+                </div>
             </div>
         );
     }
 
+    if (!data) return null;
+
+    // Logic for filtering recent transactions
+    const filteredOrders = data.recentOrders.filter(order => 
+        order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
-        <div className="space-y-8 pb-20">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {statCards.map((stat, index) => (
-                    <div
-                        key={index}
-                        className={`p-5 rounded-2xl border transition-all hover:shadow-md ${isDark
-                            ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
-                            : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
-                            }`}
-                    >
-                        <div className="flex items-start justify-between mb-4">
-                            <div className={`p-2.5 rounded-xl ${stat.color === 'blue' ? (isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600') :
-                                stat.color === 'emerald' ? (isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-50 text-emerald-600') :
-                                    stat.color === 'violet' ? (isDark ? 'bg-violet-900/30 text-violet-400' : 'bg-violet-50 text-violet-600') :
-                                        (isDark ? 'bg-pink-900/30 text-pink-400' : 'bg-pink-50 text-pink-600')
-                                }`}>
-                                <stat.icon className="w-5 h-5" strokeWidth={2} />
-                            </div>
-                            {stat.trend === 'up' && (
-                                <div className="flex items-center gap-1 text-xs font-medium text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">
-                                    <TrendingUp className="w-3 h-3" />
-                                    <span>Growing</span>
-                                </div>
-                            )}
+        <div className="space-y-10 pb-32">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-nuclear-text text-white rounded-lg">
+                            <LayoutDashboard className="w-5 h-5" />
                         </div>
-
-                        <div>
-                            <p className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {stat.value}
-                            </p>
-                            <p className={`text-sm font-medium mt-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                {stat.label}
-                            </p>
-                            <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                {stat.subtitle}
-                            </p>
-                        </div>
+                        <h2 className="text-sm font-black uppercase tracking-[0.3em] opacity-40">Command Center</h2>
                     </div>
-                ))}
-            </div>
+                    <h1 className="text-4xl font-black nuclear-text tracking-tighter">System Overview</h1>
+                </div>
 
-            {/* Quick Actions */}
-            <div>
-                <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {quickActions.map((action, index) => (
-                        <Link
-                            key={index}
-                            href={action.href}
-                            className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] ${isDark
-                                ? 'bg-slate-800 border-slate-700 hover:bg-slate-750'
-                                : 'bg-white border-gray-100 hover:shadow-md'
-                                }`}
-                        >
-                            <div className={`p-3 rounded-full mb-3 ${action.color}`}>
-                                <action.icon className="w-6 h-6" strokeWidth={2} />
-                            </div>
-                            <span className={`font-medium text-sm ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
-                                {action.label}
-                            </span>
-                        </Link>
-                    ))}
+                <div className="flex items-center gap-4">
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 opacity-30 group-focus-within:opacity-100 transition-opacity" />
+                        <input 
+                            type="text" 
+                            placeholder="Quick find orders..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-11 pr-6 py-3 bg-primary-surface border border-primary-surface rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium w-full md:w-64"
+                        />
+                    </div>
+                    <Link 
+                        href="/dashboard/admin/broadcast"
+                        className="p-3 bg-nuclear-text text-white rounded-2xl hover:bg-black transition-all shadow-lg shadow-nuclear-text/10"
+                        title="New Broadcast"
+                    >
+                        <Mail className="w-5 h-5" />
+                    </Link>
                 </div>
             </div>
 
-            {/* Recent Orders */}
-            <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
-                <div className={`p-6 border-b flex items-center justify-between ${isDark ? 'border-slate-700' : 'border-gray-50'}`}>
+            {/* KPI Section */}
+            <StatsPulse 
+                isDark={isDark}
+                stats={{
+                    totalUsers: data.stats.total_users,
+                    totalOrders: data.stats.total_orders,
+                    totalProducts: data.stats.total_products,
+                    totalRevenue: data.stats.total_revenue,
+                    potentialRevenue: data.stats.potential_revenue,
+                    newUsersToday: data.stats.new_users_today,
+                    pendingOrders: data.stats.pending_orders
+                }}
+            />
+
+            {/* Primary Analysis Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Main Performance Chart */}
+                <div className="lg:col-span-8">
+                    <PerformanceChart 
+                        isDark={isDark} 
+                        data={data.analytics.revenueChart} 
+                    />
+                </div>
+
+                {/* Active Batch Control */}
+                <div className="lg:col-span-4">
+                    <ActiveBatchWidget 
+                        isDark={isDark} 
+                        batch={data.stats.active_batch} 
+                    />
+                </div>
+            </div>
+
+            {/* Logistics Funnel */}
+            <OperationsFunnel 
+                isDark={isDark} 
+                data={data.analytics.logisticsFunnel} 
+            />
+
+            {/* Recent Orders Table */}
+            <div className={`rounded-[2.5rem] border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-primary-surface shadow-sm'}`}>
+                <div className="p-8 border-b border-primary-surface/20 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Recent Orders</h3>
-                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Latest customer transactions</p>
+                        <h3 className="text-xl font-black tracking-tight">Recent Transactions</h3>
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Live order flow monitor</p>
                     </div>
                     <Link
                         href="/dashboard/admin/orders"
-                        className="flex items-center gap-1 text-sm font-semibold text-pink-600 hover:text-pink-700 transition-colors"
+                        className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 transition-colors"
                     >
-                        View All <ArrowUpRight className="w-4 h-4" />
+                        Master Registry <ArrowUpRight className="w-4 h-4" />
                     </Link>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'bg-slate-900/50 text-slate-400' : 'bg-gray-50/50 text-gray-500'}`}>
-                            <tr>
-                                <th className="px-6 py-4 text-left">Order ID</th>
-                                <th className="px-6 py-4 text-left">Customer</th>
-                                <th className="px-6 py-4 text-left">Date</th>
-                                <th className="px-6 py-4 text-left">Status</th>
-                                <th className="px-6 py-4 text-right">Amount</th>
-                                <th className="px-6 py-4"></th>
+                        <thead>
+                            <tr className="border-b border-primary-surface/10">
+                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Order Ref</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Customer Identity</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Origin</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Protocol Status</th>
+                                <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest opacity-30">Net Amount</th>
+                                <th className="px-8 py-5"></th>
                             </tr>
                         </thead>
-                        <tbody className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-50'}`}>
-                            {recentOrders.length === 0 ? (
+                        <tbody className="divide-y divide-primary-surface/10">
+                            {filteredOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                        No orders found
+                                    <td colSpan={6} className="px-8 py-20 text-center text-sm font-medium opacity-40 italic">
+                                        The registry is currently silent. No recent activity detected.
                                     </td>
                                 </tr>
                             ) : (
-                                recentOrders.map((order) => (
-                                    <tr key={order.id} className={`group transition-colors ${isDark ? 'hover:bg-slate-700/30' : 'hover:bg-gray-50/50'}`}>
-                                        <td className="px-6 py-4">
-                                            <span className={`font-mono text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                                #{order.order_number}
-                                            </span>
+                                filteredOrders.map((order, idx) => (
+                                    <motion.tr 
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        key={order.id} 
+                                        className={`group transition-colors ${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20'}`}
+                                    >
+                                        <td className="px-8 py-6">
+                                            <span className="font-mono text-sm font-black opacity-60">#{order.order_number}</span>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {order.customer.name?.[0] || 'G'}
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black opacity-40 border border-primary-surface">
+                                                    {order.customer.name?.[0] || 'U'}
                                                 </div>
-                                                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                    {order.customer.name || 'Guest'}
-                                                </span>
+                                                <div>
+                                                    <p className="text-sm font-black">{order.customer.name || 'Anonymous User'}</p>
+                                                    <p className="text-[10px] font-medium opacity-40">{order.customer.email}</p>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                {new Date(order.created_at).toLocaleDateString()}
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-2 text-[11px] font-bold">
+                                                <Clock className="w-3.5 h-3.5 opacity-30" />
+                                                {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status).replace('text-', 'border-').replace('bg-', 'border-opacity-20 ')} ${getStatusColor(order.status)}`}>
-                                                {order.status === 'COMPLETED' && <CheckCircle2 className="w-3 h-3" />}
-                                                {order.status === 'PENDING' && <Clock className="w-3 h-3" />}
-                                                {order.status === 'CANCELLED' && <XCircle className="w-3 h-3" />}
-                                                {order.status === 'PROCESSING' && <AlertCircle className="w-3 h-3" />}
-                                                {order.status}
+                                        <td className="px-8 py-6">
+                                            <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}>
+                                                {order.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
+                                                 order.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
+                                                 <Clock className="w-3 h-3" />}
+                                                {order.status.replace('_', ' ')}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                ₵{parseFloat(order.total).toLocaleString()}
-                                            </span>
+                                        <td className="px-8 py-6 text-right">
+                                            <span className="text-sm font-black">₵{parseFloat(order.total).toLocaleString()}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
+                                        <td className="px-8 py-6 text-right">
+                                            <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
                                                 <button
                                                     onClick={() => handleDeleteOrder(order.id)}
-                                                    className={`p-2 rounded-lg transition-colors ${isDark ? 'text-red-400 hover:bg-red-400/10' : 'text-red-400 hover:bg-red-50'}`}
-                                                    title="Delete Order"
+                                                    className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors"
+                                                    title="Delete Entry"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                                 <Link
                                                     href={`/dashboard/admin/orders/${order.id}`}
-                                                    className={`p-2 rounded-lg inline-flex transition-colors ${isDark ? 'text-slate-400 hover:text-pink-400 hover:bg-pink-400/10' : 'text-gray-400 hover:text-pink-600 hover:bg-pink-50'}`}
+                                                    className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
+                                                    title="Inspect Details"
                                                 >
                                                     <ChevronRight className="w-4 h-4" />
                                                 </Link>
                                             </div>
                                         </td>
-                                    </tr>
+                                    </motion.tr>
                                 ))
                             )}
                         </tbody>

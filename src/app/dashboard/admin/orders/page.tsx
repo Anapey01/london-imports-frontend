@@ -10,7 +10,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import {
-    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square
+    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square, Search
 } from 'lucide-react';
 
 interface Order {
@@ -77,6 +77,7 @@ export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('All');
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [bulkUpdating, setBulkUpdating] = useState(false);
     
@@ -88,7 +89,10 @@ export default function AdminOrdersPage() {
     const loadOrders = useCallback(async () => {
         setLoading(true);
         try {
-            const params: any = { page: currentPage };
+            const params: any = { 
+                page: currentPage,
+                search: searchTerm || undefined
+            };
             if (statusFilter !== 'All' && statusFilter !== 'ALL') {
                 params.status = statusFilter;
             }
@@ -110,7 +114,7 @@ export default function AdminOrdersPage() {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, statusFilter]);
+    }, [currentPage, statusFilter, searchTerm]);
 
     useEffect(() => { loadOrders(); }, [loadOrders]);
 
@@ -235,13 +239,25 @@ export default function AdminOrdersPage() {
                         {orders.length} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
                     </span>
                 </div>
-                <button
-                    onClick={handleClearPending}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
-                >
-                    <X className="w-4 h-4" />
-                    Clear Pending ({statusCounts.PENDING})
-                </button>
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-64">
+                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+                        <input
+                            type="text"
+                            placeholder="Find orders or customers..."
+                            value={searchTerm}
+                            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                            className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                        />
+                    </div>
+                    <button
+                        onClick={handleClearPending}
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
+                    >
+                        <X className="w-4 h-4" />
+                        Clear Pending ({statusCounts.PENDING})
+                    </button>
+                </div>
             </div>
 
             {/* Status Filters */}
@@ -423,6 +439,7 @@ export default function AdminOrdersPage() {
                             <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Total</th>
                             <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Status</th>
                             <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Payment</th>
+                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Quick Action</th>
                             <th className={`px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Actions</th>
                         </tr>
                     </thead>
@@ -486,6 +503,32 @@ export default function AdminOrdersPage() {
                                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPaymentColor(order.payment_status)}`}>
                                         {order.payment_status}
                                     </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    {order.status === 'PROCESSING' && (
+                                        <button 
+                                            onClick={() => adminAPI.updateOrder(order.id, { status: 'IN_TRANSIT' }).then(() => loadOrders())}
+                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                        >
+                                            Ship to Ghana
+                                        </button>
+                                    )}
+                                    {order.status === 'IN_TRANSIT' && (
+                                        <button 
+                                            onClick={() => adminAPI.updateOrder(order.id, { status: 'OUT_FOR_DELIVERY' }).then(() => loadOrders())}
+                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                                        >
+                                            Last Mile
+                                        </button>
+                                    )}
+                                    {order.status === 'OUT_FOR_DELIVERY' && (
+                                        <button 
+                                            onClick={() => adminAPI.updateOrder(order.id, { status: 'DELIVERED' }).then(() => loadOrders())}
+                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                                        >
+                                            Complete
+                                        </button>
+                                    )}
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">

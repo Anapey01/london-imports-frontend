@@ -40,7 +40,13 @@ api.interceptors.request.use((config) => {
       config.url && config.url.startsWith(endpoint)
     );
 
-    if (token && !isPublicEndpoint) {
+    const isGetRequest = config.method?.toLowerCase() === 'get';
+
+    // We send the token if:
+    // 1. We have a token AND
+    // 2. It's NOT a public GET request (to avoid 401s on public pages if token is expired) OR
+    // 3. It's an action (POST/PUT/DELETE) - even within a public namespace like /products/ (e.g. reviews)
+    if (token && (!isPublicEndpoint || !isGetRequest)) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 

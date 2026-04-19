@@ -16,7 +16,9 @@ import {
     Phone, 
     Search,
     Clock,
-    CheckCircle2
+    CheckCircle2,
+    MessageSquare,
+    Package
 } from 'lucide-react';
 
 interface Order {
@@ -34,6 +36,7 @@ interface Order {
     customer_notes: string;
     status: string;
     created_at: string;
+    batch_name: string;
 }
 
 interface APIOrder {
@@ -66,6 +69,7 @@ function mapAPIOrder(order: APIOrder): Order {
         customer_notes: order.customer_notes || '',
         status: order.status || 'PENDING',
         created_at: order.created_at,
+        batch_name: (order as any).batch_name || 'No Batch'
     };
 }
 
@@ -223,6 +227,10 @@ export default function AdminLogisticsPage() {
                                                     {order.status.replace(/_/g, ' ')}
                                                 </span>
                                             </div>
+                                            <div className={`text-[10px] font-bold ${isDark ? 'text-pink-400' : 'text-pink-600'} flex items-center gap-1`}>
+                                                <Package className="w-3 h-3" />
+                                                {order.batch_name}
+                                            </div>
                                             <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
                                                 <Clock className="w-3 h-3" />
                                                 {new Date(order.created_at).toLocaleDateString()}
@@ -236,13 +244,26 @@ export default function AdminLogisticsPage() {
                                             <span className={`text-sm font-semibold truncate max-w-[150px] ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
                                                 {order.customer.name}
                                             </span>
-                                            <a 
-                                                href={`tel:${order.phone}`}
-                                                className="flex items-center gap-1.5 text-xs text-pink-500 hover:text-pink-600 font-medium transition-colors"
-                                            >
-                                                <Phone className="w-3 h-3" />
-                                                {order.phone || 'No phone'}
-                                            </a>
+                                            <div className="flex items-center gap-2">
+                                                <a 
+                                                    href={`tel:${order.phone}`}
+                                                    className="flex items-center gap-1.5 text-xs text-pink-500 hover:text-pink-600 font-medium transition-colors"
+                                                >
+                                                    <Phone className="w-3 h-3" />
+                                                    {order.phone || 'No phone'}
+                                                </a>
+                                                {order.phone && (
+                                                    <a
+                                                        href={`https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${order.customer.name}, this is London's Imports. I'm reaching out regarding your order #${order.order_number || order.id.slice(0, 8)} which is currently ${order.status.replace(/_/g, ' ')}.`)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className={`p-1 rounded-md transition-colors ${isDark ? 'bg-emerald-900/30 text-emerald-400 hover:bg-emerald-800' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
+                                                        title="WhatsApp Direct Contact"
+                                                    >
+                                                        <MessageSquare className="w-3 h-3" />
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
                                     </td>
 
