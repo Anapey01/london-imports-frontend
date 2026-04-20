@@ -110,11 +110,17 @@ export default function AdminDashboardPage() {
     if (!data) return null;
 
     // Logic for filtering recent transactions
-    const filteredOrders = data.recentOrders.filter(order => 
-        order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredOrders = (data?.recentOrders || []).filter(order => {
+        const query = searchTerm.toLowerCase();
+        const customerName = order.customer?.name || order.customer || '';
+        const customerEmail = order.customer?.email || '';
+        
+        return (
+            order.order_number?.toLowerCase().includes(query) ||
+            (typeof customerName === 'string' && customerName.toLowerCase().includes(query)) ||
+            (typeof customerEmail === 'string' && customerEmail.toLowerCase().includes(query))
+        );
+    });
 
     return (
         <div className="space-y-10 pb-32">
@@ -242,8 +248,8 @@ export default function AdminDashboardPage() {
                                                     {order.customer.name?.[0] || 'U'}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-black">{order.customer.name || 'Anonymous User'}</p>
-                                                    <p className="text-[10px] font-medium opacity-40">{order.customer.email}</p>
+                                                    <p className="text-sm font-black">{order.customer?.name || (typeof order.customer === 'string' ? order.customer : 'Anonymous User')}</p>
+                                                    <p className="text-[10px] font-medium opacity-40">{order.customer?.email || ''}</p>
                                                 </div>
                                             </div>
                                         </td>

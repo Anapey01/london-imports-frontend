@@ -53,13 +53,17 @@ interface APIOrder {
 }
 
 function mapAPIOrder(order: APIOrder): Order {
+    const customerObj = typeof order.customer === 'object' && order.customer !== null 
+        ? order.customer 
+        : { name: String(order.customer || 'Anonymous User'), email: '', avatar: '' };
+
     return {
         id: order.id,
         order_number: order.order_number,
         customer: {
-            name: order.customer.name,
-            email: order.customer.email,
-            avatar: order.customer.avatar
+            name: customerObj.name,
+            email: customerObj.email,
+            avatar: customerObj.avatar
         },
         items_count: order.items_count || (order.items as unknown[])?.length || 0,
         total_amount: typeof order.total === 'string' ? parseFloat(order.total) : (order.total || 0),
