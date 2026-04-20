@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import Link from 'next/link';
@@ -46,13 +46,14 @@ export default function AdminDashboardPage() {
     const [refreshing, setRefreshing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [chartRange, setChartRange] = useState('7d');
+    const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
     const loadData = async () => {
         try {
             const [statsRes, analyticsRes, ordersRes] = await Promise.all([
                 adminAPI.stats(),
                 adminAPI.analytics({ period: chartRange }),
-                adminAPI.orders({ limit: 8 })
+                adminAPI.orders({ limit: 20 })
             ]);
 
             setData({
@@ -69,7 +70,14 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         loadData();
-    }, []);
+        
+        // Operational Heartbeat: Auto-refresh every 60 seconds
+        const heartbeat = setInterval(() => {
+            loadData();
+        }, 60000);
+
+        return () => clearInterval(heartbeat);
+    }, [chartRange]);
 
     const handleRangeChange = async (newRange: string) => {
         setChartRange(newRange);
@@ -126,6 +134,19 @@ export default function AdminDashboardPage() {
     }
 
     if (!data) return null;
+
+    // Temporal Intelligence Helpers
+    const isRecent = (dateStr: string) => {
+        const orderDate = new Date(dateStr).getTime();
+        const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+        return orderDate > twoHoursAgo;
+    };
+
+    const isToday = (dateStr: string) => {
+        const orderDate = new Date(dateStr).toDateString();
+        const today = new Date().toDateString();
+        return orderDate === today;
+    };
 
     // Logic for filtering recent transactions
     const filteredOrders = (data?.recentOrders || []).filter(order => {
@@ -251,17 +272,55 @@ export default function AdminDashboardPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredOrders.map((order, idx) => (
-                                    <motion.tr 
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: idx * 0.05 }}
-                                        key={order.id} 
-                                        className={`group transition-colors ${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20'}`}
-                                    >
-                                        <td className="px-8 py-6">
-                                            <span className="font-mono text-sm font-black opacity-60">#{order.order_number}</span>
-                                        </td>
+                                filteredOrders.map((order, idx) => {
+                                    const fresh = isRecent(order.created_at);
+                                    const today = isToday(order.created_at);
+                                    const isExpanded = expandedOrder === order.id;
+                                    
+                                    // Detect transition from 'Today' to 'Earlier'
+                                    const prevOrder = idx > 0 ? filteredOrders[idx-1] : null;
+                                    const showDivider = prevOrder && isToday(prevOrder.created_at) && !isToday(order.created_at);
+                                    const isFirstToday = idx === 0 && isToday(order.created_at);
+
+                                    return (
+                                        <React.Fragment key={order.id}>
+                                            {(isFirstToday || showDivider) && (
+                                                <tr className={isDark ? 'bg-slate-800/20' : 'bg-primary-surface/10'}>
+                                                    <td colSpan={6} className="px-8 py-3">
+                                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
+                                                            {isFirstToday ? 'Current Cycle (Today)' : 'Archived (Earlier)'}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                            <motion.tr 
+                                                layout
+                                                initial={{ opacity: 0, x: fresh ? -20 : 0 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.05, type: 'spring', stiffness: 100 }}
+                                                onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                                                className={`group cursor-pointer transition-all ${
+                                                    isExpanded 
+                                                    ? (isDark ? 'bg-slate-800' : 'bg-primary-surface/10')
+                                                    : (fresh 
+                                                        ? (isDark ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-emerald-50 hover:bg-emerald-100/50') 
+                                                        : (today ? (isDark ? 'bg-slate-800/40 hover:bg-slate-800' : 'bg-primary-surface/20 hover:bg-primary-surface/40') 
+                                                                 : (isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20')))
+                                                }`}
+                                            >
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={`font-mono text-[13px] font-black tracking-tight ${fresh ? 'text-emerald-600' : 'opacity-80'}`}>
+                                                            #{order.order_number}
+                                                        </span>
+                                                        {fresh && (
+                                                            <div className="relative flex h-2 w-2">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black opacity-40 border border-primary-surface">
@@ -288,28 +347,89 @@ export default function AdminDashboardPage() {
                                             </span>
                                         </td>
                                         <td className="px-8 py-6 text-right">
-                                            <span className="text-sm font-black">₵{parseFloat(order.total).toLocaleString()}</span>
-                                        </td>
-                                        <td className="px-8 py-6 text-right">
-                                            <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
-                                                <button
-                                                    onClick={() => handleDeleteOrder(order.id)}
-                                                    className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors"
-                                                    title="Delete Entry"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                                <Link
-                                                    href={`/dashboard/admin/orders/${order.id}`}
-                                                    className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
-                                                    title="Inspect Details"
-                                                >
-                                                    <ChevronRight className="w-4 h-4" />
-                                                </Link>
+                                            <div className="flex justify-end items-center gap-3">
+                                                <div className={`p-2 rounded-lg transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                                                    <ChevronRight className="w-4 h-4 opacity-30" />
+                                                </div>
+                                                <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
+                                                    {fresh && (
+                                                        <span className="px-2 py-1 bg-emerald-500 text-white text-[8px] font-black rounded-lg uppercase tracking-tighter self-center animate-bounce mr-2">
+                                                            New Hot
+                                                        </span>
+                                                    )}
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
+                                                        className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors"
+                                                        title="Delete Entry"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                    <Link
+                                                        href={`/dashboard/admin/orders/${order.id}`}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
+                                                        title="Inspect Details"
+                                                    >
+                                                        <LayoutDashboard className="w-4 h-4" />
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </td>
-                                    </motion.tr>
-                                ))
+                                            </motion.tr>
+                                            <AnimatePresence>
+                                                {isExpanded && (
+                                                    <motion.tr
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className={isDark ? 'bg-slate-800' : 'bg-primary-surface/5'}
+                                                    >
+                                                        <td colSpan={6} className="px-8 py-8 border-t border-primary-surface/10">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4">Community WhatsApp Link</p>
+                                                                    <div className="flex items-center gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
+                                                                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                                                                            <Users className="w-5 h-5" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-sm font-black text-emerald-600">{order.customer.name}</p>
+                                                                            <p className="text-xs font-mono font-bold tracking-tight">{order.phone || 'No phone provided'}</p>
+                                                                        </div>
+                                                                        <button 
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                navigator.clipboard.writeText(order.phone || '');
+                                                                                alert('Phone copied!');
+                                                                            }}
+                                                                            className="ml-auto p-2 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase"
+                                                                        >
+                                                                            Copy
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4">Item Manifest</p>
+                                                                    <div className="space-y-3">
+                                                                        {order.items_summary?.map((item: any, i: number) => (
+                                                                            <div key={i} className="flex justify-between items-center text-sm font-bold p-3 bg-nuclear-text/5 rounded-xl border border-nuclear-text/10">
+                                                                                <span className="flex items-center gap-2">
+                                                                                    <span className="w-5 h-5 rounded-md bg-nuclear-text text-white flex items-center justify-center text-[10px]">{item.quantity}</span>
+                                                                                    {item.name}
+                                                                                </span>
+                                                                                <span className="opacity-60">₵{item.price.toLocaleString()}</span>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </motion.tr>
+                                                )}
+                                            </AnimatePresence>
+                                        </React.Fragment>
+                                    );
+                                })
                             )}
                         </tbody>
                     </table>
