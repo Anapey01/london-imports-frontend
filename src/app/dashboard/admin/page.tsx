@@ -56,10 +56,22 @@ export default function AdminDashboardPage() {
                 adminAPI.orders({ limit: 20 })
             ]);
 
+            // Strict Array Enforcement (Structural Immunity)
+            const rawOrders = ordersRes.data;
+            let validatedOrders: any[] = [];
+            
+            if (rawOrders) {
+                if (Array.isArray(rawOrders.results)) {
+                    validatedOrders = rawOrders.results;
+                } else if (Array.isArray(rawOrders)) {
+                    validatedOrders = rawOrders;
+                }
+            }
+
             setData({
                 stats: statsRes.data,
                 analytics: analyticsRes.data,
-                recentOrders: ordersRes.data.results || ordersRes.data || []
+                recentOrders: validatedOrders
             });
         } catch (err) {
             console.error('Failed to load dashboard data:', err);
@@ -143,21 +155,22 @@ export default function AdminDashboardPage() {
     };
 
     const isToday = (dateStr: string) => {
+        if (!dateStr) return false;
         const orderDate = new Date(dateStr).toDateString();
         const today = new Date().toDateString();
         return orderDate === today;
     };
 
-    // Logic for filtering recent transactions
-    const filteredOrders = (data?.recentOrders || []).filter(order => {
+    // Logic for filtering recent transactions - Hardened
+    const recentOrdersArray = Array.isArray(data?.recentOrders) ? data.recentOrders : [];
+    
+    const filteredOrders = recentOrdersArray.filter(order => {
         const query = searchTerm.toLowerCase();
-        const customerName = order.customer?.name || order.customer || '';
-        const customerEmail = order.customer?.email || '';
-        
         return (
-            order.order_number?.toLowerCase().includes(query) ||
-            (typeof customerName === 'string' && customerName.toLowerCase().includes(query)) ||
-            (typeof customerEmail === 'string' && customerEmail.toLowerCase().includes(query))
+            order?.order_number?.toString().toLowerCase().includes(query) ||
+            order?.customer?.name?.toLowerCase().includes(query) ||
+            order?.customer?.email?.toLowerCase().includes(query) ||
+            order?.phone?.toLowerCase().includes(query)
         );
     });
 
@@ -327,8 +340,8 @@ export default function AdminDashboardPage() {
                                                     {order.customer.name?.[0] || 'U'}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-black">{order.customer?.name || (typeof order.customer === 'string' ? order.customer : 'Anonymous User')}</p>
-                                                    <p className="text-[10px] font-medium opacity-40">{order.customer?.email || ''}</p>
+                                                    <p className="text-sm font-black">{order?.customer?.name || (typeof order?.customer === 'string' ? order.customer : 'Anonymous User')}</p>
+                                                    <p className="text-[10px] font-medium opacity-40">{order?.customer?.email || ''}</p>
                                                 </div>
                                             </div>
                                         </td>
