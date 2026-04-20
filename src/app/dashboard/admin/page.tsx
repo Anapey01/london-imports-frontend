@@ -43,13 +43,15 @@ export default function AdminDashboardPage() {
     const isDark = theme === 'dark';
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [chartRange, setChartRange] = useState('7d');
 
     const loadData = async () => {
         try {
             const [statsRes, analyticsRes, ordersRes] = await Promise.all([
                 adminAPI.stats(),
-                adminAPI.analytics({ period: '7d' }),
+                adminAPI.analytics({ period: chartRange }),
                 adminAPI.orders({ limit: 8 })
             ]);
 
@@ -68,6 +70,22 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         loadData();
     }, []);
+
+    const handleRangeChange = async (newRange: string) => {
+        setChartRange(newRange);
+        setRefreshing(true);
+        try {
+            const res = await adminAPI.analytics({ period: newRange });
+            setData(prev => prev ? {
+                ...prev,
+                analytics: res.data
+            } : null);
+        } catch (err) {
+            console.error('Failed to refresh analytics:', err);
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     const handleDeleteOrder = async (orderId: string) => {
         if (!window.confirm('Delete this order record permanently?')) return;
@@ -178,6 +196,8 @@ export default function AdminDashboardPage() {
                     <PerformanceChart 
                         isDark={isDark} 
                         data={data.analytics.revenueChart} 
+                        currentRange={chartRange}
+                        onRangeChange={handleRangeChange}
                     />
                 </div>
 

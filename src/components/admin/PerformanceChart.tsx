@@ -16,10 +16,12 @@ interface PerformanceChartProps {
         day: string;
         value: number;
     }[];
+    currentRange: string;
+    onRangeChange: (range: string) => void;
     isDark: boolean;
 }
 
-export default function PerformanceChart({ data, isDark }: PerformanceChartProps) {
+export default function PerformanceChart({ data, currentRange, onRangeChange, isDark }: PerformanceChartProps) {
     return (
         <div className={`p-8 rounded-[2.5rem] border ${
             isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-primary-surface shadow-sm'
@@ -30,18 +32,24 @@ export default function PerformanceChart({ data, isDark }: PerformanceChartProps
                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Daily transactional volume</p>
                 </div>
                 <div className="flex gap-2">
-                    {['7D', '30D', 'ALL'].map((p) => (
-                        <button 
-                            key={p}
-                            className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
-                                p === '7D' 
-                                ? 'bg-emerald-600 text-white' 
-                                : `border border-primary-surface ${isDark ? 'text-slate-400' : 'text-nuclear-text'} hover:bg-primary-surface/40`
-                            }`}
-                        >
-                            {p}
-                        </button>
-                    ))}
+                    {['7D', '30D', 'ALL'].map((p) => {
+                        const rangeValue = p.toLowerCase();
+                        const isActive = currentRange === rangeValue;
+                        
+                        return (
+                            <button 
+                                key={p}
+                                onClick={() => onRangeChange(rangeValue)}
+                                className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
+                                    isActive 
+                                    ? 'bg-emerald-600 text-white' 
+                                    : `border border-primary-surface ${isDark ? 'text-slate-400' : 'text-nuclear-text'} hover:bg-primary-surface/40`
+                                }`}
+                            >
+                                {p}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
