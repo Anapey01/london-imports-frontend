@@ -269,12 +269,12 @@ export default function AdminDashboardPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-primary-surface/10">
-                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Order Ref</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Customer Identity</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Origin</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Protocol Status</th>
-                                <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest opacity-30">Net Amount</th>
-                                <th className="px-8 py-5"></th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Order Ref</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Customer Identity</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30 hidden md:table-cell">Origin</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30 hidden md:table-cell">Protocol Status</th>
+                                <th className="px-4 md:px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest opacity-30">Net Amount</th>
+                                <th className="px-4 md:px-8 py-5"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-primary-surface/10">
@@ -321,10 +321,10 @@ export default function AdminDashboardPage() {
                                                                  : (isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20')))
                                                 }`}
                                             >
-                                                <td className="px-8 py-6">
+                                                <td className="px-4 md:px-8 py-6">
                                                     <div className="flex items-center gap-3">
                                                         <span className={`font-mono text-[13px] font-black tracking-tight ${fresh ? 'text-emerald-600' : 'opacity-80'}`}>
-                                                            #{order.order_number}
+                                                            #{order?.order_number}
                                                         </span>
                                                         {fresh && (
                                                             <div className="relative flex h-2 w-2">
@@ -334,60 +334,58 @@ export default function AdminDashboardPage() {
                                                         )}
                                                     </div>
                                                 </td>
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black opacity-40 border border-primary-surface">
-                                                    {order.customer.name?.[0] || 'U'}
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-black">{order?.customer?.name || (typeof order?.customer === 'string' ? order.customer : 'Anonymous User')}</p>
-                                                    <p className="text-[10px] font-medium opacity-40">{order?.customer?.email || ''}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center gap-2 text-[11px] font-bold">
-                                                <Clock className="w-3.5 h-3.5 opacity-30" />
-                                                {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}>
-                                                {order.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
-                                                 order.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
-                                                 <Clock className="w-3 h-3" />}
-                                                {order.status.replace('_', ' ')}
-                                            </span>
-                                        </td>
-                                        <td className="px-8 py-6 text-right">
-                                            <div className="flex justify-end items-center gap-3">
-                                                <div className={`p-2 rounded-lg transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
-                                                    <ChevronRight className="w-4 h-4 opacity-30" />
-                                                </div>
-                                                <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
-                                                    {fresh && (
-                                                        <span className="px-2 py-1 bg-emerald-500 text-white text-[8px] font-black rounded-lg uppercase tracking-tighter self-center animate-bounce mr-2">
-                                                            New Hot
-                                                        </span>
-                                                    )}
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
-                                                        className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors"
-                                                        title="Delete Entry"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                    <Link
-                                                        href={`/dashboard/admin/orders/${order.id}`}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
-                                                        title="Inspect Details"
-                                                    >
-                                                        <LayoutDashboard className="w-4 h-4" />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </td>
+                                                <td className="px-4 md:px-8 py-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black opacity-40 border border-primary-surface shrink-0">
+                                                            {order?.customer?.name?.[0] || 'U'}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm font-black truncate">{order?.customer?.name || (typeof order?.customer === 'string' ? order.customer : 'Anonymous')}</p>
+                                                            <p className="text-[10px] font-medium opacity-40 truncate hidden sm:block">{order?.customer?.email || ''}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
+                                                    <div className="flex items-center gap-2 text-[11px] font-bold">
+                                                        <Clock className="w-3.5 h-3.5 opacity-30" />
+                                                        {new Date(order?.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
+                                                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order?.status)}`}>
+                                                        {order?.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
+                                                         order?.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
+                                                         <Clock className="w-3 h-3" />}
+                                                        {order?.status?.replace('_', ' ')}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 md:px-8 py-6 text-right">
+                                                    <span className="text-sm font-black whitespace-nowrap">₵{parseFloat(order?.total).toLocaleString()}</span>
+                                                </td>
+                                                <td className="px-4 md:px-8 py-6 text-right">
+                                                    <div className="flex justify-end items-center gap-3">
+                                                        <div className={`p-2 rounded-lg transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                                                            <ChevronRight className="w-4 h-4 opacity-30" />
+                                                        </div>
+                                                        <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
+                                                                className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors"
+                                                                title="Delete Entry"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                            <Link
+                                                                href={`/dashboard/admin/orders/${order.id}`}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
+                                                                title="Inspect Details"
+                                                            >
+                                                                <LayoutDashboard className="w-4 h-4" />
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                             </motion.tr>
                                             <AnimatePresence>
                                                 {isExpanded && (
@@ -397,17 +395,17 @@ export default function AdminDashboardPage() {
                                                         exit={{ opacity: 0, height: 0 }}
                                                         className={isDark ? 'bg-slate-800' : 'bg-primary-surface/5'}
                                                     >
-                                                        <td colSpan={6} className="px-8 py-8 border-t border-primary-surface/10">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                                        <td colSpan={6} className="px-4 md:px-8 py-8 border-t border-primary-surface/10">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                                                                 <div>
                                                                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4">Community WhatsApp Link</p>
                                                                     <div className="flex items-center gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
-                                                                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                                                                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
                                                                             <Users className="w-5 h-5" />
                                                                         </div>
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-emerald-600">{order.customer.name}</p>
-                                                                            <p className="text-xs font-mono font-bold tracking-tight">{order.phone || 'No phone provided'}</p>
+                                                                        <div className="min-w-0">
+                                                                            <p className="text-sm font-black text-emerald-600 truncate">{order?.customer?.name}</p>
+                                                                            <p className="text-xs font-mono font-bold tracking-tight truncate">{order.phone || 'No phone'}</p>
                                                                         </div>
                                                                         <button 
                                                                             onClick={(e) => {
@@ -415,7 +413,7 @@ export default function AdminDashboardPage() {
                                                                                 navigator.clipboard.writeText(order.phone || '');
                                                                                 alert('Phone copied!');
                                                                             }}
-                                                                            className="ml-auto p-2 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase"
+                                                                            className="ml-auto p-2 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase whitespace-nowrap"
                                                                         >
                                                                             Copy
                                                                         </button>
