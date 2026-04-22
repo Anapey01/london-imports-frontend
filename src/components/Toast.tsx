@@ -15,7 +15,8 @@ interface Toast {
 }
 
 interface ToastContextType {
-    showToast: (message: string, type?: AlertType) => void;
+    showToast: (message: string, type?: AlertType) => string; // Returns ID
+    removeToast: (id: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -34,6 +35,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const showToast = useCallback((message: string, type: AlertType = 'success') => {
         const id = Math.random().toString(36).substr(2, 9);
         setToasts(prev => [...prev, { id, message, type }]);
+        return id;
     }, []);
 
     const removeToast = useCallback((id: string) => {
@@ -41,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <ToastContext.Provider value={{ showToast }}>
+        <ToastContext.Provider value={{ showToast, removeToast }}>
             {children}
 
             {/* Sovereign Aura Alert Container - Improved for Mobile (Bottom Center) */}

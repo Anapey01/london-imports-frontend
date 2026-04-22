@@ -163,7 +163,7 @@ function FormattedDescription({ text }: { text: string }) {
 
 export default function ProductDetailClient({ initialProduct, slug }: ProductDetailClientProps) {
     const router = useRouter();
-    const { showToast } = useToast();
+    const { showToast, removeToast } = useToast();
     const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
     const [isBuyingNow, setIsBuyingNow] = useState(false);
@@ -328,11 +328,12 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleDownloadFlyer = async () => {
         if (!product) return;
         setIsDownloading(true);
-        const flyerId = Math.random().toString(36).substr(2, 9);
-        showToast('Generating promotional flyer...', 'processing'); // Processing aura
+        let processingToastId: string | null = null;
         
         try {
             // THE SOURCE OF TRUTH: Targeted dynamic OG route for this product via robust API
+            processingToastId = showToast('Generating promotional flyer...', 'processing'); // Processing aura
+            
             const flyerUrl = `${window.location.origin}/api/og?slug=${product.slug}&t=${Date.now()}`;
             let response = await fetch(flyerUrl);
             
@@ -385,6 +386,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             window.URL.revokeObjectURL(url);
             window.URL.revokeObjectURL(svgUrl); // Clean up original SVG url
             
+            if (processingToastId) removeToast(processingToastId);
             showToast('Flyer ready for sharing!', 'success');
             
             trackEvent('file_download', {
@@ -402,6 +404,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 showToast('Failed to generate flyer. Please try again.', 'error');
             }
         } finally {
+            if (processingToastId) removeToast(processingToastId);
             setIsDownloading(false);
         }
     };
