@@ -37,7 +37,7 @@ const shadows = {
     processing: 'shadow-[0_0_40px_-10px_rgba(255,255,255,0.05)]',
 };
 
-export default function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
+export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
     useEffect(() => {
         if (type !== 'processing') {
             const timer = setTimeout(() => onClose(id), 5000);
