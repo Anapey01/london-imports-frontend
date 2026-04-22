@@ -394,7 +394,13 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             });
         } catch (error) {
             console.error('Flyer download failed', error);
-            showToast('Failed to generate flyer. Please try again.', 'error');
+            // If it's a render error, one final attempt without the main image (Small/Simple Flyer)
+            if (error instanceof Error && error.message.includes('render')) {
+                showToast('Image too large. Generating compact flyer...', 'processing');
+                window.open(`${window.location.origin}/api/og?slug=${product.slug}&image=none`, '_blank');
+            } else {
+                showToast('Failed to generate flyer. Please try again.', 'error');
+            }
         } finally {
             setIsDownloading(false);
         }

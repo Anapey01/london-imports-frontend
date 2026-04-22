@@ -6,6 +6,19 @@ export const runtime = 'edge';
 export const revalidate = 3600;
 
 /**
+ * XML Escape helper to prevent malformed SVG structure
+ */
+function xmlEscape(str: string | null | undefined): string {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+/**
  * Helper to fetch image and return as Base64 data URI for SVG inlining.
  * This bypasses CORS issues during client-side Canvas rendering.
  */
@@ -104,6 +117,12 @@ export async function GET(request: Request) {
     lines.push(currentLine);
     const displayLines = lines.slice(0, 3); // Max 3 lines
 
+    // --- SANITIZE INPUTS FOR XML SAFETY ---
+    const sTitle = xmlEscape(title);
+    const sType = xmlEscape(type);
+    const sPrice = xmlEscape(price);
+    const sBrand = "London&apos;s Imports Ghana"; // Pre-escaped literal
+
     const svgFlyer = `
       <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -131,21 +150,21 @@ export async function GET(request: Request) {
         <line x1="600" y1="0" x2="600" y2="630" stroke="#E5E7EB" stroke-width="2"/>
         
         <!-- Type / Category -->
-        <text x="660" y="80" font-family="sans-serif" font-weight="700" font-size="14" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
+        <text x="660" y="80" font-family="sans-serif" font-weight="700" font-size="14" fill="#9CA3AF" letter-spacing="4">${xmlEscape(sType.toUpperCase())}</text>
         
         <!-- Title (Wrapped via TSPAN) -->
         <text x="660" y="160" font-family="sans-serif" font-weight="800" font-size="48" fill="#111827">
-           ${displayLines.map((line, i) => `<tspan x="660" dy="${i === 0 ? 0 : 58}">${line}</tspan>`).join('')}
+           ${displayLines.map((line, i) => `<tspan x="660" dy="${i === 0 ? 0 : 58}">${xmlEscape(line)}</tspan>`).join('')}
         </text>
         
         <!-- Price Tag (Shifted down for wrapped title) -->
-        ${price ? `
+        ${sPrice ? `
           <rect x="660" y="360" width="280" height="90" rx="4" fill="#FDE68A"/>
-          <text x="800" y="420" font-family="sans-serif" font-weight="800" font-size="52" fill="#000000" text-anchor="middle">${price}</text>
+          <text x="800" y="420" font-family="sans-serif" font-weight="800" font-size="52" fill="#000000" text-anchor="middle">${sPrice}</text>
         ` : ''}
         
         <!-- Footer Branding -->
-        <text x="660" y="560" font-family="sans-serif" font-style="italic" font-size="22" fill="#111827">London's Imports Ghana</text>
+        <text x="660" y="560" font-family="sans-serif" font-style="italic" font-size="22" fill="#111827">${sBrand}</text>
         <line x1="910" y1="552" x2="950" y2="552" stroke="#D1D5DB" stroke-width="1"/>
         <text x="970" y="560" font-family="sans-serif" font-size="16" fill="#6B7280">londonsimports.com</text>
       </svg>
