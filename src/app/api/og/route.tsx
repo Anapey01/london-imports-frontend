@@ -12,16 +12,25 @@ export const revalidate = 3600;
 async function getBase64Image(url: string | null): Promise<string | null> {
     if (!url) return null;
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: AbortSignal.timeout(10000) }); // 10s timeout
         if (!response.ok) return null;
         
         const arrayBuffer = await response.arrayBuffer();
         const contentType = response.headers.get('content-type') || 'image/jpeg';
         
-        // Use Buffer-style approach for robust binary-to-base64 on Edge/Node
-        const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(arrayBuffer))
-        );
+        // --- MEMORY-SAFE BASE64 ENCODING ---
+        // Prevents "Maximum call stack size exceeded" on large images
+        const bytes = new Uint8Array(arrayBuffer);
+        let binary = '';
+        const len = bytes.byteLength;
+        const CHUNK_SIZE = 8192; // Process in chunks to be efficient
+        
+        for (let i = 0; i < len; i += CHUNK_SIZE) {
+            const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+            binary += String.fromCharCode.apply(null, chunk as any);
+        }
+        
+        const base64String = btoa(binary);
         return `data:${contentType};base64,${base64String}`;
     } catch (e) {
         console.error(`Base64 conversion failed for ${url}:`, e);

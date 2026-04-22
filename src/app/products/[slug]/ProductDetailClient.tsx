@@ -352,10 +352,12 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             await new Promise((resolve, reject) => {
                 img.onload = resolve;
                 img.onerror = (e) => {
-                    console.error("Flyer SVG image load failed:", e);
+                    console.error("Flyer SVG image load failed. Check if SVG is valid:", e);
+                    // Critical: If it fails, log the first 100 bytes of SVG for debugging
+                    blob.text().then(t => console.debug("SVG Snapshot:", t.substring(0, 200)));
                     reject(new Error('Failed to render flyer image.'));
                 };
-                img.crossOrigin = 'anonymous'; // Prevent tainted canvas issues
+                // img.crossOrigin = 'anonymous'; // REMOVED: Redundant for local Blob URIs and causes load failures on some browsers
                 img.src = svgUrl;
             });
 
