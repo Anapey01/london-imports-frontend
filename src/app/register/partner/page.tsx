@@ -6,10 +6,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { authAPI } from '@/lib/api';
 import Link from 'next/link';
 import { ArrowLeft, User, Mail, Phone, Lock, Briefcase, CreditCard, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import { useTheme } from '@/providers/ThemeProvider';
 
 export default function PartnerRegisterPage() {
+    const { showToast } = useToast();
     const router = useRouter();
     const { login } = useAuthStore();
     const { theme } = useTheme();
@@ -54,7 +55,7 @@ export default function PartnerRegisterPage() {
             });
 
             await login(formData.email, formData.password);
-            toast.success('Partner Account Created!');
+            showToast('Partner Account Created!', 'success');
             router.push('/dashboard/vendor');
 
         } catch (error: unknown) {

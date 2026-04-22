@@ -9,11 +9,12 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import Link from 'next/link';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 
 export default function AdminSignupPage() {
-    const { theme } = useTheme();
+    const { showToast } = useToast();
     const router = useRouter();
+    const { theme } = useTheme();
     const isDark = theme === 'dark';
 
     const [formData, setFormData] = useState({
@@ -39,7 +40,7 @@ export default function AdminSignupPage() {
 
         try {
             await authAPI.registerAdmin(formData);
-            toast.success('Admin account created! Please login.');
+            showToast('Admin account created! Please login.', 'success');
             router.push('/admin/login');
         } catch (err: unknown) {
             const errorRes = err as { response?: { status?: number; data?: { detail?: string; message?: string } } };

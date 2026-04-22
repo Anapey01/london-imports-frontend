@@ -7,11 +7,12 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { vendorsAPI } from '@/lib/api';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import Image from 'next/image';
 import { Store, Upload, Save, User, Palette, Image as ImageIcon } from 'lucide-react';
 
 export default function VendorSettingsPage() {
+    const { showToast } = useToast();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +72,7 @@ export default function VendorSettingsPage() {
             }
         } catch (error) {
             console.error('Failed to load profile', error);
-            toast.error('Failed to load settings');
+            showToast('Failed to load settings', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -115,13 +116,13 @@ export default function VendorSettingsPage() {
 
             await vendorsAPI.updateProfile(data);
 
-            toast.success('Store settings saved!');
+            showToast('Store settings saved!', 'success');
             // Refresh to ensure sync
             loadVendorProfile();
 
         } catch (error) {
             console.error('Save failed', error);
-            toast.error('Failed to save changes');
+            showToast('Failed to save changes', 'error');
         } finally {
             setIsSaving(false);
         }

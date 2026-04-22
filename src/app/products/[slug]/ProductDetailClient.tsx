@@ -16,7 +16,7 @@ import VariantSelector from '@/components/product/VariantSelector';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import { formatPrice } from '@/lib/format';
 import { trackViewItem, trackAddToCart, trackWhatsAppContact, trackEvent, trackProductAffinity } from '@/lib/analytics';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import { GroupBuyProgress } from '@/components/GroupBuyProgress';
 import { siteConfig } from '@/config/site';
 import { ShoppingBag, Share2, Phone, Download } from 'lucide-react';
@@ -89,6 +89,7 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ initialProduct, slug }: ProductDetailClientProps) {
     const router = useRouter();
+    const { showToast } = useToast();
     const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
     const [isBuyingNow, setIsBuyingNow] = useState(false);
@@ -253,7 +254,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleDownloadFlyer = async () => {
         if (!product) return;
         setIsDownloading(true);
-        const toastId = toast.loading('Generating promotional flyer...');
+        const flyerId = Math.random().toString(36).substr(2, 9);
+        showToast('Generating promotional flyer...', 'processing'); // Processing aura
+        
         try {
             // THE SOURCE OF TRUTH: Targeted dynamic OG route for this product via robust API
             const flyerUrl = `${window.location.origin}/api/og?slug=${product.slug}&t=${Date.now()}`;
@@ -302,7 +305,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             window.URL.revokeObjectURL(url);
             window.URL.revokeObjectURL(svgUrl); // Clean up original SVG url
             
-            toast.success('Flyer ready for sharing!', { id: toastId });
+            showToast('Flyer ready for sharing!', 'success');
             
             trackEvent('file_download', {
                 file_name: `${product.slug}-flyer`,
@@ -311,7 +314,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             });
         } catch (error) {
             console.error('Flyer download failed', error);
-            toast.error('Failed to generate flyer. Please try again or contact concierge.', { id: toastId });
+            showToast('Failed to generate flyer. Please try again.', 'error');
         } finally {
             setIsDownloading(false);
         }
@@ -340,11 +343,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleAddToCart = async () => {
         // Validation for variants
         if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
-            toast.error('Please select a size');
+            showToast('Please select a size', 'error');
             return;
         }
         if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
-            toast.error('Please select a color');
+            showToast('Please select a color', 'error');
             return;
         }
 
@@ -352,7 +355,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         try {
             await addToCart(product, quantity, selectedSize, selectedColor, selectedVariant || undefined);
             trackAddToCart(product, quantity);
-            toast.success(`Added ${quantity}x ${product.name} to cart`);
+            showToast(`Added ${quantity}x ${product.name} to cart`, 'success');
             router.push('/cart');
         } catch (e: unknown) {
             console.error("Add to Cart Failed:", e);
@@ -362,7 +365,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 console.error("Backend Error Details:", axiosError.response?.data);
                 errorMessage = axiosError.response?.data?.error || errorMessage;
             }
-            toast.error(errorMessage);
+            showToast(errorMessage, 'error');
         } finally {
             setIsAdding(false);
         }
@@ -384,7 +387,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             // First add to cart, then go directly to checkout
             await addToCart(product, quantity, selectedSize, selectedColor, selectedVariant || undefined);
             trackAddToCart(product, quantity);
-            toast.success(`Proceeding to checkout`);
+            showToast(`Proceeding to checkout`, 'success');
             
             // Encode selection into URL for checkout to identify the focus product
             const params = new URLSearchParams({
@@ -398,7 +401,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 const axiosError = e as { response?: { data?: { error?: string } } };
                 errorMessage = axiosError.response?.data?.error || errorMessage;
             }
-            toast.error(errorMessage);
+            showToast(errorMessage, 'error');
         } finally {
             setIsBuyingNow(false);
         }
@@ -431,7 +434,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 trackEvent('product_share', { item_id: product.id, item_name: product.name, method: 'native_share' });
             } else {
                 await navigator.clipboard.writeText(window.location.href);
-                toast.success('Link copied to clipboard');
+                showToast('Link copied to clipboard', 'success');
                 trackEvent('product_share', { item_id: product.id, item_name: product.name, method: 'copy_link' });
             }
         } catch (err) {

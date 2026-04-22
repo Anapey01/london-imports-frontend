@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { productsAPI } from '@/lib/api';
 import StarRating from '@/components/StarRating';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import { 
     MessageSquare, 
     User, 
@@ -32,6 +32,7 @@ interface ProductReviewsProps {
 
 export default function ProductReviews({ productSlug, initialReviews, rating, ratingCount }: ProductReviewsProps) {
     const { isAuthenticated } = useAuthStore();
+    const { showToast } = useToast();
     const [reviews, setReviews] = useState<Review[]>(initialReviews);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showForm, setShowForm] = useState(false);
@@ -59,7 +60,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!isAuthenticated) {
-            toast.error('Please login to leave a review');
+            showToast('Please login to leave a review', 'error');
             return;
         }
 
@@ -77,11 +78,11 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
             localStorage.removeItem(`review_draft_${productSlug}`);
             setNewRating(5);
             setShowForm(false);
-            toast.success('Review submitted! Thank you for your feedback.');
+            showToast('Review submitted! Thank you for your feedback.', 'success');
         } catch (error: unknown) {
             const err = error as { response?: { data?: { detail?: string; non_field_errors?: string[] } } };
             const message = err.response?.data?.detail || err.response?.data?.non_field_errors?.[0] || 'Failed to submit review. You may have already reviewed this product.';
-            toast.error(message);
+            showToast(message, 'error');
         } finally {
             setIsSubmitting(false);
         }
@@ -107,7 +108,7 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
 
     const handleShareClick = () => {
         if (!isAuthenticated) {
-            toast.error('Please login to share your experience');
+            showToast('Please login to share your experience', 'error');
             // Allow them to see where they would type
             setShowForm(true); 
             return;

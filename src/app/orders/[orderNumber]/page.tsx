@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import toast from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import { ordersAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
@@ -19,6 +19,7 @@ import { siteConfig } from '@/config/site';
 import { ArrowLeft, Package, Receipt, Truck, ShieldCheck } from 'lucide-react';
 
 export default function OrderDetailPage() {
+    const { showToast } = useToast();
     const params = useParams();
     const orderNumber = params.orderNumber as string;
     const { isAuthenticated } = useAuthStore();
@@ -38,15 +39,15 @@ export default function OrderDetailPage() {
         if (!orderNumber) return;
         
         setIsVerifying(true);
-        const loadingToast = toast.loading('Verifying with Paystack...');
+        showToast('Verifying with Paystack...', 'processing');
         
         try {
             const response = await ordersAPI.verifyPayment(orderNumber);
-            toast.success(response.data.message || 'Payment verified!', { id: loadingToast });
+            showToast(response.data.message || 'Payment verified!', 'success');
             queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
         } catch (err: unknown) {
             const errorMessage = (err as any).response?.data?.error || 'Verification failed. Please try again.';
-            toast.error(errorMessage, { id: loadingToast });
+            showToast(errorMessage, 'error');
         } finally {
             setIsVerifying(false);
         }

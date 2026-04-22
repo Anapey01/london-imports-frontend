@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Providers from "@/providers/Providers";
-import { Toaster } from 'react-hot-toast';
 import PWAUpdater from "@/components/PWAUpdater";
 import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/config/site";
@@ -163,23 +162,6 @@ export default async function RootLayout({
         </Suspense>
 
         <Providers>
-          <Toaster 
-            position="top-center"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: '#020617',
-                color: '#ffffff',
-                fontSize: '12px',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                borderRadius: '12px',
-                border: '1px solid #1e293b',
-                boxShadow: '0 10px 30px 0 rgba(0, 0, 0, 0.4)',
-              },
-            }}
-          />
           <PWAUpdater />
           <Navbar />
           <main id="main-content" className="pb-20 md:pb-0 outline-none">{children}</main>

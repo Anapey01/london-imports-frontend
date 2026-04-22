@@ -3,11 +3,12 @@
 import { useCallback, useRef, useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import Script from 'next/script';
 
 const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => {
     const { googleLogin } = useAuthStore();
+    const { showToast } = useToast();
     const router = useRouter();
     const googleButtonRef = useRef<HTMLDivElement>(null);
     const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -67,11 +68,11 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
     const handleGoogleResponse = useCallback(async (response: any) => {
         try {
             await googleLogin(response.credential);
-            toast.success('Success! Signed in with Google');
+            showToast('Success! Signed in with Google', 'success');
             router.push('/');
         } catch (error) {
             console.error('Google Login Error:', error);
-            toast.error('Google sign-in failed. Please try again.');
+            showToast('Google sign-in failed. Please try again.', 'error');
         }
     }, [googleLogin, router]);
 

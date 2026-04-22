@@ -9,9 +9,10 @@ import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
 import Link from 'next/link';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 
 function ResetPasswordForm() {
+    const { showToast } = useToast();
     const { theme } = useTheme();
     const searchParams = useSearchParams();
     const isDark = theme === 'dark';
@@ -57,7 +58,7 @@ function ResetPasswordForm() {
                 confirm_password: formData.confirm_password
             });
             setSuccess(true);
-            toast.success('Password reset successfully!');
+            showToast('Password reset successfully!', 'success');
         } catch (err: unknown) {
             setError((err as { response?: { data?: { error?: string } } }).response?.data?.error || 'Failed to reset password. Link may be expired.');
         } finally {

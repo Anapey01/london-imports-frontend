@@ -6,10 +6,11 @@ import NextImage from 'next/image';
 import { Order } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { ordersAPI } from '@/lib/api';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const OrdersView = ({ orders }: { orders: Order[] }) => {
+    const { showToast } = useToast();
     const [filter, setFilter] = useState('ALL');
     const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
     const [isCancelling, setIsCancelling] = useState(false);
@@ -26,13 +27,13 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
         setIsCancelling(true);
         try {
             await ordersAPI.cancelOrder(orderNumber);
-            toast.success('Order cancelled successfully');
+            showToast('Order cancelled successfully', 'success');
             setCancellingOrder(null);
             // Refresh would be better, but for now we'll just show the toast
             // In a real app, we'd use useQuery and invalidate the cache
             window.location.reload();
         } catch (error: any) {
-            toast.error(error.response?.data?.error || 'Failed to cancel order');
+            showToast(error.response?.data?.error || 'Failed to cancel order', 'error');
         } finally {
             setIsCancelling(false);
         }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI } from '@/lib/api';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/components/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const api = axios.create({
@@ -28,6 +28,7 @@ interface OrderTracking {
 }
 
 export default function TrackOrderPage() {
+    const { showToast } = useToast();
     const [orderNumber, setOrderNumber] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -75,12 +76,12 @@ export default function TrackOrderPage() {
         setIsCancelling(true);
         try {
             await ordersAPI.cancelOrder(trackingData.order_number);
-            toast.success('Order cancelled successfully');
+            showToast('Order cancelled successfully', 'success');
             setShowCancelModal(false);
             window.location.reload();
         } catch (error: unknown) {
             const err = error as { response?: { data?: { error?: string } } };
-            toast.error(err.response?.data?.error || 'Failed to cancel order');
+            showToast(err.response?.data?.error || 'Failed to cancel order', 'error');
         } finally {
             setIsCancelling(false);
         }
