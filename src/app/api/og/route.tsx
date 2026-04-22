@@ -14,11 +14,13 @@ async function getBase64Image(url: string | null): Promise<string | null> {
     try {
         const response = await fetch(url);
         if (!response.ok) return null;
+        
         const arrayBuffer = await response.arrayBuffer();
         const contentType = response.headers.get('content-type') || 'image/jpeg';
+        
+        // Use Buffer-style approach for robust binary-to-base64 on Edge/Node
         const base64String = btoa(
-            new Uint8Array(arrayBuffer)
-                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            String.fromCharCode(...new Uint8Array(arrayBuffer))
         );
         return `data:${contentType};base64,${base64String}`;
     } catch (e) {
@@ -103,11 +105,11 @@ export async function GET(request: Request) {
         
         <rect width="1200" height="630" fill="#FAFAFA"/>
         
-        {/* Left Panel: Inlined Image with Brand Overlay */}
+        <!-- Left Panel: Inlined Image with Brand Overlay -->
         <g clip-path="url(#imageClip)">
             ${base64ProductImage ? `
                <image href="${base64ProductImage}" width="600" height="630" preserveAspectRatio="xMidYMid slice" />
-               {/* Premium Logo Overlay (Top-Left) */}
+               <!-- Premium Logo Overlay (Top-Left) -->
                <rect x="30" y="30" width="100" height="100" rx="12" fill="white" fill-opacity="0.9" />
                ${base64Logo ? `<image href="${base64Logo}" x="40" y="40" width="80" height="80" preserveAspectRatio="xMidYMid meet" />` : ''}
             ` : `
@@ -116,24 +118,24 @@ export async function GET(request: Request) {
             `}
         </g>
         
-        {/* Right Panel: Divider */}
+        <!-- Right Panel: Divider -->
         <line x1="600" y1="0" x2="600" y2="630" stroke="#E5E7EB" stroke-width="2"/>
         
-        {/* Type / Category */}
+        <!-- Type / Category -->
         <text x="660" y="80" font-family="sans-serif" font-weight="700" font-size="14" fill="#9CA3AF" letter-spacing="4">${type.toUpperCase()}</text>
         
-        {/* Title (Wrapped via TSPAN) */}
+        <!-- Title (Wrapped via TSPAN) -->
         <text x="660" y="160" font-family="sans-serif" font-weight="800" font-size="48" fill="#111827">
            ${displayLines.map((line, i) => `<tspan x="660" dy="${i === 0 ? 0 : 58}">${line}</tspan>`).join('')}
         </text>
         
-        {/* Price Tag (Shifted down for wrapped title) */}
+        <!-- Price Tag (Shifted down for wrapped title) -->
         ${price ? `
           <rect x="660" y="360" width="280" height="90" rx="4" fill="#FDE68A"/>
           <text x="800" y="420" font-family="sans-serif" font-weight="800" font-size="52" fill="#000000" text-anchor="middle">${price}</text>
         ` : ''}
         
-        {/* Footer Branding */}
+        <!-- Footer Branding -->
         <text x="660" y="560" font-family="sans-serif" font-style="italic" font-size="22" fill="#111827">London's Imports Ghana</text>
         <line x1="910" y1="552" x2="950" y2="552" stroke="#D1D5DB" stroke-width="1"/>
         <text x="970" y="560" font-family="sans-serif" font-size="16" fill="#6B7280">londonsimports.com</text>
