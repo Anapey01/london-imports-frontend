@@ -23,7 +23,8 @@ import {
     Truck,
     X,
     ShieldCheck,
-    LayoutPanelTop
+    LayoutPanelTop,
+    Mail
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -46,6 +47,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         { name: 'Logistics', href: '/dashboard/admin/logistics', icon: Truck },
         { name: 'Products', href: '/dashboard/admin/products', icon: Package },
         { name: 'Blog', href: '/dashboard/admin/blog', icon: FileText },
+        { name: 'Broadcast', href: '/dashboard/admin/broadcast', icon: Mail },
         { name: 'Analytics', href: '/dashboard/admin/analytics', icon: BarChart3 },
         { name: 'Hero Banners', href: '/dashboard/admin/banners', icon: LayoutPanelTop },
         { name: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
@@ -74,7 +76,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
             )}
 
             <aside
-                className={`w-64 min-h-screen border-r flex flex-col fixed left-0 top-0 pt-[var(--navbar-height,4rem)] z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`w-64 h-[100dvh] border-r flex flex-col fixed left-0 top-0 pt-[var(--navbar-height,4rem)] z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}
             >
                 {/* Close Button for Mobile */}

@@ -54,20 +54,23 @@ export default function ProductImageGallery({
     return (
         <div className="space-y-6">
             {/* Main Image - directly on cream background */}
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-primary-surface border border-primary-surface/40 shadow-diffusion-lg transition-all duration-300">
+            <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-primary-surface border border-primary-surface shadow-diffusion-xl group transition-all duration-700">
                 <Image
                     src={currentImage}
                     alt={`Buy ${productName} in Ghana - Authentic China Import`}
                     fill
-                    className="object-contain drop-shadow-2xl"
+                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-700 ease-out drop-shadow-2xl"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                     priority
                 />
+                
+                {/* Subtle Glass Overlay for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
             </div>
 
-            {/* Gallery Thumbnails */}
+            {/* Gallery Thumbnails - Sleek Tiles */}
             {allImages.length > 1 && (
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                <div className="flex gap-3 overflow-x-auto py-2 px-1 scrollbar-hide snap-x">
                     {allImages.map((img) => {
                         const imgUrl = getImageUrl(img.image);
                         const isSelected = currentImage === imgUrl;
@@ -76,16 +79,20 @@ export default function ProductImageGallery({
                                 key={img.id}
                                 onClick={() => onImageSelect(imgUrl)}
                                 aria-label={`View image of ${img.alt || productName}`}
-                                className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 snap-start
-                                    ${isSelected ? 'border-emerald-500 ring-2 ring-emerald-500/20 scale-105' : 'border-primary-surface/40 hover:border-primary-surface opacity-60 hover:opacity-100'}
+                                className={`relative w-16 h-16 flex-shrink-0 rounded-2xl overflow-hidden transition-all duration-500 snap-start
+                                    ${isSelected 
+                                        ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-surface scale-105 shadow-lg' 
+                                        : 'opacity-40 hover:opacity-100 grayscale-[0.3] hover:grayscale-0 scale-95 hover:scale-100'
+                                    }
                                 `}
                             >
+                                <div className={`absolute inset-0 bg-primary-surface/20 ${isSelected ? 'opacity-0' : 'opacity-100'}`} />
                                 <Image
                                     src={imgUrl}
                                     alt={`${img.alt || productName} - London's Imports Ghana`}
                                     fill
                                     className="object-cover"
-                                    sizes="80px"
+                                    sizes="64px"
                                 />
                             </button>
                         );
