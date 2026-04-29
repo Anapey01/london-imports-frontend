@@ -244,7 +244,7 @@ export const adminAPI = {
   // Settings
   settings: () => api.get('/admin/settings/'),
   updateSettings: (data: unknown) => api.patch('/admin/settings/', data),
-  sendBroadcastEmail: (data: { subject: string; message: string; target?: string }) => 
+  sendBroadcastEmail: (data: { subject: string; message: string; target?: string; emails?: string[] }) => 
     api.post('/admin/broadcast/', data),
 
   // Maintenance

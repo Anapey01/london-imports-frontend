@@ -16,7 +16,8 @@ import {
     CreditCard,
     FileText,
     ArrowRight,
-    Eye
+    Eye,
+    Edit3
 } from 'lucide-react';
 
 const LOGISTICS_TEMPLATES = [
@@ -70,7 +71,7 @@ const JOURNEY_FILTERS = [
     { key: 'state:IN_FULFILLMENT', label: 'Loaded/Packed', icon: FileText },
     { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
     { key: 'state:OUT_FOR_DELIVERY', label: 'Port Clearance', icon: Anchor },
-    { key: 'state:RES_OVERDUE', label: 'Overdue Payments', icon: CreditCard },
+    { key: 'manual', label: 'Manual Email List', icon: Edit3 },
 ];
 
 export default function AdminBroadcastPage() {
@@ -81,6 +82,7 @@ export default function AdminBroadcastPage() {
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [target, setTarget] = useState('customers');
+    const [manualEmails, setManualEmails] = useState('');
     const [sending, setSending] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
     const [showPreview, setShowPreview] = useState(false);
@@ -92,19 +94,44 @@ export default function AdminBroadcastPage() {
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!confirm(`Are you sure you want to send this broadcast to all users matching [${target}]?`)) return;
+        
+        const audienceLabel = JOURNEY_FILTERS.find(f => f.key === target)?.label || target;
+        if (!confirm(`Are you sure you want to send this broadcast to [${audienceLabel}]?`)) return;
         
         setSending(true);
         setStatus(null);
         
         try {
-            await adminAPI.sendBroadcastEmail({ subject, message, target });
-            setStatus({ type: 'success', msg: 'Command executed: Broadcast dispatched successfully!' });
+            // Parse manual emails if needed
+            const emails = target === 'manual' 
+                ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => e.includes('@'))
+                : [];
+
+            if (target === 'manual' && emails.length === 0) {
+                throw new Error('Please enter at least one valid email address.');
+            }
+
+            const { data } = await adminAPI.sendBroadcastEmail({ 
+                subject, 
+                message, 
+                target,
+                emails 
+            });
+            
+            setStatus({ 
+                type: 'success', 
+                msg: data.message || 'Broadcast dispatched successfully!' 
+            });
+            
+            if (target === 'manual') setManualEmails('');
             setSubject('');
             setMessage('');
         } catch (err: unknown) {
-            const error = err as { response?: { data?: { error?: string } } };
-            setStatus({ type: 'error', msg: error.response?.data?.error || 'Failed to send broadcast' });
+            const error = err as { response?: { data?: { error?: string } }, message?: string };
+            setStatus({ 
+                type: 'error', 
+                msg: error.response?.data?.error || error.message || 'Failed to send broadcast' 
+            });
         } finally {
             setSending(false);
         }
@@ -248,6 +275,29 @@ export default function AdminBroadcastPage() {
                                         onSubmit={handleSend} 
                                         className="space-y-6"
                                     >
+                                        {target === 'manual' && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                className="space-y-2"
+                                            >
+                                                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                                    Paste Recipient Emails (Comma separated or new lines)
+                                                </label>
+                                                <textarea
+                                                    value={manualEmails}
+                                                    onChange={(e) => setManualEmails(e.target.value)}
+                                                    className={`w-full h-32 p-6 rounded-2xl border outline-none transition-all resize-none text-sm font-medium ${
+                                                        isDark 
+                                                        ? 'bg-slate-900 border-slate-700 text-emerald-400 focus:border-emerald-500' 
+                                                        : 'bg-white border-gray-100 text-emerald-600 focus:border-emerald-500 shadow-sm'
+                                                    }`}
+                                                    placeholder="customer1@example.com, customer2@example.com..."
+                                                    required={target === 'manual'}
+                                                />
+                                            </motion.div>
+                                        )}
+
                                         <div>
                                             <input
                                                 id="subject"
@@ -313,8 +363,9 @@ export default function AdminBroadcastPage() {
                         <div className={`mt-8 p-6 rounded-[2.5rem] bg-amber-50/50 dark:bg-amber-900/5 border border-amber-100/50 flex gap-4`}>
                             <AlertCircle className="w-6 h-6 text-amber-500 shrink-0" />
                             <div className="text-xs text-amber-700/80 dark:text-amber-400/80 leading-relaxed font-medium">
-                                <strong>System Note:</strong> Executing a broadcast will notify your audience via Resend. This action is irreversible once commenced. 
-                                Targets starting with <code>state:</code> will be filtered by the current order journey milestones.
+                                <strong>Precision Targeting Active:</strong> Executing a broadcast will notify only the selected audience via Resend. 
+                                Targets starting with <code>state:</code> automatically filter users based on their current order journey stage. 
+                                <strong>Manual Mode:</strong> Privacy safe—only the emails you paste will be contacted.
                             </div>
                         </div>
                     </div>
