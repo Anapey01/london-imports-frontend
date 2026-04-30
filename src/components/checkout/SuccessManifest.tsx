@@ -70,7 +70,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                     <div className="p-8 md:p-12 flex flex-col justify-center">
                         <div className="space-y-6">
                             <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 mb-2 block animate-pulse">
+                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-3 block">
                                     MANIFEST VALIDATED
                                 </span>
                                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-none">
@@ -78,27 +78,27 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                 </h1>
                             </div>
 
-                            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm">
-                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-slate-100 font-black">#{orderNumber}</span> has been securely processed. Our sourcing hub is now in action.
+                            <p className="text-[15px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-sm">
+                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-white font-black">#{orderNumber}</span> has been securely processed. Our sourcing hub is now in action.
                             </p>
 
-                            <div className="space-y-4 pt-4">
+                            <div className="space-y-5 pt-4">
                                 {nextSteps.map((step, index) => (
                                     <motion.div 
                                         key={step.id}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.8 + (index * 0.1) }}
-                                        className="flex gap-4 group"
+                                        className="flex gap-5 group"
                                     >
-                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-colors group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950">
-                                            <span className="text-[10px] font-black">{step.id}</span>
+                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
+                                            <span className="text-[11px] font-black">{step.id}</span>
                                         </div>
-                                        <div>
-                                            <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
+                                        <div className="flex-1">
+                                            <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
                                                 {step.title}
                                             </h3>
-                                            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium leading-normal mt-1">
+                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
                                                 {step.description}
                                             </p>
                                         </div>
