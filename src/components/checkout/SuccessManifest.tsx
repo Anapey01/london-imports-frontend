@@ -15,20 +15,20 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
     const nextSteps = [
         {
             id: '01',
-            title: 'Sourcing Hub Notified',
-            description: 'Inventory allocation for your manifest has been prioritized in our global hub.',
+            title: 'Items Being Collected',
+            description: 'We are currently gathering your items from our international partners.',
             icon: Package
         },
         {
             id: '02',
-            title: 'Logistics Manifest Processing',
-            description: 'Our team is preparing your specialized transit documents and shipping manifest.',
+            title: 'Preparing for Shipping',
+            description: 'Our team is getting your package ready and handling all the paperwork.',
             icon: Truck
         },
         {
             id: '03',
-            title: 'Dispatch Confirmation',
-            description: 'You will receive a Tracking ID via WhatsApp once the manifest is authorized for transit.',
+            title: 'Delivery Update',
+            description: 'You will receive a Tracking ID on WhatsApp as soon as your package is on its way.',
             icon: MessageSquare
         }
     ];
@@ -61,7 +61,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                 className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-xl flex items-center gap-2"
                             >
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Authorized</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Confirmed</span>
                             </motion.div>
                         </div>
                     </div>
@@ -71,15 +71,15 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                         <div className="space-y-6">
                             <div>
                                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-3 block">
-                                    MANIFEST VALIDATED
+                                    ORDER VERIFIED
                                 </span>
                                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-none">
-                                    Logistics <br /> Allocation <br /> Confirmed.
+                                    Order <br /> Successfully <br /> Confirmed.
                                 </h1>
                             </div>
 
                             <p className="text-[15px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-sm">
-                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-white font-black">#{orderNumber}</span> has been securely processed. Our sourcing hub is now in action.
+                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-white font-black">#{orderNumber}</span> has been securely processed. We've started preparing your items.
                             </p>
 
                             <div className="space-y-5 pt-4">
@@ -111,7 +111,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                     href="/orders"
                                     className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 py-4 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center hover:shadow-glow-emerald/20 transition-all flex items-center justify-center gap-3"
                                 >
-                                    View Manifests
+                                    View My Orders
                                     <ArrowRight className="w-3 h-3" />
                                 </Link>
                                 <a 
@@ -120,7 +120,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                     rel="noopener noreferrer"
                                     className="flex-1 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 py-4 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center border border-emerald-100 dark:border-emerald-900/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all flex items-center justify-center gap-3"
                                 >
-                                    Concierge Hub
+                                    Chat with Support
                                     <MessageSquare className="w-3 h-3" />
                                 </a>
                             </div>
