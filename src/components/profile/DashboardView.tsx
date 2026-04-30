@@ -7,7 +7,7 @@ import { Order } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { getTimeAgo } from '@/lib/date';
 
-const DashboardView = ({ orders }: { orders: Order[] }) => {
+const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
     const totalSpent = orders.reduce((acc: number, o: Order) => acc + parseFloat(o.total?.toString() || '0'), 0);
     const pendingCount = orders.filter((o: Order) => o.state === 'PENDING_PAYMENT').length;
     const completedCount = orders.filter((o: Order) => ['PAID', 'DELIVERED'].includes(o.state)).length;
@@ -15,15 +15,37 @@ const DashboardView = ({ orders }: { orders: Order[] }) => {
 
     return (
         <div className="space-y-10">
-            {/* Page Title */}
-            <div className="flex items-center justify-between mb-2">
+            {/* Page Title & Welcome */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2">
                 <div>
-                    <h2 className="text-4xl font-black tracking-tight text-content-primary uppercase">
-                        My Activity
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-content-primary uppercase italic">
+                        Hello, {user.first_name}!
                     </h2>
-                    <p className="text-[10px] font-black mt-1 text-content-secondary uppercase tracking-[0.2em]">
-                        A quick look at your orders and profile.
+                    <p className="text-[10px] font-black mt-2 text-content-secondary uppercase tracking-[0.3em]">
+                        Overview of your logistics and account activity.
                     </p>
+                </div>
+                
+                {/* Critical Shortcuts moved here from header */}
+                <div className="flex flex-wrap gap-4">
+                    {user.role === 'VENDOR' && (
+                        <Link
+                            href="/dashboard/vendor"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-emerald/10 text-brand-emerald text-[10px] font-black uppercase tracking-widest hover:bg-brand-emerald hover:text-white transition-all"
+                        >
+                            <ShoppingBag size={12} />
+                            Vendor Dashboard
+                        </Link>
+                    )}
+                    {(user.role === 'ADMIN' || user.is_staff || user.is_superuser) && (
+                        <Link
+                            href="/dashboard/admin"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest hover:opacity-80 transition-all"
+                        >
+                            <TrendingUp size={12} />
+                            Admin Panel
+                        </Link>
+                    )}
                 </div>
             </div>
 

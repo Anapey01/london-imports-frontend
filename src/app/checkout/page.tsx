@@ -231,7 +231,7 @@ function CheckoutPage() {
         const balanceDue = Math.max(0, totalValue - totalPaid);
 
         if (paymentType === 'BALANCE') return balanceDue;
-        if (paymentType === 'DEPOSIT') return totalValue * 0.3; // 30% Deposit
+        if (paymentType === 'DEPOSIT') return totalValue - delivery; // Full Payment (Minus Shipping Fee)
         if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
         if (paymentType === 'WHATSAPP') return 0;
         return balanceDue;

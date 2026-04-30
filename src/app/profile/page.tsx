@@ -94,10 +94,11 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen pb-20 bg-surface">
-            <ProfileHeader user={user} />
+            {/* ProfileHeader is now hidden globally across all dashboard tabs for a scroll-free experience */}
+            {/* {activeTab !== 'dashboard' && <ProfileHeader user={user} />} */}
 
             {/* Main Content Area - Sidebar Layout */}
-            <div className="max-w-6xl mx-auto px-6 relative z-20">
+            <div className="max-w-6xl mx-auto px-6 relative z-20 pt-24 md:pt-32">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
 
                     {/* Sidebar */}
@@ -105,7 +106,7 @@ export default function ProfilePage() {
 
                     {/* Content Area */}
                     <div className="flex-1 py-8 min-h-[600px]">
-                        {activeTab === 'dashboard' && <DashboardView orders={orders} />}
+                        {activeTab === 'dashboard' && <DashboardView orders={orders} user={user} />}
                         {activeTab === 'orders' && <OrdersView orders={orders} />}
                         {activeTab === 'settings' && <SettingsView user={user} />}
                         {activeTab === 'addresses' && <AddressesView user={user} />}

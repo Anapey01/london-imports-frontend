@@ -39,8 +39,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
     const selectedTotal = calculateSelectedTotal();
 
     const getPaymentLabel = () => {
-        if (paymentType === 'FULL') return 'Full Payment';
-        if (paymentType === 'DEPOSIT') return '30% Deposit';
+        if (paymentType === 'FULL') return 'Full Payment (Plus Shipping Fee)';
+        if (paymentType === 'DEPOSIT') return 'Full Payment (Minus Shipping Fee)';
         if (paymentType === 'WHATSAPP') return 'Mobile Money (Concierge)';
         if (paymentType === 'CUSTOM') return `Installment (${formatPrice(customAmount)})`;
         return 'Clear Balance';
@@ -104,8 +104,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 />
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
-                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'FULL' ? 'text-content-primary' : 'text-content-secondary'}`}>Pay in Full</span>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal)} today</p>
+                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'FULL' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Plus Shipping Fee)</span>
+                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal)} today (Full Settlement)</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'FULL' ? 'border-content-primary scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'FULL' && <div className="w-1.5 h-1.5 bg-content-primary rounded-full" />}
@@ -124,8 +124,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 />
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
-                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'DEPOSIT' ? 'text-content-primary' : 'text-content-secondary'}`}>30% Deposit</span>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Commit {formatPrice(selectedTotal * 0.3)} now</p>
+                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'DEPOSIT' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Minus Shipping Fee)</span>
+                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))} today • Pay Shipping Later</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'DEPOSIT' ? 'border-content-primary scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'DEPOSIT' && <div className="w-1.5 h-1.5 bg-content-primary rounded-full" />}
