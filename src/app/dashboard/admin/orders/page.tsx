@@ -10,8 +10,11 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import {
-    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square, Search
+    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square, Search, AlertCircle, AlertTriangle, ArrowRight, MessageSquare
 } from 'lucide-react';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 interface Order {
     id: string;
@@ -99,6 +102,30 @@ export default function AdminOrdersPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
     const loadOrders = useCallback(async () => {
         setLoading(true);
         try {
@@ -131,33 +158,52 @@ export default function AdminOrdersPage() {
 
     useEffect(() => { loadOrders(); }, [loadOrders]);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this order?')) return;
-        try {
-            await adminAPI.deleteOrder(id);
-            setOrders(prev => prev.filter(o => o.id !== id));
-            setSelectedIds(prev => { const s = new Set(prev); s.delete(id); return s; });
-        } catch (error) {
-            console.error('Delete failed:', error);
-            alert('Failed to delete order');
-        }
+    const handleDelete = (id: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Order',
+            message: 'Are you sure you want to delete this order? This action cannot be undone.',
+            variant: 'danger',
+            onConfirm: async () => {
+                try {
+                    await adminAPI.deleteOrder(id);
+                    setOrders(prev => prev.filter(o => o.id !== id));
+                    setSelectedIds(prev => { const s = new Set(prev); s.delete(id); return s; });
+                    addAlert('Order deleted successfully');
+                } catch (error) {
+                    console.error('Delete failed:', error);
+                    addAlert('Failed to delete order', 'error');
+                }
+            }
+        });
     };
 
     const handleClearPending = async () => {
-        const pendingOrders = orders.filter(o => o.status === 'PENDING' || o.status === 'Pending');
-        if (pendingOrders.length === 0) { alert('No pending orders to clear'); return; }
-        if (!confirm(`Delete ${pendingOrders.length} pending orders? This cannot be undone.`)) return;
-        setLoading(true);
-        try {
-            for (const order of pendingOrders) await adminAPI.deleteOrder(order.id);
-            await loadOrders();
-            alert('Pending orders cleared');
-        } catch (err) {
-            console.error(err);
-            alert('Failed to clear some orders');
-        } finally {
-            setLoading(false);
+        const pendingOrders = orders.filter(o => o.status === 'PENDING' || o.status === 'Pending' || o.status === 'PENDING_PAYMENT');
+        if (pendingOrders.length === 0) {
+            addAlert('No pending orders to clear', 'info');
+            return;
         }
+        
+        setConfirmModal({
+            isOpen: true,
+            title: 'Clear Pending Orders',
+            message: `You are about to delete ${pendingOrders.length} pending orders. Are you sure?`,
+            variant: 'danger',
+            onConfirm: async () => {
+                setLoading(true);
+                try {
+                    for (const order of pendingOrders) await adminAPI.deleteOrder(order.id);
+                    await loadOrders();
+                    addAlert(`Successfully cleared ${pendingOrders.length} orders`);
+                } catch (err) {
+                    console.error(err);
+                    addAlert('Error clearing some orders', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            }
+        });
     };
 
     // BULK ACTIONS
@@ -671,6 +717,31 @@ export default function AdminOrdersPage() {
                     </div>
                 </div>
             )}
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
