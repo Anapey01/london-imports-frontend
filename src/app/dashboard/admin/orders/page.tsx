@@ -233,8 +233,8 @@ export default function AdminOrdersPage() {
     const STATUS_TABS = ['All', 'PENDING_PAYMENT', 'PAID', 'OPEN_FOR_BATCH', 'IN_FULFILLMENT', 'IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
     const statusCounts: Record<string, number> = {
         All: orders.length,
-        PENDING_PAYMENT: orders.filter(o => o.status === 'PENDING_PAYMENT').length,
-        PAID: orders.filter(o => o.status === 'PAID').length,
+        PENDING_PAYMENT: orders.filter(o => o.status === 'PENDING_PAYMENT' || o.balance_due > 0).length,
+        PAID: orders.filter(o => o.status === 'PAID' || o.status === 'PROCESSING').length,
         OPEN_FOR_BATCH: orders.filter(o => o.status === 'OPEN_FOR_BATCH').length,
         IN_FULFILLMENT: orders.filter(o => o.status === 'IN_FULFILLMENT').length,
         IN_TRANSIT: orders.filter(o => o.status === 'IN_TRANSIT').length,
