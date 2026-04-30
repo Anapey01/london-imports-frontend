@@ -15,12 +15,14 @@ import {
     Anchor,
     CreditCard,
     FileText,
-    ArrowRight,
-    Eye,
-    Edit3,
+    MapPin,
     Map,
-    MapPin
+    ArrowRight,
+    Edit3,
+    Eye
 } from 'lucide-react';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
 
 const LOGISTICS_TEMPLATES = [
     {
@@ -96,55 +98,85 @@ export default function AdminBroadcastPage() {
     const [sending, setSending] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
     const [showPreview, setShowPreview] = useState(false);
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
 
     const applyTemplate = (template: typeof LOGISTICS_TEMPLATES[0]) => {
         setSubject(template.subject);
         setMessage(template.message);
     };
 
-    const handleSend = async (e: React.FormEvent) => {
+    const handleSend = (e: React.FormEvent) => {
         e.preventDefault();
         
         const audienceLabel = JOURNEY_FILTERS.find(f => f.key === target)?.label || target;
-        if (!confirm(`Are you sure you want to send this broadcast to [${audienceLabel}]?`)) return;
         
-        setSending(true);
-        setStatus(null);
-        
-        try {
-            // Parse manual emails if needed
-            const emails = target === 'manual' 
-                ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => e.includes('@'))
-                : [];
+        setConfirmModal({
+            isOpen: true,
+            title: 'Confirm Broadcast',
+            message: `Are you sure you want to send this broadcast to [${audienceLabel}]? This will contact all matching customers immediately.`,
+            variant: 'warning',
+            onConfirm: async () => {
+                setSending(true);
+                setStatus(null);
+                
+                try {
+                    // Parse manual emails if needed
+                    const emails = target === 'manual' 
+                        ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => e.includes('@'))
+                        : [];
 
-            if (target === 'manual' && emails.length === 0) {
-                throw new Error('Please enter at least one valid email address.');
+                    if (target === 'manual' && emails.length === 0) {
+                        throw new Error('Please enter at least one valid email address.');
+                    }
+
+                    const { data } = await adminAPI.sendBroadcastEmail({ 
+                        subject, 
+                        message, 
+                        target,
+                        emails 
+                    });
+                    
+                    setStatus({ 
+                        type: 'success', 
+                        msg: data.message || 'Broadcast dispatched successfully!' 
+                    });
+                    addAlert('Broadcast dispatched successfully!');
+                    
+                    if (target === 'manual') setManualEmails('');
+                    setSubject('');
+                    setMessage('');
+                } catch (err: unknown) {
+                    const error = err as { response?: { data?: { error?: string } }, message?: string };
+                    const msg = error.response?.data?.error || error.message || 'Failed to send broadcast';
+                    setStatus({ type: 'error', msg });
+                    addAlert(msg, 'error');
+                } finally {
+                    setSending(false);
+                }
             }
-
-            const { data } = await adminAPI.sendBroadcastEmail({ 
-                subject, 
-                message, 
-                target,
-                emails 
-            });
-            
-            setStatus({ 
-                type: 'success', 
-                msg: data.message || 'Broadcast dispatched successfully!' 
-            });
-            
-            if (target === 'manual') setManualEmails('');
-            setSubject('');
-            setMessage('');
-        } catch (err: unknown) {
-            const error = err as { response?: { data?: { error?: string } }, message?: string };
-            setStatus({ 
-                type: 'error', 
-                msg: error.response?.data?.error || error.message || 'Failed to send broadcast' 
-            });
-        } finally {
-            setSending(false);
-        }
+        });
     };
 
     return (
@@ -228,7 +260,7 @@ export default function AdminBroadcastPage() {
                                             }`}
                                         >
                                             <div className="p-2 bg-gray-50 dark:bg-slate-900 rounded-xl group-hover:bg-white dark:group-hover:bg-slate-800 transition-colors">
-                                                <Icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-pink-500" />
+                                        <Icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-pink-500" />
                                             </div>
                                             <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{tpl.title}</span>
                                             <ArrowRight className="ml-auto w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
@@ -380,6 +412,31 @@ export default function AdminBroadcastPage() {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
             </div>
         </div>
     );

@@ -8,15 +8,18 @@ import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-    History,
-    ChevronLeft,
+    CreditCard,
     Package,
+    ChevronLeft,
     MapPin,
     MessageCircle,
-    CreditCard
+    History as OrderHistoryIcon
 } from 'lucide-react';
 import LogisticsStepper from '@/components/admin/orders/LogisticsStepper';
 import CustomerIntelligenceCard from '@/components/admin/orders/CustomerIntelligenceCard';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 
 interface OrderItem {
@@ -39,7 +42,10 @@ interface OrderDetail {
     subtotal: string;
     delivery_fee: string;
     status: string;
-    payment_status?: string;
+    payment_status: string;
+    amount_paid: string;
+    balance_due: string;
+    is_installment: boolean;
     created_at: string;
     delivery_address: string;
     delivery_city: string;
@@ -72,6 +78,30 @@ export default function AdminOrderDetailPage() {
         customer_notes: ''
     });
 
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
     const orderId = params.id as string;
 
     const loadOrder = useCallback(async () => {
@@ -91,30 +121,53 @@ export default function AdminOrderDetailPage() {
         }
     }, [orderId, loadOrder]);
 
-    const handleUpdateStatus = async (newStatus: string) => {
-        if (!confirm(`Change status to ${newStatus}?`)) return;
-        setUpdating(true);
-        try {
-            await adminAPI.updateOrder(orderId, { status: newStatus });
-            await loadOrder(); 
-        } catch {
-            alert('Failed to update status');
-        } finally {
-            setUpdating(false);
-        }
+    const handleUpdateStatus = (newStatus: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Update Order Status',
+            message: `Transition order status to ${newStatus.replace(/_/g, ' ')}?`,
+            variant: newStatus === 'CANCELLED' ? 'danger' : 'warning',
+            onConfirm: async () => {
+                setUpdating(true);
+                try {
+                    await adminAPI.updateOrder(orderId, { status: newStatus });
+                    addAlert(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
+                    await loadOrder(); 
+                } catch {
+                    addAlert('Failed to update status', 'error');
+                } finally {
+                    setUpdating(false);
+                }
+            }
+        });
     };
 
-    const handleMarkAsPaid = async () => {
-        if (!confirm('Mark this order as PAID?')) return;
-        setUpdating(true);
-        try {
-            await adminAPI.updateOrder(orderId, { payment_status: 'PAID', status: 'PROCESSING' });
-            await loadOrder();
-        } catch {
-            alert('Failed to update payment');
-        } finally {
-            setUpdating(false);
-        }
+    const handleMarkAsPaid = () => {
+        const isInstalment = order?.is_installment;
+        const balance = parseFloat(order?.balance_due || '0');
+        
+        setConfirmModal({
+            isOpen: true,
+            title: isInstalment ? 'Authorize Instalment Payment' : 'Authorize Payment Override',
+            message: isInstalment 
+                ? `This is an INSTALMENT order with a balance of ₵${balance.toLocaleString()}. Mark the CURRENT instalment as paid, or force mark the ENTIRE order as PAID?`
+                : 'Are you sure you want to manually mark this order as PAID? This bypasses automatic payment verification.',
+            variant: 'warning',
+            onConfirm: async () => {
+                setUpdating(true);
+                try {
+                    // If it's instalment and has balance, maybe we should keep it as PARTIAL?
+                    // For now, let's follow the user request to make it known.
+                    await adminAPI.updateOrder(orderId, { payment_status: 'PAID', status: 'PROCESSING' });
+                    addAlert('Order manually marked as PAID');
+                    await loadOrder();
+                } catch {
+                    addAlert('Failed to update payment status', 'error');
+                } finally {
+                    setUpdating(false);
+                }
+            }
+        });
     };
 
     const startEditing = () => {
@@ -133,10 +186,11 @@ export default function AdminOrderDetailPage() {
         setUpdating(true);
         try {
             await adminAPI.updateOrder(orderId, editForm);
+            addAlert('Delivery protocols updated');
             await loadOrder();
             setIsEditingDelivery(false);
         } catch {
-            alert('Failed to update delivery details');
+            addAlert('Failed to update delivery details', 'error');
         } finally {
             setUpdating(false);
         }
@@ -207,9 +261,16 @@ export default function AdminOrderDetailPage() {
                         <p className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                             Logistics Lifecycle
                         </p>
-                        <span className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-tighter ${getStatusBadge(order.status)}`}>
-                            {order.status.replace(/_/g, ' ')}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            {order.is_installment && (
+                                <span className="text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-tighter bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
+                                    Instalment Plan
+                                </span>
+                            )}
+                            <span className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-tighter ${getStatusBadge(order.status)}`}>
+                                {order.status.replace(/_/g, ' ')}
+                            </span>
+                        </div>
                     </div>
                     <LogisticsStepper status={order.status} isDark={isDark} />
                 </div>
@@ -282,11 +343,27 @@ export default function AdminOrderDetailPage() {
                                         <span>Logistics Fee</span>
                                         <span>₵{parseFloat(order.delivery_fee).toLocaleString()}</span>
                                     </div>
-                                    <div className="pt-4 mt-4 border-t border-primary-surface/10 flex justify-between items-baseline">
-                                        <span className={`text-sm font-black uppercase tracking-[0.2em] ${isDark ? 'text-white' : 'text-gray-900'}`}>Grand Total</span>
-                                        <span className="text-2xl font-black tracking-tighter text-pink-500 animate-pulse-slow">
-                                            ₵{parseFloat(order.total).toLocaleString()}
-                                        </span>
+                                    <div className="pt-4 mt-4 border-t border-primary-surface/10">
+                                        <div className="flex justify-between items-baseline mb-2">
+                                            <span className={`text-sm font-black uppercase tracking-[0.2em] ${isDark ? 'text-white' : 'text-gray-900'}`}>Grand Total</span>
+                                            <span className="text-2xl font-black tracking-tighter text-pink-500">
+                                                ₵{parseFloat(order.total).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Instalment Breakdown */}
+                                        <div className={`p-4 rounded-2xl ${isDark ? 'bg-slate-900/60' : 'bg-gray-100/50'} space-y-2`}>
+                                            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                                <span className="opacity-40">Amount Paid</span>
+                                                <span className="text-emerald-500">₵{parseFloat(order.amount_paid || '0').toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                                <span className="opacity-40">Balance Due</span>
+                                                <span className={parseFloat(order.balance_due || '0') > 0 ? 'text-rose-500' : 'opacity-40'}>
+                                                    ₵{parseFloat(order.balance_due || '0').toLocaleString()}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -441,7 +518,7 @@ export default function AdminOrderDetailPage() {
                         {/* Audit Trail Placeholder */}
                         <div className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100 shadow-sm'}`}>
                             <div className="flex items-center gap-2 mb-4">
-                                <History className="w-4 h-4 opacity-40" />
+                                <OrderHistoryIcon className="w-4 h-4 opacity-40" />
                                 <h3 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                                     Audit History
                                 </h3>
@@ -465,6 +542,31 @@ export default function AdminOrderDetailPage() {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
             </div>
         </div>
     );

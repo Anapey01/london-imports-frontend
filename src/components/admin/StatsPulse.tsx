@@ -96,8 +96,8 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
                         {card.trend !== 0 && (
                             <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full ${
                                 card.trend > 0 
-                                ? 'text-emerald-600 bg-emerald-500/10' 
-                                : 'text-red-600 bg-red-500/10'
+                                ? 'text-emerald-700 bg-emerald-500/15' 
+                                : 'text-red-700 bg-red-500/15'
                             }`}>
                                 {card.trend > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                                 {Math.abs(card.trend)}%
@@ -107,17 +107,17 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
 
                     <div className="relative z-10">
                         <div className="flex items-baseline gap-1">
-                            <span className={`text-[12px] font-black opacity-40 ${isDark ? 'text-white' : 'text-nuclear-text'}`}>
+                            <span className={`text-[12px] font-black ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
                                 {card.prefix}
                             </span>
-                            <h3 className={`text-3xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-nuclear-text'}`}>
+                            <p className={`text-3xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-nuclear-text'}`}>
                                 {card.value}
-                            </h3>
+                            </p>
                         </div>
-                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1 opacity-40 ${isDark ? 'text-slate-400' : 'text-nuclear-text'}`}>
+                        <h2 className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                             {card.label}
-                        </p>
-                        <p className={`text-[11px] mt-2 font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                        </h2>
+                        <p className={`text-[11px] mt-2 font-medium ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
                             {card.subtitle}
                         </p>
                     </div>

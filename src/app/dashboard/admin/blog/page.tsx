@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import Image from 'next/image';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 interface BlogPost {
     id: number;
@@ -58,6 +61,30 @@ export default function AdminBlogPage() {
         seo_keywords: '',
     });
 
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
     useEffect(() => {
         loadPosts();
     }, []);
@@ -99,25 +126,32 @@ export default function AdminBlogPage() {
             }
             await loadPosts();
             closeModal();
-            alert(editingPost ? 'Post updated!' : 'Post created!');
+            addAlert(editingPost ? 'Post updated successfully!' : 'Post created successfully!');
         } catch (err) {
             console.error('Failed to save post:', err);
-            alert('Failed to save post. Check all fields.');
+            addAlert('Failed to save post. Check all fields.', 'error');
         } finally {
             setSaving(false);
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (confirm('Delete this blog post?')) {
-            try {
-                await adminAPI.deleteBlogPost(String(id));
-                setPosts(posts.filter(p => p.id !== id));
-            } catch (err) {
-                console.error('Failed to delete:', err);
-                alert('Failed to delete');
+    const handleDelete = (id: number) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Blog Post',
+            message: 'Permanently delete this blog article? This action cannot be undone and will affect SEO indexing.',
+            variant: 'danger',
+            onConfirm: async () => {
+                try {
+                    await adminAPI.deleteBlogPost(String(id));
+                    setPosts(posts.filter(p => p.id !== id));
+                    addAlert('Blog post deleted successfully');
+                } catch (err) {
+                    console.error('Failed to delete:', err);
+                    addAlert('Failed to delete blog post', 'error');
+                }
             }
-        }
+        });
     };
 
 
@@ -440,6 +474,31 @@ export default function AdminBlogPage() {
                     </div>
                 </div>
             )}
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

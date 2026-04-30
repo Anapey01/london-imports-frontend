@@ -12,6 +12,8 @@ import { ProductBasicInfo } from '@/components/admin/products/ProductBasicInfo';
 import { ProductDetails } from '@/components/admin/products/ProductDetails';
 import { ProductImageUpload } from '@/components/admin/products/ProductImageUpload';
 import { ProductFormData, ProductVariant } from '@/types/product';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 
 export default function AddProductPage() {
@@ -20,6 +22,17 @@ export default function AddProductPage() {
     const [loading, setLoading] = useState(false);
     const [compressionStatus, setCompressionStatus] = useState<string>(''); // To show user what's happening
     const [categories, setCategories] = useState<Category[]>([]);
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
 
     const [formData, setFormData] = useState<ProductFormData>({
         name: '',
@@ -78,7 +91,7 @@ export default function AddProductPage() {
                 // If has variants, validation check
                 const validVariants = variants.filter(v => v.name && v.price);
                 if (validVariants.length === 0) {
-                    alert('Please add at least one valid option with Name and Price.');
+                    addAlert('Please add at least one valid option with Name and Price.', 'error');
                     setLoading(false);
                     return;
                 }
@@ -91,7 +104,7 @@ export default function AddProductPage() {
                 data.append('variants_json', JSON.stringify(validVariants));
             } else {
                 if (!formData.price) {
-                    alert('Please enter a price.');
+                    addAlert('Please enter a price.', 'error');
                     setLoading(false);
                     return;
                 }
@@ -143,11 +156,11 @@ export default function AddProductPage() {
                 message?: string;
             }
             const err = error as ApiError;
-            const errorMessage = err.response?.data?.detail ||
+                const errorMessage = err.response?.data?.detail ||
                 (err.response?.data ? JSON.stringify(err.response.data) : null) ||
                 err.message ||
                 'Failed to create product.';
-            alert(`Error: ${errorMessage}`);
+            addAlert(`Error: ${errorMessage}`, 'error');
         } finally {
             setLoading(false);
         }
@@ -224,6 +237,21 @@ export default function AddProductPage() {
                     </button>
                 </div>
             </form>
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

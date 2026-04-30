@@ -4,17 +4,29 @@
  */
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import {
-    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square, Search, AlertCircle, AlertTriangle, ArrowRight, MessageSquare
+    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square, Search
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
+
+const STATUS_TABS = ['All', 'PENDING_PAYMENT', 'PAID', 'OPEN_FOR_BATCH', 'IN_FULFILLMENT', 'IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
+
+const labelMap: Record<string, string> = {
+    IN_TRANSIT: 'In Transit',
+    ARRIVED: 'Arrived',
+    DELIVERED: 'Delivered',
+    OUT_FOR_DELIVERY: 'Out for Delivery',
+    CANCELLED: 'Cancelled',
+};
+
+const statusLabel = (s: string) => s === 'All' ? 'All' : s.replace(/_/g, ' ');
 
 interface Order {
     id: string;
@@ -129,7 +141,7 @@ export default function AdminOrdersPage() {
     const loadOrders = useCallback(async () => {
         setLoading(true);
         try {
-            const params: any = { 
+            const params: Record<string, string | number | undefined> = { 
                 page: currentPage,
                 search: searchTerm || undefined
             };
@@ -223,30 +235,32 @@ export default function AdminOrdersPage() {
         });
     };
 
-    const handleBulkStatus = async (newStatus: string) => {
+    const handleBulkStatus = (newStatus: string) => {
         const ids = Array.from(selectedIds);
         if (ids.length === 0) return;
-        const labelMap: Record<string, string> = {
-            IN_TRANSIT: 'In Transit',
-            ARRIVED: 'Arrived',
-            DELIVERED: 'Delivered',
-            OUT_FOR_DELIVERY: 'Out for Delivery',
-            CANCELLED: 'Cancelled',
-        };
         const label = labelMap[newStatus] || newStatus;
-        if (!confirm(`Mark ${ids.length} order(s) as "${label}"?`)) return;
-        setBulkUpdating(true);
-        try {
-            // BUG-07 FIX: backend field is `state`, not `status`
-            await Promise.all(ids.map(id => adminAPI.updateOrder(id, { state: newStatus })));
-            setOrders(prev => prev.map(o => selectedIds.has(o.id) ? { ...o, status: newStatus } : o));
-            setSelectedIds(new Set());
-        } catch (err) {
-            console.error(err);
-            alert('Some orders failed to update.');
-        } finally {
-            setBulkUpdating(false);
-        }
+
+        setConfirmModal({
+            isOpen: true,
+            title: 'Bulk Status Update',
+            message: `Are you sure you want to mark ${ids.length} order(s) as "${label}"?`,
+            variant: 'warning',
+            onConfirm: async () => {
+                setBulkUpdating(true);
+                try {
+                    // BUG-07 FIX: backend field is `state`, not `status`
+                    await Promise.all(ids.map(id => adminAPI.updateOrder(id, { state: newStatus })));
+                    setOrders(prev => prev.map(o => selectedIds.has(o.id) ? { ...o, status: newStatus } : o));
+                    setSelectedIds(new Set());
+                    addAlert(`Successfully updated ${ids.length} orders to ${label}`);
+                } catch (err) {
+                    console.error(err);
+                    addAlert('Some orders failed to update', 'error');
+                } finally {
+                    setBulkUpdating(false);
+                }
+            }
+        });
     };
 
     // Server-side filtering is now used, so filteredOrders is just orders
@@ -275,9 +289,29 @@ export default function AdminOrdersPage() {
         return colors[status] || colors.PENDING;
     };
 
-    // BUG-06 FIX: STATUS_TABS now maps to real backend OrderState values (removed fake 'PROCESSING')
-    const STATUS_TABS = ['All', 'PENDING_PAYMENT', 'PAID', 'OPEN_FOR_BATCH', 'IN_FULFILLMENT', 'IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
-    const statusCounts: Record<string, number> = {
+    const handleQuickUpdate = (orderId: string, newState: string, label: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: `Confirm ${label}`,
+            message: `Transition order to ${label}? This will trigger automated logistics notifications.`,
+            variant: 'warning',
+            onConfirm: async () => {
+                setLoading(true);
+                try {
+                    await adminAPI.updateOrder(orderId, { state: newState });
+                    addAlert(`Status updated to ${label}`);
+                    await loadOrders();
+                } catch (err) {
+                    console.error(err);
+                    addAlert('Update failed', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            }
+        });
+    };
+
+    const statusCounts = useMemo(() => ({
         All: orders.length,
         PENDING_PAYMENT: orders.filter(o => o.status === 'PENDING_PAYMENT' || o.balance_due > 0).length,
         PAID: orders.filter(o => o.status === 'PAID' || o.status === 'PROCESSING').length,
@@ -288,9 +322,7 @@ export default function AdminOrdersPage() {
         OUT_FOR_DELIVERY: orders.filter(o => o.status === 'OUT_FOR_DELIVERY').length,
         DELIVERED: orders.filter(o => o.status === 'DELIVERED').length,
         CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
-    };
-
-    const statusLabel = (s: string) => s === 'All' ? 'All' : s.replace(/_/g, ' ');
+    }), [orders]);
 
     if (loading) {
         return (
@@ -328,7 +360,7 @@ export default function AdminOrdersPage() {
                         className="flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
                     >
                         <X className="w-4 h-4" />
-                        Clear Pending ({statusCounts.PENDING})
+                        Clear Pending ({statusCounts.PENDING_PAYMENT})
                     </button>
                 </div>
             </div>
@@ -531,131 +563,17 @@ export default function AdminOrdersPage() {
                     </thead>
                     <tbody className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
                         {filteredOrders.map((order) => (
-                            <tr
+                            <OrderRow
                                 key={order.id}
-                                className={`transition-colors ${selectedIds.has(order.id)
-                                    ? isDark ? 'bg-pink-900/20' : 'bg-pink-50'
-                                    : isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'
-                                    }`}
-                            >
-                                <td className="px-4 py-4">
-                                    <button onClick={() => toggleSelect(order.id)}>
-                                        {selectedIds.has(order.id)
-                                            ? <CheckSquare className="w-5 h-5 text-pink-500" />
-                                            : <Square className={`w-5 h-5 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                        }
-                                    </button>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        {order.thumbnail && (
-                                            <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700">
-                                                <Image
-                                                    src={getImageUrl(order.thumbnail)}
-                                                    alt="Thumbnail"
-                                                    width={40}
-                                                    height={40}
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                                />
-                                            </div>
-                                        )}
-                                        <div>
-                                            <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                #{order.order_number || order.id.slice(0, 8)}...
-                                            </p>
-                                            <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                                {new Date(order.created_at).toLocaleString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{order.customer.name}</p>
-                                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{order.customer.email}</p>
-                                </td>
-                                <td className={`px-6 py-4 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                    {order.items_count} items
-                                </td>
-                                <td className={`px-6 py-4 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                    GHS {order.total_amount.toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(order.status)}`}>
-                                        {order.status.replace(/_/g, ' ')}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex flex-col gap-1">
-                                        <span className={`text-[10px] w-fit px-2 py-0.5 rounded-full font-bold uppercase tracking-tight ${getPaymentColor(order.payment_status)}`}>
-                                            {order.payment_status === 'PARTIAL' ? 'Installment' : order.payment_status}
-                                        </span>
-                                        <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                                            GHS {order.amount_paid.toFixed(2)} / {order.total_amount.toFixed(2)}
-                                        </p>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    {order.status === 'PAID' && (
-                                        <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'IN_TRANSIT' }).then(() => loadOrders())}
-                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                                        >
-                                            Ship to Ghana
-                                        </button>
-                                    )}
-                                    {(order.status === 'OPEN_FOR_BATCH' || order.status === 'IN_FULFILLMENT') && (
-                                        <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'IN_TRANSIT' }).then(() => loadOrders())}
-                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                                        >
-                                            Ship to Ghana
-                                        </button>
-                                    )}
-                                    {order.status === 'IN_TRANSIT' && (
-                                        <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'ARRIVED' }).then(() => loadOrders())}
-                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                                        >
-                                            Arrived at Hub
-                                        </button>
-                                    )}
-                                    {order.status === 'ARRIVED' && (
-                                        <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'OUT_FOR_DELIVERY' }).then(() => loadOrders())}
-                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-                                        >
-                                            Last Mile
-                                        </button>
-                                    )}
-                                    {order.status === 'OUT_FOR_DELIVERY' && (
-                                        <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'DELIVERED' }).then(() => loadOrders())}
-                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                                        >
-                                            Complete
-                                        </button>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button
-                                            onClick={() => handleDelete(order.id)}
-                                            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-red-900/30 text-red-400' : 'hover:bg-red-50 text-red-500'}`}
-                                            title="Delete Order"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                        <a
-                                            href={`/dashboard/admin/orders/${order.id}`}
-                                            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
-                                            title="View Details"
-                                        >
-                                            <ChevronRight className="w-4 h-4" />
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
+                                order={order}
+                                isDark={isDark}
+                                isSelected={selectedIds.has(order.id)}
+                                toggleSelect={toggleSelect}
+                                getStatusColor={getStatusColor}
+                                getPaymentColor={getPaymentColor}
+                                handleQuickUpdate={handleQuickUpdate}
+                                handleDelete={handleDelete}
+                            />
                         ))}
                     </tbody>
                 </table>
@@ -745,3 +663,147 @@ export default function AdminOrdersPage() {
         </div>
     );
 }
+
+const OrderRow = React.memo(({ 
+    order, 
+    isDark, 
+    isSelected, 
+    toggleSelect, 
+    getStatusColor, 
+    getPaymentColor, 
+    handleQuickUpdate, 
+    handleDelete 
+}: any) => {
+    return (
+        <tr className={`transition-colors ${isSelected
+                ? isDark ? 'bg-pink-900/20' : 'bg-pink-50'
+                : isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'
+            }`}
+        >
+            <td className="px-4 py-4">
+                <button onClick={() => toggleSelect(order.id)}>
+                    {isSelected
+                        ? <CheckSquare className="w-5 h-5 text-pink-500" />
+                        : <Square className={`w-5 h-5 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                    }
+                </button>
+            </td>
+            <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                    {order.thumbnail && (
+                        <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700">
+                            <Image
+                                src={getImageUrl(order.thumbnail)}
+                                alt="Thumbnail"
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                            />
+                        </div>
+                    )}
+                    <div>
+                        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            #{order.order_number || order.id.slice(0, 8)}...
+                        </p>
+                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                            {new Date(order.created_at).toLocaleString()}
+                        </p>
+                    </div>
+                </div>
+            </td>
+            <td className="px-6 py-4">
+                <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{order.customer.name}</p>
+                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{order.customer.email}</p>
+            </td>
+            <td className={`px-6 py-4 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                {order.items_count} items
+            </td>
+            <td className={`px-6 py-4 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                GHS {order.total_amount.toFixed(2)}
+            </td>
+            <td className="px-6 py-4">
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(order.status)}`}>
+                    {order.status.replace(/_/g, ' ')}
+                </span>
+            </td>
+            <td className="px-6 py-4">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5">
+                        {order.is_installment && (
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tight ${isDark ? 'bg-purple-900/40 text-purple-400' : 'bg-purple-100 text-purple-700'}`}>
+                                Instalment
+                            </span>
+                        )}
+                        <span className={`text-[10px] w-fit px-2 py-0.5 rounded-full font-bold uppercase tracking-tight ${getPaymentColor(order.payment_status)}`}>
+                            {order.payment_status}
+                        </span>
+                    </div>
+                    <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                        GHS {order.amount_paid.toFixed(2)} / {order.total_amount.toFixed(2)}
+                    </p>
+                </div>
+            </td>
+            <td className="px-6 py-4">
+                {order.status === 'PAID' && (
+                    <button 
+                        onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
+                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                        Ship to Ghana
+                    </button>
+                )}
+                {(order.status === 'OPEN_FOR_BATCH' || order.status === 'IN_FULFILLMENT') && (
+                    <button 
+                        onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
+                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                        Ship to Ghana
+                    </button>
+                )}
+                {order.status === 'IN_TRANSIT' && (
+                    <button 
+                        onClick={() => handleQuickUpdate(order.id, 'ARRIVED', 'Arrived at Hub')}
+                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                    >
+                        Arrived at Hub
+                    </button>
+                )}
+                {order.status === 'ARRIVED' && (
+                    <button 
+                        onClick={() => handleQuickUpdate(order.id, 'OUT_FOR_DELIVERY', 'Last Mile')}
+                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                    >
+                        Last Mile
+                    </button>
+                )}
+                {order.status === 'OUT_FOR_DELIVERY' && (
+                    <button 
+                        onClick={() => handleQuickUpdate(order.id, 'DELIVERED', 'Complete')}
+                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                    >
+                        Complete
+                    </button>
+                )}
+            </td>
+            <td className="px-6 py-4 text-right">
+                <div className="flex items-center justify-end gap-2">
+                    <button
+                        onClick={() => handleDelete(order.id)}
+                        className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-red-900/30 text-red-400' : 'hover:bg-red-50 text-red-500'}`}
+                        title="Delete Order"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                    <a
+                        href={`/dashboard/admin/orders/${order.id}`}
+                        className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                        title="View Details"
+                    >
+                        <ChevronRight className="w-4 h-4" />
+                    </a>
+                </div>
+            </td>
+        </tr>
+    );
+});

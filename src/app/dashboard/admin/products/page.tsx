@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, productsAPI } from '@/lib/api';
 import { AdminProduct } from '@/types';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 // Component Imports
 import ProductStats from '@/components/admin/products/ProductStats';
@@ -57,6 +60,30 @@ export default function AdminProductsPage() {
         expectedDate: '',
         estimatedWeeks: 3,
     });
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
 
     useEffect(() => {
         const loadData = async () => {
@@ -113,10 +140,10 @@ export default function AdminProductsPage() {
                 expectedDate: '',
                 estimatedWeeks: 3,
             });
-            alert('Product added successfully');
+            addAlert('Product added successfully');
         } catch (err) {
             console.error('Failed to add product:', err);
-            alert('Failed to add product');
+            addAlert('Failed to add product', 'error');
         }
     };
 
@@ -128,41 +155,54 @@ export default function AdminProductsPage() {
             setProducts(response.data.results || response.data || []);
             setShowEditModal(false);
             setSelectedProduct(null);
-            alert('Product updated successfully');
+            addAlert('Product updated successfully');
         } catch (err) {
             console.error('Failed to update product:', err);
-            alert('Failed to update product');
+            addAlert('Failed to update product', 'error');
         }
     };
 
-    const handleBulkActivate = async () => {
-        if (!confirm('This will set ALL products to ACTIVE and 3 weeks delivery. Continue?')) return;
-        
-        try {
-            setLoading(true);
-            await adminAPI.bulkActivateProducts(3);
-            const response = await adminAPI.products();
-            setProducts(response.data.results || response.data || []);
-            alert('All products activated successfully!');
-        } catch (err: any) {
-            console.error('Failed bulk activation:', err);
-            const errorMessage = err.response?.data?.error || err.response?.data?.detail || err.message || 'Unknown error';
-            alert(`Bulk activation failed: ${errorMessage}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteProduct = async (id: number) => {
-        if (confirm('Remove this product from the catalog?')) {
-            try {
-                await adminAPI.deleteProduct(String(id));
-                setProducts(products.filter((p) => p.id !== id));
-            } catch (err) {
-                console.error('Failed to delete product:', err);
-                alert('Failed to delete product');
+    const handleBulkActivate = () => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Bulk Activation',
+            message: 'This will set ALL products to ACTIVE and 3 weeks delivery. Continue?',
+            variant: 'warning',
+            onConfirm: async () => {
+                try {
+                    setLoading(true);
+                    await adminAPI.bulkActivateProducts(3);
+                    const response = await adminAPI.products();
+                    setProducts(response.data.results || response.data || []);
+                    addAlert('All products activated successfully!');
+                } catch (err: any) {
+                    console.error('Failed bulk activation:', err);
+                    const errorMessage = err.response?.data?.error || err.response?.data?.detail || err.message || 'Unknown error';
+                    addAlert(`Bulk activation failed: ${errorMessage}`, 'error');
+                } finally {
+                    setLoading(false);
+                }
             }
-        }
+        });
+    };
+
+    const handleDeleteProduct = (id: number) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Product',
+            message: 'Remove this product from the catalog? This action cannot be undone.',
+            variant: 'danger',
+            onConfirm: async () => {
+                try {
+                    await adminAPI.deleteProduct(String(id));
+                    setProducts(products.filter((p) => p.id !== id));
+                    addAlert('Product deleted successfully');
+                } catch (err) {
+                    console.error('Failed to delete product:', err);
+                    addAlert('Failed to delete product', 'error');
+                }
+            }
+        });
     };
 
     const toggleFeatured = async (id: number) => {
@@ -171,9 +211,10 @@ export default function AdminProductsPage() {
         try {
             await adminAPI.featureProduct(String(id), !product.featured);
             setProducts(products.map((p) => p.id === id ? { ...p, featured: !p.featured } : p));
+            addAlert(`Product ${!product.featured ? 'featured' : 'unfeatured'} successfully`);
         } catch (err) {
             console.error('Failed to toggle featured:', err);
-            alert('Failed to update featured status');
+            addAlert('Failed to update featured status', 'error');
         }
     };
 
@@ -284,6 +325,31 @@ export default function AdminProductsPage() {
                 categories={categories}
                 isDark={isDark}
             />
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

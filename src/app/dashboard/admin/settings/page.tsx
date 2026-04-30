@@ -7,6 +7,9 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 // --- Helper Components Defined Outside to Prevent Re-renders ---
 
@@ -90,6 +93,30 @@ export default function AdminSettingsPage() {
         freeDeliveryThreshold: 200,
     });
 
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
     useEffect(() => {
         const loadSettings = async () => {
             try {
@@ -106,10 +133,10 @@ export default function AdminSettingsPage() {
         setSaving(true);
         try {
             await adminAPI.updateSettings(settings);
-            alert('Settings saved successfully!');
+            addAlert('Settings saved successfully!');
         } catch (error) {
             console.error('Failed to save settings:', error);
-            alert('Failed to save settings. Please try again.');
+            addAlert('Failed to save settings. Please try again.', 'error');
         } finally {
             setSaving(false);
         }
@@ -269,15 +296,22 @@ export default function AdminSettingsPage() {
                             </p>
                         </div>
                         <button
-                            onClick={async () => {
-                                try {
-                                    if (!confirm('This will recalculate all product reservation counts. Continue?')) return;
-                                    await adminAPI.recalculateReservations();
-                                    alert('Successfully recalculated all reservation counts!');
-                                } catch (err) {
-                                    console.error(err);
-                                    alert('Failed to recalculate: ' + (err as Error).message);
-                                }
+                            onClick={() => {
+                                setConfirmModal({
+                                    isOpen: true,
+                                    title: 'Recalculate Reservations',
+                                    message: 'This will recalculate all product reservation counts based on real paid orders. Continue?',
+                                    variant: 'warning',
+                                    onConfirm: async () => {
+                                        try {
+                                            await adminAPI.recalculateReservations();
+                                            addAlert('Successfully recalculated all reservation counts!');
+                                        } catch (err) {
+                                            console.error(err);
+                                            addAlert('Failed to recalculate: ' + (err as Error).message, 'error');
+                                        }
+                                    }
+                                });
                             }}
                             className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors"
                         >
@@ -305,6 +339,31 @@ export default function AdminSettingsPage() {
                         </button>
                     </div>
                 </Section>
+            </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
             </div>
         </div>
     );

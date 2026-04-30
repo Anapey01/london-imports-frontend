@@ -6,6 +6,9 @@
 
 import { useEffect, useState } from 'react';
 import { adminAPI } from '@/lib/api';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 interface Vendor {
     id: string;
@@ -39,6 +42,30 @@ export default function AdminVendorsPage() {
     const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
 
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
     const loadVendors = async () => {
         try {
             const response = await adminAPI.vendors();
@@ -54,40 +81,59 @@ export default function AdminVendorsPage() {
         loadVendors();
     }, []);
 
-    const handleVerify = async (vendor: Vendor) => {
-        setActionLoading(true);
-        try {
-            await adminAPI.verifyVendor(vendor.id);
-            setVendors(vendors.map(v =>
-                v.id === vendor.id
-                    ? { ...v, is_verified: true, is_active: true, status: 'VERIFIED' as const }
-                    : v
-            ));
-            setSelectedVendor(null);
-        } catch (err) {
-            console.error('Failed to verify vendor:', err);
-            alert('Failed to verify vendor');
-        } finally {
-            setActionLoading(false);
-        }
+    const handleVerify = (vendor: Vendor) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Verify Vendor',
+            message: `Are you sure you want to verify ${vendor.business_name}? This will activate their storefront.`,
+            variant: 'warning',
+            onConfirm: async () => {
+                setActionLoading(true);
+                try {
+                    await adminAPI.verifyVendor(vendor.id);
+                    setVendors(vendors.map(v =>
+                        v.id === vendor.id
+                            ? { ...v, is_verified: true, is_active: true, status: 'VERIFIED' as const }
+                            : v
+                    ));
+                    setSelectedVendor(null);
+                    addAlert(`${vendor.business_name} verified successfully`);
+                } catch (err) {
+                    console.error('Failed to verify vendor:', err);
+                    addAlert('Failed to verify vendor', 'error');
+                } finally {
+                    setActionLoading(false);
+                }
+            }
+        });
     };
 
-    const handleReject = async (vendor: Vendor) => {
-        setActionLoading(true);
-        try {
-            await adminAPI.rejectVendor(vendor.id);
-            setVendors(vendors.map(v =>
-                v.id === vendor.id
-                    ? { ...v, is_verified: false, is_active: false, status: 'REJECTED' as const }
-                    : v
-            ));
-            setSelectedVendor(null);
-        } catch (err) {
-            console.error('Failed to reject vendor:', err);
-            alert('Failed to reject vendor');
-        } finally {
-            setActionLoading(false);
-        }
+    const handleReject = (vendor: Vendor) => {
+        const isVerified = vendor.status === 'VERIFIED';
+        setConfirmModal({
+            isOpen: true,
+            title: isVerified ? 'Suspend Vendor' : 'Reject Vendor',
+            message: `Are you sure you want to ${isVerified ? 'suspend' : 'reject'} ${vendor.business_name}?`,
+            variant: 'danger',
+            onConfirm: async () => {
+                setActionLoading(true);
+                try {
+                    await adminAPI.rejectVendor(vendor.id);
+                    setVendors(vendors.map(v =>
+                        v.id === vendor.id
+                            ? { ...v, is_verified: false, is_active: false, status: 'REJECTED' as const }
+                            : v
+                    ));
+                    setSelectedVendor(null);
+                    addAlert(`${vendor.business_name} ${isVerified ? 'suspended' : 'rejected'} successfully`);
+                } catch (err) {
+                    console.error('Failed to reject vendor:', err);
+                    addAlert('Failed to update vendor status', 'error');
+                } finally {
+                    setActionLoading(false);
+                }
+            }
+        });
     };
 
     const formatDate = (dateString: string) => {
@@ -230,56 +276,16 @@ export default function AdminVendorsPage() {
 
             {/* Vendor List */}
             <div className="space-y-3">
-                {filteredVendors.map((vendor) => {
-                    const statusStyle = getStatusBadge(vendor.status);
-                    const typeBadge = getTypeBadge(vendor.vendor_type);
-
-                    return (
-                        <div key={vendor.id}
-                            onClick={() => setSelectedVendor(vendor)}
-                            className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all p-4 cursor-pointer relative overflow-hidden"
-                        >
-                            {/* Hover Indicator */}
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                            <div className="flex items-start justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-100 flex items-center justify-center text-gray-700 font-bold text-lg shadow-inner">
-                                        {vendor.business_name.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 text-sm">{vendor.business_name}</h3>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide ${typeBadge.bg} ${typeBadge.text}`}>
-                                                {typeBadge.label}
-                                            </span>
-                                            <span className="text-xs text-gray-400">• {vendor.owner_name}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${statusStyle.bg.replace('50', '50/50')} ${statusStyle.text} border-transparent`}>
-                                    {vendor.status}
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between pt-3 border-t border-gray-50">
-                                <div className="text-xs text-gray-500 flex items-center gap-4">
-                                    <span className="flex items-center gap-1">
-                                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                        {vendor.city}, {vendor.region}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                        {formatDate(vendor.created_at)}
-                                    </span>
-                                </div>
-                                <svg className="w-5 h-5 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </div>
-                    );
-                })}
+                {filteredVendors.map((vendor) => (
+                    <VendorCard
+                        key={vendor.id}
+                        vendor={vendor}
+                        setSelectedVendor={setSelectedVendor}
+                        getStatusBadge={getStatusBadge}
+                        getTypeBadge={getTypeBadge}
+                        formatDate={formatDate}
+                    />
+                ))}
 
                 {filteredVendors.length === 0 && (
                     <div className="text-center py-16 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
@@ -402,6 +408,89 @@ export default function AdminVendorsPage() {
                     </div>
                 </div>
             )}
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
+
+import React from 'react';
+
+const VendorCard = React.memo(({ 
+    vendor, 
+    setSelectedVendor, 
+    getStatusBadge, 
+    getTypeBadge, 
+    formatDate 
+}: any) => {
+    const statusStyle = getStatusBadge(vendor.status);
+    const typeBadge = getTypeBadge(vendor.vendor_type);
+
+    return (
+        <div
+            onClick={() => setSelectedVendor(vendor)}
+            className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all p-4 cursor-pointer relative overflow-hidden"
+        >
+            {/* Hover Indicator */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-100 flex items-center justify-center text-gray-700 font-bold text-lg shadow-inner">
+                        {vendor.business_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-gray-900 text-sm">{vendor.business_name}</h3>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide ${typeBadge.bg} ${typeBadge.text}`}>
+                                {typeBadge.label}
+                            </span>
+                            <span className="text-xs text-gray-400">• {vendor.owner_name}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${statusStyle.bg.replace('50', '50/50')} ${statusStyle.text} border-transparent`}>
+                    {vendor.status}
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                <div className="text-xs text-gray-500 flex items-center gap-4">
+                    <span className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        {vendor.city}, {vendor.region}
+                    </span>
+                    <span className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        {formatDate(vendor.created_at)}
+                    </span>
+                </div>
+                <svg className="w-5 h-5 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+            </div>
+        </div>
+    );
+});

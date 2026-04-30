@@ -24,8 +24,6 @@ export function ConfirmModal({
     cancelText = 'Cancel',
     variant = 'danger'
 }: ConfirmModalProps) {
-    if (!isOpen) return null;
-
     return (
         <AnimatePresence>
             {isOpen && (
@@ -47,6 +45,7 @@ export function ConfirmModal({
                         <button 
                             onClick={onClose}
                             className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            aria-label="Close modal"
                         >
                             <X className="w-4 h-4 text-slate-400" />
                         </button>

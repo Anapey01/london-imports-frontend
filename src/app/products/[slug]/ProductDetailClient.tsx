@@ -463,11 +463,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const handleBuyNow = async () => {
         // Validation for variants
         if (product.available_sizes && product.available_sizes.length > 0 && !selectedSize) {
-            alert('Please select a size');
+            showToast('Please select a size', 'error');
             return;
         }
         if (product.available_colors && product.available_colors.length > 0 && !selectedColor) {
-            alert('Please select a color');
+            showToast('Please select a color', 'error');
             return;
         }
 

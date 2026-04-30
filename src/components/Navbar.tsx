@@ -193,7 +193,7 @@ export default function Navbar() {
                                 onClick={() => setSearchModalOpen(true)}
                                 className="w-11 h-11 border border-border-standard flex items-center justify-center active:scale-95 transition-all institutional-focus"
                                 aria-label="Open search modal"
-                                aria-expanded={isSearchModalOpen ? "true" : "false"}
+                                aria-expanded={isSearchModalOpen}
                             >
                                 <Search className="w-5 h-5 text-content-primary" strokeWidth={1} />
                             </button>
@@ -202,7 +202,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(true)}
                                 className="w-11 h-11 border border-border-standard flex items-center justify-center active:scale-95 transition-all institutional-focus"
                                 aria-label="Open navigation menu"
-                                aria-expanded={isMobileMenuOpen ? "true" : "false"}
+                                aria-expanded={isMobileMenuOpen}
                             >
                                 <Menu className="w-5 h-5 text-content-primary" strokeWidth={1} />
                             </button>

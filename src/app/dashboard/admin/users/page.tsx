@@ -189,66 +189,16 @@ export default function AdminUsersPage() {
                     </div>
                 ) : (
                     filteredUsers.map((user) => (
-                        <div
+                        <UserCard
                             key={user.id}
-                            className={`rounded-xl p-4 border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}
-                        >
-                            <div className="flex items-start gap-3">
-                                {/* Avatar */}
-                                <div className="relative">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm">
-                                        {getInitials(user.first_name, user.last_name)}
-                                    </div>
-                                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 ${isDark ? 'border-slate-800' : 'border-white'} ${user.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                                </div>
-
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className={`font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                            {user.first_name} {user.last_name}
-                                        </h3>
-                                        <div className="flex items-center gap-1 ml-2">
-                                            <button
-                                                onClick={() => setSelectedUser(user)}
-                                                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-400'}`}
-                                                title={`Edit ${user.first_name} ${user.last_name}`}
-                                                aria-label={`Edit ${user.first_name} ${user.last_name}`}
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                onClick={() => setDeleteUser(user)}
-                                                className="p-2 rounded-lg transition-colors hover:bg-red-50 text-red-400"
-                                                title={`Delete ${user.first_name} ${user.last_name}`}
-                                                aria-label={`Delete ${user.first_name} ${user.last_name}`}
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p className={`text-sm truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                        {user.email}
-                                    </p>
-                                    <div className="flex items-center gap-3 mt-2">
-                                        <span className={`text-xs font-medium flex items-center gap-1 ${getRoleColor(user.role)}`}>
-                                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                            {user.role}
-                                        </span>
-                                        <span className={`text-xs flex items-center gap-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                            {formatDate(user.created_at)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            user={user}
+                            isDark={isDark}
+                            setSelectedUser={setSelectedUser}
+                            setDeleteUser={setDeleteUser}
+                            getInitials={getInitials}
+                            getRoleColor={getRoleColor}
+                            formatDate={formatDate}
+                        />
                     ))
                 )}
             </div>
@@ -345,3 +295,75 @@ export default function AdminUsersPage() {
         </div>
     );
 }
+
+import React from 'react';
+
+const UserCard = React.memo(({ 
+    user, 
+    isDark, 
+    setSelectedUser, 
+    setDeleteUser, 
+    getInitials, 
+    getRoleColor, 
+    formatDate 
+}: any) => {
+    return (
+        <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
+            <div className="flex items-start gap-3">
+                {/* Avatar */}
+                <div className="relative">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm">
+                        {getInitials(user.first_name, user.last_name)}
+                    </div>
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 ${isDark ? 'border-slate-800' : 'border-white'} ${user.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                        <h3 className={`font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            {user.first_name} {user.last_name}
+                        </h3>
+                        <div className="flex items-center gap-1 ml-2">
+                            <button
+                                onClick={() => setSelectedUser(user)}
+                                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-400'}`}
+                                title={`Edit ${user.first_name} ${user.last_name}`}
+                                aria-label={`Edit ${user.first_name} ${user.last_name}`}
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => setDeleteUser(user)}
+                                className="p-2 rounded-lg transition-colors hover:bg-red-50 text-red-400"
+                                title={`Delete ${user.first_name} ${user.last_name}`}
+                                aria-label={`Delete ${user.first_name} ${user.last_name}`}
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p className={`text-sm truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        {user.email}
+                    </p>
+                    <div className="flex items-center gap-3 mt-2">
+                        <span className={`text-xs font-medium flex items-center gap-1 ${getRoleColor(user.role)}`}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            {user.role}
+                        </span>
+                        <span className={`text-xs flex items-center gap-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {formatDate(user.created_at)}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+});

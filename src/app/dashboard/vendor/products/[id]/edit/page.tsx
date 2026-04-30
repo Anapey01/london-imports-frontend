@@ -10,6 +10,8 @@ import { Category, Product, ProductImage } from '../../../../../../types';
 import { getImageUrl } from '@/lib/image';
 import Image from 'next/image';
 import { compressImage } from '@/lib/imageUtils';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 export default function EditProductPage() {
     const { theme } = useTheme();
@@ -21,6 +23,17 @@ export default function EditProductPage() {
     const [compressionStatus, setCompressionStatus] = useState<string>('');
     const [fetching, setFetching] = useState(true);
     const [categories, setCategories] = useState<Category[]>([]);
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
 
     // Existing data from backend
     const [product, setProduct] = useState<Product | null>(null);
@@ -89,7 +102,7 @@ export default function EditProductPage() {
                             setVariants(mapped);
                         }
                     } else {
-                        alert("Product not found");
+                        addAlert("Product not found", "error");
                         router.push('/dashboard/vendor/products');
                     }
                 }
@@ -127,7 +140,7 @@ export default function EditProductPage() {
                 // If has variants, validation check
                 const validVariants = variants.filter(v => v.name && v.price);
                 if (validVariants.length === 0) {
-                    alert('Please add at least one valid option with Name and Price.');
+                    addAlert('Please add at least one valid option with Name and Price.', 'error');
                     setLoading(false);
                     return;
                 }
@@ -140,7 +153,7 @@ export default function EditProductPage() {
                 data.append('variants_json', JSON.stringify(validVariants));
             } else {
                 if (!formData.price) {
-                    alert('Please enter a price.');
+                    addAlert('Please enter a price.', 'error');
                     setLoading(false);
                     return;
                 }
@@ -189,9 +202,9 @@ export default function EditProductPage() {
             const err = error as { response?: { data?: unknown }; message?: string };
             if (err.response && err.response.data) {
                 console.error('Backend validation errors:', err.response.data);
-                alert(`Failed to update product: ${JSON.stringify(err.response.data)}`);
+                addAlert(`Failed to update product: ${JSON.stringify(err.response.data)}`, 'error');
             } else {
-                alert('Failed to update product. Please check console for details.');
+                addAlert('Failed to update product. Please check console for details.', 'error');
             }
         } finally {
             setLoading(false);
@@ -597,6 +610,21 @@ export default function EditProductPage() {
                     </button>
                 </div>
             </form>
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

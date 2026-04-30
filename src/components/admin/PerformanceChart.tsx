@@ -28,8 +28,8 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
         }`}>
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h3 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Revenue Velocity</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Daily transactional volume</p>
+                    <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Revenue Velocity</h2>
+                    <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Daily transactional volume</p>
                 </div>
                 <div className="flex gap-2">
                     {['7D', '30D', 'ALL'].map((p) => {
@@ -71,13 +71,13 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
                             dataKey="day" 
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fontWeight: 900, fill: isDark ? '#475569' : '#94a3b8' }}
+                            tick={{ fontSize: 10, fontWeight: 900, fill: isDark ? '#64748b' : '#475569' }}
                             dy={10}
                         />
                         <YAxis 
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fontWeight: 900, fill: isDark ? '#475569' : '#94a3b8' }}
+                            tick={{ fontSize: 10, fontWeight: 900, fill: isDark ? '#64748b' : '#475569' }}
                             tickFormatter={(val) => `₵${val}`}
                         />
                         <Tooltip 
@@ -86,6 +86,12 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
                                 border: 'none', 
                                 boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
                                 backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                                fontSize: '10px',
+                                fontWeight: 900,
+                                color: isDark ? '#f8fafc' : '#0f172a'
+                            }}
+                            itemStyle={{
+                                color: isDark ? '#f8fafc' : '#0f172a',
                                 fontSize: '10px',
                                 fontWeight: 900
                             }}

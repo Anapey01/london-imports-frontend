@@ -71,39 +71,74 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                         <div className="space-y-6">
                             <div>
                                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-3 block">
-                                    ORDER VERIFIED
+                                    MANIFEST VALIDATED
                                 </span>
-                                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-none">
-                                    Order <br /> Successfully <br /> Confirmed.
+                                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-tight">
+                                    Logistics <br /> Allocation <br /> Confirmed.
                                 </h1>
                             </div>
 
                             <p className="text-[15px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-sm">
-                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-white font-black">#{orderNumber}</span> has been securely processed. We've started preparing your items.
+                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-white font-black">#{orderNumber}</span> has been securely processed. Our sourcing hub is now in action.
                             </p>
 
                             <div className="space-y-5 pt-4">
-                                {nextSteps.map((step, index) => (
-                                    <motion.div 
-                                        key={step.id}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.8 + (index * 0.1) }}
-                                        className="flex gap-5 group"
-                                    >
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
-                                            <span className="text-[11px] font-black">{step.id}</span>
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
-                                                {step.title}
-                                            </h3>
-                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
-                                                {step.description}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.8 }}
+                                    className="flex gap-5 group"
+                                >
+                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
+                                        <span className="text-[11px] font-black">01</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
+                                            Sourcing Hub Notified
+                                        </h3>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
+                                            Inventory allocation for your manifest has been prioritized in our global hub.
+                                        </p>
+                                    </div>
+                                </motion.div>
+
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.9 }}
+                                    className="flex gap-5 group"
+                                >
+                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
+                                        <span className="text-[11px] font-black">02</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
+                                            Logistics Manifest Processing
+                                        </h3>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
+                                            Our team is preparing your specialized transit documents and shipping manifest.
+                                        </p>
+                                    </div>
+                                </motion.div>
+
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 1.0 }}
+                                    className="flex gap-5 group"
+                                >
+                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
+                                        <span className="text-[11px] font-black">03</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
+                                            Dispatch Confirmation
+                                        </h3>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
+                                            You will receive a Tracking ID via WhatsApp once the manifest is authorized for transit.
+                                        </p>
+                                    </div>
+                                </motion.div>
                             </div>
 
                             <div className="pt-8 flex flex-col sm:flex-row gap-4">

@@ -4,27 +4,25 @@
  */
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Users,
-    ShoppingBag,
-    Package,
-    ArrowUpRight,
     Clock,
+    ArrowUpRight,
     CheckCircle2,
     XCircle,
-    AlertCircle,
-    ChevronRight,
-    BarChart3,
-    Trash2,
-    Mail,
     LayoutDashboard,
-    Search
+    Search,
+    Mail,
+    ChevronRight,
+    Trash2
 } from 'lucide-react';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
 
 // Components
 import StatsPulse from '@/components/admin/StatsPulse';
@@ -43,12 +41,35 @@ export default function AdminDashboardPage() {
     const isDark = theme === 'dark';
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [chartRange, setChartRange] = useState('7d');
     const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
-    const loadData = async () => {
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
+    const loadData = useCallback(async () => {
         try {
             const [statsRes, analyticsRes, ordersRes] = await Promise.all([
                 adminAPI.stats(),
@@ -78,7 +99,7 @@ export default function AdminDashboardPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [chartRange]);
 
     useEffect(() => {
         loadData();
@@ -89,11 +110,10 @@ export default function AdminDashboardPage() {
         }, 60000);
 
         return () => clearInterval(heartbeat);
-    }, [chartRange]);
+    }, [loadData]);
 
     const handleRangeChange = async (newRange: string) => {
         setChartRange(newRange);
-        setRefreshing(true);
         try {
             const res = await adminAPI.analytics({ period: newRange });
             setData(prev => prev ? {
@@ -102,19 +122,26 @@ export default function AdminDashboardPage() {
             } : null);
         } catch (err) {
             console.error('Failed to refresh analytics:', err);
-        } finally {
-            setRefreshing(false);
         }
     };
 
-    const handleDeleteOrder = async (orderId: string) => {
-        if (!window.confirm('Delete this order record permanently?')) return;
-        try {
-            await adminAPI.deleteOrder(orderId);
-            loadData();
-        } catch (error) {
-            console.error('Delete failed:', error);
-        }
+    const handleDeleteOrder = (orderId: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Order Record',
+            message: 'Permanently delete this order record? This cannot be undone.',
+            variant: 'danger',
+            onConfirm: async () => {
+                try {
+                    await adminAPI.deleteOrder(orderId);
+                    addAlert('Order record deleted successfully');
+                    loadData();
+                } catch (error) {
+                    console.error('Delete failed:', error);
+                    addAlert('Failed to delete order record', 'error');
+                }
+            }
+        });
     };
 
     const getStatusColor = (status: string) => {
@@ -183,7 +210,7 @@ export default function AdminDashboardPage() {
                         <div className="p-2 bg-nuclear-text text-white rounded-lg">
                             <LayoutDashboard className="w-5 h-5" />
                         </div>
-                        <h2 className="text-sm font-black uppercase tracking-[0.3em] opacity-40">Command Center</h2>
+                        <p className="text-sm font-black uppercase tracking-[0.3em] text-slate-500">Command Center</p>
                     </div>
                     <h1 className="text-4xl font-black nuclear-text tracking-tighter">System Overview</h1>
                 </div>
@@ -254,8 +281,8 @@ export default function AdminDashboardPage() {
             <div className={`rounded-[2.5rem] border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-primary-surface shadow-sm'}`}>
                 <div className="p-8 border-b border-primary-surface/20 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-xl font-black tracking-tight">Recent Transactions</h3>
-                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Live order flow monitor</p>
+                        <h2 className="text-xl font-black tracking-tight">Recent Transactions</h2>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Live order flow monitor</p>
                     </div>
                     <Link
                         href="/dashboard/admin/orders"
@@ -269,11 +296,11 @@ export default function AdminDashboardPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-primary-surface/10">
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Order Ref</th>
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30">Customer Identity</th>
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30 hidden md:table-cell">Origin</th>
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-30 hidden md:table-cell">Protocol Status</th>
-                                <th className="px-4 md:px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest opacity-30">Net Amount</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60">Order Ref</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60">Customer Identity</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60 hidden md:table-cell">Origin</th>
+                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60 hidden md:table-cell">Protocol Status</th>
+                                <th className="px-4 md:px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest opacity-60">Net Amount</th>
                                 <th className="px-4 md:px-8 py-5"></th>
                             </tr>
                         </thead>
@@ -285,167 +312,218 @@ export default function AdminDashboardPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredOrders.map((order, idx) => {
-                                    const fresh = isRecent(order.created_at);
-                                    const today = isToday(order.created_at);
-                                    const isExpanded = expandedOrder === order.id;
-                                    
-                                    // Detect transition from 'Today' to 'Earlier'
-                                    const prevOrder = idx > 0 ? filteredOrders[idx-1] : null;
-                                    const showDivider = prevOrder && isToday(prevOrder.created_at) && !isToday(order.created_at);
-                                    const isFirstToday = idx === 0 && isToday(order.created_at);
-
-                                    return (
-                                        <React.Fragment key={order.id}>
-                                            {(isFirstToday || showDivider) && (
-                                                <tr className={isDark ? 'bg-slate-800/20' : 'bg-primary-surface/10'}>
-                                                    <td colSpan={6} className="px-8 py-3">
-                                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
-                                                            {isFirstToday ? 'Current Cycle (Today)' : 'Archived (Earlier)'}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                            <motion.tr 
-                                                layout
-                                                initial={{ opacity: 0, x: fresh ? -20 : 0 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: idx * 0.05, type: 'spring', stiffness: 100 }}
-                                                onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
-                                                className={`group cursor-pointer transition-all ${
-                                                    isExpanded 
-                                                    ? (isDark ? 'bg-slate-800' : 'bg-primary-surface/10')
-                                                    : (fresh 
-                                                        ? (isDark ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-emerald-50 hover:bg-emerald-100/50') 
-                                                        : (today ? (isDark ? 'bg-slate-800/40 hover:bg-slate-800' : 'bg-primary-surface/20 hover:bg-primary-surface/40') 
-                                                                 : (isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20')))
-                                                }`}
-                                            >
-                                                <td className="px-4 md:px-8 py-6">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className={`font-mono text-[13px] font-black tracking-tight ${fresh ? 'text-emerald-600' : 'opacity-80'}`}>
-                                                            #{order?.order_number}
-                                                        </span>
-                                                        {fresh && (
-                                                            <div className="relative flex h-2 w-2">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 md:px-8 py-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black opacity-40 border border-primary-surface shrink-0">
-                                                            {order?.customer?.name?.[0] || 'U'}
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-sm font-black truncate">{order?.customer?.name || (typeof order?.customer === 'string' ? order.customer : 'Anonymous')}</p>
-                                                            <p className="text-[10px] font-medium opacity-40 truncate hidden sm:block">{order?.customer?.email || ''}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
-                                                    <div className="flex items-center gap-2 text-[11px] font-bold">
-                                                        <Clock className="w-3.5 h-3.5 opacity-30" />
-                                                        {new Date(order?.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
-                                                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order?.status)}`}>
-                                                        {order?.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
-                                                         order?.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
-                                                         <Clock className="w-3 h-3" />}
-                                                        {order?.status?.replace('_', ' ')}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 md:px-8 py-6 text-right">
-                                                    <span className="text-sm font-black whitespace-nowrap">₵{parseFloat(order?.total).toLocaleString()}</span>
-                                                </td>
-                                                <td className="px-4 md:px-8 py-6 text-right">
-                                                    <div className="flex justify-end items-center gap-3">
-                                                        <div className={`p-2 rounded-lg transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
-                                                            <ChevronRight className="w-4 h-4 opacity-30" />
-                                                        </div>
-                                                        <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
-                                                                className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors"
-                                                                title="Delete Entry"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </button>
-                                                            <Link
-                                                                href={`/dashboard/admin/orders/${order.id}`}
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
-                                                                title="Inspect Details"
-                                                            >
-                                                                <LayoutDashboard className="w-4 h-4" />
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </motion.tr>
-                                            <AnimatePresence>
-                                                {isExpanded && (
-                                                    <motion.tr
-                                                        initial={{ opacity: 0, height: 0 }}
-                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                        exit={{ opacity: 0, height: 0 }}
-                                                        className={isDark ? 'bg-slate-800' : 'bg-primary-surface/5'}
-                                                    >
-                                                        <td colSpan={6} className="px-4 md:px-8 py-8 border-t border-primary-surface/10">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                                                                <div>
-                                                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4">Community WhatsApp Link</p>
-                                                                    <div className="flex items-center gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
-                                                                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
-                                                                            <Users className="w-5 h-5" />
-                                                                        </div>
-                                                                        <div className="min-w-0">
-                                                                            <p className="text-sm font-black text-emerald-600 truncate">{order?.customer?.name}</p>
-                                                                            <p className="text-xs font-mono font-bold tracking-tight truncate">{order.phone || 'No phone'}</p>
-                                                                        </div>
-                                                                        <button 
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                navigator.clipboard.writeText(order.phone || '');
-                                                                                alert('Phone copied!');
-                                                                            }}
-                                                                            className="ml-auto p-2 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase whitespace-nowrap"
-                                                                        >
-                                                                            Copy
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4">Item Manifest</p>
-                                                                    <div className="space-y-3">
-                                                                        {order.items_summary?.map((item: any, i: number) => (
-                                                                            <div key={i} className="flex justify-between items-center text-sm font-bold p-3 bg-nuclear-text/5 rounded-xl border border-nuclear-text/10">
-                                                                                <span className="flex items-center gap-2">
-                                                                                    <span className="w-5 h-5 rounded-md bg-nuclear-text text-white flex items-center justify-center text-[10px]">{item.quantity}</span>
-                                                                                    {item.name}
-                                                                                </span>
-                                                                                <span className="opacity-60">₵{item.price.toLocaleString()}</span>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </motion.tr>
-                                                )}
-                                            </AnimatePresence>
-                                        </React.Fragment>
-                                    );
-                                })
+                                filteredOrders.map((order, idx) => (
+                                    <OrderRow 
+                                        key={order.id}
+                                        order={order}
+                                        idx={idx}
+                                        isDark={isDark}
+                                        isExpanded={expandedOrder === order.id}
+                                        onToggle={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                                        handleDeleteOrder={handleDeleteOrder}
+                                        addAlert={addAlert}
+                                        getStatusColor={getStatusColor}
+                                        isRecent={isRecent}
+                                        isToday={isToday}
+                                        showDivider={idx > 0 && isToday(filteredOrders[idx-1]?.created_at) && !isToday(order.created_at)}
+                                        isFirstToday={idx === 0 && isToday(order.created_at)}
+                                    />
+                                ))
                             )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
+
+// Optimized OrderRow Component to fix INP and Contrast
+const OrderRow = React.memo(({ 
+    order, 
+    idx, 
+    isDark, 
+    isExpanded,
+    onToggle,
+    handleDeleteOrder, 
+    addAlert,
+    getStatusColor,
+    isRecent,
+    isToday,
+    showDivider,
+    isFirstToday
+}: any) => {
+    const fresh = isRecent(order.created_at);
+    const today = isToday(order.created_at);
+
+    return (
+        <React.Fragment>
+            {(isFirstToday || showDivider) && (
+                <tr className={isDark ? 'bg-slate-800/20' : 'bg-primary-surface/10'}>
+                    <td colSpan={6} className="px-8 py-3">
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">
+                            {isFirstToday ? 'Current Cycle (Today)' : 'Archived (Earlier)'}
+                        </span>
+                    </td>
+                </tr>
+            )}
+            <motion.tr 
+                layout="position"
+                initial={{ opacity: 0, x: fresh ? -20 : 0 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+                onClick={onToggle}
+                className={`group cursor-pointer transition-all ${
+                    isExpanded 
+                    ? (isDark ? 'bg-slate-800' : 'bg-primary-surface/10')
+                    : (fresh 
+                        ? (isDark ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-emerald-50 hover:bg-emerald-100/50') 
+                        : (today ? (isDark ? 'bg-slate-800/40 hover:bg-slate-800' : 'bg-primary-surface/20 hover:bg-primary-surface/40') 
+                                 : (isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20')))
+                }`}
+            >
+                <td className="px-4 md:px-8 py-6">
+                    <div className="flex items-center gap-3">
+                        <span className={`font-mono text-[13px] font-black tracking-tight ${fresh ? 'text-emerald-700' : 'text-slate-700 dark:text-slate-200'}`}>
+                            #{order?.order_number}
+                        </span>
+                        {fresh && (
+                            <div className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </div>
+                        )}
+                    </div>
+                </td>
+                <td className="px-4 md:px-8 py-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black text-slate-500 border border-primary-surface shrink-0">
+                            {order?.customer?.name?.[0] || 'U'}
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-sm font-black truncate">{order?.customer?.name || (typeof order?.customer === 'string' ? order.customer : 'Anonymous')}</p>
+                            <p className="text-[10px] font-medium text-slate-500 truncate hidden sm:block">{order?.customer?.email || ''}</p>
+                        </div>
+                    </div>
+                </td>
+                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
+                    <div className="flex items-center gap-2 text-[11px] font-bold">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        {new Date(order?.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
+                    </div>
+                </td>
+                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
+                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order?.status)}`}>
+                        {order?.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
+                         order?.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
+                         <Clock className="w-3 h-3" />}
+                        {order?.status?.replace('_', ' ')}
+                    </span>
+                </td>
+                <td className="px-4 md:px-8 py-6 text-right">
+                    <span className="text-sm font-black whitespace-nowrap">₵{parseFloat(order?.total).toLocaleString()}</span>
+                </td>
+                <td className="px-4 md:px-8 py-6 text-right">
+                    <div className="flex justify-end items-center gap-3">
+                        <div className={`p-2 rounded-lg transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </div>
+                        <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
+                                className="p-2.5 rounded-xl text-red-600 hover:bg-red-500/10 transition-colors"
+                                title="Delete Entry"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                            <Link
+                                href={`/dashboard/admin/orders/${order.id}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
+                                title="Inspect Details"
+                            >
+                                <LayoutDashboard className="w-4 h-4" />
+                            </Link>
+                        </div>
+                    </div>
+                </td>
+            </motion.tr>
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.tr
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className={isDark ? 'bg-slate-800' : 'bg-primary-surface/5'}
+                    >
+                        <td colSpan={6} className="px-4 md:px-8 py-8 border-t border-primary-surface/10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Community WhatsApp Link</p>
+                                    <div className="flex items-center gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0">
+                                            <Users className="w-5 h-5" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-black text-emerald-700 truncate">{order?.customer?.name}</p>
+                                            <p className="text-xs font-mono font-bold tracking-tight truncate text-slate-600">{order.phone || 'No phone'}</p>
+                                        </div>
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigator.clipboard.writeText(order.phone || '');
+                                                addAlert('Phone copied to clipboard!', 'success');
+                                            }}
+                                            className="ml-auto px-4 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase whitespace-nowrap active:scale-95 transition-transform"
+                                        >
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Item Manifest</p>
+                                    <div className="space-y-3">
+                                        {order.items_summary?.map((item: any, i: number) => (
+                                            <div key={i} className="flex justify-between items-center text-sm font-bold p-3 bg-nuclear-text/5 rounded-xl border border-nuclear-text/10">
+                                                <span className="flex items-center gap-2">
+                                                    <span className="w-5 h-5 rounded-md bg-nuclear-text text-white flex items-center justify-center text-[10px]">{item.quantity}</span>
+                                                    {item.name}
+                                                </span>
+                                                <span className="text-slate-600">₵{item.price.toLocaleString()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </motion.tr>
+                )}
+            </AnimatePresence>
+        </React.Fragment>
+    );
+});

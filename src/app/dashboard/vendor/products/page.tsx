@@ -7,6 +7,9 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { vendorsAPI } from '@/lib/api';
 import { Plus, Search, Edit, Eye, Trash2 } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 interface Product {
     id: string;
@@ -24,6 +27,30 @@ export default function VendorProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
 
     useEffect(() => {
         fetchProducts();
@@ -147,16 +174,23 @@ export default function VendorProductsPage() {
                                         <Edit className="w-5 h-5" />
                                     </Link>
                                     <button
-                                        onClick={async () => {
-                                            if (confirm('Are you sure you want to delete this product? This cannot be undone.')) {
-                                                try {
-                                                    await vendorsAPI.deleteProduct(product.id);
-                                                    setProducts(prev => prev.filter(p => p.id !== product.id));
-                                                } catch (err) {
-                                                    console.error('Failed to delete', err);
-                                                    alert('Failed to delete product');
+                                        onClick={() => {
+                                            setConfirmModal({
+                                                isOpen: true,
+                                                title: 'Delete Product',
+                                                message: 'Permanently remove this product from your inventory? This cannot be undone.',
+                                                variant: 'danger',
+                                                onConfirm: async () => {
+                                                    try {
+                                                        await vendorsAPI.deleteProduct(product.id);
+                                                        setProducts(prev => prev.filter(p => p.id !== product.id));
+                                                        addAlert('Product deleted successfully');
+                                                    } catch (err) {
+                                                        console.error('Failed to delete', err);
+                                                        addAlert('Failed to delete product', 'error');
+                                                    }
                                                 }
-                                            }
+                                            });
                                         }}
                                         className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors"
                                         title="Delete"
@@ -184,6 +218,31 @@ export default function VendorProductsPage() {
                     ))}
                 </div>
             )}
+
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

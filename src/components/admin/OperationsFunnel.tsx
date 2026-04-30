@@ -32,12 +32,12 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
         }`}>
             <div className="flex items-center justify-between mb-10">
                 <div>
-                    <h3 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Logistics Pulse</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Live shipment distribution</p>
+                    <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Logistics Pulse</h2>
+                    <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Live shipment distribution</p>
                 </div>
                 <div className="text-right">
                     <span className="text-2xl font-black text-emerald-600">{totalOrders}</span>
-                    <p className="text-[10px] font-black uppercase opacity-30">Active Units</p>
+                    <p className={`text-[10px] font-black uppercase ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>Active Units</p>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
                                             <Icon className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className={`text-[10px] font-black uppercase tracking-tight opacity-40 ${isDark ? 'text-white' : 'text-nuclear-text'}`}>
+                                            <p className={`text-[10px] font-black uppercase tracking-tight ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                                                 {step.label}
                                             </p>
                                             <p className={`text-lg font-black ${isDark ? 'text-white' : 'text-nuclear-text'}`}>
@@ -71,7 +71,7 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
                                     </div>
                                     
                                     <div className="text-right">
-                                        <span className="text-[11px] font-black opacity-30">{Math.round(percentage)}%</span>
+                                        <span className={`text-[11px] font-black ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{Math.round(percentage)}%</span>
                                     </div>
                                 </div>
 
@@ -104,15 +104,15 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
             <div className="mt-10 pt-8 border-t border-primary-surface/20 flex flex-wrap gap-8">
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-amber-500 shadow-sm shadow-amber-500/40" />
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Processing</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Processing</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40" />
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Ocean/Air Transit</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Ocean/Air Transit</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/40" />
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Arrival & Ghana Hub</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Arrival & Ghana Hub</span>
                 </div>
             </div>
         </div>

@@ -18,6 +18,9 @@ import {
     Layout
 } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { AuraAlert, AlertType } from '@/components/AuraAlert';
+import { AnimatePresence } from 'framer-motion';
 
 interface Banner {
     id: string;
@@ -37,6 +40,30 @@ export default function AdminBannersPage() {
     const [banners, setBanners] = useState<Banner[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'warning';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
+    const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+
+    const addAlert = (message: string, type: AlertType = 'success') => {
+        const id = Math.random().toString(36).substring(7);
+        setAlerts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeAlert = (id: string) => {
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
 
     const fetchBanners = async () => {
         try {
@@ -62,23 +89,30 @@ export default function AdminBannersPage() {
         fetchBanners();
     }, []);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this banner?')) return;
+    const handleDelete = (id: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Hero Banner',
+            message: 'Permanently remove this promotional banner from the homepage rotation?',
+            variant: 'danger',
+            onConfirm: async () => {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/${id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
+                    if (!response.ok) throw new Error('Failed to delete banner');
+                    setBanners(banners.filter(b => b.id !== id));
+                    addAlert('Banner deleted successfully');
+                } catch (err) {
+                    addAlert(err instanceof Error ? err.message : 'Delete failed', 'error');
                 }
-            });
-
-            if (!response.ok) throw new Error('Failed to delete banner');
-            setBanners(banners.filter(b => b.id !== id));
-        } catch (err) {
-            alert(err instanceof Error ? err.message : 'Delete failed');
-        }
+            }
+        });
     };
 
     const handleToggleActive = async (banner: Banner) => {
@@ -96,8 +130,9 @@ export default function AdminBannersPage() {
             if (!response.ok) throw new Error('Failed to toggle status');
             const updated = await response.json();
             setBanners(banners.map(b => b.id === banner.id ? { ...b, is_active: updated.is_active } : b));
+            addAlert(`Banner ${updated.is_active ? 'activated' : 'deactivated'} successfully`);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Update failed');
+            addAlert(err instanceof Error ? err.message : 'Update failed', 'error');
         }
     };
 
@@ -219,6 +254,30 @@ export default function AdminBannersPage() {
                     ))}
                 </div>
             )}
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                variant={confirmModal.variant}
+            />
+
+            {/* Notification Toasts */}
+            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                <AnimatePresence mode="popLayout">
+                    {alerts.map(alert => (
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={removeAlert}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
