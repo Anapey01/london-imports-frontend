@@ -44,11 +44,11 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             case 'PAID':
             case 'DELIVERED':
             case 'COMPLETED':
-                return { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-500/10' };
+                return { text: 'text-white', bg: 'bg-emerald-500', lightBg: 'bg-emerald-500/10' };
             case 'PENDING_PAYMENT':
             case 'DRAFT':
             case 'OPEN_FOR_BATCH':
-                return { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-500/10' };
+                return { text: 'text-white', bg: 'bg-amber-500', lightBg: 'bg-amber-500/10' };
             case 'CANCELLED':
             case 'FAILED':
                 return { text: 'text-white', bg: 'bg-red-600' };
@@ -95,7 +95,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                 ) : (
                     filteredOrders.map((order: Order) => {
                         const balanceDue = parseFloat(order.balance_due?.toString() || '0');
-                        const isPending = order.state === 'PENDING_PAYMENT' || (order.state === 'DRAFT') || (balanceDue > 0 && order.state !== 'CANCELLED');
+                        const isPending = (order.state === 'PENDING_PAYMENT' || order.state === 'DRAFT' || (balanceDue > 0 && order.state !== 'CANCELLED')) && order.state !== 'PAID';
                         const canCancel = ['PAID', 'OPEN_FOR_BATCH', 'PENDING_PAYMENT'].includes(order.state);
                         const statusStyles = getStatusStyles(order.state);
 
