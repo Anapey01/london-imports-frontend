@@ -41,6 +41,7 @@ export interface Product {
     available_sizes?: string[];
     available_colors?: string[];
     shipping_origin?: string;
+    estimated_shipping_fee?: number;
     preorder_status?: string;
     target_quantity: number;
     reservations_count: number;

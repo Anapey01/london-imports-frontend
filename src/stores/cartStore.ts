@@ -28,6 +28,7 @@ export interface Product {
     discount_percentage?: number;
     is_preorder?: boolean;
     stock_quantity?: number;
+    estimated_shipping_fee?: number;
 }
 
 export interface CartItem {
@@ -269,7 +270,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
                             ...previousCart, 
                             items: newItems, 
                             subtotal: newSubtotal, 
-                            total: newSubtotal + previousCart.delivery_fee 
+                            delivery_fee: newItems.reduce((sum, i) => sum + (Number(i.product?.estimated_shipping_fee || 0) * i.quantity), 0),
+                            total: newSubtotal + newItems.reduce((sum, i) => sum + (Number(i.product?.estimated_shipping_fee || 0) * i.quantity), 0)
                         },
                         itemCount: newItems.reduce((sum, i) => sum + i.quantity, 0)
                     });
@@ -325,7 +327,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
                         ...previousCart, 
                         items: newItems, 
                         subtotal: newSubtotal, 
-                        total: newSubtotal + previousCart.delivery_fee 
+                        delivery_fee: newItems.reduce((sum, i) => sum + (Number(i.product?.estimated_shipping_fee || 0) * i.quantity), 0),
+                        total: newSubtotal + newItems.reduce((sum, i) => sum + (Number(i.product?.estimated_shipping_fee || 0) * i.quantity), 0)
                     },
                     itemCount: newItems.reduce((sum, i) => sum + i.quantity, 0)
                 });
@@ -370,7 +373,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
     },
 
     selectAll: (selected: boolean) => {
-        const items = isAuthenticated() ? (get().cart?.items || []) : get().guestItems;
+        const isAuth = useAuthStore.getState().isAuthenticated;
+        const items = isAuth ? (get().cart?.items || []) : get().guestItems;
         if (selected) {
             set({ selectedItemIds: new Set(items.map(i => i.id)) });
         } else {

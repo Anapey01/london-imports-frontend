@@ -33,7 +33,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
         const selSubtotal = (currentOrderData.items || [])
             .filter((i: BaseOrderItem) => selectedItemIds.has(i.id))
             .reduce((sum: number, i: BaseOrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
-        return selSubtotal + (currentOrderData.delivery_fee || 0);
+        return selSubtotal + Number(currentOrderData.delivery_fee || 0);
     };
 
     const selectedTotal = calculateSelectedTotal();

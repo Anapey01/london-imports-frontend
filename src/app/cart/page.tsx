@@ -14,7 +14,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 import { ShoppingBag, Minus, Plus, ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
-import { trackBeginCheckout, trackRemoveFromCart, trackAddToCart, trackUserIntent } from '@/lib/analytics';
+import { trackBeginCheckout, trackAddToCart, trackUserIntent } from '@/lib/analytics';
 
 export default function CartPage() {
     const router = useRouter();
@@ -40,6 +40,11 @@ export default function CartPage() {
 
     // Derived totals
     const subtotal = items.reduce((sum, i) => sum + Number(i.unit_price || 0) * i.quantity, 0);
+    const deliveryFee = items.reduce((sum, i) => {
+        const fee = Number(i.product?.estimated_shipping_fee || 0);
+        return sum + (fee * i.quantity);
+    }, 0);
+    const total = subtotal + deliveryFee;
 
     // Decision-Making Intelligence: Intent Profiling
     useEffect(() => {
@@ -115,12 +120,16 @@ export default function CartPage() {
                             
                             <div className="px-4 py-6 space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-content-secondary">Items in Cart ({items.length})</span>
+                                    <span className="text-sm font-medium text-content-secondary">Items Subtotal</span>
                                     <span className="text-sm font-medium text-content-primary tabular-nums italic">GHS {subtotal.toLocaleString()}</span>
                                 </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-content-secondary">Estimated Shipping</span>
+                                    <span className="text-sm font-medium text-content-primary tabular-nums italic">GHS {deliveryFee.toLocaleString()}</span>
+                                </div>
                                 <div className="flex justify-between items-center py-5 border-y border-border-standard">
-                                    <span className="text-sm font-black uppercase tracking-[0.25em] text-content-primary">Subtotal</span>
-                                    <span className="text-2xl font-medium text-content-primary tabular-nums italic tracking-tighter">GHS {subtotal.toLocaleString()}</span>
+                                    <span className="text-sm font-black uppercase tracking-[0.25em] text-content-primary">Total</span>
+                                    <span className="text-2xl font-medium text-content-primary tabular-nums italic tracking-tighter">GHS {total.toLocaleString()}</span>
                                 </div>
                                 
                                 </div>
@@ -183,7 +192,6 @@ export default function CartPage() {
                                             <button
                                                 onClick={() => {
                                                     removeFromCart(item.id);
-                                                    trackRemoveFromCart(item.product, item.quantity);
                                                 }}
                                                 className="text-[10px] font-black uppercase tracking-widest text-content-secondary hover:text-red-500 transition-colors institutional-focus"
                                                 title="Remove item"
@@ -238,7 +246,7 @@ export default function CartPage() {
                                 >
                                     Checkout Hub
                                     <span className="opacity-30">/</span>
-                                    GHS {subtotal.toLocaleString()}
+                                    GHS {total.toLocaleString()}
                                 </button>
                             </div>
                             

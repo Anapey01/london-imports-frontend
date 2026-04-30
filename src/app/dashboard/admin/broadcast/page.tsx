@@ -17,7 +17,9 @@ import {
     FileText,
     ArrowRight,
     Eye,
-    Edit3
+    Edit3,
+    Map,
+    MapPin
 } from 'lucide-react';
 
 const LOGISTICS_TEMPLATES = [
@@ -41,6 +43,13 @@ const LOGISTICS_TEMPLATES = [
         subject: 'Transit Update: Goods are on the way to Ghana',
         message: 'Hello,\n\nYour shipment has officially departed and is currently in international transit toward Tema Port. Approximate transit times: Air (7-14 days), Sea (30-45 days).\n\nWe will notify you the moment it docks in Ghana.',
         icon: Anchor
+    },
+    {
+        id: 'ghana-arrived',
+        title: 'Arrived at Ghana Hub',
+        subject: 'Shipment Arrival: Your items are now at our London\'s Imports Hub!',
+        message: 'Hello,\n\nGreat news! Your shipment has successfully arrived at our London\'s Imports Hub in Ghana and has been sorted.\n\nYou can now come for collection at our hub or wait for our last-mile delivery team to contact you.\n\nHub Location: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for your patience.',
+        icon: Map
     },
     {
         id: 'tema-port',
@@ -70,7 +79,8 @@ const JOURNEY_FILTERS = [
     { key: 'state:OPEN_FOR_BATCH', label: 'At GZ Warehouse', icon: Package },
     { key: 'state:IN_FULFILLMENT', label: 'Loaded/Packed', icon: FileText },
     { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
-    { key: 'state:OUT_FOR_DELIVERY', label: 'Port Clearance', icon: Anchor },
+    { key: 'state:ARRIVED', label: 'Arrived at Ghana Hub', icon: MapPin },
+    { key: 'state:OUT_FOR_DELIVERY', label: 'Out for Local Delivery', icon: Anchor },
     { key: 'manual', label: 'Manual Email List', icon: Edit3 },
 ];
 

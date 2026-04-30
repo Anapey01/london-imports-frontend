@@ -171,11 +171,19 @@ export default function AdminOrdersPage() {
     const handleBulkStatus = async (newStatus: string) => {
         const ids = Array.from(selectedIds);
         if (ids.length === 0) return;
-        const label = newStatus === 'IN_TRANSIT' ? 'In Transit' : newStatus === 'DELIVERED' ? 'Delivered' : newStatus;
+        const labelMap: Record<string, string> = {
+            IN_TRANSIT: 'In Transit',
+            ARRIVED: 'Arrived',
+            DELIVERED: 'Delivered',
+            OUT_FOR_DELIVERY: 'Out for Delivery',
+            CANCELLED: 'Cancelled',
+        };
+        const label = labelMap[newStatus] || newStatus;
         if (!confirm(`Mark ${ids.length} order(s) as "${label}"?`)) return;
         setBulkUpdating(true);
         try {
-            await Promise.all(ids.map(id => adminAPI.updateOrder(id, { status: newStatus })));
+            // BUG-07 FIX: backend field is `state`, not `status`
+            await Promise.all(ids.map(id => adminAPI.updateOrder(id, { state: newStatus })));
             setOrders(prev => prev.map(o => selectedIds.has(o.id) ? { ...o, status: newStatus } : o));
             setSelectedIds(new Set());
         } catch (err) {
@@ -194,8 +202,9 @@ export default function AdminOrdersPage() {
             PENDING: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
             PROCESSING: isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600',
             IN_TRANSIT: isDark ? 'bg-indigo-900/30 text-indigo-400' : 'bg-indigo-100 text-indigo-600',
+            ARRIVED: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
             OUT_FOR_DELIVERY: isDark ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-100 text-orange-600',
-            DELIVERED: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
+            DELIVERED: isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600',
             CANCELLED: isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600',
         };
         return colors[status] || colors.PENDING;
@@ -210,12 +219,16 @@ export default function AdminOrdersPage() {
         return colors[status] || colors.PENDING;
     };
 
-    const STATUS_TABS = ['All', 'PENDING', 'PROCESSING', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
+    // BUG-06 FIX: STATUS_TABS now maps to real backend OrderState values (removed fake 'PROCESSING')
+    const STATUS_TABS = ['All', 'PENDING_PAYMENT', 'PAID', 'OPEN_FOR_BATCH', 'IN_FULFILLMENT', 'IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
     const statusCounts: Record<string, number> = {
         All: orders.length,
-        PENDING: orders.filter(o => o.status === 'PENDING').length,
-        PROCESSING: orders.filter(o => o.status === 'PROCESSING').length,
+        PENDING_PAYMENT: orders.filter(o => o.status === 'PENDING_PAYMENT').length,
+        PAID: orders.filter(o => o.status === 'PAID').length,
+        OPEN_FOR_BATCH: orders.filter(o => o.status === 'OPEN_FOR_BATCH').length,
+        IN_FULFILLMENT: orders.filter(o => o.status === 'IN_FULFILLMENT').length,
         IN_TRANSIT: orders.filter(o => o.status === 'IN_TRANSIT').length,
+        ARRIVED: orders.filter(o => o.status === 'ARRIVED').length,
         OUT_FOR_DELIVERY: orders.filter(o => o.status === 'OUT_FOR_DELIVERY').length,
         DELIVERED: orders.filter(o => o.status === 'DELIVERED').length,
         CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
@@ -304,6 +317,14 @@ export default function AdminOrdersPage() {
                         >
                             <Package className="w-4 h-4" />
                             Mark In Transit
+                        </button>
+                        <button
+                            onClick={() => handleBulkStatus('ARRIVED')}
+                            disabled={bulkUpdating}
+                            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
+                        >
+                            <CheckCircle className="w-4 h-4" />
+                            Mark Arrived
                         </button>
                         <button
                             onClick={() => handleBulkStatus('DELIVERED')}
@@ -509,9 +530,17 @@ export default function AdminOrdersPage() {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    {order.status === 'PROCESSING' && (
+                                    {order.status === 'PAID' && (
                                         <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { status: 'IN_TRANSIT' }).then(() => loadOrders())}
+                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'IN_TRANSIT' }).then(() => loadOrders())}
+                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                        >
+                                            Ship to Ghana
+                                        </button>
+                                    )}
+                                    {(order.status === 'OPEN_FOR_BATCH' || order.status === 'IN_FULFILLMENT') && (
+                                        <button 
+                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'IN_TRANSIT' }).then(() => loadOrders())}
                                             className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                                         >
                                             Ship to Ghana
@@ -519,7 +548,15 @@ export default function AdminOrdersPage() {
                                     )}
                                     {order.status === 'IN_TRANSIT' && (
                                         <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { status: 'OUT_FOR_DELIVERY' }).then(() => loadOrders())}
+                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'ARRIVED' }).then(() => loadOrders())}
+                                            className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                                        >
+                                            Arrived at Hub
+                                        </button>
+                                    )}
+                                    {order.status === 'ARRIVED' && (
+                                        <button 
+                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'OUT_FOR_DELIVERY' }).then(() => loadOrders())}
                                             className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
                                         >
                                             Last Mile
@@ -527,7 +564,7 @@ export default function AdminOrdersPage() {
                                     )}
                                     {order.status === 'OUT_FOR_DELIVERY' && (
                                         <button 
-                                            onClick={() => adminAPI.updateOrder(order.id, { status: 'DELIVERED' }).then(() => loadOrders())}
+                                            onClick={() => adminAPI.updateOrder(order.id, { state: 'DELIVERED' }).then(() => loadOrders())}
                                             className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
                                         >
                                             Complete

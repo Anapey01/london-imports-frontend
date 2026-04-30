@@ -31,9 +31,12 @@ export default function Navbar() {
         const timer = setTimeout(() => {
             setMounted(true);
         }, 100);
-        fetchCart();
+        // Only fetch cart if user is authenticated — avoids a 401 on every guest page load
+        if (isAuthenticated) {
+            fetchCart();
+        }
         return () => clearTimeout(timer);
-    }, [fetchCart]);
+    }, [fetchCart, isAuthenticated]);
 
     if (!mounted) {
         return (

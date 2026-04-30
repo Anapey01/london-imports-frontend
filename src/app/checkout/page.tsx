@@ -342,6 +342,13 @@ function CheckoutPage() {
                 throw new Error("Payment gateway not ready. Please try again or use WhatsApp.");
             }
 
+            // BUG-17 FIX: Guard against zero/negative payment amounts before opening Paystack
+            if (paymentAmount <= 0) {
+                setError('Payment amount is invalid. Please refresh and try again.');
+                setIsLoading(false);
+                return;
+            }
+
             trackPaymentLifecycle('selection', { provider: 'paystack', amount: paymentAmount });
 
             const handler = paystack.setup({

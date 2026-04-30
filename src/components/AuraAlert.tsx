@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle, Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -77,6 +77,8 @@ export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
                         onClose(id);
                     }}
                     className="flex-shrink-0 p-1 text-white/20 hover:text-white/60 transition-colors"
+                    aria-label="Close notification"
+                    title="Close"
                 >
                     <X className="w-4 h-4" />
                 </button>
