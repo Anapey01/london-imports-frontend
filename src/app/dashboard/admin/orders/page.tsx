@@ -25,6 +25,9 @@ interface Order {
     total_amount: number;
     status: string;
     payment_status: string;
+    amount_paid: number;
+    balance_due: number;
+    is_installment: boolean;
     created_at: string;
     thumbnail?: string;
     items?: Array<{
@@ -48,6 +51,9 @@ interface APIOrder {
     total: number | string;
     status?: string;
     payment_status?: string;
+    amount_paid?: number;
+    balance_due?: number;
+    is_installment?: boolean;
     created_at: string;
     thumbnail?: string;
 }
@@ -69,6 +75,9 @@ function mapAPIOrder(order: APIOrder): Order {
         total_amount: typeof order.total === 'string' ? parseFloat(order.total) : (order.total || 0),
         status: order.status || 'PENDING',
         payment_status: order.payment_status || 'PENDING',
+        amount_paid: typeof order.amount_paid === 'string' ? parseFloat(order.amount_paid) : (order.amount_paid || 0),
+        balance_due: typeof order.balance_due === 'string' ? parseFloat(order.balance_due) : (order.balance_due || 0),
+        is_installment: !!order.is_installment,
         created_at: order.created_at,
         thumbnail: order.thumbnail,
         items: order.items as Order['items'] || []
@@ -213,7 +222,8 @@ export default function AdminOrdersPage() {
     const getPaymentColor = (status: string) => {
         const colors: Record<string, string> = {
             PAID: isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600',
-            PENDING: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
+            PARTIAL: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
+            PENDING: isDark ? 'bg-slate-900/30 text-slate-400' : 'bg-gray-100 text-gray-500',
             REFUNDED: isDark ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-600',
         };
         return colors[status] || colors.PENDING;
@@ -418,9 +428,14 @@ export default function AdminOrdersPage() {
                             </div>
                             <div className="text-center border-l border-gray-200 dark:border-slate-700 pl-4 ml-4">
                                 <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>Payment</p>
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getPaymentColor(order.payment_status)}`}>
-                                    {order.payment_status}
-                                </span>
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tight ${getPaymentColor(order.payment_status)}`}>
+                                        {order.payment_status === 'PARTIAL' ? 'Installment' : order.payment_status}
+                                    </span>
+                                    <p className={`text-[9px] font-bold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                                        GHS {order.amount_paid.toFixed(0)} / {order.total_amount.toFixed(0)}
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -525,9 +540,14 @@ export default function AdminOrdersPage() {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPaymentColor(order.payment_status)}`}>
-                                        {order.payment_status}
-                                    </span>
+                                    <div className="flex flex-col gap-1">
+                                        <span className={`text-[10px] w-fit px-2 py-0.5 rounded-full font-bold uppercase tracking-tight ${getPaymentColor(order.payment_status)}`}>
+                                            {order.payment_status === 'PARTIAL' ? 'Installment' : order.payment_status}
+                                        </span>
+                                        <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                                            GHS {order.amount_paid.toFixed(2)} / {order.total_amount.toFixed(2)}
+                                        </p>
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4">
                                     {order.status === 'PAID' && (
