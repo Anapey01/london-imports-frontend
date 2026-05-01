@@ -36,7 +36,9 @@ export default function CartPage() {
         return () => clearTimeout(timer);
     }, [fetchCart]);
 
-    const items = isAuthenticated ? (cart?.items || []) : guestItems;
+    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+    // If authenticated and have a cart, show it. Otherwise fallback to guest items (especially during merge/sync)
+    const items = (isAuthenticated && hasToken && cart) ? (cart.items || []) : guestItems;
 
     // Derived totals
     const subtotal = items.reduce((sum, i) => sum + Number(i.unit_price || 0) * i.quantity, 0);

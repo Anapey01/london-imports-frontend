@@ -151,7 +151,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
             } catch (err) {
                 console.error("[CartStore] Fetch failed:", err);
                 if (get().version === reqVersion) {
-                    set({ cart: null, itemCount: 0 });
+                    // Fallback to guest count on error so badge doesn't flicker to 0
+                    set({ 
+                        cart: null, 
+                        itemCount: get().guestItems.reduce((sum, i) => sum + i.quantity, 0) 
+                    });
                 }
             } finally {
                 if (get().version === reqVersion) {
