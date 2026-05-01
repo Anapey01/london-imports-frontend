@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI } from '@/lib/api';
-import DashboardView from '@/components/profile/DashboardView';
+import OrdersView from '@/components/profile/OrdersView';
 
-export default function ProfileOverviewPage() {
-    const { user, isAuthenticated } = useAuthStore();
+export default function ProfileOrdersPage() {
+    const { isAuthenticated } = useAuthStore();
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
@@ -17,7 +17,5 @@ export default function ProfileOverviewPage() {
         }
     }, [isAuthenticated]);
 
-    if (!user) return null;
-
-    return <DashboardView orders={orders} user={user} />;
+    return <OrdersView orders={orders} />;
 }
