@@ -56,6 +56,7 @@ interface CartState {
     guestItems: CartItem[];
     isLoading: boolean;
     isMerging: boolean;
+    version: number;
     itemCount: number;
     selectedItemIds: Set<string>;
 
@@ -76,13 +77,15 @@ export const useCartStore = create<CartState>()((set, get) => ({
     isLoading: false,
     isMerging: false,
     itemCount: 0,
+    version: 0,
     selectedItemIds: new Set(),
 
     fetchCart: async () => {
-        // Fix: Check auth store state, not missing access_token
+        const reqVersion = get().version + 1;
+        set({ version: reqVersion });
+
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-        // If logged in, fetch server cart
         if (isAuthenticated) {
             set({ isLoading: true });
 
@@ -96,21 +99,17 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     if (guestItems.length > 0) {
                         console.info("[CartStore] Syncing guest items to server...", guestItems.length);
                         
-                        // CRITICAL: Clear guest state IMMEDIATELY to prevent duplicate syncs 
-                        // if fetchCart is called again before this completes.
-                        localStorage.removeItem('guest_cart');
-                        set({ guestItems: [] });
-
                         // Add each guest item to server cart
                         await Promise.all(guestItems.map(item =>
                             ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color)
                         ));
-                        console.info("[CartStore] Guest sync complete.");
+
+                        // ONLY clear local guest state AFTER successful sync
+                        localStorage.removeItem('guest_cart');
+                        set({ guestItems: [] });
                     }
                 } catch (e) {
-                    console.error("Failed to merge guest cart", e);
-                    // Optional: Restore items to localStorage if it was a network error?
-                    // For now, we prefer data loss over 10x quantity multiplication loops.
+                    console.error("[CartStore] Merge failed:", e);
                 } finally {
                     set({ isMerging: false });
                 }
@@ -118,9 +117,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             try {
                 const response = await ordersAPI.cart();
-                const cart = response.data;
+                
+                // IGNORE if a newer request (or add-to-cart) has started
+                if (get().version !== reqVersion) return;
 
-                // Initialize selection if empty (selecting all by default on first fetch)
+                const cart = response.data;
                 const newSelected = new Set(get().selectedItemIds);
                 if (newSelected.size === 0 && cart.items?.length > 0) {
                     cart.items.forEach((i: CartItem) => newSelected.add(i.id));
@@ -131,26 +132,31 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     selectedItemIds: newSelected,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
-            } catch {
-                set({ cart: null });
+            } catch (err) {
+                console.error("[CartStore] Fetch failed:", err);
+                if (get().version === reqVersion) {
+                    set({ cart: null, itemCount: 0 });
+                }
             } finally {
-                set({ isLoading: false });
+                if (get().version === reqVersion) {
+                    set({ isLoading: false });
+                }
             }
         } else {
-            // Load guest cart from local storage
+            // Guest Side
             const saved = localStorage.getItem('guest_cart');
-            if (saved) {
-                const items = JSON.parse(saved);
-                const newSelected = new Set(get().selectedItemIds);
-                if (newSelected.size === 0 && items.length > 0) {
-                    items.forEach((i: CartItem) => newSelected.add(i.id));
-                }
-                set({
-                    guestItems: items,
-                    selectedItemIds: newSelected,
-                    itemCount: items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0)
-                });
+            const items = saved ? JSON.parse(saved) : [];
+            const newSelected = new Set(get().selectedItemIds);
+            
+            if (newSelected.size === 0 && items.length > 0) {
+                items.forEach((i: CartItem) => newSelected.add(i.id));
             }
+            
+            set({
+                guestItems: items,
+                selectedItemIds: newSelected,
+                itemCount: items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0)
+            });
         }
     },
 
@@ -158,7 +164,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         if (isAuthenticated) {
-            // Optimistic Update: Increment itemCount immediately for snappy UI
+            // Increment version to invalidate any pending fetchCart calls
+            const reqVersion = get().version + 1;
+            set({ version: reqVersion });
+
+            // Optimistic Update
             const previousCount = get().itemCount;
             set({ itemCount: previousCount + quantity });
 
@@ -181,6 +191,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     newSelected.add(i.id);
                 });
 
+                // RACE CONDITION PROTECTION
+                if (get().version !== reqVersion) return;
+
                 set({
                     cart,
                     selectedItemIds: newSelected,
@@ -188,9 +201,10 @@ export const useCartStore = create<CartState>()((set, get) => ({
                 });
             } catch (err) {
                 console.error("[CartStore] Server addToCart failed:", err);
-                // Rollback: Revert the count if the request fails
-                set({ itemCount: get().itemCount - quantity });
-                throw err; // Rethrow to allow component-level catch/toast
+                if (get().version === reqVersion) {
+                    set({ itemCount: previousCount });
+                }
+                throw err;
             }
         } else {
             // Guest Side
@@ -250,6 +264,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
     removeFromCart: async (itemId: string) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
+        const reqVersion = get().version + 1;
+        set({ version: reqVersion });
         
         // Snapshot for rollback
         const previousCart = get().cart;
@@ -280,13 +296,17 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             try {
                 const response = await ordersAPI.removeFromCart(itemId);
+                if (get().version !== reqVersion) return;
+                
                 set({
                     cart: response.data,
                     itemCount: response.data.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
             } catch (error) {
                 console.error("Failed to remove from cart, rolling back.", error);
-                set({ cart: previousCart, itemCount: previousCount });
+                if (get().version === reqVersion) {
+                    set({ cart: previousCart, itemCount: previousCount });
+                }
                 throw error;
             }
         } else {
@@ -305,6 +325,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
     updateQuantity: async (itemId: string, quantity: number) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
+        const reqVersion = get().version + 1;
+        set({ version: reqVersion });
         
         // Snapshot for rollback
         const previousCart = get().cart;
@@ -336,13 +358,17 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             try {
                 const response = await ordersAPI.updateCartItem(itemId, quantity);
+                if (get().version !== reqVersion) return;
+
                 set({
                     cart: response.data,
                     itemCount: response.data.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
             } catch (error) {
                 console.error("Failed to update quantity, rolling back.", error);
-                set({ cart: previousCart, itemCount: previousCount });
+                if (get().version === reqVersion) {
+                    set({ cart: previousCart, itemCount: previousCount });
+                }
                 throw error;
             }
         } else {
@@ -386,8 +412,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
         const currentCart = get().cart;
 
+        const reqVersion = get().version + 1;
         // Reset local state immediately for snappy UX
-        set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: new Set() });
+        set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: new Set(), version: reqVersion });
         localStorage.removeItem('guest_cart');
 
         if (isAuthenticated && currentCart?.items) {
@@ -409,7 +436,3 @@ export const useCartStore = create<CartState>()((set, get) => ({
         }
     },
 }));
-
-function isAuthenticated() {
-    return useAuthStore.getState().isAuthenticated;
-}

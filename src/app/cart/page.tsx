@@ -89,18 +89,25 @@ export default function CartPage() {
 
             <div className="max-w-3xl mx-auto">
                 {items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
-                        <div className="mb-8 opacity-10">
-                            <ShoppingBag className="w-20 h-20" strokeWidth={1} />
+                    isLoading ? (
+                        <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
+                            <div className="w-8 h-8 border-4 border-slate-950 dark:border-white border-t-transparent rounded-full animate-spin opacity-20"></div>
+                            <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary animate-pulse">Synchronizing Basket...</p>
                         </div>
-                        <h2 className="text-xl font-medium mb-4 tracking-widest uppercase text-slate-950 dark:text-white">Your basket is empty</h2>
-                        <Link
-                            href="/products"
-                            className="inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-950/20 institutional-focus"
-                        >
-                            Start Sourcing
-                        </Link>
-                    </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
+                            <div className="mb-8 opacity-10">
+                                <ShoppingBag className="w-20 h-20" strokeWidth={1} />
+                            </div>
+                            <h2 className="text-xl font-medium mb-4 tracking-widest uppercase text-slate-950 dark:text-white">Your basket is empty</h2>
+                            <Link
+                                href="/products"
+                                className="inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-950/20 institutional-focus"
+                            >
+                                Start Sourcing
+                            </Link>
+                        </div>
+                    )
                 ) : (
                     <div className="space-y-0">
                         {/* CART SUMMARY */}
