@@ -116,10 +116,11 @@ export const useAuthStore = create<AuthState>()(
                     const response = await authAPI.me();
                     set({ user: response.data, isAuthenticated: true });
                 } catch (error: any) {
-                    // Only logout if it's a definitive auth failure (401 or 403)
-                    // If it's a network error (no response), keep the session for retry
-                    if (error.response && (error.response.status === 400 || error.response.status === 401 || error.response.status === 403)) {
+                    // SILENT CLEANUP: If 401/403, just logout and don't throw a scary error
+                    if (error.response && (error.response.status === 401 || error.response.status === 403 || error.response.status === 400)) {
+                        console.debug('[AuthStore] Session invalid or expired. Cleaning up.');
                         get().logout();
+                        return; // Don't re-throw for expected auth failures
                     }
                     throw error;
                 }
