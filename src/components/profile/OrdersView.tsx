@@ -101,113 +101,96 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className="group p-6 sm:p-10 rounded-3xl border border-border-standard bg-surface-card transition-all duration-700 hover:shadow-2xl hover:border-brand-emerald/30 relative overflow-hidden animate-fade-in-up">
-                                {/* Subtle Background Aura */}
-                                <div className="absolute -right-20 -top-20 w-64 h-64 bg-brand-emerald/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                                
-                                <div className="flex flex-col xl:flex-row justify-between gap-10 relative z-10">
-                                    <div className="flex flex-col sm:flex-row gap-10">
-                                        {/* Image Stack */}
-                                        <div className="flex -space-x-16 sm:-space-x-12 flex-shrink-0 justify-center sm:justify-start">
-                                            {order.items?.slice(0, 3).map((item, idx) => (
-                                                <div key={item.id} className={`relative w-32 h-40 sm:w-28 sm:h-36 rounded-2xl overflow-hidden border border-border-standard/50 shadow-2xl bg-surface z-[${30 - idx}] transform transition-all duration-500 group-hover:translate-x-2 group-hover:-rotate-2 group-hover:scale-105`}>
-                                                    {item.product.image ? (
-                                                        <NextImage
-                                                            src={getImageUrl(item.product.image)}
-                                                            alt={item.product_name}
-                                                            fill
-                                                            className="object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-surface-muted">
-                                                            <Package size={24} className="text-content-secondary opacity-30" strokeWidth={1} />
-                                                        </div>
-                                                    )}
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                </div>
-                                            ))}
-                                            {order.items && order.items.length > 3 && (
-                                                <div className="relative w-32 h-40 sm:w-28 sm:h-36 rounded-2xl flex items-center justify-center border border-border-standard/50 shadow-2xl bg-surface-card text-content-secondary text-xs font-black z-10 uppercase tracking-widest backdrop-blur-sm">
-                                                    +{order.items.length - 3}
-                                                </div>
-                                            )}
+                            <div key={order.order_number} className="group relative bg-white border border-border-standard hover:border-brand-emerald/30 transition-all duration-300 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl -mt-px first:mt-0">
+                                <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-8">
+                                    {/* Order Thumbnail - Compact */}
+                                    <div className="flex-shrink-0 w-24 h-24 sm:w-20 sm:h-20 relative rounded-lg overflow-hidden border border-border-standard bg-surface-muted group-hover:scale-105 transition-transform duration-500">
+                                        {order.items?.[0]?.product.image ? (
+                                            <NextImage
+                                                src={getImageUrl(order.items[0].product.image)}
+                                                alt={order.order_number}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <Package size={20} className="text-content-secondary opacity-20" />
+                                            </div>
+                                        )}
+                                        {order.items && order.items.length > 1 && (
+                                            <div className="absolute bottom-1 right-1 bg-slate-900/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
+                                                +{order.items.length - 1}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Core Info */}
+                                    <div className="flex-1 flex flex-col justify-center text-center sm:text-left min-w-0">
+                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-1.5">
+                                            <h3 className="text-sm font-black text-content-primary tracking-tight">
+                                                #{order.order_number}
+                                            </h3>
+                                            <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] ${statusStyles.bg} ${statusStyles.text} shadow-sm`}>
+                                                {order.state_display}
+                                            </span>
                                         </div>
-
-                                        <div className="flex flex-col justify-between py-2 text-center sm:text-left">
-                                            <div className="space-y-4">
-                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
-                                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${statusStyles.bg} ${statusStyles.text}`}>
-                                                        {order.state_display}
-                                                    </span>
-                                                    <h3 className="text-xl sm:text-2xl font-black text-content-primary uppercase tracking-tight tabular-nums">
-                                                        #{order.order_number}
-                                                    </h3>
-                                                </div>
-                                                <div className="flex items-center justify-center sm:justify-start gap-3 text-content-secondary">
-                                                    <Calendar size={12} strokeWidth={2} />
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">
-                                                        {new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date(order.created_at))}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-10 sm:mt-0 flex flex-col sm:flex-row sm:items-end gap-10 sm:gap-14">
-                                                <div className="group/total">
-                                                    <p className="text-[9px] uppercase tracking-[0.4em] font-black mb-2 text-content-secondary opacity-60 group-hover/total:opacity-100 transition-opacity">Total Investment</p>
-                                                    <p className="text-3xl sm:text-4xl font-black text-content-primary tracking-tighter tabular-nums flex items-baseline gap-1">
-                                                        <span className="text-sm font-black opacity-40">GHS</span>
-                                                        {parseFloat(order.total.toString()).toLocaleString()}
-                                                    </p>
-                                                </div>
-                                                {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
-                                                    <div className="group/balance">
-                                                        <p className="text-[9px] uppercase tracking-[0.4em] font-black mb-2 text-amber-500 opacity-80 group-hover/balance:opacity-100 transition-opacity">Outstanding Balance</p>
-                                                        <p className="text-3xl sm:text-4xl font-black text-amber-500 tracking-tighter tabular-nums flex items-baseline gap-1">
-                                                            <span className="text-sm font-black opacity-40">GHS</span>
-                                                            {balanceDue.toLocaleString()}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
+                                        <div className="flex items-center justify-center sm:justify-start gap-4 text-content-secondary">
+                                            <p className="text-[9px] font-bold uppercase tracking-wider">
+                                                {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(order.created_at))}
+                                            </p>
+                                            <span className="w-1 h-1 rounded-full bg-border-standard" />
+                                            <p className="text-[9px] font-bold uppercase tracking-wider truncate">
+                                                {order.items?.length || 0} Item(s)
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col justify-end gap-4 min-w-[200px]">
+                                    {/* Financials - Center on mobile, Row on desktop */}
+                                    <div className="flex flex-row sm:flex-col justify-center sm:justify-center items-center sm:items-end gap-6 sm:gap-1 text-right">
+                                        <div className="flex flex-col items-center sm:items-end">
+                                            <p className="text-[8px] uppercase tracking-widest font-black text-content-secondary opacity-50 hidden sm:block">TOTAL</p>
+                                            <p className="text-sm sm:text-lg font-black text-content-primary tabular-nums">
+                                                GHS {parseFloat(order.total.toString()).toLocaleString()}
+                                            </p>
+                                        </div>
+                                        {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
+                                            <div className="flex flex-col items-center sm:items-end">
+                                                <p className="text-[8px] uppercase tracking-widest font-black text-amber-500 hidden sm:block">DUE</p>
+                                                <p className="text-sm sm:text-lg font-black text-amber-500 tabular-nums">
+                                                    GHS {balanceDue.toLocaleString()}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="flex flex-row sm:flex-col items-center justify-center gap-2 sm:w-36">
                                         <Link
                                             href={`/track?order=${order.order_number}`}
-                                            className="w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] text-center transition-all bg-slate-950 text-white hover:bg-slate-900 hover:scale-[1.02] active:scale-[0.98] shadow-xl flex items-center justify-center gap-3"
+                                            className="flex-1 sm:w-full py-2.5 sm:py-2 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm whitespace-nowrap"
                                         >
-                                            <Package size={14} />
-                                            Track Order
+                                            Track
                                         </Link>
-                                        
                                         {isPending && (
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 hover:scale-[1.02] active:scale-[0.98] shadow-lg transition-all flex items-center justify-center gap-3"
+                                                className="flex-1 sm:w-full py-2.5 sm:py-2 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm whitespace-nowrap"
                                             >
-                                                <Clock size={14} />
-                                                {balanceDue > 0 ? 'Settle Balance' : 'Complete Payment'}
+                                                Pay
                                             </Link>
                                         )}
-
-                                        <div className="flex items-center justify-center gap-8 mt-4 pt-4 border-t border-border-standard/50">
-                                            <Link
-                                                href={`/orders/${order.order_number}`}
-                                                className="text-[10px] font-black uppercase tracking-[0.25em] text-content-secondary hover:text-content-primary transition-all hover:scale-105 flex items-center gap-2"
-                                            >
-                                                Invoice
-                                            </Link>
-                                            {canCancel && (
-                                                <button
-                                                    onClick={() => setCancellingOrder(order.order_number)}
-                                                    className="text-[10px] font-black uppercase tracking-[0.25em] text-content-secondary hover:text-rose-600 transition-all hover:scale-105"
-                                                >
-                                                    Cancel
-                                                </button>
-                                            )}
-                                        </div>
+                                        <Link
+                                            href={`/orders/${order.order_number}`}
+                                            className="p-2 sm:hidden rounded-lg border border-border-standard text-content-secondary"
+                                        >
+                                            <ChevronRight size={16} />
+                                        </Link>
                                     </div>
+                                </div>
+
+                                {/* Desktop Only subtle hover arrow */}
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block pointer-events-none">
+                                    <ChevronRight size={14} className="text-content-secondary" />
                                 </div>
                             </div>
                         );
