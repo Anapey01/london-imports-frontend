@@ -101,10 +101,10 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className="group relative bg-white border border-border-standard hover:border-brand-emerald/30 transition-all duration-300 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl -mt-px first:mt-0">
-                                <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-8">
-                                    {/* Order Thumbnail - Compact */}
-                                    <div className="flex-shrink-0 w-24 h-24 sm:w-20 sm:h-20 relative rounded-lg overflow-hidden border border-border-standard bg-surface-muted group-hover:scale-105 transition-transform duration-500">
+                            <div key={order.order_number} className="group relative bg-white border border-border-standard rounded-xl hover:border-brand-emerald/40 transition-all duration-300 shadow-sm overflow-hidden mb-3">
+                                <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-center gap-6 sm:gap-10">
+                                    {/* Compact Thumbnail Node */}
+                                    <div className="flex-shrink-0 w-20 h-24 sm:w-16 sm:h-20 relative rounded-lg border border-border-standard overflow-hidden bg-slate-50 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
                                         {order.items?.[0]?.product.image ? (
                                             <NextImage
                                                 src={getImageUrl(order.items[0].product.image)}
@@ -113,84 +113,81 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <Package size={20} className="text-content-secondary opacity-20" />
+                                            <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                <Package size={20} />
                                             </div>
                                         )}
                                         {order.items && order.items.length > 1 && (
-                                            <div className="absolute bottom-1 right-1 bg-slate-900/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
-                                                +{order.items.length - 1}
+                                            <div className="absolute bottom-1 right-1 bg-slate-950/80 text-white text-[7px] font-black px-1.5 py-0.5 rounded backdrop-blur-sm">
+                                                +{order.items.length - 1} MORE
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Core Info */}
-                                    <div className="flex-1 flex flex-col justify-center text-center sm:text-left min-w-0">
-                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-1.5">
-                                            <h3 className="text-sm font-black text-content-primary tracking-tight">
+                                    {/* High-Authority Meta Data */}
+                                    <div className="flex-1 min-w-0 flex flex-col justify-center text-center sm:text-left">
+                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-2">
+                                            <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
                                                 #{order.order_number}
                                             </h3>
-                                            <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] ${statusStyles.bg} ${statusStyles.text} shadow-sm`}>
+                                            <span className={`px-2 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest ${statusStyles.bg} ${statusStyles.text} shadow-sm border border-black/5`}>
                                                 {order.state_display}
                                             </span>
                                         </div>
-                                        <div className="flex items-center justify-center sm:justify-start gap-4 text-content-secondary">
-                                            <p className="text-[9px] font-bold uppercase tracking-wider">
-                                                {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(order.created_at))}
-                                            </p>
-                                            <span className="w-1 h-1 rounded-full bg-border-standard" />
-                                            <p className="text-[9px] font-bold uppercase tracking-wider truncate">
-                                                {order.items?.length || 0} Item(s)
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Financials - Center on mobile, Row on desktop */}
-                                    <div className="flex flex-row sm:flex-col justify-center sm:justify-center items-center sm:items-end gap-6 sm:gap-1 text-right">
-                                        <div className="flex flex-col items-center sm:items-end">
-                                            <p className="text-[8px] uppercase tracking-widest font-black text-content-secondary opacity-50 hidden sm:block">TOTAL</p>
-                                            <p className="text-sm sm:text-lg font-black text-content-primary tabular-nums">
-                                                GHS {parseFloat(order.total.toString()).toLocaleString()}
-                                            </p>
-                                        </div>
-                                        {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
-                                            <div className="flex flex-col items-center sm:items-end">
-                                                <p className="text-[8px] uppercase tracking-widest font-black text-amber-500 hidden sm:block">DUE</p>
-                                                <p className="text-sm sm:text-lg font-black text-amber-500 tabular-nums">
-                                                    GHS {balanceDue.toLocaleString()}
+                                        <div className="flex items-center justify-center sm:justify-start gap-4 text-slate-400">
+                                            <div className="flex items-center gap-1.5">
+                                                <Calendar size={10} className="text-slate-300" />
+                                                <p className="text-[9px] font-bold uppercase tracking-widest">
+                                                    {new Date(order.created_at).toLocaleDateString()}
                                                 </p>
                                             </div>
+                                            <span className="w-1 h-1 rounded-full bg-slate-100" />
+                                            <div className="flex items-center gap-1.5">
+                                                <Package size={10} className="text-slate-300" />
+                                                <p className="text-[9px] font-bold uppercase tracking-widest">
+                                                    {order.items?.length || 0} ITEM(S)
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Financial Ledger Block */}
+                                    <div className="flex flex-col items-center sm:items-end justify-center gap-1 text-center sm:text-right min-w-[120px]">
+                                        <p className="text-[8px] uppercase tracking-[0.2em] font-black text-slate-300">Liability</p>
+                                        <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">
+                                            GHS {parseFloat(order.total.toString()).toLocaleString()}
+                                        </p>
+                                        {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
+                                            <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest">
+                                                DUE: GHS {balanceDue.toLocaleString()}
+                                            </p>
                                         )}
                                     </div>
 
-                                    {/* Actions */}
-                                    <div className="flex flex-row sm:flex-col items-center justify-center gap-2 sm:w-36">
-                                        <Link
-                                            href={`/track?order=${order.order_number}`}
-                                            className="flex-1 sm:w-full py-2.5 sm:py-2 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm whitespace-nowrap"
-                                        >
-                                            Track
-                                        </Link>
-                                        {isPending && (
-                                            <Link
-                                                href={`/checkout?order=${order.order_number}`}
-                                                className="flex-1 sm:w-full py-2.5 sm:py-2 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm whitespace-nowrap"
-                                            >
-                                                Pay
-                                            </Link>
-                                        )}
+                                    {/* Core Operational Actions */}
+                                    <div className="flex flex-row sm:flex-col items-center justify-center gap-2 w-full sm:w-40 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
                                         <Link
                                             href={`/orders/${order.order_number}`}
-                                            className="p-2 sm:hidden rounded-lg border border-border-standard text-content-secondary"
+                                            className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm"
                                         >
-                                            <ChevronRight size={16} />
+                                            View Manifest
                                         </Link>
+                                        {isPending ? (
+                                            <Link
+                                                href={`/checkout?order=${order.order_number}`}
+                                                className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm"
+                                            >
+                                                Settle Balance
+                                            </Link>
+                                        ) : (
+                                            <Link
+                                                href={`/track?order=${order.order_number}`}
+                                                className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all"
+                                            >
+                                                Track Shipment
+                                            </Link>
+                                        )}
                                     </div>
-                                </div>
-
-                                {/* Desktop Only subtle hover arrow */}
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block pointer-events-none">
-                                    <ChevronRight size={14} className="text-content-secondary" />
                                 </div>
                             </div>
                         );
