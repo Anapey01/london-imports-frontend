@@ -36,17 +36,16 @@ import { Order } from '@/types';
 
 interface DashboardData {
     stats: {
-        totalRevenue: number;
-        totalOrders: number;
-        activeCustomers: number;
-        averageOrderValue: number;
-        revenueGrowth: number;
-        ordersGrowth: number;
-        customersGrowth: number;
-        aovGrowth: number;
+        total_users: number;
+        total_orders: number;
+        total_products: number;
+        total_revenue: number;
+        potential_revenue: number;
+        new_users_today: number;
+        pending_orders: number;
     };
     analytics: {
-        daily: Array<{ date: string; value: number }>;
+        revenueChart: any[];
         funnel: {
             visitors: number;
             cart: number;
