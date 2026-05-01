@@ -12,6 +12,9 @@ export interface User {
     city?: string;
     region?: string;
     ghana_post_gps?: string;
+    email_notifications?: boolean;
+    sms_notifications?: boolean;
+    whatsapp_notifications?: boolean;
 }
 
 export interface Category {

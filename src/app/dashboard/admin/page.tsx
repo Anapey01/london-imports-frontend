@@ -18,8 +18,16 @@ import {
     LayoutDashboard,
     Search,
     Mail,
+    Plus,
+    Calendar,
+    ChevronDown,
+    MoreHorizontal,
     ChevronRight,
-    Trash2
+    Trash2,
+    Check,
+    X,
+    Filter,
+    AlertTriangle,
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -59,6 +67,27 @@ export default function AdminDashboardPage() {
     });
 
     const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
+    const [filterStuck, setFilterStuck] = useState(false);
+
+    const isRecent = (dateStr: string) => {
+        const orderDate = new Date(dateStr).getTime();
+        const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+        return orderDate > twoHoursAgo;
+    };
+
+    const isToday = (dateStr: string) => {
+        if (!dateStr) return false;
+        const orderDate = new Date(dateStr).toDateString();
+        const today = new Date().toDateString();
+        return orderDate === today;
+    };
+
+    const isStuck = (order: any) => {
+        if (['DELIVERED', 'CANCELLED', 'COMPLETED'].includes(order.status)) return false;
+        const lastUpdated = new Date(order.updated_at || order.created_at).getTime();
+        const threshold = Date.now() - (5 * 24 * 60 * 60 * 1000);
+        return lastUpdated < threshold;
+    };
 
     const addAlert = (message: string, type: AlertType = 'success') => {
         const id = Math.random().toString(36).substring(7);
@@ -174,31 +203,20 @@ export default function AdminDashboardPage() {
 
     if (!data) return null;
 
-    // Temporal Intelligence Helpers
-    const isRecent = (dateStr: string) => {
-        const orderDate = new Date(dateStr).getTime();
-        const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
-        return orderDate > twoHoursAgo;
-    };
-
-    const isToday = (dateStr: string) => {
-        if (!dateStr) return false;
-        const orderDate = new Date(dateStr).toDateString();
-        const today = new Date().toDateString();
-        return orderDate === today;
-    };
-
     // Logic for filtering recent transactions - Hardened
     const recentOrdersArray = Array.isArray(data?.recentOrders) ? data.recentOrders : [];
     
     const filteredOrders = recentOrdersArray.filter(order => {
         const query = searchTerm.toLowerCase();
-        return (
+        const matchesQuery = (
             order?.order_number?.toString().toLowerCase().includes(query) ||
             order?.customer?.name?.toLowerCase().includes(query) ||
             order?.customer?.email?.toLowerCase().includes(query) ||
             order?.phone?.toLowerCase().includes(query)
         );
+        
+        if (filterStuck) return matchesQuery && isStuck(order);
+        return matchesQuery;
     });
 
     return (
@@ -226,13 +244,22 @@ export default function AdminDashboardPage() {
                             className="pl-11 pr-6 py-3 bg-primary-surface border border-primary-surface rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium w-full md:w-64"
                         />
                     </div>
-                    <Link 
-                        href="/dashboard/admin/broadcast"
-                        className="p-3 bg-nuclear-text text-white rounded-2xl hover:bg-black transition-all shadow-lg shadow-nuclear-text/10"
-                        title="New Broadcast"
-                    >
-                        <Mail className="w-5 h-5" />
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setFilterStuck(!filterStuck)}
+                            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filterStuck ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-primary-surface border border-primary-surface opacity-60 hover:opacity-100'}`}
+                        >
+                            <Filter className="w-3.5 h-3.5" />
+                            Delayed
+                        </button>
+                        <Link 
+                            href="/dashboard/admin/broadcast"
+                            className="p-3 bg-nuclear-text text-white rounded-2xl hover:bg-black transition-all shadow-lg shadow-nuclear-text/10"
+                            title="New Broadcast"
+                        >
+                            <Mail className="w-5 h-5" />
+                        </Link>
+                    </div>
                 </div>
             </div>
 
@@ -325,6 +352,7 @@ export default function AdminDashboardPage() {
                                         getStatusColor={getStatusColor}
                                         isRecent={isRecent}
                                         isToday={isToday}
+                                        isStuck={isStuck(order)}
                                         showDivider={idx > 0 && isToday(filteredOrders[idx-1]?.created_at) && !isToday(order.created_at)}
                                         isFirstToday={idx === 0 && isToday(order.created_at)}
                                     />
@@ -375,6 +403,7 @@ const OrderRow = React.memo(({
     getStatusColor,
     isRecent,
     isToday,
+    isStuck,
     showDivider,
     isFirstToday
 }: any) => {
@@ -438,12 +467,20 @@ const OrderRow = React.memo(({
                     </div>
                 </td>
                 <td className="px-4 md:px-8 py-6 hidden md:table-cell">
-                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order?.status)}`}>
-                        {order?.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
-                         order?.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
-                         <Clock className="w-3 h-3" />}
-                        {order?.status?.replace('_', ' ')}
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order?.status)}`}>
+                            {order?.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
+                            order?.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
+                            <Clock className="w-3 h-3" />}
+                            {order?.status?.replace('_', ' ')}
+                        </span>
+                        {isStuck && (
+                            <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-lg text-amber-600 animate-in fade-in zoom-in duration-500" title="Needs Attention: Delayed over 5 days">
+                                <AlertTriangle className="w-3 h-3" />
+                                <span className="text-[8px] font-black uppercase tracking-tighter">Delayed</span>
+                            </div>
+                        )}
+                    </div>
                 </td>
                 <td className="px-4 md:px-8 py-6 text-right">
                     <span className="text-sm font-black whitespace-nowrap">₵{parseFloat(order?.total).toLocaleString()}</span>

@@ -204,6 +204,43 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                         </>
                     )}
 
+                    {/* Financial Roadmap - Hardened UX for Installments */}
+                    {(paymentType === 'DEPOSIT' || paymentType === 'CUSTOM') && (
+                        <div className="mx-2 p-5 rounded-2xl bg-slate-50 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-500">
+                            <div className="flex items-center gap-3 mb-5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                                <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-900">Payment Roadmap</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                                <div className="space-y-1">
+                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Due Today</p>
+                                    <p className="text-sm font-black text-slate-900">
+                                        {paymentType === 'DEPOSIT' 
+                                            ? formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))
+                                            : formatPrice(customAmount || 0)}
+                                    </p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Pay Later</p>
+                                    <p className="text-sm font-black text-emerald-600">
+                                        {paymentType === 'DEPOSIT'
+                                            ? formatPrice(currentOrderData.delivery_fee || 0)
+                                            : formatPrice(selectedTotal - Number(customAmount || 0))}
+                                    </p>
+                                </div>
+                                <div className="col-span-2 pt-3 border-t border-slate-200 flex justify-between items-center">
+                                    <p className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Total Value</p>
+                                    <p className="text-sm font-black text-slate-900">{formatPrice(selectedTotal)}</p>
+                                </div>
+                            </div>
+                            <div className="mt-4 p-3 bg-white/60 rounded-lg border border-slate-100">
+                                <p className="text-[8px] font-bold text-slate-500 italic leading-relaxed">
+                                    * Your order enters the shipping pipeline today. The pending balance will be due once the items arrive at the Ghana Hub.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="pt-6">
                         <button 
                             type="button"

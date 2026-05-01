@@ -15,12 +15,6 @@ export default function SettingsView({ user }: { user: User }) {
     const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [notifications, setNotifications] = useState({
-        orders: true,
-        promotions: true,
-        newsletter: false
-    });
-
     const [profileData, setProfileData] = useState({
         first_name: user?.first_name || '',
         last_name: user?.last_name || '',
@@ -29,6 +23,9 @@ export default function SettingsView({ user }: { user: User }) {
         city: user?.city || '',
         region: user?.region || '',
         ghana_post_gps: user?.ghana_post_gps || '',
+        email_notifications: user?.email_notifications ?? true,
+        sms_notifications: user?.sms_notifications ?? true,
+        whatsapp_notifications: user?.whatsapp_notifications ?? false,
     });
 
     const inputClass = "w-full px-4 py-2.5 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-white border-slate-200 text-slate-900 focus:border-brand-emerald focus:ring-4 focus:ring-emerald-500/5 placeholder:text-slate-300";
@@ -157,17 +154,18 @@ export default function SettingsView({ user }: { user: User }) {
                         </h4>
                         <div className="space-y-4">
                             {[
-                                { id: 'orders', label: 'Order Pipeline', desc: 'Critical status updates' },
-                                { id: 'promotions', label: 'Global Offers', desc: 'Sales & flash alerts' },
+                                { id: 'email_notifications', label: 'Email Alerts', desc: 'Detailed order receipts' },
+                                { id: 'sms_notifications', label: 'SMS Alerts', desc: 'Real-time transit updates' },
+                                { id: 'whatsapp_notifications', label: 'WhatsApp Alerts', desc: 'Direct hub communication' },
                             ].map(item => (
                                 <div key={item.id} className="flex items-center justify-between group">
-                                    <div>
+                                    <div className="max-w-[140px]">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{item.label}</p>
                                         <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">{item.desc}</p>
                                     </div>
                                     <ToggleSwitch
-                                        enabled={(notifications as any)[item.id]}
-                                        onChange={() => setNotifications({ ...notifications, [item.id]: !(notifications as any)[item.id] })}
+                                        enabled={(profileData as any)[item.id]}
+                                        onChange={() => setProfileData({ ...profileData, [item.id]: !(profileData as any)[item.id] })}
                                     />
                                 </div>
                             ))}

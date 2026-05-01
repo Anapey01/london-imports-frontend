@@ -86,9 +86,9 @@ export default function OrderDetailPage() {
     if (error || !order) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-                <h1 className="text-3xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Manifest Lost.</h1>
+                <h1 className="text-3xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Order Record Not Found.</h1>
                 <p className="text-slate-500 mb-8 max-w-xs uppercase text-[10px] tracking-widest font-bold">We couldn't locate this specific logistics record.</p>
-                <Link href="/orders" className="text-[11px] font-black uppercase tracking-widest text-emerald-700 border-b border-emerald-700 pb-1">Return to Portfolio</Link>
+                <Link href="/orders" className="text-[11px] font-black uppercase tracking-widest text-emerald-700 border-b border-emerald-700 pb-1">Return to Orders</Link>
             </div>
         );
     }
@@ -126,7 +126,14 @@ export default function OrderDetailPage() {
                         </p>
                     </div>
                     
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 print:hidden">
+                        <button 
+                            onClick={() => window.print()}
+                            className="px-6 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+                        >
+                            <Receipt size={14} />
+                            Download Manifest
+                        </button>
                         <Link 
                             href={`/track?order=${order.order_number}`}
                             className="px-6 py-2.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm flex items-center gap-2"
@@ -258,7 +265,7 @@ export default function OrderDetailPage() {
                                 
                                 <div className="pt-6 border-t border-border-standard">
                                     <div className="flex justify-between items-end mb-6">
-                                        <span className="text-[9px] font-black uppercase text-content-secondary tracking-widest">Total Liability</span>
+                                        <span className="text-[9px] font-black uppercase text-content-secondary tracking-widest">Total Order Value</span>
                                         <span className="text-2xl font-black text-content-primary tracking-tight tabular-nums leading-none">
                                             GHS {Number(order.total).toLocaleString()}
                                         </span>
@@ -306,6 +313,37 @@ export default function OrderDetailPage() {
                     </aside>
                 </div>
             </div>
+            
+            {/* Print Manifest Styling */}
+            <style jsx global>{`
+                @media print {
+                    nav, footer, .print\\:hidden, button, a[href^="/orders"] {
+                        display: none !important;
+                    }
+                    body {
+                        background: white !important;
+                        padding: 0 !important;
+                    }
+                    .max-w-5xl {
+                        max-width: 100% !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    .shadow-sm, .shadow-lg {
+                        shadow: none !important;
+                        border: 1px solid #eee !important;
+                    }
+                    header {
+                        border: none !important;
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                        margin-bottom: 2rem !important;
+                    }
+                    section {
+                        break-inside: avoid;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

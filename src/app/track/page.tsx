@@ -217,6 +217,35 @@ export default function TrackOrderPage() {
                                 })}
                             </div>
                         </div>
+
+                        {/* Transit Milestones - Hardened UX for 'IN_TRANSIT' */}
+                        {trackingData.state === 'IN_TRANSIT' && (
+                            <div className="mt-12 pt-8 border-t border-gray-100">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-900">Transit Milestones</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                    {[
+                                        { label: 'Origin Facility', loc: 'China Hub', done: true },
+                                        { label: 'Ocean/Air Transit', loc: 'International Waters', done: false },
+                                        { label: 'Destination Hub', loc: 'Ghana Arrival Port', done: false },
+                                    ].map((milestone, idx) => (
+                                        <div key={idx} className={`p-4 rounded-xl border transition-all ${milestone.done ? 'bg-gray-50 border-gray-100 opacity-100' : 'bg-white border-dashed border-gray-200 opacity-60'}`}>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">{milestone.loc}</p>
+                                            <p className="text-[11px] font-black text-gray-900 uppercase tracking-widest">{milestone.label}</p>
+                                            <div className="mt-3 flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${milestone.done ? 'bg-gray-900' : 'bg-gray-200'}`} />
+                                                <div className="flex-1 h-[1px] bg-gray-100" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="mt-6 text-[9px] font-medium text-gray-400 italic">
+                                    * These updates represent typical logistics progress. Detailed timestamps are available in the history below.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Timeline Events */}
