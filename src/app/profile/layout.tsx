@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import SidebarNav from '@/components/profile/SidebarNav';
 
@@ -12,6 +12,11 @@ export default function ProfileLayout({
 }) {
     const { user, isAuthenticated, isLoading: authLoading, fetchUser, logout } = useAuthStore();
     const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -67,7 +72,7 @@ export default function ProfileLayout({
 
     return (
         <div className="min-h-screen pb-20 bg-surface">
-            <div className="max-w-6xl mx-auto px-6 relative z-20 pt-24 md:pt-32">
+            <div className="max-w-6xl mx-auto px-6 relative z-20 pt-20 md:pt-24">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                     {/* Sidebar */}
                     <SidebarNav handleLogout={handleLogout} />
