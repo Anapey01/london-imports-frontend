@@ -59,6 +59,7 @@ interface CartState {
     version: number;
     itemCount: number;
     selectedItemIds: Set<string>;
+    error: string | null;
 
     fetchCart: () => Promise<void>;
     addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => Promise<void>;
@@ -79,6 +80,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
     itemCount: 0,
     version: 0,
     selectedItemIds: new Set(),
+    error: null,
 
     fetchCart: async () => {
         const reqVersion = get().version + 1;
