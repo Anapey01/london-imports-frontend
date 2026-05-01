@@ -198,4 +198,4 @@ export default function SettingsView({ user }: { user: User }) {
     );
 }
 
-export default SettingsView;
+
