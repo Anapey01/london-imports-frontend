@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI } from '@/lib/api';
