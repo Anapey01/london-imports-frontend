@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import SidebarNav from '@/components/profile/SidebarNav';
 
@@ -74,11 +75,25 @@ export default function ProfileLayout({
         <div className="min-h-screen pb-20 bg-surface">
             <div className="max-w-6xl mx-auto px-6 relative z-20 pt-20 md:pt-24">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-                    {/* Sidebar */}
-                    <SidebarNav handleLogout={handleLogout} />
+                    {/* Sidebar: On mobile, only show on the root /profile page. On desktop, always show. */}
+                    <div className={`w-full lg:w-52 shrink-0 ${pathname === '/profile' ? 'block' : 'hidden lg:block'}`}>
+                        <SidebarNav handleLogout={handleLogout} />
+                    </div>
 
-                    {/* Content Area */}
-                    <div className="flex-1 py-8 min-h-[600px]">
+                    {/* Content Area: On mobile, hide on the root /profile page (menu mode). On desktop, always show. */}
+                    <div className={`flex-1 py-8 min-h-[600px] ${pathname === '/profile' ? 'hidden lg:block' : 'block'}`}>
+                        {/* Mobile Back Button: Only shown on sub-pages when on mobile */}
+                        {pathname !== '/profile' && (
+                            <Link 
+                                href="/profile"
+                                className="lg:hidden inline-flex items-center gap-2 mb-8 text-content-secondary hover:text-content-primary transition-colors group"
+                            >
+                                <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                </svg>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Back to Menu</span>
+                            </Link>
+                        )}
                         {children}
                     </div>
                 </div>
