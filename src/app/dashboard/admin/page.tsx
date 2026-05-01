@@ -354,11 +354,10 @@ export default function AdminDashboardPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredOrders.map((order, idx) => (
+                                filteredOrders.map((order) => (
                                     <OrderRow 
                                         key={order.id}
                                         order={order}
-                                        idx={idx}
                                         isDark={isDark}
                                         isExpanded={expandedOrder === order.id}
                                         onToggle={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
