@@ -188,7 +188,8 @@ export default function AdminDashboardPage() {
         });
     };
 
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status?: string) => {
+        if (!status) return 'text-gray-600 border-gray-200 bg-gray-50';
         switch (status) {
             case 'COMPLETED': return 'text-emerald-600 border-emerald-500/20 bg-emerald-50';
             case 'PENDING_PAYMENT': return 'text-amber-600 border-amber-500/20 bg-amber-50';
@@ -413,7 +414,7 @@ interface OrderRowProps {
     onToggle: () => void;
     handleDeleteOrder: (id: string) => void;
     addAlert: (msg: string, type?: 'success' | 'error' | 'warning') => void;
-    getStatusColor: (status: string) => string;
+    getStatusColor: (status?: string) => string;
     isRecent: (date: string) => boolean;
     isToday: (date: string) => boolean;
     isStuck: boolean;

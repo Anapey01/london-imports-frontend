@@ -69,6 +69,7 @@ export interface Order {
     id: string;
     order_number: string;
     state: string;
+    status?: string;
     state_display: string;
     total: number;
     subtotal: number;
