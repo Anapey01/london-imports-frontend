@@ -69,38 +69,39 @@ const MILESTONES = [
 ];
 
 export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) {
-    // Determine the current milestone index
     const currentMilestoneIndex = MILESTONES.findIndex(m => m.states.includes(currentState));
-    
-    // Fallback logic for intermediate states
     const effectiveIndex = currentMilestoneIndex >= 0 ? currentMilestoneIndex : 0;
 
     return (
-        <div className="w-full bg-primary-surface/40 p-8 sm:p-12 rounded-[3rem] border border-primary-surface shadow-diffusion-xl overflow-hidden backdrop-blur-xl">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-16">
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-4xl md:text-5xl font-serif font-black nuclear-text tracking-tighter leading-none">Shipment Journey</h2>
-                    <p className="text-[10px] font-black nuclear-text uppercase tracking-[0.3em] opacity-40">GZ <span className="mx-2">→</span> Accra Logistics Pipeline</p>
+        <div className="w-full">
+            {/* Minimal Pipeline Header */}
+            <div className="flex items-center justify-between mb-8 opacity-60">
+                <div className="flex items-center gap-2">
+                    <Globe size={12} className="text-emerald-600" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">
+                        Global Logistics Pipeline: GZ <span className="text-emerald-600 mx-1">→</span> ACCRA
+                    </span>
                 </div>
-                <div className="flex items-center gap-3 px-6 py-2.5 bg-slate-900 dark:bg-white rounded-xl shadow-diffusion-lg transform hover:scale-[1.02] transition-all duration-500">
-                    <Globe className="w-4 h-4 text-emerald-400 dark:text-emerald-600 animate-pulse" strokeWidth={2.5} />
-                    <span className="text-[9px] font-black text-white dark:text-slate-900 uppercase tracking-widest">Live Logistics Link</span>
+                <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Live Status</span>
                 </div>
             </div>
 
-            {/* The High-Fidelity Timeline */}
-            <div className="relative">
-                {/* Background Connecting Line */}
-                <div className="absolute top-8 left-10 right-10 h-0.5 bg-gray-50 hidden md:block">
-                    <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(effectiveIndex / (MILESTONES.length - 1)) * 100}%` }}
-                        className="h-full bg-gray-900 shadow-[0_0_8px_rgba(31,41,55,0.2)]"
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
-                    />
-                </div>
+            {/* High-Density Horizontal Timeline */}
+            <div className="relative pt-2 pb-6">
+                {/* Background Track */}
+                <div className="absolute top-[21px] left-2 right-2 h-[2px] bg-slate-100 dark:bg-slate-800 rounded-full" />
+                
+                {/* Active Progress Line */}
+                <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(effectiveIndex / (MILESTONES.length - 1)) * 100}%` }}
+                    className="absolute top-[21px] left-2 h-[2px] bg-slate-950 dark:bg-white rounded-full z-10"
+                    transition={{ duration: 1, ease: "circOut" }}
+                />
 
-                <div className="flex flex-col md:flex-row justify-between relative gap-10 md:gap-0">
+                <div className="flex justify-between relative z-20">
                     {MILESTONES.map((milestone, index) => {
                         const Icon = milestone.icon;
                         const isCompleted = index < effectiveIndex;
@@ -108,46 +109,28 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
                         const isPast = index <= effectiveIndex;
 
                         return (
-                            <div key={milestone.key} className="flex flex-row md:flex-col items-center gap-6 md:gap-4 flex-1 relative group">
-                                {/* Desktop Vertical Connector Line (for mobile spacing) */}
-                                <div className="absolute top-16 bottom-0 left-8 md:hidden w-px bg-gray-50 last:hidden">
-                                     {isPast && index < MILESTONES.length -1 && (
-                                         <div className="w-full h-full bg-gray-900 origin-top" />
-                                     )}
-                                </div>
-
-                                {/* Icon Circle */}
+                            <div key={milestone.key} className="flex flex-col items-center flex-1 group">
+                                {/* The Dot/Icon Node */}
                                 <div className={`
-                                    relative z-10 w-16 h-16 rounded-3xl flex items-center justify-center transition-all duration-500
-                                    ${isActive ? 'bg-gray-900 text-white shadow-xl scale-110' : 
-                                      isCompleted ? 'bg-gray-100 text-gray-900' : 'bg-white border-2 border-gray-50 text-gray-200'}
+                                    w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 mb-4
+                                    ${isActive ? 'bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-lg scale-110 ring-4 ring-emerald-500/10' : 
+                                      isCompleted ? 'bg-emerald-500 text-white' : 'bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-300'}
                                 `}>
-                                    <Icon className={`w-7 h-7 ${isActive ? 'animate-bounce-subtle' : ''}`} />
-                                    
-                                    {isCompleted && (
-                                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
-                                            <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-50" />
-                                        </div>
+                                    {isCompleted ? (
+                                        <CheckCircle2 size={16} />
+                                    ) : (
+                                        <Icon size={16} className={isActive ? 'animate-pulse' : ''} />
                                     )}
                                 </div>
 
-                                <div className="text-left md:text-center">
-                                    <h3 className={`text-sm font-serif font-black tracking-tight leading-tight transition-colors duration-500 ${isPast ? 'nuclear-text' : 'nuclear-text opacity-20'}`}>
+                                {/* Labels - High Density */}
+                                <div className="text-center px-2">
+                                    <h4 className={`text-[9px] font-black uppercase tracking-tight leading-tight transition-colors mb-1 ${isPast ? 'text-slate-900 dark:text-white' : 'text-slate-300'}`}>
                                         {milestone.label}
-                                    </h3>
-                                    <p className={`text-[9px] font-black uppercase tracking-[0.2em] mt-1.5 ${isActive ? 'text-emerald-600' : 'nuclear-text opacity-40'}`}>
+                                    </h4>
+                                    <p className={`text-[8px] font-bold uppercase tracking-widest opacity-60 ${isActive ? 'text-emerald-600 opacity-100' : 'text-slate-400'}`}>
                                         {milestone.sublabel}
                                     </p>
-                                    
-                                    {isActive && (
-                                        <motion.div 
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="mt-4 px-4 py-1 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[8px] font-black rounded-lg inline-block whitespace-nowrap tracking-widest shadow-diffusion"
-                                        >
-                                            CURRENT STATUS
-                                        </motion.div>
-                                    )}
                                 </div>
                             </div>
                         );
@@ -155,21 +138,13 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
                 </div>
             </div>
 
-            {/* Destination Highlight */}
-            <div className="mt-16 pt-8 border-t border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-6 opacity-80">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-emerald-50 rounded-2xl">
-                        <Globe className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Final Destination</p>
-                        <p className="text-sm font-bold text-gray-900">Accra, Ghana (LI-HUB)</p>
-                    </div>
-                </div>
-                <div className="text-right hidden sm:block">
-                    <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">
-                        Secure Air & Sea Transit
-                    </p>
+            {/* Bottom Status Feed (Optional/Compact) */}
+            <div className="mt-6 flex items-center justify-center">
+                <div className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center gap-3">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Current Phase:</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-900 dark:text-white">
+                        {MILESTONES[effectiveIndex].label}
+                    </span>
                 </div>
             </div>
         </div>
