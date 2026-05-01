@@ -1,23 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/stores/authStore';
-import { ordersAPI } from '@/lib/api';
-import DashboardView from '@/components/profile/DashboardView';
+/**
+ * Root Profile Page
+ * On mobile: Acts as the main menu (sidebar is shown by layout, content is hidden).
+ * On desktop: Redirects to Overview dashboard.
+ */
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function ProfileOverviewPage() {
-    const { user, isAuthenticated } = useAuthStore();
-    const [orders, setOrders] = useState([]);
+export default function ProfilePage() {
+    const router = useRouter();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            ordersAPI.list()
-                .then(res => setOrders(res.data.results || res.data))
-                .catch(console.error);
+        // On desktop, we don't want a "blank" overview, so we redirect to the actual overview
+        if (window.innerWidth >= 1024) {
+            router.replace('/profile/overview');
         }
-    }, [isAuthenticated]);
+    }, [router]);
 
-    if (!user) return null;
-
-    return <DashboardView orders={orders} user={user} />;
+    return (
+        <div className="flex items-center justify-center min-h-[400px] lg:hidden">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-50 animate-pulse">
+                Select an option from the menu
+            </p>
+        </div>
+    );
 }
