@@ -513,7 +513,7 @@ const OrderRow = React.memo(({
                     </div>
                 </td>
                 <td className="px-4 md:px-8 py-6 text-right">
-                    <span className="text-sm font-black whitespace-nowrap">₵{parseFloat(order?.total).toLocaleString()}</span>
+                    <span className="text-sm font-black whitespace-nowrap">₵{Number(order?.total || 0).toLocaleString()}</span>
                 </td>
                 <td className="px-4 md:px-8 py-6 text-right">
                     <div className="flex justify-end items-center gap-3">
