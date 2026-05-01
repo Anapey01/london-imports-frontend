@@ -149,7 +149,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                         GHS {parseFloat(order.total.toString()).toLocaleString()}
                                                     </p>
                                                 </div>
-                                                {balanceDue > 0 && order.state !== 'CANCELLED' && (
+                                                {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
                                                     <div>
                                                         <p className="text-[9px] uppercase tracking-[0.3em] font-black mb-1 text-content-secondary">Balance Due</p>
                                                         <p className="text-2xl sm:text-3xl font-black text-content-primary tracking-tighter tabular-nums uppercase">
