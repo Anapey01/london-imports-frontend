@@ -43,6 +43,8 @@ interface DashboardData {
         potential_revenue: number;
         new_users_today: number;
         pending_orders: number;
+        active_batch: any;
+        [key: string]: any;
     };
     analytics: {
         revenueChart: any[];
@@ -52,6 +54,7 @@ interface DashboardData {
             checkout: number;
             paid: number;
         };
+        [key: string]: any;
     };
     recentOrders: Order[];
 }
