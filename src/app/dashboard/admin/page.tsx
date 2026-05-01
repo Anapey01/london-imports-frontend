@@ -98,7 +98,7 @@ export default function AdminDashboardPage() {
     };
 
     const isStuck = (order: Order) => {
-        if (['DELIVERED', 'CANCELLED', 'COMPLETED'].includes(order.status)) return false;
+        if (['DELIVERED', 'CANCELLED', 'COMPLETED'].includes(order.status || '')) return false;
         const lastUpdated = new Date(order.updated_at || order.created_at).getTime();
         const threshold = Date.now() - (5 * 24 * 60 * 60 * 1000);
         return lastUpdated < threshold;
