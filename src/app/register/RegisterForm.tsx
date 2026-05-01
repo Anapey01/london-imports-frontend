@@ -20,14 +20,6 @@ export default function RegisterForm() {
         trackEvent('form_start', { form_id: 'register' });
     }, []);
 
-    // Auto-dismiss error messages
-    useEffect(() => {
-        if (error) {
-            const timer = setTimeout(() => setError(''), 4000);
-            return () => clearTimeout(timer);
-        }
-    }, [error]);
-
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -38,6 +30,14 @@ export default function RegisterForm() {
         phone: '',
     });
     const [error, setError] = useState('');
+
+    // Auto-dismiss error messages
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(''), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
