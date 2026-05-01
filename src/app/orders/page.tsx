@@ -56,105 +56,112 @@ export default function OrdersPage() {
                 </div>
 
                 {isLoading ? (
-                    <div className="space-y-6">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 animate-pulse">
-                                <div className="flex gap-6">
-                                    <div className="w-24 h-32 bg-gray-100 rounded-lg"></div>
-                                    <div className="flex-1 py-1">
-                                        <div className="h-5 bg-gray-100 rounded w-1/4 mb-4"></div>
-                                        <div className="h-4 bg-gray-100 rounded w-1/3"></div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="space-y-4">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="h-24 bg-white rounded-xl border border-slate-50 animate-pulse" />
                         ))}
                     </div>
                 ) : orders.length === 0 ? (
-                    <div className="bg-white rounded-3xl p-16 text-center border border-gray-100">
-                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
+                    <div className="bg-white rounded-3xl p-16 text-center border border-slate-50">
+                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 opacity-40">
+                            <Package size={32} className="text-slate-400" />
                         </div>
-                        <h2 className="text-xl font-light text-gray-900 mb-2">No orders yet</h2>
-                        <p className="text-gray-500 mb-8 font-light">Start your pre-order journey today</p>
-                        <Link href="/products" className="inline-flex items-center px-8 py-3 bg-gray-900 text-white rounded-full hover:bg-pink-600 transition-colors">
+                        <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight mb-2">No shipments yet</h2>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8">Start your pre-order journey today</p>
+                        <Link href="/products" className="inline-flex items-center px-8 py-3 bg-slate-950 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-sm">
                             Explore Collections
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-3">
                         {orders.map((order: Order) => {
                             const balanceDue = parseFloat(order.balance_due?.toString() || '0');
-                            const isPending = order.state === 'PENDING_PAYMENT' || (balanceDue > 0 && order.state !== 'CANCELLED');
+                            const isPaid = order.state === 'PAID' || order.state === 'DELIVERED' || order.state === 'COMPLETED';
+                            const isPendingPayment = (order.state === 'PENDING_PAYMENT' || balanceDue > 0) && !isPaid && order.state !== 'CANCELLED';
 
                             return (
-                                <div key={order.order_number} className="bg-white dark:bg-slate-950 p-5 sm:p-8 rounded-[1.5rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-500 group">
-                                    <div className="flex flex-col sm:flex-row justify-between gap-8">
-                                        <div className="flex flex-col sm:flex-row gap-6">
-                                            {/* Image Stack - Grid on mobile, Stack on desktop */}
-                                            <div className="flex -space-x-12 sm:-space-x-8 flex-shrink-0 justify-center sm:justify-start mb-2 sm:mb-0">
-                                                {order.items?.slice(0, 3).map((item: OrderItem, idx: number) => {
-                                                    const zIndexMap = ['z-30', 'z-20', 'z-10'];
-                                                    return (
-                                                        <div key={item.id} className={`relative w-28 h-36 sm:w-24 sm:h-32 rounded-xl overflow-hidden border border-white dark:border-slate-800 shadow-xl bg-gray-50 ${zIndexMap[idx] || 'z-0'}`}>
-                                                            {item.product.image ? (
-                                                                <NextImage
-                                                                    src={getImageUrl(item.product.image)}
-                                                                    alt={item.product_name}
-                                                                    fill
-                                                                    className="object-cover"
-                                                                />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" strokeWidth={1} /></svg>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
+                                <div key={order.order_number} className="group relative bg-white border border-border-standard rounded-xl hover:border-brand-emerald/40 transition-all duration-300 shadow-sm overflow-hidden">
+                                    <div className="p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-8">
+                                        {/* Ultra-Compact Thumbnail Node */}
+                                        <div className="flex-shrink-0 w-16 h-20 sm:w-14 sm:h-18 relative rounded-lg border border-border-standard overflow-hidden bg-slate-50 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+                                            {order.items?.[0]?.product.image ? (
+                                                <NextImage
+                                                    src={getImageUrl(order.items[0].product.image)}
+                                                    alt={order.order_number}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                    <Package size={16} />
+                                                </div>
+                                            )}
+                                            {order.items && order.items.length > 1 && (
+                                                <div className="absolute bottom-1 right-1 bg-slate-950/80 text-white text-[6px] font-black px-1 py-0.5 rounded backdrop-blur-sm">
+                                                    +{order.items.length - 1}
+                                                </div>
+                                            )}
+                                        </div>
 
-                                            <div className="flex flex-col justify-between py-1 text-center sm:text-left">
-                                                <div>
-                                                    <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-                                                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded border ${getStatusColor(order.state).replace('text-', 'border-').replace('600', '200')} ${getStatusColor(order.state)}`}>
-                                                            {order.state_display}
-                                                        </span>
-                                                    </div>
-                                                    <h3 className="text-sm sm:text-lg font-black font-sans text-slate-900 dark:text-white uppercase tracking-widest leading-relaxed">
-                                                        Order #{order.order_number}
-                                                    </h3>
-                                                    <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-light mt-1">
-                                                        Placed {new Date(order.created_at).toLocaleDateString(undefined, {
-                                                            day: 'numeric',
-                                                            month: 'short',
-                                                            year: 'numeric'
-                                                        })}
-                                                    </p>
-                                                </div>
-                                                <div className="mt-6 sm:mt-4">
-                                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-700">{order.items_count} item{order.items_count !== 1 ? 's' : ''}</p>
-                                                    <p className="text-2xl sm:text-3xl font-serif font-black text-slate-900 dark:text-white tracking-tighter tabular-nums mt-1">GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}</p>
-                                                </div>
+                                        {/* Core Identification */}
+                                        <div className="flex-1 min-w-0 flex flex-col justify-center text-center sm:text-left">
+                                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                                                <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                                                    #{order.order_number}
+                                                </h3>
+                                                <span className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-widest border border-black/5 ${
+                                                    isPaid ? 'bg-emerald-500 text-white shadow-sm' : 'bg-amber-500 text-white shadow-sm'
+                                                }`}>
+                                                    {order.state_display}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-center sm:justify-start gap-3 text-slate-400">
+                                                <p className="text-[8px] font-bold uppercase tracking-widest">
+                                                    {new Date(order.created_at).toLocaleDateString()}
+                                                </p>
+                                                <span className="w-0.5 h-0.5 rounded-full bg-slate-100" />
+                                                <p className="text-[8px] font-bold uppercase tracking-widest">
+                                                    {order.items?.length || 0} ITEMS
+                                                </p>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col justify-end gap-3 min-w-[140px]">
-                                            {isPending && (
-                                                <Link
-                                                    href={`/checkout?order=${order.order_number}`}
-                                                    className="w-full text-center px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-emerald-600 dark:hover:bg-emerald-50 transition-all duration-500 shadow-sm"
-                                                >
-                                                    {balanceDue > 0 ? 'Pay Balance' : 'Pay Now'}
-                                                </Link>
+                                        {/* Financial Ledger */}
+                                        <div className="flex flex-col items-center sm:items-end justify-center gap-0.5 text-center sm:text-right min-w-[100px]">
+                                            <p className="text-[7px] uppercase tracking-[0.2em] font-black text-slate-300">Liability</p>
+                                            <p className="text-sm sm:text-base font-black text-slate-900 tabular-nums tracking-tighter">
+                                                GHS {parseFloat(order.total.toString()).toLocaleString()}
+                                            </p>
+                                            {balanceDue > 0 && !isPaid && (
+                                                <p className="text-[8px] font-black text-amber-500 uppercase tracking-widest">
+                                                    DUE: {balanceDue.toLocaleString()}
+                                                </p>
                                             )}
+                                        </div>
+
+                                        {/* Action Node */}
+                                        <div className="flex flex-row sm:flex-col items-center justify-center gap-2 w-full sm:w-36 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-50">
                                             <Link
                                                 href={`/orders/${order.order_number}`}
-                                                className="w-full text-center px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-950 dark:hover:border-white hover:text-slate-950 dark:hover:text-white transition-all duration-500"
+                                                className="flex-1 sm:w-full py-2 rounded-lg text-[8px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm"
                                             >
                                                 Details
                                             </Link>
+                                            {isPendingPayment ? (
+                                                <Link
+                                                    href={`/checkout?order=${order.order_number}`}
+                                                    className="flex-1 sm:w-full py-2 rounded-lg text-[8px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm"
+                                                >
+                                                    Pay Balance
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href={`/track?order=${order.order_number}`}
+                                                    className="flex-1 sm:w-full py-2 rounded-lg text-[8px] font-black uppercase tracking-widest text-center border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all"
+                                                >
+                                                    Track
+                                                </Link>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
