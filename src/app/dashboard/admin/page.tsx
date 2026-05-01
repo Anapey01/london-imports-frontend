@@ -354,7 +354,7 @@ export default function AdminDashboardPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredOrders.map((order) => (
+                                filteredOrders.map((order, idx) => (
                                     <OrderRow 
                                         key={order.id}
                                         order={order}
