@@ -43,7 +43,14 @@ interface DashboardData {
         potential_revenue: number;
         new_users_today: number;
         pending_orders: number;
-        active_batch: unknown;
+        active_batch: {
+            id: string;
+            name: string;
+            total_orders: number;
+            target_orders: number;
+            cutoff_datetime: string;
+            days_left: number;
+        } | null;
         [key: string]: unknown;
     };
     analytics: {
