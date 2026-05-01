@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { ordersAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
+import { Package } from 'lucide-react';
 import { Order, OrderItem } from '@/types';
 
 const getStatusColor = (state: string) => {
