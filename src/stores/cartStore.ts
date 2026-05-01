@@ -87,8 +87,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
         set({ version: reqVersion });
 
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
-
-        if (isAuthenticated) {
+        const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+        
+        // Only fetch from server if authenticated AND we actually have a token
+        // This prevents "stale" sessions from triggering 401/redirects
+        if (isAuthenticated && hasToken) {
             set({ isLoading: true });
 
             // MERGE LOGIC: Check for guest items to sync
@@ -175,8 +178,10 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
     addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
-
-        if (isAuthenticated) {
+        const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+        
+        // Only use server if authenticated AND we actually have a token
+        if (isAuthenticated && hasToken) {
             // Increment version to invalidate any pending fetchCart calls
             const reqVersion = get().version + 1;
             set({ version: reqVersion });

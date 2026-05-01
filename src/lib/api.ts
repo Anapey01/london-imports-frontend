@@ -91,6 +91,13 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+        
+        // GUARD: If no refresh token, don't even try. Just reject so caller handles it.
+        if (!refreshToken) {
+          isRefreshing = false;
+          return Promise.reject(error);
+        }
+
         // Attempt refresh (cookies handled automatically, but SimpleJWT often requires refresh token in body)
         const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh: refreshToken }, { withCredentials: true });
 
