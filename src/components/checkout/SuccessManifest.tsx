@@ -1,161 +1,207 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useEffect, useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, Truck, Package, MessageSquare } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Truck, Package, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { ordersAPI } from '@/lib/api';
+import OrderRecommendations from './OrderRecommendations';
 
 interface SuccessManifestProps {
     orderNumber: string;
     method?: string;
 }
 
+const BACKDROPS = [
+    { id: 'noir', path: '/assets/success/noir.png', theme: 'dark' },
+    { id: 'white', path: '/assets/success/white.png', theme: 'light' },
+    { id: 'hub', path: '/assets/success/hub.png', theme: 'tech' }
+];
+
 const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
-    const nextSteps = [
-        {
-            id: '01',
-            title: 'Items Being Collected',
-            description: 'We are currently gathering your items from our international partners.',
-            icon: Package
-        },
-        {
-            id: '02',
-            title: 'Preparing for Shipping',
-            description: 'Our team is getting your package ready and handling all the paperwork.',
-            icon: Truck
-        },
-        {
-            id: '03',
-            title: 'Delivery Update',
-            description: 'You will receive a Tracking ID on WhatsApp as soon as your package is on its way.',
-            icon: MessageSquare
-        }
-    ];
+    const [orderData, setOrderData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Select a random backdrop on mount
+    const backdrop = useMemo(() => {
+        return BACKDROPS[Math.floor(Math.random() * BACKDROPS.length)];
+    }, []);
+
+    useEffect(() => {
+        const fetchOrder = async () => {
+            try {
+                const response = await ordersAPI.detail(orderNumber);
+                setOrderData(response.data);
+            } catch (err) {
+                console.error("Failed to fetch order details for success manifest:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (orderNumber) fetchOrder();
+    }, [orderNumber]);
+
+    const firstItem = orderData?.items?.[0];
+    const productCount = orderData?.items?.length || 0;
 
     return (
-        <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6">
             <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-diffusion-2xl border border-slate-100 dark:border-slate-800"
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden shadow-diffusion-2xl border border-slate-100 dark:border-slate-800"
             >
-                <div className="grid md:grid-cols-2">
-                    {/* Visual Section */}
-                    <div className="relative h-[300px] md:h-auto bg-slate-50 dark:bg-slate-950 overflow-hidden group">
+                <div className="grid lg:grid-cols-2">
+                    {/* Visual Section: Dynamic Product Display */}
+                    <div className="relative h-[400px] lg:h-auto bg-slate-100 dark:bg-slate-950 overflow-hidden group">
+                        {/* Selected Premium Backdrop */}
                         <Image
-                            src="/assets/success-manifest.png"
-                            alt="London's Import Success"
+                            src={backdrop.path}
+                            alt="London's Import Premium Background"
                             fill
-                            className="object-cover transition-transform duration-[3000ms] ease-out group-hover:scale-105"
+                            className="object-cover transition-transform duration-[5000ms] ease-out scale-110 group-hover:scale-100"
                             priority
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
                         
-                        <div className="absolute top-8 left-8">
+                        {/* Dynamic Product Image Overlay */}
+                        <AnimatePresence mode="wait">
+                            {firstItem && (
+                                <motion.div 
+                                    key={firstItem.id}
+                                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ delay: 0.6, duration: 0.8, type: "spring" }}
+                                    className="absolute inset-0 flex items-center justify-center p-12"
+                                >
+                                    <div className="relative w-full aspect-square max-w-[280px]">
+                                        {/* Premium Frame/Shadow for the product */}
+                                        <div className="absolute inset-4 bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl rotate-3" />
+                                        <div className="absolute inset-0 bg-white dark:bg-slate-800 rounded-2xl shadow-diffusion-2xl overflow-hidden -rotate-2 border border-white/50 dark:border-slate-700">
+                                            <Image 
+                                                src={firstItem.product?.primary_image || firstItem.product?.image || '/placeholder.jpg'}
+                                                alt={firstItem.product_name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                            {productCount > 1 && (
+                                                <div className="absolute bottom-4 right-4 bg-slate-950/90 text-white text-[9px] font-black px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 uppercase tracking-widest">
+                                                    +{productCount - 1} More
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Order Signature Overlay */}
+                        <div className="absolute bottom-8 left-8 right-8">
                             <motion.div 
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: 0.5, duration: 0.5 }}
-                                className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-xl flex items-center gap-2"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 0.6 }}
+                                transition={{ delay: 1.5 }}
+                                className="flex justify-between items-end border-t border-white/20 pt-4"
                             >
-                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Confirmed</span>
+                                <div className="space-y-1">
+                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Logistics Auth</span>
+                                    <p className="text-[10px] font-mono text-white/80">#{orderNumber}</p>
+                                </div>
+                                <div className="text-right space-y-1">
+                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Verified At</span>
+                                    <p className="text-[10px] font-mono text-white/80">{new Date().toLocaleDateString('en-GB')}</p>
+                                </div>
                             </motion.div>
                         </div>
                     </div>
 
-                    {/* Content Section */}
-                    <div className="p-8 md:p-12 flex flex-col justify-center">
-                        <div className="space-y-6">
-                            <div>
-                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-3 block">
-                                    MANIFEST VALIDATED
-                                </span>
-                                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-tight">
-                                    Logistics <br /> Allocation <br /> Confirmed.
+                    {/* Content Section: Warm & Premium */}
+                    <div className="p-8 md:p-16 flex flex-col justify-center">
+                        <div className="space-y-8">
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
+                                        <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                    </div>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">
+                                        Order Successful
+                                    </span>
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-[1.1]">
+                                    Your items are <br /> being gathered.
                                 </h1>
-                            </div>
+                            </motion.div>
 
-                            <p className="text-[15px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-sm">
-                                Thank you for shopping with London's Import. Your order <span className="text-slate-950 dark:text-white font-black">#{orderNumber}</span> has been securely processed. Our sourcing hub is now in action.
+                            <p className="text-[16px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-md">
+                                Thank you for your patronage. We are currently collecting your selection from our international partners to prepare them for shipment.
                             </p>
 
-                            <div className="space-y-5 pt-4">
-                                <motion.div 
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.8 }}
-                                    className="flex gap-5 group"
-                                >
-                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
-                                        <span className="text-[11px] font-black">01</span>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
-                                            Sourcing Hub Notified
-                                        </h3>
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
-                                            Inventory allocation for your manifest has been prioritized in our global hub.
-                                        </p>
-                                    </div>
-                                </motion.div>
-
-                                <motion.div 
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.9 }}
-                                    className="flex gap-5 group"
-                                >
-                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
-                                        <span className="text-[11px] font-black">02</span>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
-                                            Logistics Manifest Processing
-                                        </h3>
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
-                                            Our team is preparing your specialized transit documents and shipping manifest.
-                                        </p>
-                                    </div>
-                                </motion.div>
-
-                                <motion.div 
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 1.0 }}
-                                    className="flex gap-5 group"
-                                >
-                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
-                                        <span className="text-[11px] font-black">03</span>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
-                                            Dispatch Confirmation
-                                        </h3>
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-1.5">
-                                            You will receive a Tracking ID via WhatsApp once the manifest is authorized for transit.
-                                        </p>
-                                    </div>
-                                </motion.div>
+                            <div className="space-y-8 pt-4">
+                                {[
+                                    { 
+                                        id: '01', 
+                                        title: 'Gathering your items', 
+                                        desc: 'Inventory allocation is underway in our international sourcing hub.',
+                                        icon: Package
+                                    },
+                                    { 
+                                        id: '02', 
+                                        title: 'Preparing for shipment', 
+                                        desc: 'We are carefully packaging your order and handling all transit documents.',
+                                        icon: Truck
+                                    },
+                                    { 
+                                        id: '03', 
+                                        title: 'Delivery updates', 
+                                        desc: 'Look out for your Tracking ID on WhatsApp once your package clears transit.',
+                                        icon: MessageSquare
+                                    }
+                                ].map((step, idx) => (
+                                    <motion.div 
+                                        key={step.id}
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.8 + (idx * 0.1) }}
+                                        className="flex gap-6 group"
+                                    >
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
+                                            <step.icon className="w-5 h-5" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
+                                                {step.title}
+                                            </h3>
+                                            <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-2">
+                                                {step.desc}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                ))}
                             </div>
 
-                            <div className="pt-8 flex flex-col sm:flex-row gap-4">
+                            <div className="pt-10 flex flex-col sm:flex-row gap-4">
                                 <Link 
                                     href="/orders"
-                                    className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 py-4 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center hover:shadow-glow-emerald/20 transition-all flex items-center justify-center gap-3"
+                                    className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-16 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
                                 >
-                                    View My Orders
+                                    Track My Order
                                     <ArrowRight className="w-3 h-3" />
                                 </Link>
                                 <a 
                                     href={`https://wa.me/${siteConfig.concierge}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 py-4 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center border border-emerald-100 dark:border-emerald-900/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all flex items-center justify-center gap-3"
+                                    className="flex-1 bg-white dark:bg-slate-800 text-slate-950 dark:text-white h-16 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3"
                                 >
-                                    Chat with Support
+                                    Customer Support
                                     <MessageSquare className="w-3 h-3" />
                                 </a>
                             </div>
@@ -164,21 +210,21 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                 </div>
             </motion.div>
 
+            {/* Discovery Sections */}
+            <OrderRecommendations />
+
             {/* Footer Institutional Info */}
             <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.5 }}
-                className="mt-12 flex flex-col items-center gap-6 opacity-30 px-4 text-center"
+                transition={{ delay: 2 }}
+                className="mt-20 flex flex-col items-center gap-6 opacity-30 px-4 text-center"
             >
                 <div className="flex items-center gap-6 grayscale">
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em] nuclear-text">Zero Data Retention</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Verified Authenticity</span>
                     <div className="w-1 h-1 bg-slate-500 rounded-full" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em] nuclear-text">Logistics Protocol Alpha v4</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Secure Protocol v6.2</span>
                 </div>
-                <p className="text-[7px] uppercase tracking-[0.3em] font-medium leading-relaxed max-w-md">
-                    Electronic manifest authorized system. Order verification signature: LTRX-{orderNumber}-{Date.now()}
-                </p>
             </motion.div>
         </div>
     );
