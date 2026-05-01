@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import SidebarNav from '@/components/profile/SidebarNav';
 
@@ -12,7 +12,6 @@ export default function ProfileLayout({
 }) {
     const { user, isAuthenticated, isLoading: authLoading, fetchUser, logout } = useAuthStore();
     const router = useRouter();
-    const pathname = usePathname();
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
