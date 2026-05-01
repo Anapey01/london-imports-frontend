@@ -47,7 +47,7 @@ interface DashboardData {
         [key: string]: unknown;
     };
     analytics: {
-        revenueChart: unknown[];
+        revenueChart: Array<{ day: string; value: number }>;
         funnel: {
             visitors: number;
             cart: number;
