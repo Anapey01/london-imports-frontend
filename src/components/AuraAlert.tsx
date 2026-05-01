@@ -1,8 +1,6 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle, Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export type AlertType = 'success' | 'error' | 'info' | 'warning' | 'processing';
 
@@ -38,12 +36,20 @@ const shadows = {
 };
 
 export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
+    // Persistent Ref for onClose to prevent timer resets from unstable parent functions
+    const closeRef = useRef(onClose);
+    useEffect(() => {
+        closeRef.current = onClose;
+    }, [onClose]);
+
     useEffect(() => {
         if (type !== 'processing') {
-            const timer = setTimeout(() => onClose(id), 5000);
+            const timer = setTimeout(() => {
+                closeRef.current(id);
+            }, 4000); // 4 Seconds Auto-Dismiss
             return () => clearTimeout(timer);
         }
-    }, [id, type, onClose]);
+    }, [id, type]);
 
     return (
         <motion.div
@@ -87,11 +93,12 @@ export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
             {/* Subtle Progress Bar for Auto-close */}
             {type !== 'processing' && (
                 <motion.div
+                    key={`progress-${id}`}
                     initial={{ scaleX: 1 }}
                     animate={{ scaleX: 0 }}
-                    transition={{ duration: 5, ease: 'linear' }}
+                    transition={{ duration: 4, ease: 'linear' }}
                     style={{ originX: 0 }}
-                    className={`absolute bottom-0 left-0 right-0 h-[2px] opacity-30 ${type === 'success' ? 'bg-emerald-400' : 'bg-white'}`}
+                    className={`absolute bottom-0 left-0 right-0 h-[2px] opacity-30 ${type === 'success' ? 'bg-emerald-400' : 'bg-rose-400'}`}
                 />
             )}
         </motion.div>

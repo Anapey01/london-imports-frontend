@@ -30,6 +30,17 @@ function LoginFormContent() {
         trackEvent('form_start', { form_id: 'login' });
     }, []);
 
+    // Auto-dismiss errors/success messages
+    useEffect(() => {
+        if (error || success) {
+            const timer = setTimeout(() => {
+                setError('');
+                setSuccess('');
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, success]);
+
     const getTitle = () => {
         switch (role) {
             case 'vendor': return 'Seller Portal';

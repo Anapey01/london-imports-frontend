@@ -46,6 +46,10 @@ export default function SettingsView({ user }: { user: User }) {
         } catch (err: any) {
             setSaveStatus('error');
             setErrorMessage(err.response?.data?.message || err.message || 'Failed to update profile');
+            setTimeout(() => {
+                setSaveStatus('idle');
+                setErrorMessage('');
+            }, 4000);
         } finally {
             setIsSaving(false);
         }

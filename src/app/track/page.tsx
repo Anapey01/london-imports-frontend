@@ -33,6 +33,15 @@ export default function TrackOrderPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [trackingData, setTrackingData] = useState<OrderTracking | null>(null);
+
+    // Auto-dismiss error state
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(''), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
     const { isAuthenticated } = useAuthStore();
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -45,6 +54,10 @@ export default function TrackOrderPage() {
         setLoading(true);
         setError('');
         setTrackingData(null);
+
+        // Auto-dismiss error
+        const timer = setTimeout(() => setError(''), 4000);
+        const clearTimer = () => clearTimeout(timer);
 
         try {
             const response = await api.get(`/orders/track/public/${cleanNumber}/`);

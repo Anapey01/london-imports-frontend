@@ -98,7 +98,14 @@ function CheckoutPage() {
     const hasTrackedCheckout = useRef(false);
     const hasTrackedShipping = useRef(false);
     const hasTrackedPayment = useRef(false);
-    
+
+    // Auto-dismiss error state
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(''), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);    
     // 4. Conversion Velocity: Step Timers
     const stepStartTime = useRef(Date.now());
     const prevStep = useRef(activeStep);
