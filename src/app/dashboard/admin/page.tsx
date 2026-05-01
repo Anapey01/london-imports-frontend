@@ -18,14 +18,8 @@ import {
     LayoutDashboard,
     Search,
     Mail,
-    Plus,
-    Calendar,
-    ChevronDown,
-    MoreHorizontal,
     ChevronRight,
     Trash2,
-    Check,
-    X,
     Filter,
     AlertTriangle,
 } from 'lucide-react';
@@ -38,10 +32,29 @@ import OperationsFunnel from '@/components/admin/OperationsFunnel';
 import PerformanceChart from '@/components/admin/PerformanceChart';
 import ActiveBatchWidget from '@/components/admin/ActiveBatchWidget';
 
+import { Order } from '@/types';
+
 interface DashboardData {
-    stats: any;
-    analytics: any;
-    recentOrders: any[];
+    stats: {
+        totalRevenue: number;
+        totalOrders: number;
+        activeCustomers: number;
+        averageOrderValue: number;
+        revenueGrowth: number;
+        ordersGrowth: number;
+        customersGrowth: number;
+        aovGrowth: number;
+    };
+    analytics: {
+        daily: Array<{ date: string; value: number }>;
+        funnel: {
+            visitors: number;
+            cart: number;
+            checkout: number;
+            paid: number;
+        };
+    };
+    recentOrders: Order[];
 }
 
 export default function AdminDashboardPage() {
@@ -391,10 +404,25 @@ export default function AdminDashboardPage() {
     );
 }
 
+
+interface OrderRowProps {
+    order: Order;
+    isDark: boolean;
+    isExpanded: boolean;
+    onToggle: () => void;
+    handleDeleteOrder: (id: string) => void;
+    addAlert: (msg: string, type?: 'success' | 'error' | 'warning') => void;
+    getStatusColor: (status: string) => string;
+    isRecent: (date: string) => boolean;
+    isToday: (date: string) => boolean;
+    isStuck: boolean;
+    showDivider: boolean;
+    isFirstToday: boolean;
+}
+
 // Optimized OrderRow Component to fix INP and Contrast
 const OrderRow = React.memo(({ 
     order, 
-    idx, 
     isDark, 
     isExpanded,
     onToggle,
@@ -406,7 +434,7 @@ const OrderRow = React.memo(({
     isStuck,
     showDivider,
     isFirstToday
-}: any) => {
+}: OrderRowProps) => {
     const fresh = isRecent(order.created_at);
     const today = isToday(order.created_at);
 
@@ -545,7 +573,7 @@ const OrderRow = React.memo(({
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Item Manifest</p>
                                     <div className="space-y-3">
-                                        {order.items_summary?.map((item: any, i: number) => (
+                                        {order.items_summary?.map((item, i) => (
                                             <div key={i} className="flex justify-between items-center text-sm font-bold p-3 bg-nuclear-text/5 rounded-xl border border-nuclear-text/10">
                                                 <span className="flex items-center gap-2">
                                                     <span className="w-5 h-5 rounded-md bg-nuclear-text text-white flex items-center justify-center text-[10px]">{item.quantity}</span>

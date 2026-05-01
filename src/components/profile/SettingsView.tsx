@@ -83,20 +83,20 @@ export default function SettingsView({ user }: { user: User }) {
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">First Name</label>
-                                <input type="text" value={profileData.first_name} onChange={e => setProfileData({...profileData, first_name: e.target.value})} className={inputClass} />
+                                <label htmlFor="first_name" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">First Name</label>
+                                <input id="first_name" type="text" placeholder="Enter first name" value={profileData.first_name} onChange={e => setProfileData({...profileData, first_name: e.target.value})} className={inputClass} />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Last Name</label>
-                                <input type="text" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
+                                <label htmlFor="last_name" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Last Name</label>
+                                <input id="last_name" type="text" placeholder="Enter last name" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Email (Immutable)</label>
-                                <input type="email" value={user?.email} readOnly className={`${inputClass} bg-slate-50 border-transparent opacity-60 cursor-not-allowed`} />
+                                <label htmlFor="email" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Email (Immutable)</label>
+                                <input id="email" type="email" value={user?.email} readOnly className={`${inputClass} bg-slate-50 border-transparent opacity-60 cursor-not-allowed`} placeholder="Email address" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Contact Terminal</label>
-                                <input type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className={inputClass} placeholder="Enter phone" />
+                                <label htmlFor="phone" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Contact Terminal</label>
+                                <input id="phone" type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className={inputClass} placeholder="Enter phone" />
                             </div>
                         </div>
                     </section>
@@ -109,8 +109,9 @@ export default function SettingsView({ user }: { user: User }) {
                         
                         <div className="space-y-5">
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Delivery Pipeline Address</label>
+                                <label htmlFor="address" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Delivery Pipeline Address</label>
                                 <textarea 
+                                    id="address"
                                     value={profileData.address} 
                                     onChange={e => setProfileData({...profileData, address: e.target.value})} 
                                     className={`${inputClass} h-20 resize-none`} 
@@ -119,16 +120,16 @@ export default function SettingsView({ user }: { user: User }) {
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">City Hub</label>
-                                    <input type="text" value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className={inputClass} />
+                                    <label htmlFor="city" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">City Hub</label>
+                                    <input id="city" type="text" placeholder="Enter city" value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className={inputClass} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Regional Zone</label>
-                                    <input type="text" value={profileData.region} onChange={e => setProfileData({...profileData, region: e.target.value})} className={inputClass} />
+                                    <label htmlFor="region" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Regional Zone</label>
+                                    <input id="region" type="text" placeholder="Enter region" value={profileData.region} onChange={e => setProfileData({...profileData, region: e.target.value})} className={inputClass} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">GPS Endpoint</label>
-                                    <input type="text" value={profileData.ghana_post_gps} onChange={e => setProfileData({...profileData, ghana_post_gps: e.target.value})} className={inputClass} placeholder="GA-000-0000" />
+                                    <label htmlFor="gps" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">GPS Endpoint</label>
+                                    <input id="gps" type="text" value={profileData.ghana_post_gps} onChange={e => setProfileData({...profileData, ghana_post_gps: e.target.value})} className={inputClass} placeholder="GA-000-0000" />
                                 </div>
                             </div>
                         </div>

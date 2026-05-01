@@ -87,6 +87,17 @@ export interface Order {
     amount_paid?: number;
     delivery_window?: string;
     timeline_events?: OrderTimelineEvent[];
+    customer?: {
+        name: string;
+        email: string;
+    };
+    items_summary?: Array<{
+        name: string;
+        quantity: number;
+        price: number;
+    }>;
+    phone?: string;
+    updated_at?: string;
 }
 
 export interface OrderTimelineEvent {
