@@ -95,53 +95,59 @@ export default function OrderDetailPage() {
 
     const balanceDue = parseFloat(order.balance_due?.toString() || '0');
     const isPendingPayment = order.state === 'PENDING_PAYMENT' || balanceDue > 0;
+    const statusStyles = { bg: 'bg-emerald-50', text: 'text-emerald-700' };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 pt-24 pb-32 selection:bg-emerald-100">
-            {/* Subtle Texture Overlay */}
-            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.svg')] z-0" />
-
-            <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-20 pb-32">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
                 
-                {/* BACK NAVIGATION */}
+                {/* Back Link - Minimal */}
                 <Link 
                     href="/orders" 
-                    className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-12 group"
+                    className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-8"
                 >
-                    <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                    Logistics Index
+                    <ArrowLeft size={12} />
+                    Back to Orders
                 </Link>
 
-                {/* ASYMMETRICAL HEADER - LUX SANS */}
-                <header className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-                    <div className="space-y-4">
+                {/* Compact Header */}
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                    <div className="space-y-1">
                         <div className="flex items-center gap-3">
-                            <span className="h-px w-8 bg-emerald-600/30" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-800 dark:text-emerald-400">
-                                Sourcing Manifest
+                            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+                                Order Details
+                            </h1>
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] ${statusStyles.bg} ${statusStyles.text} shadow-sm`}>
+                                {order.state}
                             </span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black tracking-[0.05em] uppercase text-slate-900 dark:text-white leading-none">
-                            Institutional <span className="text-slate-300 dark:text-slate-700 font-light italic text-serif">Report</span>
-                        </h1>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest opacity-60">
+                            Reference: <span className="text-slate-900 dark:text-white">#{order.order_number}</span> • Placed {new Date(order.created_at).toLocaleDateString()}
+                        </p>
                     </div>
-                    <div className="text-right border-l md:border-l-0 md:border-r border-slate-100 dark:border-slate-800 pl-6 md:pl-0 md:pr-6 py-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 block mb-1">Record ID</span>
-                        <span className="text-2xl font-black text-slate-900 dark:text-white tracking-widest uppercase italic">#{order.order_number}</span>
+                    
+                    <div className="flex gap-3">
+                        <Link 
+                            href={`/track?order=${order.order_number}`}
+                            className="px-6 py-2.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm flex items-center gap-2"
+                        >
+                            <Truck size={14} />
+                            Track
+                        </Link>
                     </div>
                 </header>
 
-                <div className="grid lg:grid-cols-12 gap-16 items-start">
+                <div className="grid lg:grid-cols-12 gap-8 items-start">
                     
-                    {/* LEFT COLUMN: The Physical Manifest (8 Cols) */}
-                    <div className="lg:col-span-8 space-y-20">
+                    {/* LEFT COLUMN: Products & Tracking */}
+                    <div className="lg:col-span-8 space-y-8">
                         
-                        {/* LOGISTICS TRACKER (The Journey) */}
+                        {/* Compact Tracker */}
                         {!['CANCELLED', 'REFUNDED', 'PENDING_PAYMENT'].includes(order.state) && (
-                            <section>
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 mb-10 pb-4 border-b border-slate-200/50 dark:border-slate-800 flex items-center gap-3">
-                                    <Truck className="w-3.5 h-3.5" />
-                                    Transit Intelligence
+                            <section className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-8 flex items-center gap-2">
+                                    <Truck size={14} className="text-emerald-600" />
+                                    Shipment Journey
                                 </h3>
                                 <ShipmentTracker 
                                     currentState={order.state} 
@@ -150,145 +156,142 @@ export default function OrderDetailPage() {
                             </section>
                         )}
 
-                        {/* SOURCING DETAILS (The Ledger) */}
-                        <section>
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 mb-10 pb-4 border-b border-slate-200/50 dark:border-slate-800 flex items-center gap-3">
-                                <Package className="w-3.5 h-3.5" />
-                                Product Inventory
-                            </h3>
-                            <div className="divide-y divide-slate-50 dark:divide-slate-900">
+                        {/* Compact Product Rows */}
+                        <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                            <div className="px-6 sm:p-8 py-6 border-b border-slate-100 dark:border-slate-800">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white flex items-center gap-2">
+                                    <Package size={14} className="text-emerald-600" />
+                                    Items In Shipment
+                                </h3>
+                            </div>
+                            <div className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {order.items?.map((item: OrderItem) => (
-                                    <div key={item.id} className="grid grid-cols-[100px_1fr] gap-8 py-10 first:pt-0 last:pb-0 group">
-                                        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                    <div key={item.id} className="p-6 sm:p-8 flex items-center gap-6 group">
+                                        <div className="w-16 h-20 sm:w-20 sm:h-24 relative rounded-lg border border-slate-100 dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-950 flex-shrink-0">
                                             {item.product?.image ? (
                                                 <NextImage
                                                     src={getImageUrl(item.product.image)}
                                                     alt={item.product_name}
                                                     fill
-                                                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                     unoptimized
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                                    <Package className="w-8 h-8" strokeWidth={1} />
+                                                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                    <Package size={24} />
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex flex-col justify-between py-1">
-                                            <div className="space-y-4">
-                                                <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight uppercase leading-tight line-clamp-1">{item.product_name}</h3>
-                                                <div className="flex flex-wrap gap-8">
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <span className="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">Quantity</span>
-                                                        <span className="text-sm font-bold text-slate-500 dark:text-slate-400">{item.quantity} units</span>
-                                                    </div>
-                                                    {item.selected_size && (
-                                                        <div className="flex flex-col gap-0.5">
-                                                            <span className="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">Spec</span>
-                                                            <span className="text-sm font-bold text-slate-500 dark:text-slate-400">{item.selected_size}</span>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-1 mb-1">
+                                                {item.product_name}
+                                            </h4>
+                                            <div className="flex flex-wrap items-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                                                <span>Qty: <span className="text-slate-900 dark:text-white">{item.quantity}</span></span>
+                                                {item.selected_size && (
+                                                    <>
+                                                        <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                                        <span>Size: <span className="text-slate-900 dark:text-white">{item.selected_size}</span></span>
+                                                    </>
+                                                )}
+                                                <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                                <span>Rate: GHS {Number(item.unit_price).toLocaleString()}</span>
                                             </div>
-                                            <div className="flex justify-between items-baseline pt-8">
-                                                <span className="text-[10px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">Rate: GHS {Number(item.unit_price).toLocaleString()}</span>
-                                                <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter tabular-nums leading-none">
-                                                    GHS {Number(item.total_price).toLocaleString()}
-                                                </span>
-                                            </div>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                            <p className="text-sm sm:text-lg font-black text-slate-900 dark:text-white tabular-nums">
+                                                GHS {Number(item.total_price).toLocaleString()}
+                                            </p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </section>
-
-                        {/* ADDRESSING */}
-                        <div className="grid md:grid-cols-2 gap-12 pt-12 border-t border-slate-50 dark:border-slate-800">
+                        
+                        {/* Compact Delivery & Support */}
+                        <div className="grid md:grid-cols-2 gap-8 py-8 px-6 sm:px-8 border-t border-border-standard">
                             <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-700 mb-6 font-sans">Final Destination</h4>
-                                <div className="space-y-4">
-                                    <p className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
+                                <h4 className="text-[9px] font-black uppercase tracking-widest text-content-secondary opacity-50 mb-4">Delivery Destination</h4>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-black text-content-primary uppercase leading-tight">
                                         {order.delivery_address}
                                     </p>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                    <p className="text-[10px] text-content-secondary font-bold uppercase tracking-widest">
                                         {order.delivery_city}, {order.delivery_region}
                                     </p>
                                 </div>
                             </div>
                             <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-700 mb-6 font-sans">Concierge Reach</h4>
-                                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6">
-                                    Direct access to our logistics floor. Secure sourcing queries handled via the encrypted gateway.
+                                <h4 className="text-[9px] font-black uppercase tracking-widest text-content-secondary opacity-50 mb-4">Logistics Support</h4>
+                                <p className="text-[10px] text-content-secondary font-medium leading-relaxed mb-4">
+                                    Need assistance? Contact our dispatch hub directly for real-time shipment updates.
                                 </p>
                                 <a 
-                                    href={`https://wa.me/${siteConfig.concierge}?text=${encodeURIComponent(`Hi London's Imports! Manifest Inquiry: Order #${order.order_number}`)}`} 
+                                    href={`https://wa.me/${siteConfig.concierge}?text=${encodeURIComponent(`Hi London's Imports! Order Help: #${order.order_number}`)}`} 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
-                                    className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400 group"
+                                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-emerald group"
                                 >
-                                    Sourcing Gateway <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-2 transition-transform" />
+                                    Message Support <ArrowLeft size={12} className="rotate-180 group-hover:translate-x-1 transition-transform" />
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    {/* RIGHT COLUMN: Financial Ledger (4 Cols) */}
-                    <aside className="lg:col-span-4 lg:sticky lg:top-32">
-                        <section className="bg-slate-50 dark:bg-slate-900/50 p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-700 mb-10 flex items-center gap-3">
-                                <Receipt className="w-3.5 h-3.5" />
+                    {/* RIGHT COLUMN: Financial Summary (4 Cols) */}
+                    <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+                        <section className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-border-standard shadow-sm">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-8 flex items-center gap-2">
+                                <Receipt size={14} className="text-brand-emerald" />
                                 Financial Summary
                             </h3>
 
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 <div className="flex justify-between items-baseline">
-                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Subtotal</span>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">GHS {Number(order.subtotal).toLocaleString()}</span>
+                                    <span className="text-[9px] font-black uppercase text-content-secondary opacity-50 tracking-widest">Subtotal</span>
+                                    <span className="text-sm font-bold text-content-primary tabular-nums">GHS {Number(order.subtotal).toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-baseline">
-                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Logistics Hub</span>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">GHS {Number(order.delivery_fee).toLocaleString()}</span>
+                                    <span className="text-[9px] font-black uppercase text-content-secondary opacity-50 tracking-widest">Shipping</span>
+                                    <span className="text-sm font-bold text-content-primary tabular-nums">GHS {Number(order.delivery_fee).toLocaleString()}</span>
                                 </div>
                                 
-                                <div className="pt-8 border-t border-slate-200 dark:border-slate-800">
-                                    <div className="flex justify-between items-end mb-8">
-                                        <div>
-                                            <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-1">Total Liability</span>
-                                            <span className="text-[9px] font-medium text-slate-300 uppercase tracking-tighter">All inclusive</span>
-                                        </div>
-                                        <span className="text-4xl font-black text-slate-900 dark:text-white tracking-widest tabular-nums leading-none">
+                                <div className="pt-6 border-t border-border-standard">
+                                    <div className="flex justify-between items-end mb-6">
+                                        <span className="text-[9px] font-black uppercase text-content-secondary tracking-widest">Total Liability</span>
+                                        <span className="text-2xl font-black text-content-primary tracking-tight tabular-nums leading-none">
                                             GHS {Number(order.total).toLocaleString()}
                                         </span>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center px-6 py-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
-                                            <span className="text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-400 tracking-widest">Settled</span>
-                                            <span className="text-base font-black text-emerald-900 dark:text-emerald-100">GHS {Number(order.amount_paid).toLocaleString()}</span>
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center px-4 py-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                                            <span className="text-[8px] font-black uppercase text-emerald-700 dark:text-emerald-400 tracking-widest">Settled</span>
+                                            <span className="text-sm font-black text-emerald-800 dark:text-emerald-100 uppercase">GHS {Number(order.amount_paid).toLocaleString()}</span>
                                         </div>
 
                                         {balanceDue > 0 && (
-                                            <div className="flex justify-between items-center px-6 py-4 bg-slate-900 dark:bg-white rounded-2xl">
-                                                <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Arrears</span>
-                                                <span className="text-base font-black text-white dark:text-slate-900">GHS {Number(balanceDue).toLocaleString()}</span>
+                                            <div className="flex justify-between items-center px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-border-standard">
+                                                <span className="text-[8px] font-black uppercase text-amber-600 tracking-widest">Balance Due</span>
+                                                <span className="text-sm font-black text-amber-700 uppercase">GHS {Number(balanceDue).toLocaleString()}</span>
                                             </div>
                                         )}
                                     </div>
 
                                     {isPendingPayment && order.state !== 'CANCELLED' && (
-                                        <div className="mt-8 space-y-3">
+                                        <div className="mt-6 space-y-3">
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="block w-full h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-950/20 dark:shadow-none hover:scale-[1.02] active:scale-95 transition-all text-center leading-[64px]"
+                                                className="block w-full py-4 bg-slate-950 text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all text-center shadow-lg"
                                             >
-                                                Process Balance
+                                                Pay Balance
                                             </Link>
                                             <button
                                                 onClick={handleVerifyPayment}
                                                 disabled={isVerifying}
-                                                className="w-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-emerald-600 transition-colors py-2 flex items-center justify-center gap-2"
+                                                className="w-full text-[8px] font-black uppercase tracking-widest text-content-secondary hover:text-brand-emerald transition-colors py-2 flex items-center justify-center gap-2 opacity-60"
                                             >
-                                                <ShieldCheck className="w-3.5 h-3.5" />
+                                                <ShieldCheck size={12} />
                                                 {isVerifying ? 'Verifying...' : 'Re-verify Payment'}
                                             </button>
                                         </div>
@@ -297,11 +300,9 @@ export default function OrderDetailPage() {
                             </div>
                         </section>
 
-                        <div className="mt-12 px-8 opacity-40">
-                            <p className="text-[9px] text-slate-400 leading-relaxed uppercase tracking-widest italic grayscale">
-                                Institutional Procurement record. London's Imports Global Hub 2026. Data encrypted via SSL.
-                            </p>
-                        </div>
+                        <p className="text-[8px] text-content-secondary leading-relaxed uppercase tracking-[0.2em] opacity-40 px-2">
+                            Institutional record. London's Imports Logistics 2026. SSL Encrypted Data.
+                        </p>
                     </aside>
                 </div>
             </div>
