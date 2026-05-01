@@ -8,6 +8,7 @@ import { getImageUrl } from '@/lib/image';
 import { ordersAPI } from '@/lib/api';
 import { useToast } from '@/components/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Package, Calendar, Clock } from 'lucide-react';
 
 const OrdersView = ({ orders }: { orders: Order[] }) => {
     const { showToast } = useToast();
