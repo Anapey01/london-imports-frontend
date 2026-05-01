@@ -6,9 +6,9 @@ import { User } from '@/types';
 import ToggleSwitch from './ToggleSwitch';
 import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, AlertCircle, ChevronRight } from 'lucide-react';
 
-const SettingsView = ({ user }: { user: User }) => {
+export default function SettingsView({ user }: { user: User }) {
     const { fetchUser } = useAuthStore();
     
     const [isSaving, setIsSaving] = useState(false);
@@ -31,7 +31,7 @@ const SettingsView = ({ user }: { user: User }) => {
         ghana_post_gps: user?.ghana_post_gps || '',
     });
 
-    const inputClass = "w-full px-4 py-3 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-surface-card border-border-standard text-content-primary focus:border-brand-emerald placeholder:text-content-secondary";
+    const inputClass = "w-full px-4 py-2.5 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-white border-slate-200 text-slate-900 focus:border-brand-emerald focus:ring-4 focus:ring-emerald-500/5 placeholder:text-slate-300";
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -40,177 +40,162 @@ const SettingsView = ({ user }: { user: User }) => {
         
         try {
             await authAPI.updateProfile(profileData);
-            await fetchUser(); // Sync global store
+            await fetchUser();
             setSaveStatus('success');
             setTimeout(() => setSaveStatus('idle'), 3000);
-        } catch (err: unknown) {
-            console.error("Profile update failed:", err);
+        } catch (err: any) {
             setSaveStatus('error');
-            const error = err as { response?: { data?: { message?: string } }; message?: string };
-            setErrorMessage(error.response?.data?.message || error.message || 'Failed to update profile');
+            setErrorMessage(err.response?.data?.message || err.message || 'Failed to update profile');
         } finally {
             setIsSaving(false);
         }
     };
 
     return (
-        <div className="space-y-10">
-            {/* Header */}
-            <div className="border-b pb-4 border-border-standard flex items-center justify-between">
-                <h2 className="text-2xl font-black tracking-tight text-content-primary uppercase">
-                    Settings
-                </h2>
+        <div className="space-y-12 animate-fade-in-up pb-24">
+            {/* High-Authority Header */}
+            <div className="flex items-end justify-between border-b border-slate-100 pb-6">
+                <div>
+                    <h2 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
+                        Account Hub
+                    </h2>
+                    <p className="text-[9px] font-black mt-1 text-slate-400 uppercase tracking-[0.2em]">
+                        Global Identity & Logistics Management
+                    </p>
+                </div>
                 {saveStatus === 'success' && (
-                    <div className="flex items-center gap-2 text-brand-emerald animate-in fade-in slide-in-from-right-2 duration-300">
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Changes Saved</span>
+                    <div className="flex items-center gap-2 text-emerald-600">
+                        <CheckCircle2 size={14} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Profile Synced</span>
                     </div>
                 )}
             </div>
 
-            {/* Personal Information */}
-            <div>
-                <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 text-content-secondary">
-                    Account & Delivery Information
-                </h3>
-                <div className="p-6 rounded-xl border border-border-standard bg-surface-card">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label htmlFor="firstName" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-primary">First Name</label>
-                            <input id="firstName" type="text" value={profileData.first_name} onChange={e => setProfileData({...profileData, first_name: e.target.value})} className={inputClass} />
-                        </div>
-                        <div>
-                            <label htmlFor="lastName" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-primary">Last Name</label>
-                            <input id="lastName" type="text" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
-                        </div>
-                        <div>
-                            <label htmlFor="email" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-primary">Email Address</label>
-                            <input id="email" type="email" defaultValue={user?.email} className={`${inputClass} cursor-not-allowed bg-surface`} readOnly />
-                        </div>
-                        <div>
-                            <label htmlFor="phone" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-primary">Phone Number</label>
-                            <input id="phone" type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} placeholder="Add phone number" className={inputClass} />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* Core Profile Section */}
+                <div className="lg:col-span-8 space-y-10">
+                    <section>
+                        <div className="flex items-center gap-2 mb-6">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Personal Manifest</h3>
                         </div>
                         
-                        {/* Address Fields */}
-                        <div className="md:col-span-2 mt-4 pt-4 border-t border-dashed border-border-standard">
-                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-brand-emerald">Default Shipping Address</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">First Name</label>
+                                <input type="text" value={profileData.first_name} onChange={e => setProfileData({...profileData, first_name: e.target.value})} className={inputClass} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Last Name</label>
+                                <input type="text" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Email (Immutable)</label>
+                                <input type="email" value={user?.email} readOnly className={`${inputClass} bg-slate-50 border-transparent opacity-60 cursor-not-allowed`} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Contact Terminal</label>
+                                <input type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className={inputClass} placeholder="Enter phone" />
+                            </div>
                         </div>
-                        
-                        <div className="md:col-span-2">
-                            <label htmlFor="address" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-secondary">Street Address</label>
-                            <textarea id="address" value={profileData.address} onChange={e => setProfileData({...profileData, address: e.target.value})} className={`${inputClass} resize-none h-20`} placeholder="Your main delivery address" />
-                        </div>
-                        
-                        <div>
-                            <label htmlFor="city" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-secondary">City</label>
-                            <input id="city" type="text" value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className={inputClass} placeholder="e.g. Accra" />
-                        </div>
-                        
-                        <div>
-                            <label htmlFor="region" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-secondary">Region</label>
-                            <input id="region" type="text" value={profileData.region} onChange={e => setProfileData({...profileData, region: e.target.value})} className={inputClass} placeholder="e.g. Greater Accra" />
-                        </div>
-                        
-                        <div>
-                            <label htmlFor="gps" className="block text-[10px] font-black uppercase tracking-widest mb-2 text-content-secondary">Digital Address (GPS)</label>
-                            <input id="gps" type="text" value={profileData.ghana_post_gps} onChange={e => setProfileData({...profileData, ghana_post_gps: e.target.value})} className={`${inputClass} uppercase`} placeholder="GA-XXX-XXXX" />
-                        </div>
-                    </div>
-                    
-                    {saveStatus === 'error' && (
-                        <div className="mt-6 p-4 bg-rose-900/10 text-rose-600 rounded-xl border border-rose-900/20 flex items-center gap-3">
-                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                            <p className="text-[10px] font-black uppercase tracking-widest">{errorMessage}</p>
-                        </div>
-                    )}
+                    </section>
 
-                    <div className="mt-8 flex justify-end">
+                    <section>
+                        <div className="flex items-center gap-2 mb-6">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Default Logistics Node</h3>
+                        </div>
+                        
+                        <div className="space-y-5">
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Delivery Pipeline Address</label>
+                                <textarea 
+                                    value={profileData.address} 
+                                    onChange={e => setProfileData({...profileData, address: e.target.value})} 
+                                    className={`${inputClass} h-20 resize-none`} 
+                                    placeholder="Street, Building, Unit"
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">City Hub</label>
+                                    <input type="text" value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className={inputClass} />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Regional Zone</label>
+                                    <input type="text" value={profileData.region} onChange={e => setProfileData({...profileData, region: e.target.value})} className={inputClass} />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">GPS Endpoint</label>
+                                    <input type="text" value={profileData.ghana_post_gps} onChange={e => setProfileData({...profileData, ghana_post_gps: e.target.value})} className={inputClass} placeholder="GA-000-0000" />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div className="pt-6">
                         <button 
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="px-8 py-4 bg-content-primary text-surface text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                            className="w-full sm:w-auto px-10 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.25em] rounded-xl hover:bg-emerald-600 transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl shadow-emerald-500/5"
                         >
-                            {isSaving ? 'Saving...' : 'Update Profile'}
+                            {isSaving ? 'Syncing Profile...' : 'Save Configuration'}
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Notifications */}
-            <div>
-                <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 text-content-secondary">
-                    Notifications
-                </h3>
-                <div className="px-6 rounded-xl border divide-y border-border-standard divide-border-standard bg-surface-card">
-                    <ToggleSwitch
-                        enabled={notifications.orders}
-                        onChange={() => setNotifications({ ...notifications, orders: !notifications.orders })}
-                        label="Order updates"
-                        description="Receive notifications about your order status"
-                    />
-                    <ToggleSwitch
-                        enabled={notifications.promotions}
-                        onChange={() => setNotifications({ ...notifications, promotions: !notifications.promotions })}
-                        label="Promotions & offers"
-                        description="Get notified about sales and special deals"
-                    />
-                    <ToggleSwitch
-                        enabled={notifications.newsletter}
-                        onChange={() => setNotifications({ ...notifications, newsletter: !notifications.newsletter })}
-                        label="Newsletter"
-                        description="Weekly updates on new arrivals"
-                    />
-                </div>
-            </div>
-
-            {/* Security */}
-            <div>
-                <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 text-content-secondary">
-                    Security
-                </h3>
-                <div className="rounded-xl border border-border-standard overflow-hidden bg-surface-card">
-                    <Link
-                        href="/reset-password"
-                        className="flex items-center justify-between p-5 transition-all hover:bg-surface"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface border border-border-standard font-black text-content-primary">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-black uppercase tracking-widest text-content-primary">Change Password</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary mt-0.5">Update your password securely</p>
-                            </div>
+                {/* Sidebar Controls */}
+                <div className="lg:col-span-4 space-y-10">
+                    <section className="bg-slate-50 border border-slate-100 rounded-2xl p-6 space-y-6">
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                            <span className="w-1 h-1 rounded-full bg-slate-400" />
+                            Notifications
+                        </h4>
+                        <div className="space-y-4">
+                            {[
+                                { id: 'orders', label: 'Order Pipeline', desc: 'Critical status updates' },
+                                { id: 'promotions', label: 'Global Offers', desc: 'Sales & flash alerts' },
+                            ].map(item => (
+                                <div key={item.id} className="flex items-center justify-between group">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{item.label}</p>
+                                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">{item.desc}</p>
+                                    </div>
+                                    <ToggleSwitch
+                                        enabled={(notifications as any)[item.id]}
+                                        onChange={() => setNotifications({ ...notifications, [item.id]: !(notifications as any)[item.id] })}
+                                    />
+                                </div>
+                            ))}
                         </div>
-                        <svg className="w-5 h-5 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </Link>
-                </div>
-            </div>
+                    </section>
 
-            {/* Danger Zone */}
-            <div>
-                <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 text-rose-600">
-                    Danger Zone
-                </h3>
-                <div className="p-6 rounded-xl border border-rose-900/20 bg-rose-900/5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <p className="text-[11px] font-black uppercase tracking-widest text-content-primary">Delete Account</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary mt-0.5">Permanently delete your account and all data</p>
-                        </div>
-                        <button className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-600 text-rose-600 hover:bg-rose-600 hover:text-white transition-all">
-                            Delete Account
+                    <section className="space-y-4">
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900 px-1">Security Manifest</h4>
+                        <Link
+                            href="/reset-password"
+                            className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-900 transition-all group"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+                                    <AlertCircle size={14} />
+                                </div>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">Change Password</span>
+                            </div>
+                            <ChevronRight size={12} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
+                        </Link>
+                    </section>
+
+                    <section className="pt-6 border-t border-slate-100">
+                        <button className="w-full p-4 rounded-xl border border-rose-100 bg-rose-50/30 text-rose-600 hover:bg-rose-600 hover:text-white transition-all text-center">
+                            <p className="text-[10px] font-black uppercase tracking-widest">Deactivate Identity</p>
+                            <p className="text-[7px] font-bold uppercase tracking-widest opacity-60 mt-1">Permanent data erasure</p>
                         </button>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default SettingsView;
