@@ -109,9 +109,12 @@ api.interceptors.response.use(
         isRefreshing = false;
         refreshSubscribers = [];
         
-        // Refresh failed - User must login ONLY if it's an auth error (401/403)
+        // Refresh failed - User must login
+        // SimpleJWT sometimes returns 400 for invalid/malformed refresh tokens
         const err = refreshError as { response?: { status?: number } };
-        if (typeof window !== 'undefined' && err.response && (err.response.status === 401 || err.response.status === 403)) {
+        const status = err.response?.status;
+        
+        if (typeof window !== 'undefined' && err.response && (status === 400 || status === 401 || status === 403)) {
           // Clear tokens directly as fallback
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');

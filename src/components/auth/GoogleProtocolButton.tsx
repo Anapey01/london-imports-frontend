@@ -11,6 +11,7 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
     const { showToast } = useToast();
     const router = useRouter();
     const googleButtonRef = useRef<HTMLDivElement>(null);
+    const isInitialized = useRef(false);
     const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
     const initializeGoogle = useCallback(() => {
@@ -28,12 +29,15 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                     googleButtonRef.current.innerHTML = '';
                 }
 
-                (window as any).google.accounts.id.initialize({
-                    client_id: clientID,
-                    callback: handleGoogleResponse,
-                    auto_select: false,
-                    cancel_on_tap_outside: true,
-                });
+                if (!isInitialized.current) {
+                    (window as any).google.accounts.id.initialize({
+                        client_id: clientID,
+                        callback: handleGoogleResponse,
+                        auto_select: false,
+                        cancel_on_tap_outside: true,
+                    });
+                    isInitialized.current = true;
+                }
 
                 (window as any).google.accounts.id.renderButton(
                     googleButtonRef.current,
@@ -43,7 +47,6 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                         size: 'large', 
                         text: mode === 'signin' ? 'signin_with' : 'signup_with',
                         shape: 'rectangular',
-                        width: '100%',
                         logo_alignment: 'center'
                     }
                 );

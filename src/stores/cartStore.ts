@@ -99,10 +99,21 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     if (guestItems.length > 0) {
                         console.info("[CartStore] Syncing guest items to server...", guestItems.length);
                         
-                        // Add each guest item to server cart
-                        await Promise.all(guestItems.map(item =>
-                            ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color)
-                        ));
+                        // Add each guest item to server cart SEQUENTIALLY to prevent race conditions
+                        // This avoids multiple simultaneous get_cart calls creating duplicate orders
+                        for (const item of guestItems) {
+                            try {
+                                await ordersAPI.addToCart(
+                                    item.product.id, 
+                                    item.quantity, 
+                                    item.selected_size || "", 
+                                    item.selected_color || ""
+                                );
+                            } catch (e) {
+                                console.error(`[CartStore] Failed to merge item ${item.product.id}:`, e);
+                                // Continue with other items even if one fails
+                            }
+                        }
 
                         // ONLY clear local guest state AFTER successful sync
                         localStorage.removeItem('guest_cart');
@@ -179,10 +190,16 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     sizeParam = selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name;
                 }
 
-                console.info("[CartStore] Adding to cart (Server):", { productId: product.id, quantity, size: sizeParam, color: selectedColor });
+                console.info("[CartStore] Adding to cart (Server):", { productId: product.id, quantity, size: sizeParam, color: selectedColor || "" });
 
                 // Pass variants to API
-                const response = await ordersAPI.addToCart(product.id, quantity, sizeParam, selectedColor, selectedVariant?.id);
+                const response = await ordersAPI.addToCart(
+                    product.id, 
+                    quantity, 
+                    sizeParam, 
+                    selectedColor || "", 
+                    selectedVariant?.id
+                );
                 const cart = response.data;
 
                 // Auto-select the newly added item
@@ -199,10 +216,17 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     selectedItemIds: newSelected,
                     itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
                 });
-            } catch (err) {
+            } catch (err: any) {
                 console.error("[CartStore] Server addToCart failed:", err);
+                
+                // Rollback optimistic update on failure ONLY if no newer requests have started
                 if (get().version === reqVersion) {
-                    set({ itemCount: previousCount });
+                    const rollbackCount = get().itemCount - quantity;
+                    set({ 
+                        itemCount: Math.max(0, rollbackCount),
+                        error: "Failed to sync cart item",
+                        isLoading: false 
+                    });
                 }
                 throw err;
             }

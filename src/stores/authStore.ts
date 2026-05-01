@@ -118,7 +118,7 @@ export const useAuthStore = create<AuthState>()(
                 } catch (error: any) {
                     // Only logout if it's a definitive auth failure (401 or 403)
                     // If it's a network error (no response), keep the session for retry
-                    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    if (error.response && (error.response.status === 400 || error.response.status === 401 || error.response.status === 403)) {
                         get().logout();
                     }
                     throw error;
