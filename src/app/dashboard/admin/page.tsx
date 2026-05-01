@@ -61,6 +61,7 @@ interface DashboardData {
             checkout: number;
             paid: number;
         };
+        logisticsFunnel: Array<{ label: string; count: number }>;
         [key: string]: unknown;
     };
     recentOrders: Order[];
