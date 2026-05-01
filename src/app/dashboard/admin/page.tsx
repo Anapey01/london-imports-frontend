@@ -43,18 +43,18 @@ interface DashboardData {
         potential_revenue: number;
         new_users_today: number;
         pending_orders: number;
-        active_batch: any;
-        [key: string]: any;
+        active_batch: unknown;
+        [key: string]: unknown;
     };
     analytics: {
-        revenueChart: any[];
+        revenueChart: unknown[];
         funnel: {
             visitors: number;
             cart: number;
             checkout: number;
             paid: number;
         };
-        [key: string]: any;
+        [key: string]: unknown;
     };
     recentOrders: Order[];
 }
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
         return orderDate === today;
     };
 
-    const isStuck = (order: any) => {
+    const isStuck = (order: Order) => {
         if (['DELIVERED', 'CANCELLED', 'COMPLETED'].includes(order.status)) return false;
         const lastUpdated = new Date(order.updated_at || order.created_at).getTime();
         const threshold = Date.now() - (5 * 24 * 60 * 60 * 1000);
@@ -123,7 +123,7 @@ export default function AdminDashboardPage() {
 
             // Strict Array Enforcement (Structural Immunity)
             const rawOrders = ordersRes.data;
-            let validatedOrders: any[] = [];
+            let validatedOrders: Order[] = [];
             
             if (rawOrders) {
                 if (Array.isArray(rawOrders.results)) {
