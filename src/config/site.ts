@@ -8,6 +8,8 @@ export const siteConfig = {
     apiUrl: process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8000/api/v1' : 'https://london-imports-api.onrender.com/api/v1'),
     whatsapp: '233545247009', // Main Shop Line
     concierge: '233541096372', // Specialized Sourcing/Support
+    momoNumber: '055 812 3456', // Direct Mobile Money line
+    momoName: "London's Imports Hub",
     supportEmail: 'info@londonsimports.com',
     description: "Ghana's easiest way to buy from China. Shop 1688 and Alibaba with Momo. Fast shipping to Accra & Kumasi. Reliable mini-importation for all businesses.",
     defaults: {
