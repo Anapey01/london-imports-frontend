@@ -190,60 +190,76 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
     if (!data) return null;
 
     const LucideIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
-        const Icon = ICON_MAP[name] || Sparkles;
+        const Icon = (ICON_MAP as any)[name] || Sparkles;
         return <Icon {...props} />;
     };
+
+    // 1. Safe extraction of Highlights
+    const highlights = Array.isArray(data?.highlights) ? data.highlights : [];
+    
+    // 2. Safe extraction of Specs (Handles both Array and Object formats)
+    let specs: Array<{ label: string; value: string }> = [];
+    if (Array.isArray(data?.specs)) {
+        specs = data.specs;
+    } else if (data?.specs && typeof data.specs === 'object') {
+        specs = Object.entries(data.specs).map(([label, value]) => ({
+            label: String(label),
+            value: String(value)
+        }));
+    }
 
     return (
         <div className="mb-12 space-y-12">
             {/* 1. Performance Narrative (Editorial Story) */}
-            <div className="bg-emerald-50/30 border-l-4 border-emerald-500 p-8 rounded-r-2xl">
-                <p className="text-xl lg:text-2xl font-serif italic text-content-primary leading-relaxed opacity-90">
-                    "{data.narrative}"
-                </p>
-            </div>
-
-            {/* 2. Key Highlights Grid (Simple Premium) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {(Array.isArray(data.highlights) ? data.highlights : []).map((item, idx) => (
-                    <div key={idx} className="space-y-3">
-                        <div className="w-12 h-12 bg-content-primary text-white rounded-xl flex items-center justify-center shadow-lg">
-                            <LucideIcon name={item.icon} className="w-6 h-6" strokeWidth={1.5} />
-                        </div>
-                        <h4 className="text-lg font-bold text-content-primary tracking-tight">
-                            {item.title}
-                        </h4>
-                        <p className="text-sm text-content-secondary leading-relaxed">
-                            {item.text}
-                        </p>
-                    </div>
-                ))}
-            </div>
-
-            {/* 3. Core Specifications Table (No Jargon) */}
-            <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
-                <div className="bg-gray-50 px-6 py-3 border-b border-gray-100">
-                    <span className="text-xs font-bold uppercase tracking-widest text-content-secondary">
-                        Important Details
-                    </span>
+            {data.narrative && (
+                <div className="bg-emerald-50/30 border-l-4 border-emerald-500 p-8 rounded-r-2xl">
+                    <p className="text-xl lg:text-2xl font-serif italic text-content-primary leading-relaxed opacity-90">
+                        "{data.narrative}"
+                    </p>
                 </div>
-                <div className="divide-y divide-gray-100">
-                    {/* Safe handling for both Array and Object formats from AI */}
-                    {(Array.isArray(data.specs) 
-                        ? data.specs 
-                        : Object.entries(data.specs || {}).map(([label, value]) => ({ label, value: String(value) }))
-                    ).map((spec, idx) => (
-                        <div key={idx} className="flex px-6 py-4 text-sm">
-                            <span className="font-medium text-content-secondary w-2/5 md:w-1/3">
-                                {spec.label}
-                            </span>
-                            <span className="text-content-primary font-bold">
-                                {spec.value}
-                            </span>
+            )}
+
+            {/* 2. Key Highlights Grid */}
+            {highlights.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {highlights.map((item, idx) => (
+                        <div key={idx} className="space-y-3">
+                            <div className="w-12 h-12 bg-content-primary text-white rounded-xl flex items-center justify-center shadow-lg">
+                                <LucideIcon name={item.icon} className="w-6 h-6" strokeWidth={1.5} />
+                            </div>
+                            <h4 className="text-lg font-bold text-content-primary tracking-tight">
+                                {item.title}
+                            </h4>
+                            <p className="text-sm text-content-secondary leading-relaxed">
+                                {item.text}
+                            </p>
                         </div>
                     ))}
                 </div>
-            </div>
+            )}
+
+            {/* 3. Core Specifications Table */}
+            {specs.length > 0 && (
+                <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    <div className="bg-gray-50 px-6 py-3 border-b border-gray-100">
+                        <span className="text-xs font-bold uppercase tracking-widest text-content-secondary">
+                            Important Details
+                        </span>
+                    </div>
+                    <div className="divide-y divide-gray-100">
+                        {specs.map((spec, idx) => (
+                            <div key={idx} className="flex px-6 py-4 text-sm">
+                                <span className="font-medium text-content-secondary w-2/5 md:w-1/3">
+                                    {spec.label}
+                                </span>
+                                <span className="text-content-primary font-bold">
+                                    {spec.value}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
