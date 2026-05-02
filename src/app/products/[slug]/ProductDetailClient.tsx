@@ -696,7 +696,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 className="text-4xl lg:text-7xl font-serif text-content-primary leading-[0.95] tracking-tighter" 
                                 style={{ fontWeight: 300, fontVariationSettings: '"wght" 300' }}
                             >
-                                {product.display_name || product.short_name || product.name}
+                                {product.name}
                             </h1>
                             {product.subtitle && (
                                 <p className="text-sm lg:text-base font-medium text-content-secondary tracking-widest uppercase opacity-70 mt-2">
