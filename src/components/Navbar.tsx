@@ -14,7 +14,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { trackViewSearchResults } from '@/lib/analytics';
-import { Search, Menu, Heart, User, UserPlus } from 'lucide-react';
+import { Search, Menu, Heart, User, UserPlus, Zap } from 'lucide-react';
 
 // Lazy load heavy interactive components
 const SearchModal = dynamic(() => import('./SearchModal'));

@@ -50,7 +50,8 @@ import {
     Sun,
     Crown,
     Package,
-    Facebook
+    Facebook,
+    Zap
 } from 'lucide-react';
 
 // Mapping category names/keywords to Lucide icons for dynamic categories
