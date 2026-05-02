@@ -18,8 +18,17 @@ export const api = axios.create({
 // Request interceptor to add Auth token
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // Reading directly from localStorage to avoid circular store dependencies and race conditions
-    const token = localStorage.getItem('access_token');
+    // Reading from Zustand's persisted storage to ensure single source of truth
+    const authStorage = localStorage.getItem('auth-storage');
+    let token = null;
+    if (authStorage) {
+        try {
+            const parsed = JSON.parse(authStorage);
+            token = parsed.state?.accessToken;
+        } catch (e) {
+            console.error('[API] Failed to parse auth storage', e);
+        }
+    }
 
     // List of public endpoints where we should NOT send the token
     const publicEndpoints = [
@@ -90,7 +99,16 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+        const authStorage = typeof window !== 'undefined' ? localStorage.getItem('auth-storage') : null;
+        let refreshToken = null;
+        if (authStorage) {
+            try {
+                const parsed = JSON.parse(authStorage);
+                refreshToken = parsed.state?.refreshToken;
+            } catch (e) {
+                console.error('[API] Failed to parse auth storage for refresh', e);
+            }
+        }
         
         // GUARD: If no refresh token, don't even try. Just reject so caller handles it.
         if (!refreshToken) {
@@ -98,12 +116,14 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        // Attempt refresh (cookies handled automatically, but SimpleJWT often requires refresh token in body)
+        // Attempt refresh
         const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh: refreshToken }, { withCredentials: true });
 
         const { access } = response.data;
-        if (access && typeof window !== 'undefined') {
-          localStorage.setItem('access_token', access);
+        if (access) {
+          // Update the store directly
+          const { useAuthStore } = await import('@/stores/authStore');
+          useAuthStore.setState({ accessToken: access });
           onRefreshed(access);
         }
         
@@ -117,16 +137,14 @@ api.interceptors.response.use(
         refreshSubscribers = [];
         
         // Refresh failed - User must login
-        // SimpleJWT sometimes returns 400 for invalid/malformed refresh tokens
         const err = refreshError as { response?: { status?: number } };
         const status = err.response?.status;
         
-        if (typeof window !== 'undefined' && err.response && (status === 400 || status === 401 || status === 403)) {
-          // Clear tokens directly as fallback
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-
-          if (!window.location.pathname.includes('/login')) {
+        if (err.response && (status === 400 || status === 401 || status === 403)) {
+          const { useAuthStore } = await import('@/stores/authStore');
+          useAuthStore.getState().logout();
+          
+          if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
             window.location.href = '/login?expired=true';
           }
         }
@@ -256,6 +274,7 @@ export const adminAPI = {
   updateSettings: (data: unknown) => api.patch('/admin/settings/', data),
   sendBroadcastEmail: (data: { subject: string; message: string; target?: string; emails?: string[] }) => 
     api.post('/admin/broadcast/', data),
+  getAudienceContacts: (target: string) => api.get('/admin/broadcast/contacts/', { params: { target } }),
 
   // Maintenance
   recalculateReservations: () => api.post('/auth/admin/recalculate-reservations/'),

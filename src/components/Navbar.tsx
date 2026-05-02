@@ -147,6 +147,19 @@ export default function Navbar() {
                                 </Link>
                             )}
 
+                            {/* Admin Command (Staff Only) */}
+                            {isAuthenticated && user?.is_staff && (
+                                <Link href="/dashboard/admin" className="flex items-center gap-4 group hover:italic transition-all institutional-focus rounded-lg p-2 -m-2" aria-label="Admin Dashboard">
+                                    <div className="flex flex-col text-right">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Admin</span>
+                                        <span className="text-[8px] font-bold text-emerald-500/50 uppercase tracking-widest">Command</span>
+                                    </div>
+                                    <div className="w-10 h-10 border border-emerald-500/20 flex items-center justify-center group-hover:border-emerald-500 transition-colors bg-emerald-500/5">
+                                        <Zap className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
+                                    </div>
+                                </Link>
+                            )}
+
                             {/* My Basket */}
                             <div className="flex items-center gap-6 border-l border-border-standard/60 pl-10">
                                 <Link href="/wishlist" className="relative group institutional-focus rounded-lg p-2 -m-2 transition-all" aria-label="View Saved Items">

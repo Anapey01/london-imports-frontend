@@ -158,8 +158,13 @@ export default function ProductCard({
                          </div>
                      )}
                      <h3 className={`product-name-weight text-content-primary tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
-                         {product.name}
+                         {product.display_name || product.name}
                      </h3>
+                     {product.subtitle && (
+                         <p className="text-[10px] text-content-secondary mt-1 font-medium italic opacity-80">
+                             {product.subtitle}
+                         </p>
+                     )}
                 </div>
 
                 <div className={`flex flex-wrap items-baseline justify-between gap-1 pt-2 border-t border-border-standard ${variant === 'compact' ? 'mt-auto' : ''}`}>

@@ -59,6 +59,8 @@ interface ProductVariant {
 interface Product {
     id: string;
     name: string;
+    short_name?: string;
+    subtitle?: string;
     slug: string;
     price: number;
     description: string;
@@ -591,6 +593,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <h1 className="text-4xl lg:text-7xl font-serif font-medium text-content-primary leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
+                            {product.subtitle && (
+                                <p className="text-sm lg:text-base font-medium text-content-secondary tracking-widest uppercase opacity-70 mt-2">
+                                    {product.subtitle}
+                                </p>
+                            )}
                             
                             {/* 2. Pricing Architecture (Solid Black) */}
                             <div className="flex items-end flex-wrap gap-6 pt-4">

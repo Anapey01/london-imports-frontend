@@ -196,13 +196,24 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     <div className="mb-10">
                         <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-6 block px-4">Your Account</span>
                         {isAuthenticated ? (
-                            <Link href="/profile" onClick={onClose} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
-                                <div className="flex items-center gap-6">
-                                    <User className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
-                                    <span className="text-[13px] font-black uppercase tracking-widest text-content-primary">Profile Dashboard</span>
-                                </div>
-                                <ArrowUpRight className="w-4 h-4 text-content-secondary group-hover:text-content-primary transition-colors" />
-                            </Link>
+                            <>
+                                <Link href="/profile" onClick={onClose} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
+                                    <div className="flex items-center gap-6">
+                                        <User className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
+                                        <span className="text-[13px] font-black uppercase tracking-widest text-content-primary">Profile Dashboard</span>
+                                    </div>
+                                    <ArrowUpRight className="w-4 h-4 text-content-secondary group-hover:text-content-primary transition-colors" />
+                                </Link>
+                                {useAuthStore.getState().user?.is_staff && (
+                                    <Link href="/dashboard/admin" onClick={onClose} className="flex items-center justify-between p-4 group transition-all bg-emerald-500/5 hover:bg-emerald-500/10 border-b border-emerald-500/20 institutional-focus">
+                                        <div className="flex items-center gap-6">
+                                            <Zap className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
+                                            <span className="text-[13px] font-black uppercase tracking-widest text-emerald-600">Admin Command</span>
+                                        </div>
+                                        <ArrowUpRight className="w-4 h-4 text-emerald-500 transition-colors" />
+                                    </Link>
+                                )}
+                            </>
                         ) : (
                             <div className="flex flex-col">
                                 <Link href="/login" onClick={onClose} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">

@@ -9,6 +9,9 @@ import { trackRemoveFromCart } from '@/lib/analytics';
 export interface Product {
     id: string;
     name: string;
+    short_name?: string;
+    display_name?: string;
+    subtitle?: string;
     slug: string;
     image?: string | null;
     primary_image?: string | null;

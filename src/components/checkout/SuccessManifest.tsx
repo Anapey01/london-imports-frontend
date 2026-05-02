@@ -103,17 +103,17 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                         <div className="absolute bottom-8 left-8 right-8">
                             <motion.div 
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.6 }}
+                                animate={{ opacity: 0.8 }}
                                 transition={{ delay: 1.5 }}
-                                className="flex justify-between items-end border-t border-white/20 pt-4"
+                                className="flex justify-between items-end border-t border-white/30 pt-4"
                             >
                                 <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Logistics Auth</span>
-                                    <p className="text-[10px] font-mono text-white/80">#{orderNumber}</p>
+                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Customer Order</span>
+                                    <p className="text-[10px] font-mono text-white/90">#{orderNumber}</p>
                                 </div>
                                 <div className="text-right space-y-1">
-                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Verified At</span>
-                                    <p className="text-[10px] font-mono text-white/80">{new Date().toLocaleDateString('en-GB')}</p>
+                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Confirmation Date</span>
+                                    <p className="text-[10px] font-mono text-white/90">{new Date().toLocaleDateString('en-GB')}</p>
                                 </div>
                             </motion.div>
                         </div>
@@ -129,40 +129,40 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                             >
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
-                                        <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                        <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">
-                                        Order Successful
+                                        Congratulations!
                                     </span>
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-[1.1]">
-                                    Your items are <br /> being gathered.
+                                    Your order is <br /> confirmed.
                                 </h1>
                             </motion.div>
 
                             <p className="text-[16px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-md">
-                                Thank you for your patronage. We are currently collecting your selection from our international partners to prepare them for shipment.
+                                We've received your order and started the process of getting your items ready for shipment from our global partners.
                             </p>
 
                             <div className="space-y-8 pt-4">
                                 {[
                                     { 
                                         id: '01', 
-                                        title: 'Gathering your items', 
-                                        desc: 'Inventory allocation is underway in our international sourcing hub.',
+                                        title: 'Processing Order', 
+                                        desc: 'We are securing your items with our international partners.',
                                         icon: Package
                                     },
                                     { 
                                         id: '02', 
-                                        title: 'Preparing for shipment', 
-                                        desc: 'We are carefully packaging your order and handling all transit documents.',
-                                        icon: Truck
+                                        title: 'Quality Check', 
+                                        desc: 'Each item is inspected before being packed for safe transit.',
+                                        icon: ShieldCheck
                                     },
                                     { 
                                         id: '03', 
-                                        title: 'Delivery updates', 
-                                        desc: 'Look out for your Tracking ID on WhatsApp once your package clears transit.',
-                                        icon: MessageSquare
+                                        title: 'Ready to Ship', 
+                                        desc: 'You will receive delivery updates on WhatsApp very soon.',
+                                        icon: Truck
                                     }
                                 ].map((step, idx) => (
                                     <motion.div 
@@ -172,7 +172,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                         transition={{ delay: 0.8 + (idx * 0.1) }}
                                         className="flex gap-6 group"
                                     >
-                                        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-950 shadow-sm">
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-emerald-600 group-hover:text-white dark:group-hover:bg-emerald-500 shadow-sm">
                                             <step.icon className="w-5 h-5" strokeWidth={1.5} />
                                         </div>
                                         <div className="flex-1">
@@ -192,7 +192,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                     href="/orders"
                                     className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-16 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
                                 >
-                                    Track My Order
+                                    View My Orders
                                     <ArrowRight className="w-3 h-3" />
                                 </Link>
                                 <a 
@@ -201,7 +201,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                     rel="noopener noreferrer"
                                     className="flex-1 bg-white dark:bg-slate-800 text-slate-950 dark:text-white h-16 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3"
                                 >
-                                    Customer Support
+                                    WhatsApp Support
                                     <MessageSquare className="w-3 h-3" />
                                 </a>
                             </div>
@@ -213,7 +213,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
             {/* Discovery Sections */}
             <OrderRecommendations />
 
-            {/* Footer Institutional Info */}
+            {/* Footer */}
             <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -221,9 +221,9 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                 className="mt-20 flex flex-col items-center gap-6 opacity-30 px-4 text-center"
             >
                 <div className="flex items-center gap-6 grayscale">
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Verified Authenticity</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Order Confirmation Summary</span>
                     <div className="w-1 h-1 bg-slate-500 rounded-full" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Secure Protocol v6.2</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Transaction Confirmed</span>
                 </div>
             </motion.div>
         </div>

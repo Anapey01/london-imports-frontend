@@ -498,6 +498,13 @@ export default function AdminOrderDetailPage() {
                                         Mark Shipped
                                     </button>
                                     <button
+                                        onClick={() => handleUpdateStatus('ARRIVED')}
+                                        disabled={updating || order.status === 'ARRIVED'}
+                                        className={`w-full p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${isDark ? 'border-primary-surface/10 text-white hover:border-blue-500' : 'border-gray-50 text-gray-700 hover:border-blue-500'} disabled:opacity-30`}
+                                    >
+                                        Mark Arrived
+                                    </button>
+                                    <button
                                         onClick={() => handleUpdateStatus('DELIVERED')}
                                         disabled={updating || order.status === 'DELIVERED'}
                                         className={`w-full p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${isDark ? 'border-primary-surface/10 text-white hover:border-emerald-500' : 'border-gray-50 text-gray-700 hover:border-emerald-500'} disabled:opacity-30`}

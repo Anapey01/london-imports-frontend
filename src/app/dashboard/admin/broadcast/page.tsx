@@ -127,6 +127,31 @@ export default function AdminBroadcastPage() {
         setMessage(template.message);
     };
 
+    const handleWhatsAppExport = async () => {
+        setSending(true);
+        try {
+            const { data } = await adminAPI.getAudienceContacts(target);
+            if (!data.contacts || data.contacts.length === 0) {
+                addAlert('No phone numbers found for this audience.', 'error');
+                return;
+            }
+
+            const phones = data.contacts.map((c: { phone: string }) => c.phone).join('\n');
+            await navigator.clipboard.writeText(phones);
+            addAlert(`${data.contacts.length} phone numbers copied to clipboard for WhatsApp Broadcast!`);
+            
+            // Optional: Open WhatsApp Web if it's a small group
+            if (data.contacts.length <= 5) {
+                const multiLink = `https://wa.me/${data.contacts[0].phone}`;
+                window.open(multiLink, '_blank');
+            }
+        } catch (err) {
+            addAlert('Failed to fetch audience contacts.', 'error');
+        } finally {
+            setSending(false);
+        }
+    };
+
     const handleSend = (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -135,7 +160,7 @@ export default function AdminBroadcastPage() {
         setConfirmModal({
             isOpen: true,
             title: 'Confirm Broadcast',
-            message: `Are you sure you want to send this broadcast to [${audienceLabel}]? This will contact all matching customers immediately.`,
+            message: `Are you sure you want to send this broadcast to [${audienceLabel}]? This will initiate a background dispatch process.`,
             variant: 'warning',
             onConfirm: async () => {
                 setSending(true);
@@ -143,8 +168,9 @@ export default function AdminBroadcastPage() {
                 
                 try {
                     // Parse manual emails if needed
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     const emails = target === 'manual' 
-                        ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => e.includes('@'))
+                        ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => emailRegex.test(e))
                         : [];
 
                     if (target === 'manual' && emails.length === 0) {
@@ -160,16 +186,16 @@ export default function AdminBroadcastPage() {
                     
                     setStatus({ 
                         type: 'success', 
-                        msg: data.message || 'Broadcast dispatched successfully!' 
+                        msg: data.message || 'Broadcast dispatch initiated!' 
                     });
-                    addAlert('Broadcast dispatched successfully!');
+                    addAlert(data.message || 'Broadcast dispatch initiated!');
                     
                     if (target === 'manual') setManualEmails('');
                     setSubject('');
                     setMessage('');
                 } catch (err: unknown) {
                     const error = err as { response?: { data?: { error?: string } }, message?: string };
-                    const msg = error.response?.data?.error || error.message || 'Failed to send broadcast';
+                    const msg = error.response?.data?.error || error.message || 'Failed to initiate broadcast';
                     setStatus({ type: 'error', msg });
                     addAlert(msg, 'error');
                 } finally {
@@ -388,12 +414,13 @@ export default function AdminBroadcastPage() {
                                             
                                             <button
                                                 type="button"
-                                                onClick={() => {/* Copy phones logic */}}
+                                                onClick={handleWhatsAppExport}
+                                                disabled={sending || target === 'manual'}
                                                 className={`px-8 py-5 rounded-[2rem] border font-bold text-xs uppercase tracking-widest transition-all ${
                                                     isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                }`}
+                                                } ${target === 'manual' ? 'opacity-30 cursor-not-allowed' : ''}`}
                                             >
-                                                WhatsApp Link Hub
+                                                {sending ? 'FETCHING...' : 'WhatsApp Link Hub'}
                                             </button>
                                         </div>
                                     </motion.form>

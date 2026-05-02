@@ -56,8 +56,6 @@ export const useAuthStore = create<AuthState>()(
 
                     const { access, refresh } = response.data.tokens || response.data;
                     if (access) {
-                        localStorage.setItem('access_token', access);
-                        localStorage.setItem('refresh_token', refresh);
                         set({ accessToken: access, refreshToken: refresh });
                     }
 
@@ -74,8 +72,6 @@ export const useAuthStore = create<AuthState>()(
                     const { user, tokens } = response.data;
 
                     if (tokens?.access) {
-                        localStorage.setItem('access_token', tokens.access);
-                        localStorage.setItem('refresh_token', tokens.refresh);
                         set({ accessToken: tokens.access, refreshToken: tokens.refresh });
                     }
 
@@ -91,8 +87,6 @@ export const useAuthStore = create<AuthState>()(
                     const response = await authAPI.googleLogin(idToken);
                     const { access, refresh } = response.data.tokens || response.data;
                     if (access) {
-                        localStorage.setItem('access_token', access);
-                        localStorage.setItem('refresh_token', refresh);
                         set({ accessToken: access, refreshToken: refresh });
                     }
                     await get().fetchUser();
@@ -106,8 +100,6 @@ export const useAuthStore = create<AuthState>()(
                     await authAPI.logout();
                 } catch { }
 
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
                 set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
             },
 
