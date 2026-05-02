@@ -454,6 +454,7 @@ function CheckoutPage() {
                             setCustomAmount={setCustomAmount}
                             selectedItemIds={selectedItemIds}
                             activeStep={activeStep}
+                            orderNumberParam={orderNumberParam}
                             setActiveStep={(step: number) => {
                                 if (step === 3 && activeStep === 2 && !hasTrackedPayment.current) {
                                     trackAddPaymentInfo(currentOrderData, paymentType);

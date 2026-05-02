@@ -16,23 +16,39 @@ interface PaymentMethodSelectorProps {
         total: number;
         items?: BaseOrderItem[];
         delivery_fee?: number;
+        amount_paid?: number;
+        subtotal?: number;
     };
     selectedItemIds: Set<string>;
     customAmount: string;
     setCustomAmount: (amount: string) => void;
     activeStep: number;
     setActiveStep: (step: number) => void;
+    orderNumberParam?: string | null;
 }
 
-const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, customAmount, setCustomAmount, selectedItemIds, activeStep, setActiveStep }: PaymentMethodSelectorProps) => {
+const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, customAmount, setCustomAmount, selectedItemIds, activeStep, setActiveStep, orderNumberParam }: PaymentMethodSelectorProps) => {
     const isExpanded = activeStep === 2;
     const isCompleted = activeStep > 2;
     
     // Deduplicate total calculation
     const calculateSelectedTotal = () => {
+        // If we are resuming an order, we use the full subtotal from currentOrderData
+        // Otherwise, we filter by selected item IDs
+        const subtotalSource = (orderNumberParam || (currentOrderData as any).order_number) 
+            ? (currentOrderData as any).subtotal || currentOrderData.total 
+            : null;
+
+        if (subtotalSource !== null) {
+            const totalValue = Number(subtotalSource) + Number(currentOrderData.delivery_fee || 0);
+            const amountPaid = Number(currentOrderData.amount_paid || 0);
+            return Math.max(0, totalValue - amountPaid);
+        }
+
         const selSubtotal = (currentOrderData.items || [])
             .filter((i: BaseOrderItem) => selectedItemIds.has(i.id))
             .reduce((sum: number, i: BaseOrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
+        
         return selSubtotal + Number(currentOrderData.delivery_fee || 0);
     };
 
@@ -160,7 +176,9 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="space-y-0.5">
                                         <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'CUSTOM' ? 'text-content-primary' : 'text-content-secondary'}`}>Flexible Installment</span>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Choose your own amount</p>
+                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">
+                                            {(orderNumberParam || (currentOrderData as any).order_number) ? 'Pay any amount towards your balance' : 'Choose your own amount'}
+                                        </p>
                                     </div>
                                     <div 
                                         onClick={() => setPaymentType('CUSTOM')}
@@ -229,7 +247,9 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                     </p>
                                 </div>
                                 <div className="col-span-2 pt-3 border-t border-slate-200 flex justify-between items-center">
-                                    <p className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Total Value</p>
+                                    <p className="text-[8px] font-black text-slate-900 uppercase tracking-widest">
+                                        {(orderNumberParam || (currentOrderData as any).order_number) ? 'Remaining Balance' : 'Total Value'}
+                                    </p>
                                     <p className="text-sm font-black text-slate-900">{formatPrice(selectedTotal)}</p>
                                 </div>
                             </div>
