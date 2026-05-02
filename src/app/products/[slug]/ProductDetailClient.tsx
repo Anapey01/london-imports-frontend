@@ -691,7 +691,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 1. Header: Source Serif Authority */}
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
-                            <h1 className="text-4xl lg:text-7xl font-serif font-medium text-content-primary leading-[0.95] tracking-tighter">
+                            <h1 className="text-4xl lg:text-7xl font-serif font-normal text-content-primary leading-[0.95] tracking-tighter">
                                 {product.name}
                             </h1>
                             {product.subtitle && (
