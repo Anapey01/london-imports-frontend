@@ -60,6 +60,7 @@ interface Product {
     id: string;
     name: string;
     short_name?: string;
+    display_name?: string;
     subtitle?: string;
     slug: string;
     price: number;
