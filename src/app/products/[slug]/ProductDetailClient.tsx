@@ -63,7 +63,7 @@ interface Product {
     subtitle?: string;
     slug: string;
     price: number;
-    description: string;
+    description?: string;
     editorial_data?: {
         highlights: Array<{ icon: string; title: string; text: string }>;
         narrative: string;
