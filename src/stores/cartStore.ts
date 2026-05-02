@@ -9,6 +9,13 @@ import { trackRemoveFromCart } from '@/lib/analytics';
 export interface Product {
     id: string;
     name: string;
+    description: string;
+    editorial_data?: {
+        highlights: Array<{ icon: string; title: string; text: string }>;
+        narrative: string;
+        specs: Array<{ label: string; value: string }>;
+    };
+    category_name?: string;
     short_name?: string;
     display_name?: string;
     subtitle?: string;

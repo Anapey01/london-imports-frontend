@@ -64,6 +64,11 @@ interface Product {
     slug: string;
     price: number;
     description: string;
+    editorial_data?: {
+        highlights: Array<{ icon: string; title: string; text: string }>;
+        narrative: string;
+        specs: Array<{ label: string; value: string }>;
+    };
     image: string;
     images?: ProductImage[];
     rating?: number;
@@ -734,6 +739,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <h2 className="text-[10px] font-bold text-content-secondary uppercase tracking-[0.3em] mb-4">Description</h2>
                             <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6'}`}>
                                 <div className="text-content-primary leading-relaxed text-sm select-none">
+                                    <EditorialSection data={product.editorial_data} />
                                     <FormattedDescription text={product.description} />
                                 </div>
                                 {!isDescriptionExpanded && (
