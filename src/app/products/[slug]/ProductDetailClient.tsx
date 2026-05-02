@@ -835,8 +835,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <h2 className="text-[10px] font-bold text-content-secondary uppercase tracking-[0.3em] mb-4">Description</h2>
                             <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6'}`}>
                                 <div className="text-content-primary leading-relaxed text-sm select-none">
-                                    <EditorialSection data={product.editorial_data} />
-                                    <FormattedDescription text={product.description || ''} />
+                                    {product.editorial_data ? (
+                                        <EditorialSection data={product.editorial_data} />
+                                    ) : (
+                                        <FormattedDescription text={product.description || ''} />
+                                    )}
                                 </div>
                                 {!isDescriptionExpanded && (
                                     <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-white via-white/40 to-transparent dark:from-slate-950 dark:via-slate-950/40 dark:to-transparent pointer-events-none" />
