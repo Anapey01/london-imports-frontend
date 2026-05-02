@@ -136,13 +136,54 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                     </span>
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-[1.1]">
-                                    Your order is <br /> confirmed.
+                                    {method === 'whatsapp' ? 'Order reserved.' : 'Your order is confirmed.'}
                                 </h1>
                             </motion.div>
 
-                            <p className="text-[16px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-md">
-                                We've received your order and started the process of getting your items ready for shipment from our global partners.
-                            </p>
+                            <div className="space-y-4">
+                                <p className="text-[16px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-md">
+                                    {method === 'whatsapp' 
+                                        ? "We've reserved your items. To finalize your order, please follow the Mobile Money instructions below to complete your payment."
+                                        : "We've received your payment and started the process of getting your items ready for shipment from our global partners."}
+                                </p>
+
+                                {method === 'whatsapp' && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="bg-brand-emerald/5 border border-brand-emerald/20 rounded-2xl p-6 space-y-3"
+                                    >
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-emerald">Mobile Money Payment</p>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-slate-500">Momo Number:</span>
+                                                <span className="font-bold text-slate-900">{siteConfig.momoNumber || '055 812 3456'}</span>
+                                            </div>
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-slate-500">Name:</span>
+                                                <span className="font-bold text-slate-900">{siteConfig.momoName || "London's Imports Hub"}</span>
+                                            </div>
+                                            <div className="flex justify-between text-xs pt-2 border-t border-brand-emerald/10">
+                                                <span className="text-slate-500">Reference:</span>
+                                                <span className="font-bold text-brand-emerald">{orderNumber}</span>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {orderData && (
+                                    <div className="flex gap-8 py-4 border-y border-slate-100 dark:border-slate-800">
+                                        <div className="space-y-1">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Amount Paid</p>
+                                            <p className="text-sm font-black text-slate-900 dark:text-white">GHS {orderData.amount_paid}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Balance Due</p>
+                                            <p className="text-sm font-black text-brand-emerald">GHS {orderData.balance_due}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="space-y-8 pt-4">
                                 {[

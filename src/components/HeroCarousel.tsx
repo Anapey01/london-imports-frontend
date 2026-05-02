@@ -26,6 +26,8 @@ interface Product {
     id: string | number;
     name: string;
     short_name?: string;
+    display_name?: string;
+    sku?: string;
     slug: string;
     image?: string;
     category_name?: string;
@@ -70,7 +72,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
         
         return shuffled.slice(0, 7).map((product, idx) => ({
             id: product.id,
-            title: product.short_name || product.name,
+            title: product.display_name || product.short_name || product.name,
             subtitle: product.category_name || "New Arrival / Top Tier Sourcing",
             ctaText: "Source Now",
             ctaLink: `/products/${product.slug}`,
