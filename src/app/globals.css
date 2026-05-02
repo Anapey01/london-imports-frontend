@@ -28,7 +28,7 @@
   --accent-secondary: #334155;
   --brand-accent: #006B5A;
   --brand-logo-accent: #006B5A;
-  --font-weight-product-name: 400; /* Normal, non-bold for Light Mode */
+  --font-weight-product-name: 200; /* Ultra-thin Atelier Aesthetic */
 }
 
 /* ===== DEEP MIDNIGHT VARIABLES (GLOBAL PROTOCOL) ===== */
@@ -44,7 +44,7 @@
   --brand-logo-accent: #34d399;
   --text-primary: #f8fafc; /* Pure White (Slate 50) */
   --text-secondary: #cbd5e1; /* Lighter Slate for improved dark mode visibility */
-  --font-weight-product-name: 500; /* Medium, non-bold for Dark Mode */
+  --font-weight-product-name: 200; /* Ultra-thin Atelier Aesthetic */
 }
 
 @layer base {
