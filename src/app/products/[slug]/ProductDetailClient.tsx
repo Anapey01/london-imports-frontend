@@ -168,7 +168,19 @@ function FormattedDescription({ text }: { text: string }) {
     );
 }
 
-import * as LucideIcons from 'lucide-react';
+import { 
+    Sparkles, Zap, ShieldCheck, Volume2, Truck, Package, 
+    Leaf, Activity, Smartphone, Cpu, Watch, Star, 
+    Heart, Home, Sun, Cloud, Snowflake, Thermometer, 
+    Timer, Lock, Eye, Wind, Waves 
+} from 'lucide-react';
+
+const ICON_MAP: Record<string, any> = {
+    Zap, ShieldCheck, Volume2, Truck, Package, 
+    Leaf, Activity, Smartphone, Cpu, Watch, Star, 
+    Heart, Home, Sun, Cloud, Snowflake, Thermometer, 
+    Timer, Lock, Eye, Wind, Waves, Sparkles
+};
 
 /**
  * Premium Editorial Section
@@ -178,8 +190,7 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
     if (!data) return null;
 
     const LucideIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
-        const Icon = (LucideIcons as any)[name];
-        if (!Icon) return <LucideIcons.Sparkles {...props} />; // Fallback
+        const Icon = ICON_MAP[name] || Sparkles;
         return <Icon {...props} />;
     };
 
