@@ -692,7 +692,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
                             <h1 className="text-4xl lg:text-7xl font-serif font-light text-content-primary leading-[0.95] tracking-tighter" style={{ fontWeight: 300 }}>
-                                {product.name}
+                                {product.display_name || product.short_name || product.name}
                             </h1>
                             {product.subtitle && (
                                 <p className="text-sm lg:text-base font-medium text-content-secondary tracking-widest uppercase opacity-70 mt-2">
