@@ -205,7 +205,7 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
 
             {/* 2. Key Highlights Grid (Simple Premium) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {data.highlights.map((item, idx) => (
+                {(Array.isArray(data.highlights) ? data.highlights : []).map((item, idx) => (
                     <div key={idx} className="space-y-3">
                         <div className="w-12 h-12 bg-content-primary text-white rounded-xl flex items-center justify-center shadow-lg">
                             <LucideIcon name={item.icon} className="w-6 h-6" strokeWidth={1.5} />
@@ -228,9 +228,13 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
                     </span>
                 </div>
                 <div className="divide-y divide-gray-100">
-                    {data.specs.map((spec, idx) => (
+                    {/* Safe handling for both Array and Object formats from AI */}
+                    {(Array.isArray(data.specs) 
+                        ? data.specs 
+                        : Object.entries(data.specs || {}).map(([label, value]) => ({ label, value: String(value) }))
+                    ).map((spec, idx) => (
                         <div key={idx} className="flex px-6 py-4 text-sm">
-                            <span className="font-medium text-content-secondary w-1/3">
+                            <span className="font-medium text-content-secondary w-2/5 md:w-1/3">
                                 {spec.label}
                             </span>
                             <span className="text-content-primary font-bold">
