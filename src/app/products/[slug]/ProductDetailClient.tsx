@@ -694,7 +694,12 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
                             <h1 
                                 className="text-4xl lg:text-7xl font-serif text-content-primary leading-[0.95] tracking-tighter" 
-                                style={{ fontWeight: 300, fontVariationSettings: '"wght" 300' }}
+                                style={{ 
+                                    fontWeight: 200, 
+                                    fontVariationSettings: '"wght" 200',
+                                    WebkitFontSmoothing: 'antialiased',
+                                    MozOsxFontSmoothing: 'grayscale'
+                                }}
                             >
                                 {product.name}
                             </h1>

@@ -34,7 +34,7 @@ const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
 
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["200", "300", "400", "500", "600", "700"],
   display: "swap",
   variable: "--font-source-serif",
   preload: true,
