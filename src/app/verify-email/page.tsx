@@ -9,7 +9,7 @@ import { authAPI } from '@/lib/api';
 export default function VerifyEmailPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { user, isAuthenticated, checkAuth } = useAuthStore();
+    const { user, isAuthenticated, fetchUser } = useAuthStore();
     
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +82,7 @@ export default function VerifyEmailPage() {
         try {
             await authAPI.verifyEmail(code);
             setIsVerified(true);
-            await checkAuth(); // Refresh user state
+            await fetchUser(); // Refresh user state
             
             // Redirect after a short delay to show success state
             setTimeout(() => {
