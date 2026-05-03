@@ -54,7 +54,7 @@ export async function getProducts(params: Record<string, string> = {}) {
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 0 }, // Force fresh data for development & sync
+            next: { revalidate: 60 }, // Enabled for static generation, but kept short for freshness
         });
 
         const data = await res.json();
