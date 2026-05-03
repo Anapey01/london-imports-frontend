@@ -106,8 +106,8 @@ export default function BirthdayClubPage() {
 
                             {/* Form Column */}
                             <div>
-                                <header className="mb-10">
-                                    <h2 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none italic">
+                                <header className="mb-10 text-center">
+                                    <h2 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">
                                         The Birthday Club.
                                     </h2>
                                     <p className="text-xs font-medium text-content-secondary uppercase tracking-[0.2em] leading-relaxed">
@@ -159,7 +159,7 @@ export default function BirthdayClubPage() {
                             <div className="w-24 h-24 bg-brand-emerald/10 rounded-full flex items-center justify-center mx-auto mb-10">
                                 <CheckCircle2 className="w-12 h-12 text-brand-emerald" />
                             </div>
-                            <h2 className="text-5xl font-serif font-bold text-content-primary mb-6 tracking-tighter italic leading-none">
+                            <h2 className="text-5xl font-serif font-bold text-content-primary mb-6 tracking-tighter leading-none">
                                 You&apos;re in!
                             </h2>
                             <p className="text-sm font-medium text-content-secondary uppercase tracking-[0.3em] mb-12">
