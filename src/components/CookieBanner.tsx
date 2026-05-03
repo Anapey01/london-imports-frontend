@@ -41,7 +41,7 @@ export default function CookieBanner() {
     if (!isVisible) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4 md:pb-8 flex justify-center pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-[999] px-4 pb-20 md:pb-8 flex justify-center pointer-events-none">
             <div className="bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] max-w-2xl w-full p-6 md:p-8 flex flex-col pointer-events-auto rounded-none transition-all duration-500 overflow-hidden">
                 
                 {/* 1. INITIAL VIEW */}
