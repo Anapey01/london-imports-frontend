@@ -705,7 +705,7 @@ export default function AdminBlogPage() {
                             <button onClick={closeModal} className={`flex-1 py-4 rounded-xl font-bold transition-all ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-gray-500 hover:bg-gray-50'}`}>Cancel</button>
                             <button
                                 onClick={handleSubmit}
-                                disabled={saving || !formData.title || !formData.content}
+                                disabled={saving || !formData.title || sections.length === 0}
                                 className="flex-[2] py-4 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                             >
                                 {saving ? 'Finalizing Article...' : editingPost ? 'Update Knowledge Base' : 'Launch New Post'}
