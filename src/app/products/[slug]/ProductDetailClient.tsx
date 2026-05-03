@@ -295,7 +295,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         setSelectedSize('');
         setSelectedColor('');
         setDisplayedImage(null);
+        if (initialProduct) {
+            setProduct(initialProduct);
+        }
     }, [initialProduct]);
+
+    const refreshProductData = useCallback(() => {
+        router.refresh();
+    }, [router]);
 
     // Derived state for price and stock
     const [currentPrice, setCurrentPrice] = useState(initialProduct?.price || 0);
