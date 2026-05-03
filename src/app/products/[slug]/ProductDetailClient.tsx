@@ -309,6 +309,23 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         return product?.stock_quantity ?? 0;
     }, [product, selectedVariant]);
 
+    // CLIENT-SIDE AGGREGATE (Safe Fallback)
+    // If backend fields are 0 but reviews exist, we calculate the truth here
+    const effectiveRating = useMemo(() => {
+        if (!product) return 0;
+        if ((product.rating ?? 0) > 0) return product.rating ?? 0;
+        if (product.reviews && product.reviews.length > 0) {
+            return product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length;
+        }
+        return 0;
+    }, [product]);
+
+    const effectiveCount = useMemo(() => {
+        if (!product) return 0;
+        if ((product.rating_count ?? 0) > 0) return product.rating_count ?? 0;
+        return product.reviews?.length || 0;
+    }, [product]);
+
     const isSoldOut = useMemo(() => {
         if (product?.preorder_status === 'SOLD_OUT') return true;
         
@@ -735,9 +752,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
                                     className="flex items-center gap-3 py-1 hover:opacity-60 transition-all ml-auto"
                                 >
-                                    <StarRating initialRating={Number(product.rating ?? 0)} readOnly size="xs" />
+                                    <StarRating initialRating={Number(effectiveRating)} readOnly size="xs" />
                                     <span className="text-[9px] font-black text-content-secondary tracking-widest tabular-nums">
-                                        ({Number(product.rating ?? 0).toFixed(1)})
+                                        ({Number(effectiveRating).toFixed(1)})
                                     </span>
                                 </button>
                             </div>
@@ -927,8 +944,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             <ProductReviews
                 productSlug={product.slug}
                 initialReviews={product.reviews || []}
-                rating={product.rating || 0}
-                ratingCount={product.rating_count || 0}
+                rating={Number(effectiveRating)}
+                ratingCount={Number(effectiveCount)}
                 onReviewAdded={refreshProductData}
             />
 

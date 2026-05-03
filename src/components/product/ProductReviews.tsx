@@ -135,6 +135,15 @@ export default function ProductReviews({
         }, 100);
     };
 
+    // CLIENT-SIDE AGGREGATE (Safe Fallback)
+    // If the backend summary fields (rating/ratingCount) are 0 but we have reviews in the list,
+    // we calculate the truth from the reviews array to prevent "0.0" displays.
+    const effectiveRating = rating > 0 ? rating : (reviews.length > 0 
+        ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length 
+        : 0);
+    
+    const effectiveCount = ratingCount > 0 ? ratingCount : reviews.length;
+
     return (
         <section className="py-20 border-t border-primary-surface bg-primary-surface/20" id="reviews">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -153,11 +162,11 @@ export default function ProductReviews({
                                     <div className="pb-8 border-b border-primary-surface/40 flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <div className="text-4xl sm:text-5xl font-black nuclear-text leading-none tracking-tighter">
-                                                {Number(rating || 0).toFixed(1)}
+                                                {Number(effectiveRating || 0).toFixed(1)}
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <StarRating initialRating={Number(rating || 0)} readOnly size="xs" />
-                                                <span className="text-[9px] font-black nuclear-text opacity-40 uppercase tracking-widest">{ratingCount} Verified Reviews</span>
+                                                <StarRating initialRating={Number(effectiveRating || 0)} readOnly size="xs" />
+                                                <span className="text-[9px] font-black nuclear-text opacity-40 uppercase tracking-widest">{effectiveCount} Verified Reviews</span>
                                             </div>
                                         </div>
                                         
