@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { ShieldCheck, ArrowRight, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 import { Suspense } from 'react';
 
 function VerifyEmailContent() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { user, isAuthenticated, fetchUser } = useAuthStore();
     
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -89,8 +88,9 @@ function VerifyEmailContent() {
             setTimeout(() => {
                 router.push('/');
             }, 2000);
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Invalid or expired verification code.');
+        } catch (err: unknown) {
+            const errorMessage = (err as any).response?.data?.error || 'Invalid or expired verification code.';
+            setError(errorMessage);
             setIsLoading(false);
         }
     };
@@ -100,7 +100,8 @@ function VerifyEmailContent() {
         if (otp.every(digit => digit !== '') && !isVerified) {
             handleSubmit();
         }
-    }, [otp]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [otp, isVerified]);
 
     const handleResend = async () => {
         if (resendTimer > 0 || isResending) return;
@@ -111,7 +112,7 @@ function VerifyEmailContent() {
         try {
             await authAPI.resendOTP();
             setResendTimer(60);
-        } catch (err: any) {
+        } catch {
             setError('Failed to resend code. Please try again later.');
         } finally {
             setIsResending(false);
@@ -123,7 +124,8 @@ function VerifyEmailContent() {
         if (isAuthenticated && !user?.email_verified && !isVerified && resendTimer === 0) {
             handleResend();
         }
-    }, [isAuthenticated, user?.email_verified]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated, user?.email_verified, isVerified, resendTimer]);
 
     if (isVerified) {
         return (
@@ -187,6 +189,8 @@ function VerifyEmailContent() {
                                     inputMode="numeric"
                                     maxLength={1}
                                     value={digit}
+                                    aria-label={`Digit ${index + 1}`}
+                                    title={`Digit ${index + 1}`}
                                     onChange={e => handleChange(index, e.target.value)}
                                     onKeyDown={e => handleKeyDown(index, e)}
                                     onPaste={index === 0 ? handlePaste : undefined}
