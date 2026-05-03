@@ -63,8 +63,8 @@ export default function RegisterForm() {
                 last_name: formData.last_name.trim(),
             });
             trackSignUp();
-            logout(); 
-            router.push(`/login?email=${encodeURIComponent(formData.email)}&registered=true&welcome=true`);
+            // Redirect to verify email instead of login
+            router.push('/verify-email?new_account=true');
         } catch (error: unknown) {
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
             const errors = err.response?.data;
