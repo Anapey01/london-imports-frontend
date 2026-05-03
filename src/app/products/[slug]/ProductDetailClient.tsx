@@ -211,50 +211,54 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
     }
 
     return (
-        <div className="mb-12 space-y-12">
-            {/* 1. Performance Narrative (Editorial Story) */}
+        <div className="mb-20 space-y-20">
+            {/* 1. Performance Narrative (The Editorial Story) */}
             {data.narrative && (
-                <div className="bg-emerald-50/30 border-l-4 border-emerald-500 p-8 rounded-r-2xl">
-                    <p className="text-xl lg:text-2xl font-serif italic text-content-primary leading-relaxed opacity-90">
-                        "{data.narrative}"
+                <div className="relative py-12 border-y border-slate-100 dark:border-slate-900">
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-surface px-6 text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald/40 italic">
+                        The Story
+                    </span>
+                    <p className="text-2xl lg:text-4xl font-serif font-atelier text-content-primary leading-[1.1] tracking-tighter text-center text-balance max-w-4xl mx-auto italic">
+                        &ldquo;{data.narrative}&rdquo;
                     </p>
                 </div>
             )}
 
-            {/* 2. Key Highlights Grid */}
+            {/* 2. Key Highlights (The Feature Gallery) */}
             {highlights.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16">
                     {highlights.map((item, idx) => (
-                        <div key={idx} className="space-y-3">
-                            <div className="w-12 h-12 bg-content-primary text-white rounded-xl flex items-center justify-center shadow-lg">
-                                <LucideIcon name={item.icon} className="w-6 h-6" strokeWidth={1.5} />
+                        <div key={idx} className="group/item flex flex-col items-center text-center space-y-6">
+                            <div className="w-16 h-16 bg-surface border border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center shadow-sm group-hover/item:border-brand-emerald/30 transition-all duration-500">
+                                <LucideIcon name={item.icon} className="w-6 h-6 text-brand-emerald" strokeWidth={1} />
                             </div>
-                            <h4 className="text-lg font-bold text-content-primary tracking-tight">
-                                {item.title}
-                            </h4>
-                            <p className="text-sm text-content-secondary leading-relaxed">
-                                {item.text}
-                            </p>
+                            <div className="space-y-3">
+                                <h4 className="text-[11px] font-black text-content-primary uppercase tracking-[0.3em]">
+                                    {item.title}
+                                </h4>
+                                <p className="text-[13px] text-content-secondary leading-relaxed max-w-[240px] mx-auto opacity-80">
+                                    {item.text}
+                                </p>
+                            </div>
                         </div>
                     ))}
                 </div>
             )}
-
             {/* 3. Core Specifications Table */}
             {specs.length > 0 && (
-                <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
-                    <div className="bg-gray-50 px-6 py-3 border-b border-gray-100">
-                        <span className="text-xs font-bold uppercase tracking-widest text-content-secondary">
-                            Important Details
+                <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-surface shadow-sm">
+                    <div className="bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary">
+                            Technical Specifications
                         </span>
                     </div>
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-slate-50 dark:divide-slate-900">
                         {specs.map((spec, idx) => (
-                            <div key={idx} className="flex px-6 py-4 text-sm">
-                                <span className="font-medium text-content-secondary w-2/5 md:w-1/3">
+                            <div key={idx} className="flex px-6 py-4 text-[13px]">
+                                <span className="font-bold text-content-secondary w-2/5 md:w-1/3 uppercase tracking-tighter">
                                     {spec.label}
                                 </span>
-                                <span className="text-content-primary font-bold">
+                                <span className="text-content-primary font-medium">
                                     {spec.value}
                                 </span>
                             </div>
@@ -706,7 +710,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     </div>
                                 )}
                             </div>
-                            <h1 className="text-4xl lg:text-7xl font-serif product-name-weight text-content-primary leading-[0.95] tracking-tighter text-balance">
+                            <h1 className="text-4xl lg:text-7xl font-serif font-atelier text-content-primary leading-[0.95] tracking-tighter text-balance">
                                 {product.name}
                             </h1>
                             {product.subtitle && (

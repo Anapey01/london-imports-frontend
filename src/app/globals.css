@@ -13,6 +13,13 @@
   --color-content-secondary: var(--text-secondary);
   --color-border-standard: var(--border-color);
   --color-brand-emerald: var(--brand-accent);
+  
+  /* WEIGHT TOKENS: Explicit weights for the Atelier aesthetic */
+  --font-weight-atelier: 200;
+  
+  /* FONT FAMILY BINDINGS: Map variable-driven fonts to Tailwind utility names. */
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ===== LIGHT MODE VARIABLES (STATIONERY PROTOCOL) ===== */
@@ -48,11 +55,6 @@
 }
 
 @layer base {
-  :root {
-    --font-source-serif: var(--font-source-serif);
-    --font-montserrat: var(--font-montserrat);
-  }
-
   body {
     font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
     background-color: var(--bg-primary);
