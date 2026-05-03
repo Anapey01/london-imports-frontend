@@ -4,15 +4,20 @@
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { adminAPI } from '@/lib/api';
+import { adminAPI, api } from '@/lib/api';
 import Image from 'next/image';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
-import { Plus, Image as ImageIcon, Type, Trash2, MoveUp, MoveDown, Layout, Save, X as CloseIcon, Info, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
-import { api } from '@/lib/api';
+import { 
+    Plus, Search, Filter, MoreVertical, Edit2, Trash2, 
+    Globe, Eye, User, Calendar, Clock, ChevronRight, 
+    Layout, Info, Loader2, Sparkles, AlertTriangle, 
+    Image as ImageIcon, Type, MoveUp, MoveDown, Save, 
+    X as CloseIcon 
+} from 'lucide-react';
 
 interface Section {
     id: string;
