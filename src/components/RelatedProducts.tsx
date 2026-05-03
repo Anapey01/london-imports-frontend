@@ -37,10 +37,10 @@ export default function RelatedProducts({ currentSlug, categorySlug, isDiscreet,
                 // We use the explicit isDiscreet prop passed from the parent for authority.
                 if (isDiscreet) {
                     // Only show other discreet products
-                    related = related.filter(p => p.is_discreet === true);
+                    related = related.filter((p: Product) => p.is_discreet === true);
                 } else {
                     // Hide all discreet products from normal recommendations
-                    related = related.filter(p => p.is_discreet !== true);
+                    related = related.filter((p: Product) => p.is_discreet !== true);
                 }
 
                 // Shuffle array (Fisher-Yates)
