@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
-import { Plus, Image as ImageIcon, Type, Trash2, MoveUp, MoveDown, Layout, Save, X as CloseIcon } from 'lucide-react';
+import { Plus, Image as ImageIcon, Type, Trash2, MoveUp, MoveDown, Layout, Save, X as CloseIcon, Info, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface Section {
@@ -71,6 +71,8 @@ export default function AdminBlogPage() {
     });
 
     const [sections, setSections] = useState<Section[]>([]);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -98,18 +100,33 @@ export default function AdminBlogPage() {
 
     useEffect(() => {
         loadPosts();
+        
+        // Restore draft if exists
+        const savedDraft = localStorage.getItem('blog_post_draft');
+        if (savedDraft) {
+            try {
+                const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
+                // We only offer to restore if the modal isn't open or if it's a new post
+                if (!showModal && draftData.title) {
+                    addAlert('Found an unsaved draft. Open "New Article" to restore it.', 'info');
+                }
+            } catch (e) {
+                console.error('Failed to parse draft:', e);
+            }
+        }
     }, []);
 
-    const loadPosts = async () => {
-        try {
-            const response = await adminAPI.blogPosts();
-            setPosts(response.data.results || response.data || []);
-        } catch (err) {
-            console.error('Failed to load blog posts:', err);
-        } finally {
-            setLoading(false);
+    // Auto-save logic
+    useEffect(() => {
+        if (showModal && (formData.title || sections.length > 1 || sections[0]?.content)) {
+            const timer = setTimeout(() => {
+                localStorage.setItem('blog_post_draft', JSON.stringify({ formData, sections }));
+                setLastSaved(new Date());
+                setHasUnsavedChanges(true);
+            }, 1000);
+            return () => clearTimeout(timer);
         }
-    };
+    }, [formData, sections, showModal]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -140,6 +157,11 @@ export default function AdminBlogPage() {
             } else {
                 await adminAPI.createBlogPost(data);
             }
+            
+            // Clear draft on success
+            localStorage.removeItem('blog_post_draft');
+            setHasUnsavedChanges(false);
+            
             await loadPosts();
             closeModal();
             addAlert(editingPost ? 'Post updated successfully!' : 'Post created successfully!');
@@ -255,7 +277,22 @@ export default function AdminBlogPage() {
             seo_title: '',
             seo_keywords: '',
         });
-        setSections([{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }]);
+
+        // Check for existing draft
+        const savedDraft = localStorage.getItem('blog_post_draft');
+        if (savedDraft) {
+            try {
+                const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
+                setFormData(draftData);
+                setSections(draftSections);
+                addAlert('Draft restored from local storage.', 'info');
+            } catch (e) {
+                setSections([{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }]);
+            }
+        } else {
+            setSections([{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }]);
+        }
+        
         setShowModal(true);
     };
 
@@ -278,11 +315,28 @@ export default function AdminBlogPage() {
     };
 
     const closeModal = () => {
-        setShowModal(false);
-        setEditingPost(null);
-        setSelectedImage(null);
-        setImagePreview(null);
-        setSections([]);
+        if (hasUnsavedChanges) {
+            setConfirmModal({
+                isOpen: true,
+                title: 'Unsaved Changes',
+                message: 'You have unsaved edits in your draft. If you close now, they will be saved locally, but not published. Continue?',
+                variant: 'warning',
+                onConfirm: () => {
+                    setShowModal(false);
+                    setEditingPost(null);
+                    setSelectedImage(null);
+                    setImagePreview(null);
+                    setSections([]);
+                    setHasUnsavedChanges(false);
+                }
+            });
+        } else {
+            setShowModal(false);
+            setEditingPost(null);
+            setSelectedImage(null);
+            setImagePreview(null);
+            setSections([]);
+        }
     };
 
     const addSection = (type: 'text' | 'image') => {
@@ -449,19 +503,25 @@ export default function AdminBlogPage() {
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
                     <div className={`w-full max-w-4xl rounded-2xl p-8 max-h-[90vh] overflow-y-auto ${isDark ? 'bg-slate-900' : 'bg-white'}`} onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-between mb-8">
-                            <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {editingPost ? 'Refine Article' : 'Draft New Article'}
-                            </h3>
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <h3 className={`text-3xl font-serif font-bold leading-none mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {editingPost ? 'Refine Entry' : 'New Creation'}
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <div className={`w-1.5 h-1.5 rounded-full ${hasUnsavedChanges ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                        {hasUnsavedChanges ? (lastSaved ? `Draft Saved ${lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-saving...') : 'Synced to Cloud'}
+                                    </span>
+                                </div>
+                            </div>
                             <button 
                                 onClick={closeModal} 
                                 title="Close modal"
                                 aria-label="Close modal"
-                                className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
+                                className={`p-3 rounded-full transition-all ${isDark ? 'hover:bg-slate-800 text-slate-500 hover:text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-gray-900'}`}
                             >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <CloseIcon className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -469,94 +529,96 @@ export default function AdminBlogPage() {
                             {/* Left Column: Core Data */}
                             <div className="space-y-6">
                                 <div>
-                                    <label className={`block text-xs font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Main Title</label>
+                                    <label className={`block text-[10px] font-black uppercase tracking-[0.3em] mb-3 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Main Title</label>
                                     <input
                                         type="text"
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:ring-2 focus:ring-pink-500/20`}
-                                        placeholder="Article Headline"
+                                        className={`w-full px-0 py-4 bg-transparent border-b-2 border-slate-100 text-2xl md:text-4xl font-serif font-bold transition-all focus:border-pink-500 outline-none ${isDark ? 'text-white border-slate-800' : 'text-gray-900'}`}
+                                        placeholder="Entry Headline..."
                                     />
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <label className={`block text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                <div className="space-y-8">
+                                    <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                                        <label className={`block text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                                             Atelier Canvas
                                         </label>
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-4">
                                             <button 
                                                 onClick={() => addSection('text')}
-                                                className={`p-1.5 rounded-lg border text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:border-pink-500' : 'bg-white border-gray-200 text-gray-500 hover:border-pink-500'}`}
+                                                className={`flex items-center gap-2 text-[9px] font-black uppercase tracking-widest transition-all hover:text-pink-500 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}
                                             >
-                                                <Type className="w-3 h-3" /> Text
+                                                <Plus className="w-3 h-3" /> Add Paragraph
                                             </button>
                                             <button 
                                                 onClick={() => addSection('image')}
-                                                className={`p-1.5 rounded-lg border text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:border-indigo-500' : 'bg-white border-gray-200 text-gray-500 hover:border-indigo-500'}`}
+                                                className={`flex items-center gap-2 text-[9px] font-black uppercase tracking-widest transition-all hover:text-indigo-500 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}
                                             >
-                                                <ImageIcon className="w-3 h-3" /> Image
+                                                <Plus className="w-3 h-3" /> Add Image
                                             </button>
                                         </div>
                                     </div>
                                     
-                                    <div className="space-y-4 min-h-[400px]">
+                                    <div className="space-y-12 min-h-[500px] relative">
                                         <AnimatePresence mode="popLayout">
                                             {sections.map((section, index) => (
                                                 <motion.div 
                                                     key={section.id}
                                                     layout
-                                                    initial={{ opacity: 0, y: 20 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0, scale: 0.95 }}
-                                                    className={`group relative rounded-xl border-2 transition-all ${
-                                                        isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-100'
-                                                    } hover:border-pink-500/30`}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: 10 }}
+                                                    className="group relative"
                                                 >
-                                                    {/* Section Controls */}
-                                                    <div className="absolute -right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                    {/* Seamless Control Sidebar */}
+                                                    <div className="absolute -left-12 top-0 bottom-0 w-8 flex flex-col items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
                                                         <button 
                                                             onClick={() => moveSection(index, 'up')}
                                                             disabled={index === 0}
-                                                            className="p-1.5 rounded-full bg-white shadow-lg text-slate-400 hover:text-pink-500 disabled:opacity-30"
+                                                            className="p-1.5 rounded-full text-slate-300 hover:text-slate-900 transition-colors disabled:opacity-0"
                                                         >
                                                             <MoveUp className="w-3.5 h-3.5" />
                                                         </button>
+                                                        <div className="w-[1px] flex-1 bg-slate-100" />
                                                         <button 
                                                             onClick={() => removeSection(section.id)}
-                                                            className="p-1.5 rounded-full bg-white shadow-lg text-slate-400 hover:text-red-500"
+                                                            className="p-1.5 rounded-full text-slate-200 hover:text-red-500 transition-colors"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
                                                         </button>
+                                                        <div className="w-[1px] flex-1 bg-slate-100" />
                                                         <button 
                                                             onClick={() => moveSection(index, 'down')}
                                                             disabled={index === sections.length - 1}
-                                                            className="p-1.5 rounded-full bg-white shadow-lg text-slate-400 hover:text-indigo-500 disabled:opacity-30"
+                                                            className="p-1.5 rounded-full text-slate-300 hover:text-slate-900 transition-colors disabled:opacity-0"
                                                         >
                                                             <MoveDown className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
 
                                                     {section.type === 'text' ? (
-                                                        <textarea
-                                                            value={section.content}
-                                                            onChange={(e) => updateSection(section.id, e.target.value)}
-                                                            onInput={(e) => {
-                                                                const target = e.target as HTMLTextAreaElement;
-                                                                target.style.height = 'auto';
-                                                                target.style.height = `${target.scrollHeight}px`;
-                                                            }}
-                                                            rows={3}
-                                                            placeholder="Continue the story..."
-                                                            className={`w-full p-6 bg-transparent border-none focus:ring-0 resize-none font-serif text-lg leading-relaxed ${isDark ? 'text-slate-200' : 'text-slate-900'}`}
-                                                        />
+                                                        <div className="relative">
+                                                            <textarea
+                                                                value={section.content}
+                                                                onChange={(e) => updateSection(section.id, e.target.value)}
+                                                                onInput={(e) => {
+                                                                    const target = e.target as HTMLTextAreaElement;
+                                                                    target.style.height = 'auto';
+                                                                    target.style.height = `${target.scrollHeight}px`;
+                                                                }}
+                                                                rows={1}
+                                                                placeholder="Tell your story..."
+                                                                className={`w-full p-0 bg-transparent border-none focus:ring-0 resize-none font-serif text-xl leading-relaxed transition-all placeholder:italic ${isDark ? 'text-slate-200 placeholder:text-slate-700' : 'text-slate-900 placeholder:text-slate-200'}`}
+                                                            />
+                                                        </div>
                                                     ) : (
-                                                        <div className="p-4">
+                                                        <div className="relative group/image-block">
                                                             {section.content || section.previewUrl ? (
-                                                                <div className="relative aspect-video rounded-lg overflow-hidden group/img">
+                                                                <div className="relative w-full aspect-[16/9] bg-slate-50 border border-slate-100 overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 group-hover/image-block:shadow-2xl group-hover/image-block:shadow-slate-200">
                                                                     <img src={section.previewUrl || section.content} alt="" className="w-full h-full object-cover" />
-                                                                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
-                                                                        <span className="px-4 py-2 bg-white rounded-lg text-xs font-bold text-slate-900">Replace Image</span>
+                                                                    <label className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover/image-block:opacity-100 transition-all flex items-center justify-center cursor-pointer">
+                                                                        <span className="text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white px-6 py-3">Replace Framework</span>
                                                                         <input 
                                                                             type="file" 
                                                                             className="hidden" 
@@ -566,11 +628,11 @@ export default function AdminBlogPage() {
                                                                     </label>
                                                                 </div>
                                                             ) : (
-                                                                <label className={`flex flex-col items-center justify-center p-12 rounded-lg border-2 border-dashed transition-colors cursor-pointer ${
-                                                                    isDark ? 'border-slate-700 hover:border-slate-600' : 'border-gray-200 hover:border-gray-300'
+                                                                <label className={`flex flex-col items-center justify-center aspect-[21/9] border-2 border-dashed transition-all cursor-pointer group-hover/image-block:border-indigo-500 ${
+                                                                    isDark ? 'border-slate-800 hover:bg-slate-800/30' : 'border-slate-100 hover:bg-slate-50/50'
                                                                 }`}>
-                                                                    <ImageIcon className="w-8 h-8 text-slate-400 mb-3" />
-                                                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Select Narrative Image</span>
+                                                                    <ImageIcon className="w-6 h-6 text-slate-200 mb-4" />
+                                                                    <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">Anchor Visual Asset</span>
                                                                     <input 
                                                                         type="file" 
                                                                         className="hidden" 
@@ -586,21 +648,20 @@ export default function AdminBlogPage() {
                                         </AnimatePresence>
                                         
                                         {/* Blank State / End of Canvas */}
-                                        <div className="flex justify-center py-8">
-                                            <div className="flex items-center gap-4">
-                                                <button 
-                                                    onClick={() => addSection('text')}
-                                                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-pink-500 hover:text-white transition-all shadow-sm"
-                                                    title="Add text block"
-                                                >
-                                                    <Type className="w-5 h-5" />
+                                        <div className="flex justify-center pt-24 pb-12 opacity-20 hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-12 text-slate-900">
+                                                <button onClick={() => addSection('text')} className="flex flex-col items-center gap-4 group">
+                                                    <div className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                                                        <Plus className="w-4 h-4" />
+                                                    </div>
+                                                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">New Para</span>
                                                 </button>
-                                                <button 
-                                                    onClick={() => addSection('image')}
-                                                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-indigo-500 hover:text-white transition-all shadow-sm"
-                                                    title="Add image block"
-                                                >
-                                                    <ImageIcon className="w-5 h-5" />
+                                                <div className="w-12 h-px bg-slate-100" />
+                                                <button onClick={() => addSection('image')} className="flex flex-col items-center gap-4 group">
+                                                    <div className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                                                        <ImageIcon className="w-4 h-4" />
+                                                    </div>
+                                                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">New Frame</span>
                                                 </button>
                                             </div>
                                         </div>
