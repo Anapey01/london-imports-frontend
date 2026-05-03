@@ -10,7 +10,17 @@ import { adminAPI } from '@/lib/api';
 import Image from 'next/image';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion, Reorder } from 'framer-motion';
+import { Plus, Image as ImageIcon, Type, Trash2, MoveUp, MoveDown, Layout, Save, X as CloseIcon } from 'lucide-react';
+import { api } from '@/lib/api';
+
+interface Section {
+    id: string;
+    type: 'text' | 'image';
+    content: string;
+    file?: File;
+    previewUrl?: string;
+}
 
 interface BlogPost {
     id: number;
@@ -52,7 +62,6 @@ export default function AdminBlogPage() {
     const [formData, setFormData] = useState({
         title: '',
         excerpt: '',
-        content: '',
         category: 'guides',
         read_time_minutes: 5,
         is_published: false,
@@ -60,6 +69,8 @@ export default function AdminBlogPage() {
         seo_title: '',
         seo_keywords: '',
     });
+
+    const [sections, setSections] = useState<Section[]>([]);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -111,10 +122,15 @@ export default function AdminBlogPage() {
     const handleSubmit = async () => {
         setSaving(true);
         try {
+            // Serialize sections to HTML for the backend
+            const htmlContent = await serializeSectionsToHtml(sections);
+            
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 data.append(key, String(value));
             });
+            data.append('content', htmlContent);
+
             if (selectedImage) {
                 data.append('image', selectedImage);
             }
@@ -133,6 +149,76 @@ export default function AdminBlogPage() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const serializeSectionsToHtml = async (sections: Section[]) => {
+        let html = '';
+        for (const section of sections) {
+            if (section.type === 'text') {
+                // Convert line breaks to paragraphs/breaks
+                const textHtml = section.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '<br/>').join('');
+                html += `<div class="content-section text-section">${textHtml}</div>`;
+            } else if (section.type === 'image') {
+                let url = section.content;
+                // If it's a new file, we need to upload it or send it as base64
+                // Professional way: use a media upload endpoint. 
+                // For now, we'll try to find images already uploaded or handle them via FormData if we had a multi-part backend.
+                // Since the backend is simple, we'll use the existing CKEditor upload if possible, 
+                // but to keep it safe and functional TODAY, we'll upload new files to a temporary spot if needed.
+                if (section.file) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('upload', section.file);
+                        const response = await api.post('/ckeditor/upload/', formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        });
+                        url = response.data.url;
+                    } catch (e) {
+                        console.error('Failed to upload section image:', e);
+                        // Fallback to base64 if upload fails (not ideal but keeps the data)
+                        url = section.previewUrl || '';
+                    }
+                }
+                if (url) {
+                    html += `<div class="content-section image-section"><img src="${url}" alt="Article image" style="width:100%; height:auto; margin: 2rem 0;" /></div>`;
+                }
+            }
+        }
+        return html;
+    };
+
+    const parseHtmlToSections = (html: string): Section[] => {
+        if (!html) return [{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }];
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const sectionNodes = doc.querySelectorAll('.content-section');
+        
+        if (sectionNodes.length === 0) {
+            // Fallback for plain HTML or old posts
+            return [{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: html.replace(/<[^>]*>?/gm, '\n').trim() }];
+        }
+
+        const parsedSections: Section[] = [];
+        sectionNodes.forEach(node => {
+            if (node.classList.contains('text-section')) {
+                parsedSections.push({
+                    id: Math.random().toString(36).substr(2, 9),
+                    type: 'text',
+                    content: Array.from(node.querySelectorAll('p, br')).map(el => el.textContent || '').join('\n').trim()
+                });
+            } else if (node.classList.contains('image-section')) {
+                const img = node.querySelector('img');
+                if (img) {
+                    parsedSections.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        type: 'image',
+                        content: img.getAttribute('src') || ''
+                    });
+                }
+            }
+        });
+        return parsedSections;
     };
 
     const handleDelete = (id: number) => {
@@ -162,7 +248,6 @@ export default function AdminBlogPage() {
         setFormData({
             title: '',
             excerpt: '',
-            content: '',
             category: 'guides',
             read_time_minutes: 5,
             is_published: false,
@@ -170,6 +255,7 @@ export default function AdminBlogPage() {
             seo_title: '',
             seo_keywords: '',
         });
+        setSections([{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }]);
         setShowModal(true);
     };
 
@@ -180,7 +266,6 @@ export default function AdminBlogPage() {
         setFormData({
             title: post.title,
             excerpt: post.excerpt,
-            content: post.content,
             category: post.category,
             read_time_minutes: post.read_time_minutes,
             is_published: post.is_published,
@@ -188,6 +273,7 @@ export default function AdminBlogPage() {
             seo_title: post.seo_title || post.title,
             seo_keywords: post.seo_keywords || '',
         });
+        setSections(parseHtmlToSections(post.content));
         setShowModal(true);
     };
 
@@ -196,6 +282,43 @@ export default function AdminBlogPage() {
         setEditingPost(null);
         setSelectedImage(null);
         setImagePreview(null);
+        setSections([]);
+    };
+
+    const addSection = (type: 'text' | 'image') => {
+        const newSection: Section = {
+            id: Math.random().toString(36).substr(2, 9),
+            type,
+            content: '',
+        };
+        setSections(prev => [...prev, newSection]);
+    };
+
+    const updateSection = (id: string, content: string) => {
+        setSections(prev => prev.map(s => s.id === id ? { ...s, content } : s));
+    };
+
+    const handleSectionImageUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setSections(prev => prev.map(s => s.id === id ? { ...s, file, previewUrl } : s));
+        }
+    };
+
+    const removeSection = (id: string) => {
+        if (sections.length > 1) {
+            setSections(prev => prev.filter(s => s.id !== id));
+        }
+    };
+
+    const moveSection = (index: number, direction: 'up' | 'down') => {
+        const newSections = [...sections];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        if (targetIndex >= 0 && targetIndex < sections.length) {
+            [newSections[index], newSections[targetIndex]] = [newSections[targetIndex], newSections[index]];
+            setSections(newSections);
+        }
     };
 
     if (loading) {
@@ -356,15 +479,132 @@ export default function AdminBlogPage() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className={`block text-xs font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Content (Markdown)</label>
-                                    <textarea
-                                        value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        rows={12}
-                                        className={`w-full px-4 py-3 rounded-xl border font-mono text-sm ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200'} focus:ring-2 focus:ring-pink-500/20`}
-                                        placeholder="Type content here..."
-                                    />
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className={`block text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                            Atelier Canvas
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => addSection('text')}
+                                                className={`p-1.5 rounded-lg border text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:border-pink-500' : 'bg-white border-gray-200 text-gray-500 hover:border-pink-500'}`}
+                                            >
+                                                <Type className="w-3 h-3" /> Text
+                                            </button>
+                                            <button 
+                                                onClick={() => addSection('image')}
+                                                className={`p-1.5 rounded-lg border text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:border-indigo-500' : 'bg-white border-gray-200 text-gray-500 hover:border-indigo-500'}`}
+                                            >
+                                                <ImageIcon className="w-3 h-3" /> Image
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-4 min-h-[400px]">
+                                        <AnimatePresence mode="popLayout">
+                                            {sections.map((section, index) => (
+                                                <motion.div 
+                                                    key={section.id}
+                                                    layout
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    className={`group relative rounded-xl border-2 transition-all ${
+                                                        isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-100'
+                                                    } hover:border-pink-500/30`}
+                                                >
+                                                    {/* Section Controls */}
+                                                    <div className="absolute -right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                        <button 
+                                                            onClick={() => moveSection(index, 'up')}
+                                                            disabled={index === 0}
+                                                            className="p-1.5 rounded-full bg-white shadow-lg text-slate-400 hover:text-pink-500 disabled:opacity-30"
+                                                        >
+                                                            <MoveUp className="w-3.5 h-3.5" />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => removeSection(section.id)}
+                                                            className="p-1.5 rounded-full bg-white shadow-lg text-slate-400 hover:text-red-500"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => moveSection(index, 'down')}
+                                                            disabled={index === sections.length - 1}
+                                                            className="p-1.5 rounded-full bg-white shadow-lg text-slate-400 hover:text-indigo-500 disabled:opacity-30"
+                                                        >
+                                                            <MoveDown className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </div>
+
+                                                    {section.type === 'text' ? (
+                                                        <textarea
+                                                            value={section.content}
+                                                            onChange={(e) => updateSection(section.id, e.target.value)}
+                                                            onInput={(e) => {
+                                                                const target = e.target as HTMLTextAreaElement;
+                                                                target.style.height = 'auto';
+                                                                target.style.height = `${target.scrollHeight}px`;
+                                                            }}
+                                                            rows={3}
+                                                            placeholder="Continue the story..."
+                                                            className={`w-full p-6 bg-transparent border-none focus:ring-0 resize-none font-serif text-lg leading-relaxed ${isDark ? 'text-slate-200' : 'text-slate-900'}`}
+                                                        />
+                                                    ) : (
+                                                        <div className="p-4">
+                                                            {section.content || section.previewUrl ? (
+                                                                <div className="relative aspect-video rounded-lg overflow-hidden group/img">
+                                                                    <img src={section.previewUrl || section.content} alt="" className="w-full h-full object-cover" />
+                                                                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                                                                        <span className="px-4 py-2 bg-white rounded-lg text-xs font-bold text-slate-900">Replace Image</span>
+                                                                        <input 
+                                                                            type="file" 
+                                                                            className="hidden" 
+                                                                            accept="image/*"
+                                                                            onChange={(e) => handleSectionImageUpload(section.id, e)}
+                                                                        />
+                                                                    </label>
+                                                                </div>
+                                                            ) : (
+                                                                <label className={`flex flex-col items-center justify-center p-12 rounded-lg border-2 border-dashed transition-colors cursor-pointer ${
+                                                                    isDark ? 'border-slate-700 hover:border-slate-600' : 'border-gray-200 hover:border-gray-300'
+                                                                }`}>
+                                                                    <ImageIcon className="w-8 h-8 text-slate-400 mb-3" />
+                                                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Select Narrative Image</span>
+                                                                    <input 
+                                                                        type="file" 
+                                                                        className="hidden" 
+                                                                        accept="image/*"
+                                                                        onChange={(e) => handleSectionImageUpload(section.id, e)}
+                                                                    />
+                                                                </label>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            ))}
+                                        </AnimatePresence>
+                                        
+                                        {/* Blank State / End of Canvas */}
+                                        <div className="flex justify-center py-8">
+                                            <div className="flex items-center gap-4">
+                                                <button 
+                                                    onClick={() => addSection('text')}
+                                                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-pink-500 hover:text-white transition-all shadow-sm"
+                                                    title="Add text block"
+                                                >
+                                                    <Type className="w-5 h-5" />
+                                                </button>
+                                                <button 
+                                                    onClick={() => addSection('image')}
+                                                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-indigo-500 hover:text-white transition-all shadow-sm"
+                                                    title="Add image block"
+                                                >
+                                                    <ImageIcon className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
