@@ -118,6 +118,13 @@ function VerifyEmailContent() {
         }
     };
 
+    // Auto-resend on first load if authenticated but not verified
+    useEffect(() => {
+        if (isAuthenticated && !user?.email_verified && !isVerified && resendTimer === 0) {
+            handleResend();
+        }
+    }, [isAuthenticated, user?.email_verified]);
+
     if (isVerified) {
         return (
             <div className="min-h-screen bg-surface flex items-center justify-center p-8">
@@ -139,11 +146,11 @@ function VerifyEmailContent() {
                 <div>
                     <div className="flex items-center gap-4 mb-12 opacity-30">
                         <div className="h-px w-8 bg-white" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em]">Verification Protocol</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em]">Email Verification</span>
                     </div>
-                    <h2 className="text-4xl font-serif font-bold italic opacity-30 leading-none tracking-tighter mb-8">Secure Access.</h2>
+                    <h2 className="text-4xl font-serif font-bold italic opacity-30 leading-none tracking-tighter mb-8">Secure Account.</h2>
                     <p className="text-xs font-medium text-slate-400 leading-relaxed border-l border-slate-700 pl-6 italic">
-                        We prioritize the integrity of our community. Verification ensures your orders and birthday rewards are handled with professional care.
+                        We value your security. Verification helps us make sure your orders and birthday gifts are sent to the right person.
                     </p>
                 </div>
                 
@@ -157,11 +164,7 @@ function VerifyEmailContent() {
             <div className="flex-1 flex items-center justify-center p-8 md:p-16 lg:p-24">
                 <div className="w-full max-w-md">
                     <header className="mb-12">
-                        <div className="flex items-center gap-3 mb-6 opacity-40">
-                             <ShieldCheck className="w-3 h-3 text-content-primary" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Step 2 of 2</span>
-                        </div>
-                        <h1 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">Verify Email</h1>
+                        <h1 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">Confirm Email</h1>
                         <p className="text-sm font-medium text-content-secondary leading-relaxed">
                             We&apos;ve sent a 6-digit code to <span className="text-content-primary font-bold italic">{user?.email || 'your email'}</span>. Enter it below to unlock your account.
                         </p>

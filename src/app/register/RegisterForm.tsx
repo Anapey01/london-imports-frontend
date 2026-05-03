@@ -94,13 +94,13 @@ export default function RegisterForm() {
                         Direct From <br /> Factory.
                     </h2>
                     <p className="max-w-xs text-sm font-medium text-slate-400 leading-relaxed italic border-l border-slate-700 pl-8">
-                        From the factory in China to your home in Ghana, made simple for everyone. Reliability as a protocol.
+                        From the factory in China to your home in Ghana, made simple for everyone. Reliable and simple.
                     </p>
                 </div>
                 
                 <div className="relative z-10 pt-20 border-t border-white/10 opacity-40">
                       <span className="text-[9px] font-black uppercase tracking-widest block mb-4 text-brand-emerald">Secure Membership</span>
-                      <p className="text-xs font-medium text-slate-300">Safe login and verified accounts are required for your protection and order integrity.</p>
+                      <p className="text-xs font-medium text-slate-300">We verify accounts to keep your orders safe and secure.</p>
                 </div>
 
                 {/* Subtle Radial Architecture */}
@@ -113,7 +113,7 @@ export default function RegisterForm() {
                     <header className="mb-16">
                         <div className="flex items-center gap-3 mb-8 opacity-40">
                              <ShieldCheck className="w-3 h-3 text-content-primary" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Join the Network</span>
+                              <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Join us</span>
                         </div>
                         <h1 className="text-5xl font-serif font-bold text-content-primary mb-6 tracking-tighter leading-none">Create Account</h1>
                         <p className="text-sm font-medium text-content-secondary italic">

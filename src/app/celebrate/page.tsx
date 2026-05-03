@@ -76,10 +76,10 @@ export default function BirthdayClubPage() {
 
                             <header className="mb-12">
                                 <h1 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tighter leading-none italic">
-                                    The Birthday Club.
+                                    Join the Birthday Club.
                                 </h1>
                                 <p className="text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed uppercase tracking-widest px-4">
-                                    Tell us your special day and receive a curated annual gift from the London&apos;s Imports Atelier.
+                                    Tell us your birthday and get a special gift every year!
                                 </p>
                             </header>
 
@@ -118,7 +118,7 @@ export default function BirthdayClubPage() {
                             </form>
                             
                             <p className="mt-12 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] italic max-w-[280px]">
-                                Your data is protected. Gifts are curated based on your order history and location.
+                                Your information is safe. We use your order history to pick the best gift for you.
                             </p>
                         </>
                     ) : (
@@ -137,7 +137,7 @@ export default function BirthdayClubPage() {
                                 onClick={() => router.push('/')}
                                 className="inline-flex items-center gap-4 text-[11px] font-black text-brand-emerald hover:text-slate-900 dark:hover:text-white transition-colors uppercase tracking-[0.4em] border-b border-brand-emerald/30 pb-2"
                             >
-                                Return to Atelier
+                                Return to Shopping
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                         </div>
