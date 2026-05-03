@@ -12,8 +12,9 @@ import ReloadPrompt from '@/components/pwa/ReloadPrompt';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
 import { Suspense } from "react";
+import { GA_MEASUREMENT_ID } from '@/lib/analytics';
 import SkipToContent from "@/components/SkipToContent";
-import { GoogleTagManager } from '@next/third-parties/google';
+import { GoogleAnalytics as GoogleAnalyticsTag } from '@next/third-parties/google';
 import { 
   OrganizationSchema, 
   WebsiteSchema, 
@@ -28,8 +29,7 @@ const Footer = dynamic(() => import("@/components/Footer"), {
 });
 const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 
-// Google Analytics ID
-const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
+
 
 
 const sourceSerif = Source_Serif_4({
@@ -149,11 +149,27 @@ export default async function RootLayout({
         <WebsiteSchema />
         <FaqSchema />
         <BreadcrumbSchema />
+
+        {/* Initialize Google Consent Mode - Default State */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
+                'ad_storage': 'denied',
+                'personalization_storage': 'denied',
+                'wait_for_update': 500
+              });
+            `,
+          }}
+        />
       </head>
       <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
         <SkipToContent />
         {/* Google Analytics - Unified via Next Third Parties */}
-        <GoogleTagManager gtmId={GA_MEASUREMENT_ID} />
+        <GoogleAnalyticsTag gaId={GA_MEASUREMENT_ID} />
 
         <Suspense fallback={null}>
           <GoogleAnalytics />

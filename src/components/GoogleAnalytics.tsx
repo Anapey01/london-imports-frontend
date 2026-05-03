@@ -15,26 +15,25 @@ export default function GoogleAnalytics() {
 
     useEffect(() => {
         const handleConsent = () => {
+            if (typeof window === 'undefined') return;
+            
+            // Ensure gtag is available
+            const gtag = (window as any).gtag || function() { (window as any).dataLayer.push(arguments); };
+            
             const stored = localStorage.getItem('london_imports_cookie_consent_v2');
-            if (stored && typeof window !== 'undefined' && window.gtag) {
+            if (stored) {
                 try {
                     const consent = JSON.parse(stored);
                     
                     // Update Google Consent Mode effectively
-                    window.gtag('consent', 'update', {
+                    gtag('consent', 'update', {
                         'analytics_storage': consent.analytics ? 'granted' : 'denied',
                         'ad_storage': consent.marketing ? 'granted' : 'denied',
                         'personalization_storage': consent.personalization ? 'granted' : 'denied',
                     });
 
-                    // Log virtual page view for SPA navigation if GTM isn't auto-tracking history
-                    if (consent.analytics) {
-                        window.gtag('event', 'page_view', {
-                            page_location: window.location.href,
-                            page_path: pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ''),
-                            send_to: GA_MEASUREMENT_ID
-                        });
-                    }
+                    // Consent mode is now updated. 
+                    // Page views are handled automatically by the tag in layout.tsx.
                 } catch (e) { 
                     console.error('Consent Sync Error:', e); 
                 }

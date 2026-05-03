@@ -3,7 +3,7 @@
  * Standardized GA4 Event tracking for E-commerce
  */
 
-export const GA_MEASUREMENT_ID = "G-VP24TKHC7C";
+export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-VP24TKHC7C";
 
 // Global Window augmentation is now handled by @next/third-parties/google
 // We use 'any' casting inside functions to avoid complex type merging if needed
