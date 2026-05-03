@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { Gift, Calendar, ArrowRight, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Calendar, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 
 export default function BirthdayClubPage() {
@@ -21,7 +21,6 @@ export default function BirthdayClubPage() {
         }
     }, [isAuthenticated, isAuthLoading, router]);
 
-    // If already has a birthday, show success state immediately or different UI
     useEffect(() => {
         if (user?.date_of_birth) {
             setIsSuccess(true);
@@ -42,7 +41,7 @@ export default function BirthdayClubPage() {
             if (err.response?.status === 403) {
                 router.push('/verify-email?reason=birthday_club');
             } else {
-                setError(err.response?.data?.error || 'Failed to join the club. Please try again.');
+                setError(err.response?.data?.error || 'Failed to join. Please try again.');
             }
         } finally {
             setIsSubmitting(false);
@@ -51,91 +50,125 @@ export default function BirthdayClubPage() {
 
     if (isAuthLoading) {
         return (
-            <div className="min-h-screen bg-stationery flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-brand-emerald animate-spin" />
+            <div className="min-h-screen bg-surface flex items-center justify-center">
+                <div className="animate-pulse text-[10px] font-black uppercase tracking-[0.5em] text-content-secondary">
+                    Accessing Atelier...
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-[90vh] bg-stationery flex items-center justify-center p-6 md:p-12">
-            <div className="w-full max-w-2xl bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] relative overflow-hidden">
+        <div className="min-h-screen bg-surface flex flex-col lg:flex-row overflow-hidden">
+            
+            {/* 1. SIGNATURE ANCHOR (Editorial Sidebar) */}
+            <div className="hidden lg:flex w-1/3 bg-[#0a0f1d] p-16 flex-col justify-between relative border-r border-white/5">
+                <div className="relative z-10">
+                    <div className="flex items-center gap-4 mb-20 opacity-30">
+                        <div className="h-px w-8 bg-white" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white">Member Services</span>
+                    </div>
+                    
+                    <h1 className="text-8xl font-serif font-bold text-white/5 leading-none select-none italic pointer-events-none absolute -left-10 top-20 rotate-90 origin-top-left">
+                        CELEBRATE
+                    </h1>
+                </div>
+
+                <div className="relative z-10">
+                    <p className="text-sm font-medium text-slate-400 leading-relaxed italic border-l border-brand-emerald pl-8 max-w-xs">
+                        Personal milestones are the true currency of our community. Share your day, and we&apos;ll handle the rest.
+                    </p>
+                </div>
+
+                {/* Decorative Pattern */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none" />
+            </div>
+
+            {/* 2. CONTENT AREA */}
+            <div className="flex-1 flex items-center justify-center p-8 md:p-16 lg:p-24 relative">
                 
-                {/* Visual Accent */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-emerald/20 via-brand-emerald to-brand-emerald/20" />
+                {/* Background Decor */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-emerald/5 rounded-full blur-[100px] pointer-events-none" />
                 
-                <div className="p-8 md:p-16 flex flex-col items-center text-center">
+                <div className="w-full max-w-xl relative">
                     {!isSuccess ? (
-                        <>
-                            <div className="w-20 h-20 bg-brand-emerald/5 rounded-full flex items-center justify-center mb-10 relative">
-                                <Gift className="w-10 h-10 text-brand-emerald" />
-                                <div className="absolute -top-1 -right-1">
-                                    <Sparkles className="w-6 h-6 text-brand-emerald animate-pulse" />
-                                </div>
+                        <div className="grid md:grid-cols-2 gap-12 items-center">
+                            
+                            {/* Visual Column */}
+                            <div className="relative group">
+                                <div className="absolute inset-0 bg-brand-emerald/10 scale-95 blur-2xl group-hover:scale-105 transition-transform duration-700" />
+                                <img 
+                                    src="/editorial_birthday_club_1777830829352.png" 
+                                    alt="Birthday Club" 
+                                    className="relative z-10 w-full aspect-square object-cover grayscale-[0.5] hover:grayscale-0 transition-all duration-700"
+                                />
                             </div>
 
-                            <header className="mb-12">
-                                <h1 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tighter leading-none italic">
-                                    The Birthday Club.
-                                </h1>
-                                <p className="text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed uppercase tracking-widest px-4">
-                                    Drop your birthday here and we&apos;ll send you something special every year.
-                                </p>
-                            </header>
-
-                            <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-8">
-                                <div className="space-y-4">
-                                    <label htmlFor="dob" className="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
-                                        Select Date of Birth
-                                    </label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                                        <input
-                                            id="dob"
-                                            type="date"
-                                            value={dob}
-                                            onChange={(e) => setDob(e.target.value)}
-                                            required
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-4 pl-12 pr-4 text-sm font-black uppercase tracking-widest institutional-focus rounded-none"
-                                        />
-                                    </div>
-                                </div>
-
-                                {error && (
-                                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest animate-in fade-in slide-in-from-top-2">
-                                        {error}
+                            {/* Form Column */}
+                            <div>
+                                <header className="mb-10">
+                                    <h2 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none italic">
+                                        The Birthday Club.
+                                    </h2>
+                                    <p className="text-xs font-medium text-content-secondary uppercase tracking-[0.2em] leading-relaxed">
+                                        Drop your birthday here and we&apos;ll send you something special every year.
                                     </p>
-                                )}
+                                </header>
 
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || !dob}
-                                    className="group/btn relative w-full h-16 bg-slate-900 dark:bg-brand-emerald text-white font-black uppercase tracking-[0.4em] text-[11px] flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Joining...' : 'Count me in'}
-                                    <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                                </button>
-                            </form>
-                            
-                            <p className="mt-12 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] italic max-w-[280px]">
-                                Your info is safe with us. We only use your order history to pick a gift you&apos;ll actually love.
-                            </p>
-                        </>
+                                <form onSubmit={handleSubmit} className="space-y-8">
+                                    <div className="group">
+                                        <label htmlFor="dob" className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-4 transition-colors group-focus-within:text-brand-emerald">
+                                            Select Date
+                                        </label>
+                                        <div className="relative">
+                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-secondary/30" />
+                                            <input
+                                                id="dob"
+                                                type="date"
+                                                value={dob}
+                                                onChange={(e) => setDob(e.target.value)}
+                                                required
+                                                className="w-full bg-surface-card border border-border-standard py-4 pl-12 pr-4 text-[12px] font-black uppercase tracking-widest institutional-focus rounded-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {error && (
+                                        <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest animate-in fade-in slide-in-from-top-2">
+                                            {error}
+                                        </p>
+                                    )}
+
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting || !dob}
+                                        className="group/btn relative w-full h-16 bg-content-primary text-surface font-black uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-4 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50"
+                                    >
+                                        {isSubmitting ? 'Joining...' : 'Count me in'}
+                                        <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                                    </button>
+                                </form>
+
+                                <p className="mt-12 text-[9px] font-bold text-content-secondary/40 uppercase tracking-[0.2em] leading-relaxed italic">
+                                    Your info is safe with us. We only use your order history to pick a gift you&apos;ll actually love.
+                                </p>
+                            </div>
+                        </div>
                     ) : (
-                        <div className="animate-in fade-in zoom-in duration-700 py-12">
+                        <div className="text-center max-w-sm mx-auto animate-in fade-in zoom-in duration-1000">
                             <div className="w-24 h-24 bg-brand-emerald/10 rounded-full flex items-center justify-center mx-auto mb-10">
                                 <CheckCircle2 className="w-12 h-12 text-brand-emerald" />
                             </div>
-                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tighter italic">
+                            <h2 className="text-5xl font-serif font-bold text-content-primary mb-6 tracking-tighter italic leading-none">
                                 You&apos;re in!
                             </h2>
-                            <p className="text-sm font-medium text-slate-500 uppercase tracking-[0.3em] mb-12">
+                            <p className="text-sm font-medium text-content-secondary uppercase tracking-[0.3em] mb-12">
                                 We&apos;ll be in touch on your special day.
                             </p>
                             
                             <button
                                 onClick={() => router.push('/')}
-                                className="inline-flex items-center gap-4 text-[11px] font-black text-brand-emerald hover:text-slate-900 dark:hover:text-white transition-colors uppercase tracking-[0.4em] border-b border-brand-emerald/30 pb-2"
+                                className="inline-flex items-center gap-4 text-[11px] font-black text-brand-emerald hover:text-content-primary transition-colors uppercase tracking-[0.4em] border-b border-brand-emerald/30 pb-2"
                             >
                                 Return to Shopping
                                 <ArrowRight className="w-4 h-4" />
@@ -143,9 +176,6 @@ export default function BirthdayClubPage() {
                         </div>
                     )}
                 </div>
-
-                {/* Subtle Decorative Element */}
-                <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-brand-emerald/5 rounded-full blur-3xl pointer-events-none" />
             </div>
         </div>
     );
