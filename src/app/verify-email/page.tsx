@@ -132,8 +132,8 @@ function VerifyEmailContent() {
                     <div className="w-24 h-24 bg-brand-emerald/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
                         <CheckCircle2 className="w-12 h-12 text-brand-emerald" />
                     </div>
-                    <h1 className="text-4xl font-serif font-bold text-content-primary mb-4 tracking-tighter">Account Verified</h1>
-                    <p className="text-sm font-medium text-content-secondary uppercase tracking-[0.2em]">Preparing your celebration...</p>
+                    <h1 className="text-4xl font-serif font-bold text-content-primary mb-4 tracking-tighter">You&apos;re verified!</h1>
+                    <p className="text-sm font-medium text-content-secondary uppercase tracking-[0.2em]">Just a second, redirecting you...</p>
                 </div>
             </div>
         );
@@ -150,7 +150,7 @@ function VerifyEmailContent() {
                     </div>
                     <h2 className="text-4xl font-serif font-bold italic opacity-30 leading-none tracking-tighter mb-8">Secure Account.</h2>
                     <p className="text-xs font-medium text-slate-400 leading-relaxed border-l border-slate-700 pl-6 italic">
-                        We value your security. Verification helps us make sure your orders and birthday gifts are sent to the right person.
+                        We do this to keep your account safe and make sure your birthday gifts always reach the right person.
                     </p>
                 </div>
                 
@@ -164,9 +164,9 @@ function VerifyEmailContent() {
             <div className="flex-1 flex items-center justify-center p-8 md:p-16 lg:p-24">
                 <div className="w-full max-w-md">
                     <header className="mb-12">
-                        <h1 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">Confirm Email</h1>
+                        <h1 className="text-5xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">Check your inbox</h1>
                         <p className="text-sm font-medium text-content-secondary leading-relaxed">
-                            We&apos;ve sent a 6-digit code to <span className="text-content-primary font-bold italic">{user?.email || 'your email'}</span>. Enter it below to unlock your account.
+                            We just sent a 6-digit code to <span className="text-content-primary font-bold italic">{user?.email || 'your email'}</span>. Pop it in below to finish up.
                         </p>
                     </header>
 
@@ -202,7 +202,7 @@ function VerifyEmailContent() {
                                 className="group/btn relative w-full h-16 bg-content-primary disabled:opacity-50 disabled:cursor-not-allowed rounded-none transition-all flex items-center justify-center gap-4 overflow-hidden shadow-2xl shadow-content-primary/10"
                             >
                                 <span className="relative z-10 text-[11px] font-black text-surface uppercase tracking-[0.5em]">
-                                    {isLoading ? 'Verifying...' : 'Unlock Account'}
+                                    {isLoading ? 'Checking...' : 'Verify'}
                                 </span>
                                 {!isLoading && <ArrowRight className="relative z-10 w-4 h-4 text-surface group-hover/btn:translate-x-1 transition-transform" />}
                             </button>

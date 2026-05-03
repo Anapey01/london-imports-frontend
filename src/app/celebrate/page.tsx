@@ -76,10 +76,10 @@ export default function BirthdayClubPage() {
 
                             <header className="mb-12">
                                 <h1 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tighter leading-none italic">
-                                    Join the Birthday Club.
+                                    The Birthday Club.
                                 </h1>
                                 <p className="text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed uppercase tracking-widest px-4">
-                                    Tell us your birthday and get a special gift every year!
+                                    Drop your birthday here and we&apos;ll send you something special every year.
                                 </p>
                             </header>
 
@@ -112,13 +112,13 @@ export default function BirthdayClubPage() {
                                     disabled={isSubmitting || !dob}
                                     className="group/btn relative w-full h-16 bg-slate-900 dark:bg-brand-emerald text-white font-black uppercase tracking-[0.4em] text-[11px] flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                                 >
-                                    {isSubmitting ? 'Joining...' : 'Join the Club'}
+                                    {isSubmitting ? 'Joining...' : 'Count me in'}
                                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                 </button>
                             </form>
                             
                             <p className="mt-12 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] italic max-w-[280px]">
-                                Your information is safe. We use your order history to pick the best gift for you.
+                                Your info is safe with us. We only use your order history to pick a gift you&apos;ll actually love.
                             </p>
                         </>
                     ) : (
@@ -127,10 +127,10 @@ export default function BirthdayClubPage() {
                                 <CheckCircle2 className="w-12 h-12 text-brand-emerald" />
                             </div>
                             <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tighter italic">
-                                You&apos;re in the Club.
+                                You&apos;re in!
                             </h2>
                             <p className="text-sm font-medium text-slate-500 uppercase tracking-[0.3em] mb-12">
-                                We look forward to celebrating you on your special day.
+                                We&apos;ll be in touch on your special day.
                             </p>
                             
                             <button
