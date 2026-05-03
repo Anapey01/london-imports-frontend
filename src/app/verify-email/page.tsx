@@ -178,7 +178,7 @@ export default function VerifyEmailPage() {
                             {otp.map((digit, index) => (
                                 <input
                                     key={index}
-                                    ref={el => inputs.current[index] = el}
+                                    ref={el => { inputs.current[index] = el; }}
                                     type="text"
                                     inputMode="numeric"
                                     maxLength={1}
