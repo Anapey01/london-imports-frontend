@@ -85,9 +85,9 @@ function VerifyEmailContent() {
             setIsVerified(true);
             await fetchUser(); // Refresh user state
             
-            // Redirect after a short delay to show success state
+            // Redirect to homepage after a short delay to show success state
             setTimeout(() => {
-                router.push('/celebrate?verified=true');
+                router.push('/');
             }, 2000);
         } catch (err: any) {
             setError(err.response?.data?.error || 'Invalid or expired verification code.');
