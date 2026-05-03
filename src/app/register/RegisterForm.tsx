@@ -54,9 +54,13 @@ export default function RegisterForm() {
         }
 
         try {
+            const cleanEmail = formData.email.toLowerCase().trim();
             await register({
                 ...formData,
-                username: formData.email
+                email: cleanEmail,
+                username: cleanEmail,
+                first_name: formData.first_name.trim(),
+                last_name: formData.last_name.trim(),
             });
             trackSignUp();
             logout(); 

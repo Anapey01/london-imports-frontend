@@ -100,6 +100,16 @@ export default function ProductCard({
                     className="block h-full"
                     onClick={() => trackSelectItem(product)}
                 >
+                    {/* Discreet Badge */}
+                    {product.is_discreet && (
+                        <div className="absolute top-4 left-4 z-20">
+                            <div className="bg-black/60 dark:bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                                <span className="text-[8px] font-black text-white uppercase tracking-[0.2em]">Discreet Packaging</span>
+                            </div>
+                        </div>
+                    )}
+
                     {!imageError ? (
                         <Image
                             src={imageUrl}

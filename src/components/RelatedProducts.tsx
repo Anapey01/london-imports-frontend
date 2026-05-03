@@ -8,10 +8,11 @@ import { Product } from '@/stores/cartStore';
 interface RelatedProductsProps {
     currentSlug: string;
     categorySlug?: string;
+    isDiscreet?: boolean;
     onProductClick?: (product: Product) => void;
 }
 
-export default function RelatedProducts({ currentSlug, categorySlug, onProductClick }: RelatedProductsProps) {
+export default function RelatedProducts({ currentSlug, categorySlug, isDiscreet, onProductClick }: RelatedProductsProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -31,6 +32,16 @@ export default function RelatedProducts({ currentSlug, categorySlug, onProductCl
                 // Filter out current product
                 const results = response.data.results || [];
                 let related = results.filter((p: Product) => p.slug !== currentSlug);
+
+                // PRIVACY SILO: 
+                // We use the explicit isDiscreet prop passed from the parent for authority.
+                if (isDiscreet) {
+                    // Only show other discreet products
+                    related = related.filter(p => p.is_discreet === true);
+                } else {
+                    // Hide all discreet products from normal recommendations
+                    related = related.filter(p => p.is_discreet !== true);
+                }
 
                 // Shuffle array (Fisher-Yates)
                 for (let i = related.length - 1; i > 0; i--) {

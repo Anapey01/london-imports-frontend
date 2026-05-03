@@ -65,11 +65,12 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-montserrat), ui-sans-serif, Helvetica, Arial, sans-serif;
     letter-spacing: -0.01em;
+    font-weight: inherit; /* Reset browser default bold */
     color: var(--text-primary);
   }
 
   .product-name-weight {
-    font-weight: var(--font-weight-product-name);
+    font-weight: var(--font-weight-product-name) !important;
   }
 }
 

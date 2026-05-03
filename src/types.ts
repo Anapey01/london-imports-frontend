@@ -48,6 +48,7 @@ export interface Product {
     preorder_status?: string;
     target_quantity: number;
     reservations_count: number;
+    is_discreet?: boolean;
 }
 export interface OrderItem {
     id: string;
@@ -56,6 +57,7 @@ export interface OrderItem {
         name: string;
         image: string;
         slug: string;
+        is_discreet?: boolean;
     };
     product_name: string;
     quantity: number;

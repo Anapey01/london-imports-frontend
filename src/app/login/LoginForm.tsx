@@ -57,7 +57,9 @@ function LoginFormContent() {
         setSuccess('');
 
         try {
-            await login(username, password);
+            // Defense in depth: normalize inputs before sending to API
+            const normalizedUsername = username.toLowerCase().trim();
+            await login(normalizedUsername, password);
             const user = useAuthStore.getState().user;
             if (user?.id) {
                 setAnalyticsUser(user.id);

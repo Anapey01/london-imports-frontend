@@ -39,6 +39,7 @@ export interface Product {
     is_preorder?: boolean;
     stock_quantity?: number;
     estimated_shipping_fee?: number;
+    is_discreet?: boolean;
 }
 
 export interface CartItem {

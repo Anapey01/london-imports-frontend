@@ -28,9 +28,16 @@ interface ProductReviewsProps {
     initialReviews: Review[];
     rating: number;
     ratingCount: number;
+    onReviewAdded?: () => void;
 }
 
-export default function ProductReviews({ productSlug, initialReviews, rating, ratingCount }: ProductReviewsProps) {
+export default function ProductReviews({ 
+    productSlug, 
+    initialReviews, 
+    rating, 
+    ratingCount,
+    onReviewAdded 
+}: ProductReviewsProps) {
     const { isAuthenticated } = useAuthStore();
     const { showToast } = useToast();
     const [reviews, setReviews] = useState<Review[]>(initialReviews);
@@ -52,10 +59,14 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
         if (comment) {
             localStorage.setItem(`review_draft_${productSlug}`, comment);
         }
-        return () => {
-            // No cleanup needed
-        };
     }, [comment, productSlug]);
+    
+    // Sync reviews when parent refreshes (handles aggregate rating responsiveness)
+    useEffect(() => {
+        if (initialReviews) {
+            setReviews(initialReviews);
+        }
+    }, [initialReviews]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,6 +90,9 @@ export default function ProductReviews({ productSlug, initialReviews, rating, ra
             setNewRating(5);
             setShowForm(false);
             showToast('Review submitted! Thank you for your feedback.', 'success');
+            
+            // Notify parent to refresh aggregate ratings
+            if (onReviewAdded) onReviewAdded();
         } catch (error: unknown) {
             const err = error as { response?: { data?: { detail?: string; non_field_errors?: string[] } } };
             const message = err.response?.data?.detail || err.response?.data?.non_field_errors?.[0] || 'Failed to submit review. You may have already reviewed this product.';

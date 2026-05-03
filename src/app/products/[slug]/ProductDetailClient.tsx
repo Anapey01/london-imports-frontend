@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import dynamic from 'next/dynamic';
@@ -88,6 +88,7 @@ interface Product {
     target_quantity?: number;
     rating_count?: number;
     reviews?: Review[];
+    is_discreet?: boolean;
 }
 
 interface ProductDetailClientProps {
@@ -176,7 +177,7 @@ import {
     Timer, Lock, Eye, Wind, Waves 
 } from 'lucide-react';
 
-const ICON_MAP: Record<string, any> = {
+const ICON_MAP: Record<string, React.ElementType> = {
     Zap, ShieldCheck, Volume2, Truck, Package, 
     Leaf, Activity, Smartphone, Cpu, Watch, Star, 
     Heart, Home, Sun, Cloud, Snowflake, Thermometer, 
@@ -190,8 +191,8 @@ const ICON_MAP: Record<string, any> = {
 function EditorialSection({ data }: { data: Product['editorial_data'] }) {
     if (!data) return null;
 
-    const LucideIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
-        const Icon = (ICON_MAP as any)[name] || Sparkles;
+    const LucideIcon = ({ name, ...props }: { name: string; className?: string; size?: number | string; strokeWidth?: number | string }) => {
+        const Icon = ICON_MAP[name] || Sparkles;
         return <Icon {...props} />;
     };
 
@@ -360,31 +361,32 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     const { addToCart } = useCartStore();
 
     // Client-side fetch to ensure fresh data (e.g. reservation counts)
+    const refreshProductData = useCallback(async () => {
+        if (!slug) return;
+        try {
+            const API_BASE = siteConfig.apiUrl;
+            // Add timestamp to prevent browser caching
+            const res = await fetch(`${API_BASE}/products/${slug}/?t=${Date.now()}`);
+            if (!res.ok) throw new Error('Failed to fetch');
+            const data = await res.json();
+            setProduct(data);
+            // Ensure price updates if new data loads
+            setCurrentPrice(Number(data.price));
+        } catch (e) {
+            console.error("CSR Fetch Error", e);
+            if (!initialProduct) setError(true);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [slug, initialProduct]);
+
     useEffect(() => {
         if (slug) {
             // If we don't have initial product, show loading. If we do, just update in background.
             if (!initialProduct) setIsLoading(true);
-
-            const fetchProduct = async () => {
-                try {
-                    const API_BASE = siteConfig.apiUrl;
-                    // Add timestamp to prevent browser caching
-                    const res = await fetch(`${API_BASE}/products/${slug}/?t=${Date.now()}`);
-                    if (!res.ok) throw new Error('Failed to fetch');
-                    const data = await res.json();
-                    setProduct(data);
-                    // Ensure price updates if new data loads
-                    setCurrentPrice(Number(data.price));
-                } catch (e) {
-                    console.error("CSR Fetch Error", e);
-                    if (!initialProduct) setError(true);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-            fetchProduct();
+            refreshProductData();
         }
-    }, [initialProduct, slug]);
+    }, [initialProduct, slug, refreshProductData]);
 
     // Ref for the main CTA section to trigger the sticky bar
     const [ctaRef, setCtaRef] = useState<HTMLDivElement | null>(null);
@@ -408,23 +410,27 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 }
             }
 
-            // ADDED: Save to Recently Viewed
-            try {
-                const stored = localStorage.getItem('recently_viewed');
-                let history: Product[] = stored ? JSON.parse(stored) : [];
+            // ADDED: Save to Recently Viewed (unless discreet/privacy mode)
+            if (product.is_discreet) {
+                console.info("[Privacy] Ghost mode active. Skipping browse history for this item.");
+            } else {
+                try {
+                    const stored = localStorage.getItem('recently_viewed');
+                    let history: Product[] = stored ? JSON.parse(stored) : [];
 
-                // Remove if duplicate (so we can move it to top)
-                history = history.filter(p => p.slug !== product.slug);
+                    // Remove if duplicate (so we can move it to top)
+                    history = history.filter(p => p.slug !== product.slug);
 
-                // Add current to top
-                history.unshift(product);
+                    // Add current to top
+                    history.unshift(product);
 
-                // Limit to 10
-                if (history.length > 10) history.pop();
+                    // Limit to 10
+                    if (history.length > 10) history.pop();
 
-                localStorage.setItem('recently_viewed', JSON.stringify(history));
-            } catch (e) {
-                console.error("Failed to save recently viewed", e);
+                    localStorage.setItem('recently_viewed', JSON.stringify(history));
+                } catch (e) {
+                    console.error("Failed to save recently viewed", e);
+                }
             }
         }
     }, [product, isSoldOut]);
@@ -691,8 +697,16 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     <div className="flex flex-col gap-12 flex-1">
                         {/* 1. Header: Source Serif Authority */}
                         <div className="space-y-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
-                            <h1 className="text-4xl lg:text-7xl font-serif font-extralight text-content-primary leading-[0.95] tracking-tighter text-balance">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
+                                {product.is_discreet && (
+                                    <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                        <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Discreet Packaging Guaranteed</span>
+                                    </div>
+                                )}
+                            </div>
+                            <h1 className="text-4xl lg:text-7xl font-serif product-name-weight text-content-primary leading-[0.95] tracking-tighter text-balance">
                                 {product.name}
                             </h1>
                             {product.subtitle && (
@@ -899,6 +913,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
             <RelatedProducts
                 currentSlug={product.slug}
                 categorySlug={product.category?.slug}
+                isDiscreet={product.is_discreet}
                 onProductClick={(p) => trackProductAffinity(product.name, p)}
             />
 
@@ -907,6 +922,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 initialReviews={product.reviews || []}
                 rating={product.rating || 0}
                 ratingCount={product.rating_count || 0}
+                onReviewAdded={refreshProductData}
             />
 
             {/* Recently Viewed Section (Lazy Loaded) */}
