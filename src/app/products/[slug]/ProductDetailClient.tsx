@@ -211,10 +211,10 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
     }
 
     return (
-        <div className="mb-20 space-y-20">
+        <div className="mb-12 space-y-12">
             {/* 1. Performance Narrative (The Editorial Story) */}
             {data.narrative && (
-                <div className="relative py-12 border-y border-slate-100 dark:border-slate-900">
+                <div className="relative py-8 border-y border-slate-100 dark:border-slate-900">
                     <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-surface px-6 text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald/40 italic">
                         The Story
                     </span>
@@ -698,23 +698,23 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     />
 
                     {/* RIGHT COLUMN: Product Info/Selection (Mastered Architecture) */}
-                    <div className="flex flex-col gap-12 flex-1">
+                    <div className="flex flex-col gap-8 flex-1">
                         {/* 1. Header: Source Serif Authority */}
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Original Product / London&apos;s</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-60">Original Product / London&apos;s</span>
                                 {product.is_discreet && (
                                     <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                        <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Discreet Packaging Guaranteed</span>
+                                        <div className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                        <span className="text-[7px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Discreet</span>
                                     </div>
                                 )}
                             </div>
-                            <h1 className="text-4xl lg:text-7xl font-serif font-atelier text-content-primary leading-[0.95] tracking-tighter text-balance">
+                            <h1 className="text-3xl lg:text-5xl font-serif font-atelier text-content-primary leading-[1] tracking-tighter text-balance">
                                 {product.name}
                             </h1>
                             {product.subtitle && (
-                                <p className="text-sm lg:text-base font-medium text-content-secondary tracking-widest uppercase opacity-70 mt-2">
+                                <p className="text-xs lg:text-sm font-medium text-content-secondary tracking-[0.2em] uppercase opacity-60 mt-1">
                                     {product.subtitle}
                                 </p>
                             )}
@@ -879,25 +879,25 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         {/* 5. Details: Flat Architectural Grid */}
                         <div className="grid grid-cols-2 gap-px bg-border-standard border-y border-border-standard mt-4 mb-12">
                             {/* Type */}
-                            <div className="bg-surface py-10 flex flex-col gap-3">
+                            <div className="bg-surface py-6 flex flex-col gap-2">
                                 <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Category</span>
                                 <span className="text-xs font-bold text-content-primary uppercase tracking-widest">{product.category?.name}</span>
                             </div>
                             {/* Origin */}
-                            <div className="bg-surface py-10 flex flex-col gap-3 pl-8">
+                            <div className="bg-surface py-6 flex flex-col gap-2 pl-8">
                                 <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Made In</span>
                                 <span className="text-xs font-bold text-content-primary uppercase tracking-widest">{product.origin_country || 'Guangzhou, CN'}</span>
                             </div>
                             {/* Verification */}
-                            <div className="bg-surface py-10 flex flex-col gap-3 border-t border-border-standard">
+                            <div className="bg-surface py-6 flex flex-col gap-2 border-t border-border-standard">
                                 <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Quality Check</span>
                                 <span className="text-xs font-bold text-content-primary uppercase tracking-widest flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full" />
                                     Safe Delivery
                                 </span>
                             </div>
                             {/* Secured */}
-                            <div className="bg-surface py-10 flex flex-col gap-3 pl-8 border-t border-border-standard">
+                            <div className="bg-surface py-6 flex flex-col gap-2 pl-8 border-t border-border-standard">
                                 <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Payment</span>
                                 <span className="text-xs font-bold text-content-primary uppercase tracking-widest">MOMO SECURED</span>
                             </div>
