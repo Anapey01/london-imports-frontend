@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { ShieldCheck, ArrowRight, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
-import axiosInstance from '@/lib/axios';
+import { authAPI } from '@/lib/api';
 
 export default function VerifyEmailPage() {
     const router = useRouter();
@@ -80,7 +80,7 @@ export default function VerifyEmailPage() {
         setError('');
 
         try {
-            await axiosInstance.post('/api/v1/auth/verify-email/', { code });
+            await authAPI.verifyEmail(code);
             setIsVerified(true);
             await checkAuth(); // Refresh user state
             
@@ -108,7 +108,7 @@ export default function VerifyEmailPage() {
         setError('');
 
         try {
-            await axiosInstance.post('/api/v1/auth/resend-otp/');
+            await authAPI.resendOTP();
             setResendTimer(60);
         } catch (err: any) {
             setError('Failed to resend code. Please try again later.');

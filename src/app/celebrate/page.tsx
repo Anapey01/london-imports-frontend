@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { Gift, Calendar, ArrowRight, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
-import axiosInstance from '@/lib/axios';
+import { authAPI } from '@/lib/api';
 
 export default function BirthdayClubPage() {
     const router = useRouter();
@@ -36,7 +36,7 @@ export default function BirthdayClubPage() {
         setError('');
 
         try {
-            await axiosInstance.patch('/api/v1/users/me/birthday/', { date_of_birth: dob });
+            await authAPI.updateBirthday(dob);
             setIsSuccess(true);
         } catch (err: any) {
             if (err.response?.status === 403) {

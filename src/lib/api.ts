@@ -171,6 +171,9 @@ export const authAPI = {
   requestPasswordReset: (data: unknown) => api.post('/auth/password/reset/', data),
   confirmPasswordReset: (data: unknown) => api.post('/auth/password/reset/confirm/', data),
   googleLogin: (idToken: string) => api.post('/auth/google/', { id_token: idToken }),
+  verifyEmail: (code: string) => api.post('/auth/verify-email/', { code }),
+  resendOTP: () => api.post('/auth/resend-otp/', {}),
+  updateBirthday: (dob: string) => api.patch('/auth/me/birthday/', { date_of_birth: dob }),
 };
 
 export const productsAPI = {
