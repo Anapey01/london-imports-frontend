@@ -23,6 +23,8 @@ interface User {
     is_superuser?: boolean;
     date_joined?: string;
     order_count?: number;
+    email_verified?: boolean;
+    date_of_birth?: string;
 }
 
 interface AuthState {
