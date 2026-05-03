@@ -76,10 +76,22 @@ export default function Navbar() {
 
                         {/* Middle: Brand Signature (Centered) */}
                         <div className="absolute left-1/2 -translate-x-1/2">
-                            <Link href="/" className="flex flex-col items-center group">
-                                <span className="text-xl font-serif font-atelier tracking-[-0.05em] text-content-primary group-hover:italic transition-all duration-700">
-                                    London&apos;s Imports
-                                </span>
+                            <Link href="/" className="flex items-center gap-6 group">
+                                <div className="relative w-11 h-11 border border-content-primary overflow-hidden">
+                                    <Image
+                                        src="/logo.jpg"
+                                        alt="London's Imports"
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
+                                </div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-2xl font-serif font-bold tracking-tighter text-content-primary group-hover:italic transition-all duration-700">
+                                        LONDON&apos;S
+                                    </span>
+                                    <span className="text-[9px] font-bold tracking-[0.3em] uppercase text-content-secondary italic">Imports</span>
+                                </div>
                             </Link>
                         </div>
 
@@ -115,8 +127,14 @@ export default function Navbar() {
                             <Menu className="w-5 h-5" strokeWidth={1} />
                         </button>
 
-                        <Link href="/" className="font-serif font-atelier text-lg tracking-tighter">
-                            London&apos;s
+                        <Link href="/" className="flex items-center gap-3">
+                            <div className="relative w-7 h-7 border border-content-primary overflow-hidden">
+                                <Image src="/logo.jpg" alt="Logo" fill className="object-cover" />
+                            </div>
+                            <div className="flex flex-col leading-none">
+                                <span className="text-xs font-serif font-bold tracking-tight text-content-primary leading-none">LONDON&apos;S</span>
+                                <span className="text-[7px] font-bold tracking-[0.1em] uppercase text-brand-emerald italic leading-none">Imports</span>
+                            </div>
                         </Link>
 
                         <button
