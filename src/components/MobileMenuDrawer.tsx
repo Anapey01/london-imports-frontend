@@ -273,9 +273,11 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     {/* PRODUCT DIRECTORY ACCORDION */}
                     <div className="mb-6">
                         <button
+                            type="button"
                             onClick={() => setProductsOpen(!productsOpen)}
                             className="w-full flex items-center justify-between p-4 group transition-all border-b border-border-standard"
-                            aria-expanded={productsOpen}
+                            aria-controls="products-accordion"
+                            {...({ "aria-expanded": productsOpen })}
                         >
                             <div className="flex items-center gap-6">
                                 <LayoutGrid className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
@@ -284,7 +286,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             {productsOpen ? <Minus className="w-3 h-3 text-content-primary" /> : <Plus className="w-3 h-3 text-content-secondary group-hover:text-content-primary" />}
                         </button>
                         {productsOpen && (
-                            <div className="bg-surface-card py-4 transition-all">
+                            <div id="products-accordion" className="bg-surface-card py-4 transition-all">
                                 {categories.map((cat: { id: string; name: string; slug: string }) => {
                                     const Icon = getCategoryIcon(cat.name);
                                     return (
@@ -306,9 +308,11 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     {/* SHOP PROTOCOLS ACCORDION */}
                     <div className="mb-6">
                         <button
+                            type="button"
                             onClick={() => setShopOpen(!shopOpen)}
                             className="w-full flex items-center justify-between p-4 group transition-all border-b border-border-standard"
-                            aria-expanded={shopOpen}
+                            aria-controls="shop-accordion"
+                            {...({ "aria-expanded": shopOpen })}
                         >
                             <div className="flex items-center gap-6">
                                 <Star className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
@@ -317,7 +321,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             {shopOpen ? <Minus className="w-3 h-3 text-content-primary" /> : <Plus className="w-3 h-3 text-content-secondary group-hover:text-content-primary" />}
                         </button>
                         {shopOpen && (
-                            <div className="bg-surface-card py-4">
+                            <div id="shop-accordion" className="bg-surface-card py-4">
                                 {SHOP_ITEMS.map((item) => (
                                     <Link 
                                         key={item.name}
@@ -336,9 +340,11 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                     {/* INSTITUTIONAL SUPPORT ACCORDION */}
                     <div className="mb-6">
                         <button
+                            type="button"
                             onClick={() => setSupportOpen(!supportOpen)}
                             className="w-full flex items-center justify-between p-4 group transition-all border-b border-border-standard"
-                            aria-expanded={supportOpen}
+                            aria-controls="support-accordion"
+                            {...({ "aria-expanded": supportOpen })}
                         >
                             <div className="flex items-center gap-6">
                                 <Shield className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
@@ -347,7 +353,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             {supportOpen ? <Minus className="w-3 h-3 text-content-primary" /> : <Plus className="w-3 h-3 text-content-secondary group-hover:text-content-primary" />}
                         </button>
                         {supportOpen && (
-                            <div className="bg-surface-card py-4">
+                            <div id="support-accordion" className="bg-surface-card py-4">
                                 {SUPPORT_ITEMS.map((item) => (
                                     <Link 
                                         key={item.name}

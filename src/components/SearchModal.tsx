@@ -1,10 +1,10 @@
 /**
  * London's Imports - Search Modal Component
- * Hardened for WCAG 'Robust' Compliance (4.1.2 & 4.1.3)
+ * Restored to stable modal structure with 'Atelier Big Space' refinements.
  */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
@@ -12,7 +12,6 @@ import { productsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 import { Search, X, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { trackSearch, trackViewSearchResults, trackSelectPromotion } from '@/lib/analytics';
-
 import { useUIStore } from '@/stores/uiStore';
 
 interface SearchModalProps {
@@ -55,7 +54,6 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
 
     const results = searchData?.data?.results || searchData?.data || [];
     
-    // 2. Track Search Success/Refinement
     useEffect(() => {
         if (debouncedQuery.length >= 2 && !isSearching) {
             trackSearch(debouncedQuery);
@@ -94,136 +92,104 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm sm:flex sm:justify-center sm:pt-20">
-            {/* Hidden Results Announcement (WCAG 4.1.3) */}
-            <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-                {debouncedQuery.length >= 2 && !isSearching 
-                    ? `${results.length} products found for ${debouncedQuery}`
-                    : isSearching ? "Searching..." : ""
-                }
-            </div>
-
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-start justify-center pt-10 sm:pt-24 px-4 overflow-y-auto">
             <div
-                className="w-full h-full sm:h-auto sm:max-w-2xl bg-surface sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200 border border-border-standard"
+                className="w-full max-w-4xl bg-surface rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-border-standard"
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="search-modal-title"
             >
-                <h2 id="search-modal-title" className="sr-only">Search our products</h2>
-
-                {/* Search Header - 'Perceivable' Hardened for Smaller Screens */}
-                <div className="flex items-center gap-1 sm:gap-2 p-2 sm:p-6 border-b border-border-standard bg-surface">
-                    <form 
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            if (query.trim().length >= 2) {
-                                handleRecordSearch(query);
-                                onClose();
-                                router.push(`/products?search=${encodeURIComponent(query.trim())}`);
-                            }
-                        }}
-                        className="flex-1 flex items-center bg-surface-card border border-border-standard rounded-lg px-2 py-2 sm:px-4 sm:py-3 focus-within:border-brand-emerald transition-colors min-w-0"
-                    >
-                        <Search className="w-4 h-4 text-content-secondary mr-1.5 sm:mr-3 flex-shrink-0" strokeWidth={1.5} />
-                        <label htmlFor="modal-search-input" className="sr-only">Keywords</label>
-                        <input
-                            id="modal-search-input"
-                            ref={inputRef}
-                            type="text"
-                            value={query}
-                            onChange={e => setQuery(e.target.value)}
-                            placeholder="Search products..."
-                            className="flex-1 bg-transparent border-none outline-none text-content-primary placeholder:text-content-secondary/40 text-sm sm:text-base font-medium min-w-0"
-                        />
-                        {query && (
-                            <button type="button" onClick={() => setQuery('')} className="p-1 text-content-secondary hover:text-content-primary institutional-focus flex-shrink-0" aria-label="Clear search terms">
-                                <X className="w-4 h-4" />
+                {/* ATELIER RETAIL HYBRID - PILL DESIGN */}
+                <div className="p-8 sm:p-12 border-b border-border-standard">
+                    <div className="flex items-center gap-6">
+                        <form 
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (query.trim().length >= 2) {
+                                    handleRecordSearch(query);
+                                    onClose();
+                                    router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                }
+                            }}
+                            className="flex-1 flex items-center bg-slate-100 dark:bg-white/5 rounded-full pl-6 pr-2 py-2 focus-within:ring-2 focus-within:ring-brand-emerald/20 transition-all"
+                        >
+                            <Search className="w-5 h-5 text-content-secondary mr-4 opacity-50" strokeWidth={2} />
+                            <input
+                                id="modal-search-input"
+                                ref={inputRef}
+                                type="text"
+                                value={query}
+                                onChange={e => setQuery(e.target.value)}
+                                placeholder="Search products, brands and categories"
+                                className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-content-primary placeholder:text-content-secondary/40 py-3"
+                            />
+                            {query && (
+                                <button type="button" onClick={() => setQuery('')} className="p-2 text-content-secondary hover:text-content-primary mr-2">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            )}
+                            <button 
+                                type="submit"
+                                className="bg-[#ff8a00] hover:bg-[#e67e00] text-white px-8 py-3 rounded-full text-sm font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all"
+                            >
+                                Search
                             </button>
-                        )}
-                    </form>
-
-                    <button
-                        onClick={onClose}
-                        className="text-content-secondary hover:text-content-primary px-1.5 sm:px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest institutional-focus flex-shrink-0 active:scale-95 transition-all"
-                        aria-label="Close search"
-                    >
-                        Cancel
-                    </button>
+                        </form>
+                        <button
+                            onClick={onClose}
+                            className="hidden lg:block text-content-secondary hover:text-content-primary text-[10px] font-black uppercase tracking-[0.4em] px-4"
+                        >
+                            Close
+                        </button>
+                    </div>
                 </div>
 
-                {/* Results Area */}
-                <div className="flex-1 overflow-y-auto bg-surface relative min-h-[300px]">
-                    {isSearching && (
-                        <div className="absolute top-0 left-0 right-0 h-0.5 z-10 overflow-hidden bg-transparent">
-                            <div className="h-full bg-brand-emerald animate-progress origin-left"></div>
-                        </div>
-                    )}
-
-                    <div className="p-4">
-                        {debouncedQuery.length >= 2 && !isSearching && results.length === 0 && (
-                            <div className="py-20 text-center">
-                                <Package className="w-12 h-12 text-content-secondary/20 mx-auto mb-4" strokeWidth={1} />
-                                <p className="text-lg font-bold text-content-primary mb-1 tracking-tight">No results found</p>
-                                <p className="text-sm text-content-secondary">Try a different keyword for &quot;{debouncedQuery}&quot;</p>
+                <div className="flex-1 overflow-y-auto max-h-[60vh]">
+                    <div className="p-8 sm:p-12">
+                        {isSearching && (
+                            <div className="py-12 text-center text-content-secondary animate-pulse text-sm uppercase tracking-widest">
+                                Searching Collections...
                             </div>
                         )}
 
-                        {/* Results List - 'Operable' Hardened Target Sizes */}
-                        {results.map((product: { id: number | string; slug: string; name: string; image?: string; price: number }, index: number) => (
-                            <button
-                                key={product.id}
-                                onClick={() => {
-                                    handleRecordSearch(query);
-                                    handleProductClick(product.slug);
-                                }}
-                                className="w-full flex items-center gap-5 p-4 mb-3 bg-surface-card rounded-xl border border-border-standard shadow-sm hover:shadow-diffusion transition-all text-left group institutional-focus"
-                                aria-label={`View ${product.name}, price ${formatPrice(product.price)}`}
-                            >
-                                <div className="w-16 h-16 bg-surface rounded-lg flex items-center justify-center flex-shrink-0 border border-border-standard relative overflow-hidden">
-                                    {product.image ? (
-                                        <Image 
-                                            src={product.image} 
-                                            alt={product.name} 
-                                            fill 
-                                            className="object-cover group-hover:scale-105 transition-transform duration-500" 
-                                            priority={index < 3}
-                                        />
-                                    ) : (
-                                        <Package className="w-6 h-6 text-content-secondary opacity-20" />
-                                    )}
-                                </div>
-                                <div className="flex-1 min-w-0" aria-hidden="true">
-                                    <h4 className="font-bold text-content-primary truncate tracking-tight">{product.name}</h4>
-                                    <p className="text-brand-emerald font-black text-sm mt-1">{formatPrice(product.price)}</p>
-                                </div>
-                                <ArrowRight className="w-4 h-4 text-content-secondary group-hover:text-brand-emerald group-hover:translate-x-1 transition-all" strokeWidth={2} aria-hidden="true" />
-                            </button>
-                        ))}
+                        {!isSearching && results.length > 0 && (
+                            <div className="space-y-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary mb-8">Results</h3>
+                                {results.map((product: any) => (
+                                    <button
+                                        key={product.id}
+                                        onClick={() => handleProductClick(product.slug)}
+                                        className="w-full flex items-center gap-6 p-4 rounded-2xl hover:bg-surface-card border border-transparent hover:border-border-standard transition-all text-left group"
+                                    >
+                                        <div className="w-20 h-20 bg-surface-card rounded-xl overflow-hidden border border-border-standard flex-shrink-0">
+                                            {product.image ? (
+                                                <Image src={product.image} alt={product.name} width={80} height={80} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center opacity-20"><Package /></div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-lg font-bold text-content-primary truncate">{product.name}</h4>
+                                            <p className="text-brand-emerald font-black mt-1">{formatPrice(product.price)}</p>
+                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-content-secondary group-hover:text-brand-emerald group-hover:translate-x-2 transition-all" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
-                        {/* Trending Searches - 'Signature Protocol' Style */}
                         {query.length < 2 && (
-                            <div className="mt-6 px-2">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <TrendingUp className="w-4 h-4 text-brand-emerald" strokeWidth={2} aria-hidden="true" />
-                                    <p className="text-[10px] font-black text-content-secondary uppercase tracking-[0.3em]">
-                                        Market Pulse
-                                    </p>
+                            <div>
+                                <div className="flex items-center gap-3 mb-8">
+                                    <TrendingUp className="w-4 h-4 text-brand-emerald" />
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Market Pulse</h3>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
                                     {(trendingSearches.length > 0 ? trendingSearches.map((s:any) => s.query) : ['Solar Panels', 'Electronics', 'Fashion', 'Kitchenware']).map((term: string) => (
                                         <button
                                             key={term}
-                                            onClick={() => {
-                                                setQuery(term);
-                                                trackSelectPromotion({
-                                                    id: `trending_${term.toLowerCase().replace(/\s+/g, '_')}`,
-                                                    name: term,
-                                                    position: 'search_modal_pulse'
-                                                });
-                                            }}
-                                            className="px-5 py-2.5 bg-surface-card border border-border-standard rounded-full text-[11px] font-black uppercase tracking-widest text-content-secondary hover:border-brand-emerald hover:text-brand-emerald hover:bg-surface transition-all institutional-focus shadow-sm"
-                                            aria-label={`Search for ${term}`}
+                                            onClick={() => setQuery(term)}
+                                            className="px-6 py-3 bg-surface-card border border-border-standard rounded-full text-xs font-bold text-content-secondary hover:border-brand-emerald hover:text-brand-emerald transition-all shadow-sm"
                                         >
                                             {term}
                                         </button>

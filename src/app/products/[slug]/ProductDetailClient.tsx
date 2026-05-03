@@ -300,10 +300,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         }
     }, [initialProduct]);
 
-    const refreshProductData = useCallback(() => {
-        router.refresh();
-    }, [router]);
-
     // Derived state for price and stock
     const [currentPrice, setCurrentPrice] = useState(initialProduct?.price || 0);
     const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);

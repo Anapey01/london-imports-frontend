@@ -7,31 +7,31 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import ThemeToggle from './ThemeToggle';
 import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
-import { trackViewSearchResults } from '@/lib/analytics';
-import { Search, Menu, Heart, User, UserPlus, Zap, ShoppingBag } from 'lucide-react';
+import { Search, Menu, User, ShoppingBag } from 'lucide-react';
 
 // Lazy load heavy interactive components
 const SearchModal = dynamic(() => import('./SearchModal'));
 const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
 
 export default function Navbar() {
+    const router = useRouter();
+    const pathname = usePathname();
     const { isAuthenticated, user } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
-    const wishlistItems = useWishlistStore(state => state.items);
-    const { isSearchModalOpen, isMobileMenuOpen, setSearchModalOpen, setMobileMenuOpen } = useUIStore();
+    const { isSearchModalOpen, isMobileMenuOpen, setMobileMenuOpen, setSearchModalOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setMounted(true);
         }, 100);
-        // Only fetch cart if user is authenticated — avoids a 401 on every guest page load
         if (isAuthenticated) {
             fetchCart();
         }
@@ -42,42 +42,26 @@ export default function Navbar() {
         return (
             <nav className="border-b sticky top-0 z-40 bg-white border-slate-50">
                 <div className="h-14 md:h-20 w-full flex items-center px-4 max-w-7xl mx-auto">
-                    {/* Placeholder content to hold height */}
                 </div>
             </nav>
         );
     }
 
+    // Determine if mobile search should be shown
+    const isHomePage = pathname === '/';
+    const isShopPage = pathname?.startsWith('/products');
+    const showMobileSearch = isHomePage || isShopPage;
+
     return (
         <>
-            <nav className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-slate-50 dark:border-slate-900 transition-all duration-500">
-                {/* 1. ATELIER HEADER (Desktop) */}
-                <div className="hidden md:block max-w-[1800px] mx-auto px-12">
-                    <div className="flex justify-between items-center h-20">
-                        
-                        {/* Left: Navigation Core */}
-                        <div className="flex items-center gap-12">
-                            <button
-                                onClick={() => setMobileMenuOpen(true)}
-                                className="flex items-center gap-4 group uppercase tracking-[0.4em] text-[9px] font-black text-content-secondary hover:text-content-primary transition-all"
-                            >
-                                <Menu className="w-4 h-4" strokeWidth={1} />
-                                <span>Index</span>
-                            </button>
-
-                            <button 
-                                onClick={() => setSearchModalOpen(true)}
-                                className="flex items-center gap-4 group uppercase tracking-[0.4em] text-[9px] font-black text-content-secondary hover:text-content-primary transition-all"
-                            >
-                                <Search className="w-4 h-4" strokeWidth={1} />
-                                <span>Search</span>
-                            </button>
-                        </div>
-
-                        {/* Middle: Brand Signature (Centered) */}
-                        <div className="absolute left-1/2 -translate-x-1/2">
-                            <Link href="/" className="flex items-center gap-6 group">
-                                <div className="relative w-11 h-11 border border-content-primary overflow-hidden">
+            <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-50 dark:border-slate-900 transition-all duration-500">
+                <div className="max-w-[1800px] mx-auto px-4 md:px-12">
+                    {/* Tier 1: Logo & Actions */}
+                    <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">
+                        {/* Left Group: Brand & Index */}
+                        <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
+                            <Link href="/" className="flex items-center gap-4 group">
+                                <div className="relative w-9 h-9 md:w-11 md:h-11 border border-content-primary overflow-hidden">
                                     <Image
                                         src="/logo.jpg"
                                         alt="London's Imports"
@@ -87,67 +71,112 @@ export default function Navbar() {
                                     />
                                 </div>
                                 <div className="flex flex-col leading-none">
-                                    <span className="text-2xl font-serif font-bold tracking-tighter text-content-primary group-hover:italic transition-all duration-700">
+                                    <span className="text-xl md:text-2xl font-serif font-bold tracking-tighter text-content-primary group-hover:italic transition-all duration-700">
                                         LONDON&apos;S
                                     </span>
-                                    <span className="text-[9px] font-bold tracking-[0.3em] uppercase text-content-secondary italic">Imports</span>
+                                    <span className="text-[8px] md:text-[9px] font-bold tracking-[0.3em] uppercase text-brand-emerald italic">Imports</span>
                                 </div>
                             </Link>
+
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="hidden lg:flex items-center gap-3 group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all"
+                            >
+                                <Menu className="w-4 h-4" strokeWidth={1} />
+                                <span>Index</span>
+                            </button>
                         </div>
 
-                        {/* Right: Personal & Cart */}
-                        <div className="flex items-center gap-12">
-                            <ThemeToggle />
+                        {/* Center Group: Search (Dominant) */}
+                        <div className="hidden md:flex flex-1 max-w-3xl">
+                            <form 
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const form = e.currentTarget;
+                                    const query = (form.elements.namedItem('search') as HTMLInputElement).value;
+                                    if (query.trim().length >= 2) {
+                                        router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                    }
+                                }}
+                                className="relative flex items-center w-full bg-slate-50 dark:bg-white/5 border border-border-standard rounded-full px-8 py-2.5 focus-within:border-content-primary focus-within:bg-white transition-all group"
+                            >
+                                <Search className="w-4 h-4 text-content-secondary mr-4 opacity-50" strokeWidth={1.5} />
+                                <input
+                                    name="search"
+                                    type="text"
+                                    placeholder="Search products, brands and categories"
+                                    className="flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/30 py-1"
+                                />
+                                <button 
+                                    type="submit"
+                                    className="bg-content-primary text-white px-8 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-brand-emerald transition-all active:scale-95"
+                                >
+                                    Search
+                                </button>
+                            </form>
+                        </div>
 
-                            <Link href={isAuthenticated ? "/profile" : "/login"} className="group flex items-center gap-3 uppercase tracking-[0.4em] text-[9px] font-black text-content-secondary hover:text-content-primary transition-all">
-                                <span>{isAuthenticated ? (user?.first_name || 'Profile') : 'Sign In'}</span>
-                                <User className="w-4 h-4" strokeWidth={1} />
-                            </Link>
+                        {/* Right Group: Personal Actions */}
+                        <div className="flex items-center gap-6 md:gap-10 flex-shrink-0">
+                            <div className="flex items-center gap-6 md:gap-10">
+                                <Link href={isAuthenticated ? "/profile" : "/login"} className="hidden md:flex items-center gap-3 group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all">
+                                    <User className="w-4 h-4" strokeWidth={1} />
+                                    <span className="hidden xl:block">{isAuthenticated ? (user?.first_name || 'Profile') : 'Sign In'}</span>
+                                </Link>
 
-                            <Link href="/cart" className="group flex items-center gap-3 uppercase tracking-[0.4em] text-[9px] font-black text-content-secondary hover:text-content-primary transition-all">
-                                <div className="relative">
-                                    <ShoppingBag className="w-4 h-4" strokeWidth={1} />
-                                    {itemCount > 0 && (
-                                        <span className="absolute -top-2 -right-2 text-[8px] font-black text-brand-emerald">{itemCount}</span>
-                                    )}
-                                </div>
-                                <span className="hidden xl:block">Cart</span>
-                            </Link>
+                                <Link href="/cart" className="hidden md:flex items-center gap-3 relative group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all">
+                                    <div className="relative">
+                                        <ShoppingBag className="w-4 h-4" strokeWidth={1} />
+                                        {itemCount > 0 && (
+                                            <span className="absolute -top-1 -right-1.5 bg-brand-emerald text-white text-[7px] w-3 h-3 rounded-full flex items-center justify-center font-bold">
+                                                {itemCount}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className="hidden xl:block">Cart</span>
+                                </Link>
+
+                                <button
+                                    onClick={() => setMobileMenuOpen(true)}
+                                    className="md:hidden w-10 h-10 flex items-center justify-center text-content-primary"
+                                >
+                                    <Menu className="w-6 h-6" strokeWidth={1} />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* 2. MOBILE HEADER */}
-                <div className="md:hidden">
-                    <div className="flex items-center justify-between px-6 h-20">
-                        <button
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="w-10 h-10 flex items-center justify-center text-content-primary"
+                    {/* Tier 2: Mobile Search (Visible only on mobile and specific pages) */}
+                    {showMobileSearch && (
+                        <div className="md:hidden pb-4">
+                        <form 
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                const form = e.currentTarget;
+                                const query = (form.elements.namedItem('search') as HTMLInputElement).value;
+                                if (query.trim().length >= 2) {
+                                    router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                }
+                            }}
+                            className="relative flex items-center bg-slate-50 border border-border-standard rounded-full px-5 py-1.5 focus-within:border-content-primary transition-all"
                         >
-                            <Menu className="w-5 h-5" strokeWidth={1} />
-                        </button>
-
-                        <Link href="/" className="flex items-center gap-3">
-                            <div className="relative w-7 h-7 border border-content-primary overflow-hidden">
-                                <Image src="/logo.jpg" alt="Logo" fill className="object-cover" />
-                            </div>
-                            <div className="flex flex-col leading-none">
-                                <span className="text-xs font-serif font-bold tracking-tight text-content-primary leading-none">LONDON&apos;S</span>
-                                <span className="text-[7px] font-bold tracking-[0.1em] uppercase text-brand-emerald italic leading-none">Imports</span>
-                            </div>
-                        </Link>
-
-                        <button
-                            onClick={() => setSearchModalOpen(true)}
-                            className="w-10 h-10 flex items-center justify-center text-content-primary"
-                        >
-                            <Search className="w-5 h-5" strokeWidth={1} />
-                        </button>
+                            <Search className="w-4 h-4 text-content-secondary mr-3 opacity-50" strokeWidth={1.5} />
+                            <input
+                                name="search"
+                                type="text"
+                                placeholder="Search products..."
+                                className="flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/40 py-1"
+                            />
+                            <button 
+                                type="submit"
+                                className="bg-content-primary text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest"
+                            >
+                                Search
+                            </button>
+                        </form>
                     </div>
+                    )}
                 </div>
-
-                {/* Search Modal Protocol */}
-                <SearchModal isOpen={isSearchModalOpen} onClose={() => setSearchModalOpen(false)} />
             </nav>
 
             {/* Mobile Menu */}

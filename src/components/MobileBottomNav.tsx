@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
-import { Home, Search, ShoppingBag, User, Heart } from 'lucide-react';
+import { Home, LayoutGrid, ShoppingBag, User, Heart } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 
 export default function MobileBottomNav() {
@@ -21,7 +21,7 @@ export default function MobileBottomNav() {
 
     const navItems = [
         { name: 'Home', href: '/', icon: Home },
-        { name: 'Shop', href: '#search', icon: Search, isSearch: true },
+        { name: 'Shop', href: '/products', icon: LayoutGrid },
         { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: wishlistItems.length },
         { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: itemCount },
         { name: 'Profile', href: isAuthenticated ? '/profile' : '/login', icon: User },
@@ -36,15 +36,14 @@ export default function MobileBottomNav() {
             <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
                 {navItems.map((item) => {
                     const isActive = item.href === '/' ? pathname === '/' : (item.href !== '#' && pathname?.startsWith(item.href));
-                    const isSearch = item.icon === Search;
 
                     const content = (
                         <>
                             {/* Icon container */}
                             <div className="relative">
                                 <item.icon
-                                    className={`w-5 h-5 transition-colors ${isActive || (isSearch && isSearchModalOpen) ? 'text-brand-emerald' : 'text-content-secondary group-hover:text-content-primary'}`}
-                                    strokeWidth={(isActive || (isSearch && isSearchModalOpen)) ? 2 : 1.5}
+                                    className={`w-5 h-5 transition-colors ${isActive ? 'text-brand-emerald' : 'text-content-secondary group-hover:text-content-primary'}`}
+                                    strokeWidth={isActive ? 2 : 1.5}
                                 />
 
                                 {/* Badge for cart/wishlist */}
@@ -56,25 +55,12 @@ export default function MobileBottomNav() {
                             </div>
 
                             {/* Label - Hardened for Perceivable Contrast */}
-                            <span className={`text-[9px] mt-1.5 font-bold uppercase tracking-[0.2em] transition-colors ${(isActive || (isSearch && isSearchModalOpen)) ? 'text-brand-emerald font-black' : 'text-content-secondary group-hover:text-content-primary'}`}>
+                            <span className={`text-[9px] mt-1.5 font-bold uppercase tracking-[0.2em] transition-colors ${isActive ? 'text-brand-emerald font-black' : 'text-content-secondary group-hover:text-content-primary'}`}>
                                 {item.name}
                             </span>
                         </>
                     );
 
-                    if (item.isSearch) {
-                        return (
-                            <button
-                                key={item.name}
-                                onClick={() => setSearchModalOpen(true)}
-                                className={`flex flex-col items-center justify-center flex-1 py-1 group relative transition-all institutional-focus rounded-lg outline-none tap-highlight-none ${(isActive || isSearchModalOpen) ? 'text-brand-emerald' : 'text-content-secondary'}`}
-                                aria-label={item.name}
-                                aria-expanded={isSearchModalOpen}
-                            >
-                                {content}
-                            </button>
-                        );
-                    }
 
                     return (
                         <Link
