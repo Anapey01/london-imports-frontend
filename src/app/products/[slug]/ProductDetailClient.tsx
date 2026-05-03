@@ -218,7 +218,7 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
                     <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-surface px-6 text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald/40 italic">
                         The Story
                     </span>
-                    <p className="text-2xl lg:text-4xl font-serif font-atelier text-content-primary leading-[1.1] tracking-tighter text-center text-balance max-w-4xl mx-auto italic">
+                    <p className="text-2xl lg:text-3xl font-serif font-medium text-content-primary leading-[1.3] tracking-tight text-center text-balance max-w-4xl mx-auto">
                         &ldquo;{data.narrative}&rdquo;
                     </p>
                 </div>
