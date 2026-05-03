@@ -248,8 +248,8 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
             {specs.length > 0 && (
                 <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-surface shadow-sm">
                     <div className="bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary">
-                            Technical Specifications
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald">
+                            Provenance & Details
                         </span>
                     </div>
                     <div className="divide-y divide-slate-50 dark:divide-slate-900">
@@ -719,21 +719,21 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 </p>
                             )}
                             
-                            {/* 2. Pricing Architecture (Solid Black) */}
-                            <div className="flex items-end flex-wrap gap-6 pt-4">
-                                <span className="text-5xl lg:text-7xl font-serif font-medium text-content-primary tracking-tighter tabular-nums leading-none">
+                            {/* 2. Pricing Architecture (Elegant & Subtle) */}
+                            <div className="flex items-baseline flex-wrap gap-4 pt-2">
+                                <span className="text-3xl lg:text-4xl font-serif font-medium text-content-primary tracking-tighter tabular-nums leading-none">
                                     {formatPrice(currentPrice)}
                                 </span>
-                                <span className="text-[10px] font-medium uppercase tracking-[0.25em] text-content-secondary mb-3 opacity-60 italic">
-                                    (minus shipping fees)
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-emerald mb-0.5 opacity-60">
+                                    Excl. Delivery
                                 </span>
                                 
                                 <button 
                                     onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="flex items-center gap-3 py-2 hover:opacity-60 transition-all ml-auto sm:ml-0"
+                                    className="flex items-center gap-3 py-1 hover:opacity-60 transition-all ml-auto"
                                 >
-                                    <StarRating initialRating={Number(product.rating ?? 0)} readOnly size="sm" />
-                                    <span className="text-[10px] font-black text-content-secondary tracking-widest tabular-nums pb-0.5">
+                                    <StarRating initialRating={Number(product.rating ?? 0)} readOnly size="xs" />
+                                    <span className="text-[9px] font-black text-content-secondary tracking-widest tabular-nums">
                                         ({Number(product.rating ?? 0).toFixed(1)})
                                     </span>
                                 </button>
