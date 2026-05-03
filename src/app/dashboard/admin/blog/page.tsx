@@ -98,6 +98,17 @@ export default function AdminBlogPage() {
         setAlerts(prev => prev.filter(alert => alert.id !== id));
     };
 
+    const loadPosts = async () => {
+        try {
+            const response = await adminAPI.blogPosts();
+            setPosts(response.data.results || response.data || []);
+        } catch (err) {
+            console.error('Failed to load blog posts:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         loadPosts();
         
