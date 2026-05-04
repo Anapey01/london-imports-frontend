@@ -116,7 +116,6 @@ export const useCartStore = create<CartState>()((set, get) => ({
                         console.info("[CartStore] Syncing guest items to server...", guestItems.length);
                         
                         // Add each guest item to server cart SEQUENTIALLY to prevent race conditions
-                        // This avoids multiple simultaneous get_cart calls creating duplicate orders
                         for (const item of guestItems) {
                             try {
                                 await ordersAPI.addToCart(
@@ -125,18 +124,23 @@ export const useCartStore = create<CartState>()((set, get) => ({
                                     item.selected_size || "", 
                                     item.selected_color || ""
                                 );
-                            } catch (e) {
-                                console.error(`[CartStore] Failed to merge item ${item.product.id}:`, e);
-                                // Continue with other items even if one fails
+                            } catch (e: any) {
+                                console.error(`[CartStore] Failed to sync item ${item.product.id}:`, e.response?.data || e.message);
+                                // If we hit a 401, stop merging to prevent infinite loops
+                                if (e.response?.status === 401) {
+                                    set({ isMerging: false });
+                                    return;
+                                }
                             }
                         }
 
-                        // ONLY clear local guest state AFTER successful sync
+                        // ONLY clear local guest state AFTER successful sync attempt
                         localStorage.removeItem('guest_cart');
                         set({ guestItems: [] });
+                        console.info("[CartStore] Sync completed. Reloading server cart...");
                     }
                 } catch (e) {
-                    console.error("[CartStore] Merge failed:", e);
+                    console.error("[CartStore] Merge process encountered a fatal error:", e);
                 } finally {
                     set({ isMerging: false });
                 }

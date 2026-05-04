@@ -177,6 +177,16 @@ function CheckoutPage() {
         }
     }, [isAuthenticated, fetchCart]);
 
+    // Sync Guard: If we are logged in but still have guest items, force a re-fetch/sync
+    // This prevents "Ghost Items" (items visible in UI but unknown to server)
+    const { guestItems, isMerging } = useCartStore();
+    useEffect(() => {
+        if (isAuthenticated && guestItems.length > 0 && !isMerging && !cartLoading) {
+            console.info("[Checkout] Local items detected in authenticated session. Triggering high-priority sync...");
+            fetchCart();
+        }
+    }, [isAuthenticated, guestItems.length, isMerging, cartLoading, fetchCart]);
+
     useEffect(() => {
         if (cart && cart.items.length > 0 && !hasTrackedCheckout.current) {
             trackBeginCheckout(cart);
