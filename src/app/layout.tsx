@@ -43,7 +43,7 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-montserrat",
-  preload: true,
+  preload: false, // Avoid preloading warnings if not used in first paint
 });
 
 export const metadata: Metadata = {
@@ -160,12 +160,9 @@ export default async function RootLayout({
                 'personalization_storage': 'denied',
                 'wait_for_update': 500
               });
-            `,
-          }}
         />
-        <GoogleAnalyticsTag gaId={GA_MEASUREMENT_ID} />
       </head>
-      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`}>
+      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
         <SkipToContent />
         <Suspense fallback={null}>
           <GoogleAnalytics />
@@ -181,7 +178,7 @@ export default async function RootLayout({
           <ReloadPrompt />
         </Providers>
         <Analytics />
-
+        <GoogleAnalyticsTag gaId={GA_MEASUREMENT_ID} />
       </body>
     </html>
   );
