@@ -70,7 +70,7 @@ type CheckoutViewData = {
 function CheckoutPage() {
     const router = useRouter();
     const formRef = useRef<HTMLFormElement>(null);
-    const { cart, fetchCart, clearCart, selectedItemIds } = useCartStore();
+    const { cart, fetchCart, clearCart, selectedItemIds, isLoading: cartLoading, isMerging } = useCartStore();
     const { user, isAuthenticated, isLoading: authLoading, fetchUser } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -130,6 +130,19 @@ function CheckoutPage() {
         }
         
         if (cart) return cart as CheckoutViewData;
+        
+        // Fallback for Guest Items (if not authenticated or during sync)
+        const { guestItems } = useCartStore.getState();
+        if (guestItems.length > 0) {
+            const subtotal = guestItems.reduce((sum, i) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
+            return {
+                items: guestItems,
+                subtotal: subtotal,
+                total: subtotal, // Shipping calculated at next step
+                delivery_fee: 0,
+            } as CheckoutViewData;
+        }
+
         return { items: [], total: 0, subtotal: 0, delivery_fee: 0 } as CheckoutViewData;
     }, [checkoutOrder, cart, searchParams]);
 
@@ -261,13 +274,16 @@ function CheckoutPage() {
     }, [activeStep]);
 
     useEffect(() => {
-        if (authLoading || isLoading) return;
+        // Prevent redirecting while data is still coming in
+        if (authLoading || cartLoading || isMerging || isLoading) return;
 
+        // Only redirect if we are certain the cart is empty after loading
         if (!checkoutOrder && !orderNumberParam && (currentOrderData.items?.length || 0) === 0) {
+            console.info("[Checkout] Cart empty after load. Returning to basket.");
             router.push('/cart');
             return;
         }
-    }, [currentOrderData.items, authLoading, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
+    }, [currentOrderData.items, authLoading, cartLoading, isMerging, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
 
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
