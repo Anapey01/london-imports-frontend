@@ -62,7 +62,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                 <div className="p-6 sm:p-7 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                         <div>
-                            <label htmlFor="ship-address" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">Full Street Address</label>
+                            <label htmlFor="ship-address" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Full Street Address</label>
                             <input
                                 id="ship-address"
                                 type="text"
@@ -72,12 +72,12 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
                                 placeholder="E.G. HOUSE NUMBER / STREET NAME"
                                 required
-                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider institutional-focus"
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="ship-city" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">City / Town</label>
+                            <label htmlFor="ship-city" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">City / Town</label>
                             <input
                                 id="ship-city"
                                 type="text"
@@ -87,38 +87,42 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
                                 placeholder="ACCRA"
                                 required
-                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider institutional-focus"
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="ship-region" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">Region</label>
-                            <select
-                                id="ship-region"
-                                name="region"
-                                autoComplete="shipping address-level1"
-                                value={delivery.region}
-                                onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
-                                required
-                                title="Select Delivery Region"
-                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all nuclear-text font-black text-sm tracking-wider appearance-none cursor-pointer institutional-focus"
-                            >
-                                <option value="">SELECT REGION</option>
-                                <option value="Greater Accra">Greater Accra</option>
-                                <option value="Ashanti">Ashanti</option>
-                                <option value="Western">Western</option>
-                                <option value="Central">Central</option>
-                                <option value="Eastern">Eastern</option>
-                                <option value="Northern">Northern</option>
-                                <option value="Volta">Volta</option>
-                                <option value="Upper East">Upper East</option>
-                                <option value="Upper West">Upper West</option>
-                                <option value="Bono">Bono</option>
-                            </select>
+                            <label htmlFor="ship-region" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Region</label>
+                            <div className="relative">
+                                <select
+                                    id="ship-region"
+                                    name="region"
+                                    autoComplete="shipping address-level1"
+                                    value={delivery.region}
+                                    onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
+                                    required
+                                    className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight appearance-none cursor-pointer"
+                                >
+                                    <option value="">SELECT REGION</option>
+                                    <option value="Greater Accra">Greater Accra</option>
+                                    <option value="Ashanti">Ashanti</option>
+                                    <option value="Western">Western</option>
+                                    <option value="Central">Central</option>
+                                    <option value="Eastern">Eastern</option>
+                                    <option value="Northern">Northern</option>
+                                    <option value="Volta">Volta</option>
+                                    <option value="Upper East">Upper East</option>
+                                    <option value="Upper West">Upper West</option>
+                                    <option value="Bono">Bono</option>
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
-                            <label htmlFor="ship-gps" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">GHANA POST GPS (OPTIONAL)</label>
+                            <label htmlFor="ship-gps" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Ghana Post GPS (Optional)</label>
                             <input
                                 id="ship-gps"
                                 type="text"
@@ -126,22 +130,22 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 value={delivery.delivery_gps || ''}
                                 onChange={(e) => setDelivery({ ...delivery, delivery_gps: e.target.value })}
                                 placeholder="GA-183-9023"
-                                className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider font-mono uppercase institutional-focus"
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-[0.2em] font-mono uppercase"
                             />
                         </div>
 
                         <div className="md:col-span-2">
-                            <label htmlFor="ship-notes" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.3em] mb-2">Delivery Notes</label>
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                                    <textarea
-                                        id="ship-notes"
-                                        name="notes"
-                                        value={delivery.notes}
-                                        onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
-                                        rows={1}
-                                        className="w-full bg-transparent border-0 border-b border-border-standard py-2 focus:border-content-primary outline-none transition-all text-content-primary font-black text-sm placeholder:opacity-40 tracking-wider resize-none italic institutional-focus"
-                                        placeholder="LEAVE WITH SECURITY / CALL ON ARRIVAL..."
-                                    />
+                            <label htmlFor="ship-notes" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Delivery Notes</label>
+                            <div className="flex flex-col gap-4">
+                                <textarea
+                                    id="ship-notes"
+                                    name="notes"
+                                    value={delivery.notes}
+                                    onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
+                                    rows={3}
+                                    className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight resize-none italic"
+                                    placeholder="Leave with security / Call on arrival..."
+                                />
                                 {hasAddress && (
                                     <button 
                                         type="button"
