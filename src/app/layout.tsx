@@ -160,6 +160,8 @@ export default async function RootLayout({
                 'personalization_storage': 'denied',
                 'wait_for_update': 500
               });
+            `,
+          }}
         />
       </head>
       <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
