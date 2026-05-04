@@ -26,6 +26,7 @@ const withPWA = withPWAInit({
           url.origin.includes('google-analytics.com') ||
           url.origin.includes('googletagmanager.com') ||
           url.origin.includes('google.com') ||
+          url.origin.includes('google.com.gh') ||
           url.origin.includes('gstatic.com') ||
           url.origin.includes('sentry.io') ||
           url.origin.includes('vercel.live'),
@@ -114,9 +115,9 @@ const isDev = process.env.NODE_ENV === "development";
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.gstatic.com https://accounts.google.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.google.com.gh https://*.gstatic.com https://accounts.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com https://accounts.google.com",
-  `img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
+  `img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
   "font-src 'self' https://fonts.gstatic.com",
   `connect-src 'self' https://res.cloudinary.com https://london-imports-api.onrender.com http://127.0.0.1:8000 http://localhost:8000 https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://vercel.live https://*.wikimedia.org`,
   "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live https://accounts.google.com",

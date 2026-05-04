@@ -8,17 +8,15 @@ import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, api } from '@/lib/api';
 import { siteConfig } from '@/config/site';
-import { useAuthStore } from '@/stores/authStore';
 import imageCompression from 'browser-image-compression';
 import Image from 'next/image';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence, motion, Reorder } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { 
-    Plus, Search, Filter, MoreVertical, Edit2, Trash2, 
-    Globe, Eye, User, Calendar, Clock, ChevronRight, 
-    Layout, Info, Loader2, Sparkles, AlertTriangle, 
-    Image as ImageIcon, Type, MoveUp, MoveDown, Save, 
+    Plus, Trash2, 
+    Loader2, Sparkles, 
+    Image as ImageIcon, MoveUp, MoveDown, 
     X as CloseIcon 
 } from 'lucide-react';
 
@@ -92,7 +90,12 @@ const CanvasImageBlock = memo(({
         <div className="relative group/image-block">
             {section.content || section.previewUrl ? (
                 <div className="relative w-full aspect-[16/9] bg-slate-50 border border-slate-100 overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 group-hover/image-block:shadow-2xl group-hover/image-block:shadow-slate-200">
-                    <img src={section.previewUrl || section.content} alt="" className="w-full h-full object-cover" />
+                    <Image 
+                        src={section.previewUrl || section.content} 
+                        alt="Section content" 
+                        fill
+                        className="object-cover" 
+                    />
                     <label className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover/image-block:opacity-100 transition-all flex items-center justify-center cursor-pointer">
                         <span className="text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white px-6 py-3">Replace Framework</span>
                         <input 
@@ -174,6 +177,7 @@ export default function AdminBlogPage() {
     const [sections, setSections] = useState<Section[]>([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [draftFound, setDraftFound] = useState<{ title: string; date: string } | null>(null);
 
     const [confirmModal, setConfirmModal] = useState<{
@@ -219,7 +223,7 @@ export default function AdminBlogPage() {
         if (savedDraft) {
             try {
                 const { formData: draftData, sections: draftSections, last_updated } = JSON.parse(savedDraft);
-                const hasContent = draftData.title || draftData.excerpt || (draftSections && draftSections.some((s: any) => s.content.trim()));
+                const hasContent = draftData.title || draftData.excerpt || (draftSections && draftSections.some((s: Section) => s.content.trim()));
                 
                 if (!showModal && hasContent) {
                     setDraftFound({ 
@@ -506,12 +510,12 @@ export default function AdminBlogPage() {
                 const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
                 setFormData(draftData);
                 // Merge draft sections but keep image blocks as placeholders since files weren't saved
-                setSections(draftSections.map((s: any) => ({
+                setSections(draftSections.map((s: Section) => ({
                     ...s,
                     previewUrl: s.type === 'image' ? '' : undefined
                 })));
                 addAlert('New article draft restored.', 'info');
-            } catch (e) {
+            } catch {
                 setSections([{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }]);
             }
         } else {
@@ -549,7 +553,7 @@ export default function AdminBlogPage() {
         const savedDraft = localStorage.getItem(draftKey);
         if (savedDraft) {
             try {
-                const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
+                const { formData: draftData } = JSON.parse(savedDraft);
                 // We could prompt here, but for now we'll just restore if it looks more recent?
                 // Or just always restore if it exists.
                 setFormData(draftData);
@@ -856,6 +860,8 @@ export default function AdminBlogPage() {
                                                         <button 
                                                             onClick={() => moveSection(index, 'up')}
                                                             disabled={index === 0}
+                                                            title="Move Section Up"
+                                                            aria-label="Move Section Up"
                                                             className="p-1.5 rounded-full text-slate-300 hover:text-slate-900 transition-colors disabled:opacity-0"
                                                         >
                                                             <MoveUp className="w-3.5 h-3.5" />
@@ -863,6 +869,8 @@ export default function AdminBlogPage() {
                                                         <div className="w-[1px] flex-1 bg-slate-100" />
                                                         <button 
                                                             onClick={() => removeSection(section.id)}
+                                                            title="Remove Section"
+                                                            aria-label="Remove Section"
                                                             className="p-1.5 rounded-full text-slate-200 hover:text-red-500 transition-colors"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
@@ -871,6 +879,8 @@ export default function AdminBlogPage() {
                                                         <button 
                                                             onClick={() => moveSection(index, 'down')}
                                                             disabled={index === sections.length - 1}
+                                                            title="Move Section Down"
+                                                            aria-label="Move Section Down"
                                                             className="p-1.5 rounded-full text-slate-300 hover:text-slate-900 transition-colors disabled:opacity-0"
                                                         >
                                                             <MoveDown className="w-3.5 h-3.5" />
