@@ -9,6 +9,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, api } from '@/lib/api';
 import { siteConfig } from '@/config/site';
 import { useAuthStore } from '@/stores/authStore';
+import imageCompression from 'browser-image-compression';
 import Image from 'next/image';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -317,20 +318,52 @@ export default function AdminBlogPage() {
 
     const handleSubmit = async () => {
         setSaving(true);
+        setUploadProgress(0);
         try {
-            // First, start all image uploads in parallel
-            const uploadPromises = sections.map(async (section) => {
+            // Options for image compression
+            const compressionOptions = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true,
+                initialQuality: 0.8
+            };
+
+            // Track individual progress for each upload
+            const totalTasks = sections.filter(s => s.type === 'image' && s.file).length + 1; // +1 for the main request
+            const taskProgress = new Array(totalTasks).fill(0);
+
+            const updateOverallProgress = () => {
+                const average = taskProgress.reduce((a, b) => a + b, 0) / totalTasks;
+                setUploadProgress(Math.round(average));
+            };
+
+            // First, start all image uploads in parallel with compression
+            const uploadPromises = sections.map(async (section, index) => {
                 if (section.type === 'image' && section.file) {
                     try {
+                        // Compress before upload
+                        const compressedFile = await imageCompression(section.file, compressionOptions);
+                        
                         const formData = new FormData();
-                        formData.append('upload', section.file);
+                        formData.append('upload', compressedFile);
+                        
                         const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
                         const response = await api.post(`${rootUrl}/ckeditor/upload/`, formData, {
-                            headers: { 'Content-Type': 'multipart/form-data' }
+                            headers: { 'Content-Type': 'multipart/form-data' },
+                            onUploadProgress: (progressEvent) => {
+                                if (progressEvent.total) {
+                                    taskProgress[index] = (progressEvent.loaded / progressEvent.total) * 100;
+                                    updateOverallProgress();
+                                }
+                            }
                         });
+                        taskProgress[index] = 100;
+                        updateOverallProgress();
                         return { id: section.id, url: response.data.url };
                     } catch (e) {
-                        console.error('Failed to upload section image:', e);
+                        console.error('Failed to compress/upload section image:', e);
+                        taskProgress[index] = 100; // Mark as done even if failed to not stall bar
+                        updateOverallProgress();
                         return { id: section.id, url: section.previewUrl || '' };
                     }
                 }
@@ -350,14 +383,19 @@ export default function AdminBlogPage() {
             data.append('content', htmlContent);
 
             if (selectedImage) {
-                data.append('featured_image', selectedImage);
+                // Compress featured image
+                const compressedFeatured = await imageCompression(selectedImage, compressionOptions);
+                data.append('featured_image', compressedFeatured);
             }
 
+            const finalTaskIndex = totalTasks - 1;
             if (editingPost) {
                 await adminAPI.updateBlogPost(String(editingPost.id), data);
             } else {
                 await adminAPI.createBlogPost(data);
             }
+            taskProgress[finalTaskIndex] = 100;
+            updateOverallProgress();
             
             // Clear draft on success
             const draftKey = editingPost ? `blog_post_draft_${editingPost.id}` : 'blog_post_draft_new';
@@ -369,9 +407,10 @@ export default function AdminBlogPage() {
             addAlert(editingPost ? 'Article refined successfully!' : 'Article published successfully!');
         } catch (err) {
             console.error('Failed to save post:', err);
-            addAlert('Failed to save post. Check connectivity.', 'error');
+            addAlert('Failed to save. Please check all fields.', 'error');
         } finally {
             setSaving(false);
+            setUploadProgress(0);
         }
     };
 
@@ -978,9 +1017,19 @@ export default function AdminBlogPage() {
                                 className="flex-[2] py-4 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                             >
                                 {saving ? (
-                                    <div className="flex items-center justify-center gap-3">
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        <span>Uploading Assets & Publishing...</span>
+                                    <div className="flex flex-col items-center gap-2 w-full">
+                                        <div className="flex items-center justify-center gap-3">
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            <span>{uploadProgress < 100 ? `Uploading Assets (${uploadProgress}%)...` : 'Finalizing Post...'}</span>
+                                        </div>
+                                        <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                                            <motion.div 
+                                                className="h-full bg-white"
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${uploadProgress}%` }}
+                                                transition={{ duration: 0.3 }}
+                                            />
+                                        </div>
                                     </div>
                                 ) : editingPost ? 'Update Knowledge Base' : 'Launch New Post'}
                             </button>
