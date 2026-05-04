@@ -4,6 +4,7 @@
  */
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
@@ -18,13 +19,18 @@ export default function MobileBottomNav() {
     const { isAuthenticated } = useAuthStore();
     const wishlistItems = useWishlistStore(state => state.items);
     const { setSearchModalOpen, isSearchModalOpen } = useUIStore();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const navItems = [
         { name: 'Home', href: '/', icon: Home },
         { name: 'Shop', href: '/products', icon: LayoutGrid },
-        { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: wishlistItems.length },
-        { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: itemCount },
-        { name: 'Profile', href: isAuthenticated ? '/profile' : '/login', icon: User },
+        { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: mounted ? wishlistItems.length : 0 },
+        { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: mounted ? itemCount : 0 },
+        { name: 'Profile', href: (mounted && isAuthenticated) ? '/profile' : '/login', icon: User },
     ];
 
     if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/checkout')) {

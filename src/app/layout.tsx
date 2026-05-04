@@ -34,7 +34,6 @@ const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
 
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
   display: "swap",
   variable: "--font-source-serif",
   preload: true,
@@ -42,7 +41,6 @@ const sourceSerif = Source_Serif_4({
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-montserrat",
   preload: true,
@@ -165,12 +163,10 @@ export default async function RootLayout({
             `,
           }}
         />
-      </head>
-      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
-        <SkipToContent />
-        {/* Google Analytics - Unified via Next Third Parties */}
         <GoogleAnalyticsTag gaId={GA_MEASUREMENT_ID} />
-
+      </head>
+      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`}>
+        <SkipToContent />
         <Suspense fallback={null}>
           <GoogleAnalytics />
           <WebVitalsReporter />
