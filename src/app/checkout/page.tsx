@@ -324,10 +324,11 @@ function CheckoutPage() {
                 return;
             }
 
-            const buyNowSlug = searchParams.get('buyNow');
-            let targetItemIds = Array.from(selectedItemIds);
+            // Filter out any temporary guest_ IDs that might be lingering in selectedItemIds
+            // This prevents "Must be a valid UUID" errors from the backend during guest-to-user transitions
+            let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
             
-            // If no items are explicitly selected, default to all cart items to prevent backend ambiguity
+            // If no items are explicitly selected (or all were guest IDs), default to all real cart items
             if (targetItemIds.length === 0 && cart && cart.items.length > 0) {
                 targetItemIds = cart.items.map(i => i.id);
             }
@@ -451,9 +452,20 @@ function CheckoutPage() {
                 // Handle Django REST Framework field errors: { field_name: ["error message"] }
                 else if (typeof errorData === 'object') {
                     const firstField = Object.keys(errorData)[0];
-                    const firstError = Array.isArray(errorData[firstField]) 
-                        ? errorData[firstField][0] 
-                        : JSON.stringify(errorData[firstField]);
+                    let firstError = errorData[firstField];
+                    
+                    // If the field itself is an object (e.g. ListField errors with indices like {"0": ["..."]})
+                    if (firstError && typeof firstError === 'object' && !Array.isArray(firstError)) {
+                        const firstIndex = Object.keys(firstError)[0];
+                        const indexError = Array.isArray(firstError[firstIndex]) ? firstError[firstIndex][0] : JSON.stringify(firstError[firstIndex]);
+                        // Convert "0" -> "Item 1" for better UX
+                        const itemLabel = !isNaN(Number(firstIndex)) ? `Item ${Number(firstIndex) + 1}` : firstIndex;
+                        firstError = `${itemLabel}: ${indexError}`;
+                    } else if (Array.isArray(firstError)) {
+                        firstError = firstError[0];
+                    } else {
+                        firstError = JSON.stringify(firstError);
+                    }
                     
                     if (firstField && firstError) {
                         // Capitalize field name for better readability
