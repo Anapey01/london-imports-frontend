@@ -58,7 +58,7 @@ export default function ProductCard({
                 price: product.price,
                 image: product.image || ""
             });
-            trackAddToWishlist(product);
+            setTimeout(() => trackAddToWishlist(product), 0);
         }
     };
 
@@ -78,7 +78,7 @@ export default function ProductCard({
             // We don't await the store call for the UI feedback, 
             // the store handles its own optimism.
             addToCart({ ...product, image: product.image || "" });
-            trackAddToCart(product);
+            setTimeout(() => trackAddToCart(product), 0);
         } catch (error) {
             console.error("Add to cart error:", error);
             showToast("Failed to add to basket", "error");
@@ -91,14 +91,19 @@ export default function ProductCard({
     const imageUrl = getImageUrl(product.image);
 
     return (
-        <div className="bg-surface-card border-t border-border-standard pt-6 transition-all duration-500 flex flex-col h-full group/card relative">
+        <div className="bg-surface-card border-t border-border-standard pt-6 transition-[border-color,background-color] duration-300 flex flex-col h-full group/card relative">
             
             {/* 1. ARCHITECTURAL IMAGE DISPLAY */}
             <div className="relative overflow-hidden mb-6 aspect-[4/5] bg-surface/30">
                 <NextLink 
                     href={`/products/${product.slug}`} 
                     className="block h-full"
-                    onClick={() => trackSelectItem(product)}
+                    onClick={() => {
+                        // Non-blocking analytics
+                        if (typeof window !== 'undefined') {
+                            setTimeout(() => trackSelectItem(product), 0);
+                        }
+                    }}
                 >
                     {/* Discreet Badge */}
                     {product.is_discreet && (
@@ -118,7 +123,7 @@ export default function ProductCard({
                             priority={priority}
                             unoptimized={imageUrl.startsWith('http')}
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                            className="object-contain group-hover/card:scale-110 transition-transform duration-700 ease-in-out px-4 py-8"
+                            className="object-contain group-hover/card:scale-110 transition-transform duration-500 ease-in-out px-4 py-8"
                             onError={() => setImageError(true)}
                         />
                     ) : (
@@ -158,7 +163,12 @@ export default function ProductCard({
             <NextLink 
                 href={`/products/${product.slug}`} 
                 className={`flex flex-col gap-3 group/link ${variant === 'compact' ? 'px-1' : ''}`}
-                onClick={() => trackSelectItem(product)}
+                onClick={() => {
+                    // Non-blocking analytics
+                    if (typeof window !== 'undefined') {
+                        setTimeout(() => trackSelectItem(product), 0);
+                    }
+                }}
             >
                 <div>
                      {!hideProgress && (
