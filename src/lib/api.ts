@@ -10,6 +10,7 @@ const API_BASE_URL = siteConfig.apiUrl;
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Send cookies with requests
+  timeout: 15000, // 15 seconds timeout to prevent long hangs on slow Render/Database responses
   headers: {
     'Content-Type': 'application/json',
   },

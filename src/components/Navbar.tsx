@@ -27,25 +27,24 @@ export default function Navbar() {
     const { itemCount, fetchCart } = useCartStore();
     const { isSearchModalOpen, isMobileMenuOpen, setMobileMenuOpen, setSearchModalOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setMounted(true);
-        }, 100);
+        setMounted(true);
         if (isAuthenticated) {
             fetchCart();
         }
-        return () => clearTimeout(timer);
+
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, [fetchCart, isAuthenticated]);
 
-    if (!mounted) {
-        return (
-            <nav className="border-b sticky top-0 z-40 bg-white border-slate-50">
-                <div className="h-14 md:h-20 w-full flex items-center px-4 max-w-7xl mx-auto">
-                </div>
-            </nav>
-        );
-    }
+    // Shell matches for SSR stability
+    const authText = mounted && isAuthenticated ? (user?.first_name || 'Profile') : 'Sign In';
+    const authLink = mounted && isAuthenticated ? "/profile" : "/login";
 
     // Determine if mobile search should be shown
     const isHomePage = pathname === '/';
@@ -54,18 +53,19 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-50 dark:border-slate-900 transition-all duration-500">
+            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-white/95 backdrop-blur-xl border-slate-100 dark:border-slate-800' : 'bg-white border-transparent'}`}>
                 <div className="max-w-[1800px] mx-auto px-4 md:px-12">
                     {/* Tier 1: Logo & Actions */}
                     <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">
                         {/* Left Group: Brand & Index */}
                         <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
                             <Link href="/" className="flex items-center gap-4 group">
-                                <div className="relative w-9 h-9 md:w-11 md:h-11 border border-content-primary overflow-hidden">
+                                <div className="relative w-9 h-9 md:w-11 md:h-11 border border-content-primary overflow-hidden bg-slate-50 dark:bg-slate-900">
                                     <Image
                                         src="/logo.jpg"
                                         alt="London's Imports"
                                         fill
+                                        sizes="(max-width: 768px) 36px, 44px"
                                         className="object-cover"
                                         priority
                                     />
@@ -119,15 +119,15 @@ export default function Navbar() {
                         {/* Right Group: Personal Actions */}
                         <div className="flex items-center gap-6 md:gap-10 flex-shrink-0">
                             <div className="flex items-center gap-6 md:gap-10">
-                                <Link href={isAuthenticated ? "/profile" : "/login"} className="hidden md:flex items-center gap-3 group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all">
+                                <Link href={authLink} className="hidden md:flex items-center gap-3 group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all">
                                     <User className="w-4 h-4" strokeWidth={1} />
-                                    <span className="hidden xl:block">{isAuthenticated ? (user?.first_name || 'Profile') : 'Sign In'}</span>
+                                    <span className="hidden xl:block">{authText}</span>
                                 </Link>
 
                                 <Link href="/cart" className="hidden md:flex items-center gap-3 relative group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all">
                                     <div className="relative">
                                         <ShoppingBag className="w-4 h-4" strokeWidth={1} />
-                                        {itemCount > 0 && (
+                                        {mounted && itemCount > 0 && (
                                             <span className="absolute -top-1 -right-1.5 bg-brand-emerald text-white text-[7px] w-3 h-3 rounded-full flex items-center justify-center font-bold">
                                                 {itemCount}
                                             </span>

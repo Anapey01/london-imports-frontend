@@ -12,12 +12,23 @@ export default function AuthRehydration() {
     const { fetchUser } = useAuthStore();
 
     useEffect(() => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+        if (typeof window === 'undefined') return;
 
-        // If we have a token but state says not authenticated (or just to be sure on boot)
-        if (token) {
+        const authStorage = localStorage.getItem('auth-storage');
+        let hasToken = false;
+        
+        if (authStorage) {
+            try {
+                const parsed = JSON.parse(authStorage);
+                hasToken = !!parsed.state?.accessToken;
+            } catch (e) {
+                console.debug('[AuthRehydration] No valid auth storage found');
+            }
+        }
+
+        if (hasToken) {
             fetchUser().catch(() => {
-                // Silently handled in store
+                // Silently handled in store (cleans up if token is expired)
             });
         }
     }, [fetchUser]);
