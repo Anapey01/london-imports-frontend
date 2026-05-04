@@ -70,7 +70,7 @@ type CheckoutViewData = {
 function CheckoutPage() {
     const router = useRouter();
     const formRef = useRef<HTMLFormElement>(null);
-    const { cart, fetchCart, clearCart, selectedItemIds, isLoading: cartLoading, isMerging } = useCartStore();
+    const { cart, fetchCart, clearCart, selectedItemIds, guestItems, isLoading: cartLoading, isMerging } = useCartStore();
     const { user, isAuthenticated, isLoading: authLoading, fetchUser } = useAuthStore();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -132,8 +132,22 @@ function CheckoutPage() {
         if (cart) return cart as CheckoutViewData;
         
         // Fallback for Guest Items (if not authenticated or during sync)
-        const { guestItems } = useCartStore.getState();
         if (guestItems.length > 0) {
+            const buyNowSlug = searchParams.get('buyNow');
+            
+            // If Buy Now is active, filter to only that product even for guests
+            if (buyNowSlug) {
+                const buyNowItem = guestItems.find(item => item.product.slug === buyNowSlug);
+                if (buyNowItem) {
+                    return {
+                        items: [buyNowItem],
+                        subtotal: Number(buyNowItem.total_price),
+                        total: Number(buyNowItem.total_price),
+                        delivery_fee: 0,
+                    } as CheckoutViewData;
+                }
+            }
+
             const subtotal = guestItems.reduce((sum, i) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
             return {
                 items: guestItems,
@@ -144,7 +158,7 @@ function CheckoutPage() {
         }
 
         return { items: [], total: 0, subtotal: 0, delivery_fee: 0 } as CheckoutViewData;
-    }, [checkoutOrder, cart, searchParams]);
+    }, [checkoutOrder, cart, guestItems, searchParams]);
 
     useEffect(() => {
         if (delivery.address && delivery.city && delivery.region && activeStep === 1) {
@@ -278,12 +292,14 @@ function CheckoutPage() {
         if (authLoading || cartLoading || isMerging || isLoading) return;
 
         // Only redirect if we are certain the cart is empty after loading
-        if (!checkoutOrder && !orderNumberParam && (currentOrderData.items?.length || 0) === 0) {
+        // CRITICAL: Do NOT redirect if we have a buyNow slug or a resuming order, as data is still being prepared
+        const buyNowSlug = searchParams.get('buyNow');
+        if (!checkoutOrder && !orderNumberParam && !buyNowSlug && (currentOrderData.items?.length || 0) === 0) {
             console.info("[Checkout] Cart empty after load. Returning to basket.");
             router.push('/cart');
             return;
         }
-    }, [currentOrderData.items, authLoading, cartLoading, isMerging, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router]);
+    }, [currentOrderData.items, authLoading, cartLoading, isMerging, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router, searchParams]);
 
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -554,7 +570,19 @@ function CheckoutPage() {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-[11px] font-black text-content-primary truncate">{item.product?.name}</p>
-                                                        <p className="text-[10px] text-content-secondary font-bold">Qty: {item.quantity}</p>
+                                                        <div className="flex flex-wrap gap-2 mt-0.5">
+                                                            {item.selected_size && (
+                                                                <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
+                                                                    Size: {item.selected_size}
+                                                                </span>
+                                                            )}
+                                                            {item.selected_color && (
+                                                                <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
+                                                                    Color: {item.selected_color}
+                                                                </span>
+                                                            )}
+                                                            <span className="text-[9px] text-content-secondary font-bold">Qty: {item.quantity}</span>
+                                                        </div>
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-[11px] font-black text-content-primary">{formatPrice(item.total_price)}</p>

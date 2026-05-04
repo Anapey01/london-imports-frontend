@@ -186,6 +186,18 @@ export default function CartPage() {
                                                     GHS {Number(item.unit_price).toLocaleString()}
                                                 </span>
                                             </div>
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                {item.selected_size && (
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-content-secondary bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                                        Size: {item.selected_size}
+                                                    </span>
+                                                )}
+                                                {item.selected_color && (
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-content-secondary bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                                        Color: {item.selected_color}
+                                                    </span>
+                                                )}
+                                            </div>
                                             
                                             <p className={`text-[10px] font-black uppercase tracking-[0.2em] pt-2 ${
                                                 (!item.product.is_preorder && item.product.stock_quantity === 0) ? 'text-red-500' : 'text-emerald-600'
