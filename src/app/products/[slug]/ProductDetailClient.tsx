@@ -834,7 +834,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 </button>
                                 
                                 <button
-                                    onClick={product.preorder_status === 'READY_TO_SHIP' ? handleBuyNow : handleAddToCart}
+                                    onClick={handleBuyNow}
                                     disabled={isAdding || isBuyingNow || isSoldOut}
                                     className="flex items-center gap-3 text-content-primary text-[11px] font-black uppercase tracking-[0.3em] border-b border-slate-900 dark:border-white pb-1 hover:opacity-60 transition-all disabled:opacity-20 whitespace-nowrap flex-shrink-0"
                                 >

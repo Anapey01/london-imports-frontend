@@ -288,16 +288,11 @@ function CheckoutPage() {
     }, [activeStep]);
 
     useEffect(() => {
-        // Prevent redirecting while data is still coming in
-        if (authLoading || cartLoading || isMerging || isLoading) return;
-
-        // Only redirect if we are certain the cart is empty after loading
-        // CRITICAL: Do NOT redirect if we have a buyNow slug or a resuming order, as data is still being prepared
+        // Only log if we are certain the cart is empty after loading
+        // We removed the auto-redirect to prevent jarring UX and race conditions
         const buyNowSlug = searchParams.get('buyNow');
         if (!checkoutOrder && !orderNumberParam && !buyNowSlug && (currentOrderData.items?.length || 0) === 0) {
-            console.info("[Checkout] Cart empty after load. Returning to basket.");
-            router.push('/cart');
-            return;
+            console.info("[Checkout] No items detected. Displaying empty state.");
         }
     }, [currentOrderData.items, authLoading, cartLoading, isMerging, selectedItemIds, checkoutOrder, orderNumberParam, isLoading, router, searchParams]);
 
@@ -502,6 +497,45 @@ function CheckoutPage() {
             setIsLoading(false);
         }
     };
+    
+    // 1. Loading State
+    if (isLoadingPage || authLoading || (cartLoading && !cart && !orderNumberParam)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-surface">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-950"></div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary">Preparing Hub...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // 2. Empty State (Final Check)
+    if (!checkoutOrder && !orderNumberParam && !searchParams.get('buyNow') && (currentOrderData.items?.length || 0) === 0) {
+        return (
+            <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-8">
+                    <ShoppingBag className="w-8 h-8 text-slate-300" strokeWidth={1} />
+                </div>
+                <h2 className="text-xl font-bold text-content-primary mb-2 uppercase tracking-widest">Your checkout is empty</h2>
+                <p className="text-sm text-content-secondary mb-8 max-w-xs">We couldn&apos;t find any items ready for checkout. They might still be syncing or your session expired.</p>
+                <div className="flex flex-col gap-4 w-full max-w-xs">
+                    <button 
+                        onClick={() => router.push('/products')}
+                        className="w-full py-4 bg-slate-950 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all"
+                    >
+                        Back to Sourcing
+                    </button>
+                    <button 
+                        onClick={() => fetchCart()}
+                        className="w-full py-4 bg-white text-slate-950 border border-slate-200 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all"
+                    >
+                        Retry Sync
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-surface pt-16 pb-12 md:pt-20 px-4 sm:px-6 lg:px-8 font-sans transition-all duration-500 relative overflow-hidden">
