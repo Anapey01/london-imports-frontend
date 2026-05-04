@@ -64,6 +64,12 @@ function LoginFormContent() {
             if (user?.id) {
                 setAnalyticsUser(user.id);
                 trackLogin();
+                
+                // If user is not verified, send them to verification first
+                if (!user.email_verified) {
+                    router.push(`/verify-email?redirect=${encodeURIComponent(redirect)}`);
+                    return;
+                }
             }
             router.push(redirect);
         } catch (error: unknown) {

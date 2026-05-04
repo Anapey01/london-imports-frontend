@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { ShoppingBag, Clock, CheckCircle, TrendingUp, Calendar, Package, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Clock, CheckCircle, TrendingUp, Calendar, Package, ChevronRight, Gift, ArrowRight } from 'lucide-react';
 import { Order } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { getTimeAgo } from '@/lib/date';
@@ -141,31 +141,65 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                     </div>
                 </div>
 
-                {/* Compact Activity List */}
-                <div className="lg:col-span-4 space-y-4">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary">Logistics Timeline</h3>
-                    <div className="bg-slate-50 border border-border-standard rounded-xl p-5 space-y-5">
-                        {orders.length > 0 ? (
-                            orders.slice(0, 5).map((order: Order) => {
-                                const isCompleted = ['PAID', 'DELIVERED'].includes(order.state);
-                                return (
-                                    <div key={order.order_number} className="relative pl-6 border-l border-border-standard last:pb-0 pb-1">
-                                        <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full border-2 border-white shadow-sm ${isCompleted ? 'bg-emerald-500' : 'bg-blue-500'}`} />
-                                        <div className="space-y-1">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-content-primary leading-tight">
-                                                {isCompleted ? 'Order Finalized' : 'Order Initiated'}
-                                            </p>
-                                            <p className="text-[8px] font-bold text-content-secondary uppercase tracking-widest flex items-center justify-between">
-                                                <span>#{order.order_number}</span>
-                                                <span className="opacity-60">{getTimeAgo(new Date(order.created_at))}</span>
-                                            </p>
-                                        </div>
+                {/* Activity & Nudges */}
+                <div className="lg:col-span-4 space-y-8">
+                    {/* Birthday Club Nudge */}
+                    {!user.date_of_birth && (
+                        <div className="relative group overflow-hidden bg-[#0a0f1d] p-6 rounded-2xl border border-white/5 shadow-2xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-emerald/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                            
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="p-2 bg-brand-emerald/10 rounded-lg">
+                                        <Gift size={16} className="text-brand-emerald" />
                                     </div>
-                                );
-                            })
-                        ) : (
-                            <p className="text-[10px] font-black text-content-secondary text-center py-4">Timeline empty</p>
-                        )}
+                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Atelier Rewards</span>
+                                </div>
+                                
+                                <h4 className="text-xl font-serif font-bold text-white mb-2 leading-tight">Celebrate with us.</h4>
+                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest leading-relaxed mb-6 italic opacity-80">
+                                    Join the Birthday Club for exclusive annual gifts and personalized surprises.
+                                </p>
+                                
+                                <Link 
+                                    href="/celebrate" 
+                                    className="inline-flex items-center gap-3 text-[10px] font-black text-brand-emerald uppercase tracking-[0.4em] hover:text-white transition-colors group/link"
+                                >
+                                    Join The Club
+                                    <ArrowRight size={12} className="group-hover/link:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+
+                            {/* Decorative Background Texture */}
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none" />
+                        </div>
+                    )}
+
+                    <div className="space-y-4">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary">Logistics Timeline</h3>
+                        <div className="bg-slate-50 border border-border-standard rounded-xl p-5 space-y-5">
+                            {orders.length > 0 ? (
+                                orders.slice(0, 5).map((order: Order) => {
+                                    const isCompleted = ['PAID', 'DELIVERED'].includes(order.state);
+                                    return (
+                                        <div key={order.order_number} className="relative pl-6 border-l border-border-standard last:pb-0 pb-1">
+                                            <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full border-2 border-white shadow-sm ${isCompleted ? 'bg-emerald-500' : 'bg-blue-500'}`} />
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-content-primary leading-tight">
+                                                    {isCompleted ? 'Order Finalized' : 'Order Initiated'}
+                                                </p>
+                                                <p className="text-[8px] font-bold text-content-secondary uppercase tracking-widest flex items-center justify-between">
+                                                    <span>#{order.order_number}</span>
+                                                    <span className="opacity-60">{getTimeAgo(new Date(order.created_at))}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-[10px] font-black text-content-secondary text-center py-4">Timeline empty</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

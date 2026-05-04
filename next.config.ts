@@ -13,9 +13,10 @@ const withPWA = withPWAInit({
   fallbacks: {
     document: "/offline",
   },
-  workboxOptions: {
-    skipWaiting: false, // Control updates via UI (ReloadPrompt)
-    clientsClaim: true,
+    workboxOptions: {
+      skipWaiting: true,
+      clientsClaim: true,
+      cleanupOutdatedCaches: true,
     runtimeCaching: [
       {
         urlPattern: ({ url }) => 

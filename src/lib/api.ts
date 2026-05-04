@@ -283,12 +283,12 @@ export const adminAPI = {
   recalculateReservations: () => api.post('/auth/admin/recalculate-reservations/'),
 
   // Blog management
-  blogPosts: (params?: unknown) => api.get('/blog/admin/', { params }),
-  createBlogPost: (data: unknown) => api.post('/blog/admin/', data),
-  getBlogPost: (id: string) => api.get(`/blog/admin/${id}/`),
-  updateBlogPost: (id: string, data: unknown) => api.patch(`/blog/admin/${id}/`, data),
-  deleteBlogPost: (id: string) => api.delete(`/blog/admin/${id}/`),
-  publishBlogPost: (id: string) => api.post(`/blog/admin/${id}/publish/`),
+  blogPosts: (params?: unknown) => api.get('/admin/blog/', { params }),
+  createBlogPost: (data: unknown) => api.post('/admin/blog/', data),
+  getBlogPost: (id: string) => api.get(`/admin/blog/${id}/`),
+  updateBlogPost: (id: string, data: unknown) => api.patch(`/admin/blog/${id}/`, data),
+  deleteBlogPost: (id: string) => api.delete(`/admin/blog/${id}/`),
+  publishBlogPost: (id: string) => api.post(`/admin/blog/${id}/publish/`),
 };
 
 // Public Blog API

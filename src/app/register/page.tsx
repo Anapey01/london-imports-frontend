@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import RegisterForm from './RegisterForm';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
     title: 'Create Account | London\'s Imports',
@@ -11,5 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-    return <RegisterForm />;
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RegisterForm />
+        </Suspense>
+    );
 }

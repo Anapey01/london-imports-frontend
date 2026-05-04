@@ -84,9 +84,12 @@ function VerifyEmailContent() {
             setIsVerified(true);
             await fetchUser(); // Refresh user state
             
-            // Redirect to homepage after a short delay to show success state
+            const searchParams = new URLSearchParams(window.location.search);
+            const redirect = searchParams.get('redirect') || '/';
+            
+            // Redirect to destination after a short delay to show success state
             setTimeout(() => {
-                router.push('/');
+                router.push(redirect);
             }, 2000);
         } catch (err: unknown) {
             const errorMessage = (err as any).response?.data?.error || 'Invalid or expired verification code.';
@@ -121,7 +124,10 @@ function VerifyEmailContent() {
 
     // Auto-resend on first load if authenticated but not verified
     useEffect(() => {
-        if (isAuthenticated && !user?.email_verified && !isVerified && resendTimer === 0) {
+        const searchParams = new URLSearchParams(window.location.search);
+        const isNewAccount = searchParams.get('new_account') === 'true';
+
+        if (isAuthenticated && !user?.email_verified && !isVerified && resendTimer === 0 && !isNewAccount) {
             handleResend();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,6 +7,8 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, api } from '@/lib/api';
+import { siteConfig } from '@/config/site';
+import { useAuthStore } from '@/stores/authStore';
 import Image from 'next/image';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -171,6 +173,7 @@ export default function AdminBlogPage() {
     const [sections, setSections] = useState<Section[]>([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [draftFound, setDraftFound] = useState<{ title: string; date: string } | null>(null);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -210,32 +213,99 @@ export default function AdminBlogPage() {
     useEffect(() => {
         loadPosts();
         
-        // Restore draft if exists
-        const savedDraft = localStorage.getItem('blog_post_draft');
+        // Restore draft if exists for a "new" post
+        const savedDraft = localStorage.getItem('blog_post_draft_new');
         if (savedDraft) {
             try {
-                const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
-                // We only offer to restore if the modal isn't open or if it's a new post
-                if (!showModal && draftData.title) {
-                    addAlert('Found an unsaved draft. Open "New Article" to restore it.', 'info');
+                const { formData: draftData, sections: draftSections, last_updated } = JSON.parse(savedDraft);
+                const hasContent = draftData.title || draftData.excerpt || (draftSections && draftSections.some((s: any) => s.content.trim()));
+                
+                if (!showModal && hasContent) {
+                    setDraftFound({ 
+                        title: draftData.title || 'Untitled Article', 
+                        date: last_updated ? new Date(last_updated).toLocaleTimeString() : 'Recently'
+                    });
                 }
             } catch (e) {
                 console.error('Failed to parse draft:', e);
             }
         }
-    }, []);
+    }, [showModal]);
 
-    // Auto-save logic
+    // Immediate save on tab hide/switch
     useEffect(() => {
-        if (showModal && (formData.title || sections.length > 1 || sections[0]?.content)) {
-            const timer = setTimeout(() => {
-                localStorage.setItem('blog_post_draft', JSON.stringify({ formData, sections }));
-                setLastSaved(new Date());
-                setHasUnsavedChanges(true);
-            }, 1000);
-            return () => clearTimeout(timer);
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden' && showModal) {
+                const draftKey = editingPost ? `blog_post_draft_${editingPost.id}` : 'blog_post_draft_new';
+                const sectionsToSave = sections.map(s => ({
+                    id: s.id,
+                    type: s.type,
+                    content: s.type === 'image' && s.file ? '' : s.content
+                }));
+                localStorage.setItem(draftKey, JSON.stringify({ 
+                    formData, 
+                    sections: sectionsToSave,
+                    last_updated: new Date().toISOString()
+                }));
+            }
+        };
+        window.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => window.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [showModal, editingPost, formData, sections]);
+
+    // BeforeUnload listener to prevent accidental loss AND force save
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (showModal) {
+                // Emergency save on refresh
+                const draftKey = editingPost ? `blog_post_draft_${editingPost.id}` : 'blog_post_draft_new';
+                const sectionsToSave = sections.map(s => ({
+                    id: s.id,
+                    type: s.type,
+                    content: s.type === 'image' && s.file ? '' : s.content
+                }));
+                localStorage.setItem(draftKey, JSON.stringify({ 
+                    formData, 
+                    sections: sectionsToSave,
+                    last_updated: new Date().toISOString()
+                }));
+
+                if (hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [hasUnsavedChanges, showModal, formData, sections, editingPost]);
+
+    // Auto-save logic with aggressive debounce
+    useEffect(() => {
+        if (showModal) {
+            const draftKey = editingPost ? `blog_post_draft_${editingPost.id}` : 'blog_post_draft_new';
+            
+            // Save if there's any content or title
+            if (formData.title.trim() || sections.some(s => s.content.trim())) {
+                const timer = setTimeout(() => {
+                    const sectionsToSave = sections.map(s => ({
+                        id: s.id,
+                        type: s.type,
+                        content: s.type === 'image' && s.file ? '' : s.content
+                    }));
+                    
+                    localStorage.setItem(draftKey, JSON.stringify({ 
+                        formData, 
+                        sections: sectionsToSave,
+                        last_updated: new Date().toISOString()
+                    }));
+                    setLastSaved(new Date());
+                    setHasUnsavedChanges(true);
+                }, 500); // 500ms debounce
+                return () => clearTimeout(timer);
+            }
         }
-    }, [formData, sections, showModal]);
+    }, [formData, sections, showModal, editingPost]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -248,8 +318,30 @@ export default function AdminBlogPage() {
     const handleSubmit = async () => {
         setSaving(true);
         try {
-            // Serialize sections to HTML for the backend
-            const htmlContent = await serializeSectionsToHtml(sections);
+            // First, start all image uploads in parallel
+            const uploadPromises = sections.map(async (section) => {
+                if (section.type === 'image' && section.file) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('upload', section.file);
+                        const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
+                        const response = await api.post(`${rootUrl}/ckeditor/upload/`, formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        });
+                        return { id: section.id, url: response.data.url };
+                    } catch (e) {
+                        console.error('Failed to upload section image:', e);
+                        return { id: section.id, url: section.previewUrl || '' };
+                    }
+                }
+                return { id: section.id, url: section.content };
+            });
+
+            const uploadedImages = await Promise.all(uploadPromises);
+            const imageMap = Object.fromEntries(uploadedImages.map(img => [img.id, img.url]));
+
+            // Serialize sections to HTML using the already uploaded URLs
+            const htmlContent = serializeSectionsToHtmlSync(sections, imageMap);
             
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
@@ -258,7 +350,7 @@ export default function AdminBlogPage() {
             data.append('content', htmlContent);
 
             if (selectedImage) {
-                data.append('image', selectedImage);
+                data.append('featured_image', selectedImage);
             }
 
             if (editingPost) {
@@ -268,48 +360,29 @@ export default function AdminBlogPage() {
             }
             
             // Clear draft on success
-            localStorage.removeItem('blog_post_draft');
+            const draftKey = editingPost ? `blog_post_draft_${editingPost.id}` : 'blog_post_draft_new';
+            localStorage.removeItem(draftKey);
             setHasUnsavedChanges(false);
             
             await loadPosts();
             closeModal();
-            addAlert(editingPost ? 'Post updated successfully!' : 'Post created successfully!');
+            addAlert(editingPost ? 'Article refined successfully!' : 'Article published successfully!');
         } catch (err) {
             console.error('Failed to save post:', err);
-            addAlert('Failed to save post. Check all fields.', 'error');
+            addAlert('Failed to save post. Check connectivity.', 'error');
         } finally {
             setSaving(false);
         }
     };
 
-    const serializeSectionsToHtml = async (sections: Section[]) => {
+    const serializeSectionsToHtmlSync = (sections: Section[], imageMap: Record<string, string>) => {
         let html = '';
         for (const section of sections) {
             if (section.type === 'text') {
-                // Convert line breaks to paragraphs/breaks
                 const textHtml = section.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '<br/>').join('');
                 html += `<div class="content-section text-section">${textHtml}</div>`;
             } else if (section.type === 'image') {
-                let url = section.content;
-                // If it's a new file, we need to upload it or send it as base64
-                // Professional way: use a media upload endpoint. 
-                // For now, we'll try to find images already uploaded or handle them via FormData if we had a multi-part backend.
-                // Since the backend is simple, we'll use the existing CKEditor upload if possible, 
-                // but to keep it safe and functional TODAY, we'll upload new files to a temporary spot if needed.
-                if (section.file) {
-                    try {
-                        const formData = new FormData();
-                        formData.append('upload', section.file);
-                        const response = await api.post('/ckeditor/upload/', formData, {
-                            headers: { 'Content-Type': 'multipart/form-data' }
-                        });
-                        url = response.data.url;
-                    } catch (e) {
-                        console.error('Failed to upload section image:', e);
-                        // Fallback to base64 if upload fails (not ideal but keeps the data)
-                        url = section.previewUrl || '';
-                    }
-                }
+                const url = imageMap[section.id] || section.content;
                 if (url) {
                     html += `<div class="content-section image-section"><img src="${url}" alt="Article image" style="width:100%; height:auto; margin: 2rem 0;" /></div>`;
                 }
@@ -387,14 +460,18 @@ export default function AdminBlogPage() {
             seo_keywords: '',
         });
 
-        // Check for existing draft
-        const savedDraft = localStorage.getItem('blog_post_draft');
+        // Check for existing draft for NEW posts
+        const savedDraft = localStorage.getItem('blog_post_draft_new');
         if (savedDraft) {
             try {
                 const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
                 setFormData(draftData);
-                setSections(draftSections);
-                addAlert('Draft restored from local storage.', 'info');
+                // Merge draft sections but keep image blocks as placeholders since files weren't saved
+                setSections(draftSections.map((s: any) => ({
+                    ...s,
+                    previewUrl: s.type === 'image' ? '' : undefined
+                })));
+                addAlert('New article draft restored.', 'info');
             } catch (e) {
                 setSections([{ id: Math.random().toString(36).substr(2, 9), type: 'text', content: '' }]);
             }
@@ -403,6 +480,13 @@ export default function AdminBlogPage() {
         }
         
         setShowModal(true);
+        setDraftFound(null);
+    };
+
+    const clearNewDraft = () => {
+        localStorage.removeItem('blog_post_draft_new');
+        setDraftFound(null);
+        addAlert('Draft cleared', 'info');
     };
 
     const openEditModal = (post: BlogPost) => {
@@ -420,6 +504,23 @@ export default function AdminBlogPage() {
             seo_keywords: post.seo_keywords || '',
         });
         setSections(parseHtmlToSections(post.content));
+        
+        // Check for existing draft for THIS specific post
+        const draftKey = `blog_post_draft_${post.id}`;
+        const savedDraft = localStorage.getItem(draftKey);
+        if (savedDraft) {
+            try {
+                const { formData: draftData, sections: draftSections } = JSON.parse(savedDraft);
+                // We could prompt here, but for now we'll just restore if it looks more recent?
+                // Or just always restore if it exists.
+                setFormData(draftData);
+                // Note: images in drafts are lost, we keep the original ones from the post
+                addAlert('Unsaved edits restored for this post.', 'info');
+            } catch (e) {
+                console.error('Failed to restore edit draft', e);
+            }
+        }
+        
         setShowModal(true);
     };
 
@@ -517,6 +618,37 @@ export default function AdminBlogPage() {
                     New Article
                 </button>
             </div>
+
+            {/* Draft Recovery Banner */}
+            {draftFound && !showModal && (
+                <div className={`p-4 rounded-xl border flex items-center justify-between animate-in slide-in-from-top-4 duration-500 ${isDark ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100'}`}>
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                            <Sparkles className="w-5 h-5 text-indigo-500" />
+                        </div>
+                        <div>
+                            <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>Unsaved Draft Found</p>
+                            <p className={`text-[11px] font-medium opacity-60 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                &quot;{draftFound.title}&quot; was auto-saved at {draftFound.date}.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={clearNewDraft}
+                            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:opacity-100 transition-opacity ${isDark ? 'text-slate-400 opacity-40' : 'text-slate-500 opacity-60'}`}
+                        >
+                            Discard
+                        </button>
+                        <button 
+                            onClick={openCreateModal}
+                            className="px-6 py-2.5 rounded-lg bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
+                        >
+                            Continue Writing
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Posts List */}
             <div className={`rounded-xl border overflow-hidden ${isDark ? 'bg-slate-800/30 border-slate-700/50' : 'bg-white border-gray-100'}`}>
@@ -845,7 +977,12 @@ export default function AdminBlogPage() {
                                 disabled={saving || !formData.title || sections.length === 0}
                                 className="flex-[2] py-4 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                             >
-                                {saving ? 'Finalizing Article...' : editingPost ? 'Update Knowledge Base' : 'Launch New Post'}
+                                {saving ? (
+                                    <div className="flex items-center justify-center gap-3">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Uploading Assets & Publishing...</span>
+                                    </div>
+                                ) : editingPost ? 'Update Knowledge Base' : 'Launch New Post'}
                             </button>
                         </div>
                     </div>

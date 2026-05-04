@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { trackSignUp, trackEvent } from '@/lib/analytics';
 import { ArrowUpRight, ArrowRight, AlertCircle, ShieldCheck } from 'lucide-react';
@@ -14,6 +14,8 @@ import GoogleProtocolButton from '@/components/auth/GoogleProtocolButton';
 
 export default function RegisterForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect') || '/';
     const { register, logout, isLoading } = useAuthStore();
 
     useEffect(() => {
@@ -63,8 +65,8 @@ export default function RegisterForm() {
                 last_name: formData.last_name.trim(),
             });
             trackSignUp();
-            // Redirect to verify email instead of login
-            router.push('/verify-email?new_account=true');
+            // Redirect to verify email instead of login, passing the original redirect
+            router.push(`/verify-email?new_account=true&redirect=${encodeURIComponent(redirect)}`);
         } catch (error: unknown) {
             const err = error as { response?: { data?: Record<string, string | string[]> }, message?: string };
             const errors = err.response?.data;
