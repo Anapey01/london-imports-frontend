@@ -316,8 +316,21 @@ function CheckoutPage() {
         }
 
         try {
+            // Client-side validation
+            if (!delivery.address || !delivery.city || !delivery.region) {
+                setError('Please complete your shipping address first.');
+                setIsLoading(false);
+                setActiveStep(1);
+                return;
+            }
+
             const buyNowSlug = searchParams.get('buyNow');
             let targetItemIds = Array.from(selectedItemIds);
+            
+            // If no items are explicitly selected, default to all cart items to prevent backend ambiguity
+            if (targetItemIds.length === 0 && cart && cart.items.length > 0) {
+                targetItemIds = cart.items.map(i => i.id);
+            }
             
             if (buyNowSlug && cart) {
                 const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
@@ -424,17 +437,32 @@ function CheckoutPage() {
                     setIsLoading(false);
                 }
             }
-        } catch (err: unknown) {
+        } catch (err: any) {
             console.error("Checkout Error:", err);
-            const backendError = err as BackendError;
-            const errorData = backendError.response?.data;
             let errorMessage = 'Error processing request';
 
-            if (errorData && typeof errorData === 'object') {
-                const detailedError = errorData as { error?: string; message?: string; detail?: string };
-                errorMessage = detailedError.error || detailedError.message || detailedError.detail || 'Checkout failed';
-            } else if (typeof errorData === 'string') {
-                errorMessage = errorData;
+            if (err.response?.data) {
+                const errorData = err.response.data;
+                
+                // Handle standard error/message/detail fields
+                if (errorData.error || errorData.message || errorData.detail) {
+                    errorMessage = errorData.error || errorData.message || errorData.detail;
+                } 
+                // Handle Django REST Framework field errors: { field_name: ["error message"] }
+                else if (typeof errorData === 'object') {
+                    const firstField = Object.keys(errorData)[0];
+                    const firstError = Array.isArray(errorData[firstField]) 
+                        ? errorData[firstField][0] 
+                        : JSON.stringify(errorData[firstField]);
+                    
+                    if (firstField && firstError) {
+                        // Capitalize field name for better readability
+                        const fieldName = firstField.charAt(0).toUpperCase() + firstField.slice(1).replace(/_/g, ' ');
+                        errorMessage = `${fieldName}: ${firstError}`;
+                    }
+                } else if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                }
             } else if (err instanceof Error) {
                 errorMessage = err.message;
             }
