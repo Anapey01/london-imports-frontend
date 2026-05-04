@@ -200,8 +200,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 {paymentType === 'CUSTOM' && (
                                     <div className="animate-in slide-in-from-top-2 duration-300">
                                         <div className="relative group">
-                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
-                                                <span className="text-[9px] font-black text-content-secondary group-focus-within:text-brand-emerald uppercase tracking-widest pl-3">GHS</span>
+                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">GHS</span>
                                             </div>
                                             <input
                                                 type="number"
@@ -212,7 +212,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                                     setCustomAmount(e.target.value);
                                                 }}
                                                 placeholder="0.00"
-                                                className="w-full pl-12 pr-4 py-3 bg-transparent border-0 border-b-2 border-border-standard focus:border-brand-emerald outline-none transition-all text-content-primary font-black text-lg tabular-nums placeholder:opacity-40"
+                                                className="w-full pl-16 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-xl text-lg font-black text-content-primary tabular-nums placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
                                                 min="1"
                                                 max={selectedTotal}
                                             />
