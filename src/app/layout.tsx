@@ -36,7 +36,7 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-source-serif",
-  preload: true,
+  preload: false, // Prevents efficiency warnings; browser loads it when CSS is parsed
 });
 
 const montserrat = Montserrat({
@@ -179,8 +179,6 @@ export default async function RootLayout({
           <MobileBottomNav />
           <ReloadPrompt />
         </Providers>
-        <Analytics />
-        <GoogleAnalyticsTag gaId={GA_MEASUREMENT_ID} />
       </body>
     </html>
   );
