@@ -324,6 +324,8 @@ function CheckoutPage() {
                 return;
             }
 
+            const buyNowSlug = searchParams.get('buyNow');
+            
             // Filter out any temporary guest_ IDs that might be lingering in selectedItemIds
             // This prevents "Must be a valid UUID" errors from the backend during guest-to-user transitions
             let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
