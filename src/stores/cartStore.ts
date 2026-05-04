@@ -464,11 +464,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
         localStorage.removeItem('guest_cart');
 
         if (isAuthenticated && currentCart?.items) {
-            // ONLY clear server items if the order is still a DRAFT.
-            // If the user just paid, the order is PENDING_PAYMENT or PAID.
-            // We MUST NOT delete items from those orders.
-            if (currentCart.state === 'DRAFT') {
-                console.info("[CartStore] Clearing DRAFT cart items from server...");
+            // ONLY clear server items if the order is still a DRAFT or PENDING_PAYMENT.
+            if (currentCart.state === 'DRAFT' || currentCart.state === 'PENDING_PAYMENT') {
+                console.info("[CartStore] Clearing cart items from server...");
                 try {
                     await Promise.all(
                         currentCart.items.map(item => ordersAPI.removeFromCart(item.id))
@@ -477,7 +475,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     console.error("[CartStore] Server-side cleanup failed:", error);
                 }
             } else {
-                console.info("[CartStore] Order is beyond DRAFT state. Skipping server-side item deletion.");
+                console.info("[CartStore] Order is beyond PENDING state. Skipping server-side item deletion.");
             }
         }
     },
