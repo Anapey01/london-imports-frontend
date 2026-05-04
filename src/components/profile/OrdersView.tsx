@@ -170,7 +170,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                             href={`/orders/${order.order_number}`}
                                             className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm"
                                         >
-                                            View Manifest
+                                            View Order Details
                                         </Link>
                                         {isPending ? (
                                             <Link

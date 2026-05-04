@@ -126,20 +126,20 @@ export default function OrderDetailPage() {
                         </p>
                     </div>
                     
-                    <div className="flex gap-3 print:hidden">
+                    <div className="flex flex-col xs:flex-row gap-3 print:hidden w-full sm:w-auto">
                         <button 
                             onClick={() => window.print()}
-                            className="px-6 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+                            className="flex-1 sm:flex-initial px-6 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2"
                         >
                             <Receipt size={14} />
-                            Download Manifest
+                            Download Receipt
                         </button>
                         <Link 
                             href={`/track?order=${order.order_number}`}
-                            className="px-6 py-2.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm flex items-center gap-2"
+                            className="flex-1 sm:flex-initial px-6 py-2.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm flex items-center justify-center gap-2"
                         >
                             <Truck size={14} />
-                            Track
+                            Track Order
                         </Link>
                     </div>
                 </header>
