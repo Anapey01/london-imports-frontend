@@ -576,9 +576,10 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
         setIsAdding(true);
         try {
+            const displayName = product.display_name || product.short_name || product.name;
             await addToCart(product, quantity, selectedSize, selectedColor, selectedVariant || undefined);
             trackAddToCart(product, quantity);
-            showToast(`Added ${quantity}x ${product.name} to cart`, 'success');
+            showToast(`Added ${quantity}x ${displayName} to cart`, 'success');
             router.push('/cart');
         } catch (e: unknown) {
             console.error("Add to Cart Failed:", e);
@@ -695,7 +696,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     )}
                     <span className="mx-4 text-border-standard">/</span>
                     <span className="text-slate-900 dark:text-white">
-                        {product.name}
+                        {product.display_name || product.short_name || product.name}
                     </span>
                 </nav>
 
@@ -731,7 +732,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 )}
                             </div>
                             <h1 className="text-3xl lg:text-5xl font-serif font-atelier text-content-primary leading-[1] tracking-tighter text-balance">
-                                {product.name}
+                                {product.display_name || product.short_name || product.name}
                             </h1>
                             {product.subtitle && (
                                 <p className="text-xs lg:text-sm font-medium text-content-secondary tracking-[0.2em] uppercase opacity-60 mt-1">

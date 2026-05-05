@@ -6,6 +6,8 @@ import { createPortal } from 'react-dom';
 interface StickyMobileCartProps {
     product: {
         name: string;
+        display_name?: string;
+        short_name?: string;
         price: number;
         preorder_status?: string;
     };
@@ -59,7 +61,7 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
                 {/* Product Info (Truncated) */}
                 <div className="flex-1 min-w-0">
                     <p className="text-[9px] font-black nuclear-text opacity-40 uppercase tracking-[0.2em] truncate mb-0.5">
-                        {product.name}
+                        {product.display_name || product.short_name || product.name}
                     </p>
                     <p className="text-[15px] font-black nuclear-text tabular-nums tracking-tighter leading-none">
                         {product.price?.toLocaleString('en-GH', { style: 'currency', currency: 'GHS' })}

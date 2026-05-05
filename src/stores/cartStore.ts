@@ -24,6 +24,14 @@ export interface Product {
     stock_quantity?: number;
     preorder_status?: string;
     delivery_window_text?: string;
+    available_sizes?: string[];
+    available_colors?: string[];
+    variants?: Array<{
+        id: string;
+        name: string;
+        price: string;
+        stock_quantity: number;
+    }>;
 }
 
 export interface CartItem {
@@ -125,6 +133,14 @@ export const useCartStore = create<CartState>()(
                 const reqVersion = get().version + 1;
                 set({ version: reqVersion });
 
+                // ENFORCE VARIANT SELECTION: If product has sizes/colors, they must be provided
+                const hasSizes = product.available_sizes && product.available_sizes.length > 0;
+                const hasColors = product.available_colors && product.available_colors.length > 0;
+                
+                if ((hasSizes && !selectedSize) || (hasColors && !selectedColor)) {
+                    throw new Error('VARIANT_REQUIRED');
+                }
+
                 const size = selectedVariant ? (selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name) : (selectedSize || "");
                 const price = selectedVariant ? parseFloat(selectedVariant.price) : product.price;
 
@@ -134,11 +150,15 @@ export const useCartStore = create<CartState>()(
                     try {
                         const res = await ordersAPI.addToCart(product.id, quantity, size, selectedColor, selectedVariant?.id);
                         if (get().version <= reqVersion) {
-                            set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
+                            set({ 
+                                cart: res.data, 
+                                itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) 
+                            });
                         }
-                    } catch {
+                    } catch (error) {
                         // Rollback on error
                         set(state => ({ itemCount: Math.max(0, state.itemCount - quantity) }));
+                        throw error;
                     }
                 } else {
                     const items = [...get().guestItems];
@@ -201,6 +221,8 @@ export const useCartStore = create<CartState>()(
             name: 'li-cart-storage',
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({ 
+                cart: state.cart,
+                itemCount: state.itemCount,
                 guestItems: state.guestItems,
                 selectedItemIds: state.selectedItemIds 
             }),
