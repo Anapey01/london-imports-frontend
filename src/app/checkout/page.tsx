@@ -346,14 +346,15 @@ function CheckoutPage() {
             }
 
             // 2. RESILIENCE LOOP: If the cart is empty right after sync (common mobile lag), 
-            // we retry the fetch with a delay up to 3 times.
+            // we retry the fetch with a delay up to 5 times for mobile resilience.
             let freshCart = useCartStore.getState().cart;
             let retryCount = 0;
-            const maxRetries = 3;
+            const maxRetries = 5;
 
             while ((!freshCart || (freshCart.items?.length || 0) === 0) && retryCount < maxRetries && isAuthenticated) {
-                console.info(`[Checkout] Mobile Resilience: Cart empty after sync. Retry ${retryCount + 1}/${maxRetries}...`);
-                await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5s
+                const waitTime = 2000; // Increase to 2s for mobile/Ghana latency
+                console.info(`[Checkout] Mobile Resilience: Cart empty after sync. Retry ${retryCount + 1}/${maxRetries} (waiting ${waitTime}ms)...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime)); 
                 await fetchCart();
                 freshCart = useCartStore.getState().cart;
                 retryCount++;
@@ -363,7 +364,9 @@ function CheckoutPage() {
             let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
             
             // If no items are explicitly selected (or all were guest IDs), use ALL items from the FRESH cart
+            // This is a critical fallback for users who didn't interact with checkboxes
             if (targetItemIds.length === 0 && freshCart && (freshCart.items?.length || 0) > 0) {
+                console.info("[Checkout] No specific items selected. Defaulting to all items in server cart.");
                 targetItemIds = freshCart.items.map(i => i.id);
             }
             
@@ -377,7 +380,7 @@ function CheckoutPage() {
             // 3. FINAL VALIDATION: Stop if we still have nothing to checkout
             if (targetItemIds.length === 0) {
                 console.warn("[Checkout] Submission blocked: targetItemIds is empty even after resilience loop.");
-                setError('Mobile Sync Delay: We couldn\'t find your items on the server yet. Please wait 2 seconds and try again.');
+                setError('Mobile Sync Delay: We couldn\'t find your items on the server yet. This happens on slow connections. Please wait 3 seconds and try again.');
                 setIsLoading(false);
                 return;
             }

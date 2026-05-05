@@ -127,18 +127,31 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     if (guestItems.length > 0) {
                         console.info("[CartStore] Syncing guest items to server...", guestItems.length);
                         
+                        // Track old IDs for migration
+                        const oldToNewMap = new Map<string, string>();
+                        
                         // Add each guest item to server cart SEQUENTIALLY to prevent race conditions
                         for (const item of guestItems) {
                             try {
-                                await ordersAPI.addToCart(
+                                const res = await ordersAPI.addToCart(
                                     item.product.id, 
                                     item.quantity, 
                                     item.selected_size || "", 
                                     item.selected_color || ""
                                 );
+                                
+                                // Map the guest ID to the new server ID if possible
+                                // We find the item in the returned cart that matches product/size/color
+                                const newServerItem = res.data.items?.find((i: any) => 
+                                    i.product.id === item.product.id && 
+                                    (i.selected_size || "") === (item.selected_size || "") && 
+                                    (i.selected_color || "") === (item.selected_color || "")
+                                );
+                                if (newServerItem) {
+                                    oldToNewMap.set(item.id, newServerItem.id);
+                                }
                             } catch (e: any) {
                                 console.error(`[CartStore] Failed to sync item ${item.product.id}:`, e.response?.data || e.message);
-                                // If we hit a 401, stop merging to prevent infinite loops
                                 if (e.response?.status === 401) {
                                     set({ isMerging: false });
                                     return;
@@ -146,10 +159,21 @@ export const useCartStore = create<CartState>()((set, get) => ({
                             }
                         }
 
+                        // MIGRATE SELECTION: If the user had guest items selected, select their new server counterparts
+                        const currentSelected = get().selectedItemIds;
+                        const newSelected = new Set(currentSelected);
+                        oldToNewMap.forEach((newId, oldId) => {
+                            if (currentSelected.has(oldId)) {
+                                newSelected.delete(oldId);
+                                newSelected.add(newId);
+                            }
+                        });
+                        set({ selectedItemIds: newSelected });
+
                         // ONLY clear local guest state AFTER successful sync attempt
                         localStorage.removeItem('guest_cart');
                         set({ guestItems: [] });
-                        console.info("[CartStore] Sync completed.");
+                        console.info("[CartStore] Sync completed and selection migrated.");
                     }
                 } catch (e) {
                     console.error("[CartStore] Merge process encountered a fatal error:", e);
@@ -160,13 +184,21 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             try {
                 // CACHE BUSTING: Mobile browsers (Safari/Chrome) often cache the empty cart state.
-                // Adding a timestamp ensures we get the "Absolute Truth" from the server.
+                // Adding a timestamp AND explicit headers ensures we get the "Absolute Truth".
                 const timestamp = new Date().getTime();
                 const response = await ordersAPI.cart({ t: timestamp });
                 
-                // IGNORE if a newer request (or add-to-cart) has started
-                const serverCart = response.data;
-                const serverItems = serverCart.items || [];
+                let serverCart = response.data;
+                let serverItems = serverCart.items || [];
+
+                // MOBILE RESILIENCE: If we JUST synced items but the server says empty, retry once with a delay
+                if (savedGuest && serverItems.length === 0) {
+                    console.warn("[CartStore] Server returned empty cart immediately after merge. Retrying fetch...");
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const retryRes = await ordersAPI.cart({ t: new Date().getTime() });
+                    serverCart = retryRes.data;
+                    serverItems = serverCart.items || [];
+                }
 
                 set({ 
                     cart: serverCart, 
@@ -179,7 +211,6 @@ export const useCartStore = create<CartState>()((set, get) => ({
             } catch (err) {
                 console.error("[CartStore] Fetch failed:", err);
                 if (get().version === reqVersion) {
-                    // Fallback to guest count on error so badge doesn't flicker to 0
                     set({ 
                         cart: null, 
                         itemCount: get().guestItems.reduce((sum, i) => sum + i.quantity, 0) 
