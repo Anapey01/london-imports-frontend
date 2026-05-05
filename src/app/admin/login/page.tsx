@@ -7,7 +7,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
-import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 

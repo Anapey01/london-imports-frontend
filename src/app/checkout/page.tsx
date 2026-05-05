@@ -156,7 +156,7 @@ function CheckoutPage() {
         }
 
         return { items: [], total: 0, subtotal: 0, delivery_fee: 0 } as CheckoutViewData;
-    }, [checkoutOrder, cart, guestItems, searchParams]);
+    }, [checkoutOrder, cart, guestItems, searchParams, buyNowSlug]);
 
     useEffect(() => {
         if (delivery.address && delivery.city && delivery.region && activeStep === 1) {

@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, use } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import { useTheme } from '@/providers/ThemeProvider';
-import Link from 'next/link';
 import Image from 'next/image';
 import {
     CreditCard,
@@ -90,7 +89,21 @@ function LogisticsStepper({ status, isDark }: { status: string; isDark: boolean 
     );
 }
 
-function CustomerIntelligenceCard({ customer, isDark }: any) {
+interface CustomerStats {
+    ltv: number;
+    order_count: number;
+    join_date: string;
+    is_vip: boolean;
+}
+
+interface Customer {
+    name: string;
+    email: string;
+    phone: string;
+    stats: CustomerStats;
+}
+
+function CustomerIntelligenceCard({ customer, isDark }: { customer: Customer; isDark: boolean }) {
     const joinDate = new Date(customer.stats.join_date).toLocaleDateString('en-GB', { 
         month: 'long', 
         year: 'numeric' 
@@ -208,12 +221,7 @@ interface OrderDetail {
     delivery_gps?: string;
     customer_notes?: string;
     items: OrderItem[];
-    customer_stats: {
-        ltv: number;
-        order_count: number;
-        join_date: string;
-        is_vip: boolean;
-    };
+    customer_stats: CustomerStats;
 }
 
 export default function AdminOrderDetailPage() {

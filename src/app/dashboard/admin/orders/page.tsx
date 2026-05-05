@@ -11,7 +11,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import {
-    ChevronRight, ChevronLeft, Eye, Trash2, Package, CheckCircle, X, CheckSquare, Square, Search
+    ChevronRight, ChevronLeft, Eye, Trash2, Package, X, CheckSquare, Square, Search
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -54,25 +54,7 @@ interface Order {
     }>;
 }
 
-interface APIOrder {
-    id: string;
-    order_number?: string;
-    customer: {
-        name: string;
-        email: string;
-        avatar?: string;
-    };
-    items_count?: number;
-    items?: unknown[];
-    total: number | string;
-    status?: string;
-    payment_status?: string;
-    amount_paid?: number;
-    balance_due?: number;
-    is_installment?: boolean;
-    created_at: string;
-    thumbnail?: string;
-}
+// Unified Order interfaces moved to types.ts or defined explicitly
 
 function mapAPIOrder(order: any): Order {
     if (!order) return {
@@ -591,10 +573,8 @@ export default function AdminOrdersPage() {
 
 const OrderRow = React.memo(({ 
     order, 
-    isDark, 
     isSelected, 
     toggleSelect, 
-    getStatusColor, 
     getPaymentColor, 
     statusFilter,
     handleQuickUpdate, 

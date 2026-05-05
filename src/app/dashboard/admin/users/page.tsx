@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
-import { Search, User, Trash2, Shield, Eye, ShieldCheck, Activity } from 'lucide-react';
+import { Search, User, Trash2, Activity } from 'lucide-react';
 
 interface AdminUser {
     id: string | number;
@@ -189,12 +189,8 @@ export default function AdminUsersPage() {
                                 <UserRow
                                     key={user.id}
                                     user={user}
-                                    isDark={isDark}
-                                    setSelectedUser={setSelectedUser}
-                                    setDeleteUser={setDeleteUser}
-                                    getInitials={getInitials}
-                                    getRoleColor={getRoleColor}
-                                    formatDate={formatDate}
+                                    onUpdate={() => setSelectedUser(user)}
+                                    onDelete={() => setDeleteUser(user)}
                                 />
                             ))}
                         </tbody>
@@ -296,19 +292,29 @@ export default function AdminUsersPage() {
 
 const UserRow = React.memo(({ 
     user, 
-    isDark, 
-    setSelectedUser, 
-    setDeleteUser, 
-    getInitials, 
-    getRoleColor, 
-    formatDate 
-}: any) => {
+    onUpdate, 
+    onDelete 
+}: { 
+    user: AdminUser, 
+    onUpdate: () => void, 
+    onDelete: () => void 
+}) => {
+    const initials = `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase() || 'U';
+    const roleColor = (() => {
+        switch (user.role) {
+            case 'ADMIN': return 'text-slate-950';
+            case 'VENDOR': return 'text-slate-600';
+            default: return 'text-slate-400';
+        }
+    })();
+    const formattedDate = user.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase() : '';
+
     return (
         <tr className="group hover:bg-slate-50/50 transition-all duration-500">
             <td className="px-8 py-8">
                 <div className="flex items-center gap-6">
                     <div className="w-10 h-10 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
-                        {getInitials(user.first_name, user.last_name)}
+                        {initials}
                     </div>
                     <div className="min-w-0">
                         <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{user.first_name} {user.last_name}</p>
