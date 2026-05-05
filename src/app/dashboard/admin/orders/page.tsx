@@ -271,7 +271,19 @@ export default function AdminOrdersPage() {
                 try {
                     // BUG-07 FIX: backend field is `state`, not `status`
                     await Promise.all(ids.map(id => adminAPI.updateOrder(id, { state: newStatus })));
-                    setOrders(prev => prev.map(o => selectedIds.has(o.id) ? { ...o, status: newStatus } : o));
+                    setOrders(prev => prev.map(o => {
+                        if (selectedIds.has(o.id)) {
+                            const isPaid = newStatus === 'PAID' || newStatus === 'OPEN_FOR_BATCH';
+                            return { 
+                                ...o, 
+                                status: newStatus,
+                                payment_status: isPaid ? 'PAID' : o.payment_status,
+                                amount_paid: isPaid ? o.total_amount : o.amount_paid,
+                                balance_due: isPaid ? 0 : o.balance_due
+                            };
+                        }
+                        return o;
+                    }));
                     setSelectedIds(new Set());
                     addAlert(`Successfully updated ${ids.length} orders to ${label}`);
                 } catch (err) {
