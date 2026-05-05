@@ -108,7 +108,7 @@ function mapAPIOrder(order: any): Order {
         balance_due: Number(order.balance_due || 0),
         is_installment: !!order.is_installment,
         created_at: order.created_at || new Date().toISOString(),
-        thumbnail: order.thumbnail,
+        thumbnail: order.thumbnail || (order.items_summary?.[0]?.product?.image) || (order.items?.[0]?.product?.image),
         items: order.items_summary || order.items || []
     };
 }
@@ -471,6 +471,7 @@ export default function AdminOrdersPage() {
                                     </button>
                                 </th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Order ID</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Item</th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Customer</th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Date</th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
@@ -602,6 +603,20 @@ const OrderRow = React.memo(({
                     <span className="font-mono text-[12px] font-black tracking-tighter text-slate-900">
                         #{order.order_number || order.id.slice(0, 8)}
                     </span>
+                </div>
+            </td>
+            <td className="px-8 py-8">
+                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-lg overflow-hidden flex items-center justify-center relative group-hover:border-slate-900 transition-all">
+                    {order.thumbnail ? (
+                        <Image 
+                            src={getImageUrl(order.thumbnail)} 
+                            alt="Order Preview" 
+                            fill 
+                            className="object-cover"
+                        />
+                    ) : (
+                        <Package size={16} className="text-slate-200" />
+                    )}
                 </div>
             </td>
             <td className="px-8 py-8">
