@@ -66,22 +66,26 @@ export default function ProductCard({
         e.preventDefault();
         e.stopPropagation();
         
-        // Instant Feedback: Toast + Icon Swap
-        setShowSuccess(true);
-        showToast(`Added ${product.name} to basket`, 'success');
-        
-        // Reset success state after 2 seconds
-        setTimeout(() => setShowSuccess(false), 2000);
+        const displayName = product.display_name || product.short_name || product.name;
 
         try {
             setIsAdding(true);
-            // We don't await the store call for the UI feedback, 
-            // the store handles its own optimism.
-            addToCart({ ...product, image: product.image || "" });
+            await addToCart({ ...product, image: product.image || "" });
+            
+            // Success Feedback
+            setShowSuccess(true);
+            showToast(`Added ${displayName} to basket`, 'success');
+            setTimeout(() => setShowSuccess(false), 2000);
             setTimeout(() => trackAddToCart(product), 0);
-        } catch (error) {
-            console.error("Add to cart error:", error);
-            showToast("Failed to add to basket", "error");
+        } catch (error: any) {
+            if (error.message === 'VARIANT_REQUIRED') {
+                showToast("Please select a size or color", "warning");
+                // Redirect to product page after a short delay
+                window.location.href = `/products/${product.slug}`;
+            } else {
+                console.error("Add to cart error:", error);
+                showToast("Failed to add to basket", "error");
+            }
             setShowSuccess(false);
         } finally {
             setIsAdding(false);

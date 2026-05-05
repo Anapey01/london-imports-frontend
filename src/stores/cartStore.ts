@@ -21,6 +21,8 @@ export interface Product {
     stock_quantity?: number;
     preorder_status?: string;
     delivery_window_text?: string;
+    available_sizes?: string[];
+    available_colors?: string[];
 }
 
 export interface CartItem {
@@ -55,7 +57,7 @@ interface CartState {
     addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
-    clearCart: () => void;
+    clearCart: () => Promise<void>;
     setSelectedItems: (ids: Set<string>) => void;
 }
 
@@ -124,6 +126,14 @@ export const useCartStore = create<CartState>()((set, get) => ({
     },
 
     addToCart: async (product, quantity = 1, selectedSize, selectedColor, selectedVariant) => {
+        // Variant Guard: If product has variants, size/color must be provided
+        const hasVariants = (product.available_sizes && product.available_sizes.length > 0) || 
+                           (product.available_colors && product.available_colors.length > 0);
+        
+        if (hasVariants && !selectedSize && !selectedColor && !selectedVariant) {
+             throw new Error('VARIANT_REQUIRED');
+        }
+
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
         const reqVersion = get().version + 1;
         set({ version: reqVersion });
@@ -141,6 +151,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
                 }
             } catch {
                 set(state => ({ itemCount: Math.max(0, state.itemCount - quantity) }));
+                throw new Error('ADD_FAILED');
             }
         } else {
             const items = [...get().guestItems];
@@ -196,9 +207,20 @@ export const useCartStore = create<CartState>()((set, get) => ({
         }
     },
 
-    clearCart: () => {
+    clearCart: async () => {
+        const isAuthenticated = useAuthStore.getState().isAuthenticated;
+        const currentCart = get().cart;
+        
         localStorage.removeItem('guest_cart');
         set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: new Set() });
+
+        if (isAuthenticated && currentCart?.items) {
+            try {
+                await Promise.all(currentCart.items.map(item => ordersAPI.removeFromCart(item.id)));
+            } catch (error) {
+                console.error("[CartStore] Failed to clear server cart completely", error);
+            }
+        }
     },
 
     setSelectedItems: (ids) => set({ selectedItemIds: ids }),
