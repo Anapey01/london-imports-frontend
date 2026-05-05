@@ -9,7 +9,7 @@ import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymentInfo, trackWhatsAppContact, trackCheckoutError, trackPaymentLifecycle, trackEvent } from '@/lib/analytics';
 import { ExtendedCart, BackendError, type OrderItem } from '@/types';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ShoppingBag, Search } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 import CheckoutSkeleton from '@/components/checkout/CheckoutSkeleton';
@@ -178,8 +178,6 @@ function CheckoutPage() {
     }, [isAuthenticated, fetchCart]);
 
     // Sync Guard: If we are logged in but still have guest items, force a re-fetch/sync
-    // This prevents "Ghost Items" (items visible in UI but unknown to server)
-    const { guestItems, isMerging } = useCartStore();
     useEffect(() => {
         if (isAuthenticated && guestItems.length > 0 && !isMerging && !cartLoading) {
             console.info("[Checkout] Local items detected in authenticated session. Triggering high-priority sync...");
@@ -509,7 +507,7 @@ function CheckoutPage() {
     };
     
     // 1. Loading State
-    if (isLoadingPage || authLoading || (cartLoading && !cart && !orderNumberParam)) {
+    if (authLoading || (cartLoading && !cart && !orderNumberParam)) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-surface">
                 <div className="flex flex-col items-center gap-4">
