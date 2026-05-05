@@ -619,7 +619,7 @@ function CheckoutPage() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-[11px] font-black text-content-primary truncate">{item.product.short_name || item.product.sku || item.product.name}</p>
+                                                        <p className="text-[11px] font-black text-content-primary truncate">{item.product.display_name || item.product.short_name || item.product.sku || item.product.name}</p>
                                                         <div className="flex flex-wrap gap-2 mt-0.5">
                                                             {item.selected_size && (
                                                                 <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">

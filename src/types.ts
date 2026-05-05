@@ -48,6 +48,9 @@ export interface Product {
     preorder_status?: string;
     target_quantity: number;
     reservations_count: number;
+    display_name?: string;
+    short_name?: string;
+    sku?: string;
     is_discreet?: boolean;
 }
 export interface OrderItem {
@@ -57,6 +60,9 @@ export interface OrderItem {
         name: string;
         image: string;
         slug: string;
+        display_name?: string;
+        short_name?: string;
+        sku?: string;
         is_discreet?: boolean;
     };
     product_name: string;
