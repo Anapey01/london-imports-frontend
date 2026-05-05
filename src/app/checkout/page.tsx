@@ -259,7 +259,7 @@ function CheckoutPage() {
 
     const paymentAmount = useMemo(() => {
         const selSubtotal = (currentOrderData.items || [])
-            .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(i.id))
+            .filter((i: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.includes(i.id))
             .reduce((sum: number, i: CartItem | OrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
             
         // CRITICAL: Coerce all values to Numbers to prevent string concatenation ("860" + "0" = "8600")
@@ -605,7 +605,7 @@ function CheckoutPage() {
                                 <div className="p-6 sm:p-7 space-y-6">
                                     <div className="grid grid-cols-1 gap-4">
                                         {(currentOrderData.items || [])
-                                            .filter((item: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.has(item.id))
+                                            .filter((item: CartItem | OrderItem) => checkoutOrder || orderNumberParam ? true : selectedItemIds.includes(item.id))
                                             .map((item: CartItem | OrderItem) => (
                                                 <div key={item.id} className="flex gap-4 items-center p-4 bg-surface border border-border-standard rounded-xl">
                                                     <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-standard p-1 relative">
@@ -619,7 +619,7 @@ function CheckoutPage() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-[11px] font-black text-content-primary truncate">{item.product?.name}</p>
+                                                        <p className="text-[11px] font-black text-content-primary truncate">{item.product.short_name || item.product.sku || item.product.name}</p>
                                                         <div className="flex flex-wrap gap-2 mt-0.5">
                                                             {item.selected_size && (
                                                                 <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">

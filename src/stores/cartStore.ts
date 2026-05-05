@@ -1,8 +1,10 @@
 /**
  * London's Imports - Cart Store
  * Optimized for Snappiness & Absolute Resilience.
+ * Implements Persistence to survive page refreshes.
  */
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { ordersAPI } from '@/lib/api';
 import { useAuthStore } from './authStore';
 
@@ -13,6 +15,7 @@ export interface Product {
     image?: string | null;
     display_name?: string;
     short_name?: string;
+    sku?: string;
     subtitle?: string;
     price: number;
     estimated_shipping_fee?: number;
@@ -21,8 +24,6 @@ export interface Product {
     stock_quantity?: number;
     preorder_status?: string;
     delivery_window_text?: string;
-    available_sizes?: string[];
-    available_colors?: string[];
 }
 
 export interface CartItem {
@@ -50,178 +51,160 @@ interface CartState {
     isLoading: boolean;
     isMerging: boolean;
     itemCount: number;
-    selectedItemIds: Set<string>;
+    selectedItemIds: string[]; // Changed to string[] for easier persistence
     version: number;
 
     fetchCart: () => Promise<void>;
     addToCart: (product: Product, quantity?: number, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
-    clearCart: () => Promise<void>;
-    setSelectedItems: (ids: Set<string>) => void;
+    clearCart: () => void;
+    setSelectedItems: (ids: string[]) => void;
 }
 
-export const useCartStore = create<CartState>()((set, get) => ({
-    cart: null,
-    guestItems: [],
-    isLoading: false,
-    isMerging: false,
-    itemCount: 0,
-    selectedItemIds: new Set(),
-    version: 0,
+export const useCartStore = create<CartState>()(
+    persist(
+        (set, get) => ({
+            cart: null,
+            guestItems: [],
+            isLoading: false,
+            isMerging: false,
+            itemCount: 0,
+            selectedItemIds: [],
+            version: 0,
 
-    fetchCart: async () => {
-        const reqVersion = get().version + 1;
-        set({ version: reqVersion });
+            fetchCart: async () => {
+                const reqVersion = get().version + 1;
+                set({ version: reqVersion });
 
-        const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        
-        if (isAuthenticated) {
-            // SILENT BACKGROUND MERGE
-            const savedGuest = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
-            if (savedGuest && !get().isMerging) {
-                (async () => {
-                    try {
-                        set({ isMerging: true });
-                        const guestItemsData: CartItem[] = JSON.parse(savedGuest);
-                        for (const item of guestItemsData) {
-                            try { 
-                                await ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color); 
-                            } catch {
-                                // Silent failure for background sync
+                const isAuthenticated = useAuthStore.getState().isAuthenticated;
+                
+                if (isAuthenticated) {
+                    // Check for items to merge
+                    const { guestItems, isMerging } = get();
+                    if (guestItems.length > 0 && !isMerging) {
+                        try {
+                            set({ isMerging: true });
+                            for (const item of guestItems) {
+                                try { 
+                                    await ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size, item.selected_color); 
+                                } catch (e) {
+                                    console.error("Merge error for item:", item.product.name, e);
+                                }
                             }
+                            // Clear guest items after successful (or attempted) merge
+                            set({ guestItems: [] });
+                        } finally { 
+                            set({ isMerging: false }); 
                         }
-                        const res = await ordersAPI.cart({ t: Date.now() });
-                        if (res.data.items && res.data.items.length > 0) {
-                            localStorage.removeItem('guest_cart');
-                            set({ guestItems: [], cart: res.data });
+                    }
+
+                    try {
+                        if (!get().cart) set({ isLoading: true });
+                        const response = await ordersAPI.cart({ t: Date.now() });
+                        if (get().version === reqVersion) {
+                            const serverItems = response.data.items || [];
+                            set({ 
+                                cart: response.data, 
+                                itemCount: serverItems.reduce((s: number, i: CartItem) => s + i.quantity, 0),
+                                isLoading: false 
+                            });
                         }
                     } catch {
-                        // Silent failure
-                    } finally { 
-                        set({ isMerging: false }); 
+                        if (get().version === reqVersion) set({ isLoading: false });
                     }
-                })();
-            }
-
-            try {
-                if (!get().cart) set({ isLoading: true });
-                const response = await ordersAPI.cart({ t: Date.now() });
-                if (get().version === reqVersion) {
-                    const serverItems = response.data.items || [];
-                    set({ 
-                        cart: response.data, 
-                        itemCount: serverItems.length > 0 ? serverItems.reduce((s: number, i: CartItem) => s + i.quantity, 0) : get().guestItems.reduce((s: number, i: CartItem) => s + i.quantity, 0),
-                        isLoading: false 
-                    });
+                } else {
+                    // Guest mode: use persisted guestItems
+                    const { guestItems } = get();
+                    set({ itemCount: guestItems.reduce((s, i) => s + i.quantity, 0) });
                 }
-            } catch {
-                if (get().version === reqVersion) set({ isLoading: false });
-            }
-        } else {
-            const saved = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
-            const items = saved ? JSON.parse(saved) : [];
-            set({ guestItems: items, itemCount: items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
-        }
-    },
+            },
 
-    addToCart: async (product, quantity = 1, selectedSize, selectedColor, selectedVariant) => {
-        // Variant Guard: If product has variants, size/color must be provided
-        const hasVariants = (product.available_sizes && product.available_sizes.length > 0) || 
-                           (product.available_colors && product.available_colors.length > 0);
-        
-        if (hasVariants && !selectedSize && !selectedColor && !selectedVariant) {
-             throw new Error('VARIANT_REQUIRED');
-        }
+            addToCart: async (product, quantity = 1, selectedSize, selectedColor, selectedVariant) => {
+                const isAuthenticated = useAuthStore.getState().isAuthenticated;
+                const reqVersion = get().version + 1;
+                set({ version: reqVersion });
 
-        const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        const reqVersion = get().version + 1;
-        set({ version: reqVersion });
+                const size = selectedVariant ? (selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name) : (selectedSize || "");
+                const price = selectedVariant ? parseFloat(selectedVariant.price) : product.price;
 
-        const size = selectedVariant ? (selectedSize ? `${selectedVariant.name}, ${selectedSize}` : selectedVariant.name) : (selectedSize || "");
-        const price = selectedVariant ? parseFloat(selectedVariant.price) : product.price;
-
-        if (isAuthenticated) {
-            // OPTIMISTIC
-            set(state => ({ itemCount: state.itemCount + quantity }));
-            try {
-                const res = await ordersAPI.addToCart(product.id, quantity, size, selectedColor, selectedVariant?.id);
-                if (get().version <= reqVersion) {
-                    set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
+                if (isAuthenticated) {
+                    // OPTIMISTIC
+                    set(state => ({ itemCount: state.itemCount + quantity }));
+                    try {
+                        const res = await ordersAPI.addToCart(product.id, quantity, size, selectedColor, selectedVariant?.id);
+                        if (get().version <= reqVersion) {
+                            set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
+                        }
+                    } catch {
+                        // Rollback on error
+                        set(state => ({ itemCount: Math.max(0, state.itemCount - quantity) }));
+                    }
+                } else {
+                    const items = [...get().guestItems];
+                    const idx = items.findIndex(i => i.product.id === product.id && i.selected_size === size && i.selected_color === selectedColor);
+                    if (idx >= 0) {
+                        items[idx].quantity += quantity;
+                        items[idx].total_price = items[idx].quantity * items[idx].unit_price;
+                    } else {
+                        items.push({
+                            id: `guest_${Date.now()}`,
+                            product: { ...product },
+                            quantity,
+                            unit_price: price,
+                            total_price: price * quantity,
+                            selected_size: size,
+                            selected_color: selectedColor
+                        });
+                    }
+                    set({ guestItems: items, itemCount: items.reduce((s, i) => s + i.quantity, 0) });
                 }
-            } catch {
-                set(state => ({ itemCount: Math.max(0, state.itemCount - quantity) }));
-                throw new Error('ADD_FAILED');
-            }
-        } else {
-            const items = [...get().guestItems];
-            const idx = items.findIndex(i => i.product.id === product.id && i.selected_size === size && i.selected_color === selectedColor);
-            if (idx >= 0) {
-                items[idx].quantity += quantity;
-                items[idx].total_price = items[idx].quantity * items[idx].unit_price;
-            } else {
-                items.push({
-                    id: `guest_${Date.now()}`,
-                    product: { ...product },
-                    quantity,
-                    unit_price: price,
-                    total_price: price * quantity,
-                    selected_size: size,
-                    selected_color: selectedColor
-                });
-            }
-            localStorage.setItem('guest_cart', JSON.stringify(items));
-            set({ guestItems: items, itemCount: items.reduce((s, i) => s + i.quantity, 0) });
+            },
+
+            removeFromCart: async (itemId) => {
+                const isAuthenticated = useAuthStore.getState().isAuthenticated;
+                if (isAuthenticated && !itemId.startsWith('guest_')) {
+                    try {
+                        const res = await ordersAPI.removeFromCart(itemId);
+                        set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
+                    } catch {
+                        // Silent fail
+                    }
+                } else {
+                    const items = get().guestItems.filter(i => i.id !== itemId);
+                    set({ guestItems: items, itemCount: items.reduce((s, i) => s + i.quantity, 0) });
+                }
+            },
+
+            updateQuantity: async (itemId, quantity) => {
+                const isAuthenticated = useAuthStore.getState().isAuthenticated;
+                if (isAuthenticated && !itemId.startsWith('guest_')) {
+                    try {
+                        const res = await ordersAPI.updateCartItem(itemId, quantity);
+                        set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
+                    } catch {
+                        // Silent fail
+                    }
+                } else {
+                    const items = get().guestItems.map(i => i.id === itemId ? { ...i, quantity, total_price: i.unit_price * quantity } : i);
+                    set({ guestItems: items, itemCount: items.reduce((s, i) => s + i.quantity, 0) });
+                }
+            },
+
+            clearCart: () => {
+                set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: [] });
+            },
+
+            setSelectedItems: (ids) => set({ selectedItemIds: ids }),
+        }),
+        {
+            name: 'li-cart-storage',
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({ 
+                guestItems: state.guestItems,
+                selectedItemIds: state.selectedItemIds 
+            }),
         }
-    },
+    )
+);
 
-    removeFromCart: async (itemId) => {
-        const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        if (isAuthenticated && !itemId.startsWith('guest_')) {
-            try {
-                const res = await ordersAPI.removeFromCart(itemId);
-                set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
-            } catch {
-                // Silent fail
-            }
-        } else {
-            const items = get().guestItems.filter(i => i.id !== itemId);
-            localStorage.setItem('guest_cart', JSON.stringify(items));
-            set({ guestItems: items, itemCount: items.reduce((s, i) => s + i.quantity, 0) });
-        }
-    },
-
-    updateQuantity: async (itemId, quantity) => {
-        const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        if (isAuthenticated && !itemId.startsWith('guest_')) {
-            try {
-                const res = await ordersAPI.updateCartItem(itemId, quantity);
-                set({ cart: res.data, itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) });
-            } catch {
-                // Silent fail
-            }
-        } else {
-            const items = get().guestItems.map(i => i.id === itemId ? { ...i, quantity, total_price: i.unit_price * quantity } : i);
-            localStorage.setItem('guest_cart', JSON.stringify(items));
-            set({ guestItems: items, itemCount: items.reduce((s, i) => s + i.quantity, 0) });
-        }
-    },
-
-    clearCart: async () => {
-        const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        const currentCart = get().cart;
-        
-        localStorage.removeItem('guest_cart');
-        set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: new Set() });
-
-        if (isAuthenticated && currentCart?.items) {
-            try {
-                await Promise.all(currentCart.items.map(item => ordersAPI.removeFromCart(item.id)));
-            } catch (error) {
-                console.error("[CartStore] Failed to clear server cart completely", error);
-            }
-        }
-    },
-
-    setSelectedItems: (ids) => set({ selectedItemIds: ids }),
-}));

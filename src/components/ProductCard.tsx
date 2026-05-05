@@ -66,7 +66,7 @@ export default function ProductCard({
         e.preventDefault();
         e.stopPropagation();
         
-        const displayName = product.display_name || product.short_name || product.name;
+        const displayName = product.short_name || product.sku || product.name;
 
         try {
             setIsAdding(true);
