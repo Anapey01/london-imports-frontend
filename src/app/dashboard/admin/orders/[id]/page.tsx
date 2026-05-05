@@ -319,7 +319,7 @@ export default function AdminOrderDetailPage() {
                     await adminAPI.updateOrder(orderId, { 
                         payment_status: 'PAID', 
                         status: 'PAID',
-                        amount_paid: order.total 
+                        amount_paid: order?.total || 0 
                     });
                     addAlert('Manual credit override successful');
                     await loadOrder();
