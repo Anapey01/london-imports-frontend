@@ -326,10 +326,10 @@ const UserRow = React.memo(({
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic truncate max-w-[200px]">{user.email}</p>
             </td>
             <td className="px-8 py-8 hidden lg:table-cell">
-                <p className="text-[10px] font-black text-slate-300 uppercase tabular-nums">{formatDate(user.created_at)}</p>
+                <p className="text-[10px] font-black text-slate-300 uppercase tabular-nums">{formattedDate}</p>
             </td>
             <td className="px-8 py-8 hidden lg:table-cell">
-                <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${getRoleColor(user.role)}`}>
+                <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${roleColor}`}>
                     {user.role}
                 </span>
             </td>
