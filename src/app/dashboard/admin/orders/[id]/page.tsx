@@ -13,6 +13,7 @@ import {
     ChevronLeft,
     MapPin,
     MessageCircle,
+    ArrowRightLeft,
     History as OrderHistoryIcon
 } from 'lucide-react';
 import LogisticsStepper from '@/components/admin/orders/LogisticsStepper';
@@ -76,6 +77,14 @@ export default function AdminOrderDetailPage() {
         delivery_region: '',
         delivery_gps: '',
         customer_notes: ''
+    });
+
+    const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+    const [customerOrders, setCustomerOrders] = useState<any[]>([]);
+    const [transferData, setTransferData] = useState({
+        target_order_id: '',
+        amount: 0,
+        reason: ''
     });
 
     const [confirmModal, setConfirmModal] = useState<{
@@ -168,6 +177,46 @@ export default function AdminOrderDetailPage() {
                 }
             }
         });
+    };
+
+    const handleTransferPayment = async () => {
+        if (!transferData.target_order_id || transferData.amount <= 0) {
+            addAlert('Please select an order and amount', 'error');
+            return;
+        }
+        
+        if (transferData.amount > parseFloat(order?.amount_paid || '0')) {
+            addAlert('Cannot transfer more than the amount paid', 'error');
+            return;
+        }
+
+        setUpdating(true);
+        try {
+            await adminAPI.transferPayment(orderId, transferData);
+            addAlert(`Transferred ₵${transferData.amount.toLocaleString()} successfully`);
+            setIsTransferModalOpen(false);
+            await loadOrder();
+        } catch (error: any) {
+            addAlert(error.response?.data?.error || 'Transfer failed', 'error');
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const openTransferModal = async () => {
+        setIsTransferModalOpen(true);
+        setTransferData({
+            target_order_id: '',
+            amount: parseFloat(order?.amount_paid || '0'),
+            reason: ''
+        });
+        try {
+            const response = await adminAPI.orders({ search: order?.email });
+            // Filter out current order and cancelled orders
+            setCustomerOrders(response.data.filter((o: any) => o.id !== orderId && o.status !== 'CANCELLED'));
+        } catch (error) {
+            console.error('Failed to load customer orders:', error);
+        }
     };
 
     const startEditing = () => {
@@ -488,6 +537,16 @@ export default function AdminOrderDetailPage() {
                                         <CreditCard className="w-5 h-5" />
                                     </button>
                                 )}
+                                {parseFloat(order.amount_paid || '0') > 0 && order.status !== 'CANCELLED' && (
+                                    <button
+                                        onClick={openTransferModal}
+                                        disabled={updating}
+                                        className="flex items-center justify-between p-4 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                                    >
+                                        Transfer Payment
+                                        <ArrowRightLeft className="w-5 h-5" />
+                                    </button>
+                                )}
                                 
                                 <div className="pt-4 mt-4 border-t border-primary-surface/10 grid grid-cols-1 gap-2">
                                     <button
@@ -550,6 +609,83 @@ export default function AdminOrderDetailPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Transfer Payment Modal */}
+            <AnimatePresence>
+                {isTransferModalOpen && (
+                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                        <div className={`w-full max-w-md rounded-[2.5rem] overflow-hidden ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-2xl'}`}>
+                            <div className="p-8">
+                                <h2 className={`text-xl font-black tracking-tight mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    Transfer Payment
+                                </h2>
+                                <p className={`text-xs font-bold opacity-40 uppercase tracking-widest mb-6`}>
+                                    Internal Ledger Adjustment
+                                </p>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Destination Order</label>
+                                        <select
+                                            value={transferData.target_order_id}
+                                            onChange={(e) => setTransferData({ ...transferData, target_order_id: e.target.value })}
+                                            className={`w-full p-4 rounded-2xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                        >
+                                            <option value="">Select an order...</option>
+                                            {customerOrders.map(o => (
+                                                <option key={o.id} value={o.id}>
+                                                    #{o.order_number} (Total: ₵{parseFloat(o.total).toLocaleString()})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Transfer Amount (GHS)</label>
+                                        <input
+                                            type="number"
+                                            value={transferData.amount}
+                                            onChange={(e) => setTransferData({ ...transferData, amount: parseFloat(e.target.value) })}
+                                            className={`w-full p-4 rounded-2xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                            max={parseFloat(order.amount_paid || '0')}
+                                        />
+                                        <p className="text-[10px] font-bold text-pink-500 uppercase tracking-widest ml-1">
+                                            Max available: ₵{parseFloat(order.amount_paid || '0').toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Adjustment Reason</label>
+                                        <textarea
+                                            value={transferData.reason}
+                                            onChange={(e) => setTransferData({ ...transferData, reason: e.target.value })}
+                                            className={`w-full p-4 rounded-2xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                            placeholder="e.g. Mistaken payment for wrong item"
+                                            rows={3}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 mt-8">
+                                    <button
+                                        onClick={() => setIsTransferModalOpen(false)}
+                                        className={`p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 ${isDark ? 'border-slate-800 text-slate-400' : 'border-gray-100 text-gray-500'}`}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleTransferPayment}
+                                        disabled={updating || !transferData.target_order_id || transferData.amount <= 0}
+                                        className="p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-pink-500 text-white disabled:opacity-50"
+                                    >
+                                        {updating ? 'Processing...' : 'Execute Transfer'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Confirmation Modal */}
             <ConfirmModal

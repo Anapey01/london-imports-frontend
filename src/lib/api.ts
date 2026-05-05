@@ -296,6 +296,8 @@ export const adminAPI = {
   getOrder: (id: string) => api.get(`/admin/orders/${id}/`),
   updateOrder: (id: string, data: unknown) => api.patch(`/admin/orders/${id}/`, data),
   deleteOrder: (id: string) => api.delete(`/admin/orders/${id}/`),
+  transferPayment: (id: string, data: { target_order_id: string; amount: number; reason?: string }) => 
+    api.post(`/admin/orders/${id}/transfer-payment/`, data),
 
   // Products management
   products: (params?: unknown) => api.get('/admin/products/', { params }),
