@@ -131,28 +131,27 @@ export default function PaymentTransferPage() {
     const OrderListItem = ({ order, onSelect, type }: { order: Order, onSelect: () => void, type: 'source' | 'target' }) => (
         <button
             onClick={onSelect}
-            className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all border ${
+            className={`w-full flex items-center gap-3 p-3 md:p-4 rounded-2xl transition-all border ${
                 isDark ? 'border-slate-800 bg-slate-900/50 hover:bg-slate-800' : 'border-gray-100 bg-white hover:bg-gray-50'
             }`}
         >
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0 ${
                 type === 'source' ? 'bg-pink-500/10 text-pink-500' : 'bg-blue-500/10 text-blue-500'
             }`}>
-                {type === 'source' ? <ArrowRightLeft className="w-5 h-5 rotate-180" /> : <ArrowRightLeft className="w-5 h-5" />}
+                {type === 'source' ? <ArrowRightLeft className="w-4 h-4 md:w-5 md:h-5 rotate-180" /> : <ArrowRightLeft className="w-4 h-4 md:w-5 md:h-5" />}
             </div>
-            <div className="flex-1 min-w-0">
-                <p className={`text-sm font-black tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <div className="flex-1 min-w-0 text-left">
+                <p className={`text-xs md:text-sm font-black tracking-tight truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     #{order.order_number}
                 </p>
-                <p className="text-[10px] font-bold opacity-40 uppercase truncate">
-                    {order.customer.name} • {order.customer.email}
+                <p className="text-[9px] md:text-[10px] font-bold opacity-40 uppercase truncate">
+                    {order.customer.name}
                 </p>
             </div>
-            <div className="text-right">
-                <p className="text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</p>
-                <p className="text-[10px] font-bold opacity-40 uppercase">Paid</p>
+            <div className="text-right shrink-0">
+                <p className="text-xs md:text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</p>
+                <p className="text-[9px] md:text-[10px] font-bold opacity-40 uppercase">Paid</p>
             </div>
-            <ChevronRight className="w-4 h-4 opacity-20" />
         </button>
     );
 
@@ -161,7 +160,7 @@ export default function PaymentTransferPage() {
             layoutId={type}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`relative p-6 rounded-[2rem] border-2 shadow-xl ${
+            className={`relative p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-2 shadow-xl ${
                 type === 'source' 
                     ? 'border-pink-500/30 bg-pink-500/5' 
                     : 'border-blue-500/30 bg-blue-500/5'
@@ -169,53 +168,53 @@ export default function PaymentTransferPage() {
         >
             <button 
                 onClick={onClear}
-                className="absolute top-4 right-4 text-[10px] font-black uppercase underline tracking-widest opacity-40 hover:opacity-100 transition-opacity"
+                className="absolute top-4 right-4 text-[9px] md:text-[10px] font-black uppercase underline tracking-widest opacity-40 hover:opacity-100 transition-opacity"
             >
                 Change
             </button>
-            <div className="flex items-center gap-4 mb-6">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 ${
                     type === 'source' ? 'bg-pink-500 text-white' : 'bg-blue-500 text-white'
                 }`}>
-                    {type === 'source' ? <ArrowRightLeft className="w-6 h-6 rotate-180" /> : <ArrowRightLeft className="w-6 h-6" />}
+                    {type === 'source' ? <ArrowRightLeft className="w-5 h-5 md:w-6 md:h-6 rotate-180" /> : <ArrowRightLeft className="w-5 h-5 md:w-6 md:h-6" />}
                 </div>
-                <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-1">
+                <div className="min-w-0">
+                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-40 mb-0.5 md:mb-1">
                         {type === 'source' ? 'Source Order' : 'Destination Order'}
                     </p>
-                    <h3 className={`text-2xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <h3 className={`text-xl md:text-2xl font-black tracking-tighter truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         #{order.order_number}
                     </h3>
                 </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-                <div className={`p-4 rounded-2xl ${isDark ? 'bg-slate-900' : 'bg-white/50 shadow-sm'}`}>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Customer</p>
-                    <p className="text-sm font-bold truncate">{order.customer.name}</p>
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
+                <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl ${isDark ? 'bg-slate-900' : 'bg-white/50 shadow-sm'}`}>
+                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Customer</p>
+                    <p className="text-[11px] md:text-sm font-bold truncate">{order.customer.name}</p>
                 </div>
-                <div className={`p-4 rounded-2xl ${isDark ? 'bg-slate-900' : 'bg-white/50 shadow-sm'}`}>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Paid Balance</p>
-                    <p className="text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</p>
+                <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl ${isDark ? 'bg-slate-900' : 'bg-white/50 shadow-sm'}`}>
+                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Paid Balance</p>
+                    <p className="text-[11px] md:text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</p>
                 </div>
             </div>
         </motion.div>
     );
 
     return (
-        <div className="max-w-7xl mx-auto space-y-12 pb-32 pt-4">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
+        <div className="max-w-7xl mx-auto space-y-6 md:space-y-12 pb-40 pt-4 md:pt-8 px-4">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-8 h-8 rounded-lg bg-pink-500 flex items-center justify-center">
-                            <ArrowRightLeft className="w-5 h-5 text-white" />
+                    <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
+                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-pink-500 flex items-center justify-center">
+                            <ArrowRightLeft className="w-4 h-4 md:w-5 md:h-5 text-white" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500">Financial Ops</span>
+                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-pink-500">Financial Ops</span>
                     </div>
-                    <h1 className={`text-4xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <h1 className={`text-2xl md:text-4xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         Payment Transfer Hub
                     </h1>
                 </div>
-                <div className={`px-6 py-3 rounded-2xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
+                <div className={`hidden md:block px-6 py-3 rounded-2xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">System Status</p>
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -224,32 +223,32 @@ export default function PaymentTransferPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12">
                 {/* Source Selection Area */}
-                <div className="space-y-6">
+                <div className="space-y-4">
                     {selectedSource ? (
                         <SelectedCard order={selectedSource} onClear={() => setSelectedSource(null)} type="source" />
                     ) : (
-                        <div className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} space-y-6`}>
+                        <div className={`p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} space-y-4 md:space-y-6`}>
                             <div className="flex items-center justify-between">
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Search Source</h2>
-                                {searchingSource && <Loader2 className="w-4 h-4 text-pink-500 animate-spin" />}
+                                <h2 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Search Source</h2>
+                                {searchingSource && <Loader2 className="w-3 h-3 md:w-4 md:h-4 text-pink-500 animate-spin" />}
                             </div>
                             <div className="relative group">
-                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20 group-focus-within:text-pink-500 group-focus-within:opacity-100 transition-all" />
+                                <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 opacity-20 group-focus-within:text-pink-500 group-focus-within:opacity-100 transition-all" />
                                 <input
-                                    placeholder="Type Order #, Name or Email..."
+                                    placeholder="Order #, Name or Email..."
                                     value={sourceSearch}
                                     onChange={(e) => setSourceSearch(e.target.value)}
-                                    className={`w-full pl-16 pr-6 py-5 rounded-3xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                    className={`w-full pl-12 md:pl-16 pr-4 md:pr-6 py-3 md:py-5 rounded-2xl md:rounded-3xl text-xs md:text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-gray-50 border-gray-100'}`}
                                 />
                             </div>
-                            <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="space-y-2 max-h-[250px] md:max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
                                 {sourceOrders.map(o => (
                                     <OrderListItem key={o.id} order={o} onSelect={() => setSelectedSource(o)} type="source" />
                                 ))}
                                 {sourceSearch && sourceOrders.length === 0 && !searchingSource && (
-                                    <div className="py-12 text-center opacity-30 italic text-sm">No results for &quot;{sourceSearch}&quot;</div>
+                                    <div className="py-8 text-center opacity-30 italic text-[11px] md:text-sm">No results for &quot;{sourceSearch}&quot;</div>
                                 )}
                             </div>
                         </div>
@@ -257,30 +256,30 @@ export default function PaymentTransferPage() {
                 </div>
 
                 {/* Target Selection Area */}
-                <div className="space-y-6">
+                <div className="space-y-4">
                     {selectedTarget ? (
                         <SelectedCard order={selectedTarget} onClear={() => setSelectedTarget(null)} type="target" />
                     ) : (
-                        <div className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} space-y-6`}>
+                        <div className={`p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} space-y-4 md:space-y-6`}>
                             <div className="flex items-center justify-between">
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Search Destination</h2>
-                                {searchingTarget && <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />}
+                                <h2 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Search Destination</h2>
+                                {searchingTarget && <Loader2 className="w-3 h-3 md:w-4 md:h-4 text-blue-500 animate-spin" />}
                             </div>
                             <div className="relative group">
-                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20 group-focus-within:text-blue-500 group-focus-within:opacity-100 transition-all" />
+                                <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 opacity-20 group-focus-within:text-blue-500 group-focus-within:opacity-100 transition-all" />
                                 <input
-                                    placeholder="Type Order #, Name or Email..."
+                                    placeholder="Order #, Name or Email..."
                                     value={targetSearch}
                                     onChange={(e) => setTargetSearch(e.target.value)}
-                                    className={`w-full pl-16 pr-6 py-5 rounded-3xl text-sm font-bold border-2 focus:border-blue-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                    className={`w-full pl-12 md:pl-16 pr-4 md:pr-6 py-3 md:py-5 rounded-2xl md:rounded-3xl text-xs md:text-sm font-bold border-2 focus:border-blue-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-gray-50 border-gray-100'}`}
                                 />
                             </div>
-                            <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="space-y-2 max-h-[250px] md:max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
                                 {targetOrders.map(o => (
                                     <OrderListItem key={o.id} order={o} onSelect={() => setSelectedTarget(o)} type="target" />
                                 ))}
                                 {targetSearch && targetOrders.length === 0 && !searchingTarget && (
-                                    <div className="py-12 text-center opacity-30 italic text-sm">No results for &quot;{targetSearch}&quot;</div>
+                                    <div className="py-8 text-center opacity-30 italic text-[11px] md:text-sm">No results for &quot;{targetSearch}&quot;</div>
                                 )}
                             </div>
                         </div>
@@ -289,53 +288,53 @@ export default function PaymentTransferPage() {
             </div>
 
             {/* Execution Bridge */}
-            <div className="fixed bottom-0 left-0 md:left-64 right-0 p-8 z-[100] pointer-events-none">
+            <div className="fixed bottom-0 left-0 md:left-64 right-0 p-4 md:p-8 z-[100] pointer-events-none">
                 <div className="max-w-4xl mx-auto pointer-events-auto">
                     <motion.div 
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
-                        className={`p-2 rounded-[3rem] shadow-2xl backdrop-blur-xl border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-gray-100'}`}
+                        className={`p-2 rounded-[2rem] md:rounded-[3rem] shadow-2xl backdrop-blur-xl border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-gray-100'}`}
                     >
-                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
-                            <div className="flex-1 flex flex-col md:flex-row gap-2">
-                                <div className="flex-1 px-8 py-5 rounded-[2.5rem] flex flex-col justify-center gap-1">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Transfer Sum</label>
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-xl font-black text-pink-500">₵</span>
+                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-1 md:gap-2">
+                            <div className="flex-1 flex flex-col md:flex-row gap-1 md:gap-2">
+                                <div className="flex-1 px-5 md:px-8 py-3 md:py-5 rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-center gap-0.5 md:gap-1">
+                                    <label className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-40">Amount</label>
+                                    <div className="flex items-baseline gap-1 md:gap-2">
+                                        <span className="text-lg md:text-xl font-black text-pink-500">₵</span>
                                         <input
                                             type="number"
                                             value={amount}
                                             onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                                            className={`bg-transparent text-2xl font-black outline-none w-full ${isDark ? 'text-white' : 'text-gray-900'}`}
+                                            className={`bg-transparent text-lg md:text-2xl font-black outline-none w-full ${isDark ? 'text-white' : 'text-gray-900'}`}
                                             placeholder="0.00"
                                         />
                                     </div>
                                 </div>
-                                <div className={`flex-1 px-8 py-5 rounded-[2.5rem] flex flex-col justify-center gap-1 ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Protocol Reason</label>
+                                <div className={`flex-1 px-5 md:px-8 py-3 md:py-5 rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-center gap-0.5 md:gap-1 ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
+                                    <label className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-40">Reason</label>
                                     <input
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
-                                        className={`bg-transparent text-sm font-bold outline-none w-full ${isDark ? 'text-white' : 'text-gray-900'}`}
-                                        placeholder="e.g. Correcting mistaken order payment"
+                                        className={`bg-transparent text-[11px] md:text-sm font-bold outline-none w-full ${isDark ? 'text-white' : 'text-gray-900'}`}
+                                        placeholder="Brief reason..."
                                     />
                                 </div>
                             </div>
                             <button
                                 onClick={handleTransfer}
                                 disabled={loading || !selectedSource || !selectedTarget || amount <= 0}
-                                className={`lg:w-72 h-auto py-6 lg:py-0 px-10 rounded-[2.5rem] flex items-center justify-center gap-4 transition-all ${
+                                className={`lg:w-64 h-14 md:h-auto py-3 md:py-6 px-8 md:px-10 rounded-[1.5rem] md:rounded-[2.5rem] flex items-center justify-center gap-3 md:gap-4 transition-all ${
                                     loading || !selectedSource || !selectedTarget || amount <= 0
                                         ? 'bg-gray-500/10 text-gray-500 cursor-not-allowed'
                                         : 'bg-pink-600 text-white hover:bg-pink-500 shadow-lg shadow-pink-500/20 active:scale-95'
                                 }`}
                             >
-                                <span className="text-xs font-black uppercase tracking-[0.2em]">Authorize Now</span>
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRightLeft className="w-5 h-5" />}
+                                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">Authorize</span>
+                                {loading ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <ArrowRightLeft className="w-4 h-4 md:w-5 md:h-5" />}
                             </button>
                         </div>
                         
-                        <div className="px-10 py-3 flex items-center justify-between">
+                        <div className="hidden md:flex px-10 py-3 items-center justify-between">
                             <div className="flex gap-6">
                                 <div className="flex items-center gap-2 opacity-40">
                                     <CheckCircle2 className="w-3 h-3" />
@@ -375,17 +374,14 @@ export default function PaymentTransferPage() {
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
+                    width: 3px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-track {
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(236, 72, 153, 0.2);
-                    border-radius: 20px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(236, 72, 153, 0.4);
+                    background: rgba(236, 72, 153, 0.1);
+                    border-radius: 10px;
                 }
             `}</style>
         </div>

@@ -21,6 +21,7 @@ import {
   FaqSchema, 
   BreadcrumbSchema 
 } from "@/components/seo/JsonLd";
+import { NavbarWrapper, FooterWrapper, MobileBottomNavWrapper } from "@/components/layout/LayoutWrappers";
 
 
 // Lazy load below-the-fold components to reduce initial bundle
@@ -173,10 +174,10 @@ export default async function RootLayout({
 
         <Providers>
           <PWAUpdater />
-          <Navbar />
+          <NavbarWrapper />
           <main id="main-content" className="pb-20 md:pb-0 outline-none">{children}</main>
-          <Footer />
-          <MobileBottomNav />
+          <FooterWrapper />
+          <MobileBottomNavWrapper />
           <ReloadPrompt />
         </Providers>
       </body>
