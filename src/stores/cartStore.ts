@@ -101,109 +101,62 @@ export const useCartStore = create<CartState>()((set, get) => ({
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
         const hasToken = !!accessToken;
         
-        // Only fetch from server if authenticated AND we actually have a token
-        // This prevents "stale" sessions from triggering 401/redirects
         if (isAuthenticated && hasToken) {
-            set({ isLoading: true });
-
-            // MERGE LOGIC: Check for guest items to sync
+            // SILENT BACKGROUND MERGE
             const savedGuest = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
-            
-            // If already merging, we wait for it to finish before proceeding with the fetch
-            if (get().isMerging) {
-                console.info("[CartStore] Sync already in progress, waiting...");
-                // Poll every 500ms for completion (max 10s)
-                let attempts = 0;
-                while (get().isMerging && attempts < 20) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    attempts++;
-                }
-            }
-
             if (savedGuest && !get().isMerging) {
-                try {
-                    set({ isMerging: true });
-                    const guestItemsToSync: CartItem[] = JSON.parse(savedGuest);
-                    
-                    if (guestItemsToSync.length > 0) {
-                        console.info("[CartStore] Syncing guest items to server...", guestItemsToSync.length);
-                        
-                        const oldToNewMap = new Map<string, string>();
-                        const syncSuccesses: string[] = [];
-                        
-                        // Add each guest item to server cart SEQUENTIALLY
-                        for (const item of guestItemsToSync) {
-                            try {
-                                const res = await ordersAPI.addToCart(
-                                    item.product.id, 
-                                    item.quantity, 
-                                    item.selected_size || "", 
-                                    item.selected_color || ""
-                                );
-                                
-                                syncSuccesses.push(item.id);
-                                
-                                // Map the guest ID to the new server ID
-                                const newServerItem = res.data.items?.find((i: any) => 
-                                    i.product.id === item.product.id && 
-                                    (i.selected_size || "") === (item.selected_size || "") && 
-                                    (i.selected_color || "") === (item.selected_color || "")
-                                );
-                                if (newServerItem) {
-                                    oldToNewMap.set(item.id, newServerItem.id);
-                                }
-                            } catch (e: any) {
-                                console.error(`[CartStore] Failed to sync item ${item.product.id}:`, e.response?.data || e.message);
-                                if (e.response?.status === 401) {
-                                    set({ isMerging: false });
-                                    return;
+                (async () => {
+                    try {
+                        set({ isMerging: true });
+                        const guestItemsToSync: CartItem[] = JSON.parse(savedGuest);
+                        if (guestItemsToSync.length > 0) {
+                            console.info("[CartStore] Syncing items in background...");
+                            for (const item of guestItemsToSync) {
+                                try {
+                                    await ordersAPI.addToCart(item.product.id, item.quantity, item.selected_size || "", item.selected_color || "");
+                                } catch (e) {
+                                    console.error("[CartStore] Background sync failed for item:", item.product.id);
                                 }
                             }
+                            
+                            // Verification check
+                            const verifyRes = await ordersAPI.cart({ t: Date.now() });
+                            if ((verifyRes.data.items?.length || 0) > 0) {
+                                localStorage.removeItem('guest_cart');
+                                set({ 
+                                    guestItems: [], 
+                                    cart: verifyRes.data,
+                                    itemCount: verifyRes.data.items.reduce((sum: number, i: any) => sum + i.quantity, 0)
+                                });
+                            }
                         }
-
-                        // Update selection BEFORE clearing guest items
-                        if (oldToNewMap.size > 0) {
-                            const currentSelected = get().selectedItemIds;
-                            const newSelected = new Set(currentSelected);
-                            oldToNewMap.forEach((newId, oldId) => {
-                                if (currentSelected.has(oldId)) {
-                                    newSelected.delete(oldId);
-                                    newSelected.add(newId);
-                                }
-                            });
-                            set({ selectedItemIds: newSelected });
-                        }
-
-                        // CRITICAL: Verify with server before clearing local state
-                        console.info("[CartStore] Sync attempts finished. Verifying with server...");
-                        let verificationRes = await ordersAPI.cart({ t: new Date().getTime() });
-                        let verifiedItems = verificationRes.data.items || [];
-
-                        // If the server cart is STILL empty but we just synced items, retry verification 3 times
-                        let vRetry = 0;
-                        while (verifiedItems.length === 0 && vRetry < 3 && syncSuccesses.length > 0) {
-                            console.warn(`[CartStore] Verification ${vRetry + 1} failed. Cart still empty. Waiting...`);
-                            await new Promise(resolve => setTimeout(resolve, 1500));
-                            verificationRes = await ordersAPI.cart({ t: new Date().getTime() });
-                            verifiedItems = verificationRes.data.items || [];
-                            vRetry++;
-                        }
-
-                        if (verifiedItems.length > 0) {
-                            // SUCCESS: Items are confirmed on server. Now we can clear local state safely.
-                            localStorage.removeItem('guest_cart');
-                            set({ guestItems: [] });
-                            console.info("[CartStore] Sync verified and local items cleared.");
-                        } else {
-                            // FAILURE: Items synced but not appearing. KEEP GUEST ITEMS as fallback.
-                            console.error("[CartStore] Items synced but server still returns empty cart. Keeping guest items for safety.");
-                        }
+                    } finally {
+                        set({ isMerging: false });
                     }
-                } catch (e) {
-                    console.error("[CartStore] Merge process encountered a fatal error:", e);
-                } finally {
-                    set({ isMerging: false });
+                })();
+            }
+
+            try {
+                // Only show loader if we have NO items at all (first load)
+                if (!get().cart && get().guestItems.length === 0) set({ isLoading: true });
+
+                const response = await ordersAPI.cart({ t: Date.now() });
+                
+                // Only update if this is still the latest request version
+                if (get().version === reqVersion) {
+                    const serverCart = response.data;
+                    const serverItems = serverCart.items || [];
+                    
+                    set({ 
+                        cart: serverCart, 
+                        itemCount: serverItems.length > 0 
+                            ? serverItems.reduce((sum: number, item: any) => sum + item.quantity, 0)
+                            : get().guestItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
+                        isLoading: false,
+                    });
                 }
+            } catch (err) {
+                if (get().version === reqVersion) set({ isLoading: false });
             }
 
             try {
@@ -294,8 +247,11 @@ export const useCartStore = create<CartState>()((set, get) => ({
                     newSelected.add(i.id);
                 });
 
-                // RACE CONDITION PROTECTION
-                if (get().version !== reqVersion) return;
+                // RACE CONDITION PROTECTION: Only block if a NEWER addToCart was started
+                if (get().version > reqVersion) {
+                    console.warn("[CartStore] Newer addToCart is in progress. Skipping state update.");
+                    return;
+                }
 
                 set({
                     cart,

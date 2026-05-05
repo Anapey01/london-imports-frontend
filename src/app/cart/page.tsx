@@ -95,7 +95,6 @@ export default function CartPage() {
                     isLoading ? (
                         <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
                             <div className="w-8 h-8 border-4 border-slate-950 dark:border-white border-t-transparent rounded-full animate-spin opacity-20"></div>
-                            <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary animate-pulse">Synchronizing Basket...</p>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
