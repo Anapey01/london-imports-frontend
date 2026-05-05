@@ -27,7 +27,6 @@ export default function CartPage() {
         updateQuantity,
         clearCart
     } = useCartStore();
-    const { isAuthenticated } = useAuthStore();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
