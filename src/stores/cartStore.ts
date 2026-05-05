@@ -170,7 +170,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
                 set({ 
                     cart: serverCart, 
-                    items: serverItems,
+                    itemCount: serverItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
                     isLoading: false,
                     guestItems: savedGuest ? [] : get().guestItems
                 });
