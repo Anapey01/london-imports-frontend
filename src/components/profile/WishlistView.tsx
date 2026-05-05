@@ -14,14 +14,14 @@ const WishlistView = () => {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Curated Interest Archive</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Wishlist</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
-                        Saved Assets <sup className="text-lg font-black text-slate-200 tabular-nums">{items.length}</sup>
+                        My Wishlist <sup className="text-lg font-black text-slate-200 tabular-nums">{items.length}</sup>
                     </h2>
                 </div>
                 {items.length > 0 && (
                     <Link href="/wishlist" className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-slate-900 transition-colors border-b border-slate-100 hover:border-slate-900 pb-1">
-                        Open Full Curation
+                        View All
                     </Link>
                 )}
             </div>
@@ -33,7 +33,7 @@ const WishlistView = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No Assets Flagged for Retrieval</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Your wishlist is empty</p>
                     <Link href="/products" className="inline-block mt-6 text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 border-b border-slate-900 pb-1">
                         Browse Catalog
                     </Link>

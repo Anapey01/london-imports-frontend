@@ -58,9 +58,9 @@ export default function SettingsView({ user }: { user: User }) {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Identity & Terminal Control</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Account Settings</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
-                        Account Manifest
+                        My Profile
                     </h2>
                 </div>
                 {saveStatus === 'success' && (
@@ -70,7 +70,7 @@ export default function SettingsView({ user }: { user: User }) {
                         className="flex items-center gap-3 px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-600"
                     >
                         <CheckCircle2 size={14} className="animate-bounce" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Profile Synced</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Profile Updated</span>
                     </motion.div>
                 )}
             </div>
@@ -81,7 +81,7 @@ export default function SettingsView({ user }: { user: User }) {
                     <section>
                         <div className="flex items-center gap-2 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Personal Manifest</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Personal Information</h3>
                         </div>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
@@ -98,7 +98,7 @@ export default function SettingsView({ user }: { user: User }) {
                                 <input id="email" type="email" value={user?.email} readOnly className={`${inputClass} bg-slate-50 border-transparent opacity-60 cursor-not-allowed`} placeholder="Email address" />
                             </div>
                             <div className="space-y-1.5">
-                                <label htmlFor="phone" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Contact Terminal</label>
+                                <label htmlFor="phone" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Phone Number</label>
                                 <input id="phone" type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className={inputClass} placeholder="Enter phone" />
                             </div>
                         </div>
@@ -107,12 +107,12 @@ export default function SettingsView({ user }: { user: User }) {
                     <section>
                         <div className="flex items-center gap-2 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Default Logistics Node</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Default Delivery Address</h3>
                         </div>
                         
                         <div className="space-y-5">
                             <div className="space-y-1.5">
-                                <label htmlFor="address" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Delivery Pipeline Address</label>
+                                <label htmlFor="address" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Street Address</label>
                                 <textarea 
                                     id="address"
                                     value={profileData.address} 
@@ -123,15 +123,15 @@ export default function SettingsView({ user }: { user: User }) {
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                 <div className="space-y-1.5">
-                                    <label htmlFor="city" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">City Hub</label>
+                                    <label htmlFor="city" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">City</label>
                                     <input id="city" type="text" placeholder="Enter city" value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className={inputClass} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="region" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Regional Zone</label>
+                                    <label htmlFor="region" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Region</label>
                                     <input id="region" type="text" placeholder="Enter region" value={profileData.region} onChange={e => setProfileData({...profileData, region: e.target.value})} className={inputClass} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="gps" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">GPS Endpoint</label>
+                                    <label htmlFor="gps" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Ghana Post GPS</label>
                                     <input id="gps" type="text" value={profileData.ghana_post_gps} onChange={e => setProfileData({...profileData, ghana_post_gps: e.target.value})} className={inputClass} placeholder="GA-000-0000" />
                                 </div>
                             </div>
@@ -144,7 +144,7 @@ export default function SettingsView({ user }: { user: User }) {
                             disabled={isSaving}
                             className="w-full sm:w-auto px-12 py-5 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-[0.98] disabled:opacity-50 shadow-2xl shadow-slate-900/10"
                         >
-                            {isSaving ? 'Syncing Pipeline...' : 'Commit Configuration'}
+                            {isSaving ? 'Saving Changes...' : 'Save Changes'}
                         </button>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ export default function SettingsView({ user }: { user: User }) {
                     </section>
 
                     <section className="space-y-4">
-                        <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900 px-1">Security Manifest</h4>
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900 px-1">Security</h4>
                         <Link
                             href="/reset-password"
                             className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-900 transition-all group"
@@ -194,8 +194,8 @@ export default function SettingsView({ user }: { user: User }) {
 
                     <section className="pt-6 border-t border-slate-100">
                         <button className="w-full p-4 rounded-xl border border-rose-100 bg-rose-50/30 text-rose-600 hover:bg-rose-600 hover:text-white transition-all text-center">
-                            <p className="text-[10px] font-black uppercase tracking-widest">Deactivate Identity</p>
-                            <p className="text-[7px] font-bold uppercase tracking-widest opacity-60 mt-1">Permanent data erasure</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest">Delete Account</p>
+                            <p className="text-[7px] font-bold uppercase tracking-widest opacity-60 mt-1">This action is permanent</p>
                         </button>
                     </section>
                 </div>

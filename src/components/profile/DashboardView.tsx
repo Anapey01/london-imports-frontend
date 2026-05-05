@@ -18,10 +18,10 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
             {/* Architectural Stats Bridge */}
             <div className="grid grid-cols-2 lg:grid-cols-4 border border-slate-100 rounded-2xl overflow-hidden bg-white shadow-sm">
                 {[
-                    { label: 'Total TXNS', value: orders.length, icon: ShoppingBag },
-                    { label: 'Awaiting', value: pendingCount, icon: Clock },
-                    { label: 'Finalized', value: completedCount, icon: CheckCircle },
-                    { label: 'Asset Value', value: `GHC ${totalSpent.toLocaleString()}`, icon: TrendingUp },
+                    { label: 'Total Orders', value: orders.length, icon: ShoppingBag },
+                    { label: 'To Pay', value: pendingCount, icon: Clock },
+                    { label: 'Completed', value: completedCount, icon: CheckCircle },
+                    { label: 'Total Spent', value: `GHC ${totalSpent.toLocaleString()}`, icon: TrendingUp },
                 ].map((stat, i) => (
                     <div key={i} className={`px-6 py-8 flex flex-col gap-4 group transition-colors hover:bg-slate-50/50 ${i !== 3 ? 'border-r border-slate-100' : ''}`}>
                         <div className="flex items-center justify-between">
@@ -43,10 +43,10 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                     <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                         <div className="flex items-center gap-4">
                             <Package size={14} className="text-slate-300" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">Shipment Manifest</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">Recent Orders</h3>
                         </div>
                         <Link href="/profile/orders" className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-2">
-                            Archive <ChevronRight size={10} />
+                            View All <ChevronRight size={10} />
                         </Link>
                     </div>
 
@@ -65,7 +65,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                                         <div className="flex items-center gap-6">
                                             {/* Manifest ID */}
                                             <div className="flex flex-col min-w-[80px]">
-                                                <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Entry ID</p>
+                                                <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Order #</p>
                                                 <p className="text-xs font-black text-slate-900">#{order.order_number}</p>
                                             </div>
 
@@ -89,7 +89,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-3 mb-1">
                                                     <p className="text-[10px] font-black text-slate-900 truncate uppercase tracking-tight">
-                                                        {firstItem?.product.name || 'System Cargo'}
+                                                        {firstItem?.product.name || 'Package'}
                                                     </p>
                                                     <span className={`h-1.5 w-1.5 rounded-full ${isPaid ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
                                                 </div>
@@ -114,7 +114,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                         ) : (
                             <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-2xl">
                                 <Package size={32} className="mx-auto mb-4 text-slate-100" strokeWidth={1} />
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Operational Log Empty</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No orders found</p>
                             </div>
                         )}
                     </div>
@@ -125,7 +125,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                     <div className="space-y-6">
                         <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
                             <TrendingUp size={14} className="text-slate-300" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">Dispatch Timeline</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">Order Status</h3>
                         </div>
                         
                         <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100">
@@ -139,10 +139,10 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                                             </div>
                                             <div className="group">
                                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-900 group-hover:text-brand-emerald transition-colors leading-tight mb-1">
-                                                    {isCompleted ? 'Finality Achieved' : 'Global Corridor Transit'}
+                                                    {isCompleted ? 'Order Delivered' : 'In Transit'}
                                                 </p>
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Node #{order.order_number}</span>
+                                                    <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Order #{order.order_number}</span>
                                                     <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-60 italic">{getTimeAgo(new Date(order.created_at))}</span>
                                                 </div>
                                             </div>
@@ -152,7 +152,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                             ) : (
                                 <div className="text-center py-10 opacity-30">
                                     <div className="w-1 h-20 bg-slate-100 mx-auto rounded-full mb-4" />
-                                    <p className="text-[8px] font-black uppercase tracking-widest">No Active Signals</p>
+                                    <p className="text-[8px] font-black uppercase tracking-widest">No recent updates</p>
                                 </div>
                             )}
                         </div>
@@ -164,7 +164,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                             <div className="relative z-10">
                                 <div className="flex items-center gap-3 mb-6">
                                     <Gift size={14} className="text-brand-emerald" />
-                                    <span className="text-[9px] font-black text-white uppercase tracking-[0.4em]">Protocol 01: Rewards</span>
+                                    <span className="text-[9px] font-black text-white uppercase tracking-[0.4em]">Exclusive Rewards</span>
                                 </div>
                                 <h4 className="text-2xl font-serif italic text-white mb-4">The Atelier Club.</h4>
                                 <p className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.2em] leading-relaxed mb-8">
@@ -174,7 +174,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                                     href="/profile/settings" 
                                     className="block w-full py-4 border border-white/10 rounded-xl text-[10px] font-black text-white text-center uppercase tracking-[0.4em] hover:bg-white hover:text-slate-900 transition-all duration-500"
                                 >
-                                    Join Protocol
+                                    Join Club
                                 </Link>
                             </div>
                             {/* Terminal Texture */}

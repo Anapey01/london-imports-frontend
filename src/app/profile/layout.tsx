@@ -93,14 +93,14 @@ export default function ProfileLayout({
                             </div>
                             
                             <div className="text-center sm:text-left pt-2">
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Authenticated Client</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Customer Profile</p>
                                 <h1 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none mb-3">
                                     {user.first_name} {user.last_name}
                                 </h1>
                                 <div className="flex items-center justify-center sm:justify-start gap-4">
                                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{user.email}</span>
                                     <span className="w-1 h-1 rounded-full bg-slate-200" />
-                                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Verified Hub Access</span>
+                                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Verified Member</span>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +114,7 @@ export default function ProfileLayout({
                                 </p>
                             </div>
                             <div className="px-8 py-6 bg-slate-50/50">
-                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2">Security ID</p>
+                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2">Member ID</p>
                                 <p className="text-sm font-black text-slate-800 tabular-nums">
                                     #{user.id?.toString().slice(-4).toUpperCase() || 'STND'}
                                 </p>
@@ -149,7 +149,7 @@ export default function ProfileLayout({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                                     </svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 transition-colors">Return to Console</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 transition-colors">Back to Dashboard</span>
                             </Link>
                         )}
                         <div className="animate-fade-in-up">

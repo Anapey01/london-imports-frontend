@@ -50,9 +50,9 @@ const AddressesView = ({ user }: AddressesViewProps) => {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Logistics Node Storage</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Saved Addresses</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
-                        Address Collection
+                        My Addresses
                     </h2>
                 </div>
                 {!showForm && (
@@ -61,7 +61,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
                     >
                         <Plus className="w-3 h-3" />
-                        Append Node
+                        Add New Address
                     </button>
                 )}
             </div>
@@ -73,14 +73,14 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         <div className="flex items-center gap-4">
                             <MapPin size={14} className="text-slate-300" />
                             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
-                                Global Logistics Endpoint
+                                 Primary Address
                             </h3>
                         </div>
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('switch-profile-tab', { detail: 'settings' }))}
                             className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
                         >
-                            Modify Baseline
+                            Change
                         </button>
                     </div>
                     <div className="p-8 rounded-2xl border border-slate-100 bg-white group hover:border-slate-300 transition-all duration-500 shadow-sm relative overflow-hidden">
@@ -88,12 +88,12 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                             <div className="flex-1 space-y-4">
                                 <div className="flex items-center gap-4">
                                     <span className="text-[8px] font-black text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
-                                        Verified Active Node
+                                        Default Address
                                     </span>
                                 </div>
                                 <div>
                                     <p className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight mb-2">
-                                        {user.address || 'Deployment Pending'}
+                                        {user.address || 'Address not set'}
                                     </p>
                                     <div className="flex flex-wrap items-center gap-6">
                                         <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
@@ -124,16 +124,16 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
                             <Plus size={14} className="text-brand-emerald" />
                             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
-                                {editingId ? 'Modify Manifest Entry' : 'New Dispatch Node'}
+                                {editingId ? 'Edit Address' : 'Add Address'}
                             </h3>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             {[
-                                { label: 'Node Label', placeholder: 'e.g. Primary Hub', value: formData.label, key: 'label' },
-                                { label: 'Hub City', placeholder: 'e.g. Accra', value: formData.city, key: 'city' },
-                                { label: 'Regional Zone', placeholder: 'e.g. Greater Accra', value: formData.area, key: 'area' },
-                                { label: 'Operational Landmark', placeholder: 'e.g. Near Hub', value: formData.landmark, key: 'landmark' },
+                                { label: 'Address Label', placeholder: 'e.g. Home', value: formData.label, key: 'label' },
+                                { label: 'City', placeholder: 'e.g. Accra', value: formData.city, key: 'city' },
+                                { label: 'Region', placeholder: 'e.g. Greater Accra', value: formData.area, key: 'area' },
+                                { label: 'Landmark', placeholder: 'e.g. Near Hub', value: formData.landmark, key: 'landmark' },
                             ].map(field => (
                                 <div key={field.key} className="space-y-2">
                                     <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">{field.label}</label>
@@ -148,7 +148,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                 </div>
                             ))}
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Comms Terminal (Phone)</label>
+                                <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Phone</label>
                                 <input 
                                     type="tel" 
                                     placeholder="+233..." 
@@ -162,10 +162,10 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         
                         <div className="flex gap-4 mt-10">
                             <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all active:scale-[0.98]">
-                                {editingId ? 'Save Configuration' : 'Commit to Manifest'}
+                                {editingId ? 'Save' : 'Add Address'}
                             </button>
                             <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-8 text-[9px] font-black uppercase tracking-[0.4em] rounded-xl transition-all text-white/40 hover:text-white">
-                                Abort
+                                Cancel
                             </button>
                         </div>
                     </div>
@@ -178,14 +178,14 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                 <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
                     <Navigation size={14} className="text-slate-300" />
                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
-                        Auxiliary Manifest Nodes
+                        Saved Addresses
                     </h3>
                 </div>
                 
                 {addresses.length === 0 && !showForm ? (
                     <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-2xl">
                         <Plus size={32} className="mx-auto mb-4 text-slate-100" strokeWidth={1} />
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Archive Retrieval Empty</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No saved addresses</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -197,7 +197,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                             <MapPin size={14} />
                                         </div>
                                         <div>
-                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-0.5">Node Class</p>
+                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-0.5">Label</p>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{address.label}</p>
                                         </div>
                                     </div>
@@ -205,14 +205,14 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                         <button 
                                             onClick={() => { setFormData({ label: address.label, city: address.city, area: address.area, landmark: address.landmark, phone: address.phone }); setEditingId(address.id); setShowForm(true); }} 
                                             className="p-2 rounded-lg hover:bg-slate-50 text-slate-300 hover:text-slate-900 transition-all"
-                                            title="Configure"
+                                            title="Edit"
                                         >
                                             <Edit2 size={12} />
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(address.id)} 
                                             className="p-2 rounded-lg hover:bg-rose-50 text-slate-300 hover:text-rose-600 transition-all"
-                                            title="Purge"
+                                            title="Delete"
                                         >
                                             <Trash2 size={12} />
                                         </button>
@@ -224,7 +224,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                     </p>
                                     <div className="flex items-center justify-between">
                                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest tabular-nums">
-                                            Terminal: {address.phone}
+                                            Phone: {address.phone}
                                         </p>
                                         {address.landmark && (
                                             <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest truncate max-w-[100px]">

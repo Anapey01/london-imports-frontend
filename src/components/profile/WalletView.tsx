@@ -44,7 +44,7 @@ const WalletView = () => {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Financial Asset Manifest</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Payment Methods</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
                         Payment Methods
                     </h2>
@@ -54,7 +54,7 @@ const WalletView = () => {
                         onClick={() => setShowForm(true)}
                         className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
                     >
-                        Append Asset
+                        Add Method
                     </button>
                 )}
             </div>
@@ -64,10 +64,10 @@ const WalletView = () => {
                     <div className="relative z-10">
                         <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
                             <Plus size={14} className="text-brand-emerald" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Initialize Financial Asset</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Add Mobile Money</h3>
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Mobile Money Terminal (Phone)</label>
+                            <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Momo Number</label>
                             <input
                                 type="tel"
                                 placeholder="024 XXX XXXX"
@@ -79,10 +79,10 @@ const WalletView = () => {
                         </div>
                         <div className="flex gap-4 mt-10">
                             <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all shadow-xl">
-                                Commit Asset
+                                Save Method
                             </button>
                             <button type="button" onClick={() => setShowForm(false)} className="px-8 text-[9px] font-black uppercase tracking-[0.4em] rounded-xl text-white/40 hover:text-white transition-all">
-                                Abort
+                                Cancel
                             </button>
                         </div>
                     </div>
@@ -98,7 +98,7 @@ const WalletView = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                         </svg>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Financial Ledger Empty</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No payment methods</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
@@ -112,7 +112,7 @@ const WalletView = () => {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-3 mb-1">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Mobile Money Hub</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Mobile Money</p>
                                         {method.isDefault && (
                                             <span className="text-[7px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Primary</span>
                                         )}
@@ -126,14 +126,14 @@ const WalletView = () => {
                                         onClick={() => setDefault(method.id)} 
                                         className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
                                     >
-                                        Set Active
+                                        Set as Default
                                     </button>
                                 )}
                                 <button 
                                     onClick={() => handleDelete(method.id)} 
                                     className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-300 hover:text-rose-600 transition-colors"
                                 >
-                                    Purge
+                                    Delete
                                 </button>
                             </div>
                         </div>
