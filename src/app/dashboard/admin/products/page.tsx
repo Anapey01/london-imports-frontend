@@ -162,18 +162,18 @@ export default function AdminProductsPage() {
             setProducts(response.data.results || response.data || []);
             setShowEditModal(false);
             setSelectedProduct(null);
-            addAlert('Product manifest updated');
+            addAlert('Product updated');
         } catch (err) {
             console.error('Failed to update product:', err);
-            addAlert('Failed to update manifest', 'error');
+            addAlert('Update failed', 'error');
         }
     };
 
     const handleBulkActivate = () => {
         setConfirmModal({
             isOpen: true,
-            title: 'PROTOCOL_OVERRIDE_BULK',
-            message: 'Initialize all catalog entries to ACTIVE with 3-week delivery protocol?',
+            title: 'Activate All Products',
+            message: 'Set all products to active with 3-week delivery status?',
             variant: 'warning',
             onConfirm: async () => {
                 try {
@@ -181,10 +181,10 @@ export default function AdminProductsPage() {
                     await adminAPI.bulkActivateProducts(3);
                     const response = await adminAPI.products();
                     setProducts(response.data.results || response.data || []);
-                    addAlert('Catalog wide activation complete');
+                    addAlert('Catalog activation complete');
                 } catch (err: any) {
                     console.error('Failed bulk activation:', err);
-                    addAlert('Protocol override failed', 'error');
+                    addAlert('Activation failed', 'error');
                 } finally {
                     setLoading(false);
                 }
@@ -195,17 +195,17 @@ export default function AdminProductsPage() {
     const handleDeleteProduct = (id: number) => {
         setConfirmModal({
             isOpen: true,
-            title: 'MANIFEST_DESTRUCTION',
-            message: 'Permanently purge this entry from the catalog registry?',
+            title: 'Delete Product',
+            message: 'Are you sure you want to delete this product from the catalog?',
             variant: 'danger',
             onConfirm: async () => {
                 try {
                     await adminAPI.deleteProduct(String(id));
                     setProducts(products.filter((p) => p.id !== id));
-                    addAlert('Entry purged successfully');
+                    addAlert('Product deleted successfully');
                 } catch (err) {
                     console.error('Failed to delete product:', err);
-                    addAlert('Destruction protocol failed', 'error');
+                    addAlert('Delete failed', 'error');
                 }
             }
         });
@@ -245,11 +245,11 @@ export default function AdminProductsPage() {
             {/* 1. COMMAND HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Inventory Manifest</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Product Catalog</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{products.length} ENTRIES_RECORDED</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{products.length} PRODUCTS</span>
                         </div>
                     </div>
                 </div>
@@ -260,14 +260,14 @@ export default function AdminProductsPage() {
                         className="px-6 py-4 bg-white border border-slate-950 text-slate-950 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center gap-3"
                     >
                         <Zap className="w-3.5 h-3.5" />
-                        OVERRIDE_ACTIVATE
+                        ACTIVATE ALL
                     </button>
                     <button
                         onClick={() => setShowAddModal(true)}
                         className="px-6 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all flex items-center gap-3"
                     >
                         <Plus className="w-4 h-4" />
-                        NEW_ENTRY
+                        ADD PRODUCT
                     </button>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import React from 'react';
 import { AdminProduct } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import Image from 'next/image';
-import { MoreHorizontal, Trash2, ShieldCheck, Zap, Eye, Edit3, Star } from 'lucide-react';
+import { MoreHorizontal, Trash2, ShieldCheck, Zap, Eye, Edit3, Star, Package } from 'lucide-react';
 
 interface ProductTableProps {
     products: AdminProduct[];
@@ -51,7 +51,7 @@ const ProductRow = React.memo(({
                                 <Star className="w-3 h-3 text-slate-950 fill-slate-950" />
                             )}
                             {product.preOrder && (
-                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 italic">PRE_ORDER_ENABLED</span>
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 italic">PRE-ORDER</span>
                             )}
                         </div>
                         <p className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter truncate mt-1">{product.category}</p>
@@ -64,7 +64,7 @@ const ProductRow = React.memo(({
             <td className="px-8 py-8">
                 <div className="flex items-center gap-3">
                     <span className={`text-[10px] font-black uppercase tracking-widest ${product.stock === 0 ? 'text-red-600' : 'text-slate-400'}`}>
-                        {product.stock === 0 ? 'ZERO_INVENTORY' : `${product.stock.toString().padStart(2, '0')}_UNITS`}
+                        {product.stock === 0 ? 'OUT OF STOCK' : `${product.stock} UNITS`}
                     </span>
                 </div>
             </td>
@@ -72,7 +72,7 @@ const ProductRow = React.memo(({
                 <div className="flex items-center gap-3">
                     <div className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
                     <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${statusStyle.text === 'text-white' ? 'text-slate-950' : statusStyle.text}`}>
-                        {product.status}_PROTOCOL
+                        {product.status}
                     </span>
                 </div>
             </td>
@@ -82,7 +82,7 @@ const ProductRow = React.memo(({
                         onClick={(e) => { e.stopPropagation(); onToggleFeatured(product.id); }}
                         className={`text-[9px] font-black uppercase tracking-widest transition-colors ${product.featured ? 'text-slate-950' : 'text-slate-300 hover:text-slate-950'}`}
                     >
-                        {product.featured ? 'PRIORITY_OFF' : 'PRIORITY_ON'}
+                        {product.featured ? 'UNFEATURE' : 'FEATURE'}
                     </button>
                     <button
                         onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
@@ -110,10 +110,10 @@ const ProductTable = ({
             <table className="w-full border-collapse">
                 <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Inventory_Asset</th>
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Valuation_Mark</th>
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Supply_Node</th>
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Cycle_State</th>
+                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Product</th>
+                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Price</th>
+                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Stock</th>
+                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Status</th>
                         <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
                     </tr>
                 </thead>
@@ -135,7 +135,7 @@ const ProductTable = ({
             {products.length === 0 && (
                 <div className="py-32 text-center">
                     <Package className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
-                    <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Catalog Registry Null</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">No Products Found</p>
                 </div>
             )}
         </div>

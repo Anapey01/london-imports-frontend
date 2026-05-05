@@ -94,8 +94,8 @@ export default function AdminBannersPage() {
     const handleDelete = (id: string) => {
         setConfirmModal({
             isOpen: true,
-            title: 'MANIFEST_DESTRUCTION',
-            message: 'Permanently purge this promotional asset from the homepage registry?',
+            title: 'Delete Banner',
+            message: 'Are you sure you want to delete this banner from the homepage?',
             variant: 'danger',
             onConfirm: async () => {
                 try {
@@ -109,9 +109,9 @@ export default function AdminBannersPage() {
 
                     if (!response.ok) throw new Error('Failed to delete banner');
                     setBanners(banners.filter(b => b.id !== id));
-                    addAlert('Asset purged successfully');
+                    addAlert('Banner deleted successfully');
                 } catch (err) {
-                    addAlert(err instanceof Error ? err.message : 'Destruction failed', 'error');
+                    addAlert(err instanceof Error ? err.message : 'Delete failed', 'error');
                 }
             }
         });
@@ -132,9 +132,9 @@ export default function AdminBannersPage() {
             if (!response.ok) throw new Error('Failed to toggle status');
             const updated = await response.json();
             setBanners(banners.map(b => b.id === banner.id ? { ...b, is_active: updated.is_active } : b));
-            addAlert(`Asset ${updated.is_active ? 'authorized' : 'de-authorized'} successfully`);
+            addAlert(`Banner ${updated.is_active ? 'published' : 'hidden'} successfully`);
         } catch (err) {
-            addAlert(err instanceof Error ? err.message : 'Protocol update failed', 'error');
+            addAlert(err instanceof Error ? err.message : 'Update failed', 'error');
         }
     };
 
@@ -153,11 +153,11 @@ export default function AdminBannersPage() {
             {/* 1. COMMAND HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Promotional Manifest</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Homepage Banners</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{banners.length} ASSETS_REGISTERED</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{banners.length} BANNERS</span>
                         </div>
                     </div>
                 </div>
@@ -167,14 +167,14 @@ export default function AdminBannersPage() {
                     className="px-8 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all flex items-center gap-3"
                 >
                     <Plus className="w-4 h-4" />
-                    REGISTER_NEW_ASSET
+                    ADD BANNER
                 </Link>
             </div>
 
             {error && (
                 <div className="p-6 bg-red-50 border-l border-red-600 text-red-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-4">
                     <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                    PROTOCOL_ERROR: {error}
+                    ERROR: {error}
                 </div>
             )}
 
@@ -184,9 +184,9 @@ export default function AdminBannersPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Asset_Visual</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Content_Metadata</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Display_Logic</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Banner Preview</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Banner Details</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Visibility</th>
                                 <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
                             </tr>
                         </thead>
@@ -206,10 +206,10 @@ export default function AdminBannersPage() {
                                     <td className="px-8 py-8">
                                         <div className="flex flex-col gap-2 max-w-xs">
                                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-950 truncate">
-                                                {banner.title || 'NULL_TITLE'}
+                                                {banner.title || 'Untitled'}
                                             </span>
                                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter line-clamp-2">
-                                                {banner.subtitle || 'NO_SUBTITLE_DATA'}
+                                                {banner.subtitle || 'No description'}
                                             </span>
                                             <div className="flex items-center gap-3 mt-2">
                                                 <ExternalLink className="w-3 h-3 text-slate-300" />
@@ -222,12 +222,12 @@ export default function AdminBannersPage() {
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-1.5 h-1.5 rounded-full ${banner.is_active ? 'bg-emerald-500' : 'bg-slate-200'}`} />
                                                 <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${banner.is_active ? 'text-slate-900' : 'text-slate-300'}`}>
-                                                    {banner.is_active ? 'AUTHORIZED' : 'DE_AUTHORIZED'}
+                                                    {banner.is_active ? 'VISIBLE' : 'HIDDEN'}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <Layers className="w-3.5 h-3.5 text-slate-200" />
-                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Priority_Node: {banner.order}</span>
+                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sort Order: {banner.order}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -236,21 +236,21 @@ export default function AdminBannersPage() {
                                             <button
                                                 onClick={() => handleToggleActive(banner)}
                                                 className={`p-3 border transition-all ${banner.is_active ? 'bg-slate-50 border-slate-50 text-slate-400 hover:border-slate-900 hover:text-slate-900' : 'bg-emerald-500 border-emerald-500 text-white shadow-lg'}`}
-                                                title={banner.is_active ? 'Revoke Authorization' : 'Grant Authorization'}
+                                                title={banner.is_active ? 'Hide Banner' : 'Show Banner'}
                                             >
                                                 {banner.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                             </button>
                                             <Link
                                                 href={`/dashboard/admin/banners/${banner.id}`}
                                                 className="p-3 border border-slate-50 text-slate-300 hover:border-slate-950 hover:text-slate-950 transition-all"
-                                                title="Edit Manifest"
+                                                title="Edit Banner"
                                             >
                                                 <Pencil className="w-4 h-4" />
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(banner.id)}
-                                                className="p-3 border border-slate-50 text-slate-200 hover:border-red-600 hover:text-red-600 transition-all"
-                                                title="Destruction Protocol"
+                                                className="p-3 border border-slate-100 text-slate-200 hover:border-red-600 hover:text-red-600 transition-all"
+                                                title="Delete Banner"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
@@ -264,7 +264,7 @@ export default function AdminBannersPage() {
                 {banners.length === 0 && (
                     <div className="py-32 text-center">
                         <Layout className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
-                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Promotional Database Null</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">No Banners Found</p>
                     </div>
                 )}
             </div>

@@ -265,8 +265,8 @@ export default function AdminDashboardPage() {
                 <div className="lg:col-span-8 bg-white p-12">
                     <div className="flex items-center justify-between mb-12">
                         <div>
-                            <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE FLOW MATRIX</h2>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Active currency throughput</p>
+                            <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE TRENDS</h2>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Revenue over time</p>
                         </div>
                         <div className="flex bg-slate-50 p-1">
                             {['7d', '30d', '90d'].map(range => (
@@ -305,7 +305,7 @@ export default function AdminDashboardPage() {
             <div className="bg-white border border-slate-100 p-12">
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-8 bg-slate-900" />
-                    <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">OPERATIONAL FUNNEL</h2>
+                    <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FUNNEL</h2>
                 </div>
                 <OperationsFunnel 
                     isDark={isDark} 
@@ -317,8 +317,8 @@ export default function AdminDashboardPage() {
             <div className="bg-white border border-slate-100 overflow-hidden">
                 <div className="p-12 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                     <div>
-                        <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tighter">Live Manifest</h2>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-4">Real-time system transaction flow</p>
+                        <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tighter">Recent Orders</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-4">Latest activity across the platform</p>
                     </div>
                     
                     <div className="flex flex-col md:flex-row items-center gap-4">
@@ -326,7 +326,7 @@ export default function AdminDashboardPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
                             <input 
                                 type="text" 
-                                placeholder="SEARCH MANIFEST..."
+                                placeholder="SEARCH ORDERS..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all w-full md:w-64"
@@ -338,7 +338,7 @@ export default function AdminDashboardPage() {
                                 filterStuck ? 'bg-amber-500 text-white border-amber-500' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-900 hover:text-slate-900'
                             }`}
                         >
-                            {filterStuck ? 'DELAYED_ONLY' : 'FILTER_STUCK'}
+                            {filterStuck ? 'SHOWING DELAYED' : 'SHOW DELAYED'}
                         </button>
                     </div>
                 </div>
@@ -347,11 +347,11 @@ export default function AdminDashboardPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-slate-50 bg-slate-50/30">
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Entry_Ref</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Identity_Node</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Temporal_Mark</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Protocol_Status</th>
-                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Asset_Valuation</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Order ID</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Customer</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Date</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Status</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Total</th>
                                 <th className="px-8 py-6"></th>
                             </tr>
                         </thead>
@@ -359,7 +359,7 @@ export default function AdminDashboardPage() {
                             {filteredOrders.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-8 py-32 text-center">
-                                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-200">The Ledger is Silent</p>
+                                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-200">No recent orders found</p>
                                     </td>
                                 </tr>
                             ) : (
@@ -456,7 +456,7 @@ const OrderRow = React.memo(({
                         <div className="flex items-center gap-3">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900">
-                                {isFirstToday ? 'CURRENT_MANIFEST_CYCLE' : 'ARCHIVED_LEDGER_ENTRIES'}
+                                {isFirstToday ? "TODAY'S ORDERS" : 'PAST ORDERS'}
                             </span>
                         </div>
                     </td>
@@ -487,7 +487,7 @@ const OrderRow = React.memo(({
                             {order?.customer?.name?.[0] || 'U'}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[11px] font-black uppercase tracking-widest truncate">{order?.customer?.name || 'ANONYMOUS'}</p>
+                            <p className="text-[11px] font-black uppercase tracking-widest truncate">{order?.customer?.name || 'GUEST'}</p>
                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate hidden sm:block">{order?.customer?.email || ''}</p>
                         </div>
                     </div>
@@ -546,26 +546,26 @@ const OrderRow = React.memo(({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                                 <div className="space-y-8">
                                     <div>
-                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">CUSTOMER_NODE</p>
+                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">CUSTOMER DETAILS</p>
                                         <div className="border-l-2 border-slate-900 pl-8 space-y-2">
                                             <p className="text-sm font-black uppercase tracking-widest">{order?.customer?.name}</p>
-                                            <p className="text-xs font-mono font-bold text-slate-400">{order.phone || 'NO_CONTACT_DATA'}</p>
+                                            <p className="text-xs font-mono font-bold text-slate-400">{order.phone || 'No contact information'}</p>
                                             <button 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     navigator.clipboard.writeText(order.phone || '');
-                                                    addAlert('Identity data transmitted.', 'success');
+                                                    addAlert('Phone number copied.', 'success');
                                                 }}
                                                 className="text-[9px] font-black uppercase tracking-widest text-emerald-600 border-b border-emerald-600 pb-1 mt-4 hover:text-emerald-500"
                                             >
-                                                COPY_PHONE_DATA
+                                                COPY PHONE
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-8">
                                     <div>
-                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">ITEM_MANIFEST</p>
+                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">ORDER ITEMS</p>
                                         <div className="space-y-px bg-slate-100 border border-slate-100">
                                             {order.items_summary?.map((item, i) => (
                                                 <div key={i} className="flex justify-between items-center p-4 bg-white">

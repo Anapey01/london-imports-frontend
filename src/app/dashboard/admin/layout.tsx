@@ -103,11 +103,11 @@ export default function AdminDashboardLayout({
                                 <div className="flex items-center gap-3">
                                     <span className="h-px w-8 bg-slate-900" />
                                     <h1 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">
-                                        PROTOCOL / {pathname.split('/').pop()?.toUpperCase()}
+                                        ADMIN / {pathname.split('/').pop()?.toUpperCase() || 'DASHBOARD'}
                                     </h1>
                                 </div>
                                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-11">
-                                    Authenticated as {user.username} // ID: {user.email.split('@')[0]}
+                                    Logged in as {user.username}
                                 </p>
                             </div>
                         </div>
@@ -116,13 +116,13 @@ export default function AdminDashboardLayout({
                             <div className="hidden lg:flex items-center gap-8 border-r border-slate-50 pr-8">
                                 <div className="text-right">
                                     <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Environment</p>
-                                    <p className="text-[9px] font-bold text-slate-900 uppercase tracking-tighter">Production Node</p>
+                                    <p className="text-[9px] font-bold text-slate-900 uppercase tracking-tighter">Production</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Status</p>
+                                    <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">System Status</p>
                                     <div className="flex items-center gap-1.5 justify-end">
                                         <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                                        <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter">Live</p>
+                                        <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter">Online</p>
                                     </div>
                                 </div>
                             </div>
@@ -134,7 +134,7 @@ export default function AdminDashboardLayout({
                     </div>
                 </div>
 
-                {/* 2. OPERATIONAL PAYLOAD */}
+                {/* 2. DASHBOARD CONTENT */}
                 <div className="max-w-[1600px] mx-auto p-8 md:p-12">
                     {children}
                 </div>

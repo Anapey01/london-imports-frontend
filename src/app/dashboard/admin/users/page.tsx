@@ -115,11 +115,11 @@ export default function AdminUsersPage() {
             {/* 1. COMMAND HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">User Directory</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">User Management</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{users.length} IDENTITIES_RECORDED</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{users.length} TOTAL USERS</span>
                         </div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="SEARCH IDENTITIES..."
+                            placeholder="SEARCH USERS..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
@@ -176,11 +176,11 @@ export default function AdminUsersPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Identity_Node</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Credential_Auth</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Temporal_Log</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Protocol_Level</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Auth_State</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">User</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Email Address</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Join Date</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Role</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
                                 <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
                             </tr>
                         </thead>
@@ -203,7 +203,7 @@ export default function AdminUsersPage() {
                 {filteredUsers.length === 0 && (
                     <div className="py-32 text-center">
                         <User className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
-                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Identity Database Null</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">No Users Found</p>
                     </div>
                 )}
             </div>
@@ -215,9 +215,9 @@ export default function AdminUsersPage() {
                         className="w-full max-w-sm bg-white p-12 text-center space-y-8"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900">IDENT_DESTRUCTION_CONFIRM</h3>
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900">Confirm Deletion</h3>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-                            Permanently purge records for <span className="text-slate-900 font-black">{deleteUser.first_name} {deleteUser.last_name}</span>?
+                            Permanently delete account records for <span className="text-slate-900 font-black">{deleteUser.first_name} {deleteUser.last_name}</span>?
                         </p>
                         <div className="flex flex-col gap-3">
                             <button
@@ -225,13 +225,13 @@ export default function AdminUsersPage() {
                                 disabled={isDeleting}
                                 className="w-full py-4 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-700 transition-all disabled:opacity-50"
                             >
-                                {isDeleting ? 'PURGING...' : 'EXECUTE_PURGE'}
+                                {isDeleting ? 'DELETING...' : 'DELETE ACCOUNT'}
                             </button>
                             <button
                                 onClick={() => setDeleteUser(null)}
                                 className="w-full py-4 bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] hover:text-slate-900 transition-all"
                             >
-                                ABORT_OPERATION
+                                CANCEL
                             </button>
                         </div>
                     </div>
@@ -245,31 +245,31 @@ export default function AdminUsersPage() {
                         className="w-full max-w-md bg-white p-12 space-y-10"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900">PROTOCOL_OVERRIDE</h3>
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900">Update User Status</h3>
                         <div className="space-y-8">
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Access_Tier</label>
+                                <label className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">User Role</label>
                                 <select
                                     defaultValue={selectedUser.role}
                                     className="w-full p-4 bg-slate-50 border-none text-[10px] font-black uppercase tracking-widest focus:ring-1 focus:ring-slate-900 transition-all"
                                     aria-label="Select user role"
                                     title="User role"
                                 >
-                                    <option value="CUSTOMER">CUSTOMER_PROTOCOL</option>
-                                    <option value="VENDOR">VENDOR_AUTHORITY</option>
-                                    <option value="ADMIN">ADMIN_MANIFEST</option>
+                                    <option value="CUSTOMER">CUSTOMER</option>
+                                    <option value="VENDOR">VENDOR</option>
+                                    <option value="ADMIN">ADMIN</option>
                                 </select>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Lifecycle_State</label>
+                                <label className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Account Status</label>
                                 <select
                                     defaultValue={selectedUser.is_active ? 'active' : 'suspended'}
                                     className="w-full p-4 bg-slate-50 border-none text-[10px] font-black uppercase tracking-widest focus:ring-1 focus:ring-slate-900 transition-all"
                                     aria-label="Select user status"
                                     title="User status"
                                 >
-                                    <option value="active">ACTIVE_SYNC</option>
-                                    <option value="suspended">SUSPEND_PROTOCOL</option>
+                                    <option value="active">ACTIVE</option>
+                                    <option value="suspended">SUSPENDED</option>
                                 </select>
                             </div>
                         </div>
@@ -278,13 +278,13 @@ export default function AdminUsersPage() {
                                 onClick={() => setSelectedUser(null)}
                                 className="w-full py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all"
                             >
-                                COMMIT_CHANGES
+                                SAVE CHANGES
                             </button>
                             <button
                                 onClick={() => setSelectedUser(null)}
                                 className="w-full py-4 bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] hover:text-slate-900 transition-all"
                             >
-                                DISCARD_INPUT
+                                CANCEL
                             </button>
                         </div>
                     </div>
@@ -324,13 +324,13 @@ const UserRow = React.memo(({
             </td>
             <td className="px-8 py-8 hidden lg:table-cell">
                 <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${getRoleColor(user.role)}`}>
-                    {user.role}_MANIFEST
+                    {user.role}
                 </span>
             </td>
             <td className="px-8 py-8 hidden lg:table-cell">
                 <div className="flex items-center gap-3">
                     <div className={`w-1.5 h-1.5 rounded-full ${user.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-slate-200'}`} />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{user.is_active ? 'LIVE_SESSION' : 'OFFLINE'}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{user.is_active ? 'ACTIVE' : 'OFFLINE'}</span>
                 </div>
             </td>
             <td className="px-8 py-8 text-right">
@@ -339,7 +339,7 @@ const UserRow = React.memo(({
                         onClick={() => setSelectedUser(user)}
                         className="text-[9px] font-black uppercase tracking-widest text-slate-300 hover:text-slate-900 transition-colors"
                     >
-                        MODIFY_ACCESS
+                        EDIT STATUS
                     </button>
                     <button
                         onClick={() => setDeleteUser(user)}

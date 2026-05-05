@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
@@ -14,7 +15,7 @@ import {
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const STATUS_TABS = ['All', 'PENDING_PAYMENT', 'PAID', 'OPEN_FOR_BATCH', 'IN_FULFILLMENT', 'IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
 
@@ -359,14 +360,14 @@ export default function AdminOrdersPage() {
             {/* 1. COMMAND HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Order Archive</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Order Management</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} MANIFESTS</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} ORDERS</span>
                         </div>
                         <span className="h-4 w-px bg-slate-200" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Total Valuation: ₵{orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Total Sales: ₵{orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}</span>
                     </div>
                 </div>
 
@@ -375,7 +376,7 @@ export default function AdminOrdersPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="SEARCH ARCHIVE..."
+                            placeholder="SEARCH ORDERS..."
                             value={searchTerm}
                             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                             className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
@@ -386,7 +387,7 @@ export default function AdminOrdersPage() {
                         className="flex items-center justify-center gap-3 px-8 py-4 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto"
                     >
                         <X className="w-3.5 h-3.5" />
-                        CLEAR_PENDING ({statusCounts.PENDING_PAYMENT})
+                        CLEAR PENDING ({statusCounts.PENDING_PAYMENT})
                     </button>
                 </div>
             </div>
@@ -426,14 +427,14 @@ export default function AdminOrdersPage() {
                         <div className="flex items-center gap-4 border-r border-slate-800 pr-8">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
-                                {selectedIds.size} MANIFESTS_SELECTED
+                                {selectedIds.size} ORDERS SELECTED
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-4">
                             {[
-                                { status: 'IN_TRANSIT', label: 'SHIP_TO_GHANA', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
-                                { status: 'ARRIVED', label: 'MARK_ARRIVED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
-                                { status: 'DELIVERED', label: 'MARK_DELIVERED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' }
+                                { status: 'IN_TRANSIT', label: 'SHIP TO GHANA', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
+                                { status: 'ARRIVED', label: 'MARK AS ARRIVED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
+                                { status: 'DELIVERED', label: 'MARK AS DELIVERED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' }
                             ].map(action => (
                                 <button
                                     key={action.status}
@@ -448,7 +449,7 @@ export default function AdminOrdersPage() {
                                 onClick={() => setSelectedIds(new Set())}
                                 className="px-6 py-3 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
                             >
-                                ABORT_SELECTION
+                                CANCEL
                             </button>
                         </div>
                     </motion.div>
@@ -469,11 +470,11 @@ export default function AdminOrdersPage() {
                                         }
                                     </button>
                                 </th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Entry_Ref</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Identity_Node</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Temporal_Mark</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Protocol_Status</th>
-                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Asset_Valuation</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Order ID</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Customer</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Date</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Total</th>
                                 <th className="px-8 py-6"></th>
                             </tr>
                         </thead>
@@ -497,7 +498,7 @@ export default function AdminOrdersPage() {
                 {filteredOrders.length === 0 && (
                     <div className="py-32 text-center">
                         <Package className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
-                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Archive Sequence Null</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">No Orders Found</p>
                     </div>
                 )}
             </div>
@@ -506,7 +507,7 @@ export default function AdminOrdersPage() {
             {totalPages > 1 && (
                 <div className="flex items-center justify-between py-12 border-t border-slate-50">
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">
-                        Registry Page <span className="text-slate-950">{currentPage}</span> / {totalPages}
+                        Page <span className="text-slate-950">{currentPage}</span> / {totalPages}
                     </p>
                     <div className="flex gap-px bg-slate-100 border border-slate-100">
                         <button
@@ -644,7 +645,7 @@ const OrderRow = React.memo(({
                                 onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
                                 className="text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
                             >
-                                EXECUTE_SHIPMENT
+                                SHIP ORDER
                             </button>
                         )}
                         <button

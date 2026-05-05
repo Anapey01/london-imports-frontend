@@ -57,9 +57,7 @@ function LoginFormContent() {
         setSuccess('');
 
         try {
-            // Defense in depth: normalize inputs before sending to API
-            const normalizedUsername = username.toLowerCase().trim();
-            await login(normalizedUsername, password);
+            await login(username, password);
             const user = useAuthStore.getState().user;
             if (user?.id) {
                 setAnalyticsUser(user.id);
@@ -93,13 +91,13 @@ function LoginFormContent() {
                         Direct to Your <br /> Door.
                     </h2>
                     <p className="max-w-xs text-sm font-medium text-slate-400 leading-relaxed italic border-l border-slate-700 pl-8">
-                        Every order is a safe and verified step in our shipping network. Reliable and secure.
+                        Secure, professional sourcing and logistics management for global trade.
                     </p>
                 </div>
                 
                 <div className="relative z-10 pt-20 border-t border-white/10 opacity-40">
-                      <span className="text-[9px] font-black uppercase tracking-widest block mb-4 text-brand-emerald">Safe & Secure</span>
-                      <p className="text-xs font-medium text-slate-300">Your orders are 100% insured and protected through SHA-256 encrypted protocols.</p>
+                      <span className="text-[9px] font-black uppercase tracking-widest block mb-4 text-brand-emerald">Secure Access</span>
+                      <p className="text-xs font-medium text-slate-300">Your connection is encrypted and monitored for maximum security.</p>
                 </div>
 
                 {/* Subtle Radial Architecture */}
@@ -112,7 +110,7 @@ function LoginFormContent() {
                     <header className="mb-20">
                         <div className="flex items-center gap-3 mb-8 opacity-40">
                              <Lock className="w-3 h-3 text-content-primary" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Secure Login</span>
+                             <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Sign In</span>
                         </div>
                         <h1 className="text-5xl font-serif font-bold text-content-primary mb-6 tracking-tighter leading-none">{getTitle()}</h1>
                         <p className="text-sm font-medium text-content-secondary italic">
@@ -187,7 +185,7 @@ function LoginFormContent() {
                             className="group/btn relative w-full h-16 bg-content-primary rounded-none transition-all hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-4 overflow-hidden shadow-2xl shadow-content-primary/10 mt-6"
                         >
                             <span className="relative z-10 text-[11px] font-black text-surface uppercase tracking-[0.5em]">
-                                {isLoading ? 'Verifying...' : 'Sign In Now'}
+                                {isLoading ? 'Checking...' : 'Sign In Now'}
                             </span>
                             {!isLoading && <ArrowUpRight className="relative z-10 w-4 h-4 text-surface group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />}
                         </button>

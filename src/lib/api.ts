@@ -82,11 +82,18 @@ api.interceptors.request.use((config) => {
 
     const isGetRequest = config.method?.toLowerCase() === 'get';
 
+    const isAuthEndpoint = config.url && (
+      config.url.startsWith('/auth/login/') || 
+      config.url.startsWith('/auth/register/') ||
+      config.url.startsWith('/auth/google/')
+    );
+
     // We send the token if:
     // 1. We have a token AND
     // 2. It's NOT a public GET request (to avoid 401s on public pages if token is expired) OR
     // 3. It's an action (POST/PUT/DELETE) - even within a public namespace like /products/ (e.g. reviews)
-    if (token && (!isPublicEndpoint || !isGetRequest)) {
+    // 4. BUT NEVER for auth endpoints (to avoid sending old/expired tokens during new login)
+    if (token && (!isPublicEndpoint || !isGetRequest) && !isAuthEndpoint) {
       config.headers.Authorization = `Bearer ${token}`;
       if (process.env.NODE_ENV === 'development') {
           console.debug(`[API] Auth header added to ${config.url}`);
