@@ -11,6 +11,9 @@ export interface Product {
     name: string;
     slug: string;
     image?: string | null;
+    display_name?: string;
+    short_name?: string;
+    subtitle?: string;
     price: number;
     estimated_shipping_fee?: number;
     is_discreet?: boolean;
