@@ -97,8 +97,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
         const reqVersion = get().version + 1;
         set({ version: reqVersion });
 
+        const accessToken = useAuthStore.getState().accessToken;
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+        const hasToken = !!accessToken;
         
         // Only fetch from server if authenticated AND we actually have a token
         // This prevents "stale" sessions from triggering 401/redirects
@@ -122,16 +123,16 @@ export const useCartStore = create<CartState>()((set, get) => ({
             if (savedGuest && !get().isMerging) {
                 try {
                     set({ isMerging: true });
-                    const guestItems: CartItem[] = JSON.parse(savedGuest);
+                    const guestItemsToSync: CartItem[] = JSON.parse(savedGuest);
                     
-                    if (guestItems.length > 0) {
-                        console.info("[CartStore] Syncing guest items to server...", guestItems.length);
+                    if (guestItemsToSync.length > 0) {
+                        console.info("[CartStore] Syncing guest items to server...", guestItemsToSync.length);
                         
-                        // Track old IDs for migration
                         const oldToNewMap = new Map<string, string>();
+                        const syncSuccesses: string[] = [];
                         
-                        // Add each guest item to server cart SEQUENTIALLY to prevent race conditions
-                        for (const item of guestItems) {
+                        // Add each guest item to server cart SEQUENTIALLY
+                        for (const item of guestItemsToSync) {
                             try {
                                 const res = await ordersAPI.addToCart(
                                     item.product.id, 
@@ -140,8 +141,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
                                     item.selected_color || ""
                                 );
                                 
-                                // Map the guest ID to the new server ID if possible
-                                // We find the item in the returned cart that matches product/size/color
+                                syncSuccesses.push(item.id);
+                                
+                                // Map the guest ID to the new server ID
                                 const newServerItem = res.data.items?.find((i: any) => 
                                     i.product.id === item.product.id && 
                                     (i.selected_size || "") === (item.selected_size || "") && 
@@ -159,21 +161,43 @@ export const useCartStore = create<CartState>()((set, get) => ({
                             }
                         }
 
-                        // MIGRATE SELECTION: If the user had guest items selected, select their new server counterparts
-                        const currentSelected = get().selectedItemIds;
-                        const newSelected = new Set(currentSelected);
-                        oldToNewMap.forEach((newId, oldId) => {
-                            if (currentSelected.has(oldId)) {
-                                newSelected.delete(oldId);
-                                newSelected.add(newId);
-                            }
-                        });
-                        set({ selectedItemIds: newSelected });
+                        // Update selection BEFORE clearing guest items
+                        if (oldToNewMap.size > 0) {
+                            const currentSelected = get().selectedItemIds;
+                            const newSelected = new Set(currentSelected);
+                            oldToNewMap.forEach((newId, oldId) => {
+                                if (currentSelected.has(oldId)) {
+                                    newSelected.delete(oldId);
+                                    newSelected.add(newId);
+                                }
+                            });
+                            set({ selectedItemIds: newSelected });
+                        }
 
-                        // ONLY clear local guest state AFTER successful sync attempt
-                        localStorage.removeItem('guest_cart');
-                        set({ guestItems: [] });
-                        console.info("[CartStore] Sync completed and selection migrated.");
+                        // CRITICAL: Verify with server before clearing local state
+                        console.info("[CartStore] Sync attempts finished. Verifying with server...");
+                        let verificationRes = await ordersAPI.cart({ t: new Date().getTime() });
+                        let verifiedItems = verificationRes.data.items || [];
+
+                        // If the server cart is STILL empty but we just synced items, retry verification 3 times
+                        let vRetry = 0;
+                        while (verifiedItems.length === 0 && vRetry < 3 && syncSuccesses.length > 0) {
+                            console.warn(`[CartStore] Verification ${vRetry + 1} failed. Cart still empty. Waiting...`);
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+                            verificationRes = await ordersAPI.cart({ t: new Date().getTime() });
+                            verifiedItems = verificationRes.data.items || [];
+                            vRetry++;
+                        }
+
+                        if (verifiedItems.length > 0) {
+                            // SUCCESS: Items are confirmed on server. Now we can clear local state safely.
+                            localStorage.removeItem('guest_cart');
+                            set({ guestItems: [] });
+                            console.info("[CartStore] Sync verified and local items cleared.");
+                        } else {
+                            // FAILURE: Items synced but not appearing. KEEP GUEST ITEMS as fallback.
+                            console.error("[CartStore] Items synced but server still returns empty cart. Keeping guest items for safety.");
+                        }
                     }
                 } catch (e) {
                     console.error("[CartStore] Merge process encountered a fatal error:", e);
@@ -183,31 +207,22 @@ export const useCartStore = create<CartState>()((set, get) => ({
             }
 
             try {
-                // CACHE BUSTING: Mobile browsers (Safari/Chrome) often cache the empty cart state.
-                // Adding a timestamp AND explicit headers ensures we get the "Absolute Truth".
+                // Fetch the latest state
                 const timestamp = new Date().getTime();
                 const response = await ordersAPI.cart({ t: timestamp });
                 
-                let serverCart = response.data;
-                let serverItems = serverCart.items || [];
-
-                // MOBILE RESILIENCE: If we JUST synced items but the server says empty, retry once with a delay
-                if (savedGuest && serverItems.length === 0) {
-                    console.warn("[CartStore] Server returned empty cart immediately after merge. Retrying fetch...");
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    const retryRes = await ordersAPI.cart({ t: new Date().getTime() });
-                    serverCart = retryRes.data;
-                    serverItems = serverCart.items || [];
-                }
+                const serverCart = response.data;
+                const serverItems = serverCart.items || [];
 
                 set({ 
                     cart: serverCart, 
-                    itemCount: serverItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
+                    itemCount: serverItems.length > 0 
+                        ? serverItems.reduce((sum: number, item: any) => sum + item.quantity, 0)
+                        : get().guestItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
                     isLoading: false,
-                    guestItems: savedGuest ? [] : get().guestItems
                 });
                 
-                console.info(`[CartStore] Fetch successful. Items on server: ${serverItems.length}`);
+                console.info(`[CartStore] Final fetch. Items: Server=${serverItems.length}, Local=${get().guestItems.length}`);
             } catch (err) {
                 console.error("[CartStore] Fetch failed:", err);
                 if (get().version === reqVersion) {
@@ -240,8 +255,9 @@ export const useCartStore = create<CartState>()((set, get) => ({
     },
 
     addToCart: async (product: Product, quantity = 1, selectedSize?: string, selectedColor?: string, selectedVariant?: { id: string; name: string; price: string }) => {
+        const accessToken = useAuthStore.getState().accessToken;
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+        const hasToken = !!accessToken;
         
         // Only use server if authenticated AND we actually have a token
         if (isAuthenticated && hasToken) {

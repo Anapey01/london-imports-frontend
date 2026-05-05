@@ -189,7 +189,15 @@ export const productsAPI = {
 };
 
 export const ordersAPI = {
-  cart: (params?: unknown) => api.get('/orders/cart/', { params }),
+  cart: (params?: any) => 
+    api.get('/orders/cart/', { 
+      params,
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    }),
   addToCart: (productId: string, quantity: number, selectedSize?: string, selectedColor?: string, variantId?: string) =>
     api.post('/orders/cart/', { product_id: productId, quantity, selected_size: selectedSize, selected_color: selectedColor, variant_id: variantId }),
   removeFromCart: (itemId: string) =>

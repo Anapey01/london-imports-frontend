@@ -36,7 +36,9 @@ export default function CartPage() {
         return () => clearTimeout(timer);
     }, [fetchCart]);
 
-    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+    const accessToken = useAuthStore((state) => state.accessToken);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const hasToken = !!accessToken;
     // If authenticated and have a cart, show it. Otherwise fallback to guest items (especially during merge/sync)
     const items = (isAuthenticated && hasToken && cart) ? (cart.items || []) : guestItems;
 
