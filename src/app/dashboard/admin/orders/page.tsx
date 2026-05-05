@@ -475,7 +475,9 @@ export default function AdminOrdersPage() {
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Customer</th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Date</th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
-                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Total</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">
+                                    {statusFilter === 'PENDING_PAYMENT' ? 'Balance Due' : 'Total'}
+                                </th>
                                 <th className="px-8 py-6"></th>
                             </tr>
                         </thead>
@@ -489,6 +491,7 @@ export default function AdminOrdersPage() {
                                     toggleSelect={toggleSelect}
                                     getStatusColor={getStatusColor}
                                     getPaymentColor={getPaymentColor}
+                                    statusFilter={statusFilter}
                                     handleQuickUpdate={handleQuickUpdate}
                                     handleDelete={handleDelete}
                                 />
@@ -581,6 +584,7 @@ const OrderRow = React.memo(({
     toggleSelect, 
     getStatusColor, 
     getPaymentColor, 
+    statusFilter,
     handleQuickUpdate, 
     handleDelete 
 }: any) => {
@@ -650,7 +654,9 @@ const OrderRow = React.memo(({
                 </div>
             </td>
             <td className="px-8 py-8 text-right">
-                <span className="text-[12px] font-black text-slate-950 tabular-nums">₵{Number(order.total_amount).toLocaleString()}</span>
+                <span className="text-[12px] font-black text-slate-950 tabular-nums">
+                    ₵{(statusFilter === 'PENDING_PAYMENT' ? Number(order.balance_due) : Number(order.total_amount)).toLocaleString()}
+                </span>
             </td>
             <td className="px-8 py-8 text-right">
                 <div className="flex justify-end items-center gap-6">
