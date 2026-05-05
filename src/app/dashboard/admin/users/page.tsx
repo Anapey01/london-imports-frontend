@@ -342,16 +342,16 @@ const UserRow = React.memo(({
             <td className="px-8 py-8 text-right">
                 <div className="flex justify-end items-center gap-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
                     <button
-                        onClick={() => setSelectedUser(user)}
+                        onClick={onUpdate}
                         className="text-[9px] font-black uppercase tracking-widest text-slate-300 hover:text-slate-900 transition-colors"
                     >
                         EDIT STATUS
                     </button>
                     <button
-                        onClick={() => setDeleteUser(user)}
+                        onClick={onDelete}
                         className="p-2 text-slate-200 hover:text-red-600 transition-colors"
                     >
-                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                        <Trash2 className="w-4 h-4" />
                     </button>
                 </div>
             </td>
