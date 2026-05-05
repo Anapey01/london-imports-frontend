@@ -451,7 +451,11 @@ function CheckoutPage() {
                     router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
                 } catch (verifyErr: unknown) {
                     const axiosErr = verifyErr as BackendError;
-                    const serverMessage = axiosErr.response?.data?.error || axiosErr.response?.data?.message || String(verifyErr);
+                    const errorData = axiosErr.response?.data;
+                    const serverMessage = (typeof errorData === 'object' && errorData !== null)
+                        ? (errorData.error || errorData.message || errorData.detail || String(verifyErr))
+                        : (typeof errorData === 'string' ? errorData : String(verifyErr));
+                        
                     console.error('Verification failed:', serverMessage);
                     trackPaymentLifecycle('failure', { step: 'verification', error: serverMessage, provider: 'paystack' });
                     setError('Payment check failed. Please message us on WhatsApp with your order number.');
@@ -466,32 +470,32 @@ function CheckoutPage() {
             if (axiosErr.response?.data) {
                 const errorData = axiosErr.response.data;
                 
-                // Handle standard error/message/detail fields
-                if (errorData.error || errorData.message || errorData.detail) {
-                    errorMessage = errorData.error || errorData.message || errorData.detail;
-                } 
-                // Handle Django REST Framework field errors: { field_name: ["error message"] }
-                else if (typeof errorData === 'object') {
-                    const firstField = Object.keys(errorData)[0];
-                    let firstError = errorData[firstField];
-                    
-                    // If the field itself is an object (e.g. ListField errors with indices like {"0": ["..."]})
-                    if (firstError && typeof firstError === 'object' && !Array.isArray(firstError)) {
-                        const firstIndex = Object.keys(firstError)[0];
-                        const indexError = Array.isArray(firstError[firstIndex]) ? firstError[firstIndex][0] : JSON.stringify(firstError[firstIndex]);
-                        // Convert "0" -> "Item 1" for better UX
-                        const itemLabel = !isNaN(Number(firstIndex)) ? `Item ${Number(firstIndex) + 1}` : firstIndex;
-                        firstError = `${itemLabel}: ${indexError}`;
-                    } else if (Array.isArray(firstError)) {
-                        firstError = firstError[0];
-                    } else {
-                        firstError = JSON.stringify(firstError);
-                    }
-                    
-                    if (firstField && firstError) {
-                        // Capitalize field name for better readability
-                        const fieldName = firstField.charAt(0).toUpperCase() + firstField.slice(1).replace(/_/g, ' ');
-                        errorMessage = `${fieldName}: ${firstError}`;
+                // Handle standard error/message/detail fields with type safety
+                if (typeof errorData === 'object' && errorData !== null) {
+                    if (errorData.error || errorData.message || errorData.detail) {
+                        errorMessage = errorData.error || errorData.message || errorData.detail || errorMessage;
+                    } 
+                    // Handle Django REST Framework field errors: { field_name: ["error message"] }
+                    else {
+                        const firstField = Object.keys(errorData)[0];
+                        let firstError = errorData[firstField];
+                        
+                        // If the field itself is an object (e.g. ListField errors)
+                        if (firstError && typeof firstError === 'object' && !Array.isArray(firstError)) {
+                            const firstIndex = Object.keys(firstError)[0];
+                            const indexError = Array.isArray(firstError[firstIndex]) ? firstError[firstIndex][0] : JSON.stringify(firstError[firstIndex]);
+                            const itemLabel = !isNaN(Number(firstIndex)) ? `Item ${Number(firstIndex) + 1}` : firstIndex;
+                            firstError = `${itemLabel}: ${indexError}`;
+                        } else if (Array.isArray(firstError)) {
+                            firstError = firstError[0];
+                        } else {
+                            firstError = String(firstError);
+                        }
+                        
+                        if (firstField && firstError) {
+                            const fieldName = firstField.charAt(0).toUpperCase() + firstField.slice(1).replace(/_/g, ' ');
+                            errorMessage = `${fieldName}: ${firstError}`;
+                        }
                     }
                 } else if (typeof errorData === 'string') {
                     errorMessage = errorData;
