@@ -19,7 +19,7 @@ interface PaymentMethodSelectorProps {
         amount_paid?: number;
         subtotal?: number;
     };
-    selectedItemIds: Set<string>;
+    selectedItemIds: string[];
     customAmount: string;
     setCustomAmount: (amount: string) => void;
     activeStep: number;
@@ -46,7 +46,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
         }
 
         const selSubtotal = (currentOrderData.items || [])
-            .filter((i: BaseOrderItem) => selectedItemIds.has(i.id))
+            .filter((i: BaseOrderItem) => selectedItemIds.includes(i.id))
             .reduce((sum: number, i: BaseOrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
         
         return selSubtotal + Number(currentOrderData.delivery_fee || 0);
