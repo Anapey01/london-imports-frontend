@@ -19,6 +19,13 @@ const withPWA = withPWAInit({
       cleanupOutdatedCaches: true,
     runtimeCaching: [
       {
+        // 1. Admin & Dashboard - NetworkOnly (Never cache or intercept admin portal)
+        urlPattern: ({ url }) => 
+          url.pathname.startsWith('/admin/') || 
+          url.pathname.startsWith('/dashboard/admin/'),
+        handler: 'NetworkOnly',
+      },
+      {
         urlPattern: ({ url }) => 
           url.origin.includes('paystack.co') || 
           url.origin.includes('paystack.com') || 

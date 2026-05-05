@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 import AdminSidebar from '@/components/dashboard/AdminSidebar';
 
 interface User {
@@ -29,38 +30,31 @@ export default function AdminDashboardLayout({
     const { theme } = useTheme();
     const router = useRouter();
     const pathname = usePathname();
-    const [isLoading, setIsLoading] = useState(true);
+    const { user: storeUser, isAuthenticated, isLoading: authLoading } = useAuthStore();
     const [user, setUser] = useState<User | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [checking, setChecking] = useState(true);
     const isDark = theme === 'dark';
 
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const token = localStorage.getItem('access_token');
-                if (!token) throw new Error('No token');
+        // If authStore says we're not authenticated and it's not loading, redirect
+        if (!authLoading && !isAuthenticated) {
+            router.push('/admin/login');
+            return;
+        }
 
-                const response = await authAPI.me();
-                const userData = response.data;
-
-                // Only allow ADMIN users (or staff/superuser)
-                if (userData.role !== 'ADMIN' && !userData.is_staff && !userData.is_superuser) {
-                    router.push('/');
-                    return;
-                }
-
-                setUser(userData);
-            } catch {
-                router.push('/admin/login');
-            } finally {
-                setIsLoading(false);
+        // If authenticated, check roles
+        if (isAuthenticated && storeUser) {
+            if (storeUser.role !== 'ADMIN' && !storeUser.is_staff && !storeUser.is_superuser) {
+                router.push('/');
+                return;
             }
-        };
+            setUser(storeUser as unknown as User);
+            setChecking(false);
+        }
+    }, [isAuthenticated, storeUser, authLoading, router]);
 
-        checkAuth();
-    }, [router]);
-
-    if (isLoading) {
+    if (authLoading || checking) {
         return (
             <div
                 className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
