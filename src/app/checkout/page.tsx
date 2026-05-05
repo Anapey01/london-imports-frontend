@@ -9,7 +9,7 @@ import { ordersAPI, paymentsAPI } from '@/lib/api';
 import { formatPrice } from '@/lib/format';
 import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymentInfo, trackWhatsAppContact, trackCheckoutError, trackPaymentLifecycle, trackEvent } from '@/lib/analytics';
 import { ExtendedCart, BackendError, type OrderItem } from '@/types';
-import { AlertCircle, ShoppingBag, Search } from 'lucide-react';
+import { AlertCircle, ShoppingBag } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 import CheckoutSkeleton from '@/components/checkout/CheckoutSkeleton';
@@ -275,8 +275,6 @@ function CheckoutPage() {
         if (paymentType === 'BALANCE') return balanceDue;
         if (paymentType === 'DEPOSIT') return totalValue - delivery; // Full Payment (Minus Shipping Fee)
         if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
-
-        if (paymentType === 'CUSTOM' && customAmount) return parseFloat(customAmount);
         if (paymentType === 'WHATSAPP') return 0;
         return balanceDue;
     }, [paymentType, currentOrderData, customAmount, checkoutOrder, selectedItemIds, orderNumberParam]);
@@ -451,20 +449,22 @@ function CheckoutPage() {
                     clearCart();
                     sessionStorage.removeItem('londons_checkout_delivery');
                     router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
-                } catch (verifyErr: any) {
-                    const serverMessage = verifyErr.response?.data?.error || verifyErr.response?.data?.message || String(verifyErr);
+                } catch (verifyErr: unknown) {
+                    const axiosErr = verifyErr as BackendError;
+                    const serverMessage = axiosErr.response?.data?.error || axiosErr.response?.data?.message || String(verifyErr);
                     console.error('Verification failed:', serverMessage);
                     trackPaymentLifecycle('failure', { step: 'verification', error: serverMessage, provider: 'paystack' });
                     setError('Payment check failed. Please message us on WhatsApp with your order number.');
                     setIsLoading(false);
                 }
             }
-        } catch (err: any) {
-            console.error("Checkout Error:", err);
+        } catch (err: unknown) {
+            const axiosErr = err as BackendError;
+            console.error("Checkout Error:", axiosErr);
             let errorMessage = 'Error processing request';
 
-            if (err.response?.data) {
-                const errorData = err.response.data;
+            if (axiosErr.response?.data) {
+                const errorData = axiosErr.response.data;
                 
                 // Handle standard error/message/detail fields
                 if (errorData.error || errorData.message || errorData.detail) {
