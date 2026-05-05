@@ -732,7 +732,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                 )}
                             </div>
                             <h1 className="text-3xl lg:text-5xl font-serif font-atelier text-content-primary leading-[1] tracking-tighter text-balance">
-                                {product.display_name || product.short_name || product.name}
+                                {product.name}
                             </h1>
                             {product.subtitle && (
                                 <p className="text-xs lg:text-sm font-medium text-content-secondary tracking-[0.2em] uppercase opacity-60 mt-1">
