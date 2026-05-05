@@ -345,19 +345,28 @@ function CheckoutPage() {
             }
 
             const freshCart = useCartStore.getState().cart;
-            let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
             
-            // If no items selected, default to all
-            if (targetItemIds.length === 0 && freshCart && (freshCart.items?.length || 0) > 0) {
-                targetItemIds = freshCart.items.map(i => i.id);
+            // LOGIC FIX: If we are resuming an order, we use its items, NOT the cart store.
+            // This prevents "Empty Basket" errors when paying from the dashboard.
+            let targetItemIds: string[] = [];
+            
+            if (orderNumberParam && checkoutOrder) {
+                targetItemIds = (checkoutOrder.items || []).map(i => i.id);
+            } else {
+                targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
+                
+                // If no items selected, default to all from the fresh cart
+                if (targetItemIds.length === 0 && freshCart && (freshCart.items?.length || 0) > 0) {
+                    targetItemIds = freshCart.items.map(i => i.id);
+                }
+                
+                if (buyNowSlug && freshCart) {
+                    const buyNowItem = freshCart.items.find(item => item.product.slug === buyNowSlug);
+                    if (buyNowItem) targetItemIds = [buyNowItem.id];
+                }
             }
             
-            if (buyNowSlug && freshCart) {
-                const buyNowItem = freshCart.items.find(item => item.product.slug === buyNowSlug);
-                if (buyNowItem) targetItemIds = [buyNowItem.id];
-            }
-
-            if (targetItemIds.length === 0) {
+            if (targetItemIds.length === 0 && !orderNumberParam) {
                 setError('Your basket is empty on the server. Please try adding items again.');
                 setIsLoading(false);
                 return;
@@ -365,6 +374,7 @@ function CheckoutPage() {
 
             const orderPayload = {
                 item_ids: targetItemIds,
+                order_number: orderNumberParam || undefined,
                 delivery_address: delivery.address,
                 delivery_city: delivery.city,
                 delivery_region: delivery.region,

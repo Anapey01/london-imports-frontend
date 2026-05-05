@@ -21,13 +21,161 @@ import {
     ShieldCheck,
     Truck,
     CheckCircle2,
-    Loader2
+    Loader2,
+    User,
+    Crown,
+    Calendar,
+    ShoppingBag,
+    TrendingUp
 } from 'lucide-react';
-import LogisticsStepper from '@/components/admin/orders/LogisticsStepper';
-import CustomerIntelligenceCard from '@/components/admin/orders/CustomerIntelligenceCard';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion } from 'framer-motion';
+
+// --- Integrated Components ---
+
+const STEPS = [
+    { id: 'PENDING', label: 'Registered', icon: Package },
+    { id: 'PROCESSING', label: 'Hub Consolidation', icon: Package },
+    { id: 'IN_TRANSIT', label: 'Global Corridor', icon: Truck },
+    { id: 'ARRIVED', label: 'GH Hub Arrival', icon: MapPin },
+    { id: 'OUT_FOR_DELIVERY', label: 'Dispatch', icon: Truck },
+    { id: 'DELIVERED', label: 'Finality', icon: CheckCircle2 },
+];
+
+function LogisticsStepper({ status, isDark }: { status: string; isDark: boolean }) {
+    const currentStepIndex = STEPS.findIndex(s => s.id === status);
+    
+    return (
+        <div className="w-full">
+            <div className="relative flex justify-between">
+                <div className={`absolute top-4 left-0 right-0 h-px ${isDark ? 'bg-white/5' : 'bg-slate-200'}`} />
+                <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }}
+                    className="absolute top-4 left-0 h-px bg-pink-500"
+                />
+
+                {STEPS.map((step, idx) => {
+                    const isCompleted = idx <= currentStepIndex;
+                    const isCurrent = idx === currentStepIndex;
+                    
+                    return (
+                        <div key={step.id} className="relative z-10 flex flex-col items-center group flex-1">
+                            <motion.div 
+                                initial={false}
+                                animate={{ 
+                                    scale: isCurrent ? 1.1 : 1,
+                                    borderColor: isCompleted ? '#ec4899' : isDark ? 'rgba(255,255,255,0.05)' : '#e2e8f0',
+                                    backgroundColor: isCurrent ? (isDark ? '#000' : '#fff') : 'transparent'
+                                }}
+                                className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500`}
+                            >
+                                <div className={`w-1 h-1 rounded-full ${isCompleted ? 'bg-pink-500' : isDark ? 'bg-white/10' : 'bg-slate-300'}`} />
+                            </motion.div>
+                            
+                            <div className="mt-4 flex flex-col items-center text-center">
+                                <span className={`text-[8px] font-mono tracking-[0.2em] uppercase mb-1 transition-all duration-500 ${isCurrent ? 'opacity-100 text-pink-500 font-black' : 'opacity-20'}`}>
+                                    {isCurrent ? 'Current' : `Node 0${idx + 1}`}
+                                </span>
+                                <span className={`text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${isCurrent ? 'opacity-100' : 'opacity-30'}`}>
+                                    {step.label}
+                                </span>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+function CustomerIntelligenceCard({ customer, isDark }: any) {
+    const joinDate = new Date(customer.stats.join_date).toLocaleDateString('en-GB', { 
+        month: 'long', 
+        year: 'numeric' 
+    });
+
+    return (
+        <div className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'} relative group`}>
+            <div className="absolute top-0 left-0 w-1 h-full bg-slate-900 dark:bg-white/10" />
+            
+            <div className="p-10">
+                <div className="flex items-center gap-3 mb-10 opacity-40">
+                    <User className="w-4 h-4" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Client Identity Profile</h3>
+                </div>
+
+                <div className="flex items-start justify-between mb-12">
+                    <div className="flex items-center gap-6">
+                        <div className={`w-16 h-16 rounded-full border flex items-center justify-center text-xl font-serif font-bold ${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-100 text-slate-900'}`}>
+                            {customer.name[0].toUpperCase()}
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <h3 className={`text-2xl font-serif font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {customer.name}
+                                </h3>
+                                {customer.stats.is_vip && (
+                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-[8px] font-black text-white rounded-full uppercase tracking-widest">
+                                        <Crown className="w-3 h-3" />
+                                        VIP
+                                    </div>
+                                )}
+                            </div>
+                            <p className="text-xs font-mono opacity-40 lowercase tracking-tight">{customer.email}</p>
+                            <p className="text-xs font-mono opacity-40 mt-1 uppercase tracking-widest">{customer.phone}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
+                    <div className="p-6 bg-white dark:bg-slate-900">
+                        <div className="flex items-center gap-2 mb-3 opacity-30">
+                            <TrendingUp className="w-3 h-3" />
+                            <span className="text-[9px] font-black uppercase tracking-widest">Lifetime Value</span>
+                        </div>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-xs font-serif italic opacity-40">₵</span>
+                            <span className={`text-2xl font-serif font-bold tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                {customer.stats.ltv.toLocaleString()}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="p-6 bg-white dark:bg-slate-900 border-l border-inherit">
+                        <div className="flex items-center gap-2 mb-3 opacity-30">
+                            <ShoppingBag className="w-3 h-3" />
+                            <span className="text-[9px] font-black uppercase tracking-widest">Order Count</span>
+                        </div>
+                        <div className="flex items-baseline gap-2">
+                            <span className={`text-2xl font-serif font-bold tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                {customer.stats.order_count}
+                            </span>
+                            <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">TXNS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-10 pt-8 border-t border-inherit flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Calendar className="w-4 h-4 opacity-20" />
+                        <div className="space-y-0.5">
+                            <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block">Established Member</span>
+                            <p className="text-[10px] font-bold uppercase tracking-widest">{joinDate}</p>
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block">Account Status</span>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Verified Hub Access</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// --- End Integrated Components ---
 
 interface OrderItem {
     id: string;
@@ -248,7 +396,6 @@ export default function AdminOrderDetailPage() {
 
     return (
         <div className={`min-h-screen pb-32 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FAFAFA] text-slate-900'}`}>
-            {/* Editorial Header Navigation */}
             <div className={`sticky top-0 z-[60] px-8 py-5 border-b backdrop-blur-xl ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-100'}`}>
                 <div className="max-w-[1600px] mx-auto flex items-center justify-between">
                     <button 
@@ -279,11 +426,7 @@ export default function AdminOrderDetailPage() {
 
             <main className="max-w-[1600px] mx-auto px-8 py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    
-                    {/* Left Column: Logistics & Payload (8 Units) */}
                     <div className="lg:col-span-8 space-y-12">
-                        
-                        {/* 01. Visual Lifecycle */}
                         <section className={`p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="flex items-center justify-between mb-12">
                                 <div className="flex items-center gap-4">
@@ -295,7 +438,6 @@ export default function AdminOrderDetailPage() {
                             <LogisticsStepper status={order.status} isDark={isDark} />
                         </section>
 
-                        {/* 02. Shipment Manifest */}
                         <section className={`border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="p-8 border-b border-inherit flex items-center justify-between">
                                 <div className="flex items-center gap-4">
@@ -331,7 +473,6 @@ export default function AdminOrderDetailPage() {
                                 ))}
                             </div>
 
-                            {/* Ledger Summary */}
                             <div className="p-12 bg-slate-500/5 border-t border-inherit">
                                 <div className="max-w-md ml-auto space-y-6">
                                     <div className="grid grid-cols-2 gap-4 pb-6 border-b border-dashed border-inherit">
@@ -369,7 +510,6 @@ export default function AdminOrderDetailPage() {
                             </div>
                         </section>
 
-                        {/* 03. Delivery Protocol */}
                         <section className={`p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="flex items-center justify-between mb-10">
                                 <div className="flex items-center gap-4">
@@ -449,10 +589,7 @@ export default function AdminOrderDetailPage() {
                         </section>
                     </div>
 
-                    {/* Right Column: Intelligence & Control (4 Units) */}
                     <div className="lg:col-span-4 space-y-12">
-                        
-                        {/* 04. Identity Intelligence */}
                         <CustomerIntelligenceCard 
                             customer={{
                                 name: order.customer,
@@ -463,7 +600,6 @@ export default function AdminOrderDetailPage() {
                             isDark={isDark} 
                         />
 
-                        {/* 05. Command Terminal */}
                         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="p-8 border-b border-inherit flex items-center gap-4">
                                 <Terminal className="w-5 h-5 opacity-20" />
@@ -527,7 +663,6 @@ export default function AdminOrderDetailPage() {
                             </div>
                         </section>
 
-                        {/* 06. Audit Log */}
                         <section className={`p-8 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="flex items-center gap-3 mb-10">
                                 <OrderHistoryIcon className="w-4 h-4 opacity-20" />
@@ -549,12 +684,10 @@ export default function AdminOrderDetailPage() {
                                 </div>
                             </div>
                         </section>
-
                     </div>
                 </div>
             </main>
 
-            {/* Transfer Modal - Premium Redesign */}
             <AnimatePresence>
                 {isTransferModalOpen && (
                     <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md">
