@@ -11,7 +11,9 @@ import {
     CreditCard,
     AlertCircle,
     CheckCircle2,
-    History
+    History,
+    ChevronRight,
+    Loader2
 } from 'lucide-react';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -60,7 +62,10 @@ export default function PaymentTransferPage() {
     };
 
     const searchOrders = async (query: string, setResults: (res: Order[]) => void, setLoading: (l: boolean) => void) => {
-        if (!query || query.length < 2) return;
+        if (!query || query.length < 2) {
+            setResults([]);
+            return;
+        }
         setLoading(true);
         try {
             const response = await adminAPI.orders({ search: query });
@@ -74,17 +79,17 @@ export default function PaymentTransferPage() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            searchOrders(sourceSearch, setSourceOrders, setSearchingSource);
-        }, 500);
+            if (!selectedSource) searchOrders(sourceSearch, setSourceOrders, setSearchingSource);
+        }, 300);
         return () => clearTimeout(timer);
-    }, [sourceSearch]);
+    }, [sourceSearch, selectedSource]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            searchOrders(targetSearch, setTargetOrders, setSearchingTarget);
-        }, 500);
+            if (!selectedTarget) searchOrders(targetSearch, setTargetOrders, setSearchingTarget);
+        }, 300);
         return () => clearTimeout(timer);
-    }, [targetSearch]);
+    }, [targetSearch, selectedTarget]);
 
     const handleTransfer = async () => {
         if (!selectedSource || !selectedTarget || amount <= 0) {
@@ -110,7 +115,6 @@ export default function PaymentTransferPage() {
                 reason
             });
             addAlert('Transfer completed successfully!');
-            // Reset state
             setSelectedSource(null);
             setSelectedTarget(null);
             setAmount(0);
@@ -124,235 +128,238 @@ export default function PaymentTransferPage() {
         }
     };
 
-    const openTransferModal = async () => {
-        // This is a placeholder or not needed here but good to keep logic if we move back
-    };
-
-    const OrderCard = ({ order, onSelect, isSelected, type }: { order: Order, onSelect: () => void, isSelected: boolean, type: 'source' | 'target' }) => (
+    const OrderListItem = ({ order, onSelect, type }: { order: Order, onSelect: () => void, type: 'source' | 'target' }) => (
         <button
             onClick={onSelect}
-            className={`w-full text-left p-6 rounded-3xl transition-all border-2 ${
-                isSelected 
-                    ? 'border-pink-500 bg-pink-500/5 shadow-lg shadow-pink-500/10' 
-                    : isDark ? 'border-slate-800 bg-slate-900/50 hover:border-slate-700' : 'border-gray-100 bg-white hover:border-gray-200 shadow-sm'
+            className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all border ${
+                isDark ? 'border-slate-800 bg-slate-900/50 hover:bg-slate-800' : 'border-gray-100 bg-white hover:bg-gray-50'
             }`}
         >
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        {type === 'source' ? 'Funds Origin' : 'Destination'}
-                    </p>
-                    <p className={`text-lg font-black tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        #{order.order_number}
-                    </p>
-                </div>
-                <span className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-tighter ${
-                    order.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
-                }`}>
-                    {order.status}
-                </span>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                type === 'source' ? 'bg-pink-500/10 text-pink-500' : 'bg-blue-500/10 text-blue-500'
+            }`}>
+                {type === 'source' ? <ArrowRightLeft className="w-5 h-5 rotate-180" /> : <ArrowRightLeft className="w-5 h-5" />}
             </div>
-            
-            <div className="space-y-3">
-                <div className="flex items-center gap-3 opacity-60">
-                    <User className="w-4 h-4" />
-                    <span className="text-xs font-bold">{order.customer.name}</span>
-                </div>
-                <div className="flex items-center gap-3 opacity-60">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-xs font-bold">{new Date(order.created_at).toLocaleDateString()}</span>
-                </div>
-                <div className="pt-3 border-t border-primary-surface/10 flex justify-between items-baseline">
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Paid Balance</span>
-                    <span className="text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</span>
-                </div>
+            <div className="flex-1 min-w-0">
+                <p className={`text-sm font-black tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    #{order.order_number}
+                </p>
+                <p className="text-[10px] font-bold opacity-40 uppercase truncate">
+                    {order.customer.name} • {order.customer.email}
+                </p>
             </div>
+            <div className="text-right">
+                <p className="text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</p>
+                <p className="text-[10px] font-bold opacity-40 uppercase">Paid</p>
+            </div>
+            <ChevronRight className="w-4 h-4 opacity-20" />
         </button>
     );
 
+    const SelectedCard = ({ order, onClear, type }: { order: Order, onClear: () => void, type: 'source' | 'target' }) => (
+        <motion.div 
+            layoutId={type}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`relative p-6 rounded-[2rem] border-2 shadow-xl ${
+                type === 'source' 
+                    ? 'border-pink-500/30 bg-pink-500/5' 
+                    : 'border-blue-500/30 bg-blue-500/5'
+            }`}
+        >
+            <button 
+                onClick={onClear}
+                className="absolute top-4 right-4 text-[10px] font-black uppercase underline tracking-widest opacity-40 hover:opacity-100 transition-opacity"
+            >
+                Change
+            </button>
+            <div className="flex items-center gap-4 mb-6">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    type === 'source' ? 'bg-pink-500 text-white' : 'bg-blue-500 text-white'
+                }`}>
+                    {type === 'source' ? <ArrowRightLeft className="w-6 h-6 rotate-180" /> : <ArrowRightLeft className="w-6 h-6" />}
+                </div>
+                <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-1">
+                        {type === 'source' ? 'Source Order' : 'Destination Order'}
+                    </p>
+                    <h3 className={`text-2xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        #{order.order_number}
+                    </h3>
+                </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className={`p-4 rounded-2xl ${isDark ? 'bg-slate-900' : 'bg-white/50 shadow-sm'}`}>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Customer</p>
+                    <p className="text-sm font-bold truncate">{order.customer.name}</p>
+                </div>
+                <div className={`p-4 rounded-2xl ${isDark ? 'bg-slate-900' : 'bg-white/50 shadow-sm'}`}>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Paid Balance</p>
+                    <p className="text-sm font-black text-emerald-500">₵{order.amount_paid.toLocaleString()}</p>
+                </div>
+            </div>
+        </motion.div>
+    );
+
     return (
-        <div className="max-w-6xl mx-auto space-y-8 pb-24">
-            <header>
-                <h1 className={`text-3xl font-black tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    Payment Transfer Hub
-                </h1>
-                <p className={`text-sm mt-2 font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                    Electronically move funds between customer orders to resolve payment errors.
-                </p>
+        <div className="max-w-7xl mx-auto space-y-12 pb-32 pt-4">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-pink-500 flex items-center justify-center">
+                            <ArrowRightLeft className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500">Financial Ops</span>
+                    </div>
+                    <h1 className={`text-4xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        Payment Transfer Hub
+                    </h1>
+                </div>
+                <div className={`px-6 py-3 rounded-2xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">System Status</p>
+                    <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-xs font-bold">Ledger Engine Ready</span>
+                    </div>
+                </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Source Selection */}
-                <section className="space-y-4">
-                    <h2 className={`text-xs font-black uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        1. Select Source Order
-                    </h2>
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-30" />
-                        <input
-                            placeholder="Search by Order # or Customer..."
-                            value={sourceSearch}
-                            onChange={(e) => setSourceSearch(e.target.value)}
-                            className={`w-full pl-12 pr-4 py-4 rounded-2xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-gray-100'}`}
-                        />
-                        {searchingSource && (
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <div className="w-4 h-4 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 px-4">
+                {/* Source Selection Area */}
+                <div className="space-y-6">
+                    {selectedSource ? (
+                        <SelectedCard order={selectedSource} onClear={() => setSelectedSource(null)} type="source" />
+                    ) : (
+                        <div className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} space-y-6`}>
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Search Source</h2>
+                                {searchingSource && <Loader2 className="w-4 h-4 text-pink-500 animate-spin" />}
                             </div>
-                        )}
-                    </div>
-                    
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
-                        {selectedSource ? (
-                            <div className="relative">
-                                <OrderCard 
-                                    order={selectedSource} 
-                                    onSelect={() => setSelectedSource(null)} 
-                                    isSelected={true} 
-                                    type="source" 
-                                />
-                                <button 
-                                    onClick={() => setSelectedSource(null)}
-                                    className="absolute top-4 right-4 p-2 bg-pink-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform"
-                                >
-                                    <ArrowRightLeft className="w-4 h-4 rotate-45" />
-                                </button>
-                            </div>
-                        ) : (
-                            sourceOrders.map(o => (
-                                <OrderCard key={o.id} order={o} onSelect={() => setSelectedSource(o)} isSelected={false} type="source" />
-                            ))
-                        )}
-                        {!selectedSource && sourceSearch && sourceOrders.length === 0 && !searchingSource && (
-                            <p className="text-center py-8 text-sm opacity-40 italic">No eligible source orders found</p>
-                        )}
-                    </div>
-                </section>
-
-                {/* Target Selection */}
-                <section className="space-y-4">
-                    <h2 className={`text-xs font-black uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        2. Select Destination Order
-                    </h2>
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-30" />
-                        <input
-                            placeholder="Search by Order # or Customer..."
-                            value={targetSearch}
-                            onChange={(e) => setTargetSearch(e.target.value)}
-                            className={`w-full pl-12 pr-4 py-4 rounded-2xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-gray-100'}`}
-                        />
-                        {searchingTarget && (
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <div className="w-4 h-4 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
-                        {selectedTarget ? (
-                            <div className="relative">
-                                <OrderCard 
-                                    order={selectedTarget} 
-                                    onSelect={() => setSelectedTarget(null)} 
-                                    isSelected={true} 
-                                    type="target" 
-                                />
-                                <button 
-                                    onClick={() => setSelectedTarget(null)}
-                                    className="absolute top-4 right-4 p-2 bg-pink-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform"
-                                >
-                                    <ArrowRightLeft className="w-4 h-4 rotate-45" />
-                                </button>
-                            </div>
-                        ) : (
-                            targetOrders.map(o => (
-                                <OrderCard key={o.id} order={o} onSelect={() => setSelectedTarget(o)} isSelected={false} type="target" />
-                            ))
-                        )}
-                        {!selectedTarget && targetSearch && targetOrders.length === 0 && !searchingTarget && (
-                            <p className="text-center py-8 text-sm opacity-40 italic">No eligible target orders found</p>
-                        )}
-                    </div>
-                </section>
-            </div>
-
-            {/* Execution Panel */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`p-10 rounded-[3rem] border ${isDark ? 'bg-slate-900 border-slate-800 shadow-2xl shadow-black/50' : 'bg-white border-gray-100 shadow-xl'}`}
-            >
-                <div className="flex flex-col md:flex-row items-center gap-10">
-                    <div className="flex-1 space-y-6 w-full">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Transfer Amount</label>
-                                <div className="relative">
-                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-pink-500">₵</span>
-                                    <input
-                                        type="number"
-                                        value={amount}
-                                        onChange={(e) => setAmount(parseFloat(e.target.value))}
-                                        placeholder="0.00"
-                                        className={`w-full pl-12 pr-6 py-5 rounded-[2rem] text-xl font-black border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-100'}`}
-                                    />
-                                    {selectedSource && (
-                                        <p className="absolute -bottom-6 left-2 text-[9px] font-black text-pink-500 uppercase tracking-widest">
-                                            Available: ₵{selectedSource.amount_paid.toLocaleString()}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Adjustment Reason</label>
+                            <div className="relative group">
+                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20 group-focus-within:text-pink-500 group-focus-within:opacity-100 transition-all" />
                                 <input
-                                    value={reason}
-                                    onChange={(e) => setReason(e.target.value)}
-                                    placeholder="Brief description of the error..."
-                                    className={`w-full px-8 py-5 rounded-[2rem] text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                    placeholder="Type Order #, Name or Email..."
+                                    value={sourceSearch}
+                                    onChange={(e) => setSourceSearch(e.target.value)}
+                                    className={`w-full pl-16 pr-6 py-5 rounded-3xl text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-gray-50 border-gray-100'}`}
                                 />
+                            </div>
+                            <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                                {sourceOrders.map(o => (
+                                    <OrderListItem key={o.id} order={o} onSelect={() => setSelectedSource(o)} type="source" />
+                                ))}
+                                {sourceSearch && sourceOrders.length === 0 && !searchingSource && (
+                                    <div className="py-12 text-center opacity-30 italic text-sm">No results for &quot;{sourceSearch}&quot;</div>
+                                )}
                             </div>
                         </div>
-                    </div>
-                    
-                    <button
-                        onClick={handleTransfer}
-                        disabled={loading || !selectedSource || !selectedTarget || amount <= 0}
-                        className={`shrink-0 h-24 px-12 rounded-[2rem] flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em] transition-all ${
-                            loading || !selectedSource || !selectedTarget || amount <= 0
-                                ? 'bg-gray-500 opacity-20 cursor-not-allowed'
-                                : 'bg-pink-500 text-white hover:scale-105 active:scale-95 shadow-xl shadow-pink-500/30'
-                        }`}
-                    >
-                        {loading ? 'Processing...' : 'Authorize Transfer'}
-                        <ArrowRightLeft className="w-5 h-5" />
-                    </button>
+                    )}
                 </div>
-                
-                {/* Validation Info */}
-                <div className="mt-8 flex flex-wrap gap-6 pt-8 border-t border-primary-surface/10">
-                    <div className="flex items-center gap-2">
-                        {selectedSource && selectedTarget && selectedSource.customer.email === selectedTarget.customer.email ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        ) : (
-                            <AlertCircle className="w-4 h-4 text-amber-500" />
-                        )}
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Customer Match Policy</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <History className="w-4 h-4 text-pink-500" />
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Auto Stock Release Enabled</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4 text-blue-500" />
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Customer Email Receipt Enabled</span>
-                    </div>
-                </div>
-            </motion.div>
 
-            {/* Notification Toasts */}
-            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+                {/* Target Selection Area */}
+                <div className="space-y-6">
+                    {selectedTarget ? (
+                        <SelectedCard order={selectedTarget} onClear={() => setSelectedTarget(null)} type="target" />
+                    ) : (
+                        <div className={`p-8 rounded-[2.5rem] border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-gray-100 shadow-sm'} space-y-6`}>
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Search Destination</h2>
+                                {searchingTarget && <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />}
+                            </div>
+                            <div className="relative group">
+                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20 group-focus-within:text-blue-500 group-focus-within:opacity-100 transition-all" />
+                                <input
+                                    placeholder="Type Order #, Name or Email..."
+                                    value={targetSearch}
+                                    onChange={(e) => setTargetSearch(e.target.value)}
+                                    className={`w-full pl-16 pr-6 py-5 rounded-3xl text-sm font-bold border-2 focus:border-blue-500 outline-none transition-all ${isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-gray-50 border-gray-100'}`}
+                                />
+                            </div>
+                            <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                                {targetOrders.map(o => (
+                                    <OrderListItem key={o.id} order={o} onSelect={() => setSelectedTarget(o)} type="target" />
+                                ))}
+                                {targetSearch && targetOrders.length === 0 && !searchingTarget && (
+                                    <div className="py-12 text-center opacity-30 italic text-sm">No results for &quot;{targetSearch}&quot;</div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Execution Bridge */}
+            <div className="fixed bottom-0 left-0 md:left-64 right-0 p-8 z-[100] pointer-events-none">
+                <div className="max-w-4xl mx-auto pointer-events-auto">
+                    <motion.div 
+                        initial={{ y: 100 }}
+                        animate={{ y: 0 }}
+                        className={`p-2 rounded-[3rem] shadow-2xl backdrop-blur-xl border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-gray-100'}`}
+                    >
+                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
+                            <div className="flex-1 flex flex-col md:flex-row gap-2">
+                                <div className="flex-1 px-8 py-5 rounded-[2.5rem] flex flex-col justify-center gap-1">
+                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Transfer Sum</label>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-xl font-black text-pink-500">₵</span>
+                                        <input
+                                            type="number"
+                                            value={amount}
+                                            onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                                            className={`bg-transparent text-2xl font-black outline-none w-full ${isDark ? 'text-white' : 'text-gray-900'}`}
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+                                <div className={`flex-1 px-8 py-5 rounded-[2.5rem] flex flex-col justify-center gap-1 ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
+                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Protocol Reason</label>
+                                    <input
+                                        value={reason}
+                                        onChange={(e) => setReason(e.target.value)}
+                                        className={`bg-transparent text-sm font-bold outline-none w-full ${isDark ? 'text-white' : 'text-gray-900'}`}
+                                        placeholder="e.g. Correcting mistaken order payment"
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleTransfer}
+                                disabled={loading || !selectedSource || !selectedTarget || amount <= 0}
+                                className={`lg:w-72 h-auto py-6 lg:py-0 px-10 rounded-[2.5rem] flex items-center justify-center gap-4 transition-all ${
+                                    loading || !selectedSource || !selectedTarget || amount <= 0
+                                        ? 'bg-gray-500/10 text-gray-500 cursor-not-allowed'
+                                        : 'bg-pink-600 text-white hover:bg-pink-500 shadow-lg shadow-pink-500/20 active:scale-95'
+                                }`}
+                            >
+                                <span className="text-xs font-black uppercase tracking-[0.2em]">Authorize Now</span>
+                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRightLeft className="w-5 h-5" />}
+                            </button>
+                        </div>
+                        
+                        <div className="px-10 py-3 flex items-center justify-between">
+                            <div className="flex gap-6">
+                                <div className="flex items-center gap-2 opacity-40">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    <span className="text-[8px] font-black uppercase tracking-widest">Atomic Engine</span>
+                                </div>
+                                <div className="flex items-center gap-2 opacity-40">
+                                    <History className="w-3 h-3" />
+                                    <span className="text-[8px] font-black uppercase tracking-widest">Stock Auto-Sync</span>
+                                </div>
+                            </div>
+                            {selectedSource && selectedTarget && (
+                                <div className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
+                                    selectedSource.customer.email === selectedTarget.customer.email ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                                }`}>
+                                    {selectedSource.customer.email === selectedTarget.customer.email ? 'Identity Verified' : 'Identity Mismatch Warning'}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* Notifications */}
+            <div className="fixed bottom-32 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
                 <AnimatePresence mode="popLayout">
                     {alerts.map(alert => (
                         <AuraAlert
@@ -365,6 +372,22 @@ export default function PaymentTransferPage() {
                     ))}
                 </AnimatePresence>
             </div>
+
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(236, 72, 153, 0.2);
+                    border-radius: 20px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(236, 72, 153, 0.4);
+                }
+            `}</style>
         </div>
     );
 }
