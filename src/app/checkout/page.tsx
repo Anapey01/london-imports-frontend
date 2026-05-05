@@ -112,11 +112,11 @@ function CheckoutPage() {
 
     const searchParams = useSearchParams();
     const orderNumberParam = searchParams.get('order');
+    const buyNowSlug = searchParams.get('buyNow');
 
     const currentOrderData = useMemo((): CheckoutViewData => {
         if (checkoutOrder) return checkoutOrder as unknown as CheckoutViewData;
         
-        const buyNowSlug = searchParams.get('buyNow');
         if (cart && buyNowSlug) {
             const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
             if (buyNowItem) {
@@ -133,8 +133,6 @@ function CheckoutPage() {
         
         // Fallback for Guest Items (if not authenticated or during sync)
         if (guestItems.length > 0) {
-            const buyNowSlug = searchParams.get('buyNow');
-            
             // If Buy Now is active, filter to only that product even for guests
             if (buyNowSlug) {
                 const buyNowItem = guestItems.find(item => item.product.slug === buyNowSlug);
