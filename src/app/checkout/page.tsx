@@ -339,48 +339,26 @@ function CheckoutPage() {
                 return;
             }
 
-            // 1. ATOMIC SYNC: Force a fresh store fetch to bridge any Guest-to-User gap
+            // 1. SIMPLE SYNC: Only fetch if we have guest items to bridge
             if (isAuthenticated && guestItems.length > 0) {
-                console.info("[Checkout] Critical: Found guest items. Syncing before checkout...");
                 await fetchCart();
             }
 
-            // 2. RESILIENCE LOOP: If the cart is empty right after sync (common mobile lag), 
-            // we retry the fetch with a delay up to 5 times for mobile resilience.
-            let freshCart = useCartStore.getState().cart;
-            let retryCount = 0;
-            const maxRetries = 5;
-
-            while ((!freshCart || (freshCart.items?.length || 0) === 0) && retryCount < maxRetries && isAuthenticated) {
-                const waitTime = 2000; // Increase to 2s for mobile/Ghana latency
-                console.info(`[Checkout] Mobile Resilience: Cart empty after sync. Retry ${retryCount + 1}/${maxRetries} (waiting ${waitTime}ms)...`);
-                await new Promise(resolve => setTimeout(resolve, waitTime)); 
-                await fetchCart();
-                freshCart = useCartStore.getState().cart;
-                retryCount++;
-            }
-            
-            // Filter out any temporary guest_ IDs
+            const freshCart = useCartStore.getState().cart;
             let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
             
-            // If no items are explicitly selected (or all were guest IDs), use ALL items from the FRESH cart
-            // This is a critical fallback for users who didn't interact with checkboxes
+            // If no items selected, default to all
             if (targetItemIds.length === 0 && freshCart && (freshCart.items?.length || 0) > 0) {
-                console.info("[Checkout] No specific items selected. Defaulting to all items in server cart.");
                 targetItemIds = freshCart.items.map(i => i.id);
             }
             
             if (buyNowSlug && freshCart) {
                 const buyNowItem = freshCart.items.find(item => item.product.slug === buyNowSlug);
-                if (buyNowItem) {
-                    targetItemIds = [buyNowItem.id];
-                }
+                if (buyNowItem) targetItemIds = [buyNowItem.id];
             }
 
-            // 3. FINAL VALIDATION: Stop if we still have nothing to checkout
             if (targetItemIds.length === 0) {
-                console.warn("[Checkout] Submission blocked: targetItemIds is empty even after resilience loop.");
-                setError('Mobile Sync Delay: We couldn\'t find your items on the server yet. This happens on slow connections. Please wait 3 seconds and try again.');
+                setError('Your basket is empty on the server. Please try adding items again.');
                 setIsLoading(false);
                 return;
             }
@@ -671,10 +649,10 @@ function CheckoutPage() {
                                         <button 
                                             type="button"
                                             onClick={() => handleSubmit()}
-                                            disabled={isLoading || isMerging}
+                                            disabled={isLoading}
                                             className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100"
                                         >
-                                            {isMerging ? 'Syncing items...' : (isLoading ? 'Processing...' : 'Place your order')}
+                                            {isLoading ? 'Processing...' : 'Place your order'}
                                         </button>
                                     </div>
                                 </div>
