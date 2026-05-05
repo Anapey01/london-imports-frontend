@@ -309,17 +309,6 @@ function CheckoutPage() {
         setError('');
         setIsLoading(true);
 
-        try {
-            // NUCLEAR SYNC GUARD: If we have guest items locally, we MUST push them to server 
-            // BEFORE calling checkout, otherwise the server will see an empty cart.
-            if (isAuthenticated && guestItems.length > 0) {
-                console.info("[Checkout] Pre-submit sync triggered...");
-                await fetchCart();
-            }
-        } catch (syncErr) {
-            console.error("[Checkout] Sync failed during submission:", syncErr);
-        }
-
         const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9';
 
         if (!publicKey) {
@@ -352,26 +341,41 @@ function CheckoutPage() {
                 return;
             }
 
-            const buyNowSlug = searchParams.get('buyNow');
+            // 1. ATOMIC SYNC: Force a fresh store fetch to bridge any Guest-to-User gap
+            if (isAuthenticated && guestItems.length > 0) {
+                console.info("[Checkout] Critical: Found guest items. Syncing before checkout...");
+                await fetchCart();
+            }
+
+            // 2. GET FRESH STATE: Reach directly into the store for the absolute truth
+            // This bypasses the stale 'cart' variable from the component closure.
+            const freshCart = useCartStore.getState().cart;
             
-            // Filter out any temporary guest_ IDs that might be lingering in selectedItemIds
-            // This prevents "Must be a valid UUID" errors from the backend during guest-to-user transitions
+            // Filter out any temporary guest_ IDs
             let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
             
-            // If no items are explicitly selected (or all were guest IDs), default to all real cart items
-            if (targetItemIds.length === 0 && cart && cart.items.length > 0) {
-                targetItemIds = cart.items.map(i => i.id);
+            // If no items are explicitly selected (or all were guest IDs), use ALL items from the FRESH cart
+            if (targetItemIds.length === 0 && freshCart && (freshCart.items?.length || 0) > 0) {
+                targetItemIds = freshCart.items.map(i => i.id);
             }
             
-            if (buyNowSlug && cart) {
-                const buyNowItem = cart.items.find(item => item.product.slug === buyNowSlug);
+            if (buyNowSlug && freshCart) {
+                const buyNowItem = freshCart.items.find(item => item.product.slug === buyNowSlug);
                 if (buyNowItem) {
                     targetItemIds = [buyNowItem.id];
                 }
             }
 
+            // 3. FINAL VALIDATION: Stop if we still have nothing to checkout
+            if (targetItemIds.length === 0) {
+                console.warn("[Checkout] Submission blocked: targetItemIds is empty even after sync.");
+                setError('Your basket is empty on the server. Please refresh or re-add items.');
+                setIsLoading(false);
+                return;
+            }
+
             const orderPayload = {
-                item_ids: targetItemIds.length > 0 ? targetItemIds : undefined,
+                item_ids: targetItemIds,
                 delivery_address: delivery.address,
                 delivery_city: delivery.city,
                 delivery_region: delivery.region,
