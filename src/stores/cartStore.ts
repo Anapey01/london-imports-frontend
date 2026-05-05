@@ -107,6 +107,18 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
             // MERGE LOGIC: Check for guest items to sync
             const savedGuest = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
+            
+            // If already merging, we wait for it to finish before proceeding with the fetch
+            if (get().isMerging) {
+                console.info("[CartStore] Sync already in progress, waiting...");
+                // Poll every 500ms for completion (max 10s)
+                let attempts = 0;
+                while (get().isMerging && attempts < 20) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    attempts++;
+                }
+            }
+
             if (savedGuest && !get().isMerging) {
                 try {
                     set({ isMerging: true });
@@ -137,7 +149,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
                         // ONLY clear local guest state AFTER successful sync attempt
                         localStorage.removeItem('guest_cart');
                         set({ guestItems: [] });
-                        console.info("[CartStore] Sync completed. Reloading server cart...");
+                        console.info("[CartStore] Sync completed.");
                     }
                 } catch (e) {
                     console.error("[CartStore] Merge process encountered a fatal error:", e);

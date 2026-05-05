@@ -19,6 +19,7 @@ interface OrderSummaryProps {
     paymentAmount: number;
     onSubmit: () => void;
     isSubmitting: boolean;
+    isMerging?: boolean;
     activeStep: number;
 }
 
@@ -30,6 +31,7 @@ const OrderSummary = ({
     paymentAmount,
     onSubmit,
     isSubmitting,
+    isMerging,
     activeStep
 }: OrderSummaryProps) => {
     const subtotalValue = checkoutOrder || orderNumberParam ? Number(currentOrderData.subtotal || 0) : (currentOrderData.items || [])
@@ -69,14 +71,16 @@ const OrderSummary = ({
             <div className="space-y-4">
                 <button
                     onClick={onSubmit}
-                    disabled={isSubmitting || (activeStep < 3 && !orderNumberParam)}
+                    disabled={isSubmitting || isMerging || (activeStep < 3 && !orderNumberParam)}
                     className={`w-full py-4 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all relative overflow-hidden ${
-                        isSubmitting || (activeStep < 3 && !orderNumberParam)
+                        isSubmitting || isMerging || (activeStep < 3 && !orderNumberParam)
                         ? 'bg-surface text-content-secondary cursor-not-allowed border border-border-standard'
                         : 'bg-content-primary text-surface hover:scale-[1.02] active:scale-[0.98] shadow-xl'
                     }`}
                 >
-                    {isSubmitting ? (
+                    {isMerging ? (
+                        'Syncing...'
+                    ) : isSubmitting ? (
                         <div className="flex items-center justify-center gap-3">
                             <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" />
                             <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:0.2s]" />

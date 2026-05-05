@@ -305,9 +305,20 @@ function CheckoutPage() {
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         
-        if (isLoading) return;
+        if (isLoading || isMerging) return;
         setError('');
         setIsLoading(true);
+
+        try {
+            // NUCLEAR SYNC GUARD: If we have guest items locally, we MUST push them to server 
+            // BEFORE calling checkout, otherwise the server will see an empty cart.
+            if (isAuthenticated && guestItems.length > 0) {
+                console.info("[Checkout] Pre-submit sync triggered...");
+                await fetchCart();
+            }
+        } catch (syncErr) {
+            console.error("[Checkout] Sync failed during submission:", syncErr);
+        }
 
         const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_7f1c1f3074d6438db02c462788e9ebc9dfd6c0b9';
 
@@ -645,10 +656,10 @@ function CheckoutPage() {
                                         <button 
                                             type="button"
                                             onClick={() => handleSubmit()}
-                                            disabled={isLoading}
-                                            className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                                            disabled={isLoading || isMerging}
+                                            className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100"
                                         >
-                                            {isLoading ? 'Processing...' : 'Place your order'}
+                                            {isMerging ? 'Syncing items...' : (isLoading ? 'Processing...' : 'Place your order')}
                                         </button>
                                     </div>
                                 </div>
@@ -666,6 +677,7 @@ function CheckoutPage() {
                                 paymentAmount={paymentAmount}
                                 onSubmit={handleSubmit}
                                 isSubmitting={isLoading}
+                                isMerging={isMerging}
                                 activeStep={activeStep}
                             />
 
