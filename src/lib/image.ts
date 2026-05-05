@@ -82,3 +82,19 @@ export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
 
     return src;
 };
+/**
+ * Fixes relative image paths in HTML content (e.g. from CKEditor)
+ * Replaces /media/ with the absolute backend URL.
+ */
+export const fixHtmlContent = (content: string | null | undefined): string => {
+    if (!content) return '';
+    
+    const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
+    
+    // Replace src="/media/" with src="https://backend.com/media/"
+    // Also handles single quotes and escaped quotes
+    return content.replace(
+        /src=["']\/media\//g, 
+        (match) => match.replace('/media/', `${rootUrl}/media/`)
+    );
+};

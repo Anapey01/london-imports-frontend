@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, fixHtmlContent } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
 import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
@@ -193,7 +193,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                 {article.featured_image && (
                     <div className="relative w-full aspect-[2/1] overflow-hidden mb-24 border border-slate-100 grayscale hover:grayscale-0 transition-all duration-1000">
                         <Image
-                            src={article.featured_image}
+                            src={getImageUrl(article.featured_image)}
                             alt={article.title}
                             fill
                             className="object-cover"
@@ -211,7 +211,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                         prose-strong:text-slate-900 prose-strong:font-black
                         prose-blockquote:border-slate-900 prose-blockquote:bg-slate-50/50 prose-blockquote:font-serif prose-blockquote:italic prose-blockquote:py-8 prose-blockquote:px-10
                         prose-img:rounded-none prose-img:border prose-img:border-slate-100"
-                        dangerouslySetInnerHTML={{ __html: article.content }}
+                        dangerouslySetInnerHTML={{ __html: fixHtmlContent(article.content) }}
                     />
                 </div>
 
