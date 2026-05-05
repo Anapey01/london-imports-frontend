@@ -345,9 +345,19 @@ function CheckoutPage() {
                 await fetchCart();
             }
 
-            // 2. GET FRESH STATE: Reach directly into the store for the absolute truth
-            // This bypasses the stale 'cart' variable from the component closure.
-            const freshCart = useCartStore.getState().cart;
+            // 2. RESILIENCE LOOP: If the cart is empty right after sync (common mobile lag), 
+            // we retry the fetch with a delay up to 3 times.
+            let freshCart = useCartStore.getState().cart;
+            let retryCount = 0;
+            const maxRetries = 3;
+
+            while ((!freshCart || (freshCart.items?.length || 0) === 0) && retryCount < maxRetries && isAuthenticated) {
+                console.info(`[Checkout] Mobile Resilience: Cart empty after sync. Retry ${retryCount + 1}/${maxRetries}...`);
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5s
+                await fetchCart();
+                freshCart = useCartStore.getState().cart;
+                retryCount++;
+            }
             
             // Filter out any temporary guest_ IDs
             let targetItemIds = Array.from(selectedItemIds).filter(id => !id.startsWith('guest_'));
@@ -366,8 +376,8 @@ function CheckoutPage() {
 
             // 3. FINAL VALIDATION: Stop if we still have nothing to checkout
             if (targetItemIds.length === 0) {
-                console.warn("[Checkout] Submission blocked: targetItemIds is empty even after sync.");
-                setError('Your basket is empty on the server. Please refresh or re-add items.');
+                console.warn("[Checkout] Submission blocked: targetItemIds is empty even after resilience loop.");
+                setError('Mobile Sync Delay: We couldn\'t find your items on the server yet. Please wait 2 seconds and try again.');
                 setIsLoading(false);
                 return;
             }

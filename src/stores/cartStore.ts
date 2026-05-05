@@ -159,22 +159,23 @@ export const useCartStore = create<CartState>()((set, get) => ({
             }
 
             try {
-                const response = await ordersAPI.cart();
+                // CACHE BUSTING: Mobile browsers (Safari/Chrome) often cache the empty cart state.
+                // Adding a timestamp ensures we get the "Absolute Truth" from the server.
+                const timestamp = new Date().getTime();
+                const response = await ordersAPI.cart({ t: timestamp });
                 
                 // IGNORE if a newer request (or add-to-cart) has started
-                if (get().version !== reqVersion) return;
+                const serverCart = response.data;
+                const serverItems = serverCart.items || [];
 
-                const cart = response.data;
-                const newSelected = new Set(get().selectedItemIds);
-                if (newSelected.size === 0 && cart.items?.length > 0) {
-                    cart.items.forEach((i: CartItem) => newSelected.add(i.id));
-                }
-
-                set({
-                    cart,
-                    selectedItemIds: newSelected,
-                    itemCount: cart.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
+                set({ 
+                    cart: serverCart, 
+                    items: serverItems,
+                    isLoading: false,
+                    guestItems: savedGuest ? [] : get().guestItems
                 });
+                
+                console.info(`[CartStore] Fetch successful. Items on server: ${serverItems.length}`);
             } catch (err) {
                 console.error("[CartStore] Fetch failed:", err);
                 if (get().version === reqVersion) {
