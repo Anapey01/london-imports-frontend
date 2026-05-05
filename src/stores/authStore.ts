@@ -4,7 +4,7 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authAPI } from '@/lib/api';
+import { authAPI, setTokens } from '@/lib/api';
 
 interface User {
     id: string;
@@ -59,6 +59,8 @@ export const useAuthStore = create<AuthState>()(
                     const { access, refresh } = response.data.tokens || response.data;
                     if (access) {
                         set({ accessToken: access, refreshToken: refresh });
+                        // Sync with API client memory cache immediately
+                        setTokens(access);
                     }
 
                     await get().fetchUser();
@@ -75,6 +77,7 @@ export const useAuthStore = create<AuthState>()(
 
                     if (tokens?.access) {
                         set({ accessToken: tokens.access, refreshToken: tokens.refresh });
+                        setTokens(tokens.access);
                     }
 
                     set({ user, isAuthenticated: true });
@@ -90,6 +93,7 @@ export const useAuthStore = create<AuthState>()(
                     const { access, refresh } = response.data.tokens || response.data;
                     if (access) {
                         set({ accessToken: access, refreshToken: refresh });
+                        setTokens(access);
                     }
                     await get().fetchUser();
                 } finally {
@@ -103,6 +107,7 @@ export const useAuthStore = create<AuthState>()(
                 } catch { }
 
                 set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
+                setTokens(null);
             },
 
             fetchUser: async () => {

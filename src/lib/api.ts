@@ -16,18 +16,48 @@ export const api = axios.create({
   },
 });
 
+// In-memory token cache to bypass localStorage race conditions during login
+let _accessToken: string | null = null;
+
+/**
+ * Update the in-memory token cache. 
+ * Called by authStore to ensure API client has the latest token immediately.
+ */
+export const setTokens = (access: string | null) => {
+    _accessToken = access;
+};
+
+// Initialize from localStorage if available (for page refreshes)
+if (typeof window !== 'undefined') {
+    try {
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+            const parsed = JSON.parse(authStorage);
+            _accessToken = parsed.state?.accessToken;
+        }
+    } catch (e) {
+        // Silent fail on initialization
+    }
+}
+
 // Request interceptor to add Auth token
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // Reading from Zustand's persisted storage to ensure single source of truth
-    const authStorage = localStorage.getItem('auth-storage');
-    let token = null;
-    if (authStorage) {
-        try {
-            const parsed = JSON.parse(authStorage);
-            token = parsed.state?.accessToken;
-        } catch (e) {
-            console.error('[API] Failed to parse auth storage', e);
+    // 1. Try in-memory token first (fastest, most reliable for just-logged-in)
+    let token = _accessToken;
+
+    // 2. Fallback to localStorage if memory token is missing (safety)
+    if (!token) {
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+            try {
+                const parsed = JSON.parse(authStorage);
+                token = parsed.state?.accessToken;
+                // Sync back to memory for next time
+                _accessToken = token;
+            } catch (e) {
+                console.error('[API] Failed to parse auth storage', e);
+            }
         }
     }
 
@@ -58,6 +88,9 @@ api.interceptors.request.use((config) => {
     // 3. It's an action (POST/PUT/DELETE) - even within a public namespace like /products/ (e.g. reviews)
     if (token && (!isPublicEndpoint || !isGetRequest)) {
       config.headers.Authorization = `Bearer ${token}`;
+      if (process.env.NODE_ENV === 'development') {
+          console.debug(`[API] Auth header added to ${config.url}`);
+      }
     }
 
     // CRITICAL FIX: If data is FormData, let browser set Content-Type (multipart)
@@ -125,6 +158,10 @@ api.interceptors.response.use(
           // Update the store directly
           const { useAuthStore } = await import('@/stores/authStore');
           useAuthStore.setState({ accessToken: access });
+          
+          // Update memory cache
+          setTokens(access);
+          
           onRefreshed(access);
         }
         

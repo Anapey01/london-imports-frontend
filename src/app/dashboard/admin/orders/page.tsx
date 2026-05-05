@@ -73,29 +73,42 @@ interface APIOrder {
     thumbnail?: string;
 }
 
-function mapAPIOrder(order: APIOrder): Order {
+function mapAPIOrder(order: any): Order {
+    if (!order) return {
+        id: Math.random().toString(),
+        customer: { name: 'Unknown', email: '' },
+        items_count: 0,
+        total_amount: 0,
+        status: 'PENDING',
+        payment_status: 'PENDING',
+        amount_paid: 0,
+        balance_due: 0,
+        is_installment: false,
+        created_at: new Date().toISOString()
+    };
+
     const customerObj = typeof order.customer === 'object' && order.customer !== null 
         ? order.customer 
         : { name: String(order.customer || 'Anonymous User'), email: '', avatar: '' };
 
     return {
-        id: order.id,
+        id: String(order.id || ''),
         order_number: order.order_number,
         customer: {
-            name: customerObj.name,
-            email: customerObj.email,
-            avatar: customerObj.avatar
+            name: customerObj.name || 'Anonymous User',
+            email: customerObj.email || '',
+            avatar: customerObj.avatar || ''
         },
-        items_count: order.items_count || (order.items as unknown[])?.length || 0,
-        total_amount: typeof order.total === 'string' ? parseFloat(order.total) : (order.total || 0),
+        items_count: order.items_count || (order.items_summary?.length) || (order.items?.length) || 0,
+        total_amount: Number(order.total || 0),
         status: order.status || 'PENDING',
         payment_status: order.payment_status || 'PENDING',
-        amount_paid: typeof order.amount_paid === 'string' ? parseFloat(order.amount_paid) : (order.amount_paid || 0),
-        balance_due: typeof order.balance_due === 'string' ? parseFloat(order.balance_due) : (order.balance_due || 0),
+        amount_paid: Number(order.amount_paid || 0),
+        balance_due: Number(order.balance_due || 0),
         is_installment: !!order.is_installment,
-        created_at: order.created_at,
+        created_at: order.created_at || new Date().toISOString(),
         thumbnail: order.thumbnail,
-        items: order.items as Order['items'] || []
+        items: order.items_summary || order.items || []
     };
 }
 
@@ -152,17 +165,24 @@ export default function AdminOrdersPage() {
             const response = await adminAPI.orders(params);
             const data = response.data;
             
-            // Handle DRF paginated response
-            const ordersData = data.results || data || [];
-            setOrders(ordersData.map(mapAPIOrder));
-            
-            // Assume 20 items per page if count/results present
-            if (data.count !== undefined) {
-                setTotalCount(data.count);
-                setTotalPages(Math.ceil(data.count / 20)); // Adjust based on backend PAGE_SIZE
+            // Structural Immunity: Handle all response formats
+            let ordersArray: any[] = [];
+            if (data) {
+                if (Array.isArray(data.results)) {
+                    ordersArray = data.results;
+                    setTotalCount(data.count || data.results.length);
+                    setTotalPages(Math.ceil((data.count || data.results.length) / 100)); // Match backend PAGE_SIZE=100
+                } else if (Array.isArray(data)) {
+                    ordersArray = data;
+                    setTotalCount(data.length);
+                    setTotalPages(1);
+                }
             }
+            
+            setOrders(ordersArray.map(mapAPIOrder));
         } catch (err) {
             console.error('Failed to load orders:', err);
+            addAlert('Failed to load orders from server', 'error');
         } finally {
             setLoading(false);
         }
@@ -341,7 +361,7 @@ export default function AdminOrdersPage() {
                 <div>
                     <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Order Management</h2>
                     <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        {orders.length} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
+                        {totalCount} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
                     </span>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">

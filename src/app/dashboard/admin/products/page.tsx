@@ -92,11 +92,18 @@ export default function AdminProductsPage() {
                     adminAPI.products(),
                     productsAPI.categories()
                 ]);
-                setProducts(productsRes.data.results || productsRes.data || []);
-                const catData = categoriesRes.data.results || categoriesRes.data || [];
-                setCategories(catData.map((c: { name: string }) => c.name));
+                
+                // Structural Immunity
+                const pData = productsRes.data;
+                const productsArray = Array.isArray(pData.results) ? pData.results : (Array.isArray(pData) ? pData : []);
+                setProducts(productsArray);
+
+                const cData = categoriesRes.data;
+                const categoriesArray = Array.isArray(cData.results) ? cData.results : (Array.isArray(cData) ? cData : []);
+                setCategories(categoriesArray.map((c: { name: string }) => c.name));
             } catch (err) {
                 console.error('Failed to load data:', err);
+                addAlert('Failed to load catalog data', 'error');
             } finally {
                 setLoading(false);
             }

@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
@@ -15,6 +16,7 @@ export default function AdminLoginPage() {
     const router = useRouter();
     const isDark = theme === 'dark';
 
+    const { login } = useAuthStore();
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -25,30 +27,25 @@ export default function AdminLoginPage() {
         setLoading(true);
 
         try {
-            // Login
-            const loginResponse = await authAPI.login(formData);
-            const { access, refresh } = loginResponse.data;
+            // Use unified authStore to handle login and persistence
+            await login(formData.username, formData.password);
+            
+            // The store's login method calls fetchUser automatically, 
+            // so we can now check the user from the store
+            const user = useAuthStore.getState().user;
 
-            localStorage.setItem('access_token', access);
-            localStorage.setItem('refresh_token', refresh);
-
-            // Check if user is admin
-            const userResponse = await authAPI.me();
-            const userData = userResponse.data;
-
-            if (userData.role !== 'ADMIN' && !userData.is_staff && !userData.is_superuser) {
-                // Not an admin - clear tokens and show error
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                setError('Access denied. This login is for administrators only.');
+            if (!user || (user.role !== 'ADMIN' && !user.is_staff && !user.is_superuser)) {
+                // Not an admin - log out and show error
+                await useAuthStore.getState().logout();
+                setError('Access denied. This portal is for administrators only.');
                 setLoading(false);
                 return;
             }
 
             // Success - redirect to admin dashboard
             router.push('/dashboard/admin');
-        } catch (err: unknown) {
-            setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail || 'Invalid credentials');
+        } catch (err: any) {
+            setError(err.response?.data?.detail || 'Invalid credentials or network error');
             setLoading(false);
         }
     };
