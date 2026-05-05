@@ -316,7 +316,11 @@ export default function AdminOrderDetailPage() {
             onConfirm: async () => {
                 setUpdating(true);
                 try {
-                    await adminAPI.updateOrder(orderId, { payment_status: 'PAID', status: 'PAID' });
+                    await adminAPI.updateOrder(orderId, { 
+                        payment_status: 'PAID', 
+                        status: 'PAID',
+                        amount_paid: order.total 
+                    });
                     addAlert('Manual credit override successful');
                     await loadOrder();
                 } catch {

@@ -334,7 +334,7 @@ export default function AdminOrdersPage() {
 
     const statusCounts = useMemo(() => ({
         All: orders.length,
-        PENDING_PAYMENT: orders.filter(o => o.status === 'PENDING_PAYMENT' || o.balance_due > 0).length,
+        PENDING_PAYMENT: orders.filter(o => o.payment_status !== 'PAID' && (o.status === 'PENDING_PAYMENT' || o.balance_due > 0)).length,
         PAID: orders.filter(o => o.status === 'PAID' || o.status === 'PROCESSING').length,
         OPEN_FOR_BATCH: orders.filter(o => o.status === 'OPEN_FOR_BATCH').length,
         IN_FULFILLMENT: orders.filter(o => o.status === 'IN_FULFILLMENT').length,
