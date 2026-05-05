@@ -1,10 +1,10 @@
 /**
  * London's Imports - Admin Logistics Dashboard
- * High-level view of delivery information for couriers and dispatchers
+ * High-level 'Atelier' manifest view for delivery and dispatch management
  */
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import {
@@ -18,7 +18,10 @@ import {
     Clock,
     CheckCircle2,
     MessageSquare,
-    Package
+    Package,
+    Navigation,
+    X,
+    ExternalLink
 } from 'lucide-react';
 
 interface Order {
@@ -69,7 +72,7 @@ function mapAPIOrder(order: APIOrder): Order {
         customer_notes: order.customer_notes || '',
         status: order.status || 'PENDING',
         created_at: order.created_at,
-        batch_name: (order as any).batch_name || 'No Batch'
+        batch_name: (order as any).batch_name || 'NO_BATCH_ASSIGNED'
     };
 }
 
@@ -78,7 +81,7 @@ export default function AdminLogisticsPage() {
     const isDark = theme === 'dark';
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const [statusFilter, setStatusFilter] = useState('PROCESSING'); // Default to processing for logistics
+    const [statusFilter, setStatusFilter] = useState('PROCESSING');
     const [searchQuery, setSearchQuery] = useState('');
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -125,223 +128,111 @@ export default function AdminLogisticsPage() {
         setTimeout(() => setCopiedId(null), 2000);
     };
 
-    const getStatusColor = (status: string) => {
-        const colors: Record<string, string> = {
-            PENDING: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
-            PROCESSING: isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600',
-            IN_TRANSIT: isDark ? 'bg-indigo-900/30 text-indigo-400' : 'bg-indigo-100 text-indigo-600',
-            OUT_FOR_DELIVERY: isDark ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-100 text-orange-600',
-            DELIVERED: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
-            CANCELLED: isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600',
-        };
-        return colors[status] || colors.PENDING;
-    };
-
     const STATUS_TABS = ['All', 'PROCESSING', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'] as const;
 
+    if (loading && currentPage === 1) {
+        return (
+            <div className="space-y-4 p-8">
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-24 bg-slate-50 animate-pulse border border-slate-100"></div>
+                ))}
+            </div>
+        );
+    }
+
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-12 pb-32">
+            {/* 1. COMMAND HEADER */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h2 className={`text-xl font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        <Truck className="w-6 h-6 text-pink-500" />
-                        Logistics Dashboard
-                    </h2>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Quick view of delivery details for active orders
-                    </p>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Logistics Manifest</h1>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} SHIPMENTS_TRACKED</span>
+                        </div>
+                    </div>
                 </div>
-                
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-64">
-                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
-                    <input
-                        type="text"
-                        placeholder="Search order or customer..."
-                        value={searchQuery}
-                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                        className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
-                    />
+
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    <div className="relative w-full md:w-80 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="SEARCH SHIPMENTS..."
+                            value={searchQuery}
+                            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Status Filters */}
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {/* 2. PROTOCOL FILTERS */}
+            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {STATUS_TABS.map(s => (
                     <button
                         key={s}
                         onClick={() => { setStatusFilter(s); setCurrentPage(1); }}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${statusFilter === s
-                            ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20'
-                            : isDark
-                                ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === s
+                            ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
+                            : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                             }`}
                     >
-                        {s === 'All' ? 'All Orders' : s.replace(/_/g, ' ')}
-                        {statusFilter === s && <span className="ml-2 opacity-70">({totalCount})</span>}
+                        {s === 'All' ? 'Full Manifest' : s.replace(/_/g, ' ')}
                     </button>
                 ))}
             </div>
 
-            {/* Table Container */}
-            <div className={`rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
+            {/* 3. LOGISTICS REGISTRY TABLE */}
+            <div className="bg-white border border-slate-100 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr className={`${isDark ? 'bg-slate-800/50' : 'bg-gray-50/50'} border-b ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Dispatch Info</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Customer Contact</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Delivery Location</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">GPS / Notes</th>
-                                <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
+                            <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Shipment_Ref</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Recipient_Identity</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Geographic_Node</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Navigation_Data</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-gray-100'}`}>
-                            {loading ? (
-                                [...Array(5)].map((_, i) => (
-                                    <tr key={i} className="animate-pulse">
-                                        <td colSpan={5} className="px-6 py-8">
-                                            <div className={`h-4 rounded w-full ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}></div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : orders.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-20 text-center">
-                                        <Truck className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                        <p className="text-slate-400 font-medium">No orders found for this stage</p>
-                                    </td>
-                                </tr>
-                            ) : orders.map((order) => (
-                                <tr key={order.id} className={`group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors`}>
-                                    {/* Order ID & Status */}
-                                    <td className="px-6 py-5">
-                                        <div className="flex flex-col gap-1">
-                                            <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                #{order.order_number || order.id.slice(0, 8)}
-                                            </span>
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${getStatusColor(order.status)}`}>
-                                                    {order.status.replace(/_/g, ' ')}
-                                                </span>
-                                            </div>
-                                            <div className={`text-[10px] font-bold ${isDark ? 'text-pink-400' : 'text-pink-600'} flex items-center gap-1`}>
-                                                <Package className="w-3 h-3" />
-                                                {order.batch_name}
-                                            </div>
-                                            <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                                                <Clock className="w-3 h-3" />
-                                                {new Date(order.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </td>
-
-                                    {/* Customer & Phone */}
-                                    <td className="px-6 py-5">
-                                        <div className="flex flex-col gap-1">
-                                            <span className={`text-sm font-semibold truncate max-w-[150px] ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                                                {order.customer.name}
-                                            </span>
-                                            <div className="flex items-center gap-2">
-                                                <a 
-                                                    href={`tel:${order.phone}`}
-                                                    className="flex items-center gap-1.5 text-xs text-pink-500 hover:text-pink-600 font-medium transition-colors"
-                                                >
-                                                    <Phone className="w-3 h-3" />
-                                                    {order.phone || 'No phone'}
-                                                </a>
-                                                {order.phone && (
-                                                    <a
-                                                        href={`https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${order.customer.name}, this is London's Imports. I'm reaching out regarding your order #${order.order_number || order.id.slice(0, 8)} which is currently ${order.status.replace(/_/g, ' ')}.`)}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={`p-1 rounded-md transition-colors ${isDark ? 'bg-emerald-900/30 text-emerald-400 hover:bg-emerald-800' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
-                                                        title="WhatsApp Direct Contact"
-                                                    >
-                                                        <MessageSquare className="w-3 h-3" />
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    {/* Location Info */}
-                                    <td className="px-6 py-5">
-                                        <div className="flex flex-col max-w-[200px]">
-                                            <div className="flex items-start gap-1.5">
-                                                <MapPin className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
-                                                <span className={`text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                                    {order.delivery_address || 'No address provided'}
-                                                </span>
-                                            </div>
-                                            <span className="text-[10px] font-bold text-slate-400 mt-1 ml-5 uppercase">
-                                                {order.delivery_city}, {order.delivery_region}
-                                            </span>
-                                        </div>
-                                    </td>
-
-                                    {/* GPS & Notes */}
-                                    <td className="px-6 py-5">
-                                        <div className="flex flex-col gap-2">
-                                            {order.delivery_gps ? (
-                                                <button 
-                                                    onClick={() => copyToClipboard(order.delivery_gps, order.id + '-gps')}
-                                                    className={`group/copy flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs font-mono transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-pink-400 hover:border-pink-500' : 'bg-gray-50 border-gray-100 text-pink-600 hover:border-pink-300'}`}
-                                                >
-                                                    {order.delivery_gps}
-                                                    {copiedId === order.id + '-gps' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 opacity-0 group-hover/copy:opacity-100 transition-opacity" />}
-                                                </button>
-                                            ) : (
-                                                <span className="text-[10px] text-slate-400 italic">No GPS provided</span>
-                                            )}
-                                            
-                                            {order.customer_notes && (
-                                                <div className={`p-2 rounded-lg text-[10px] leading-relaxed italic ${isDark ? 'bg-slate-800/50 text-slate-400 border border-slate-800' : 'bg-amber-50 text-amber-800 border border-amber-100'}`}>
-                                                    &quot;{order.customer_notes}&quot;
-                                                </div>
-                                            )}
-                                        </div>
-                                    </td>
-
-                                    {/* Actions */}
-                                    <td className="px-6 py-5 text-right">
-                                        <a 
-                                            href={`/dashboard/admin/orders/${order.id}`}
-                                            className={`inline-flex items-center gap-2 p-2 rounded-xl transition-all ${isDark ? 'bg-slate-800 text-slate-400 hover:text-white hover:bg-pink-500/20' : 'bg-gray-100 text-gray-500 hover:text-pink-600 hover:bg-pink-50'}`}
-                                            title="View Full Order"
-                                        >
-                                            <ChevronRight className="w-5 h-5" />
-                                        </a>
-                                    </td>
-                                </tr>
+                        <tbody className="divide-y divide-slate-50">
+                            {orders.map((order) => (
+                                <LogisticsRow
+                                    key={order.id}
+                                    order={order}
+                                    copyToClipboard={copyToClipboard}
+                                    copiedId={copiedId}
+                                />
                             ))}
                         </tbody>
                     </table>
                 </div>
+                {orders.length === 0 && !loading && (
+                    <div className="py-32 text-center">
+                        <Truck className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Logistics Database Null</p>
+                    </div>
+                )}
             </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
-                    <span className="text-xs text-slate-500 font-medium">Page {currentPage} of {totalPages}</span>
-                    <div className="flex gap-2">
+                <div className="flex items-center justify-between border-t border-slate-50 pt-12">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Page {currentPage} of {totalPages}</span>
+                    <div className="flex gap-4">
                         <button
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1 || loading}
-                            className={`p-2 rounded-xl border transition-all disabled:opacity-30 ${isDark ? 'border-slate-800 hover:bg-slate-800 text-white' : 'border-gray-100 hover:bg-gray-50'}`}
-                            title="Previous Page"
-                            aria-label="Previous Page"
+                            className="p-4 border border-slate-100 text-slate-400 hover:text-slate-950 hover:border-slate-950 transition-all disabled:opacity-30"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages || loading}
-                            className={`p-2 rounded-xl border transition-all disabled:opacity-30 ${isDark ? 'border-slate-800 hover:bg-slate-800 text-white' : 'border-gray-100 hover:bg-gray-50'}`}
-                            title="Next Page"
-                            aria-label="Next Page"
+                            className="p-4 border border-slate-100 text-slate-400 hover:text-slate-950 hover:border-slate-950 transition-all disabled:opacity-30"
                         >
                             <ChevronRight className="w-4 h-4" />
                         </button>
@@ -351,3 +242,108 @@ export default function AdminLogisticsPage() {
         </div>
     );
 }
+
+const LogisticsRow = React.memo(({ 
+    order, 
+    copyToClipboard, 
+    copiedId 
+}: any) => {
+    return (
+        <tr className="group hover:bg-slate-50/50 transition-all duration-500">
+            <td className="px-8 py-8">
+                <div className="flex flex-col gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-950">
+                        #{order.order_number || order.id.slice(0, 8)}
+                    </span>
+                    <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-900 text-white italic">
+                            {order.status.replace(/_/g, ' ')}
+                        </span>
+                    </div>
+                    <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                        <Package className="w-3 h-3" />
+                        {order.batch_name}
+                    </div>
+                </div>
+            </td>
+
+            <td className="px-8 py-8">
+                <div className="flex flex-col gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-950">
+                        {order.customer.name}
+                    </span>
+                    <div className="flex items-center gap-4">
+                        <a 
+                            href={`tel:${order.phone}`}
+                            className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-950 transition-colors flex items-center gap-2"
+                        >
+                            <Phone className="w-3.5 h-3.5" />
+                            {order.phone || 'NO_CONTACT'}
+                        </a>
+                        {order.phone && (
+                            <a
+                                href={`https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${order.customer.name}, this is London's Imports. I'm reaching out regarding your order #${order.order_number || order.id.slice(0, 8)} which is currently ${order.status.replace(/_/g, ' ')}.`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 bg-slate-50 text-slate-400 hover:bg-slate-950 hover:text-white transition-all rounded-sm"
+                                title="WhatsApp Direct"
+                            >
+                                <MessageSquare className="w-3.5 h-3.5" />
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </td>
+
+            <td className="px-8 py-8">
+                <div className="flex flex-col gap-2 max-w-[250px]">
+                    <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 text-slate-300 mt-0.5 shrink-0" />
+                        <span className="text-[10px] font-bold text-slate-500 uppercase leading-relaxed tracking-tight">
+                            {order.delivery_address || 'ADDRESS_NOT_RECORDED'}
+                        </span>
+                    </div>
+                    <span className="text-[9px] font-black text-slate-300 ml-7 uppercase tracking-widest">
+                        {order.delivery_city}, {order.delivery_region}
+                    </span>
+                </div>
+            </td>
+
+            <td className="px-8 py-8">
+                <div className="flex flex-col gap-3">
+                    {order.delivery_gps ? (
+                        <button 
+                            onClick={() => copyToClipboard(order.delivery_gps, order.id + '-gps')}
+                            className={`flex items-center justify-between gap-4 px-4 py-2 border text-[10px] font-black uppercase tracking-widest transition-all ${
+                                copiedId === order.id + '-gps' 
+                                ? 'bg-emerald-600 border-emerald-600 text-white' 
+                                : 'bg-slate-50 border-slate-50 text-slate-400 hover:border-slate-900 hover:text-slate-900'
+                            }`}
+                        >
+                            <span className="truncate">{order.delivery_gps}</span>
+                            {copiedId === order.id + '-gps' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Navigation className="w-3.5 h-3.5" />}
+                        </button>
+                    ) : (
+                        <span className="text-[9px] font-black text-slate-200 uppercase tracking-widest italic">GPS_NULL</span>
+                    )}
+                    
+                    {order.customer_notes && (
+                        <div className="p-3 bg-slate-50/50 border-l border-slate-200 text-[9px] font-bold text-slate-400 italic leading-relaxed uppercase">
+                            &quot;{order.customer_notes}&quot;
+                        </div>
+                    )}
+                </div>
+            </td>
+
+            <td className="px-8 py-8 text-right">
+                <a 
+                    href={`/dashboard/admin/orders/${order.id}`}
+                    className="inline-flex items-center justify-center p-4 border border-slate-100 text-slate-300 hover:text-slate-950 hover:border-slate-950 transition-all"
+                    title="Inspect Entry"
+                >
+                    <ExternalLink className="w-5 h-5" />
+                </a>
+            </td>
+        </tr>
+    );
+});

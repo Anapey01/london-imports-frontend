@@ -14,75 +14,43 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
     const recentOrders = orders.slice(0, 5);
 
     return (
-        <div className="space-y-8 animate-fade-in-up">
-            {/* Tighter Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-content-primary uppercase">
-                        Welcome, {user.first_name}
-                    </h2>
-                    <p className="text-[9px] font-black mt-1 text-content-secondary uppercase tracking-[0.2em] opacity-60">
-                        Operational Overview & Global Logistics Hub
-                    </p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                    {user.role === 'VENDOR' && (
-                        <Link
-                            href="/dashboard/vendor"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-100 transition-all border border-emerald-100"
-                        >
-                            <ShoppingBag size={12} />
-                            Vendor
-                        </Link>
-                    )}
-                    {(user.role === 'ADMIN' || user.is_staff || user.is_superuser) && (
-                        <Link
-                            href="/dashboard/admin"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider hover:bg-slate-800 transition-all shadow-sm"
-                        >
-                            <TrendingUp size={12} />
-                            Admin
-                        </Link>
-                    )}
-                </div>
-            </div>
-
-            {/* Compact Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="space-y-12">
+            {/* Architectural Stats Bridge */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 border border-slate-100 rounded-2xl overflow-hidden bg-white shadow-sm">
                 {[
-                    { label: 'Orders', value: orders.length, icon: ShoppingBag, color: 'text-blue-600', bg: 'bg-blue-50' },
-                    { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
-                    { label: 'Delivered', value: completedCount, icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                    { label: 'Total Volume', value: `GHS ${totalSpent.toLocaleString()}`, icon: TrendingUp, color: 'text-pink-600', bg: 'bg-pink-50' },
+                    { label: 'Total TXNS', value: orders.length, icon: ShoppingBag },
+                    { label: 'Awaiting', value: pendingCount, icon: Clock },
+                    { label: 'Finalized', value: completedCount, icon: CheckCircle },
+                    { label: 'Asset Value', value: `GHC ${totalSpent.toLocaleString()}`, icon: TrendingUp },
                 ].map((stat, i) => (
-                    <div key={i} className="px-5 py-4 rounded-xl border border-border-standard bg-white flex items-center gap-4 group hover:border-brand-emerald/30 transition-all">
-                        <div className={`w-10 h-10 ${stat.bg} ${stat.color} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                            <stat.icon size={18} />
+                    <div key={i} className={`px-6 py-8 flex flex-col gap-4 group transition-colors hover:bg-slate-50/50 ${i !== 3 ? 'border-r border-slate-100' : ''}`}>
+                        <div className="flex items-center justify-between">
+                            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 group-hover:text-slate-900 transition-colors">
+                                {stat.label}
+                            </p>
+                            <stat.icon size={12} className="text-slate-200 group-hover:text-brand-emerald transition-colors" />
                         </div>
-                        <div className="min-w-0">
-                            <p className="text-[8px] uppercase tracking-[0.2em] font-black text-content-secondary opacity-50 mb-0.5">{stat.label}</p>
-                            <p className="text-sm sm:text-base font-black text-content-primary truncate uppercase tabular-nums">{stat.value}</p>
-                        </div>
+                        <p className="text-2xl font-black text-slate-900 tracking-tighter uppercase tabular-nums">
+                            {stat.value}
+                        </p>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                {/* Compact Order Row List */}
-                <div className="lg:col-span-8 space-y-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary">Recent Orders</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                {/* Shipment Manifest Section */}
+                <div className="lg:col-span-8 space-y-6">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div className="flex items-center gap-4">
+                            <Package size={14} className="text-slate-300" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">Shipment Manifest</h3>
                         </div>
-                        {orders.length > 5 && (
-                            <Link href="/profile/orders" className="text-[9px] font-black uppercase tracking-widest text-brand-emerald hover:underline">
-                                View all
-                            </Link>
-                        )}
+                        <Link href="/profile/orders" className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-2">
+                            Archive <ChevronRight size={10} />
+                        </Link>
                     </div>
 
-                    <div className="border border-border-standard rounded-xl overflow-hidden bg-white shadow-sm">
+                    <div className="space-y-3">
                         {recentOrders.length > 0 ? (
                             recentOrders.map((order: Order) => {
                                 const isPaid = ['PAID', 'DELIVERED'].includes(order.state);
@@ -92,115 +60,127 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                                     <Link
                                         key={order.order_number}
                                         href={`/profile/orders`}
-                                        className="flex items-center gap-4 p-3 hover:bg-slate-50 transition-colors border-b last:border-0 border-border-standard"
+                                        className="group block bg-white border border-slate-100 rounded-xl p-4 hover:border-slate-300 transition-all duration-300"
                                     >
-                                        <div className="w-12 h-12 relative rounded border border-border-standard overflow-hidden bg-surface-muted flex-shrink-0">
-                                            {firstItem?.product.image ? (
-                                                <NextImage
-                                                    src={getImageUrl(firstItem.product.image)}
-                                                    alt={order.order_number}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <Package size={14} className="text-content-secondary opacity-30" />
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-0.5">
-                                                <span className="text-[11px] font-black text-content-primary tracking-tight">#{order.order_number}</span>
-                                                <span className={`text-[7px] px-1.5 py-0.5 rounded font-black uppercase tracking-[0.1em] ${isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                                                    {order.state_display}
-                                                </span>
+                                        <div className="flex items-center gap-6">
+                                            {/* Manifest ID */}
+                                            <div className="flex flex-col min-w-[80px]">
+                                                <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Entry ID</p>
+                                                <p className="text-xs font-black text-slate-900">#{order.order_number}</p>
                                             </div>
-                                            <p className="text-[8px] font-bold text-content-secondary uppercase tracking-widest truncate">
-                                                {new Date(order.created_at).toLocaleDateString()} • {order.items?.length || 0} ITEMS
-                                            </p>
-                                        </div>
 
-                                        <div className="text-right flex-shrink-0">
-                                            <p className="text-xs sm:text-sm font-black text-content-primary">
-                                                GHS {parseFloat(order.total?.toString() || '0').toLocaleString()}
-                                            </p>
-                                            <div className="text-[8px] font-black uppercase tracking-widest text-content-secondary opacity-50 flex items-center justify-end gap-1">
-                                                Details <ChevronRight size={8} />
+                                            {/* Payload Node */}
+                                            <div className="h-12 w-10 relative rounded border border-slate-100 overflow-hidden bg-slate-50 flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500">
+                                                {firstItem?.product.image ? (
+                                                    <NextImage
+                                                        src={getImageUrl(firstItem.product.image)}
+                                                        alt={order.order_number}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <Package size={12} className="text-slate-200" />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Manifest Data */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <p className="text-[10px] font-black text-slate-900 truncate uppercase tracking-tight">
+                                                        {firstItem?.product.name || 'System Cargo'}
+                                                    </p>
+                                                    <span className={`h-1.5 w-1.5 rounded-full ${isPaid ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
+                                                </div>
+                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                                                    {new Date(order.created_at).toLocaleDateString()} • {order.items?.length || 0} UNITS
+                                                </p>
+                                            </div>
+
+                                            {/* Valuation */}
+                                            <div className="text-right flex-shrink-0">
+                                                <p className="text-sm font-black text-slate-900 tabular-nums">
+                                                    ₵{parseFloat(order.total?.toString() || '0').toLocaleString()}
+                                                </p>
+                                                <p className={`text-[8px] font-black uppercase tracking-widest ${isPaid ? 'text-emerald-500' : 'text-amber-500'}`}>
+                                                    {order.state_display}
+                                                </p>
                                             </div>
                                         </div>
                                     </Link>
                                 );
                             })
                         ) : (
-                            <div className="py-12 text-center">
-                                <Package size={24} className="mx-auto mb-3 text-content-secondary opacity-20" />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary">No active orders</p>
+                            <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                                <Package size={32} className="mx-auto mb-4 text-slate-100" strokeWidth={1} />
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Operational Log Empty</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Activity & Nudges */}
-                <div className="lg:col-span-4 space-y-8">
-                    {/* Birthday Club Nudge */}
-                    {!user.date_of_birth && (
-                        <div className="relative group overflow-hidden bg-[#0a0f1d] p-6 rounded-2xl border border-white/5 shadow-2xl">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-emerald/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                            
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2 bg-brand-emerald/10 rounded-lg">
-                                        <Gift size={16} className="text-brand-emerald" />
-                                    </div>
-                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Atelier Rewards</span>
-                                </div>
-                                
-                                <h4 className="text-xl font-serif font-bold text-white mb-2 leading-tight">Celebrate with us.</h4>
-                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest leading-relaxed mb-6 italic opacity-80">
-                                    Join the Birthday Club for exclusive annual gifts and personalized surprises.
-                                </p>
-                                
-                                <Link 
-                                    href="/celebrate" 
-                                    className="inline-flex items-center gap-3 text-[10px] font-black text-brand-emerald uppercase tracking-[0.4em] hover:text-white transition-colors group/link"
-                                >
-                                    Join The Club
-                                    <ArrowRight size={12} className="group-hover/link:translate-x-1 transition-transform" />
-                                </Link>
-                            </div>
-
-                            {/* Decorative Background Texture */}
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none" />
+                {/* Logistics Intelligence Section */}
+                <div className="lg:col-span-4 space-y-10">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
+                            <TrendingUp size={14} className="text-slate-300" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">Dispatch Timeline</h3>
                         </div>
-                    )}
-
-                    <div className="space-y-4">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary">Logistics Timeline</h3>
-                        <div className="bg-slate-50 border border-border-standard rounded-xl p-5 space-y-5">
+                        
+                        <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100">
                             {orders.length > 0 ? (
-                                orders.slice(0, 5).map((order: Order) => {
+                                orders.slice(0, 4).map((order: Order) => {
                                     const isCompleted = ['PAID', 'DELIVERED'].includes(order.state);
                                     return (
-                                        <div key={order.order_number} className="relative pl-6 border-l border-border-standard last:pb-0 pb-1">
-                                            <div className={`absolute -left-1.5 top-0 w-3 h-3 rounded-full border-2 border-white shadow-sm ${isCompleted ? 'bg-emerald-500' : 'bg-blue-500'}`} />
-                                            <div className="space-y-1">
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-content-primary leading-tight">
-                                                    {isCompleted ? 'Order Finalized' : 'Order Initiated'}
+                                        <div key={order.order_number} className="relative pl-10">
+                                            <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border border-white shadow-sm flex items-center justify-center z-10 transition-transform hover:scale-110 cursor-pointer ${isCompleted ? 'bg-emerald-500' : 'bg-slate-900'}`}>
+                                                <div className="w-1 h-1 bg-white rounded-full" />
+                                            </div>
+                                            <div className="group">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-900 group-hover:text-brand-emerald transition-colors leading-tight mb-1">
+                                                    {isCompleted ? 'Finality Achieved' : 'Global Corridor Transit'}
                                                 </p>
-                                                <p className="text-[8px] font-bold text-content-secondary uppercase tracking-widest flex items-center justify-between">
-                                                    <span>#{order.order_number}</span>
-                                                    <span className="opacity-60">{getTimeAgo(new Date(order.created_at))}</span>
-                                                </p>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Node #{order.order_number}</span>
+                                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-60 italic">{getTimeAgo(new Date(order.created_at))}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     );
                                 })
                             ) : (
-                                <p className="text-[10px] font-black text-content-secondary text-center py-4">Timeline empty</p>
+                                <div className="text-center py-10 opacity-30">
+                                    <div className="w-1 h-20 bg-slate-100 mx-auto rounded-full mb-4" />
+                                    <p className="text-[8px] font-black uppercase tracking-widest">No Active Signals</p>
+                                </div>
                             )}
                         </div>
                     </div>
+
+                    {/* Architectural Action Terminal */}
+                    {!user.date_of_birth && (
+                        <div className="bg-slate-900 rounded-2xl p-8 relative overflow-hidden group shadow-2xl">
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <Gift size={14} className="text-brand-emerald" />
+                                    <span className="text-[9px] font-black text-white uppercase tracking-[0.4em]">Protocol 01: Rewards</span>
+                                </div>
+                                <h4 className="text-2xl font-serif italic text-white mb-4">The Atelier Club.</h4>
+                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.2em] leading-relaxed mb-8">
+                                    Secure exclusive annual privileges and personalized asset allocation.
+                                </p>
+                                <Link 
+                                    href="/profile/settings" 
+                                    className="block w-full py-4 border border-white/10 rounded-xl text-[10px] font-black text-white text-center uppercase tracking-[0.4em] hover:bg-white hover:text-slate-900 transition-all duration-500"
+                                >
+                                    Join Protocol
+                                </Link>
+                            </div>
+                            {/* Terminal Texture */}
+                            <div className="absolute inset-0 bg-[radial-gradient(#ffffff_0.5px,transparent_0.5px)] [background-size:16px_16px] opacity-[0.03]" />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

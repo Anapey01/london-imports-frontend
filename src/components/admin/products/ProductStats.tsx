@@ -7,20 +7,24 @@ interface ProductStatsProps {
     isDark: boolean;
 }
 
-const ProductStats = ({ products, isDark }: ProductStatsProps) => {
+const ProductStats = ({ products }: ProductStatsProps) => {
     const stats = [
-        { label: 'Total Products', value: products.length, color: 'text-blue-500' },
-        { label: 'Pre-Orders', value: products.filter((p) => p.preOrder).length, color: 'text-purple-500' },
-        { label: 'Active', value: products.filter((p) => p.status === 'ACTIVE').length, color: 'text-emerald-500' },
-        { label: 'Pending Review', value: products.filter((p) => p.status === 'PENDING').length, color: 'text-amber-500' },
+        { label: 'TOTAL_ENTRIES', value: products.length },
+        { label: 'PRE_ORDER_PROTOCOL', value: products.filter((p) => p.preOrder).length },
+        { label: 'ACTIVE_MANIFESTS', value: products.filter((p) => p.status === 'ACTIVE').length },
+        { label: 'PENDING_AUTHORITY', value: products.filter((p) => p.status === 'PENDING').length },
     ];
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-100 border border-slate-100">
             {stats.map((stat, i) => (
-                <div key={i} className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/30 border-slate-700/50' : 'bg-white border-gray-100'}`}>
-                    <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{stat.label}</p>
+                <div key={i} className="p-8 bg-white space-y-2">
+                    <p className="text-3xl font-serif font-bold text-slate-950 tabular-nums tracking-tighter">
+                        {stat.value.toString().padStart(2, '0')}
+                    </p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+                        {stat.label}
+                    </p>
                 </div>
             ))}
         </div>

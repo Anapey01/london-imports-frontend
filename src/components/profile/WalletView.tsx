@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
 
 // Wallet View
 const WalletView = () => {
@@ -39,73 +40,101 @@ const WalletView = () => {
     const inputClass = "w-full px-4 py-3 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-surface-card border-border-standard text-content-primary focus:border-brand-emerald placeholder:text-content-secondary";
 
     return (
-        <div className="space-y-8">
-            <div className="border-b pb-4 border-border-standard">
-                <div className="flex items-end justify-between">
-                    <h2 className="text-2xl font-black tracking-tight text-content-primary uppercase">
+        <div className="space-y-12 animate-fade-in-up">
+            {/* Architectural Header Archive */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Financial Asset Manifest</p>
+                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
                         Payment Methods
                     </h2>
-                    {!showForm && (
-                        <button onClick={() => setShowForm(true)} className="text-[10px] font-black uppercase tracking-widest border-b pb-0.5 border-brand-emerald text-brand-emerald transition-all hover:text-brand-emerald/80">
-                            + Add MoMo
-                        </button>
-                    )}
                 </div>
+                {!showForm && (
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
+                    >
+                        Append Asset
+                    </button>
+                )}
             </div>
 
             {showForm && (
-                <form onSubmit={handleAddMomo} className="p-6 rounded-xl border border-border-standard bg-surface-card">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 text-content-secondary">Add Mobile Money</h3>
-                    <input
-                        type="tel"
-                        placeholder="Mobile Money Number (e.g., 024 XXX XXXX)"
-                        value={phoneNumber}
-                        onChange={e => setPhoneNumber(e.target.value)}
-                        className={inputClass}
-                        required
-                    />
-                    <div className="flex gap-3 mt-4">
-                        <button type="submit" className="px-5 py-2.5 bg-brand-emerald text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-brand-emerald/90 transition-all shadow-lg">Save</button>
-                        <button type="button" onClick={() => setShowForm(false)} className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-lg text-content-secondary hover:text-content-primary transition-all">Cancel</button>
+                <form onSubmit={handleAddMomo} className="p-10 rounded-2xl border border-slate-900 bg-slate-900 shadow-2xl relative overflow-hidden">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+                            <Plus size={14} className="text-brand-emerald" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Initialize Financial Asset</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Mobile Money Terminal (Phone)</label>
+                            <input
+                                type="tel"
+                                placeholder="024 XXX XXXX"
+                                value={phoneNumber}
+                                onChange={e => setPhoneNumber(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20"
+                                required
+                            />
+                        </div>
+                        <div className="flex gap-4 mt-10">
+                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all shadow-xl">
+                                Commit Asset
+                            </button>
+                            <button type="button" onClick={() => setShowForm(false)} className="px-8 text-[9px] font-black uppercase tracking-[0.4em] rounded-xl text-white/40 hover:text-white transition-all">
+                                Abort
+                            </button>
+                        </div>
                     </div>
+                    {/* Terminal Texture */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#ffffff_0.5px,transparent_0.5px)] [background-size:16px_16px] opacity-[0.03]" />
                 </form>
             )}
 
             {paymentMethods.length === 0 && !showForm ? (
-                <div className="text-center py-16">
-                    <svg className="w-12 h-12 mx-auto mb-4 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                    </svg>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary">No payment methods saved</p>
-                    <button onClick={() => setShowForm(true)} className="mt-4 text-[10px] font-black uppercase tracking-widest border-b pb-0.5 border-brand-emerald text-brand-emerald">
-                        Add Mobile Money
-                    </button>
+                <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                    <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-6">
+                        <svg className="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                        </svg>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Financial Ledger Empty</p>
                 </div>
             ) : (
-                <div className="divide-y divide-border-standard">
+                <div className="grid gap-4">
                     {paymentMethods.map(method => (
-                        <div key={method.id} className="py-5 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-card border border-border-standard">
-                                    <svg className="w-5 h-5 text-yellow-600" viewBox="0 0 24 24" fill="currentColor">
+                        <div key={method.id} className="p-6 rounded-2xl border border-slate-100 bg-white group hover:border-slate-300 transition-all duration-500 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-sm">
+                            <div className="flex items-center gap-6">
+                                <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                                     </svg>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-black text-[11px] uppercase tracking-widest text-content-primary">Mobile Money</p>
+                                <div>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Mobile Money Hub</p>
                                         {method.isDefault && (
-                                            <span className="text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-brand-emerald/10 text-brand-emerald font-black">Default</span>
+                                            <span className="text-[7px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Primary</span>
                                         )}
                                     </div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary mt-0.5">{maskNumber(method.number)}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 tabular-nums">{maskNumber(method.number)}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 sm:border-l border-slate-100 sm:pl-8">
                                 {!method.isDefault && (
-                                    <button onClick={() => setDefault(method.id)} className="text-[10px] font-black uppercase tracking-widest text-content-secondary hover:text-content-primary transition-all">Set default</button>
+                                    <button 
+                                        onClick={() => setDefault(method.id)} 
+                                        className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
+                                    >
+                                        Set Active
+                                    </button>
                                 )}
-                                <button onClick={() => handleDelete(method.id)} className="text-[10px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-500 transition-all">Remove</button>
+                                <button 
+                                    onClick={() => handleDelete(method.id)} 
+                                    className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-300 hover:text-rose-600 transition-colors"
+                                >
+                                    Purge
+                                </button>
                             </div>
                         </div>
                     ))}

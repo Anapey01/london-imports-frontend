@@ -3,9 +3,11 @@
  * Verified Logistics Strategy & International Sourcing.
  */
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { Metadata } from 'next';
 import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { getImageUrl } from '@/lib/image';
 
 export const metadata: Metadata = {
     title: 'Logistics & Scaling | Editorial Publication',
@@ -140,7 +142,17 @@ export default async function BlogPage() {
                                 hover:bg-slate-50/50 transition-all duration-700
                             `}
                         >
-                            <div className="flex flex-col h-full">
+                                {idx === 0 && article.featured_image && (
+                                    <div className="relative w-full aspect-[21/9] mb-12 overflow-hidden border border-slate-100 group-hover:border-slate-300 transition-all duration-700">
+                                        <NextImage 
+                                            src={getImageUrl(article.featured_image)} 
+                                            alt={article.title}
+                                            fill
+                                            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                                        />
+                                    </div>
+                                )}
+
                                 {/* Metadata Ledger */}
                                 <div className="flex items-center justify-between mb-10 border-b border-slate-50 pb-6">
                                     <span className="text-[9px] font-black text-slate-200 uppercase tracking-widest group-hover:text-emerald-500 transition-colors">
@@ -154,17 +166,31 @@ export default async function BlogPage() {
 
                                 {/* Article Content */}
                                 <div className="flex-1">
-                                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4">
-                                        {new Date(article.published_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                                    </p>
-                                    <h2 className={`font-serif font-bold text-slate-900 group-hover:italic transition-all duration-700 leading-[0.95] tracking-tighter mb-8 
-                                        ${idx === 0 ? 'text-4xl md:text-6xl lg:text-7xl' : 'text-2xl md:text-3xl'}
-                                    `}>
-                                        {article.title}
-                                    </h2>
-                                    <p className="text-slate-400 text-sm md:text-base leading-relaxed italic border-l border-slate-50 pl-8 mb-12">
-                                        &quot;{article.excerpt}&quot;
-                                    </p>
+                                    <div className="flex flex-col md:flex-row gap-8">
+                                        <div className="flex-1">
+                                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4">
+                                                {new Date(article.published_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                            </p>
+                                            <h2 className={`font-serif font-bold text-slate-900 group-hover:italic transition-all duration-700 leading-[0.95] tracking-tighter mb-8 
+                                                ${idx === 0 ? 'text-4xl md:text-6xl lg:text-7xl' : 'text-2xl md:text-3xl'}
+                                            `}>
+                                                {article.title}
+                                            </h2>
+                                            <p className="text-slate-400 text-sm md:text-base leading-relaxed italic border-l border-slate-50 pl-8 mb-12">
+                                                &quot;{article.excerpt}&quot;
+                                            </p>
+                                        </div>
+                                        {idx !== 0 && article.featured_image && (
+                                            <div className="hidden md:block w-32 h-32 shrink-0 relative overflow-hidden border border-slate-50">
+                                                <NextImage 
+                                                    src={getImageUrl(article.featured_image)} 
+                                                    alt={article.title}
+                                                    fill
+                                                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Article Interaction */}

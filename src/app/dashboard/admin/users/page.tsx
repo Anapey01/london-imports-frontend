@@ -1,12 +1,13 @@
 /**
  * London's Imports - Admin User Management
- * View and manage all users with mobile-friendly card layout
+ * View and manage all users with premium 'Atelier' architectural system
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
+import { Search, User, Trash2, Shield, Eye, ShieldCheck, Activity } from 'lucide-react';
 
 interface AdminUser {
     id: string | number;
@@ -83,21 +84,16 @@ export default function AdminUsersPage() {
 
     const getRoleColor = (role: string) => {
         switch (role) {
-            case 'ADMIN': return 'text-red-500';
-            case 'VENDOR': return 'text-purple-500';
-            default: return 'text-blue-500';
+            case 'ADMIN': return 'text-slate-950';
+            case 'VENDOR': return 'text-slate-600';
+            default: return 'text-slate-400';
         }
     };
 
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-        const now = new Date();
-        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-        if (diffDays === 0) return 'Today';
-        if (diffDays === 1) return 'Yesterday';
-        if (diffDays < 7) return `${diffDays} days ago`;
-        return date.toLocaleDateString();
+        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase();
     };
 
     const getInitials = (firstName: string, lastName: string) => {
@@ -106,60 +102,55 @@ export default function AdminUsersPage() {
 
     if (loading) {
         return (
-            <div className="space-y-4 p-4">
+            <div className="space-y-4 p-8">
                 {[...Array(5)].map((_, i) => (
-                    <div key={i} className={`h-24 rounded-xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
+                    <div key={i} className="h-20 bg-slate-50 animate-pulse border border-slate-100"></div>
                 ))}
             </div>
         );
     }
 
     return (
-        <div className="space-y-4">
-            {/* Header Card */}
-            <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-5 text-white flex items-center justify-between">
+        <div className="space-y-12 pb-32">
+            {/* 1. COMMAND HEADER */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h2 className="text-xl font-bold">User Management</h2>
-                    <p className="text-pink-100 text-sm">{users.length} registered users</p>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">User Directory</h1>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{users.length} IDENTITIES_RECORDED</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
+
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    <div className="relative w-full md:w-80 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="SEARCH IDENTITIES..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Error Message */}
             {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center gap-3">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm">{error}</span>
-                    <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-red-500" title="Dismiss error">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                <div className="bg-red-50 border border-red-100 text-red-600 p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-4">
+                    <Activity className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{error}</span>
+                    <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-red-600 transition-colors">
+                        <Trash2 className="w-4 h-4" />
                     </button>
                 </div>
             )}
 
-            {/* Search */}
-            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-                <svg className={`w-5 h-5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                    type="text"
-                    placeholder="Search by name or email..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`flex-1 bg-transparent outline-none text-sm ${isDark ? 'text-white placeholder:text-slate-500' : 'text-gray-900 placeholder:text-gray-400'}`}
-                />
-            </div>
-
-            {/* Role Filters */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            {/* 2. PROTOCOL FILTERS */}
+            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {[
                     { key: 'ALL', label: 'All Users' },
                     { key: 'CUSTOMER', label: 'Customers' },
@@ -169,11 +160,9 @@ export default function AdminUsersPage() {
                     <button
                         key={role.key}
                         onClick={() => setRoleFilter(role.key)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${roleFilter === role.key
-                            ? 'bg-gray-900 text-white'
-                            : isDark
-                                ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${roleFilter === role.key
+                            ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
+                            : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                             }`}
                     >
                         {role.label}
@@ -181,59 +170,68 @@ export default function AdminUsersPage() {
                 ))}
             </div>
 
-            {/* User Cards */}
-            <div className="space-y-3">
-                {filteredUsers.length === 0 ? (
-                    <div className={`text-center py-12 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        No users found
+            {/* 3. MASTER REGISTRY TABLE */}
+            <div className="bg-white border border-slate-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Identity_Node</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Credential_Auth</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Temporal_Log</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Protocol_Level</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Auth_State</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {filteredUsers.map((user) => (
+                                <UserRow
+                                    key={user.id}
+                                    user={user}
+                                    isDark={isDark}
+                                    setSelectedUser={setSelectedUser}
+                                    setDeleteUser={setDeleteUser}
+                                    getInitials={getInitials}
+                                    getRoleColor={getRoleColor}
+                                    formatDate={formatDate}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                {filteredUsers.length === 0 && (
+                    <div className="py-32 text-center">
+                        <User className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Identity Database Null</p>
                     </div>
-                ) : (
-                    filteredUsers.map((user) => (
-                        <UserCard
-                            key={user.id}
-                            user={user}
-                            isDark={isDark}
-                            setSelectedUser={setSelectedUser}
-                            setDeleteUser={setDeleteUser}
-                            getInitials={getInitials}
-                            getRoleColor={getRoleColor}
-                            formatDate={formatDate}
-                        />
-                    ))
                 )}
             </div>
 
             {/* Delete Confirmation Modal */}
             {deleteUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setDeleteUser(null)}>
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDeleteUser(null)}>
                     <div
-                        className={`w-full max-w-sm rounded-2xl p-6 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
+                        className="w-full max-w-sm bg-white p-12 text-center space-y-8"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </div>
-                        <h3 className={`text-lg font-bold text-center mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            Delete User?
-                        </h3>
-                        <p className={`text-sm text-center mb-6 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            Are you sure you want to delete <strong>{deleteUser.first_name} {deleteUser.last_name}</strong>? This action cannot be undone.
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900">IDENT_DESTRUCTION_CONFIRM</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                            Permanently purge records for <span className="text-slate-900 font-black">{deleteUser.first_name} {deleteUser.last_name}</span>?
                         </p>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setDeleteUser(null)}
-                                className={`flex-1 py-2.5 rounded-xl border font-medium ${isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                            >
-                                Cancel
-                            </button>
+                        <div className="flex flex-col gap-3">
                             <button
                                 onClick={handleDeleteUser}
                                 disabled={isDeleting}
-                                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 disabled:opacity-50"
+                                className="w-full py-4 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-700 transition-all disabled:opacity-50"
                             >
-                                {isDeleting ? 'Deleting...' : 'Delete'}
+                                {isDeleting ? 'PURGING...' : 'EXECUTE_PURGE'}
+                            </button>
+                            <button
+                                onClick={() => setDeleteUser(null)}
+                                className="w-full py-4 bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] hover:text-slate-900 transition-all"
+                            >
+                                ABORT_OPERATION
                             </button>
                         </div>
                     </div>
@@ -242,51 +240,51 @@ export default function AdminUsersPage() {
 
             {/* Edit Modal */}
             {selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedUser(null)}>
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelectedUser(null)}>
                     <div
-                        className={`w-full max-w-md rounded-2xl p-6 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
+                        className="w-full max-w-md bg-white p-12 space-y-10"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Edit User</h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Role</label>
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900">PROTOCOL_OVERRIDE</h3>
+                        <div className="space-y-8">
+                            <div className="space-y-3">
+                                <label className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Access_Tier</label>
                                 <select
                                     defaultValue={selectedUser.role}
-                                    className={`w-full px-4 py-2.5 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                                    className="w-full p-4 bg-slate-50 border-none text-[10px] font-black uppercase tracking-widest focus:ring-1 focus:ring-slate-900 transition-all"
                                     aria-label="Select user role"
                                     title="User role"
                                 >
-                                    <option value="CUSTOMER">Customer</option>
-                                    <option value="VENDOR">Vendor</option>
-                                    <option value="ADMIN">Admin</option>
+                                    <option value="CUSTOMER">CUSTOMER_PROTOCOL</option>
+                                    <option value="VENDOR">VENDOR_AUTHORITY</option>
+                                    <option value="ADMIN">ADMIN_MANIFEST</option>
                                 </select>
                             </div>
-                            <div>
-                                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Status</label>
+                            <div className="space-y-3">
+                                <label className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Lifecycle_State</label>
                                 <select
                                     defaultValue={selectedUser.is_active ? 'active' : 'suspended'}
-                                    className={`w-full px-4 py-2.5 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                                    className="w-full p-4 bg-slate-50 border-none text-[10px] font-black uppercase tracking-widest focus:ring-1 focus:ring-slate-900 transition-all"
                                     aria-label="Select user status"
                                     title="User status"
                                 >
-                                    <option value="active">Active</option>
-                                    <option value="suspended">Suspended</option>
+                                    <option value="active">ACTIVE_SYNC</option>
+                                    <option value="suspended">SUSPEND_PROTOCOL</option>
                                 </select>
                             </div>
                         </div>
-                        <div className="flex gap-3 mt-6">
+                        <div className="flex flex-col gap-3 pt-6">
                             <button
                                 onClick={() => setSelectedUser(null)}
-                                className={`flex-1 py-2.5 rounded-xl border font-medium ${isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                className="w-full py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all"
                             >
-                                Cancel
+                                COMMIT_CHANGES
                             </button>
                             <button
                                 onClick={() => setSelectedUser(null)}
-                                className="flex-1 py-2.5 rounded-xl bg-pink-500 text-white font-medium hover:bg-pink-600"
+                                className="w-full py-4 bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] hover:text-slate-900 transition-all"
                             >
-                                Save Changes
+                                DISCARD_INPUT
                             </button>
                         </div>
                     </div>
@@ -296,9 +294,7 @@ export default function AdminUsersPage() {
     );
 }
 
-import React from 'react';
-
-const UserCard = React.memo(({ 
+const UserRow = React.memo(({ 
     user, 
     isDark, 
     setSelectedUser, 
@@ -308,62 +304,51 @@ const UserCard = React.memo(({
     formatDate 
 }: any) => {
     return (
-        <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
-            <div className="flex items-start gap-3">
-                {/* Avatar */}
-                <div className="relative">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm">
+        <tr className="group hover:bg-slate-50/50 transition-all duration-500">
+            <td className="px-8 py-8">
+                <div className="flex items-center gap-6">
+                    <div className="w-10 h-10 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
                         {getInitials(user.first_name, user.last_name)}
                     </div>
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 ${isDark ? 'border-slate-800' : 'border-white'} ${user.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                        <h3 className={`font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            {user.first_name} {user.last_name}
-                        </h3>
-                        <div className="flex items-center gap-1 ml-2">
-                            <button
-                                onClick={() => setSelectedUser(user)}
-                                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-400'}`}
-                                title={`Edit ${user.first_name} ${user.last_name}`}
-                                aria-label={`Edit ${user.first_name} ${user.last_name}`}
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </button>
-                            <button
-                                onClick={() => setDeleteUser(user)}
-                                className="p-2 rounded-lg transition-colors hover:bg-red-50 text-red-400"
-                                title={`Delete ${user.first_name} ${user.last_name}`}
-                                aria-label={`Delete ${user.first_name} ${user.last_name}`}
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <p className={`text-sm truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        {user.email}
-                    </p>
-                    <div className="flex items-center gap-3 mt-2">
-                        <span className={`text-xs font-medium flex items-center gap-1 ${getRoleColor(user.role)}`}>
-                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                            {user.role}
-                        </span>
-                        <span className={`text-xs flex items-center gap-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {formatDate(user.created_at)}
-                        </span>
+                    <div className="min-w-0">
+                        <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{user.first_name} {user.last_name}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic">@{user.username}</p>
                     </div>
                 </div>
-            </div>
-        </div>
+            </td>
+            <td className="px-8 py-8">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic truncate max-w-[200px]">{user.email}</p>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <p className="text-[10px] font-black text-slate-300 uppercase tabular-nums">{formatDate(user.created_at)}</p>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${getRoleColor(user.role)}`}>
+                    {user.role}_MANIFEST
+                </span>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <div className="flex items-center gap-3">
+                    <div className={`w-1.5 h-1.5 rounded-full ${user.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-slate-200'}`} />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{user.is_active ? 'LIVE_SESSION' : 'OFFLINE'}</span>
+                </div>
+            </td>
+            <td className="px-8 py-8 text-right">
+                <div className="flex justify-end items-center gap-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                    <button
+                        onClick={() => setSelectedUser(user)}
+                        className="text-[9px] font-black uppercase tracking-widest text-slate-300 hover:text-slate-900 transition-colors"
+                    >
+                        MODIFY_ACCESS
+                    </button>
+                    <button
+                        onClick={() => setDeleteUser(user)}
+                        className="p-2 text-slate-200 hover:text-red-600 transition-colors"
+                    >
+                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                </div>
+            </td>
+        </tr>
     );
 });

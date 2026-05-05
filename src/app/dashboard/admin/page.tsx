@@ -244,50 +244,8 @@ export default function AdminDashboardPage() {
     });
 
     return (
-        <div className="space-y-10 pb-32">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-nuclear-text text-white rounded-lg">
-                            <LayoutDashboard className="w-5 h-5" />
-                        </div>
-                        <p className="text-sm font-black uppercase tracking-[0.3em] text-slate-500">Command Center</p>
-                    </div>
-                    <h1 className="text-4xl font-black nuclear-text tracking-tighter">System Overview</h1>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 opacity-30 group-focus-within:opacity-100 transition-opacity" />
-                        <input 
-                            type="text" 
-                            placeholder="Quick find orders..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-11 pr-6 py-3 bg-primary-surface border border-primary-surface rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium w-full md:w-64"
-                        />
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <button 
-                            onClick={() => setFilterStuck(!filterStuck)}
-                            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filterStuck ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-primary-surface border border-primary-surface opacity-60 hover:opacity-100'}`}
-                        >
-                            <Filter className="w-3.5 h-3.5" />
-                            Delayed
-                        </button>
-                        <Link 
-                            href="/dashboard/admin/broadcast"
-                            className="p-3 bg-nuclear-text text-white rounded-2xl hover:bg-black transition-all shadow-lg shadow-nuclear-text/10"
-                            title="New Broadcast"
-                        >
-                            <Mail className="w-5 h-5" />
-                        </Link>
-                    </div>
-                </div>
-            </div>
-
-            {/* KPI Section */}
+        <div className="space-y-16 pb-32">
+            {/* 1. OPERATIONAL TELEMETRY */}
             <StatsPulse 
                 isDark={isDark}
                 stats={{
@@ -301,20 +259,41 @@ export default function AdminDashboardPage() {
                 }}
             />
 
-            {/* Primary Analysis Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* 2. SYSTEM ANALYTICS BRIDGE */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-slate-100 border border-slate-100">
                 {/* Main Performance Chart */}
-                <div className="lg:col-span-8">
-                    <PerformanceChart 
-                        isDark={isDark} 
-                        data={data.analytics.revenueChart} 
-                        currentRange={chartRange}
-                        onRangeChange={handleRangeChange}
-                    />
+                <div className="lg:col-span-8 bg-white p-12">
+                    <div className="flex items-center justify-between mb-12">
+                        <div>
+                            <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE FLOW MATRIX</h2>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Active currency throughput</p>
+                        </div>
+                        <div className="flex bg-slate-50 p-1">
+                            {['7d', '30d', '90d'].map(range => (
+                                <button
+                                    key={range}
+                                    onClick={() => handleRangeChange(range)}
+                                    className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest transition-all ${
+                                        chartRange === range ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                                    }`}
+                                >
+                                    {range}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="h-[400px]">
+                        <PerformanceChart 
+                            isDark={isDark} 
+                            data={data.analytics.revenueChart} 
+                            currentRange={chartRange}
+                            onRangeChange={handleRangeChange}
+                        />
+                    </div>
                 </div>
 
-                {/* Active Batch Control */}
-                <div className="lg:col-span-4">
+                {/* Active Batch Control (Manifest Integration) */}
+                <div className="lg:col-span-4 bg-slate-50/50 p-12 border-l border-slate-100">
                     <ActiveBatchWidget 
                         isDark={isDark} 
                         batch={data.stats.active_batch} 
@@ -322,44 +301,65 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            {/* Logistics Funnel */}
-            <OperationsFunnel 
-                isDark={isDark} 
-                data={data.analytics.logisticsFunnel} 
-            />
+            {/* 3. LOGISTICS PIPELINE STATUS */}
+            <div className="bg-white border border-slate-100 p-12">
+                <div className="flex items-center gap-4 mb-12">
+                    <span className="h-px w-8 bg-slate-900" />
+                    <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">OPERATIONAL FUNNEL</h2>
+                </div>
+                <OperationsFunnel 
+                    isDark={isDark} 
+                    data={data.analytics.logisticsFunnel} 
+                />
+            </div>
 
-            {/* Recent Orders Table */}
-            <div className={`rounded-[2.5rem] border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-primary-surface shadow-sm'}`}>
-                <div className="p-8 border-b border-primary-surface/20 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            {/* 4. TRANSACTION ARCHIVE (THE LEDGER) */}
+            <div className="bg-white border border-slate-100 overflow-hidden">
+                <div className="p-12 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                     <div>
-                        <h2 className="text-xl font-black tracking-tight">Recent Transactions</h2>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Live order flow monitor</p>
+                        <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tighter">Live Manifest</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-4">Real-time system transaction flow</p>
                     </div>
-                    <Link
-                        href="/dashboard/admin/orders"
-                        className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 transition-colors"
-                    >
-                        Master Registry <ArrowUpRight className="w-4 h-4" />
-                    </Link>
+                    
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                            <input 
+                                type="text" 
+                                placeholder="SEARCH MANIFEST..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all w-full md:w-64"
+                            />
+                        </div>
+                        <button 
+                            onClick={() => setFilterStuck(!filterStuck)}
+                            className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border ${
+                                filterStuck ? 'bg-amber-500 text-white border-amber-500' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-900 hover:text-slate-900'
+                            }`}
+                        >
+                            {filterStuck ? 'DELAYED_ONLY' : 'FILTER_STUCK'}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-primary-surface/10">
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60">Order Ref</th>
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60">Customer Identity</th>
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60 hidden md:table-cell">Origin</th>
-                                <th className="px-4 md:px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest opacity-60 hidden md:table-cell">Protocol Status</th>
-                                <th className="px-4 md:px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest opacity-60">Net Amount</th>
-                                <th className="px-4 md:px-8 py-5"></th>
+                            <tr className="border-b border-slate-50 bg-slate-50/30">
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Entry_Ref</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Identity_Node</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Temporal_Mark</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Protocol_Status</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Asset_Valuation</th>
+                                <th className="px-8 py-6"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-primary-surface/10">
+                        <tbody className="divide-y divide-slate-50">
                             {filteredOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-8 py-20 text-center text-sm font-medium opacity-40 italic">
-                                        The registry is currently silent. No recent activity detected.
+                                    <td colSpan={6} className="px-8 py-32 text-center">
+                                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-200">The Ledger is Silent</p>
                                     </td>
                                 </tr>
                             ) : (
@@ -397,7 +397,7 @@ export default function AdminDashboardPage() {
             />
 
             {/* Notification Toasts */}
-            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+            <div className="fixed bottom-12 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
                 <AnimatePresence mode="popLayout">
                     {alerts.map(alert => (
                         <AuraAlert
@@ -451,98 +451,84 @@ const OrderRow = React.memo(({
     return (
         <React.Fragment>
             {(isFirstToday || showDivider) && (
-                <tr className={isDark ? 'bg-slate-800/20' : 'bg-primary-surface/10'}>
-                    <td colSpan={6} className="px-8 py-3">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">
-                            {isFirstToday ? 'Current Cycle (Today)' : 'Archived (Earlier)'}
-                        </span>
+                <tr className="bg-slate-50/50">
+                    <td colSpan={6} className="px-8 py-4">
+                        <div className="flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900">
+                                {isFirstToday ? 'CURRENT_MANIFEST_CYCLE' : 'ARCHIVED_LEDGER_ENTRIES'}
+                            </span>
+                        </div>
                     </td>
                 </tr>
             )}
             <motion.tr 
                 layout="position"
-                initial={{ opacity: 0, x: fresh ? -20 : 0 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ type: 'spring', stiffness: 100, damping: 15 }}
                 onClick={onToggle}
-                className={`group cursor-pointer transition-all ${
+                className={`group cursor-pointer transition-all duration-500 ${
                     isExpanded 
-                    ? (isDark ? 'bg-slate-800' : 'bg-primary-surface/10')
-                    : (fresh 
-                        ? (isDark ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-emerald-50 hover:bg-emerald-100/50') 
-                        : (today ? (isDark ? 'bg-slate-800/40 hover:bg-slate-800' : 'bg-primary-surface/20 hover:bg-primary-surface/40') 
-                                 : (isDark ? 'hover:bg-slate-800/40' : 'hover:bg-primary-surface/20')))
+                    ? 'bg-slate-50'
+                    : 'bg-white hover:bg-slate-50/50'
                 }`}
             >
-                <td className="px-4 md:px-8 py-6">
-                    <div className="flex items-center gap-3">
-                        <span className={`font-mono text-[13px] font-black tracking-tight ${fresh ? 'text-emerald-700' : 'text-slate-700 dark:text-slate-200'}`}>
+                <td className="px-8 py-8">
+                    <div className="flex items-center gap-4">
+                        <span className={`font-mono text-[12px] font-black tracking-tighter ${fresh ? 'text-emerald-600' : 'text-slate-900'}`}>
                             #{order?.order_number}
                         </span>
                         {fresh && (
-                            <div className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </div>
+                            <div className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         )}
                     </div>
                 </td>
-                <td className="px-4 md:px-8 py-6">
+                <td className="px-8 py-8">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary-surface flex items-center justify-center text-xs font-black text-slate-500 border border-primary-surface shrink-0">
+                        <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
                             {order?.customer?.name?.[0] || 'U'}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-sm font-black truncate">{order?.customer?.name || (typeof order?.customer === 'string' ? order.customer : 'Anonymous')}</p>
-                            <p className="text-[10px] font-medium text-slate-500 truncate hidden sm:block">{order?.customer?.email || ''}</p>
+                            <p className="text-[11px] font-black uppercase tracking-widest truncate">{order?.customer?.name || 'ANONYMOUS'}</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate hidden sm:block">{order?.customer?.email || ''}</p>
                         </div>
                     </div>
                 </td>
-                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
-                    <div className="flex items-center gap-2 text-[11px] font-bold">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {new Date(order?.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' })}
-                    </div>
+                <td className="px-8 py-8 hidden md:table-cell">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tabular-nums">
+                        {new Date(order?.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase()}
+                    </p>
                 </td>
-                <td className="px-4 md:px-8 py-6 hidden md:table-cell">
-                    <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order?.status)}`}>
-                            {order?.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : 
-                            order?.status === 'CANCELLED' ? <XCircle className="w-3 h-3" /> : 
-                            <Clock className="w-3 h-3" />}
+                <td className="px-8 py-8 hidden md:table-cell">
+                    <div className="flex items-center gap-3">
+                        <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+                            order?.status === 'COMPLETED' ? 'text-emerald-600' : 
+                            order?.status === 'CANCELLED' ? 'text-red-600' : 'text-slate-400'
+                        }`}>
                             {order?.status?.replace('_', ' ')}
                         </span>
                         {isStuck && (
-                            <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-lg text-amber-600 animate-in fade-in zoom-in duration-500" title="Needs Attention: Delayed over 5 days">
-                                <AlertTriangle className="w-3 h-3" />
-                                <span className="text-[8px] font-black uppercase tracking-tighter">Delayed</span>
-                            </div>
+                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Execution Delayed" />
                         )}
                     </div>
                 </td>
-                <td className="px-4 md:px-8 py-6 text-right">
-                    <span className="text-sm font-black whitespace-nowrap">₵{Number(order?.total || 0).toLocaleString()}</span>
+                <td className="px-8 py-8 text-right">
+                    <span className="text-[12px] font-black text-slate-950 tabular-nums">₵{Number(order?.total || 0).toLocaleString()}</span>
                 </td>
-                <td className="px-4 md:px-8 py-6 text-right">
-                    <div className="flex justify-end items-center gap-3">
-                        <div className={`p-2 rounded-lg transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
-                        </div>
-                        <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
+                <td className="px-8 py-8 text-right">
+                    <div className="flex justify-end items-center gap-6">
+                        <ChevronRight className={`w-3.5 h-3.5 text-slate-200 group-hover:text-slate-900 transition-all ${isExpanded ? 'rotate-90' : ''}`} />
+                        <div className="hidden group-hover:flex items-center gap-4 transition-all animate-in fade-in slide-in-from-right-2">
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
-                                className="p-2.5 rounded-xl text-red-600 hover:bg-red-500/10 transition-colors"
-                                title="Delete Entry"
+                                className="p-2 text-slate-300 hover:text-red-600 transition-colors"
                             >
                                 <Trash2 className="w-4 h-4" />
                             </button>
                             <Link
                                 href={`/dashboard/admin/orders/${order.id}`}
                                 onClick={(e) => e.stopPropagation()}
-                                className="p-2.5 rounded-xl bg-primary-surface hover:bg-nuclear-text hover:text-white transition-all shadow-sm"
-                                title="Inspect Details"
+                                className="p-2 text-slate-300 hover:text-slate-900 transition-colors"
                             >
-                                <LayoutDashboard className="w-4 h-4" />
+                                <ArrowUpRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>
@@ -554,44 +540,43 @@ const OrderRow = React.memo(({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className={isDark ? 'bg-slate-800' : 'bg-primary-surface/5'}
+                        className="bg-slate-50/30"
                     >
-                        <td colSpan={6} className="px-4 md:px-8 py-8 border-t border-primary-surface/10">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Community WhatsApp Link</p>
-                                    <div className="flex items-center gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
-                                        <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0">
-                                            <Users className="w-5 h-5" />
+                        <td colSpan={6} className="px-12 py-12 border-t border-slate-50">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div className="space-y-8">
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">CUSTOMER_NODE</p>
+                                        <div className="border-l-2 border-slate-900 pl-8 space-y-2">
+                                            <p className="text-sm font-black uppercase tracking-widest">{order?.customer?.name}</p>
+                                            <p className="text-xs font-mono font-bold text-slate-400">{order.phone || 'NO_CONTACT_DATA'}</p>
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigator.clipboard.writeText(order.phone || '');
+                                                    addAlert('Identity data transmitted.', 'success');
+                                                }}
+                                                className="text-[9px] font-black uppercase tracking-widest text-emerald-600 border-b border-emerald-600 pb-1 mt-4 hover:text-emerald-500"
+                                            >
+                                                COPY_PHONE_DATA
+                                            </button>
                                         </div>
-                                        <div className="min-w-0">
-                                            <p className="text-sm font-black text-emerald-700 truncate">{order?.customer?.name}</p>
-                                            <p className="text-xs font-mono font-bold tracking-tight truncate text-slate-600">{order.phone || 'No phone'}</p>
-                                        </div>
-                                        <button 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigator.clipboard.writeText(order.phone || '');
-                                                addAlert('Phone copied to clipboard!', 'success');
-                                            }}
-                                            className="ml-auto px-4 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase whitespace-nowrap active:scale-95 transition-transform"
-                                        >
-                                            Copy
-                                        </button>
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Item Manifest</p>
-                                    <div className="space-y-3">
-                                        {order.items_summary?.map((item, i) => (
-                                            <div key={i} className="flex justify-between items-center text-sm font-bold p-3 bg-nuclear-text/5 rounded-xl border border-nuclear-text/10">
-                                                <span className="flex items-center gap-2">
-                                                    <span className="w-5 h-5 rounded-md bg-nuclear-text text-white flex items-center justify-center text-[10px]">{item.quantity}</span>
-                                                    {item.name}
-                                                </span>
-                                                <span className="text-slate-600">₵{item.price.toLocaleString()}</span>
-                                            </div>
-                                        ))}
+                                <div className="space-y-8">
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">ITEM_MANIFEST</p>
+                                        <div className="space-y-px bg-slate-100 border border-slate-100">
+                                            {order.items_summary?.map((item, i) => (
+                                                <div key={i} className="flex justify-between items-center p-4 bg-white">
+                                                    <span className="flex items-center gap-4">
+                                                        <span className="text-[10px] font-black text-slate-200 tabular-nums">{item.quantity.toString().padStart(2, '0')}</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">{item.name}</span>
+                                                    </span>
+                                                    <span className="text-[10px] font-black tabular-nums text-slate-900">₵{item.price.toLocaleString()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

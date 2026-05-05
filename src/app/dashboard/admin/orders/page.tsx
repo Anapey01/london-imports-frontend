@@ -355,308 +355,197 @@ export default function AdminOrdersPage() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-12 pb-32">
+            {/* 1. COMMAND HEADER */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Order Management</h2>
-                    <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        {totalCount} orders • GHS {orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}
-                    </span>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Order Archive</h1>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} MANIFESTS</span>
+                        </div>
+                        <span className="h-4 w-px bg-slate-200" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Total Valuation: ₵{orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}</span>
+                    </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-                    <div className="relative w-full sm:w-64">
-                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    <div className="relative w-full md:w-80 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="Find orders or customers..."
+                            placeholder="SEARCH ARCHIVE..."
                             value={searchTerm}
                             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                            className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border focus:ring-2 focus:ring-pink-500 outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-100 text-gray-900'}`}
+                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
                         />
                     </div>
                     <button
                         onClick={handleClearPending}
-                        className="flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
+                        className="flex items-center justify-center gap-3 px-8 py-4 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto"
                     >
-                        <X className="w-4 h-4" />
-                        Clear Pending ({statusCounts.PENDING_PAYMENT})
+                        <X className="w-3.5 h-3.5" />
+                        CLEAR_PENDING ({statusCounts.PENDING_PAYMENT})
                     </button>
                 </div>
             </div>
 
-            {/* Status Filters */}
-            <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-                <div className="flex gap-2 min-w-max">
+            {/* 2. PROTOCOL FILTERS */}
+            <div className="overflow-x-auto pb-6 -mx-8 px-8 scrollbar-hide">
+                <div className="flex gap-4 min-w-max">
                     {STATUS_TABS.map(s => (
                         <button
                             key={s}
                             onClick={() => { 
                                 setStatusFilter(s); 
-                                setCurrentPage(1); // Reset to first page
+                                setCurrentPage(1);
                                 setSelectedIds(new Set()); 
                             }}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${statusFilter === s
-                                ? 'bg-pink-500 text-white'
-                                : isDark
-                                    ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === s
+                                ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
+                                : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                                 }`}
                         >
                             {statusLabel(s)}
-                            {statusFilter === 'All' && s === 'All' && <span className="ml-2 opacity-70">({totalCount})</span>}
-                            {statusFilter !== 'All' && s === statusFilter && <span className="ml-2 opacity-70">({totalCount})</span>}
+                            <span className="ml-3 opacity-30 tabular-nums">[{statusCounts[s as keyof typeof statusCounts] || 0}]</span>
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* BULK ACTION TOOLBAR — appears when selection is active */}
-            {selectedIds.size > 0 && (
-                <div className={`flex flex-wrap items-center gap-3 p-3 rounded-xl border-2 border-pink-200 ${isDark ? 'bg-slate-800 border-pink-900/40' : 'bg-pink-50'}`}>
-                    <span className={`text-sm font-semibold ${isDark ? 'text-pink-400' : 'text-pink-700'}`}>
-                        {selectedIds.size} order{selectedIds.size > 1 ? 's' : ''} selected
-                    </span>
-                    <div className="flex flex-wrap gap-2 ml-auto">
-                        <button
-                            onClick={() => handleBulkStatus('IN_TRANSIT')}
-                            disabled={bulkUpdating}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
-                        >
-                            <Package className="w-4 h-4" />
-                            Mark In Transit
-                        </button>
-                        <button
-                            onClick={() => handleBulkStatus('ARRIVED')}
-                            disabled={bulkUpdating}
-                            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
-                        >
-                            <CheckCircle className="w-4 h-4" />
-                            Mark Arrived
-                        </button>
-                        <button
-                            onClick={() => handleBulkStatus('DELIVERED')}
-                            disabled={bulkUpdating}
-                            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
-                        >
-                            <CheckCircle className="w-4 h-4" />
-                            Mark Delivered
-                        </button>
-                        <button
-                            onClick={() => setSelectedIds(new Set())}
-                            disabled={bulkUpdating}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isDark ? 'text-slate-400 hover:bg-slate-700' : 'text-gray-500 hover:bg-gray-200'}`}
-                        >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Mobile View: Cards */}
-            <div className="md:hidden space-y-4">
-                {filteredOrders.map((order) => (
-                    <div
-                        key={order.id}
-                        className={`p-4 rounded-xl border shadow-sm transition-colors ${selectedIds.has(order.id)
-                            ? isDark ? 'bg-pink-900/20 border-pink-700' : 'bg-pink-50 border-pink-300'
-                            : isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'
-                            }`}
+            {/* 3. BULK EXECUTION BRIDGE */}
+            <AnimatePresence>
+                {selectedIds.size > 0 && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="sticky top-32 z-40 flex flex-wrap items-center gap-6 p-6 bg-slate-950 border border-slate-800 shadow-2xl"
                     >
-                        {/* Checkbox + Header */}
-                        <div className="flex justify-between items-start mb-4 pb-3 border-b border-gray-100 dark:border-slate-700">
-                            <div className="flex items-center gap-3">
-                                <button onClick={() => toggleSelect(order.id)} className="shrink-0">
-                                    {selectedIds.has(order.id)
-                                        ? <CheckSquare className="w-5 h-5 text-pink-500" />
-                                        : <Square className={`w-5 h-5 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                    }
-                                </button>
-                                <div>
-                                    <p className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                        #{order.order_number || order.id.slice(0, 8)}
-                                    </p>
-                                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
-                                        {new Date(order.created_at).toLocaleString()}
-                                    </p>
-                                </div>
-                            </div>
-                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(order.status)}`}>
-                                {order.status.replace(/_/g, ' ')}
+                        <div className="flex items-center gap-4 border-r border-slate-800 pr-8">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
+                                {selectedIds.size} MANIFESTS_SELECTED
                             </span>
                         </div>
-
-                        {/* Customer Info */}
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
-                                {order.thumbnail ? (
-                                    <Image
-                                        src={getImageUrl(order.thumbnail)}
-                                        alt="Order Item"
-                                        width={48}
-                                        height={48}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                    />
-                                ) : (
-                                    <div className={`w-full h-full flex items-center justify-center text-sm font-bold ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                        {order.customer.name.charAt(0).toUpperCase()}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                    {order.customer.name}
-                                </p>
-                                <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                    {order.customer.email}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Stats Row */}
-                        <div className={`flex justify-between items-center py-3 rounded-lg px-3 mb-4 ${isDark ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
-                            <div className="text-center">
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>Items</p>
-                                <p className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{order.items_count}</p>
-                            </div>
-                            <div className="text-center border-l border-gray-200 dark:border-slate-700 pl-4 ml-4">
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>Total</p>
-                                <p className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>GHS {order.total_amount.toFixed(2)}</p>
-                            </div>
-                            <div className="text-center border-l border-gray-200 dark:border-slate-700 pl-4 ml-4">
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>Payment</p>
-                                <div className="flex flex-col items-center gap-1">
-                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tight ${getPaymentColor(order.payment_status)}`}>
-                                        {order.payment_status === 'PARTIAL' ? 'Installment' : order.payment_status}
-                                    </span>
-                                    <p className={`text-[9px] font-bold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                                        GHS {order.amount_paid.toFixed(0)} / {order.total_amount.toFixed(0)}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => handleDelete(order.id)}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors border ${isDark ? 'border-red-900/30 text-red-400 hover:bg-red-900/20' : 'border-red-100 text-red-600 hover:bg-red-50'}`}
-                            >
-                                <Trash2 className="w-4 h-4" />
-                                Delete
-                            </button>
-                            <a
-                                href={`/dashboard/admin/orders/${order.id}`}
-                                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800"
-                            >
-                                <Eye className="w-4 h-4" />
-                                View Details
-                            </a>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Desktop View: Table */}
-            <div className={`hidden md:block rounded-xl border overflow-hidden ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
-                <table className="w-full">
-                    <thead className={`${isDark ? 'bg-slate-800' : 'bg-gray-50'}`}>
-                        <tr>
-                            <th className="px-4 py-3 w-10">
-                                <button onClick={toggleSelectAll} className="flex items-center justify-center" title="Select All">
-                                    {selectedIds.size === filteredOrders.length && filteredOrders.length > 0
-                                        ? <CheckSquare className="w-5 h-5 text-pink-500" />
-                                        : <Square className={`w-5 h-5 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                    }
+                        <div className="flex flex-wrap gap-4">
+                            {[
+                                { status: 'IN_TRANSIT', label: 'SHIP_TO_GHANA', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
+                                { status: 'ARRIVED', label: 'MARK_ARRIVED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
+                                { status: 'DELIVERED', label: 'MARK_DELIVERED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' }
+                            ].map(action => (
+                                <button
+                                    key={action.status}
+                                    onClick={() => handleBulkStatus(action.status)}
+                                    disabled={bulkUpdating}
+                                    className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50 ${action.color}`}
+                                >
+                                    {action.label}
                                 </button>
-                            </th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Order</th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Customer</th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Items</th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Total</th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Status</th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Payment</th>
-                            <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Quick Action</th>
-                            <th className={`px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
-                        {filteredOrders.map((order) => (
-                            <OrderRow
-                                key={order.id}
-                                order={order}
-                                isDark={isDark}
-                                isSelected={selectedIds.has(order.id)}
-                                toggleSelect={toggleSelect}
-                                getStatusColor={getStatusColor}
-                                getPaymentColor={getPaymentColor}
-                                handleQuickUpdate={handleQuickUpdate}
-                                handleDelete={handleDelete}
-                            />
-                        ))}
-                    </tbody>
-                </table>
+                            ))}
+                            <button
+                                onClick={() => setSelectedIds(new Set())}
+                                className="px-6 py-3 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
+                            >
+                                ABORT_SELECTION
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* 4. MASTER REGISTRY TABLE */}
+            <div className="bg-white border border-slate-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-6 w-16">
+                                    <button onClick={toggleSelectAll} className="flex items-center justify-center">
+                                        {selectedIds.size === filteredOrders.length && filteredOrders.length > 0
+                                            ? <CheckSquare className="w-4 h-4 text-slate-950" />
+                                            : <Square className="w-4 h-4 text-slate-300" />
+                                        }
+                                    </button>
+                                </th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Entry_Ref</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Identity_Node</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Temporal_Mark</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Protocol_Status</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Asset_Valuation</th>
+                                <th className="px-8 py-6"></th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {filteredOrders.map((order) => (
+                                <OrderRow
+                                    key={order.id}
+                                    order={order}
+                                    isDark={isDark}
+                                    isSelected={selectedIds.has(order.id)}
+                                    toggleSelect={toggleSelect}
+                                    getStatusColor={getStatusColor}
+                                    getPaymentColor={getPaymentColor}
+                                    handleQuickUpdate={handleQuickUpdate}
+                                    handleDelete={handleDelete}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 {filteredOrders.length === 0 && (
-                    <div className={`py-16 text-center ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        <Package className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                        <p className="font-medium">No orders found</p>
+                    <div className="py-32 text-center">
+                        <Package className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Archive Sequence Null</p>
                     </div>
                 )}
             </div>
 
-            {/* Pagination Controls */}
+            {/* 5. ARCHIVE NAVIGATION */}
             {totalPages > 1 && (
-                <div className={`flex items-center justify-between p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
-                        <span className="ml-2">({totalCount} total)</span>
+                <div className="flex items-center justify-between py-12 border-t border-slate-50">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">
+                        Registry Page <span className="text-slate-950">{currentPage}</span> / {totalPages}
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-px bg-slate-100 border border-slate-100">
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1 || loading}
-                            className={`p-2 rounded-lg border transition-colors disabled:opacity-50 ${isDark ? 'border-slate-700 hover:bg-slate-700 text-white' : 'border-gray-100 hover:bg-gray-50 text-gray-900'}`}
-                            title="Previous Page"
+                            className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 disabled:opacity-30 transition-all"
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-4 h-4" />
                         </button>
                         {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                            // Simple logic to show pages around current
                             let pageNum = currentPage - 2 + i;
                             if (currentPage <= 2) pageNum = i + 1;
                             if (currentPage >= totalPages - 1) pageNum = totalPages - 4 + i;
-                            
                             if (pageNum < 1 || pageNum > totalPages) return null;
                             
                             return (
                                 <button
                                     key={pageNum}
                                     onClick={() => setCurrentPage(pageNum)}
-                                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${currentPage === pageNum
-                                        ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30'
-                                        : isDark 
-                                            ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' 
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${currentPage === pageNum
+                                        ? 'bg-slate-950 text-white'
+                                        : 'bg-white text-slate-400 hover:text-slate-900'
                                     }`}
                                 >
-                                    {pageNum}
+                                    {pageNum.toString().padStart(2, '0')}
                                 </button>
                             );
                         })}
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages || loading}
-                            className={`p-2 rounded-lg border transition-colors disabled:opacity-50 ${isDark ? 'border-slate-700 hover:bg-slate-700 text-white' : 'border-gray-100 hover:bg-gray-50 text-gray-900'}`}
-                            title="Next Page"
+                            className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 disabled:opacity-30 transition-all"
                         >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* Confirmation Modal */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
@@ -666,8 +555,7 @@ export default function AdminOrdersPage() {
                 variant={confirmModal.variant}
             />
 
-            {/* Notification Toasts */}
-            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+            <div className="fixed bottom-12 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
                 <AnimatePresence mode="popLayout">
                     {alerts.map(alert => (
                         <AuraAlert
@@ -695,133 +583,83 @@ const OrderRow = React.memo(({
     handleDelete 
 }: any) => {
     return (
-        <tr className={`transition-colors ${isSelected
-                ? isDark ? 'bg-pink-900/20' : 'bg-pink-50'
-                : isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'
+        <tr className={`group transition-all duration-500 ${isSelected
+                ? 'bg-slate-50'
+                : 'bg-white hover:bg-slate-50/50'
             }`}
         >
-            <td className="px-4 py-4">
+            <td className="px-8 py-8">
                 <button onClick={() => toggleSelect(order.id)}>
                     {isSelected
-                        ? <CheckSquare className="w-5 h-5 text-pink-500" />
-                        : <Square className={`w-5 h-5 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                        ? <CheckSquare className="w-4 h-4 text-slate-950" />
+                        : <Square className="w-4 h-4 text-slate-200 group-hover:text-slate-400" />
                     }
                 </button>
             </td>
-            <td className="px-6 py-4">
+            <td className="px-8 py-8">
+                <div className="flex items-center gap-4">
+                    <span className="font-mono text-[12px] font-black tracking-tighter text-slate-900">
+                        #{order.order_number || order.id.slice(0, 8)}
+                    </span>
+                </div>
+            </td>
+            <td className="px-8 py-8">
+                <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
+                        {order.customer.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-[11px] font-black uppercase tracking-widest truncate text-slate-950">{order.customer.name}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate hidden sm:block italic">{order.customer.email}</p>
+                    </div>
+                </div>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <p className="text-[10px] font-black text-slate-400 uppercase tabular-nums">
+                    {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase()}
+                </p>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
                 <div className="flex items-center gap-3">
-                    {order.thumbnail && (
-                        <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700">
-                            <Image
-                                src={getImageUrl(order.thumbnail)}
-                                alt="Thumbnail"
-                                width={40}
-                                height={40}
-                                className="w-full h-full object-cover"
-                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                            />
-                        </div>
-                    )}
-                    <div>
-                        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            #{order.order_number || order.id.slice(0, 8)}...
-                        </p>
-                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            {new Date(order.created_at).toLocaleString()}
-                        </p>
-                    </div>
+                    <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+                        order.status === 'DELIVERED' ? 'text-emerald-600' : 
+                        order.status === 'CANCELLED' ? 'text-red-600' : 'text-slate-400'
+                    }`}>
+                        {order.status.replace(/_/g, ' ')}
+                    </span>
+                    <div className="w-1 h-1 rounded-full bg-slate-200" />
+                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(order.payment_status)}`}>
+                        {order.payment_status}
+                    </span>
                 </div>
             </td>
-            <td className="px-6 py-4">
-                <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{order.customer.name}</p>
-                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{order.customer.email}</p>
+            <td className="px-8 py-8 text-right">
+                <span className="text-[12px] font-black text-slate-950 tabular-nums">₵{Number(order.total_amount).toLocaleString()}</span>
             </td>
-            <td className={`px-6 py-4 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                {order.items_count} items
-            </td>
-            <td className={`px-6 py-4 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                GHS {order.total_amount.toFixed(2)}
-            </td>
-            <td className="px-6 py-4">
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(order.status)}`}>
-                    {order.status.replace(/_/g, ' ')}
-                </span>
-            </td>
-            <td className="px-6 py-4">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5">
-                        {order.is_installment && (
-                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tight ${isDark ? 'bg-purple-900/40 text-purple-400' : 'bg-purple-100 text-purple-700'}`}>
-                                Instalment
-                            </span>
+            <td className="px-8 py-8 text-right">
+                <div className="flex justify-end items-center gap-6">
+                    <div className="hidden group-hover:flex items-center gap-4 transition-all animate-in fade-in slide-in-from-right-2">
+                        {order.status === 'PAID' && (
+                            <button 
+                                onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
+                                className="text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                            >
+                                EXECUTE_SHIPMENT
+                            </button>
                         )}
-                        <span className={`text-[10px] w-fit px-2 py-0.5 rounded-full font-bold uppercase tracking-tight ${getPaymentColor(order.payment_status)}`}>
-                            {order.payment_status}
-                        </span>
+                        <button
+                            onClick={() => handleDelete(order.id)}
+                            className="p-2 text-slate-300 hover:text-red-600 transition-colors"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                        <Link
+                            href={`/dashboard/admin/orders/${order.id}`}
+                            className="p-2 text-slate-300 hover:text-slate-900 transition-colors"
+                        >
+                            <Eye className="w-4 h-4" />
+                        </Link>
                     </div>
-                    <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                        GHS {order.amount_paid.toFixed(2)} / {order.total_amount.toFixed(2)}
-                    </p>
-                </div>
-            </td>
-            <td className="px-6 py-4">
-                {order.status === 'PAID' && (
-                    <button 
-                        onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
-                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                        Ship to Ghana
-                    </button>
-                )}
-                {(order.status === 'OPEN_FOR_BATCH' || order.status === 'IN_FULFILLMENT') && (
-                    <button 
-                        onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
-                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                        Ship to Ghana
-                    </button>
-                )}
-                {order.status === 'IN_TRANSIT' && (
-                    <button 
-                        onClick={() => handleQuickUpdate(order.id, 'ARRIVED', 'Arrived at Hub')}
-                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                    >
-                        Arrived at Hub
-                    </button>
-                )}
-                {order.status === 'ARRIVED' && (
-                    <button 
-                        onClick={() => handleQuickUpdate(order.id, 'OUT_FOR_DELIVERY', 'Last Mile')}
-                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-                    >
-                        Last Mile
-                    </button>
-                )}
-                {order.status === 'OUT_FOR_DELIVERY' && (
-                    <button 
-                        onClick={() => handleQuickUpdate(order.id, 'DELIVERED', 'Complete')}
-                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                    >
-                        Complete
-                    </button>
-                )}
-            </td>
-            <td className="px-6 py-4 text-right">
-                <div className="flex items-center justify-end gap-2">
-                    <button
-                        onClick={() => handleDelete(order.id)}
-                        className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-red-900/30 text-red-400' : 'hover:bg-red-50 text-red-500'}`}
-                        title="Delete Order"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                    <a
-                        href={`/dashboard/admin/orders/${order.id}`}
-                        className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
-                        title="View Details"
-                    >
-                        <ChevronRight className="w-4 h-4" />
-                    </a>
                 </div>
             </td>
         </tr>

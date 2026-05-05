@@ -29,97 +29,86 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
         {
             label: 'Total Customers',
             value: stats.totalUsers.toLocaleString(),
-            subtitle: `+${stats.newUsersToday} joining today`,
+            subtitle: `+${stats.newUsersToday} Today`,
             icon: Users,
-            color: 'emerald',
-            trend: stats.newUsersToday >= 0 ? 12 : -5, // Synthetic trend for demo
+            trend: stats.newUsersToday >= 0 ? 12 : -5,
             prefix: ''
         },
         {
             label: 'Total Revenue',
             value: stats.totalRevenue.toLocaleString(),
-            subtitle: `Realized income`,
+            subtitle: `Realized Net`,
             icon: BadgeDollarSign,
-            color: 'emerald',
             trend: 8.2,
             prefix: '₵'
         },
         {
             label: 'Pipeline Value',
             value: stats.potentialRevenue.toLocaleString(),
-            subtitle: `${stats.pendingOrders} unpaid orders`,
+            subtitle: `${stats.pendingOrders} Pending`,
             icon: Zap,
-            color: 'amber',
             trend: 14.5,
             prefix: '₵'
         },
         {
             label: 'Active Catalog',
             value: stats.totalProducts.toLocaleString(),
-            subtitle: 'Published items',
+            subtitle: 'Verified SKU',
             icon: Package,
-            color: 'blue',
             trend: 0,
             prefix: ''
         },
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-100 border border-slate-100">
             {cards.map((card, idx) => (
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: idx * 0.05 }}
                     key={card.label}
-                    className={`relative p-6 rounded-[2rem] border overflow-hidden transition-all hover:shadow-diffusion-lg ${
-                        isDark 
-                        ? 'bg-slate-900 border-slate-800' 
-                        : 'bg-white border-primary-surface shadow-sm'
+                    className={`relative p-8 group transition-all duration-700 ${
+                        isDark ? 'bg-slate-950 hover:bg-slate-900' : 'bg-white hover:bg-slate-50'
                     }`}
                 >
-                    {/* Background Accent */}
-                    <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-10 ${
-                        card.color === 'emerald' ? 'bg-emerald-500' : 
-                        card.color === 'amber' ? 'bg-amber-500' : 'bg-blue-500'
-                    }`} />
-
-                    <div className="flex items-start justify-between mb-4 relative z-10">
-                        <div className={`p-3 rounded-2xl ${
-                            card.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-600' : 
-                            card.color === 'amber' ? 'bg-amber-500/10 text-amber-600' :
-                            'bg-blue-500/10 text-blue-600'
-                        }`}>
-                            <card.icon className="w-6 h-6" strokeWidth={2.5} />
-                        </div>
-
-                        {card.trend !== 0 && (
-                            <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full ${
-                                card.trend > 0 
-                                ? 'text-emerald-700 bg-emerald-500/15' 
-                                : 'text-red-700 bg-red-500/15'
-                            }`}>
-                                {card.trend > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                                {Math.abs(card.trend)}%
-                            </div>
-                        )}
+                    {/* Architectural Grid Anchor */}
+                    <div className="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <card.icon className="w-12 h-12 text-slate-900" strokeWidth={1} />
                     </div>
 
                     <div className="relative z-10">
-                        <div className="flex items-baseline gap-1">
-                            <span className={`text-[12px] font-black ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
-                                {card.prefix}
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 group-hover:text-slate-900 transition-colors">
+                                Node_{idx.toString().padStart(2, '0')}
                             </span>
-                            <p className={`text-3xl font-black tracking-tighter ${isDark ? 'text-white' : 'text-nuclear-text'}`}>
-                                {card.value}
-                            </p>
+                            <div className="flex-1 h-px bg-slate-50 group-hover:bg-slate-200 transition-colors" />
+                            {card.trend !== 0 && (
+                                <span className={`text-[9px] font-black tabular-nums ${card.trend > 0 ? 'text-emerald-500' : 'text-slate-400'}`}>
+                                    {card.trend > 0 ? '+' : ''}{card.trend}%
+                                </span>
+                            )}
                         </div>
-                        <h2 className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                            {card.label}
-                        </h2>
-                        <p className={`text-[11px] mt-2 font-medium ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
-                            {card.subtitle}
-                        </p>
+
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-baseline gap-1">
+                                {card.prefix && (
+                                    <span className="text-sm font-black text-slate-300 uppercase">{card.prefix}</span>
+                                )}
+                                <p className="text-4xl font-serif font-bold text-slate-900 tracking-tighter leading-none group-hover:italic transition-all duration-700">
+                                    {card.value}
+                                </p>
+                            </div>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-950 mt-2">
+                                {card.label}
+                            </h2>
+                            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-50">
+                                <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">
+                                    {card.subtitle}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             ))}

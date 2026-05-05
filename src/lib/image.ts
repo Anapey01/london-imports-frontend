@@ -93,8 +93,14 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     
     // Replace src="/media/" with src="https://backend.com/media/"
     // Also handles single quotes and escaped quotes
-    return content.replace(
+    const fixedContent = content.replace(
         /src=["']\/media\//g, 
         (match) => match.replace('/media/', `${rootUrl}/media/`)
+    );
+
+    // FORCE HTTPS on any http links to the backend to prevent mixed content blocking on Vercel
+    return fixedContent.replace(
+        /src=["']http:\/\/london-imports-api\.onrender\.com/g,
+        (match) => match.replace('http:', 'https:')
     );
 };

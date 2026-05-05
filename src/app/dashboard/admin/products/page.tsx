@@ -1,16 +1,17 @@
 /**
  * London's Imports - Admin Product Catalog Management
- * Professional catalog management with clean design
+ * Premium 'Atelier' architectural system with monochromatic precision
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI, productsAPI } from '@/lib/api';
 import { AdminProduct } from '@/types';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
+import { Search, Plus, Trash2, ShieldCheck, Activity, Package, Grid, List, Zap, Filter, MoreHorizontal } from 'lucide-react';
 
 // Component Imports
 import ProductStats from '@/components/admin/products/ProductStats';
@@ -20,7 +21,6 @@ import ProductGrid from '@/components/admin/products/ProductGrid';
 import AddProductModal from '@/components/admin/products/AddProductModal';
 import EditProductModal from '@/components/admin/products/EditProductModal';
 
-// Category icons as SVG paths
 const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {
         'Electronics': 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
@@ -93,7 +93,6 @@ export default function AdminProductsPage() {
                     productsAPI.categories()
                 ]);
                 
-                // Structural Immunity
                 const pData = productsRes.data;
                 const productsArray = Array.isArray(pData.results) ? pData.results : (Array.isArray(pData) ? pData : []);
                 setProducts(productsArray);
@@ -112,8 +111,9 @@ export default function AdminProductsPage() {
     }, []);
 
     const filteredProducts = products.filter((product) => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.vendor.toLowerCase().includes(searchTerm.toLowerCase());
+        const name = product.name?.toLowerCase() || '';
+        const vendor = product.vendor?.toLowerCase() || '';
+        const matchesSearch = name.includes(searchTerm.toLowerCase()) || vendor.includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter === 'ALL' || product.category === categoryFilter;
         const matchesStatus = statusFilter === 'ALL' || product.status === statusFilter;
         return matchesSearch && matchesCategory && matchesStatus;
@@ -121,10 +121,10 @@ export default function AdminProductsPage() {
 
     const getStatusStyle = (status: string) => {
         const styles: Record<string, { bg: string; text: string; dot: string }> = {
-            ACTIVE: { bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-50', text: isDark ? 'text-emerald-400' : 'text-emerald-700', dot: 'bg-emerald-500' },
-            PENDING: { bg: isDark ? 'bg-amber-500/10' : 'bg-amber-50', text: isDark ? 'text-amber-400' : 'text-amber-700', dot: 'bg-amber-500' },
-            OUT_OF_STOCK: { bg: isDark ? 'bg-red-500/10' : 'bg-red-50', text: isDark ? 'text-red-400' : 'text-red-700', dot: 'bg-red-500' },
-            DRAFT: { bg: isDark ? 'bg-slate-500/10' : 'bg-slate-100', text: isDark ? 'text-slate-400' : 'text-slate-600', dot: 'bg-slate-400' },
+            ACTIVE: { bg: 'bg-slate-900', text: 'text-white', dot: 'bg-emerald-500' },
+            PENDING: { bg: 'bg-slate-100', text: 'text-slate-400', dot: 'bg-amber-500' },
+            OUT_OF_STOCK: { bg: 'bg-red-600', text: 'text-white', dot: 'bg-white' },
+            DRAFT: { bg: 'bg-slate-50', text: 'text-slate-300', dot: 'bg-slate-200' },
         };
         return styles[status] || styles.DRAFT;
     };
@@ -147,10 +147,10 @@ export default function AdminProductsPage() {
                 expectedDate: '',
                 estimatedWeeks: 3,
             });
-            addAlert('Product added successfully');
+            addAlert('Product entry recorded successfully');
         } catch (err) {
             console.error('Failed to add product:', err);
-            addAlert('Failed to add product', 'error');
+            addAlert('Failed to record product entry', 'error');
         }
     };
 
@@ -162,18 +162,18 @@ export default function AdminProductsPage() {
             setProducts(response.data.results || response.data || []);
             setShowEditModal(false);
             setSelectedProduct(null);
-            addAlert('Product updated successfully');
+            addAlert('Product manifest updated');
         } catch (err) {
             console.error('Failed to update product:', err);
-            addAlert('Failed to update product', 'error');
+            addAlert('Failed to update manifest', 'error');
         }
     };
 
     const handleBulkActivate = () => {
         setConfirmModal({
             isOpen: true,
-            title: 'Bulk Activation',
-            message: 'This will set ALL products to ACTIVE and 3 weeks delivery. Continue?',
+            title: 'PROTOCOL_OVERRIDE_BULK',
+            message: 'Initialize all catalog entries to ACTIVE with 3-week delivery protocol?',
             variant: 'warning',
             onConfirm: async () => {
                 try {
@@ -181,11 +181,10 @@ export default function AdminProductsPage() {
                     await adminAPI.bulkActivateProducts(3);
                     const response = await adminAPI.products();
                     setProducts(response.data.results || response.data || []);
-                    addAlert('All products activated successfully!');
+                    addAlert('Catalog wide activation complete');
                 } catch (err: any) {
                     console.error('Failed bulk activation:', err);
-                    const errorMessage = err.response?.data?.error || err.response?.data?.detail || err.message || 'Unknown error';
-                    addAlert(`Bulk activation failed: ${errorMessage}`, 'error');
+                    addAlert('Protocol override failed', 'error');
                 } finally {
                     setLoading(false);
                 }
@@ -196,17 +195,17 @@ export default function AdminProductsPage() {
     const handleDeleteProduct = (id: number) => {
         setConfirmModal({
             isOpen: true,
-            title: 'Delete Product',
-            message: 'Remove this product from the catalog? This action cannot be undone.',
+            title: 'MANIFEST_DESTRUCTION',
+            message: 'Permanently purge this entry from the catalog registry?',
             variant: 'danger',
             onConfirm: async () => {
                 try {
                     await adminAPI.deleteProduct(String(id));
                     setProducts(products.filter((p) => p.id !== id));
-                    addAlert('Product deleted successfully');
+                    addAlert('Entry purged successfully');
                 } catch (err) {
                     console.error('Failed to delete product:', err);
-                    addAlert('Failed to delete product', 'error');
+                    addAlert('Destruction protocol failed', 'error');
                 }
             }
         });
@@ -218,10 +217,10 @@ export default function AdminProductsPage() {
         try {
             await adminAPI.featureProduct(String(id), !product.featured);
             setProducts(products.map((p) => p.id === id ? { ...p, featured: !p.featured } : p));
-            addAlert(`Product ${!product.featured ? 'featured' : 'unfeatured'} successfully`);
+            addAlert(`Priority status ${!product.featured ? 'enabled' : 'disabled'}`);
         } catch (err) {
             console.error('Failed to toggle featured:', err);
-            addAlert('Failed to update featured status', 'error');
+            addAlert('Priority update failed', 'error');
         }
     };
 
@@ -233,46 +232,42 @@ export default function AdminProductsPage() {
 
     if (loading) {
         return (
-            <div className="space-y-4">
-                <div className={`h-12 w-48 rounded-lg animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
-                <div className={`h-16 rounded-xl animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
-                {[...Array(4)].map((_, i) => (
-                    <div key={i} className={`h-20 rounded-lg animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
+            <div className="space-y-4 p-8">
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-20 bg-slate-50 animate-pulse border border-slate-100"></div>
                 ))}
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
+        <div className="space-y-12 pb-32">
+            {/* 1. COMMAND HEADER */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        Product Catalog
-                    </h2>
-                    <p className={`text-sm mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Manage your inventory and pre-order listings
-                    </p>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Inventory Manifest</h1>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{products.length} ENTRIES_RECORDED</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-4">
                     <button
                         onClick={handleBulkActivate}
-                        className={`px-4 py-2.5 rounded-lg border font-medium text-sm flex items-center gap-2 transition-colors ${isDark ? 'border-amber-500/50 text-amber-500 hover:bg-amber-500/10' : 'border-amber-200 text-amber-700 hover:bg-amber-50'}`}
+                        className="px-6 py-4 bg-white border border-slate-950 text-slate-950 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center gap-3"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Bulk Active (3 Weeks)
+                        <Zap className="w-3.5 h-3.5" />
+                        OVERRIDE_ACTIVATE
                     </button>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="px-4 py-2.5 rounded-lg bg-pink-500 text-white font-medium text-sm flex items-center gap-2 hover:bg-pink-600 transition-colors"
+                        className="px-6 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all flex items-center gap-3"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        New Product
+                        <Plus className="w-4 h-4" />
+                        NEW_ENTRY
                     </button>
                 </div>
             </div>
@@ -292,26 +287,28 @@ export default function AdminProductsPage() {
                 isDark={isDark}
             />
 
-            {viewMode === 'table' ? (
-                <ProductTable
-                    products={filteredProducts}
-                    isDark={isDark}
-                    onEdit={(p) => { setSelectedProduct(p); setShowEditModal(true); }}
-                    onDelete={handleDeleteProduct}
-                    onToggleFeatured={toggleFeatured}
-                    getStatusStyle={getStatusStyle}
-                    ProductIcon={ProductIcon}
-                />
-            ) : (
-                <ProductGrid
-                    products={filteredProducts}
-                    isDark={isDark}
-                    onEdit={(p) => { setSelectedProduct(p); setShowEditModal(true); }}
-                    onToggleFeatured={toggleFeatured}
-                    getStatusStyle={getStatusStyle}
-                    ProductIcon={ProductIcon}
-                />
-            )}
+            <div className="bg-white border border-slate-100 overflow-hidden">
+                {viewMode === 'table' ? (
+                    <ProductTable
+                        products={filteredProducts}
+                        isDark={isDark}
+                        onEdit={(p) => { setSelectedProduct(p); setShowEditModal(true); }}
+                        onDelete={handleDeleteProduct}
+                        onToggleFeatured={toggleFeatured}
+                        getStatusStyle={getStatusStyle}
+                        ProductIcon={ProductIcon}
+                    />
+                ) : (
+                    <ProductGrid
+                        products={filteredProducts}
+                        isDark={isDark}
+                        onEdit={(p) => { setSelectedProduct(p); setShowEditModal(true); }}
+                        onToggleFeatured={toggleFeatured}
+                        getStatusStyle={getStatusStyle}
+                        ProductIcon={ProductIcon}
+                    />
+                )}
+            </div>
 
             <AddProductModal
                 show={showAddModal}
@@ -333,7 +330,6 @@ export default function AdminProductsPage() {
                 isDark={isDark}
             />
 
-            {/* Confirmation Modal */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
@@ -343,8 +339,7 @@ export default function AdminProductsPage() {
                 variant={confirmModal.variant}
             />
 
-            {/* Notification Toasts */}
-            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+            <div className="fixed bottom-12 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
                 <AnimatePresence mode="popLayout">
                     {alerts.map(alert => (
                         <AuraAlert

@@ -46,71 +46,71 @@ const AddressesView = ({ user }: AddressesViewProps) => {
     const inputClass = "w-full px-4 py-3 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-surface-card border-border-standard text-content-primary focus:border-brand-emerald placeholder:text-content-secondary";
 
     return (
-        <div className="space-y-10 animate-fade-in-up">
-            <div className="border-b pb-6 border-border-standard">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-2xl font-black tracking-tight text-content-primary uppercase">
-                            Your Addresses
-                        </h2>
-                        <p className="text-[10px] uppercase mt-1 tracking-widest font-black text-content-secondary">
-                            Manage your delivery locations and primary shipping info
-                        </p>
-                    </div>
-                    {!showForm && (
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-xl hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
-                        >
-                            <Plus className="w-3 h-3" />
-                            Add Address
-                        </button>
-                    )}
+        <div className="space-y-12 animate-fade-in-up">
+            {/* Architectural Header Archive */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Logistics Node Storage</p>
+                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                        Address Collection
+                    </h2>
                 </div>
+                {!showForm && (
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
+                    >
+                        <Plus className="w-3 h-3" />
+                        Append Node
+                    </button>
+                )}
             </div>
 
-            {/* Profile Address (The one synced from checkout) */}
+            {/* Primary Shipping Terminal */}
             {(user?.address || user?.city || user?.region) && (
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-content-secondary">
-                            Primary Account Address
-                        </h3>
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div className="flex items-center gap-4">
+                            <MapPin size={14} className="text-slate-300" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
+                                Global Logistics Endpoint
+                            </h3>
+                        </div>
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('switch-profile-tab', { detail: 'settings' }))}
-                            className="text-[10px] font-black uppercase tracking-widest text-content-secondary hover:text-content-primary transition-all pb-0.5 border-b border-border-standard hover:border-content-primary"
+                            className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
                         >
-                            Edit in Settings
+                            Modify Baseline
                         </button>
                     </div>
-                    <div className="p-6 rounded-3xl border border-border-standard bg-surface-card hover:border-brand-emerald/50 transition-all">
-                        <div className="flex items-start gap-4">
-                            <div className="mt-1 p-2 bg-brand-emerald/10 rounded-xl">
-                                <MapPin className="w-5 h-5 text-brand-emerald" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <h4 className="font-black uppercase tracking-widest text-[11px] text-content-primary">Official Shipping Info</h4>
-                                    <span className="flex items-center gap-1 text-[10px] font-black text-brand-emerald bg-brand-emerald/10 px-2 py-0.5 rounded-full uppercase truncate">
-                                        <CheckCircle2 className="w-3 h-3" />
-                                        Synced from Checkout
+                    <div className="p-8 rounded-2xl border border-slate-100 bg-white group hover:border-slate-300 transition-all duration-500 shadow-sm relative overflow-hidden">
+                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                            <div className="flex-1 space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-[8px] font-black text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
+                                        Verified Active Node
                                     </span>
                                 </div>
-                                <p className="text-[11px] font-black uppercase tracking-widest text-content-secondary leading-relaxed">
-                                    {user.address || 'No street address provided'}
-                                </p>
-                                <div className="flex flex-wrap items-center gap-4 mt-3">
-                                    {(user.city || user.region) && (
-                                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-content-secondary">
-                                            <Navigation className="w-3.5 h-3.5" />
-                                            {user.city || 'N/A'}, {user.region || 'N/A'}
+                                <div>
+                                    <p className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight mb-2">
+                                        {user.address || 'Deployment Pending'}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-6">
+                                        <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                            <Navigation size={10} />
+                                            {user.city || 'UNDEFINED'}, {user.region || 'UNDEFINED'}
                                         </div>
-                                    )}
-                                    {user.ghana_post_gps && (
-                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-rose-600 bg-surface px-2 py-1 rounded-lg border border-border-standard shadow-sm uppercase tracking-widest">
-                                            GPS: {user.ghana_post_gps}
-                                        </div>
-                                    )}
+                                        {user.ghana_post_gps && (
+                                            <div className="flex items-center gap-2 text-[9px] font-black text-slate-900 bg-slate-50 px-2 py-1 rounded border border-slate-200 uppercase tracking-widest tabular-nums">
+                                                ID: {user.ghana_post_gps}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-center justify-center border-l border-slate-100 pl-8 hidden md:flex">
+                                <div className="h-12 w-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:rotate-[360deg] transition-transform duration-1000">
+                                    <CheckCircle2 className="w-6 h-6 text-brand-emerald" strokeWidth={1.5} />
                                 </div>
                             </div>
                         </div>
@@ -119,93 +119,119 @@ const AddressesView = ({ user }: AddressesViewProps) => {
             )}
 
             {showForm && (
-                <form onSubmit={handleSubmit} className="p-8 rounded-3xl border shadow-xl bg-surface-card border-border-standard">
-                    <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-content-primary">
-                            {editingId ? 'Edit Address' : 'New Delivery Location'}
-                        </h3>
+                <form onSubmit={handleSubmit} className="p-10 rounded-2xl border border-slate-900 bg-slate-900 shadow-2xl relative overflow-hidden">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+                            <Plus size={14} className="text-brand-emerald" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
+                                {editingId ? 'Modify Manifest Entry' : 'New Dispatch Node'}
+                            </h3>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                            {[
+                                { label: 'Node Label', placeholder: 'e.g. Primary Hub', value: formData.label, key: 'label' },
+                                { label: 'Hub City', placeholder: 'e.g. Accra', value: formData.city, key: 'city' },
+                                { label: 'Regional Zone', placeholder: 'e.g. Greater Accra', value: formData.area, key: 'area' },
+                                { label: 'Operational Landmark', placeholder: 'e.g. Near Hub', value: formData.landmark, key: 'landmark' },
+                            ].map(field => (
+                                <div key={field.key} className="space-y-2">
+                                    <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">{field.label}</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder={field.placeholder} 
+                                        value={field.value} 
+                                        onChange={e => setFormData({ ...formData, [field.key]: e.target.value })} 
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
+                                        required={field.key !== 'landmark'} 
+                                    />
+                                </div>
+                            ))}
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Comms Terminal (Phone)</label>
+                                <input 
+                                    type="tel" 
+                                    placeholder="+233..." 
+                                    value={formData.phone} 
+                                    onChange={e => setFormData({ ...formData, phone: e.target.value })} 
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
+                                    required 
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="flex gap-4 mt-10">
+                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all active:scale-[0.98]">
+                                {editingId ? 'Save Configuration' : 'Commit to Manifest'}
+                            </button>
+                            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-8 text-[9px] font-black uppercase tracking-[0.4em] rounded-xl transition-all text-white/40 hover:text-white">
+                                Abort
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold uppercase tracking-wider ml-1 text-content-primary">Label</label>
-                            <input type="text" placeholder="e.g. Home, Office" value={formData.label} onChange={e => setFormData({ ...formData, label: e.target.value })} className={inputClass} required />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-content-secondary uppercase tracking-wider ml-1">City</label>
-                            <input type="text" placeholder="e.g. Accra" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} className={inputClass} required />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Area / Neighborhood</label>
-                            <input type="text" placeholder="e.g. East Legon" value={formData.area} onChange={e => setFormData({ ...formData, area: e.target.value })} className={inputClass} required />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Landmark</label>
-                            <input type="text" placeholder="e.g. Near Shell Hospital" value={formData.landmark} onChange={e => setFormData({ ...formData, landmark: e.target.value })} className={inputClass} />
-                        </div>
-                        <div className="space-y-1.5 md:col-span-2">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Phone Number</label>
-                            <input type="tel" placeholder="+233..." value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className={inputClass} required />
-                        </div>
-                    </div>
-                    
-                    <div className="flex gap-4 mt-10 p-4 bg-surface rounded-2xl border border-border-standard">
-                        <button type="submit" className="flex-1 py-3.5 bg-rose-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-rose-700 transition-all hover:shadow-lg hover:shadow-rose-500/20 active:scale-[0.98]">
-                            {editingId ? 'Save Changes' : 'Add to Collection'}
-                        </button>
-                        <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-6 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all text-content-secondary hover:text-content-primary">
-                            Cancel
-                        </button>
-                    </div>
+                    {/* Decorative Terminal Pattern */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#ffffff_0.5px,transparent_0.5px)] [background-size:16px_16px] opacity-[0.03]" />
                 </form>
             )}
 
-            <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-content-secondary">
-                    Additional saved address
-                </h3>
+            <div className="space-y-6">
+                <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
+                    <Navigation size={14} className="text-slate-300" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
+                        Auxiliary Manifest Nodes
+                    </h3>
+                </div>
                 
                 {addresses.length === 0 && !showForm ? (
-                    <div className="p-12 text-center rounded-[2.5rem] border-2 border-dashed border-border-standard bg-surface-card">
-                        <Plus className="w-12 h-12 mx-auto mb-4 text-content-secondary opacity-20" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary">No additional addresses saved</p>
+                    <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                        <Plus size={32} className="mx-auto mb-4 text-slate-100" strokeWidth={1} />
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Archive Retrieval Empty</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {addresses.map(address => (
-                            <div key={address.id} className="p-6 rounded-3xl border border-border-standard bg-surface-card group transition-all duration-300 hover:bg-surface">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <div className="p-2 rounded-lg bg-surface text-content-secondary">
-                                            <MapPin className="w-4 h-4" />
+                            <div key={address.id} className="p-6 rounded-2xl border border-slate-100 bg-white group hover:border-slate-300 transition-all duration-500 shadow-sm">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2 rounded-lg bg-slate-50 text-slate-400 group-hover:text-brand-emerald transition-colors">
+                                            <MapPin size={14} />
                                         </div>
-                                        <p className="font-black uppercase tracking-widest text-[11px] text-content-primary">{address.label}</p>
+                                        <div>
+                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-0.5">Node Class</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{address.label}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex items-center gap-2">
                                         <button 
                                             onClick={() => { setFormData({ label: address.label, city: address.city, area: address.area, landmark: address.landmark, phone: address.phone }); setEditingId(address.id); setShowForm(true); }} 
-                                            className="p-2 rounded-lg hover:bg-pink-50 hover:text-pink-600 transition-all text-content-secondary"
-                                            title="Edit"
+                                            className="p-2 rounded-lg hover:bg-slate-50 text-slate-300 hover:text-slate-900 transition-all"
+                                            title="Configure"
                                         >
-                                            <Edit2 className="w-3.5 h-3.5" />
+                                            <Edit2 size={12} />
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(address.id)} 
-                                            className="p-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-content-secondary"
-                                            title="Delete"
+                                            className="p-2 rounded-lg hover:bg-rose-50 text-slate-300 hover:text-rose-600 transition-all"
+                                            title="Purge"
                                         >
-                                            <Trash2 className="w-3.5 h-3.5" />
+                                            <Trash2 size={12} />
                                         </button>
                                     </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-content-secondary">
+                                <div className="space-y-4">
+                                    <p className="text-sm font-black text-slate-900 uppercase tracking-tighter truncate">
                                         {address.area}, {address.city}
                                     </p>
-                                    {address.landmark && (
-                                        <p className="text-[10px] text-content-secondary/60 italic">Near {address.landmark}</p>
-                                    )}
-                                    <p className="text-[10px] font-bold mt-2 text-content-secondary/40">{address.phone}</p>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest tabular-nums">
+                                            Terminal: {address.phone}
+                                        </p>
+                                        {address.landmark && (
+                                            <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest truncate max-w-[100px]">
+                                                {address.landmark}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}

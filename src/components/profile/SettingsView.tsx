@@ -6,6 +6,7 @@ import { User } from '@/types';
 import ToggleSwitch from './ToggleSwitch';
 import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import { motion } from 'framer-motion';
 import { CheckCircle2, AlertCircle, ChevronRight } from 'lucide-react';
 
 export default function SettingsView({ user }: { user: User }) {
@@ -54,21 +55,23 @@ export default function SettingsView({ user }: { user: User }) {
 
     return (
         <div className="space-y-12 animate-fade-in-up pb-24">
-            {/* High-Authority Header */}
-            <div className="flex items-end justify-between border-b border-slate-100 pb-6">
-                <div>
-                    <h2 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
-                        Account Hub
+            {/* Architectural Header Archive */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Identity & Terminal Control</p>
+                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                        Account Manifest
                     </h2>
-                    <p className="text-[9px] font-black mt-1 text-slate-400 uppercase tracking-[0.2em]">
-                        Global Identity & Logistics Management
-                    </p>
                 </div>
                 {saveStatus === 'success' && (
-                    <div className="flex items-center gap-2 text-emerald-600">
-                        <CheckCircle2 size={14} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Profile Synced</span>
-                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-3 px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-600"
+                    >
+                        <CheckCircle2 size={14} className="animate-bounce" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Profile Synced</span>
+                    </motion.div>
                 )}
             </div>
 
@@ -135,13 +138,13 @@ export default function SettingsView({ user }: { user: User }) {
                         </div>
                     </section>
 
-                    <div className="pt-6">
+                    <div className="pt-10">
                         <button 
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full sm:w-auto px-10 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.25em] rounded-xl hover:bg-emerald-600 transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl shadow-emerald-500/5"
+                            className="w-full sm:w-auto px-12 py-5 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-[0.98] disabled:opacity-50 shadow-2xl shadow-slate-900/10"
                         >
-                            {isSaving ? 'Syncing Profile...' : 'Save Configuration'}
+                            {isSaving ? 'Syncing Pipeline...' : 'Commit Configuration'}
                         </button>
                     </div>
                 </div>

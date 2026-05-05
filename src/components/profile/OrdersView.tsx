@@ -62,129 +62,128 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
     };
 
     return (
-        <div className="space-y-10 pb-20">
-            <div className="border-b pb-4 border-border-standard">
-                <div className="flex flex-wrap items-end justify-between gap-4">
-                    <h2 className="text-2xl font-black tracking-tight text-content-primary uppercase">
-                        My Orders
+        <div className="space-y-12 pb-20">
+            {/* Manifest Header Archive */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Archive Retrieval</p>
+                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                        Order Manifests
                     </h2>
-                    <div className="flex items-center gap-4">
-                        {['ALL', 'PENDING', 'COMPLETED'].map(status => (
-                            <button
-                                key={status}
-                                onClick={() => setFilter(status)}
-                                className={`text-[10px] uppercase tracking-widest transition-colors ${filter === status
-                                    ? 'text-content-primary font-black'
-                                    : 'text-content-secondary hover:text-content-primary font-black'
-                                    }`}
-                            >
-                                {status === 'ALL' ? 'All' : status.charAt(0) + status.slice(1).toLowerCase()}
-                            </button>
-                        ))}
-                    </div>
+                </div>
+                <div className="flex items-center gap-6 border border-slate-100 rounded-full px-6 py-3 bg-slate-50/30">
+                    {['ALL', 'PENDING', 'COMPLETED'].map(status => (
+                        <button
+                            key={status}
+                            onClick={() => setFilter(status)}
+                            className={`text-[9px] font-black uppercase tracking-[0.2em] transition-all relative ${filter === status
+                                ? 'text-slate-900'
+                                : 'text-slate-300 hover:text-slate-500'
+                                }`}
+                        >
+                            {status === 'ALL' ? 'Total' : status}
+                            {filter === status && (
+                                <motion.div layoutId="filter-pill" className="absolute -bottom-2 left-0 right-0 h-[2px] bg-brand-emerald rounded-full" />
+                            )}
+                        </button>
+                    ))}
                 </div>
             </div>
 
             <div className="grid gap-6">
                 {filteredOrders.length === 0 ? (
-                    <div className="text-center py-20">
-                        <svg className="w-12 h-12 mx-auto mb-4 text-content-secondary opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        <p className="text-sm font-black uppercase tracking-widest text-content-secondary">No orders found</p>
+                    <div className="py-32 text-center border-2 border-dashed border-slate-100 rounded-3xl">
+                        <Package size={48} className="mx-auto mb-6 text-slate-100" strokeWidth={1} />
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">No Historical Records Found</p>
                     </div>
                 ) : (
                     filteredOrders.map((order: Order) => {
                         const balanceDue = parseFloat(order.balance_due?.toString() || '0');
                         const isPending = (order.state === 'PENDING_PAYMENT' || order.state === 'DRAFT' || (balanceDue > 0 && order.state !== 'CANCELLED')) && order.state !== 'PAID';
-                        const canCancel = ['PAID', 'OPEN_FOR_BATCH', 'PENDING_PAYMENT'].includes(order.state);
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className="group relative bg-white border border-border-standard rounded-xl hover:border-brand-emerald/40 transition-all duration-300 shadow-sm overflow-hidden mb-3">
-                                <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-center gap-6 sm:gap-10">
-                                    {/* Compact Thumbnail Node */}
-                                    <div className="flex-shrink-0 w-20 h-24 sm:w-16 sm:h-20 relative rounded-lg border border-border-standard overflow-hidden bg-slate-50 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
-                                        {order.items?.[0]?.product.image ? (
-                                            <NextImage
-                                                src={getImageUrl(order.items[0].product.image)}
-                                                alt={order.order_number}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                                <Package size={20} />
-                                            </div>
-                                        )}
-                                        {order.items && order.items.length > 1 && (
-                                            <div className="absolute bottom-1 right-1 bg-slate-950/80 text-white text-[7px] font-black px-1.5 py-0.5 rounded backdrop-blur-sm">
-                                                +{order.items.length - 1} MORE
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* High-Authority Meta Data */}
-                                    <div className="flex-1 min-w-0 flex flex-col justify-center text-center sm:text-left">
-                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-2">
-                                            <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
-                                                #{order.order_number}
-                                            </h3>
-                                            <span className={`px-2 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest ${statusStyles.bg} ${statusStyles.text} shadow-sm border border-black/5`}>
-                                                {order.state_display}
-                                            </span>
+                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-2xl hover:border-slate-300 transition-all duration-500 overflow-hidden shadow-sm">
+                                <div className="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center gap-10">
+                                    {/* Entry ID & Date Node */}
+                                    <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-10 min-w-[140px]">
+                                        <div className="space-y-1">
+                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Entry Identifier</p>
+                                            <p className="text-sm font-black text-slate-900">#{order.order_number}</p>
                                         </div>
-                                        <div className="flex items-center justify-center sm:justify-start gap-4 text-slate-400">
-                                            <div className="flex items-center gap-1.5">
-                                                <Calendar size={10} className="text-slate-300" />
-                                                <p className="text-[9px] font-bold uppercase tracking-widest">
-                                                    {new Date(order.created_at).toLocaleDateString()}
-                                                </p>
-                                            </div>
-                                            <span className="w-1 h-1 rounded-full bg-slate-100" />
-                                            <div className="flex items-center gap-1.5">
-                                                <Package size={10} className="text-slate-300" />
-                                                <p className="text-[9px] font-bold uppercase tracking-widest">
-                                                    {order.items?.length || 0} ITEM(S)
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Financial Ledger Block */}
-                                    <div className="flex flex-col items-center sm:items-end justify-center gap-1 text-center sm:text-right min-w-[120px]">
-                                        <p className="text-[8px] uppercase tracking-[0.2em] font-black text-slate-300">Liability</p>
-                                        <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">
-                                            GHS {parseFloat(order.total.toString()).toLocaleString()}
-                                        </p>
-                                        {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
-                                            <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest">
-                                                DUE: GHS {balanceDue.toLocaleString()}
+                                        <div className="space-y-1 lg:mt-6">
+                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Logged Date</p>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+                                                {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Asset Summary Node */}
+                                    <div className="flex-1 flex items-center gap-8 min-w-0">
+                                        <div className="h-20 w-16 relative rounded border border-slate-100 overflow-hidden bg-slate-50 grayscale group-hover:grayscale-0 transition-all duration-700 flex-shrink-0">
+                                            {order.items?.[0]?.product.image ? (
+                                                <NextImage
+                                                    src={getImageUrl(order.items[0].product.image)}
+                                                    alt={order.order_number}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                    <Package size={20} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className={`h-2 w-2 rounded-full ${statusStyles.bg} shadow-sm border border-black/5`} />
+                                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-900">
+                                                    {order.state_display}
+                                                </span>
+                                            </div>
+                                            <h4 className="text-base font-black text-slate-900 truncate uppercase tracking-tight mb-2">
+                                                {order.items?.[0]?.product.name || 'Shipment Cargo'}
+                                            </h4>
+                                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                                Consolidated Logistics • {order.items?.length || 0} Assets Included
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Financial Valuation Node */}
+                                    <div className="lg:w-48 border-y lg:border-y-0 lg:border-x border-slate-100 py-6 lg:py-0 lg:px-10 flex flex-col justify-center lg:items-end">
+                                        <div className="flex items-baseline justify-between lg:justify-end gap-2 mb-2 w-full">
+                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Total Value</p>
+                                            <p className="text-xl font-black text-slate-900 tabular-nums leading-none">
+                                                ₵{parseFloat(order.total.toString()).toLocaleString()}
+                                            </p>
+                                        </div>
+                                        {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
+                                            <div className="flex items-center justify-between lg:justify-end gap-2 w-full">
+                                                <p className="text-[8px] font-black text-amber-300 uppercase tracking-widest">Liability</p>
+                                                <p className="text-[10px] font-black text-amber-500 tabular-nums">
+                                                    ₵{balanceDue.toLocaleString()}
+                                                </p>
+                                            </div>
                                         )}
                                     </div>
 
-                                    {/* Core Operational Actions */}
-                                    <div className="flex flex-row sm:flex-col items-center justify-center gap-2 w-full sm:w-40 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
+                                    {/* Operational Bridge Node */}
+                                    <div className="lg:w-52 flex flex-col gap-3">
                                         <Link
-                                            href={`/orders/${order.order_number}`}
-                                            className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm"
+                                            href={`/track?order=${order.order_number}`}
+                                            className="w-full py-4 border border-slate-900 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-slate-800 transition-all shadow-lg"
                                         >
-                                            View Order Details
+                                            Open Protocol
                                         </Link>
-                                        {isPending ? (
+                                        {isPending && (
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm"
+                                                className="w-full py-4 border border-brand-emerald bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-brand-emerald/90 transition-all"
                                             >
                                                 Settle Balance
-                                            </Link>
-                                        ) : (
-                                            <Link
-                                                href={`/track?order=${order.order_number}`}
-                                                className="flex-1 sm:w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all"
-                                            >
-                                                Track Shipment
                                             </Link>
                                         )}
                                     </div>

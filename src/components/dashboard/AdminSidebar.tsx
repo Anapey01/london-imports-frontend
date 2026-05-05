@@ -41,19 +41,19 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
     const isDark = theme === 'dark';
 
     const links = [
-        { name: 'Overview', href: '/dashboard/admin', icon: LayoutDashboard },
-        { name: 'Users', href: '/dashboard/admin/users', icon: Users },
-        { name: 'Vendors', href: '/dashboard/admin/vendors', icon: Store },
-        { name: 'Orders', href: '/dashboard/admin/orders', icon: ShoppingBag },
-        { name: 'Payment Transfer', href: '/dashboard/admin/payments/transfer', icon: ArrowRightLeft },
-        { name: 'Logistics', href: '/dashboard/admin/logistics', icon: Truck },
-        { name: 'Products', href: '/dashboard/admin/products', icon: Package },
-        { name: 'Blog', href: '/dashboard/admin/blog', icon: FileText },
-        { name: 'Broadcast', href: '/dashboard/admin/broadcast', icon: Mail },
-        { name: 'Analytics', href: '/dashboard/admin/analytics', icon: BarChart3 },
-        { name: 'Hero Banners', href: '/dashboard/admin/banners', icon: LayoutPanelTop },
-        { name: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
-        { name: 'Tutorials', href: '/dashboard/admin/tutorials', icon: PlayCircle },
+        { name: 'OVERVIEW', href: '/dashboard/admin', icon: LayoutDashboard },
+        { name: 'USERS', href: '/dashboard/admin/users', icon: Users },
+        { name: 'VENDORS', href: '/dashboard/admin/vendors', icon: Store },
+        { name: 'ORDERS', href: '/dashboard/admin/orders', icon: ShoppingBag },
+        { name: 'TRANSFERS', href: '/dashboard/admin/payments/transfer', icon: ArrowRightLeft },
+        { name: 'LOGISTICS', href: '/dashboard/admin/logistics', icon: Truck },
+        { name: 'PRODUCTS', href: '/dashboard/admin/products', icon: Package },
+        { name: 'JOURNAL', href: '/dashboard/admin/blog', icon: FileText },
+        { name: 'BROADCAST', href: '/dashboard/admin/broadcast', icon: Mail },
+        { name: 'ANALYTICS', href: '/dashboard/admin/analytics', icon: BarChart3 },
+        { name: 'BANNERS', href: '/dashboard/admin/banners', icon: LayoutPanelTop },
+        { name: 'CONFIG', href: '/dashboard/admin/settings', icon: Settings },
+        { name: 'ACADEMY', href: '/dashboard/admin/tutorials', icon: PlayCircle },
     ];
 
     const handleLogout = async () => {
@@ -69,44 +69,48 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
     return (
         <>
             {/* Backdrop for mobile */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-30 md:hidden animate-fade-in"
-                    onClick={onClose}
-                    aria-hidden="true"
-                />
-            )}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-white/80 backdrop-blur-md z-[50] md:hidden"
+                        onClick={onClose}
+                    />
+                )}
+            </AnimatePresence>
 
             <aside
-                className={`w-64 h-[100dvh] border-r flex flex-col fixed left-0 top-0 pt-[var(--navbar-height,4rem)] z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-                    } md:translate-x-0 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}
+                className={`w-64 h-[100dvh] border-r flex flex-col fixed left-0 top-0 z-[60] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    isOpen ? 'translate-x-0' : '-translate-x-full'
+                } md:translate-x-0 ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-50'}`}
             >
-                {/* Close Button for Mobile */}
-                <div className="md:hidden absolute top-4 right-4 z-50">
-                    <button
-                        onClick={onClose}
-                        aria-label="Close menu"
-                        className={`p-2 rounded-lg ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
-                    >
-                        <X className="w-6 h-6" />
-                    </button>
-                </div>
-
-                {/* Logo Area */}
-                <div className={`px-6 py-6 border-b ${isDark ? 'border-slate-800' : 'border-gray-50'}`}>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
-                            <ShieldCheck className="w-6 h-6 text-white" strokeWidth={2} />
+                {/* 1. BRAND TERMINAL HEADER */}
+                <div className={`px-8 py-10 border-b ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-none border border-slate-900 flex items-center justify-center">
+                                <ShieldCheck className="w-4 h-4 text-slate-900" strokeWidth={1.5} />
+                            </div>
+                            <span className="text-[10px] font-black tracking-[0.4em] text-slate-900 uppercase">Console</span>
                         </div>
-                        <div>
-                            <p className={`font-bold text-sm tracking-wide ${isDark ? 'text-white' : 'text-gray-900'}`}>ADMIN PANEL</p>
-                            <p className={`text-xs font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>London&apos;s Imports</p>
+                        <button onClick={onClose} className="md:hidden">
+                            <X className="w-4 h-4 text-slate-300" />
+                        </button>
+                    </div>
+                    
+                    <div className="space-y-1">
+                        <h2 className="text-[11px] font-black tracking-widest text-slate-900 uppercase">SYSTEM OPERATOR</h2>
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Verified Protocol</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
+                {/* 2. OPERATIONAL NAVIGATION */}
+                <nav className="flex-1 py-8 px-4 space-y-1 overflow-y-auto custom-scrollbar">
                     {links.map((link) => {
                         const isActive = pathname === link.href || (link.href !== '/dashboard/admin' && pathname.startsWith(link.href));
                         return (
@@ -114,31 +118,45 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                                 key={link.name}
                                 href={link.href}
                                 onClick={() => onClose && onClose()}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium group ${isActive
-                                    ? isDark
-                                        ? 'bg-pink-500/10 text-pink-400 shadow-sm'
-                                        : 'bg-pink-50 text-pink-700 shadow-sm'
-                                    : isDark
-                                        ? 'text-slate-400 hover:text-white hover:bg-slate-800'
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                                    }`}
+                                className={`flex items-center justify-between px-4 py-3 group transition-all duration-300 ${
+                                    isActive
+                                        ? 'bg-slate-900 text-white'
+                                        : 'text-slate-400 hover:text-slate-900 hover:translate-x-1'
+                                }`}
                             >
-                                <link.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-pink-500 group-hover:text-pink-600' : 'text-gray-400 group-hover:text-gray-600 dark:text-slate-500 dark:group-hover:text-slate-300'}`} strokeWidth={isActive ? 2 : 1.5} />
-                                {link.name}
+                                <div className="flex items-center gap-4">
+                                    <link.icon className={`w-4 h-4 transition-colors ${
+                                        isActive ? 'text-emerald-400' : 'text-slate-300 group-hover:text-slate-900'
+                                    }`} strokeWidth={isActive ? 2 : 1.5} />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{link.name}</span>
+                                </div>
+                                {isActive && (
+                                    <motion.div 
+                                        layoutId="active-indicator"
+                                        className="w-1 h-1 bg-emerald-400"
+                                    />
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
 
-                {/* Logout */}
-                <div className={`p-4 border-t ${isDark ? 'border-slate-800' : 'border-gray-50'} mt-auto`}>
+                {/* 3. TERMINAL FOOTER */}
+                <div className={`p-6 border-t ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl w-full transition-colors text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 dark:text-red-400"
+                        className="flex items-center justify-between px-4 py-4 w-full transition-all group hover:bg-red-50"
                     >
-                        <LogOut className="w-5 h-5" strokeWidth={1.5} />
-                        Sign Out
+                        <div className="flex items-center gap-4">
+                            <LogOut className="w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" strokeWidth={1.5} />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-red-600 transition-colors">Terminate Session</span>
+                        </div>
                     </button>
+                    
+                    <div className="mt-6 pt-6 border-t border-slate-50 opacity-20">
+                        <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-950">London&apos;s Imports Hub</p>
+                        <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mt-1">Operational Environment v2.4</p>
+                    </div>
                 </div>
             </aside>
         </>

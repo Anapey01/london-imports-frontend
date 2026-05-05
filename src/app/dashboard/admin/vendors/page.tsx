@@ -1,14 +1,15 @@
 /**
  * London's Imports - Admin Vendor Management
- * Premium mobile responsive design with verify/reject functionality
+ * Premium 'Atelier' architectural system with monochromatic precision
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { adminAPI } from '@/lib/api';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Search, Building2, Trash2, Eye, ShieldCheck, Activity, MapPin, Calendar, CheckSquare, X } from 'lucide-react';
 
 interface Vendor {
     id: string;
@@ -38,9 +39,10 @@ export default function AdminVendorsPage() {
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('ALL');
-    const [typeFilter, setTypeFilter] = useState('ALL'); // New type filter
+    const [typeFilter, setTypeFilter] = useState('ALL');
     const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -84,8 +86,8 @@ export default function AdminVendorsPage() {
     const handleVerify = (vendor: Vendor) => {
         setConfirmModal({
             isOpen: true,
-            title: 'Verify Vendor',
-            message: `Are you sure you want to verify ${vendor.business_name}? This will activate their storefront.`,
+            title: 'PROTOCOL_AUTHORIZATION',
+            message: `Authorize ${vendor.business_name} for active marketplace participation?`,
             variant: 'warning',
             onConfirm: async () => {
                 setActionLoading(true);
@@ -97,10 +99,10 @@ export default function AdminVendorsPage() {
                             : v
                     ));
                     setSelectedVendor(null);
-                    addAlert(`${vendor.business_name} verified successfully`);
+                    addAlert(`${vendor.business_name} authorization complete`);
                 } catch (err) {
                     console.error('Failed to verify vendor:', err);
-                    addAlert('Failed to verify vendor', 'error');
+                    addAlert('Failed to authorize vendor', 'error');
                 } finally {
                     setActionLoading(false);
                 }
@@ -112,8 +114,8 @@ export default function AdminVendorsPage() {
         const isVerified = vendor.status === 'VERIFIED';
         setConfirmModal({
             isOpen: true,
-            title: isVerified ? 'Suspend Vendor' : 'Reject Vendor',
-            message: `Are you sure you want to ${isVerified ? 'suspend' : 'reject'} ${vendor.business_name}?`,
+            title: isVerified ? 'PROTOCOL_SUSPENSION' : 'MANIFEST_REJECTION',
+            message: `Execute ${isVerified ? 'suspension' : 'rejection'} protocol for ${vendor.business_name}?`,
             variant: 'danger',
             onConfirm: async () => {
                 setActionLoading(true);
@@ -128,7 +130,7 @@ export default function AdminVendorsPage() {
                     addAlert(`${vendor.business_name} ${isVerified ? 'suspended' : 'rejected'} successfully`);
                 } catch (err) {
                     console.error('Failed to reject vendor:', err);
-                    addAlert('Failed to update vendor status', 'error');
+                    addAlert('Failed to execute protocol', 'error');
                 } finally {
                     setActionLoading(false);
                 }
@@ -139,113 +141,81 @@ export default function AdminVendorsPage() {
     const formatDate = (dateString: string) => {
         try {
             const date = new Date(dateString);
-            if (isNaN(date.getTime())) return 'Recently';
-            const now = new Date();
-            const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-            if (diffDays === 0) return 'Today';
-            if (diffDays === 1) return 'Yesterday';
-            if (diffDays < 7) return `${diffDays}d ago`;
-            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase();
         } catch {
-            return 'Recently';
+            return 'RECENT';
         }
     };
 
     const filteredVendors = vendors.filter(vendor => {
         const matchesStatus = statusFilter === 'ALL' || vendor.status === statusFilter;
         const matchesType = typeFilter === 'ALL' || vendor.vendor_type === typeFilter;
-        return matchesStatus && matchesType;
+        const matchesSearch = vendor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                             vendor.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesStatus && matchesType && matchesSearch;
     });
 
     const pendingCount = vendors.filter(v => v.status === 'PENDING').length;
 
-    const getStatusBadge = (status: string) => {
-        const styles: Record<string, { bg: string, text: string, dot: string }> = {
-            PENDING: { bg: 'bg-amber-50', text: 'text-amber-600', dot: 'bg-amber-500' },
-            VERIFIED: { bg: 'bg-emerald-50', text: 'text-emerald-600', dot: 'bg-emerald-500' },
-            REJECTED: { bg: 'bg-red-50', text: 'text-red-600', dot: 'bg-red-500' },
-        };
-        return styles[status] || styles.PENDING;
-    };
-
-    const getTypeBadge = (type: string) => {
-        if (type === 'STANDALONE') {
-            return { bg: 'bg-purple-100', text: 'text-purple-700', label: 'Partner' };
-        }
-        return { bg: 'bg-pink-100', text: 'text-pink-700', label: 'Seller' };
-    };
-
     if (loading) {
         return (
-            <div className="space-y-3">
+            <div className="space-y-4 p-8">
                 {[...Array(4)].map((_, i) => (
-                    <div key={i} className="h-24 rounded-2xl animate-pulse bg-gradient-to-r from-gray-100 to-gray-200"></div>
+                    <div key={i} className="h-20 bg-slate-50 animate-pulse border border-slate-100"></div>
                 ))}
             </div>
         );
     }
 
-    // Helper for verification documents
-    const VerificationStatus = ({ label, value, isBoolean = false }: { label: string, value: string | boolean | null | undefined, isBoolean?: boolean }) => {
-        const isValid = isBoolean ? value === true : !!value;
-        return (
-            <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                <span className="text-sm text-gray-500">{label}</span>
-                <div className="flex items-center gap-1.5">
-                    {isValid ? (
-                        <span className="text-emerald-600 bg-emerald-50 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                            Verified
-                        </span>
-                    ) : (
-                        <span className="text-amber-600 bg-amber-50 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                            Pending
-                        </span>
-                    )}
-                    {!isBoolean && value && <span className="text-sm font-mono text-gray-700 ml-1">{String(value)}</span>}
-                </div>
-            </div>
-        );
-    };
-
     return (
-        <div className="space-y-4">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl shadow-indigo-200">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-bold tracking-tight">Vendor Management</h2>
-                        <p className="text-indigo-100 text-sm mt-1">
-                            Review and manage marketplace sellers and strategic partners.
-                        </p>
-                    </div>
-                    <div className="flex gap-3">
-                        <div className="text-right">
-                            <p className="text-2xl font-bold">{vendors.length}</p>
-                            <p className="text-xs text-indigo-200">Total Vendors</p>
+        <div className="space-y-12 pb-32">
+            {/* 1. COMMAND HEADER */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
+                <div>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Vendor Registry</h1>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{vendors.length} ENTITIES_ENROLLED</span>
                         </div>
+                        {pendingCount > 0 && (
+                            <>
+                                <span className="h-4 w-px bg-slate-200" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600 animate-pulse">{pendingCount} PENDING_AUTHORIZATION</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    <div className="relative w-full md:w-80 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="SEARCH ENTITIES..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-col gap-3">
-                {/* Status Filters */}
-                <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+            {/* 2. PROTOCOL FILTERS */}
+            <div className="flex flex-col gap-6">
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                     {[
-                        { key: 'ALL', label: 'All Status' },
-                        { key: 'PENDING', label: `Pending Review${pendingCount > 0 ? ` (${pendingCount})` : ''}` },
-                        { key: 'VERIFIED', label: 'Verified' },
-                        { key: 'REJECTED', label: 'Rejected' },
+                        { key: 'ALL', label: 'All Manifests' },
+                        { key: 'PENDING', label: 'Pending Review' },
+                        { key: 'VERIFIED', label: 'Authorized' },
+                        { key: 'REJECTED', label: 'Restricted' },
                     ].map((filter) => (
                         <button
                             key={filter.key}
                             onClick={() => setStatusFilter(filter.key)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${statusFilter === filter.key
-                                ? filter.key === 'PENDING'
-                                    ? 'bg-amber-500 border-amber-500 text-white shadow-md shadow-amber-200'
-                                    : 'bg-gray-900 border-gray-900 text-white shadow-md'
-                                : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                            className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === filter.key
+                                ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
+                                : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                                 }`}
                         >
                             {filter.label}
@@ -253,19 +223,18 @@ export default function AdminVendorsPage() {
                     ))}
                 </div>
 
-                {/* Type Filters */}
-                <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                <div className="flex gap-4 border-l border-slate-100 pl-4">
                     {[
-                        { key: 'ALL', label: 'All Types' },
-                        { key: 'MARKETPLACE', label: 'Sellers' },
-                        { key: 'STANDALONE', label: 'Partners' },
+                        { key: 'ALL', label: 'ALL_TYPES' },
+                        { key: 'MARKETPLACE', label: 'MARKET_SELLERS' },
+                        { key: 'STANDALONE', label: 'STRATEGIC_PARTNERS' },
                     ].map((filter) => (
                         <button
                             key={filter.key}
                             onClick={() => setTypeFilter(filter.key)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${typeFilter === filter.key
-                                ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-500/20'
-                                : 'bg-transparent text-gray-500 hover:bg-gray-50'
+                            className={`text-[9px] font-black uppercase tracking-[0.3em] transition-all ${typeFilter === filter.key
+                                ? 'text-slate-950 underline underline-offset-8'
+                                : 'text-slate-300 hover:text-slate-900'
                                 }`}
                         >
                             {filter.label}
@@ -274,141 +243,140 @@ export default function AdminVendorsPage() {
                 </div>
             </div>
 
-            {/* Vendor List */}
-            <div className="space-y-3">
-                {filteredVendors.map((vendor) => (
-                    <VendorCard
-                        key={vendor.id}
-                        vendor={vendor}
-                        setSelectedVendor={setSelectedVendor}
-                        getStatusBadge={getStatusBadge}
-                        getTypeBadge={getTypeBadge}
-                        formatDate={formatDate}
-                    />
-                ))}
-
+            {/* 3. MASTER REGISTRY TABLE */}
+            <div className="bg-white border border-slate-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Entity_Manifest</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Authority_Node</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Temporal_Mark</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Protocol_Status</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Location_Origin</th>
+                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {filteredVendors.map((vendor) => (
+                                <VendorRow
+                                    key={vendor.id}
+                                    vendor={vendor}
+                                    setSelectedVendor={setSelectedVendor}
+                                    formatDate={formatDate}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 {filteredVendors.length === 0 && (
-                    <div className="text-center py-16 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
-                        <p className="text-gray-400 font-medium">No vendors match your filters</p>
-                        <button onClick={() => { setStatusFilter('ALL'); setTypeFilter('ALL') }} className="mt-2 text-indigo-600 text-sm font-semibold hover:underline">
-                            Clear Filters
-                        </button>
+                    <div className="py-32 text-center">
+                        <Building2 className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Vendor Database Null</p>
                     </div>
                 )}
             </div>
 
             {/* Detailed Review Modal */}
             {selectedVendor && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4" onClick={() => !actionLoading && setSelectedVendor(null)}>
-                    <div className="w-full md:max-w-xl bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-
-                        {/* Modal Header */}
-                        <div className="relative h-24 bg-gradient-to-r from-violet-600 to-indigo-600 p-6 flex items-start justify-between shrink-0">
-                            <div className="text-white">
-                                <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider mb-2 bg-white/20 backdrop-blur-md`}>
-                                    {selectedVendor.vendor_type === 'STANDALONE' ? 'Strategic Partner' : 'Marketplace Seller'}
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => !actionLoading && setSelectedVendor(null)}>
+                    <div className="w-full max-w-2xl bg-white p-12 space-y-12 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-between items-start">
+                            <div className="space-y-4">
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 bg-slate-50 px-3 py-1">
+                                    {selectedVendor.vendor_type === 'STANDALONE' ? 'STRATEGIC_PARTNER_ENROLLMENT' : 'MARKET_SELLER_ENTRY'}
                                 </span>
-                                <h3 className="text-2xl font-bold">{selectedVendor.business_name}</h3>
+                                <h3 className="text-3xl font-serif font-bold text-slate-950 tracking-tighter">{selectedVendor.business_name}</h3>
                             </div>
-                            <button onClick={() => setSelectedVendor(null)} aria-label="Close modal" className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            <button onClick={() => setSelectedVendor(null)} className="text-slate-300 hover:text-slate-950 transition-colors">
+                                <X className="w-6 h-6" />
                             </button>
                         </div>
 
-                        {/* Scrollable Content */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-
-                            {/* Contact Info */}
-                            <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contact Details</h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-xs text-gray-500">Owner Name</p>
-                                        <p className="font-medium text-sm text-gray-900">{selectedVendor.owner_name}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500">Phone</p>
-                                        <p className="font-medium text-sm text-gray-900">{selectedVendor.business_phone}</p>
-                                    </div>
-                                    <div className="col-span-2">
-                                        <p className="text-xs text-gray-500">Email</p>
-                                        <p className="font-medium text-sm text-gray-900 break-all">{selectedVendor.business_email}</p>
-                                    </div>
-                                    <div className="col-span-2">
-                                        <p className="text-xs text-gray-500">Location</p>
-                                        <p className="font-medium text-sm text-gray-900">{selectedVendor.city}, {selectedVendor.region}</p>
-                                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="space-y-8">
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Owner_Identity</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.owner_name}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Comm_Link</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.business_email}</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.business_phone}</p>
                                 </div>
                             </div>
-
-                            {/* Verification Data (For Partners mainly) */}
-                            {selectedVendor.vendor_type === 'STANDALONE' && selectedVendor.documents && (
-                                <div className="border border-gray-100 rounded-2xl p-4">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Verification Documents</h4>
-                                    <div className="space-y-1">
-                                        <VerificationStatus label="Ghana Card ID" value={selectedVendor.documents.ghana_card || 'Not uploaded'} />
-                                        <VerificationStatus label="Business Cert" value={selectedVendor.documents.business_cert || 'Not uploaded'} />
-                                        <VerificationStatus label="Paystack Integration" value={selectedVendor.documents.has_paystack} isBoolean />
-                                    </div>
-                                    <div className="mt-3 p-3 bg-blue-50 text-blue-700 text-xs rounded-xl flex gap-2 items-start">
-                                        <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                        Verifying a partner grants them a dedicated storefront and enables their custom payment gateway. Ensure all legal documents are valid.
-                                    </div>
+                            <div className="space-y-8">
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Geographic_Node</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.city}, {selectedVendor.region}</p>
                                 </div>
-                            )}
-
-                            {/* Seller Note */}
-                            {selectedVendor.vendor_type === 'MARKETPLACE' && (
-                                <div className="p-3 bg-gray-50 text-gray-500 text-xs rounded-xl">
-                                    Marketplace sellers are vetted for product quality and shipping reliability. No additional legal docs required for basic tier.
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Operational_History</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.total_orders} TRANSACTIONS_PROCESSED</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.fulfillment_rate}% FULFILLMENT_ACCURACY</p>
                                 </div>
-                            )}
-
+                            </div>
                         </div>
 
-                        {/* Sticky Action Footer */}
-                        <div className="p-4 border-t border-gray-100 bg-white shrink-0 grid grid-cols-2 gap-3">
+                        {selectedVendor.vendor_type === 'STANDALONE' && selectedVendor.documents && (
+                            <div className="border-t border-slate-100 pt-12 space-y-6">
+                                <h4 className="text-[10px] font-black text-slate-950 uppercase tracking-[0.4em]">VERIFICATION_MANIFEST</h4>
+                                <div className="grid grid-cols-1 gap-px bg-slate-100 border border-slate-100">
+                                    {[
+                                        { label: 'GHANA_CARD_ID', value: selectedVendor.documents.ghana_card },
+                                        { label: 'BUSINESS_CERTIFICATE', value: selectedVendor.documents.business_cert },
+                                        { label: 'PAYSTACK_GATEWAY_INTEGRATION', value: selectedVendor.documents.has_paystack, isBool: true }
+                                    ].map((doc, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-6 bg-white">
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{doc.label}</span>
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-1.5 h-1.5 rounded-full ${(doc.isBool ? doc.value : !!doc.value) ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                                    {(doc.isBool ? doc.value : !!doc.value) ? 'VERIFIED' : 'PENDING_INPUT'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex flex-col md:flex-row gap-4 pt-12">
                             {selectedVendor.status === 'PENDING' ? (
                                 <>
                                     <button
-                                        onClick={() => handleReject(selectedVendor)}
-                                        disabled={actionLoading}
-                                        className="py-3 rounded-xl border-2 border-red-100 text-red-600 font-bold hover:bg-red-50 disabled:opacity-50 transition-colors"
-                                    >
-                                        Reject
-                                    </button>
-                                    <button
                                         onClick={() => handleVerify(selectedVendor)}
                                         disabled={actionLoading}
-                                        className="py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold shadow-lg shadow-green-500/20 disabled:opacity-50 hover:shadow-xl transition-all"
+                                        className="flex-1 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-emerald-600 transition-all disabled:opacity-50"
                                     >
-                                        {actionLoading ? 'Processing...' : 'Approve & Verify'}
+                                        {actionLoading ? 'EXECUTING...' : 'AUTHORIZE_ENTITY'}
+                                    </button>
+                                    <button
+                                        onClick={() => handleReject(selectedVendor)}
+                                        disabled={actionLoading}
+                                        className="flex-1 py-4 bg-white border border-slate-950 text-slate-950 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50"
+                                    >
+                                        REJECT_MANIFEST
                                     </button>
                                 </>
                             ) : (
-                                selectedVendor.status === 'VERIFIED' ? (
-                                    <button
-                                        onClick={() => handleReject(selectedVendor)}
-                                        disabled={actionLoading}
-                                        className="col-span-2 py-3 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 disabled:opacity-50 transition-colors"
-                                    >
-                                        Suspend Account
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => handleVerify(selectedVendor)}
-                                        disabled={actionLoading}
-                                        className="col-span-2 py-3 rounded-xl bg-emerald-50 text-emerald-600 font-bold hover:bg-emerald-100 disabled:opacity-50 transition-colors"
-                                    >
-                                        Reinstate Account
-                                    </button>
-                                )
+                                <button
+                                    onClick={() => selectedVendor.status === 'VERIFIED' ? handleReject(selectedVendor) : handleVerify(selectedVendor)}
+                                    disabled={actionLoading}
+                                    className={`w-full py-4 text-[10px] font-black uppercase tracking-[0.4em] transition-all disabled:opacity-50 ${
+                                        selectedVendor.status === 'VERIFIED' 
+                                        ? 'bg-slate-50 text-slate-400 hover:bg-red-600 hover:text-white' 
+                                        : 'bg-slate-950 text-white hover:bg-emerald-600'
+                                    }`}
+                                >
+                                    {selectedVendor.status === 'VERIFIED' ? 'EXECUTE_SUSPENSION' : 'RESTORE_AUTHORITY'}
+                                </button>
                             )}
                         </div>
                     </div>
                 </div>
             )}
-            {/* Confirmation Modal */}
+
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
@@ -418,8 +386,7 @@ export default function AdminVendorsPage() {
                 variant={confirmModal.variant}
             />
 
-            {/* Notification Toasts */}
-            <div className="fixed bottom-8 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
+            <div className="fixed bottom-12 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">
                 <AnimatePresence mode="popLayout">
                     {alerts.map(alert => (
                         <AuraAlert
@@ -436,61 +403,53 @@ export default function AdminVendorsPage() {
     );
 }
 
-import React from 'react';
-
-const VendorCard = React.memo(({ 
+const VendorRow = React.memo(({ 
     vendor, 
     setSelectedVendor, 
-    getStatusBadge, 
-    getTypeBadge, 
     formatDate 
 }: any) => {
-    const statusStyle = getStatusBadge(vendor.status);
-    const typeBadge = getTypeBadge(vendor.vendor_type);
-
     return (
-        <div
-            onClick={() => setSelectedVendor(vendor)}
-            className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all p-4 cursor-pointer relative overflow-hidden"
-        >
-            {/* Hover Indicator */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-            <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-100 flex items-center justify-center text-gray-700 font-bold text-lg shadow-inner">
+        <tr className="group hover:bg-slate-50/50 transition-all duration-500 cursor-pointer" onClick={() => setSelectedVendor(vendor)}>
+            <td className="px-8 py-8">
+                <div className="flex items-center gap-6">
+                    <div className="w-10 h-10 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
                         {vendor.business_name.charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                        <h3 className="font-bold text-gray-900 text-sm">{vendor.business_name}</h3>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide ${typeBadge.bg} ${typeBadge.text}`}>
-                                {typeBadge.label}
-                            </span>
-                            <span className="text-xs text-gray-400">• {vendor.owner_name}</span>
-                        </div>
+                    <div className="min-w-0">
+                        <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{vendor.business_name}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic">TYPE: {vendor.vendor_type}</p>
                     </div>
                 </div>
-                <div className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${statusStyle.bg.replace('50', '50/50')} ${statusStyle.text} border-transparent`}>
-                    {vendor.status}
-                </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-3 border-t border-gray-50">
-                <div className="text-xs text-gray-500 flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        {vendor.city}, {vendor.region}
+            </td>
+            <td className="px-8 py-8">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 truncate max-w-[200px]">{vendor.owner_name}</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic">{vendor.business_email}</p>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <p className="text-[10px] font-black text-slate-300 uppercase tabular-nums">{formatDate(vendor.created_at)}</p>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <div className="flex items-center gap-3">
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                        vendor.status === 'VERIFIED' ? 'bg-emerald-500' : 
+                        vendor.status === 'PENDING' ? 'bg-amber-500 animate-pulse' : 'bg-red-600'
+                    }`} />
+                    <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+                        vendor.status === 'VERIFIED' ? 'text-slate-950' : 
+                        vendor.status === 'PENDING' ? 'text-amber-600' : 'text-red-600'
+                    }`}>
+                        {vendor.status}_PROTOCOL
                     </span>
-                    <span className="flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        {formatDate(vendor.created_at)}
-                    </span>
                 </div>
-                <svg className="w-5 h-5 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-            </div>
-        </div>
+            </td>
+            <td className="px-8 py-8 hidden lg:table-cell">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{vendor.city}, {vendor.region}</p>
+            </td>
+            <td className="px-8 py-8 text-right">
+                <div className="flex justify-end items-center opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 border-b border-slate-950 pb-1">VIEW_ENTRY</span>
+                </div>
+            </td>
+        </tr>
     );
 });

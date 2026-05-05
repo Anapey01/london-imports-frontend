@@ -72,29 +72,89 @@ export default function ProfileLayout({
     }
 
     return (
-        <div className="min-h-screen pb-20 bg-surface">
-            <div className="max-w-6xl mx-auto px-6 relative z-20 pt-20 md:pt-24">
+        <div className="min-h-screen pb-20 bg-white font-sans text-slate-900 overflow-x-hidden">
+            {/* Architectural Header Bridge */}
+            <div className="w-full bg-white border-b border-slate-100/80 pt-20 md:pt-24 relative overflow-hidden">
+                <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
+                    <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
+                        {/* Identity Node */}
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+                            <div className="relative group">
+                                <div className="h-24 w-24 rounded-full border border-slate-200 p-1 bg-white shadow-sm transition-transform duration-500 group-hover:rotate-6">
+                                    <div className="w-full h-full rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 overflow-hidden">
+                                        <span className="text-3xl font-serif font-black text-slate-300">
+                                            {user.first_name?.[0] || user.username?.[0]}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 h-8 w-8 bg-brand-emerald text-white rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                                </div>
+                            </div>
+                            
+                            <div className="text-center sm:text-left pt-2">
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Authenticated Client</p>
+                                <h1 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none mb-3">
+                                    {user.first_name} {user.last_name}
+                                </h1>
+                                <div className="flex items-center justify-center sm:justify-start gap-4">
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{user.email}</span>
+                                    <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Verified Hub Access</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Operational Metrics (Architectural Grid) */}
+                        <div className="hidden md:flex items-stretch border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
+                            <div className="px-8 py-6 border-r border-slate-100">
+                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2">Member Since</p>
+                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                                    {user.date_joined ? new Date(user.date_joined).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Pending'}
+                                </p>
+                            </div>
+                            <div className="px-8 py-6 bg-slate-50/50">
+                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2">Security ID</p>
+                                <p className="text-sm font-black text-slate-800 tabular-nums">
+                                    #{user.id?.toString().slice(-4).toUpperCase() || 'STND'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Decorative Grid Pattern */}
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.4] pointer-events-none" />
+            </div>
+
+            <div className="max-w-6xl mx-auto px-6 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-                    {/* Sidebar: On mobile, only show on the root /profile page. On desktop, always show. */}
-                    <div className={`w-full lg:w-52 shrink-0 ${pathname === '/profile' ? 'block' : 'hidden lg:block'}`}>
-                        <SidebarNav handleLogout={handleLogout} />
+                    {/* Sidebar Anchor */}
+                    <div className={`w-full lg:w-52 shrink-0 ${pathname === '/profile' ? 'block' : 'hidden lg:block'} pt-8`}>
+                        <div className="sticky top-24">
+                            <SidebarNav handleLogout={handleLogout} />
+                        </div>
                     </div>
 
-                    {/* Content Area: On mobile, hide on the root /profile page (menu mode). On desktop, always show. */}
+                    {/* Operational Viewport */}
                     <div className={`flex-1 py-8 min-h-[600px] ${pathname === '/profile' ? 'hidden lg:block' : 'block'}`}>
-                        {/* Mobile Back Button: Only shown on sub-pages when on mobile */}
+                        {/* Navigation Node */}
                         {pathname !== '/profile' && (
                             <Link 
                                 href="/profile"
-                                className="lg:hidden inline-flex items-center gap-2 mb-8 text-content-secondary hover:text-content-primary transition-colors group"
+                                className="lg:hidden inline-flex items-center gap-3 mb-10 group"
                             >
-                                <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                                </svg>
-                                <span className="text-[10px] font-black uppercase tracking-widest">Back to Menu</span>
+                                <div className="p-2 rounded-full border border-slate-200 group-hover:bg-slate-50 transition-colors">
+                                    <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                    </svg>
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 transition-colors">Return to Console</span>
                             </Link>
                         )}
-                        {children}
+                        <div className="animate-fade-in-up">
+                            {children}
+                        </div>
                     </div>
                 </div>
             </div>
