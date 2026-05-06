@@ -38,7 +38,7 @@ export default function MobileBottomNav() {
     }
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-xl border-t border-border-standard z-50 safe-area-bottom shadow-diffusion">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-md border-t border-border-standard z-50 safe-area-bottom shadow-diffusion will-change-transform">
             <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
                 {navItems.map((item) => {
                     const isActive = item.href === '/' ? pathname === '/' : (item.href !== '#' && pathname?.startsWith(item.href));

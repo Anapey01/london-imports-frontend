@@ -33,10 +33,18 @@ export default function Navbar() {
             fetchCart();
         }
 
+        let ticking = false;
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrolled = window.scrollY > 10;
+                    setIsScrolled(prev => prev !== scrolled ? scrolled : prev);
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, [fetchCart, isAuthenticated]);
 
@@ -51,7 +59,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-surface/95 backdrop-blur-xl border-border-standard' : 'bg-surface border-transparent'}`}>
+            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b will-change-transform ${isScrolled ? 'bg-surface/90 backdrop-blur-md border-border-standard' : 'bg-surface border-transparent'}`}>
                 <div className="max-w-[1800px] mx-auto px-4 md:px-12">
                     {/* Tier 1: Logo & Actions */}
                     <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">

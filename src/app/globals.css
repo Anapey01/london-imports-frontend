@@ -61,7 +61,6 @@
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.5s ease, color 0.5s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -551,10 +550,12 @@ a, button, [role="button"] {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.025;
+  opacity: 0.015;
   z-index: 100;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  /* Hardware-accelerated static noise pattern instead of feTurbulence */
+  background-image: url("https://www.transparenttextures.com/patterns/p6.png");
+  will-change: transform;
 }
 
 .shadow-diffusion {
