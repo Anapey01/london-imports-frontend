@@ -115,7 +115,7 @@ export default function Navbar() {
                                 />
                                 <button 
                                     type="submit"
-                                    className="bg-content-primary dark:bg-brand-emerald text-white dark:text-slate-950 px-8 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-brand-emerald dark:hover:bg-brand-accent transition-all active:scale-95"
+                                    className="bg-content-primary dark:bg-slate-800 text-white dark:text-white px-8 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-brand-emerald dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700"
                                 >
                                     Search
                                 </button>
@@ -175,7 +175,7 @@ export default function Navbar() {
                             />
                             <button 
                                 type="submit"
-                                className="bg-content-primary dark:bg-brand-emerald text-white dark:text-slate-950 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest"
+                                className="bg-content-primary dark:bg-slate-800 text-white dark:text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border border-transparent dark:border-slate-700"
                             >
                                 Search
                             </button>
