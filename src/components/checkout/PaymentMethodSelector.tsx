@@ -31,19 +31,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
     const isExpanded = activeStep === 2;
     const isCompleted = activeStep > 2;
     
-    // Deduplicate total calculation
+    // AMAZON-STANDARD: Deduplicate total calculation from items
     const calculateSelectedTotal = () => {
-        // If we are resuming an order, we use the full subtotal from currentOrderData
-        // Otherwise, we filter by selected item IDs
-        const subtotalSource = (orderNumberParam || (currentOrderData as any).order_number) 
-            ? (currentOrderData as any).subtotal || currentOrderData.total 
-            : null;
-
-        if (subtotalSource !== null) {
-            const totalValue = Number(subtotalSource) + Number(currentOrderData.delivery_fee || 0);
-            const amountPaid = Number(currentOrderData.amount_paid || 0);
-            return Math.max(0, totalValue - amountPaid);
-        }
 
         const selSubtotal = (currentOrderData.items || [])
             .filter((i: BaseOrderItem) => {

@@ -34,7 +34,8 @@ const OrderSummary = ({
     isMerging,
     activeStep
 }: OrderSummaryProps) => {
-    const subtotalValue = checkoutOrder || orderNumberParam ? Number(currentOrderData.subtotal || 0) : (currentOrderData.items || [])
+    // AMAZON-STANDARD: Always calculate subtotal from items.
+    const subtotalValue = (currentOrderData.items || [])
         .filter((i: CartItem | OrderItem) => {
             if (selectedItemIds.length === 0) return true; // DEFAULT TO ALL
             return selectedItemIds.includes(i.id);
