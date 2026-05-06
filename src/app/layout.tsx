@@ -8,7 +8,6 @@ import PWAUpdater from "@/components/PWAUpdater";
 import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/config/site";
 
-import ReloadPrompt from '@/components/pwa/ReloadPrompt';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
 import { Suspense } from "react";
@@ -178,7 +177,6 @@ export default async function RootLayout({
           <main id="main-content" className="pb-20 md:pb-0 outline-none">{children}</main>
           <FooterWrapper />
           <MobileBottomNavWrapper />
-          <ReloadPrompt />
         </Providers>
       </body>
     </html>

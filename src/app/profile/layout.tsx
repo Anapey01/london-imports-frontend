@@ -74,7 +74,7 @@ export default function ProfileLayout({
 
     return (
         <div className="min-h-screen pb-20 bg-white font-sans text-slate-900 overflow-x-hidden">
-            <ProfileHeader user={user} />
+            {pathname === '/profile' && <ProfileHeader user={user} />}
 
             <div className="max-w-6xl mx-auto px-6 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
