@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  /* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow the .dark class selector. */
-  --variant-dark: .dark &;
-  --variant-light: :not(.dark) &;
+  /* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow either the .dark class or data-theme attribute. */
+  --variant-dark: :is(.dark, [data-theme="dark"]) &;
+  --variant-light: :is(:not(.dark), [data-theme="light"]) &;
 
   /* SEMANTIC COLOR MAPPING: Maps variable-driven tokens to standard Tailwind utility names.
      This allows components to use 'bg-surface' instead of hardcoded 'bg-white dark:bg-slate-900'. */
