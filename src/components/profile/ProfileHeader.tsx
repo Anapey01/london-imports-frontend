@@ -75,11 +75,11 @@ const ProfileHeader = ({ user }: { user: User }) => {
 
                     {/* User Info */}
                     <div className="flex-1 text-center sm:text-left min-w-0">
-                        <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-content-primary italic">
+                        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-content-primary italic">
                             {user.first_name} {user.last_name}
                         </h1>
                         <div className="mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-sm text-content-secondary">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${user.role === 'VENDOR'
+                            <span className={`px-2 py-1 rounded text-xs font-black uppercase tracking-widest ${user.role === 'VENDOR'
                                 ? 'bg-brand-emerald/10 text-brand-emerald'
                                 : 'bg-surface-card text-content-secondary border border-border-standard'
                                 }`}>
@@ -102,14 +102,14 @@ const ProfileHeader = ({ user }: { user: User }) => {
 
                         {showInfo && (
                             <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-sm text-content-secondary">
-                                <a href={`mailto:${user.email}`} className="flex items-center gap-1.5 hover:text-brand-emerald transition-colors">
+                                <a href={`mailto:${user.email}`} className="flex items-center gap-1.5 hover:text-brand-emerald transition-colors font-medium">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                                     </svg>
                                     {user.email}
                                 </a>
                                 {user.phone && (
-                                    <span className="flex items-center gap-1.5">
+                                    <span className="flex items-center gap-1.5 font-medium">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                                         </svg>
@@ -125,7 +125,7 @@ const ProfileHeader = ({ user }: { user: User }) => {
                         {user.role === 'VENDOR' ? (
                             <Link
                                 href="/dashboard/vendor"
-                                className="group inline-flex items-center gap-2 border-b border-content-primary pb-0.5 text-[11px] font-black uppercase tracking-widest text-content-primary hover:text-brand-emerald hover:border-brand-emerald transition-all"
+                                className="group inline-flex items-center gap-2 border-b border-content-primary pb-0.5 text-xs font-black uppercase tracking-widest text-content-primary hover:text-brand-emerald hover:border-brand-emerald transition-all"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />

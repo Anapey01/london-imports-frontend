@@ -9,15 +9,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import ThemeToggle from './ThemeToggle';
 import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
-import { useWishlistStore } from '@/stores/wishlistStore';
 import { Search, Menu, User, ShoppingBag } from 'lucide-react';
 
 // Lazy load heavy interactive components
-const SearchModal = dynamic(() => import('./SearchModal'));
+
 const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
 
 export default function Navbar() {
@@ -25,7 +23,7 @@ export default function Navbar() {
     const pathname = usePathname();
     const { isAuthenticated, user } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
-    const { isSearchModalOpen, isMobileMenuOpen, setMobileMenuOpen, setSearchModalOpen } = useUIStore();
+    const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 

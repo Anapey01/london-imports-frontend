@@ -44,7 +44,7 @@ const WalletView = () => {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Payment Methods</p>
+                    <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Payment Methods</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
                         Payment Methods
                     </h2>
@@ -52,7 +52,7 @@ const WalletView = () => {
                 {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-950 text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
                     >
                         Add Method
                     </button>
@@ -63,25 +63,25 @@ const WalletView = () => {
                 <form onSubmit={handleAddMomo} className="p-10 rounded-2xl border border-slate-900 bg-slate-900 shadow-2xl relative overflow-hidden">
                     <div className="relative z-10">
                         <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
-                            <Plus size={14} className="text-brand-emerald" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Add Mobile Money</h3>
+                            <Plus size={16} className="text-brand-emerald" />
+                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white">Add Mobile Money</h3>
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Momo Number</label>
+                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Momo Number</label>
                             <input
                                 type="tel"
                                 placeholder="024 XXX XXXX"
                                 value={phoneNumber}
                                 onChange={e => setPhoneNumber(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20"
                                 required
                             />
                         </div>
                         <div className="flex gap-4 mt-10">
-                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all shadow-xl">
+                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all shadow-xl">
                                 Save Method
                             </button>
-                            <button type="button" onClick={() => setShowForm(false)} className="px-8 text-[9px] font-black uppercase tracking-[0.4em] rounded-xl text-white/40 hover:text-white transition-all">
+                            <button type="button" onClick={() => setShowForm(false)} className="px-8 text-[11px] font-black uppercase tracking-[0.4em] rounded-xl text-white/40 hover:text-white transition-all">
                                 Cancel
                             </button>
                         </div>
@@ -98,7 +98,7 @@ const WalletView = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                         </svg>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No payment methods</p>
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">No payment methods</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
@@ -112,26 +112,26 @@ const WalletView = () => {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-3 mb-1">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Mobile Money</p>
+                                        <p className="text-xs font-black uppercase tracking-widest text-slate-900">Mobile Money</p>
                                         {method.isDefault && (
-                                            <span className="text-[7px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Primary</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Primary</span>
                                         )}
                                     </div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 tabular-nums">{maskNumber(method.number)}</p>
+                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 tabular-nums">{maskNumber(method.number)}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 sm:border-l border-slate-100 sm:pl-8">
                                 {!method.isDefault && (
                                     <button 
                                         onClick={() => setDefault(method.id)} 
-                                        className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
+                                        className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-slate-900 transition-colors"
                                     >
                                         Set as Default
                                     </button>
                                 )}
                                 <button 
                                     onClick={() => handleDelete(method.id)} 
-                                    className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-300 hover:text-rose-600 transition-colors"
+                                    className="text-[11px] font-black uppercase tracking-[0.3em] text-rose-400 hover:text-rose-600 transition-colors"
                                 >
                                     Delete
                                 </button>

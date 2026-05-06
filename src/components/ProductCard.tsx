@@ -77,8 +77,9 @@ export default function ProductCard({
             showToast(`Added ${displayName} to basket`, 'success');
             setTimeout(() => setShowSuccess(false), 2000);
             setTimeout(() => trackAddToCart(product), 0);
-        } catch (error: any) {
-            if (error.message === 'VARIANT_REQUIRED') {
+        } catch (error: unknown) {
+            const err = error as { message?: string };
+            if (err.message === 'VARIANT_REQUIRED') {
                 showToast("Please select a size or color", "warning");
                 // Redirect to product page after a short delay
                 window.location.href = `/products/${product.slug}`;

@@ -55,15 +55,18 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.login({ username, password });
-
-                    const { access, refresh } = response.data.tokens || response.data;
+                    const { access, refresh, user } = response.data.tokens || response.data;
+                    
                     if (access) {
-                        set({ accessToken: access, refreshToken: refresh });
+                        set({ 
+                            accessToken: access, 
+                            refreshToken: refresh,
+                            user: user,
+                            isAuthenticated: true
+                        });
                         // Sync with API client memory cache immediately
                         setTokens(access);
                     }
-
-                    await get().fetchUser();
                 } finally {
                     set({ isLoading: false });
                 }
@@ -114,9 +117,10 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     const response = await authAPI.me();
                     set({ user: response.data, isAuthenticated: true });
-                } catch (error: any) {
+                } catch (error: unknown) {
+                    const err = error as { response?: { status: number } };
                     // SILENT CLEANUP: If 401/403, just logout and don't throw a scary error
-                    if (error.response && (error.response.status === 401 || error.response.status === 403 || error.response.status === 400)) {
+                    if (err.response && (err.response.status === 401 || err.response.status === 403 || err.response.status === 400)) {
                         console.debug('[AuthStore] Session invalid or expired. Cleaning up.');
                         get().logout();
                         return; // Don't re-throw for expected auth failures

@@ -92,7 +92,8 @@ function VerifyEmailContent() {
                 router.push(redirect);
             }, 2000);
         } catch (err: unknown) {
-            const errorMessage = (err as any).response?.data?.error || 'Invalid or expired verification code.';
+            const errorObj = err as { response?: { data?: { error?: string } } };
+            const errorMessage = errorObj.response?.data?.error || 'Invalid or expired verification code.';
             setError(errorMessage);
             setIsLoading(false);
         }

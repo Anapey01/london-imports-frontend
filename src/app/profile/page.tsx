@@ -20,7 +20,7 @@ export default function ProfilePage() {
 
     return (
         <div className="flex items-center justify-center min-h-[400px] lg:hidden">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-50 animate-pulse">
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-content-secondary opacity-50 animate-pulse">
                 Select an option from the menu
             </p>
         </div>

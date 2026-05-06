@@ -8,7 +8,7 @@ import { getImageUrl } from '@/lib/image';
 import { ordersAPI } from '@/lib/api';
 import { useToast } from '@/components/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Package, Calendar, Clock, ChevronRight } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 const OrdersView = ({ orders }: { orders: Order[] }) => {
     const { showToast } = useToast();
@@ -33,8 +33,9 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             // Refresh would be better, but for now we'll just show the toast
             // In a real app, we'd use useQuery and invalidate the cache
             window.location.reload();
-        } catch (error: any) {
-            showToast(error.response?.data?.error || 'Failed to cancel order', 'error');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { error?: string } } };
+            showToast(err.response?.data?.error || 'Failed to cancel order', 'error');
         } finally {
             setIsCancelling(false);
         }
@@ -66,7 +67,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             {/* Manifest Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Order History</p>
+                    <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Order History</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
                         My Orders
                     </h2>
@@ -76,9 +77,9 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
-                            className={`text-[9px] font-black uppercase tracking-[0.2em] transition-all relative ${filter === status
+                            className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all relative ${filter === status
                                 ? 'text-slate-900'
-                                : 'text-slate-300 hover:text-slate-500'
+                                : 'text-slate-400 hover:text-slate-600'
                                 }`}
                         >
                             {status === 'ALL' ? 'Total' : status}
@@ -93,8 +94,8 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             <div className="grid gap-6">
                 {filteredOrders.length === 0 ? (
                     <div className="py-32 text-center border-2 border-dashed border-slate-100 rounded-3xl">
-                        <Package size={48} className="mx-auto mb-6 text-slate-100" strokeWidth={1} />
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">No orders found</p>
+                        <Package size={48} className="mx-auto mb-6 text-slate-200" strokeWidth={1} />
+                        <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-400">No orders found</p>
                     </div>
                 ) : (
                     filteredOrders.map((order: Order) => {
@@ -108,12 +109,12 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     {/* Entry ID & Date Node */}
                                     <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-10 min-w-[140px]">
                                         <div className="space-y-1">
-                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Order Number</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Number</p>
                                             <p className="text-sm font-black text-slate-900">#{order.order_number}</p>
                                         </div>
                                         <div className="space-y-1 lg:mt-6">
-                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Date Ordered</p>
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date Ordered</p>
+                                            <p className="text-xs font-bold text-slate-600 uppercase tracking-tight">
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
                                         </div>
@@ -139,14 +140,14 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <span className={`h-2 w-2 rounded-full ${statusStyles.bg} shadow-sm border border-black/5`} />
-                                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-900">
+                                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">
                                                     {order.state_display}
                                                 </span>
                                             </div>
                                             <h4 className="text-base font-black text-slate-900 truncate uppercase tracking-tight mb-2">
                                                 {order.items?.[0]?.product.name || 'Package'}
                                             </h4>
-                                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
                                                 Sovereign Logistics • {order.items?.length || 0} Items Included
                                             </p>
                                         </div>
@@ -155,15 +156,15 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     {/* Financial Valuation Node */}
                                     <div className="lg:w-48 border-y lg:border-y-0 lg:border-x border-slate-100 py-6 lg:py-0 lg:px-10 flex flex-col justify-center lg:items-end">
                                         <div className="flex items-baseline justify-between lg:justify-end gap-2 mb-2 w-full">
-                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Order Total</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Total</p>
                                             <p className="text-xl font-black text-slate-900 tabular-nums leading-none">
                                                 ₵{parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
                                         </div>
                                         {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
                                             <div className="flex items-center justify-between lg:justify-end gap-2 w-full">
-                                                <p className="text-[8px] font-black text-amber-300 uppercase tracking-widest">Balance Due</p>
-                                                <p className="text-[10px] font-black text-amber-500 tabular-nums">
+                                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Balance Due</p>
+                                                <p className="text-xs font-black text-amber-600 tabular-nums">
                                                     ₵{balanceDue.toLocaleString()}
                                                 </p>
                                             </div>
@@ -174,14 +175,14 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     <div className="lg:w-52 flex flex-col gap-3">
                                         <Link
                                             href={`/track?order=${order.order_number}`}
-                                            className="w-full py-4 border border-slate-900 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-slate-800 transition-all shadow-lg"
+                                            className="w-full py-4 border border-slate-900 bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-slate-800 transition-all shadow-lg"
                                         >
                                             Track Order
                                         </Link>
                                         {isPending && (
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="w-full py-4 border border-brand-emerald bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-brand-emerald/90 transition-all"
+                                                className="w-full py-4 border border-brand-emerald bg-brand-emerald text-white text-[11px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-brand-emerald/90 transition-all"
                                             >
                                                 Pay Now
                                             </Link>

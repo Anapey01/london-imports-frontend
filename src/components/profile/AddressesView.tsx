@@ -50,7 +50,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Saved Addresses</p>
+                    <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Saved Addresses</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
                         My Addresses
                     </h2>
@@ -58,9 +58,9 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                 {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-950 text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
                     >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-4 h-4" />
                         Add New Address
                     </button>
                 )}
@@ -71,14 +71,14 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                         <div className="flex items-center gap-4">
-                            <MapPin size={14} className="text-slate-300" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
+                            <MapPin size={16} className="text-slate-400" />
+                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-900">
                                  Primary Address
                             </h3>
                         </div>
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('switch-profile-tab', { detail: 'settings' }))}
-                            className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
+                            className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-slate-900 transition-colors"
                         >
                             Change
                         </button>
@@ -87,7 +87,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                             <div className="flex-1 space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <span className="text-[8px] font-black text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
+                                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
                                         Default Address
                                     </span>
                                 </div>
@@ -96,12 +96,12 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                         {user.address || 'Address not set'}
                                     </p>
                                     <div className="flex flex-wrap items-center gap-6">
-                                        <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                            <Navigation size={10} />
+                                        <div className="flex items-center gap-2 text-xs font-black text-slate-500 uppercase tracking-widest">
+                                            <Navigation size={12} />
                                             {user.city || 'UNDEFINED'}, {user.region || 'UNDEFINED'}
                                         </div>
                                         {user.ghana_post_gps && (
-                                            <div className="flex items-center gap-2 text-[9px] font-black text-slate-900 bg-slate-50 px-2 py-1 rounded border border-slate-200 uppercase tracking-widest tabular-nums">
+                                            <div className="flex items-center gap-2 text-xs font-black text-slate-900 bg-slate-50 px-2 py-1 rounded border border-slate-200 uppercase tracking-widest tabular-nums">
                                                 ID: {user.ghana_post_gps}
                                             </div>
                                         )}
@@ -122,8 +122,8 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                 <form onSubmit={handleSubmit} className="p-10 rounded-2xl border border-slate-900 bg-slate-900 shadow-2xl relative overflow-hidden">
                     <div className="relative z-10">
                         <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
-                            <Plus size={14} className="text-brand-emerald" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
+                            <Plus size={16} className="text-brand-emerald" />
+                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white">
                                 {editingId ? 'Edit Address' : 'Add Address'}
                             </h3>
                         </div>
@@ -136,35 +136,35 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                 { label: 'Landmark', placeholder: 'e.g. Near Hub', value: formData.landmark, key: 'landmark' },
                             ].map(field => (
                                 <div key={field.key} className="space-y-2">
-                                    <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">{field.label}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">{field.label}</label>
                                     <input 
                                         type="text" 
                                         placeholder={field.placeholder} 
                                         value={field.value} 
                                         onChange={e => setFormData({ ...formData, [field.key]: e.target.value })} 
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
                                         required={field.key !== 'landmark'} 
                                     />
                                 </div>
                             ))}
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Phone</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">Phone</label>
                                 <input 
                                     type="tel" 
                                     placeholder="+233..." 
                                     value={formData.phone} 
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })} 
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
                                     required 
                                 />
                             </div>
                         </div>
                         
                         <div className="flex gap-4 mt-10">
-                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all active:scale-[0.98]">
+                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all active:scale-[0.98]">
                                 {editingId ? 'Save' : 'Add Address'}
                             </button>
-                            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-8 text-[9px] font-black uppercase tracking-[0.4em] rounded-xl transition-all text-white/40 hover:text-white">
+                            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-8 text-[11px] font-black uppercase tracking-[0.4em] rounded-xl transition-all text-white/40 hover:text-white">
                                 Cancel
                             </button>
                         </div>
@@ -176,16 +176,16 @@ const AddressesView = ({ user }: AddressesViewProps) => {
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
-                    <Navigation size={14} className="text-slate-300" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
+                    <Navigation size={16} className="text-slate-400" />
+                    <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-900">
                         Saved Addresses
                     </h3>
                 </div>
                 
                 {addresses.length === 0 && !showForm ? (
                     <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-2xl">
-                        <Plus size={32} className="mx-auto mb-4 text-slate-100" strokeWidth={1} />
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No saved addresses</p>
+                        <Plus size={32} className="mx-auto mb-4 text-slate-200" strokeWidth={1} />
+                        <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">No saved addresses</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -197,8 +197,8 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                             <MapPin size={14} />
                                         </div>
                                         <div>
-                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-0.5">Label</p>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{address.label}</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Label</p>
+                                            <p className="text-xs font-black uppercase tracking-widest text-slate-900">{address.label}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -223,11 +223,11 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                         {address.area}, {address.city}
                                     </p>
                                     <div className="flex items-center justify-between">
-                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest tabular-nums">
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest tabular-nums">
                                             Phone: {address.phone}
                                         </p>
                                         {address.landmark && (
-                                            <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest truncate max-w-[100px]">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate max-w-[100px]">
                                                 {address.landmark}
                                             </p>
                                         )}

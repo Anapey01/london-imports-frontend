@@ -7,7 +7,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
-import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import AdminSidebar from '@/components/dashboard/AdminSidebar';
 

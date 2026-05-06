@@ -5,7 +5,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { Search, User, Trash2, Activity } from 'lucide-react';
 
@@ -22,8 +21,6 @@ interface AdminUser {
 }
 
 export default function AdminUsersPage() {
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -81,24 +78,6 @@ export default function AdminUsersPage() {
         const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
         return matchesSearch && matchesRole;
     });
-
-    const getRoleColor = (role: string) => {
-        switch (role) {
-            case 'ADMIN': return 'text-slate-950';
-            case 'VENDOR': return 'text-slate-600';
-            default: return 'text-slate-400';
-        }
-    };
-
-    const formatDate = (dateString: string) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase();
-    };
-
-    const getInitials = (firstName: string, lastName: string) => {
-        return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
-    };
 
     if (loading) {
         return (

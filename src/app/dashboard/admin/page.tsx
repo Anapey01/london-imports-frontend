@@ -10,18 +10,10 @@ import { adminAPI } from '@/lib/api';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Users,
-    Clock,
     ArrowUpRight,
-    CheckCircle2,
-    XCircle,
-    LayoutDashboard,
     Search,
-    Mail,
     ChevronRight,
     Trash2,
-    Filter,
-    AlertTriangle,
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -196,17 +188,7 @@ export default function AdminDashboardPage() {
         });
     };
 
-    const getStatusColor = (status?: string) => {
-        if (!status) return 'text-gray-600 border-gray-200 bg-gray-50';
-        switch (status) {
-            case 'COMPLETED': return 'text-emerald-600 border-emerald-500/20 bg-emerald-50';
-            case 'PENDING_PAYMENT': return 'text-amber-600 border-amber-500/20 bg-amber-50';
-            case 'PAID': return 'text-blue-600 border-blue-500/20 bg-blue-50';
-            case 'IN_TRANSIT': return 'text-purple-600 border-purple-500/20 bg-purple-50';
-            case 'CANCELLED': return 'text-red-600 border-red-500/20 bg-red-50';
-            default: return 'text-gray-600 border-gray-200 bg-gray-50';
-        }
-    };
+
 
     if (loading) {
         return (
@@ -265,16 +247,16 @@ export default function AdminDashboardPage() {
                 <div className="lg:col-span-8 bg-white p-12">
                     <div className="flex items-center justify-between mb-12">
                         <div>
-                            <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE TRENDS</h2>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Revenue over time</p>
+                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE TRENDS</h2>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Revenue over time</p>
                         </div>
                         <div className="flex bg-slate-50 p-1">
                             {['7d', '30d', '90d'].map(range => (
                                 <button
                                     key={range}
                                     onClick={() => handleRangeChange(range)}
-                                    className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest transition-all ${
-                                        chartRange === range ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                                    className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                                        chartRange === range ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                                 >
                                     {range}
@@ -305,7 +287,7 @@ export default function AdminDashboardPage() {
             <div className="bg-white border border-slate-100 p-12">
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-8 bg-slate-900" />
-                    <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FUNNEL</h2>
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FUNNEL</h2>
                 </div>
                 <OperationsFunnel 
                     isDark={isDark} 
@@ -347,11 +329,11 @@ export default function AdminDashboardPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-slate-50 bg-slate-50/30">
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Order ID</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Customer</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Date</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden md:table-cell">Status</th>
-                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Total</th>
+                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Order ID</th>
+                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Customer</th>
+                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hidden md:table-cell">Date</th>
+                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hidden md:table-cell">Status</th>
+                                <th className="px-8 py-6 text-right text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Total</th>
                                 <th className="px-8 py-6"></th>
                             </tr>
                         </thead>
@@ -359,7 +341,7 @@ export default function AdminDashboardPage() {
                             {filteredOrders.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-8 py-32 text-center">
-                                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-200">No recent orders found</p>
+                                        <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-300">No recent orders found</p>
                                     </td>
                                 </tr>
                             ) : (
@@ -367,14 +349,11 @@ export default function AdminDashboardPage() {
                                     <OrderRow 
                                         key={order.id}
                                         order={order}
-                                        isDark={isDark}
                                         isExpanded={expandedOrder === order.id}
                                         onToggle={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
                                         handleDeleteOrder={handleDeleteOrder}
                                         addAlert={addAlert}
-                                        getStatusColor={getStatusColor}
                                         isRecent={isRecent}
-                                        isToday={isToday}
                                         isStuck={isStuck(order)}
                                         showDivider={idx > 0 && isToday(filteredOrders[idx-1]?.created_at) && !isToday(order.created_at)}
                                         isFirstToday={idx === 0 && isToday(order.created_at)}
@@ -417,14 +396,11 @@ export default function AdminDashboardPage() {
 
 interface OrderRowProps {
     order: Order;
-    isDark: boolean;
     isExpanded: boolean;
     onToggle: () => void;
     handleDeleteOrder: (id: string) => void;
     addAlert: (msg: string, type?: 'success' | 'error' | 'warning') => void;
-    getStatusColor: (status?: string) => string;
     isRecent: (date: string) => boolean;
-    isToday: (date: string) => boolean;
     isStuck: boolean;
     showDivider: boolean;
     isFirstToday: boolean;
@@ -433,20 +409,16 @@ interface OrderRowProps {
 // Optimized OrderRow Component to fix INP and Contrast
 const OrderRow = React.memo(({ 
     order, 
-    isDark, 
     isExpanded,
     onToggle,
     handleDeleteOrder, 
     addAlert,
-    getStatusColor,
     isRecent,
-    isToday,
     isStuck,
     showDivider,
     isFirstToday
 }: OrderRowProps) => {
     const fresh = isRecent(order.created_at);
-    const today = isToday(order.created_at);
 
     return (
         <React.Fragment>
@@ -455,7 +427,7 @@ const OrderRow = React.memo(({
                     <td colSpan={6} className="px-8 py-4">
                         <div className="flex items-center gap-3">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900">
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">
                                 {isFirstToday ? "TODAY'S ORDERS" : 'PAST ORDERS'}
                             </span>
                         </div>
@@ -483,12 +455,12 @@ const OrderRow = React.memo(({
                 </td>
                 <td className="px-8 py-8">
                     <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
+                        <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-xs font-black text-slate-500 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
                             {order?.customer?.name?.[0] || 'U'}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[11px] font-black uppercase tracking-widest truncate">{order?.customer?.name || 'GUEST'}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate hidden sm:block">{order?.customer?.email || ''}</p>
+                            <p className="text-xs font-black uppercase tracking-widest truncate">{order?.customer?.name || 'GUEST'}</p>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter truncate hidden sm:block">{order?.customer?.email || ''}</p>
                         </div>
                     </div>
                 </td>
@@ -499,9 +471,9 @@ const OrderRow = React.memo(({
                 </td>
                 <td className="px-8 py-8 hidden md:table-cell">
                     <div className="flex items-center gap-3">
-                        <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+                        <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${
                             order?.status === 'COMPLETED' ? 'text-emerald-600' : 
-                            order?.status === 'CANCELLED' ? 'text-red-600' : 'text-slate-400'
+                            order?.status === 'CANCELLED' ? 'text-red-600' : 'text-slate-500'
                         }`}>
                             {order?.status?.replace('_', ' ')}
                         </span>
@@ -546,10 +518,10 @@ const OrderRow = React.memo(({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                                 <div className="space-y-8">
                                     <div>
-                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">CUSTOMER DETAILS</p>
+                                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 mb-6">CUSTOMER DETAILS</p>
                                         <div className="border-l-2 border-slate-900 pl-8 space-y-2">
                                             <p className="text-sm font-black uppercase tracking-widest">{order?.customer?.name}</p>
-                                            <p className="text-xs font-mono font-bold text-slate-400">{order.phone || 'No contact information'}</p>
+                                            <p className="text-xs font-mono font-bold text-slate-500">{order.phone || 'No contact information'}</p>
                                             <button 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -565,15 +537,15 @@ const OrderRow = React.memo(({
                                 </div>
                                 <div className="space-y-8">
                                     <div>
-                                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6">ORDER ITEMS</p>
+                                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 mb-6">ORDER ITEMS</p>
                                         <div className="space-y-px bg-slate-100 border border-slate-100">
                                             {order.items_summary?.map((item, i) => (
                                                 <div key={i} className="flex justify-between items-center p-4 bg-white">
                                                     <span className="flex items-center gap-4">
-                                                        <span className="text-[10px] font-black text-slate-200 tabular-nums">{item.quantity.toString().padStart(2, '0')}</span>
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">{item.name}</span>
+                                                        <span className="text-xs font-black text-slate-300 tabular-nums">{item.quantity.toString().padStart(2, '0')}</span>
+                                                        <span className="text-xs font-black uppercase tracking-widest text-slate-700">{item.name}</span>
                                                     </span>
-                                                    <span className="text-[10px] font-black tabular-nums text-slate-900">₵{item.price.toLocaleString()}</span>
+                                                    <span className="text-xs font-black tabular-nums text-slate-900">₵{item.price.toLocaleString()}</span>
                                                 </div>
                                             ))}
                                         </div>

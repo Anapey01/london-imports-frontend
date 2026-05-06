@@ -10,7 +10,7 @@ const API_BASE_URL = siteConfig.apiUrl;
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Send cookies with requests
-  timeout: 15000, // 15 seconds timeout to prevent long hangs on slow Render/Database responses
+  timeout: 30000, // 30 seconds to accommodate Render spin-up times
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,7 +35,7 @@ if (typeof window !== 'undefined') {
             const parsed = JSON.parse(authStorage);
             _accessToken = parsed.state?.accessToken;
         }
-    } catch (e) {
+    } catch {
         // Silent fail on initialization
     }
 }
@@ -82,17 +82,11 @@ api.interceptors.request.use((config) => {
 
     const isGetRequest = config.method?.toLowerCase() === 'get';
 
-    const isAuthEndpoint = config.url && (
-      config.url.startsWith('/auth/login/') || 
-      config.url.startsWith('/auth/register/') ||
-      config.url.startsWith('/auth/google/')
-    );
-
-    // We send the token if:
-    // 1. We have a token AND
-    // 2. It's NOT a public GET request (to avoid 401s on public pages if token is expired) OR
-    // 3. It's an action (POST/PUT/DELETE) - even within a public namespace like /products/ (e.g. reviews)
     // 4. BUT NEVER for auth endpoints (to avoid sending old/expired tokens during new login)
+    const isAuthEndpoint = config.url?.includes('/auth/login/') || 
+                          config.url?.includes('/auth/register/') ||
+                          config.url?.includes('/auth/google/');
+
     if (token && (!isPublicEndpoint || !isGetRequest) && !isAuthEndpoint) {
       config.headers.Authorization = `Bearer ${token}`;
       if (process.env.NODE_ENV === 'development') {
@@ -233,7 +227,7 @@ export const productsAPI = {
 };
 
 export const ordersAPI = {
-  cart: (params?: any) => 
+  cart: (params?: Record<string, unknown>) => 
     api.get('/orders/cart/', { 
       params,
       headers: {

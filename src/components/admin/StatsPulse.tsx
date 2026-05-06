@@ -2,11 +2,8 @@
 
 import { 
     Users, 
-    ShoppingBag, 
     Package, 
     BadgeDollarSign, 
-    TrendingUp, 
-    TrendingDown,
     Zap
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -79,12 +76,12 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
 
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 group-hover:text-slate-900 transition-colors">
+                            <span className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 group-hover:text-slate-900 transition-colors">
                                 Node_{idx.toString().padStart(2, '0')}
                             </span>
                             <div className="flex-1 h-px bg-slate-50 group-hover:bg-slate-200 transition-colors" />
                             {card.trend !== 0 && (
-                                <span className={`text-[9px] font-black tabular-nums ${card.trend > 0 ? 'text-emerald-500' : 'text-slate-400'}`}>
+                                <span className={`text-[11px] font-black tabular-nums ${card.trend > 0 ? 'text-emerald-500' : 'text-slate-500'}`}>
                                     {card.trend > 0 ? '+' : ''}{card.trend}%
                                 </span>
                             )}
@@ -99,12 +96,12 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
                                     {card.value}
                                 </p>
                             </div>
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-950 mt-2">
+                            <h2 className="text-xs font-black uppercase tracking-[0.4em] text-slate-900 mt-2">
                                 {card.label}
                             </h2>
                             <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-50">
                                 <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">
+                                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic">
                                     {card.subtitle}
                                 </p>
                             </div>

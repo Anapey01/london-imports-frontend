@@ -43,8 +43,9 @@ export default function AdminLoginPage() {
 
             // Success - redirect to admin dashboard
             router.push('/dashboard/admin');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Invalid credentials or network error');
+        } catch (err: unknown) {
+            const errorObj = err as { response?: { data?: { detail?: string } } };
+            setError(errorObj.response?.data?.detail || 'Invalid credentials or network error');
             setLoading(false);
         }
     };

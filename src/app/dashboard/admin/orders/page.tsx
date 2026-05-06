@@ -46,17 +46,12 @@ interface Order {
     is_installment: boolean;
     created_at: string;
     thumbnail?: string;
-    items?: Array<{
-        id: number;
-        product_name: string;
-        quantity: number;
-        price: number;
-    }>;
+    items?: Record<string, unknown>[];
 }
 
 // Unified Order interfaces moved to types.ts or defined explicitly
 
-function mapAPIOrder(order: any): Order {
+function mapAPIOrder(order: Record<string, unknown>): Order {
     if (!order) return {
         id: Math.random().toString(),
         customer: { name: 'Unknown', email: '' },
@@ -70,28 +65,31 @@ function mapAPIOrder(order: any): Order {
         created_at: new Date().toISOString()
     };
 
-    const customerObj = typeof order.customer === 'object' && order.customer !== null 
-        ? order.customer 
-        : { name: String(order.customer || 'Anonymous User'), email: '', avatar: '' };
+    const customerData = order.customer as Record<string, string> | string | undefined;
+    const customerObj = typeof customerData === 'object' && customerData !== null 
+        ? customerData 
+        : { name: String(customerData || 'Anonymous User'), email: '', avatar: '' };
+
+    const itemsSummary = (order.items_summary || order.items || []) as Record<string, unknown>[];
 
     return {
         id: String(order.id || ''),
-        order_number: order.order_number,
+        order_number: order.order_number as string,
         customer: {
             name: customerObj.name || 'Anonymous User',
             email: customerObj.email || '',
             avatar: customerObj.avatar || ''
         },
-        items_count: order.items_count || (order.items_summary?.length) || (order.items?.length) || 0,
+        items_count: (order.items_count as number) || itemsSummary.length || 0,
         total_amount: Number(order.total || 0),
-        status: order.status || 'PENDING',
-        payment_status: order.payment_status || 'PENDING',
+        status: (order.status as string) || 'PENDING',
+        payment_status: (order.payment_status as string) || 'PENDING',
         amount_paid: Number(order.amount_paid || 0),
         balance_due: Number(order.balance_due || 0),
         is_installment: !!order.is_installment,
-        created_at: order.created_at || new Date().toISOString(),
-        thumbnail: order.thumbnail || (order.items_summary?.[0]?.product?.image) || (order.items?.[0]?.product?.image),
-        items: order.items_summary || order.items || []
+        created_at: (order.created_at as string) || new Date().toISOString(),
+        thumbnail: (order.thumbnail as string) || (itemsSummary[0] as { product?: { image?: string } } | undefined)?.product?.image,
+        items: itemsSummary
     };
 }
 
@@ -149,7 +147,7 @@ export default function AdminOrdersPage() {
             const data = response.data;
             
             // Structural Immunity: Handle all response formats
-            let ordersArray: any[] = [];
+            let ordersArray: Record<string, unknown>[] = [];
             if (data) {
                 if (Array.isArray(data.results)) {
                     ordersArray = data.results;
@@ -571,6 +569,18 @@ export default function AdminOrdersPage() {
     );
 }
 
+interface OrderRowProps {
+    order: Order;
+    isDark: boolean;
+    isSelected: boolean;
+    toggleSelect: (id: string) => void;
+    getPaymentColor: (status: string) => string;
+    statusFilter: string;
+    handleQuickUpdate: (id: string, state: string, label: string) => void;
+    handleDelete: (id: string) => void;
+    getStatusColor: (status: string) => string;
+}
+
 const OrderRow = React.memo(({ 
     order, 
     isSelected, 
@@ -579,7 +589,7 @@ const OrderRow = React.memo(({
     statusFilter,
     handleQuickUpdate, 
     handleDelete 
-}: any) => {
+}: OrderRowProps) => {
     return (
         <tr className={`group transition-all duration-500 ${isSelected
                 ? 'bg-slate-50'

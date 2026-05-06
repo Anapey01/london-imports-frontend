@@ -30,12 +30,12 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
         <div className="space-y-12">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-[11px] font-black tracking-[0.4em] text-slate-950 uppercase">LOGISTICS_THROUGHPUT</h2>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2 italic">Real-time pipeline distribution</p>
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-950 uppercase">LOGISTICS_THROUGHPUT</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 italic">Real-time pipeline distribution</p>
                 </div>
                 <div className="text-right">
                     <span className="text-3xl font-serif font-bold text-slate-950 tabular-nums">{totalOrders}</span>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">ACTIVE_MANIFESTS</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">ACTIVE_MANIFESTS</p>
                 </div>
             </div>
 
@@ -49,15 +49,15 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
                             isDark ? 'bg-slate-950 hover:bg-slate-900' : 'bg-white hover:bg-slate-50'
                         }`}>
                             <div className="flex items-center justify-between mb-8">
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300">Phase_{idx.toString().padStart(2, '0')}</span>
-                                <Icon className="w-4 h-4 text-slate-300 group-hover:text-slate-900 transition-colors" strokeWidth={1.5} />
+                                <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Phase_{idx.toString().padStart(2, '0')}</span>
+                                <Icon className="w-5 h-5 text-slate-400 group-hover:text-slate-900 transition-colors" strokeWidth={1.5} />
                             </div>
 
                             <div className="space-y-4">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-950">{step.label}</p>
+                                <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-950">{step.label}</p>
                                 <div className="flex items-baseline justify-between">
                                     <p className="text-4xl font-serif font-bold text-slate-900 tracking-tighter tabular-nums">{step.count}</p>
-                                    <span className="text-[11px] font-black text-slate-400 tabular-nums italic">{Math.round(percentage)}%</span>
+                                    <span className="text-xs font-black text-slate-500 tabular-nums italic">{Math.round(percentage)}%</span>
                                 </div>
                             </div>
 
@@ -78,11 +78,11 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
             <div className="flex items-center gap-12 py-6 border-t border-slate-50">
                 <div className="flex items-center gap-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400">Sync_Status: Verified</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Sync_Status: Verified</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400">Stream: Encrypted</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Stream: Encrypted</span>
                 </div>
             </div>
         </div>

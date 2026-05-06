@@ -14,7 +14,7 @@ export default function SettingsView({ user }: { user: User }) {
     
     const [isSaving, setIsSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
-    const [errorMessage, setErrorMessage] = useState('');
+
 
     const [profileData, setProfileData] = useState({
         first_name: user?.first_name || '',
@@ -34,19 +34,16 @@ export default function SettingsView({ user }: { user: User }) {
     const handleSave = async () => {
         setIsSaving(true);
         setSaveStatus('idle');
-        setErrorMessage('');
         
         try {
             await authAPI.updateProfile(profileData);
             await fetchUser();
             setSaveStatus('success');
             setTimeout(() => setSaveStatus('idle'), 3000);
-        } catch (err: any) {
+        } catch {
             setSaveStatus('error');
-            setErrorMessage(err.response?.data?.message || err.message || 'Failed to update profile');
             setTimeout(() => {
                 setSaveStatus('idle');
-                setErrorMessage('');
             }, 4000);
         } finally {
             setIsSaving(false);
@@ -58,7 +55,7 @@ export default function SettingsView({ user }: { user: User }) {
             {/* Architectural Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Account Settings</p>
+                    <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Account Settings</p>
                     <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
                         My Profile
                     </h2>
@@ -69,8 +66,8 @@ export default function SettingsView({ user }: { user: User }) {
                         animate={{ opacity: 1, y: 0 }}
                         className="flex items-center gap-3 px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-600"
                     >
-                        <CheckCircle2 size={14} className="animate-bounce" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Profile Updated</span>
+                        <CheckCircle2 size={16} className="animate-bounce" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">Profile Updated</span>
                     </motion.div>
                 )}
             </div>
@@ -81,24 +78,24 @@ export default function SettingsView({ user }: { user: User }) {
                     <section>
                         <div className="flex items-center gap-2 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Personal Information</h3>
+                            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Personal Information</h3>
                         </div>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                             <div className="space-y-1.5">
-                                <label htmlFor="first_name" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">First Name</label>
+                                <label htmlFor="first_name" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">First Name</label>
                                 <input id="first_name" type="text" placeholder="Enter first name" value={profileData.first_name} onChange={e => setProfileData({...profileData, first_name: e.target.value})} className={inputClass} />
                             </div>
                             <div className="space-y-1.5">
-                                <label htmlFor="last_name" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Last Name</label>
+                                <label htmlFor="last_name" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Last Name</label>
                                 <input id="last_name" type="text" placeholder="Enter last name" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
                             </div>
                             <div className="space-y-1.5">
-                                <label htmlFor="email" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Email (Immutable)</label>
+                                <label htmlFor="email" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Email (Immutable)</label>
                                 <input id="email" type="email" value={user?.email} readOnly className={`${inputClass} bg-slate-50 border-transparent opacity-60 cursor-not-allowed`} placeholder="Email address" />
                             </div>
                             <div className="space-y-1.5">
-                                <label htmlFor="phone" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Phone Number</label>
+                                <label htmlFor="phone" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Phone Number</label>
                                 <input id="phone" type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className={inputClass} placeholder="Enter phone" />
                             </div>
                         </div>
@@ -107,12 +104,12 @@ export default function SettingsView({ user }: { user: User }) {
                     <section>
                         <div className="flex items-center gap-2 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Default Delivery Address</h3>
+                            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Default Delivery Address</h3>
                         </div>
                         
                         <div className="space-y-5">
                             <div className="space-y-1.5">
-                                <label htmlFor="address" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Street Address</label>
+                                <label htmlFor="address" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Street Address</label>
                                 <textarea 
                                     id="address"
                                     value={profileData.address} 
@@ -123,15 +120,15 @@ export default function SettingsView({ user }: { user: User }) {
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                 <div className="space-y-1.5">
-                                    <label htmlFor="city" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">City</label>
+                                    <label htmlFor="city" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">City</label>
                                     <input id="city" type="text" placeholder="Enter city" value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className={inputClass} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="region" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Region</label>
+                                    <label htmlFor="region" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Region</label>
                                     <input id="region" type="text" placeholder="Enter region" value={profileData.region} onChange={e => setProfileData({...profileData, region: e.target.value})} className={inputClass} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="gps" className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">Ghana Post GPS</label>
+                                    <label htmlFor="gps" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Ghana Post GPS</label>
                                     <input id="gps" type="text" value={profileData.ghana_post_gps} onChange={e => setProfileData({...profileData, ghana_post_gps: e.target.value})} className={inputClass} placeholder="GA-000-0000" />
                                 </div>
                             </div>
@@ -142,7 +139,7 @@ export default function SettingsView({ user }: { user: User }) {
                         <button 
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full sm:w-auto px-12 py-5 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-[0.98] disabled:opacity-50 shadow-2xl shadow-slate-900/10"
+                            className="w-full sm:w-auto px-12 py-5 bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-[0.98] disabled:opacity-50 shadow-2xl shadow-slate-900/10"
                         >
                             {isSaving ? 'Saving Changes...' : 'Save Changes'}
                         </button>
@@ -152,8 +149,8 @@ export default function SettingsView({ user }: { user: User }) {
                 {/* Sidebar Controls */}
                 <div className="lg:col-span-4 space-y-10">
                     <section className="bg-slate-50 border border-slate-100 rounded-2xl p-6 space-y-6">
-                        <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
-                            <span className="w-1 h-1 rounded-full bg-slate-400" />
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                             Notifications
                         </h4>
                         <div className="space-y-4">
@@ -164,12 +161,15 @@ export default function SettingsView({ user }: { user: User }) {
                             ].map(item => (
                                 <div key={item.id} className="flex items-center justify-between group">
                                     <div className="max-w-[140px]">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{item.label}</p>
-                                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">{item.desc}</p>
+                                        <p className="text-xs font-black uppercase tracking-widest text-slate-900">{item.label}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">{item.desc}</p>
                                     </div>
                                     <ToggleSwitch
-                                        enabled={(profileData as any)[item.id]}
-                                        onChange={() => setProfileData({ ...profileData, [item.id]: !(profileData as any)[item.id] })}
+                                        enabled={profileData[item.id as keyof typeof profileData] as boolean}
+                                        onChange={() => {
+                                            const key = item.id as keyof typeof profileData;
+                                            setProfileData({ ...profileData, [key]: !profileData[key] });
+                                        }}
                                     />
                                 </div>
                             ))}
@@ -177,7 +177,7 @@ export default function SettingsView({ user }: { user: User }) {
                     </section>
 
                     <section className="space-y-4">
-                        <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900 px-1">Security</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 px-1">Security</h4>
                         <Link
                             href="/reset-password"
                             className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-900 transition-all group"
@@ -186,7 +186,7 @@ export default function SettingsView({ user }: { user: User }) {
                                 <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
                                     <AlertCircle size={14} />
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">Change Password</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">Change Password</span>
                             </div>
                             <ChevronRight size={12} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
                         </Link>
@@ -194,8 +194,8 @@ export default function SettingsView({ user }: { user: User }) {
 
                     <section className="pt-6 border-t border-slate-100">
                         <button className="w-full p-4 rounded-xl border border-rose-100 bg-rose-50/30 text-rose-600 hover:bg-rose-600 hover:text-white transition-all text-center">
-                            <p className="text-[10px] font-black uppercase tracking-widest">Delete Account</p>
-                            <p className="text-[7px] font-bold uppercase tracking-widest opacity-60 mt-1">This action is permanent</p>
+                            <p className="text-xs font-black uppercase tracking-widest">Delete Account</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-1">This action is permanent</p>
                         </button>
                     </section>
                 </div>

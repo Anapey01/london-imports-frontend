@@ -30,9 +30,9 @@ const SidebarNav = ({ handleLogout }: { handleLogout: () => void }) => {
                         <Link
                             key={item.id}
                             href={item.href}
-                            className={`w-full flex items-center gap-4 px-4 py-3 text-[10px] transition-all relative rounded-xl border border-transparent ${active
+                            className={`w-full flex items-center gap-4 px-4 py-3 text-xs transition-all relative rounded-xl border border-transparent ${active
                                 ? 'text-slate-900 bg-slate-50 font-black uppercase tracking-[0.3em] border-slate-100 shadow-sm'
-                                : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50/50 uppercase tracking-[0.2em] font-bold'
+                                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50/50 uppercase tracking-[0.2em] font-bold'
                                 }`}
                         >
                             <svg className={`w-4 h-4 shrink-0 transition-colors ${active ? 'text-slate-900' : 'text-slate-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={active ? 2 : 1.5}>
@@ -51,7 +51,7 @@ const SidebarNav = ({ handleLogout }: { handleLogout: () => void }) => {
  
             <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-4 px-4 py-3 text-[10px] transition-all text-rose-300 hover:text-rose-600 font-black uppercase tracking-[0.3em] group"
+                className="w-full flex items-center gap-4 px-4 py-3 text-[11px] transition-all text-rose-400 hover:text-rose-600 font-black uppercase tracking-[0.3em] group"
             >
                 <svg className="w-4 h-4 shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />

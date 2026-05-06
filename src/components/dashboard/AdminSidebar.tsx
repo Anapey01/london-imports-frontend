@@ -94,18 +94,18 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                             <div className="w-8 h-8 rounded-none border border-slate-900 flex items-center justify-center">
                                 <ShieldCheck className="w-4 h-4 text-slate-900" strokeWidth={1.5} />
                             </div>
-                            <span className="text-[10px] font-black tracking-[0.4em] text-slate-900 uppercase">Menu</span>
+                            <span className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">Menu</span>
                         </div>
                         <button onClick={onClose} className="md:hidden">
-                            <X className="w-4 h-4 text-slate-300" />
+                            <X className="w-5 h-5 text-slate-400" />
                         </button>
                     </div>
                     
                     <div className="space-y-1">
-                        <h2 className="text-[11px] font-black tracking-widest text-slate-900 uppercase">Administrator</h2>
+                        <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">Administrator</h2>
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Secure Session</span>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Secure Session</span>
                         </div>
                     </div>
                 </div>
@@ -127,9 +127,9 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                             >
                                 <div className="flex items-center gap-4">
                                     <link.icon className={`w-4 h-4 transition-colors ${
-                                        isActive ? 'text-emerald-400' : 'text-slate-300 group-hover:text-slate-900'
+                                        isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-900'
                                     }`} strokeWidth={isActive ? 2 : 1.5} />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{link.name}</span>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">{link.name}</span>
                                 </div>
                                 {isActive && (
                                     <motion.div 
@@ -149,14 +149,14 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                         className="flex items-center justify-between px-4 py-4 w-full transition-all group hover:bg-red-50"
                     >
                         <div className="flex items-center gap-4">
-                            <LogOut className="w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" strokeWidth={1.5} />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-red-600 transition-colors">Log Out</span>
+                            <LogOut className="w-4 h-4 text-slate-400 group-hover:text-red-500 transition-colors" strokeWidth={1.5} />
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-red-600 transition-colors">Log Out</span>
                         </div>
                     </button>
                     
-                    <div className="mt-6 pt-6 border-t border-slate-50 opacity-20">
-                        <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-950">London&apos;s Imports Hub</p>
-                        <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mt-1">Operational Environment v2.4</p>
+                    <div className="mt-6 pt-6 border-t border-slate-50 opacity-40">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-950">London&apos;s Imports Hub</p>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Operational Environment v2.4</p>
                     </div>
                 </div>
             </aside>

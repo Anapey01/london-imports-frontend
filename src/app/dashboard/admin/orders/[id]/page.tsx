@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, use } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
@@ -242,7 +242,7 @@ export default function AdminOrderDetailPage() {
     });
 
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
-    const [customerOrders, setCustomerOrders] = useState<any[]>([]);
+    const [customerOrders, setCustomerOrders] = useState<OrderDetail[]>([]);
     const [transferData, setTransferData] = useState({
         target_order_id: '',
         amount: 0,
@@ -352,8 +352,9 @@ export default function AdminOrderDetailPage() {
             addAlert('Ledger adjustment complete');
             setIsTransferModalOpen(false);
             await loadOrder();
-        } catch (error: any) {
-            addAlert(error.response?.data?.error || 'Adjustment failed', 'error');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { error?: string } } };
+            addAlert(err.response?.data?.error || 'Adjustment failed', 'error');
         } finally {
             setUpdating(false);
         }
@@ -368,7 +369,7 @@ export default function AdminOrderDetailPage() {
         });
         try {
             const response = await adminAPI.orders({ search: order?.email });
-            setCustomerOrders(response.data.filter((o: any) => o.id !== orderId && o.status !== 'CANCELLED'));
+            setCustomerOrders(response.data.filter((o: OrderDetail) => o.id !== orderId && o.status !== 'CANCELLED'));
         } catch (error) {
             console.error('Failed to load records:', error);
         }
