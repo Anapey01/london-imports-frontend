@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { User } from '@/types';
-import { ShieldCheck, LayoutDashboard, Mail, Phone, Camera, ArrowUpRight, Calendar } from 'lucide-react';
+import { ShieldCheck, LayoutDashboard, Mail, Camera, ArrowUpRight, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ProfileHeader = ({ user }: { user: User }) => {
