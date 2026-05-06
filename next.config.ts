@@ -45,7 +45,9 @@ const withPWA = withPWAInit({
           url.origin === 'https://london-imports-api.onrender.com' && 
           url.pathname.startsWith('/api/v1/') &&
           request.method === 'GET' &&
-          !url.pathname.includes('/auth/'),
+          !url.pathname.includes('/auth/') && 
+          !url.pathname.includes('/orders/') && 
+          !url.pathname.includes('/cart/'),
         handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'api-data-swr',
