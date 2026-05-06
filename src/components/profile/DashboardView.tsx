@@ -159,7 +159,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
                     </div>
 
                     {/* Architectural Action Terminal */}
-                    {!user.date_of_birth && (
+                    {(!user?.date_of_birth) && user?.role === 'CUSTOMER' && (
                         <div className="bg-slate-900 rounded-2xl p-8 relative overflow-hidden group shadow-2xl">
                             <div className="relative z-10">
                                 <div className="flex items-center gap-3 mb-6">
