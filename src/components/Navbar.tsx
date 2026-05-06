@@ -51,7 +51,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-white/95 backdrop-blur-xl border-slate-100 dark:border-slate-800' : 'bg-white border-transparent'}`}>
+            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-slate-100 dark:border-slate-800' : 'bg-white dark:bg-slate-950 border-transparent'}`}>
                 <div className="max-w-[1800px] mx-auto px-4 md:px-12">
                     {/* Tier 1: Logo & Actions */}
                     <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">
@@ -96,7 +96,7 @@ export default function Navbar() {
                                         router.push(`/products?search=${encodeURIComponent(query.trim())}`);
                                     }
                                 }}
-                                className="relative flex items-center w-full bg-slate-50 dark:bg-white/5 border border-border-standard rounded-full px-8 py-2.5 focus-within:border-content-primary focus-within:bg-white transition-all group"
+                                className="relative flex items-center w-full bg-slate-50 dark:bg-slate-900 border border-border-standard dark:border-slate-800 rounded-full px-8 py-2.5 focus-within:border-content-primary dark:focus-within:border-white focus-within:bg-white dark:focus-within:bg-slate-800 transition-all group"
                             >
                                 <Search className="w-4 h-4 text-content-secondary mr-4 opacity-50" strokeWidth={1.5} />
                                 <input
@@ -156,7 +156,7 @@ export default function Navbar() {
                                     router.push(`/products?search=${encodeURIComponent(query.trim())}`);
                                 }
                             }}
-                            className="relative flex items-center bg-slate-50 border border-border-standard rounded-full px-5 py-1.5 focus-within:border-content-primary transition-all"
+                            className="relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard dark:border-slate-800 rounded-full px-5 py-1.5 focus-within:border-content-primary dark:focus-within:border-white transition-all"
                         >
                             <Search className="w-4 h-4 text-content-secondary mr-3 opacity-50" strokeWidth={1.5} />
                             <input
