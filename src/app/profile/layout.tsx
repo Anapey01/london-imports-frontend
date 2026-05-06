@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import SidebarNav from '@/components/profile/SidebarNav';
+import ProfileHeader from '@/components/profile/ProfileHeader';
 
 export default function ProfileLayout({
     children,
@@ -73,59 +74,7 @@ export default function ProfileLayout({
 
     return (
         <div className="min-h-screen pb-20 bg-white font-sans text-slate-900 overflow-x-hidden">
-            {/* Architectural Header Bridge */}
-            <div className="w-full bg-white border-b border-slate-100/80 pt-20 md:pt-24 relative overflow-hidden">
-                <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
-                    <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
-                        {/* Identity Node */}
-                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-                            <div className="relative group">
-                                <div className="h-24 w-24 rounded-full border border-slate-200 p-1 bg-white shadow-sm transition-transform duration-500 group-hover:rotate-6">
-                                    <div className="w-full h-full rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 overflow-hidden">
-                                        <span className="text-3xl font-serif font-black text-slate-300">
-                                            {user.first_name?.[0] || user.username?.[0]}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="absolute -bottom-1 -right-1 h-8 w-8 bg-brand-emerald text-white rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                                    <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                                </div>
-                            </div>
-                            
-                            <div className="text-center sm:text-left pt-2">
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Customer Profile</p>
-                                <h1 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none mb-3">
-                                    {user.first_name} {user.last_name}
-                                </h1>
-                                <div className="flex items-center justify-center sm:justify-start gap-4">
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{user.email}</span>
-                                    <span className="w-1 h-1 rounded-full bg-slate-200" />
-                                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Verified Member</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Operational Metrics (Architectural Grid) */}
-                        <div className="hidden md:flex items-stretch border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
-                            <div className="px-8 py-6 border-r border-slate-100">
-                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2">Member Since</p>
-                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">
-                                    {user.date_joined ? new Date(user.date_joined).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Pending'}
-                                </p>
-                            </div>
-                            <div className="px-8 py-6 bg-slate-50/50">
-                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2">Member ID</p>
-                                <p className="text-sm font-black text-slate-800 tabular-nums">
-                                    #{user.id?.toString().slice(-4).toUpperCase() || 'STND'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Decorative Grid Pattern */}
-                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.4] pointer-events-none" />
-            </div>
+            <ProfileHeader user={user} />
 
             <div className="max-w-6xl mx-auto px-6 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
