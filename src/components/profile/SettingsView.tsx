@@ -27,6 +27,7 @@ export default function SettingsView({ user }: { user: User }) {
         email_notifications: user?.email_notifications ?? true,
         sms_notifications: user?.sms_notifications ?? true,
         whatsapp_notifications: user?.whatsapp_notifications ?? false,
+        date_of_birth: user?.date_of_birth || '',
     });
 
     const inputClass = "w-full px-4 py-2.5 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-white border-slate-200 text-slate-900 focus:border-brand-emerald focus:ring-4 focus:ring-emerald-500/5 placeholder:text-slate-300";
@@ -97,6 +98,10 @@ export default function SettingsView({ user }: { user: User }) {
                             <div className="space-y-1.5">
                                 <label htmlFor="phone" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Phone Number</label>
                                 <input id="phone" type="tel" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className={inputClass} placeholder="Enter phone" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label htmlFor="date_of_birth" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Date of Birth</label>
+                                <input id="date_of_birth" type="date" value={profileData.date_of_birth} onChange={e => setProfileData({...profileData, date_of_birth: e.target.value})} className={inputClass} />
                             </div>
                         </div>
                     </section>
