@@ -16,6 +16,7 @@ export interface User {
     sms_notifications?: boolean;
     whatsapp_notifications?: boolean;
     date_of_birth?: string;
+    id?: string | number;
 }
 
 export interface Category {
