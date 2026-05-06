@@ -267,8 +267,11 @@ function CheckoutPage() {
             .reduce((sum: number, i: CartItem | OrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
             
         // CRITICAL: Coerce all values to Numbers to prevent string concatenation ("860" + "0" = "8600")
-        // CRITICAL: Always prioritize the calculated subtotal from visible items to prevent server-side ghost price jumps
-        const subtotal = Number(selSubtotal || checkoutOrder?.subtotal || currentOrderData.subtotal || 0);
+        // CRITICAL: Trust the frontend's calculated subtotal (60) over the server's total (120) for fresh orders.
+        // The server total is only trusted when resuming an existing order (orderNumberParam).
+        const subtotal = (checkoutOrder || orderNumberParam) 
+            ? Number(checkoutOrder?.subtotal || currentOrderData.subtotal || 0)
+            : selSubtotal;
         const delivery = Number(checkoutOrder?.delivery_fee || currentOrderData.delivery_fee || 0);
         const totalValue = subtotal + delivery;
         

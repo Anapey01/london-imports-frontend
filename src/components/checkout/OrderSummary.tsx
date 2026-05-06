@@ -35,7 +35,10 @@ const OrderSummary = ({
     activeStep
 }: OrderSummaryProps) => {
     const subtotalValue = checkoutOrder || orderNumberParam ? Number(currentOrderData.subtotal || 0) : (currentOrderData.items || [])
-        .filter((i: CartItem | OrderItem) => selectedItemIds.includes(i.id))
+        .filter((i: CartItem | OrderItem) => {
+            if (selectedItemIds.length === 0) return true; // DEFAULT TO ALL
+            return selectedItemIds.includes(i.id);
+        })
         .reduce((sum: number, i: CartItem | OrderItem) => sum + (Number(i.unit_price || 0) * i.quantity), 0);
 
     const deliveryValue = Number(currentOrderData.delivery_fee || 0);
