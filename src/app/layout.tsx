@@ -2,18 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { Source_Serif_4, Montserrat } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import Providers from "@/providers/Providers";
 import PWAUpdater from "@/components/PWAUpdater";
-import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/config/site";
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
 import { Suspense } from "react";
-import { GA_MEASUREMENT_ID } from '@/lib/analytics';
 import SkipToContent from "@/components/SkipToContent";
-import { GoogleAnalytics as GoogleAnalyticsTag } from '@next/third-parties/google';
 import { 
   OrganizationSchema, 
   WebsiteSchema, 
@@ -23,15 +19,7 @@ import {
 import { NavbarWrapper, FooterWrapper, MobileBottomNavWrapper } from "@/components/layout/LayoutWrappers";
 
 
-// Lazy load below-the-fold components to reduce initial bundle
-const Footer = dynamic(() => import("@/components/Footer"), {
-  loading: () => <div className="h-64 bg-primary-surface dark:bg-slate-950 animate-pulse" />,
-});
-const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"));
-
-
-
-
+// Configuration constants for the Source Serif font family
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   display: "swap",

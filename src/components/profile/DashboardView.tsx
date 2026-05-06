@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { ShoppingBag, Clock, CheckCircle, TrendingUp, Calendar, Package, ChevronRight, Gift, ArrowRight } from 'lucide-react';
-import { Order } from '@/types';
+import { ShoppingBag, Clock, CheckCircle, TrendingUp, Package, ChevronRight, Gift } from 'lucide-react';
+import { Order, User } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { getTimeAgo } from '@/lib/date';
 
-const DashboardView = ({ orders, user }: { orders: Order[]; user: any }) => {
+const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
     const totalSpent = orders.reduce((acc: number, o: Order) => acc + parseFloat(o.total?.toString() || '0'), 0);
     const pendingCount = orders.filter((o: Order) => o.state === 'PENDING_PAYMENT').length;
     const completedCount = orders.filter((o: Order) => ['PAID', 'DELIVERED'].includes(o.state)).length;
