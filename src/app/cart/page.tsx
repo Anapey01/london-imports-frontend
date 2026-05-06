@@ -38,8 +38,9 @@ export default function CartPage() {
     const accessToken = useAuthStore((state) => state.accessToken);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const hasToken = !!accessToken;
-    // If authenticated and have a cart, show it. Otherwise fallback to guest items (especially during merge/sync)
-    const items = (isAuthenticated && hasToken && cart) ? (cart.items || []) : guestItems;
+    
+    // MINIMAL FIX: Ensure we use the server cart items when authenticated, otherwise guest items.
+    const items = (isAuthenticated && hasToken) ? (cart?.items || []) : guestItems;
 
     // Derived totals
     const subtotal = items.reduce((sum, i) => sum + Number(i.unit_price || 0) * i.quantity, 0);
