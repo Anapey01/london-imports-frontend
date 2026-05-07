@@ -107,6 +107,7 @@ export default function AdminOrdersPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [apiCounts, setApiCounts] = useState<Record<string, number> | null>(null);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -149,6 +150,10 @@ export default function AdminOrdersPage() {
             // Structural Immunity: Handle all response formats
             let ordersArray: Record<string, unknown>[] = [];
             if (data) {
+                if (data.counts) {
+                    setApiCounts(data.counts);
+                }
+                
                 if (Array.isArray(data.results)) {
                     ordersArray = data.results;
                     setTotalCount(data.count || data.results.length);
@@ -324,18 +329,22 @@ export default function AdminOrdersPage() {
         });
     };
 
-    const statusCounts = useMemo(() => ({
-        All: orders.length,
-        PENDING_PAYMENT: orders.filter(o => o.payment_status !== 'PAID' && (o.status === 'PENDING_PAYMENT' || o.balance_due > 0)).length,
-        PAID: orders.filter(o => o.status === 'PAID' || o.status === 'PROCESSING').length,
-        OPEN_FOR_BATCH: orders.filter(o => o.status === 'OPEN_FOR_BATCH').length,
-        IN_FULFILLMENT: orders.filter(o => o.status === 'IN_FULFILLMENT').length,
-        IN_TRANSIT: orders.filter(o => o.status === 'IN_TRANSIT').length,
-        ARRIVED: orders.filter(o => o.status === 'ARRIVED').length,
-        OUT_FOR_DELIVERY: orders.filter(o => o.status === 'OUT_FOR_DELIVERY').length,
-        DELIVERED: orders.filter(o => o.status === 'DELIVERED').length,
-        CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
-    }), [orders]);
+    const statusCounts = useMemo(() => {
+        if (apiCounts) return apiCounts;
+        
+        return {
+            All: orders.length,
+            PENDING_PAYMENT: orders.filter(o => o.payment_status !== 'PAID' && (o.status === 'PENDING_PAYMENT' || o.balance_due > 0)).length,
+            PAID: orders.filter(o => o.status === 'PAID' || o.status === 'PROCESSING').length,
+            OPEN_FOR_BATCH: orders.filter(o => o.status === 'OPEN_FOR_BATCH').length,
+            IN_FULFILLMENT: orders.filter(o => o.status === 'IN_FULFILLMENT').length,
+            IN_TRANSIT: orders.filter(o => o.status === 'IN_TRANSIT').length,
+            ARRIVED: orders.filter(o => o.status === 'ARRIVED').length,
+            OUT_FOR_DELIVERY: orders.filter(o => o.status === 'OUT_FOR_DELIVERY').length,
+            DELIVERED: orders.filter(o => o.status === 'DELIVERED').length,
+            CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
+        };
+    }, [orders, apiCounts]);
 
     if (loading) {
         return (
@@ -662,27 +671,27 @@ const OrderRow = React.memo(({
             </td>
             <td className="px-8 py-8 text-right">
                 <div className="flex justify-end items-center gap-6">
-                    <div className="hidden group-hover:flex items-center gap-4 transition-all animate-in fade-in slide-in-from-right-2">
+                    <div className="flex items-center gap-2 sm:gap-4 transition-all">
                         {order.status === 'PAID' && (
                             <button 
                                 onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
-                                className="text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
                             >
-                                SHIP ORDER
+                                SHIP
                             </button>
                         )}
-                        <button
-                            onClick={() => handleDelete(order.id)}
-                            className="p-2 text-slate-300 hover:text-red-600 transition-colors"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
                         <Link
                             href={`/dashboard/admin/orders/${order.id}`}
-                            className="p-2 text-slate-300 hover:text-slate-900 transition-colors"
+                            className="p-2 text-slate-400 hover:text-slate-900 transition-colors"
                         >
                             <Eye className="w-4 h-4" />
                         </Link>
+                        <button
+                            onClick={() => handleDelete(order.id)}
+                            className="p-2 text-slate-200 hover:text-red-600 transition-colors"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </td>
