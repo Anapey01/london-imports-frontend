@@ -247,3 +247,38 @@ export function BreadcrumbSchema() {
     />
   );
 }
+
+/**
+ * ACCESSIBILITY SEO: Tells Search Engines (Google/Bing) that the site is fully accessible.
+ * This can boost ranking as accessibility is a high-quality signal for modern algorithms.
+ */
+export function AccessibilitySchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "accessibilityFeature": [
+      "alternativeText",
+      "ariaLabels",
+      "colorContrast",
+      "displayTransformability",
+      "readingOrder",
+      "structuralNavigation",
+      "unlocked"
+    ],
+    "accessibilityControl": [
+      "fullKeyboardControl",
+      "fullMouseControl",
+      "fullTouchControl"
+    ],
+    "accessibilityHazard": "none",
+    "accessibilitySummary": "London's Imports is committed to providing a digitally accessible shopping experience for all shoppers in Ghana. Our platform features high-contrast visuals, screen-reader optimized product descriptions, full keyboard navigation, and aria-compliant interactive elements."
+  };
+
+  return (
+    <script
+      id="accessibility-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}

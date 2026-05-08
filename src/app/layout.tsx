@@ -14,7 +14,8 @@ import {
   OrganizationSchema, 
   WebsiteSchema, 
   FaqSchema, 
-  BreadcrumbSchema 
+  BreadcrumbSchema,
+  AccessibilitySchema
 } from "@/components/seo/JsonLd";
 import { NavbarWrapper, FooterWrapper, MobileBottomNavWrapper } from "@/components/layout/LayoutWrappers";
 
@@ -130,7 +131,8 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href={new URL(siteConfig.apiUrl).origin} />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        
+        <SkipToContent />
+        <AccessibilitySchema />
         <OrganizationSchema />
         <WebsiteSchema />
         <FaqSchema />
