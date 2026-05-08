@@ -290,6 +290,14 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     // Track last tracked product to prevent duplicate GA4 events
     const lastTrackedSlug = useRef<string | null>(null);
 
+    // AUTO-OPEN REVIEW MODAL LOGIC
+    const [autoOpenReview, setAutoOpenReview] = useState(false);
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.hash === '#review') {
+            setAutoOpenReview(true);
+        }
+    }, []);
+
     // Reset selection when product changes
     useEffect(() => {
         setSelectedSize('');
@@ -948,6 +956,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 rating={Number(effectiveRating)}
                 ratingCount={Number(effectiveCount)}
                 onReviewAdded={refreshProductData}
+                autoOpen={autoOpenReview}
             />
 
             {/* Recently Viewed Section (Lazy Loaded) */}

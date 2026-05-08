@@ -29,6 +29,7 @@ interface ProductReviewsProps {
     rating: number;
     ratingCount: number;
     onReviewAdded?: () => void;
+    autoOpen?: boolean;
 }
 
 export default function ProductReviews({ 
@@ -36,14 +37,29 @@ export default function ProductReviews({
     initialReviews, 
     rating, 
     ratingCount,
-    onReviewAdded 
+    onReviewAdded,
+    autoOpen = false
 }: ProductReviewsProps) {
     const { isAuthenticated } = useAuthStore();
     const { showToast } = useToast();
     const [reviews, setReviews] = useState<Review[]>(initialReviews);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showForm, setShowForm] = useState(false);
+    const [showForm, setShowForm] = useState(autoOpen);
     const [showDetails, setShowDetails] = useState(false);
+    
+    // Auto-open form if requested via prop
+    useEffect(() => {
+        if (autoOpen) {
+            setShowForm(true);
+            // Smooth scroll to form area
+            setTimeout(() => {
+                const reviewsSection = document.getElementById('reviews');
+                if (reviewsSection) {
+                    reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+    }, [autoOpen]);
     
     // Form state with draft persistence
     const [newRating, setNewRating] = useState(5);
