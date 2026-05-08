@@ -135,7 +135,6 @@ export default async function RootLayout({
         <AccessibilitySchema />
         <OrganizationSchema />
         <WebsiteSchema />
-        <FaqSchema />
         <BreadcrumbSchema />
 
         {/* Initialize Google Consent Mode - Default State */}

@@ -74,6 +74,11 @@ export default function HomePage() {
 
       {/* 5. Deep Keyword SEO Accordion (Crawler Data Archive) */}
       <SEOAccordion />
+      
+      {/* Search Engine Optimization: Structured Data */}
+      <FaqSchema />
     </div>
   );
 }
+
+import { FaqSchema } from '@/components/seo/JsonLd';
