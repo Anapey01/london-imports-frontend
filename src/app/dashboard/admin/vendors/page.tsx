@@ -86,7 +86,7 @@ export default function AdminVendorsPage() {
     const handleVerify = (vendor: Vendor) => {
         setConfirmModal({
             isOpen: true,
-            title: 'PROTOCOL_AUTHORIZATION',
+            title: 'AUTHORIZE PARTNER',
             message: `Authorize ${vendor.business_name} for active marketplace participation?`,
             variant: 'warning',
             onConfirm: async () => {
@@ -114,8 +114,8 @@ export default function AdminVendorsPage() {
         const isVerified = vendor.status === 'VERIFIED';
         setConfirmModal({
             isOpen: true,
-            title: isVerified ? 'PROTOCOL_SUSPENSION' : 'MANIFEST_REJECTION',
-            message: `Execute ${isVerified ? 'suspension' : 'rejection'} protocol for ${vendor.business_name}?`,
+            title: isVerified ? 'SUSPEND ACCOUNT' : 'REJECT APPLICATION',
+            message: `Execute ${isVerified ? 'suspension' : 'rejection'} for ${vendor.business_name}?`,
             variant: 'danger',
             onConfirm: async () => {
                 setActionLoading(true);
@@ -130,7 +130,7 @@ export default function AdminVendorsPage() {
                     addAlert(`${vendor.business_name} ${isVerified ? 'suspended' : 'rejected'} successfully`);
                 } catch (err) {
                     console.error('Failed to reject vendor:', err);
-                    addAlert('Failed to execute protocol', 'error');
+                    addAlert('Action failed', 'error');
                 } finally {
                     setActionLoading(false);
                 }
@@ -176,12 +176,12 @@ export default function AdminVendorsPage() {
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{vendors.length} ENTITIES_ENROLLED</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{vendors.length} PARTNERS ENROLLED</span>
                         </div>
                         {pendingCount > 0 && (
                             <>
                                 <span className="h-4 w-px bg-slate-200" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600 animate-pulse">{pendingCount} PENDING_AUTHORIZATION</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600 animate-pulse">{pendingCount} WAITING FOR REVIEW</span>
                             </>
                         )}
                     </div>
@@ -225,9 +225,9 @@ export default function AdminVendorsPage() {
 
                 <div className="flex gap-4 border-l border-slate-100 pl-4">
                     {[
-                        { key: 'ALL', label: 'ALL_TYPES' },
-                        { key: 'MARKETPLACE', label: 'MARKET_SELLERS' },
-                        { key: 'STANDALONE', label: 'STRATEGIC_PARTNERS' },
+                        { key: 'ALL', label: 'ALL PARTNERS' },
+                        { key: 'MARKETPLACE', label: 'MARKETPLACE VENDORS' },
+                        { key: 'STANDALONE', label: 'OFFICIAL PARTNERS' },
                     ].map((filter) => (
                         <button
                             key={filter.key}
@@ -249,11 +249,11 @@ export default function AdminVendorsPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Entity_Manifest</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Authority_Node</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Temporal_Mark</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Protocol_Status</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Location_Origin</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Partner Name</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Contact Person</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Enrolled Date</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
+                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Location</th>
                                 <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
                             </tr>
                         </thead>
@@ -272,7 +272,7 @@ export default function AdminVendorsPage() {
                 {filteredVendors.length === 0 && (
                     <div className="py-32 text-center">
                         <Building2 className="w-12 h-12 mx-auto mb-6 text-slate-100" strokeWidth={1} />
-                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">Vendor Database Null</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-300">No Partners Found</p>
                     </div>
                 )}
             </div>
@@ -284,7 +284,7 @@ export default function AdminVendorsPage() {
                         <div className="flex justify-between items-start">
                             <div className="space-y-4">
                                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 bg-slate-50 px-3 py-1">
-                                    {selectedVendor.vendor_type === 'STANDALONE' ? 'STRATEGIC_PARTNER_ENROLLMENT' : 'MARKET_SELLER_ENTRY'}
+                                    {selectedVendor.vendor_type === 'STANDALONE' ? 'OFFICIAL PARTNER PROFILE' : 'MARKETPLACE VENDOR PROFILE'}
                                 </span>
                                 <h3 className="text-3xl font-serif font-bold text-slate-950 tracking-tighter">{selectedVendor.business_name}</h3>
                             </div>
@@ -296,43 +296,43 @@ export default function AdminVendorsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <div className="space-y-8">
                                 <div className="space-y-2">
-                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Owner_Identity</p>
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Owner Name</p>
                                     <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.owner_name}</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Comm_Link</p>
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Contact Info</p>
                                     <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.business_email}</p>
                                     <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.business_phone}</p>
                                 </div>
                             </div>
                             <div className="space-y-8">
                                 <div className="space-y-2">
-                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Geographic_Node</p>
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Business Location</p>
                                     <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.city}, {selectedVendor.region}</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Operational_History</p>
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.total_orders} TRANSACTIONS_PROCESSED</p>
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.fulfillment_rate}% FULFILLMENT_ACCURACY</p>
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Performance Summary</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.total_orders} TOTAL ORDERS</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{selectedVendor.fulfillment_rate}% SUCCESS RATE</p>
                                 </div>
                             </div>
                         </div>
 
                         {selectedVendor.vendor_type === 'STANDALONE' && selectedVendor.documents && (
                             <div className="border-t border-slate-100 pt-12 space-y-6">
-                                <h4 className="text-[10px] font-black text-slate-950 uppercase tracking-[0.4em]">VERIFICATION_MANIFEST</h4>
+                                <h4 className="text-[10px] font-black text-slate-950 uppercase tracking-[0.4em]">Document Verification</h4>
                                 <div className="grid grid-cols-1 gap-px bg-slate-100 border border-slate-100">
                                     {[
-                                        { label: 'GHANA_CARD_ID', value: selectedVendor.documents.ghana_card },
-                                        { label: 'BUSINESS_CERTIFICATE', value: selectedVendor.documents.business_cert },
-                                        { label: 'PAYSTACK_GATEWAY_INTEGRATION', value: selectedVendor.documents.has_paystack, isBool: true }
+                                        { label: 'NATIONAL ID (GHANA CARD)', value: selectedVendor.documents.ghana_card },
+                                        { label: 'REGISTRATION CERTIFICATE', value: selectedVendor.documents.business_cert },
+                                        { label: 'PAYMENT SETUP (PAYSTACK)', value: selectedVendor.documents.has_paystack, isBool: true }
                                     ].map((doc, idx) => (
                                         <div key={idx} className="flex items-center justify-between p-6 bg-white">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{doc.label}</span>
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-1.5 h-1.5 rounded-full ${(doc.isBool ? doc.value : !!doc.value) ? 'bg-emerald-500' : 'bg-slate-200'}`} />
                                                 <span className="text-[10px] font-black uppercase tracking-widest">
-                                                    {(doc.isBool ? doc.value : !!doc.value) ? 'VERIFIED' : 'PENDING_INPUT'}
+                                                    {(doc.isBool ? doc.value : !!doc.value) ? 'VERIFIED' : 'WAITING FOR DOCS'}
                                                 </span>
                                             </div>
                                         </div>
@@ -349,14 +349,14 @@ export default function AdminVendorsPage() {
                                         disabled={actionLoading}
                                         className="flex-1 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-emerald-600 transition-all disabled:opacity-50"
                                     >
-                                        {actionLoading ? 'EXECUTING...' : 'AUTHORIZE_ENTITY'}
+                                        {actionLoading ? 'PROCESSING...' : 'AUTHORIZE PARTNER'}
                                     </button>
                                     <button
                                         onClick={() => handleReject(selectedVendor)}
                                         disabled={actionLoading}
                                         className="flex-1 py-4 bg-white border border-slate-950 text-slate-950 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50"
                                     >
-                                        REJECT_MANIFEST
+                                        REJECT APPLICATION
                                     </button>
                                 </>
                             ) : (
@@ -369,7 +369,7 @@ export default function AdminVendorsPage() {
                                         : 'bg-slate-950 text-white hover:bg-emerald-600'
                                     }`}
                                 >
-                                    {selectedVendor.status === 'VERIFIED' ? 'EXECUTE_SUSPENSION' : 'RESTORE_AUTHORITY'}
+                                    {selectedVendor.status === 'VERIFIED' ? 'SUSPEND PARTNER' : 'RESTORE PARTNER'}
                                 </button>
                             )}
                         </div>
@@ -438,7 +438,7 @@ const VendorRow = React.memo(({
                         vendor.status === 'VERIFIED' ? 'text-slate-950' : 
                         vendor.status === 'PENDING' ? 'text-amber-600' : 'text-red-600'
                     }`}>
-                        {vendor.status}_PROTOCOL
+                        {vendor.status}
                     </span>
                 </div>
             </td>
@@ -447,7 +447,7 @@ const VendorRow = React.memo(({
             </td>
             <td className="px-8 py-8 text-right">
                 <div className="flex justify-end items-center opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 border-b border-slate-950 pb-1">VIEW_ENTRY</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 border-b border-slate-950 pb-1">VIEW PROFILE</span>
                 </div>
             </td>
         </tr>

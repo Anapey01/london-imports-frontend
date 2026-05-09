@@ -16,54 +16,54 @@ export default function TutorialsPage() {
     const tutorials = {
         products: [
             {
-                title: 'ASSET_REGISTRATION_PROTOCOL',
+                title: 'PRODUCT REGISTRATION',
                 steps: [
-                    'NAVIGATE_TO_INVENTORY_MANIFEST_NODE.',
-                    'EXECUTE_REGISTER_NEW_ENTRY_COMMAND.',
-                    'POPULATE_METADATA: IDENTITY, VALUATION, DESCRIPTION.',
-                    'UPLOAD_ASSET_VISUAL_PAYLOAD.',
-                    'SET_SUPPLY_NODE_STATE (DRAFT/ACTIVE) AND_UNITS.',
-                    'AUTHORIZE_COMMIT_TO_REGISTRY.'
+                    'Navigate to the Product Inventory section.',
+                    'Click on the "Add New Product" button.',
+                    'Fill in the Name, Price, and Description fields.',
+                    'Upload high-quality product photos.',
+                    'Set the status to Active and enter your stock quantity.',
+                    'Click "Save Product" to publish it to the shop.'
                 ]
             },
             {
-                title: 'INVENTORY_NODE_SYNCHRONIZATION',
+                title: 'UPDATING STOCK LEVELS',
                 steps: [
-                    'LOCATE_TARGET_ASSET_IN_MANIFEST_REGISTRY.',
-                    'INITIATE_OVERRIDE_MODE (EDIT_COMMAND).',
-                    'SYNCHRONIZE_UNIT_COUNT (STOCK_LEVEL).',
-                    'VERIFY_SUPPLY_THRESHOLD_ALERTS.'
+                    'Find the target product in your inventory list.',
+                    'Click the "Edit" button to open the product details.',
+                    'Update the remaining stock count in the inventory field.',
+                    'Verify that low-stock alerts are set correctly.'
                 ]
             }
         ],
         orders: [
             {
-                title: 'TRANSACTION_EXECUTION_FLOW',
+                title: 'PROCESSING NEW ORDERS',
                 steps: [
-                    'ACCESS_LIVE_MANIFEST_REGISTRY.',
-                    'INSPECT_PENDING_TRANSACTION_NODE.',
-                    'VERIFY_ENTITY_IDENTITY_AND_PAYLOAD.',
-                    'TRANSITION_TO_PROCESSING_PROTOCOL.',
-                    'INITIATE_DISPATCH_HANDSHAKE_AND_LOGISTICS_LINK.'
+                    'Open the Recent Orders dashboard.',
+                    'Select an order marked as "Pending".',
+                    'Verify the customer details and items ordered.',
+                    'Update the order status to "Processing".',
+                    'Assign the order to a shipping batch for delivery.'
                 ]
             },
             {
-                title: 'REVERSAL_PROTOCOL (REFUNDS)',
+                title: 'REFUND OPERATIONS',
                 steps: [
-                    'OPEN_ARCHIVED_TRANSACTION_ENTRY.',
-                    'VERIFY_ASSET_RECOVERY_STATUS.',
-                    'EXECUTE_REFUND_OVERRIDE_COMMAND.',
-                    'UPDATE_LEDGER_TO_REFUNDED_STATE.'
+                    'Locate the completed order in the archives.',
+                    'Confirm that items have been returned if necessary.',
+                    'Process the refund via the payment gateway.',
+                    'Mark the order as "Refunded" in the dashboard.'
                 ]
             }
         ],
         users: [
             {
-                title: 'ENTITY_IDENTITY_MANAGEMENT',
+                title: 'MANAGING CUSTOMERS',
                 steps: [
-                    'DIRECTORY_NODE_CONTAINS_ALL_REGISTERED_ENTITIES.',
-                    'AUDIT_TRANSACTION_HISTORY_AND_COMMUNICATION_LOGS.',
-                    'DEPLOY_BLOCK_PROTOCOL_ONLY_FOR_UNAUTHORIZED_ACTIVITY.'
+                    'The Customer Directory lists all registered users.',
+                    'Review their past orders and contact history.',
+                    'Use the "Block" action only for suspicious activity.'
                 ]
             }
         ]
@@ -74,11 +74,11 @@ export default function TutorialsPage() {
             {/* 1. COMMAND HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Operational Directives</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Operational Guide</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">SYSTEM_GUIDANCE_V1.0</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">ADMIN GUIDE V1.0</span>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ export default function TutorialsPage() {
                             : 'bg-white text-slate-400 border-transparent hover:text-slate-900'
                             }`}
                     >
-                        {tab}_MANAGEMENT
+                        {tab.toUpperCase()} MANAGEMENT
                     </button>
                 ))}
             </div>
@@ -133,12 +133,12 @@ export default function TutorialsPage() {
                         <Shield className="w-6 h-6" strokeWidth={1.5} />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">SYSTEM_SUPPORT_CHANNEL</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">ADMIN HELP CENTER</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Authorized personnel only</p>
                     </div>
                 </div>
                 <button className="px-8 py-4 bg-white border border-slate-950 text-slate-950 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all">
-                    INITIATE_SUPPORT_LINK
+                    CONTACT DEVELOPER
                 </button>
             </div>
         </div>
