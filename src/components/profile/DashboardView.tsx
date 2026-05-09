@@ -230,23 +230,23 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                         </div>
                     </section>
 
-                    <section className={`p-8 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
+                    <section className={`p-8 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                         <div className="flex items-center gap-3 mb-10">
-                            <OrderHistoryIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-700 dark:text-slate-200">Activity Ledger</h2>
+                            <OrderHistoryIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-900 dark:text-gray-100">Activity Ledger</h2>
                         </div>
                         
                         <div className="space-y-10 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-200 dark:before:bg-white/5">
                             {orders.slice(0, 3).map((order) => {
                                 const isCompleted = ['PAID', 'DELIVERED'].includes(order.state);
                                 return (
-                                    <div key={order.order_number} className="relative pl-8">
-                                        <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 ${isDark ? 'border-slate-950' : 'border-white'} ${isCompleted ? 'bg-emerald-500' : 'bg-slate-900'} z-10`} />
-                                        <span className={`text-[9px] font-black uppercase tracking-widest block mb-1 ${isCompleted ? 'text-emerald-500' : 'text-slate-600 dark:text-slate-200'}`}>
+                                    <div key={order.order_number} className="relative pl-10">
+                                        <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 ${isDark ? 'border-slate-950' : 'border-white'} ${isCompleted ? 'bg-emerald-500' : 'bg-gray-900'} z-10`} />
+                                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] block mb-1 ${isCompleted ? 'text-emerald-500' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                             {isCompleted ? 'Node Reached' : 'Active Protocol'}
                                         </span>
-                                        <p className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-white">Order #{order.order_number}</p>
-                                        <p className="text-[10px] mt-1 uppercase font-mono text-slate-500 dark:text-slate-400 font-bold">{getTimeAgo(new Date(order.created_at))}</p>
+                                        <p className="text-sm font-bold uppercase tracking-widest text-black dark:text-white">ID: #{order.order_number}</p>
+                                        <p className="text-[10px] mt-1 uppercase font-mono text-gray-600 dark:text-gray-400 font-bold">{getTimeAgo(new Date(order.created_at))}</p>
                                     </div>
                                 );
                             })}
