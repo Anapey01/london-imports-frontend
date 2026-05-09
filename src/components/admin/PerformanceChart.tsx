@@ -23,15 +23,15 @@ interface PerformanceChartProps {
 
 export default function PerformanceChart({ data, currentRange, onRangeChange, isDark }: PerformanceChartProps) {
     return (
-        <div className={`p-8 rounded-[2.5rem] border ${
+        <div className={`px-4 py-8 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border ${
             isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-primary-surface shadow-sm'
         }`}>
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-8 sm:mb-12">
                 <div>
                     <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Revenue Velocity</h2>
                     <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Daily transactional volume</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     {['7D', '30D', 'ALL'].map((p) => {
                         const rangeValue = p.toLowerCase();
                         const isActive = currentRange === rangeValue;
@@ -42,7 +42,7 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
                                 onClick={() => onRangeChange(rangeValue)}
                                 className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
                                     isActive 
-                                    ? 'bg-emerald-600 text-white' 
+                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' 
                                     : `border border-primary-surface ${isDark ? 'text-slate-400' : 'text-nuclear-text'} hover:bg-primary-surface/40`
                                 }`}
                             >

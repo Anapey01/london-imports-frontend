@@ -244,13 +244,13 @@ export default function AdminDashboardPage() {
             {/* 2. SYSTEM ANALYTICS BRIDGE */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-slate-100 border border-slate-100">
                 {/* Main Performance Chart */}
-                <div className="lg:col-span-8 bg-white p-12">
-                    <div className="flex items-center justify-between mb-12">
+                <div className="lg:col-span-8 bg-white px-4 py-10 sm:p-12">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-12 sm:mb-16">
                         <div>
                             <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE TRENDS</h2>
                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Revenue over time</p>
                         </div>
-                        <div className="flex bg-slate-50 p-1">
+                        <div className="flex bg-slate-50 p-1 w-fit">
                             {['7d', '30d', '90d'].map(range => (
                                 <button
                                     key={range}
@@ -275,7 +275,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Active Batch Control (Manifest Integration) */}
-                <div className="lg:col-span-4 bg-slate-50/50 p-12 border-l border-slate-100">
+                <div className="lg:col-span-4 bg-slate-50/50 px-4 py-10 sm:p-12 border-t lg:border-t-0 lg:border-l border-slate-100">
                     <ActiveBatchWidget 
                         isDark={isDark} 
                         batch={data.stats.active_batch} 
@@ -284,7 +284,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 3. LOGISTICS PIPELINE STATUS */}
-            <div className="bg-white border border-slate-100 p-12">
+            <div className="bg-white border border-slate-100 px-4 py-10 sm:p-12">
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-8 bg-slate-900" />
                     <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FUNNEL</h2>
