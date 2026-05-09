@@ -33,6 +33,8 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
     const completedCount = orders.filter((o: Order) => ['PAID', 'DELIVERED'].includes(o.state)).length;
     const recentOrders = orders.slice(0, 5);
 
+    const displayName = user.first_name || user.email?.split('@')[0] || 'Member';
+
     return (
         <div className={`space-y-12 animate-in fade-in duration-700`}>
             {/* Header / Protocol Briefing */}
@@ -40,7 +42,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                 <div>
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 block mb-2">Authenticated Session</span>
                     <h1 className="text-4xl sm:text-5xl font-serif font-bold tracking-tighter">
-                        Welcome, <span className="italic text-pink-500">{user.name.split(' ')[0]}.</span>
+                        Welcome, <span className="italic text-pink-500">{displayName}.</span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-6">
@@ -67,12 +69,12 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                             <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-12 gap-8">
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-6">
                                     <div className={`w-16 h-16 rounded-full border flex items-center justify-center text-xl font-serif font-bold shrink-0 ${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-100 text-slate-900'}`}>
-                                        {user.name[0].toUpperCase()}
+                                        {displayName[0].toUpperCase()}
                                     </div>
                                     <div className="min-w-0">
                                         <div className="flex flex-wrap items-center gap-3 mb-1">
                                             <h3 className={`text-xl sm:text-2xl font-serif font-bold tracking-tight break-words ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                {user.name}
+                                                {user.first_name} {user.last_name}
                                             </h3>
                                             <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-[8px] font-black text-white rounded-full uppercase tracking-widest">
                                                 <Crown className="w-3 h-3" />
