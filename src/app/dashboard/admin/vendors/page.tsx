@@ -9,7 +9,7 @@ import { adminAPI } from '@/lib/api';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
-import { Search, Building2, Eye, Activity, MapPin, Calendar, CheckSquare, X } from 'lucide-react';
+import { Search, Building2, X } from 'lucide-react';
 
 interface Vendor {
     id: string;
