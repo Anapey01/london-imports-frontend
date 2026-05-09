@@ -242,7 +242,7 @@ export default function AdminDashboardPage() {
             />
 
             {/* 2. SYSTEM ANALYTICS BRIDGE */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-slate-100 border border-slate-100">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-px bg-slate-50 lg:bg-slate-100 border border-slate-100">
                 {/* Main Performance Chart */}
                 <div className="lg:col-span-8 bg-white px-4 py-10 sm:p-12">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-12 sm:mb-16">
