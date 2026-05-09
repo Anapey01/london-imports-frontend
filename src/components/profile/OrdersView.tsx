@@ -67,24 +67,24 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             {/* Manifest Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
-                    <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Order History</p>
-                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
-                        My Orders
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 text-slate-500">Order History Archive</p>
+                    <h2 className="text-4xl sm:text-5xl font-serif font-bold tracking-tighter text-slate-900 leading-none">
+                        My <span className="italic text-brand-emerald">Manifests.</span>
                     </h2>
                 </div>
-                <div className="flex items-center gap-6 border border-slate-100 rounded-full px-6 py-3 bg-slate-50/30">
+                <div className="flex items-center gap-6 border border-slate-200 rounded-full px-8 py-4 bg-slate-50/50">
                     {['ALL', 'PENDING', 'COMPLETED'].map(status => (
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
-                            className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all relative ${filter === status
+                            className={`text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${filter === status
                                 ? 'text-slate-900'
                                 : 'text-slate-400 hover:text-slate-600'
                                 }`}
                         >
-                            {status === 'ALL' ? 'Total' : status}
+                            {status === 'ALL' ? 'Manifests' : status}
                             {filter === status && (
-                                <motion.div layoutId="filter-pill" className="absolute -bottom-2 left-0 right-0 h-[2px] bg-brand-emerald rounded-full" />
+                                <motion.div layoutId="filter-pill" className="absolute -bottom-2 left-0 right-0 h-[2px] bg-slate-900 rounded-full" />
                             )}
                         </button>
                     ))}
@@ -107,14 +107,14 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                             <div key={order.order_number} className="group bg-white border border-slate-100 rounded-2xl hover:border-slate-300 transition-all duration-500 overflow-hidden shadow-sm">
                                 <div className="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center gap-10">
                                     {/* Entry ID & Date Node */}
-                                    <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-10 min-w-[140px]">
+                                    <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-12 min-w-[160px]">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Number</p>
-                                            <p className="text-sm font-black text-slate-900">#{order.order_number}</p>
+                                            <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest opacity-80">Manifest ID</p>
+                                            <p className="text-sm font-mono font-bold text-slate-900 tracking-tight">#{order.order_number}</p>
                                         </div>
-                                        <div className="space-y-1 lg:mt-6">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date Ordered</p>
-                                            <p className="text-xs font-bold text-slate-600 uppercase tracking-tight">
+                                        <div className="space-y-1 lg:mt-8">
+                                            <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest opacity-80">Registered Date</p>
+                                            <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
                                         </div>
@@ -140,31 +140,31 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <span className={`h-2 w-2 rounded-full ${statusStyles.bg} shadow-sm border border-black/5`} />
-                                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">
+                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">
                                                     {order.state_display}
                                                 </span>
                                             </div>
-                                            <h4 className="text-base font-black text-slate-900 truncate uppercase tracking-tight mb-2">
-                                                {order.items?.[0]?.product.name || 'Package'}
+                                            <h4 className="text-xl font-serif font-bold text-slate-900 truncate uppercase tracking-tight mb-2">
+                                                {order.items?.[0]?.product.name || 'Package Consignment'}
                                             </h4>
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-                                                Sovereign Logistics • {order.items?.length || 0} Items Included
+                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] opacity-70">
+                                                Sovereign Logistics Hub • {order.items?.length || 0} Assets
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Financial Valuation Node */}
-                                    <div className="lg:w-48 border-y lg:border-y-0 lg:border-x border-slate-100 py-6 lg:py-0 lg:px-10 flex flex-col justify-center lg:items-end">
-                                        <div className="flex items-baseline justify-between lg:justify-end gap-2 mb-2 w-full">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Total</p>
-                                            <p className="text-xl font-black text-slate-900 tabular-nums leading-none">
+                                    <div className="lg:w-56 border-y lg:border-y-0 lg:border-x border-slate-100 py-8 lg:py-0 lg:px-12 flex flex-col justify-center lg:items-end">
+                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-3 w-full">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-80">Valuation</p>
+                                            <p className="text-2xl font-mono font-bold text-slate-900 tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
                                         </div>
                                         {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
-                                            <div className="flex items-center justify-between lg:justify-end gap-2 w-full">
-                                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Balance Due</p>
-                                                <p className="text-xs font-black text-amber-600 tabular-nums">
+                                            <div className="flex items-center justify-between lg:justify-end gap-3 w-full">
+                                                <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest opacity-80">Outstanding</p>
+                                                <p className="text-sm font-mono font-bold text-amber-600 tracking-tighter">
                                                     ₵{balanceDue.toLocaleString()}
                                                 </p>
                                             </div>

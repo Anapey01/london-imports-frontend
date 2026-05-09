@@ -38,7 +38,7 @@ const ProfileHeader = ({ user }: { user: User }) => {
                                 {avatarUrl ? (
                                     <NextImage src={avatarUrl} alt="Avatar" fill className="object-cover scale-105 group-hover:scale-100 transition-transform duration-700" />
                                 ) : (
-                                    <span className="text-3xl font-serif italic text-white/30 select-none">{user.first_name?.[0]}</span>
+                                    <span className="text-3xl font-serif italic text-white/50 select-none">{user.first_name?.[0]}</span>
                                 )}
                                 <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <Camera size={20} className="text-white" />
@@ -48,7 +48,7 @@ const ProfileHeader = ({ user }: { user: User }) => {
                     </div>
 
                     {/* Identity Hierarchy */}
-                    <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-300 mb-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400 mb-4">
                         {user.is_staff ? 'Official Staff' : user.role === 'VENDOR' ? 'Partner Vendor' : 'Member'}
                     </p>
                     
@@ -67,15 +67,15 @@ const ProfileHeader = ({ user }: { user: User }) => {
                     </div>
 
                     {/* Minimalist Metrics */}
-                    <div className="flex items-center justify-center gap-6 text-slate-300 border-t border-slate-50 pt-8 w-full max-w-xs">
+                    <div className="flex items-center justify-center gap-6 text-slate-400 border-t border-slate-100 pt-8 w-full max-w-xs">
                         <div className="text-center">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-200 mb-1">Est.</p>
-                            <p className="text-[11px] font-black text-slate-400 tracking-tighter">{memberSince}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 opacity-70">Est.</p>
+                            <p className="text-[11px] font-black text-slate-600 tracking-tighter">{memberSince}</p>
                         </div>
-                        <div className="w-px h-8 bg-slate-50" />
+                        <div className="w-px h-8 bg-slate-100" />
                         <div className="text-center">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-200 mb-1">ID</p>
-                            <p className="text-[11px] font-black text-slate-400 tracking-tighter">#{user.id?.toString().slice(-4).toUpperCase() || '5313'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 opacity-70">ID</p>
+                            <p className="text-[11px] font-black text-slate-600 tracking-tighter">#{user.id?.toString().slice(-4).toUpperCase() || '5313'}</p>
                         </div>
                     </div>
 
