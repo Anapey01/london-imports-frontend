@@ -30,12 +30,12 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
         <div className="space-y-12">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0">
                 <div>
-                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-950 uppercase">LOGISTICS_THROUGHPUT</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 italic">Real-time pipeline distribution</p>
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-950 uppercase">PIPELINE FLOW</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 italic">Order stage distribution</p>
                 </div>
                 <div className="text-left sm:text-right border-l-2 sm:border-l-0 sm:border-r-0 border-slate-900 pl-4 sm:pl-0">
                     <span className="text-3xl font-serif font-bold text-slate-950 tabular-nums">{totalOrders}</span>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">ACTIVE_MANIFESTS</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">TOTAL SHIPMENTS</p>
                 </div>
             </div>
 

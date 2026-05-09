@@ -116,7 +116,7 @@ function CustomerIntelligenceCard({ customer, isDark }: { customer: Customer; is
             <div className="p-10">
                 <div className="flex items-center gap-3 mb-10 opacity-40">
                     <User className="w-4 h-4" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Client Identity Profile</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Customer Identity Profile</h3>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-12 gap-8 sm:gap-0">
@@ -302,7 +302,7 @@ export default function AdminOrderDetailPage() {
                 setUpdating(true);
                 try {
                     await adminAPI.updateOrder(orderId, { status: newStatus });
-                    addAlert(`Protocol updated: ${newStatus.replace(/_/g, ' ')}`);
+                    addAlert(`Status updated: ${newStatus.replace(/_/g, ' ')}`);
                     await loadOrder(); 
                 } catch {
                     addAlert('Authorization failed', 'error');
@@ -446,9 +446,9 @@ export default function AdminOrderDetailPage() {
                             <div className="flex items-center justify-between mb-12">
                                 <div className="flex items-center gap-4">
                                     <Truck className="w-5 h-5 opacity-20" />
-                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Dispatch Lifecycle</h2>
+                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Shipping Status</h2>
                                 </div>
-                                <span className="text-[10px] font-mono opacity-30 uppercase">Operational Protocol</span>
+                                <span className="text-[10px] font-mono opacity-30 uppercase">Tracking Update</span>
                             </div>
                             <LogisticsStepper status={order.status} isDark={isDark} />
                         </section>
@@ -457,9 +457,9 @@ export default function AdminOrderDetailPage() {
                             <div className="p-8 border-b border-inherit flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <FileText className="w-5 h-5 opacity-20" />
-                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Shipment Manifest</h2>
+                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Order Items</h2>
                                 </div>
-                                <span className="text-[10px] font-mono opacity-30 uppercase">{order.items.length} LINE ITEMS</span>
+                                <span className="text-[10px] font-mono opacity-30 uppercase">{order.items.length} ITEMS TOTAL</span>
                             </div>
                             
                             <div className="divide-y divide-inherit">
@@ -503,7 +503,7 @@ export default function AdminOrderDetailPage() {
                                     
                                     <div className="flex justify-between items-end">
                                         <div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500 block mb-2">Grand Valuation</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500 block mb-2">Total Value</span>
                                             <h3 className="text-5xl font-serif font-bold tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total).toLocaleString()}
                                             </h3>
@@ -529,7 +529,7 @@ export default function AdminOrderDetailPage() {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-10">
                                 <div className="flex items-center gap-4">
                                     <MapPin className="w-5 h-5 opacity-20" />
-                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Dispatch Coordinates</h2>
+                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Delivery Address</h2>
                                 </div>
                                 <button
                                     onClick={isEditingDelivery ? handleSaveDelivery : () => {
@@ -544,7 +544,7 @@ export default function AdminOrderDetailPage() {
                                     }}
                                     className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 opacity-40 hover:opacity-100 transition-opacity w-fit"
                                 >
-                                    {isEditingDelivery ? 'Commit Protocol' : 'Update Protocol'}
+                                    {isEditingDelivery ? 'Save Changes' : 'Edit Address'}
                                 </button>
                             </div>
 
@@ -552,12 +552,12 @@ export default function AdminOrderDetailPage() {
                                 <div className="grid md:grid-cols-2 gap-12">
                                     <div className="space-y-6">
                                         <div>
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-2">Drop Location</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-2">Street Address</span>
                                             <p className="text-2xl font-serif font-bold tracking-tight leading-tight">{order.delivery_address}</p>
                                         </div>
                                         <div className="flex gap-12">
                                             <div>
-                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-1">City Hub</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-1">City</span>
                                                 <p className="text-sm font-bold uppercase tracking-widest">{order.delivery_city}</p>
                                             </div>
                                             <div>
@@ -573,7 +573,7 @@ export default function AdminOrderDetailPage() {
                                         )}
                                     </div>
                                     <div className="bg-slate-500/5 p-8 border-l-2 border-pink-500">
-                                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-4">Internal Directives</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-4">Shipping Notes</span>
                                         <p className="text-sm font-medium italic opacity-60 leading-relaxed">
                                             &quot;{order.customer_notes || 'No special directives logged for this shipment.'}&quot;
                                         </p>
