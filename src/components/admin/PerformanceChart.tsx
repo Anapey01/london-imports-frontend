@@ -9,7 +9,7 @@ import {
     Tooltip, 
     ResponsiveContainer 
 } from 'recharts';
-import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 
 interface PerformanceChartProps {
     data: {

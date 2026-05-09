@@ -2,11 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { 
-    Calendar, 
-    Target, 
     AlertCircle,
-    ChevronRight,
-    Boxes
+    ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 
