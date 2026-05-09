@@ -9,10 +9,8 @@ import {
     TrendingUp, 
     Package, 
     ChevronRight, 
-    Gift,
     User as UserIcon,
     Crown,
-    Calendar,
     ArrowRight,
     Terminal,
     ShieldCheck,
@@ -22,7 +20,6 @@ import { Order, User } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { getTimeAgo } from '@/lib/date';
 import { useTheme } from '@/providers/ThemeProvider';
-import { motion } from 'framer-motion';
 
 const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
     const { theme } = useTheme();
