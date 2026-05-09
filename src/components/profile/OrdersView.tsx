@@ -65,26 +65,26 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
     return (
         <div className="space-y-12 pb-20">
             {/* Manifest Header Archive */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
-                <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">Order History Archive</p>
-                    <h2 className="text-4xl sm:text-5xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white leading-none">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-slate-100 pb-8">
+                <div className="space-y-1">
+                    <p className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400">Order History Archive</p>
+                    <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white leading-none">
                         My <span className="italic text-brand-emerald">Manifests.</span>
                     </h2>
                 </div>
-                <div className="flex items-center gap-6 border border-slate-200 rounded-full px-8 py-4 bg-slate-50/50">
+                <div className="flex items-center gap-5 border border-slate-100 rounded-sm px-6 py-3 bg-slate-50/30">
                     {['ALL', 'PENDING', 'COMPLETED'].map(status => (
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
-                            className={`text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${filter === status
+                            className={`text-[9px] font-mono font-bold uppercase tracking-[0.3em] transition-all relative ${filter === status
                                 ? 'text-slate-900'
                                 : 'text-slate-400 hover:text-slate-600'
                                 }`}
                         >
-                            {status === 'ALL' ? 'Manifests' : status}
+                            {status === 'ALL' ? 'Registry' : status}
                             {filter === status && (
-                                <motion.div layoutId="filter-pill" className="absolute -bottom-2 left-0 right-0 h-[2px] bg-slate-900 rounded-full" />
+                                <motion.div layoutId="filter-pill" className="absolute -bottom-1.5 left-0 right-0 h-[1px] bg-slate-900 rounded-full" />
                             )}
                         </button>
                     ))}
@@ -104,8 +104,8 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-xl hover:border-slate-300 transition-all duration-500 overflow-hidden shadow-sm">
-                                <div className="p-6 sm:p-10 flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
+                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-sm hover:border-slate-300 transition-all duration-300 overflow-hidden">
+                                <div className="p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8">
                                     {/* Entry ID & Date Node */}
                                     <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center lg:border-r border-slate-100 lg:pr-12 min-w-[160px]">
                                         <div className="space-y-1">
@@ -138,26 +138,26 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                         </div>
                                         
                                         <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <span className={`h-2 w-2 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
-                                                <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-slate-900 dark:text-white">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className={`h-1.5 w-1.5 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
+                                                <span className="text-[8px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400 dark:text-white">
                                                     {order.state_display}
                                                 </span>
                                             </div>
-                                            <h4 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-4 leading-tight">
+                                            <h4 className="text-base sm:text-lg font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-3 leading-tight group-hover:text-brand-emerald transition-colors">
                                                 {order.items?.[0]?.product.name || 'Package Consignment'}
                                             </h4>
-                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 opacity-50">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Node</span>
-                                                    <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Node</span>
+                                                    <p className="text-[9px] font-mono font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">
                                                         Sovereign Hub
                                                     </p>
                                                 </div>
-                                                <span className="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+                                                <span className="w-px h-2 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Assets</span>
-                                                    <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Assets</span>
+                                                    <p className="text-[9px] font-mono font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">
                                                         {order.items?.length || 0} Registered
                                                     </p>
                                                 </div>
@@ -166,17 +166,17 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     </div>
 
                                     {/* Financial Valuation Node */}
-                                    <div className="lg:w-64 flex flex-col justify-center lg:items-end border-t lg:border-t-0 lg:border-x border-slate-100 pt-6 lg:pt-0 lg:px-12">
-                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-2 w-full">
-                                            <p className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Valuation</p>
-                                            <p className="text-2xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
+                                    <div className="lg:w-56 flex flex-col justify-center lg:items-end border-t lg:border-t-0 lg:border-x border-slate-100 pt-4 lg:pt-0 lg:px-10">
+                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-1.5 w-full">
+                                            <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Valuation</p>
+                                            <p className="text-xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
                                         </div>
                                         {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
                                             <div className="flex items-center justify-between lg:justify-end gap-3 w-full">
-                                                <p className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Balance</p>
-                                                <p className="text-sm font-mono font-bold text-amber-700 dark:text-amber-500 tracking-tighter">
+                                                <p className="text-[8px] font-mono font-bold text-amber-600 uppercase tracking-widest">Balance</p>
+                                                <p className="text-xs font-mono font-bold text-amber-700 tracking-tighter">
                                                     ₵{balanceDue.toLocaleString()}
                                                 </p>
                                             </div>
@@ -184,19 +184,19 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     </div>
 
                                     {/* Operational Bridge Node */}
-                                    <div className="lg:w-52 flex flex-col gap-3">
+                                    <div className="lg:w-48 flex flex-col gap-2">
                                         <Link
                                             href={`/track?order=${order.order_number}`}
-                                            className="w-full py-4 border border-slate-900 bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-slate-800 transition-all shadow-lg"
+                                            className="w-full py-3 border border-slate-900 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.4em] text-center rounded-sm hover:bg-slate-800 transition-all shadow-md"
                                         >
-                                            Track Order
+                                            Track
                                         </Link>
                                         {isPending && (
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="w-full py-4 border border-brand-emerald bg-brand-emerald text-white text-[11px] font-black uppercase tracking-[0.4em] text-center rounded-xl hover:bg-brand-emerald/90 transition-all"
+                                                className="w-full py-3 border border-brand-emerald bg-brand-emerald text-white text-[10px] font-black uppercase tracking-[0.4em] text-center rounded-sm hover:bg-brand-emerald/90 transition-all"
                                             >
-                                                Pay Now
+                                                Payment
                                             </Link>
                                         )}
                                     </div>
