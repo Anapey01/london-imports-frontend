@@ -46,8 +46,8 @@ function LogisticsStepper({ status, isDark }: { status: string; isDark: boolean 
     const currentStepIndex = STEPS.findIndex(s => s.id === status);
     
     return (
-        <div className="w-full">
-            <div className="relative flex justify-between">
+        <div className="w-full overflow-x-auto pb-6 scrollbar-hide">
+            <div className="relative flex justify-between min-w-[700px] px-4">
                 <div className={`absolute top-4 left-0 right-0 h-px ${isDark ? 'bg-white/5' : 'bg-slate-200'}`} />
                 <motion.div 
                     initial={{ width: 0 }}
@@ -409,29 +409,31 @@ export default function AdminOrderDetailPage() {
 
     return (
         <div className={`min-h-screen pb-32 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FAFAFA] text-slate-900'}`}>
-            <div className={`sticky top-0 z-[60] px-8 py-5 border-b backdrop-blur-xl ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-100'}`}>
-                <div className="max-w-[1600px] mx-auto flex items-center justify-between">
+            <div className={`sticky top-0 z-[60] px-4 sm:px-8 py-5 border-b backdrop-blur-xl ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-100'}`}>
+                <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0">
                     <button 
                         onClick={() => router.back()} 
-                        className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all"
+                        className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all w-fit"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back to Register
                     </button>
                     
-                    <div className="flex items-center gap-4">
-                        <span className="font-mono text-xs tracking-[0.2em] opacity-30">REF NO:</span>
-                        <h1 className="font-mono text-lg font-bold tracking-tighter">#{order.order_number}</h1>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${
-                            order.payment_status === 'PAID' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-rose-500/10 border-rose-500/20 text-rose-500'
-                        }`}>
-                            {order.payment_status}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+                        <div className="flex items-center gap-4">
+                            <span className="font-mono text-[10px] tracking-[0.2em] opacity-30">REF NO:</span>
+                            <h1 className="font-mono text-sm sm:text-lg font-bold tracking-tighter truncate max-w-[150px] sm:max-w-none">#{order.order_number}</h1>
                         </div>
-                        <div className={`px-4 py-1.5 rounded-full border border-slate-800 text-[9px] font-black uppercase tracking-widest ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
-                            {order.status.replace(/_/g, ' ')}
+
+                        <div className="flex items-center gap-4">
+                            <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+                                order.payment_status === 'PAID' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-rose-500/10 border-rose-500/20 text-rose-500'
+                            }`}>
+                                {order.payment_status}
+                            </div>
+                            <div className={`px-4 py-1.5 rounded-full border border-slate-800 text-[9px] font-black uppercase tracking-widest ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
+                                {order.status.replace(/_/g, ' ')}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -462,8 +464,8 @@ export default function AdminOrderDetailPage() {
                             
                             <div className="divide-y divide-inherit">
                                 {order.items.map((item) => (
-                                    <div key={item.id} className="flex items-center gap-8 p-8 group hover:bg-slate-500/5 transition-colors">
-                                        <div className="relative w-24 h-24 overflow-hidden border border-inherit shrink-0 grayscale group-hover:grayscale-0 transition-all duration-700">
+                                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 group hover:bg-slate-500/5 transition-colors">
+                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 overflow-hidden border border-inherit shrink-0 grayscale group-hover:grayscale-0 transition-all duration-700">
                                             <Image
                                                 src={getImageUrl(item.image)}
                                                 alt={item.product_name}
@@ -472,14 +474,14 @@ export default function AdminOrderDetailPage() {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xl font-serif font-bold tracking-tight mb-2 leading-none">{item.product_name}</p>
+                                            <p className="text-lg sm:text-xl font-serif font-bold tracking-tight mb-2 leading-none">{item.product_name}</p>
                                             <div className="flex gap-4">
                                                 <span className="text-[10px] font-mono opacity-40 uppercase">COLOR: {item.color || 'STND'}</span>
                                                 <span className="text-[10px] font-mono opacity-40 uppercase">SIZE: {item.size || 'STND'}</span>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-2xl font-mono tracking-tighter mb-1">₵{parseFloat(item.price).toLocaleString()}</p>
+                                        <div className="w-full sm:w-auto text-left sm:text-right pt-4 sm:pt-0 border-t sm:border-t-0 border-inherit">
+                                            <p className="text-xl sm:text-2xl font-mono tracking-tighter mb-1">₵{parseFloat(item.price).toLocaleString()}</p>
                                             <p className="text-[10px] font-black uppercase tracking-widest opacity-20 italic">QUANTITY: {item.quantity}</p>
                                         </div>
                                     </div>
