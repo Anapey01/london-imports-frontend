@@ -104,25 +104,25 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                         const statusStyles = getStatusStyles(order.state);
 
                         return (
-                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-2xl hover:border-slate-300 transition-all duration-500 overflow-hidden shadow-sm">
-                                <div className="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center gap-10">
+                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-xl hover:border-slate-300 transition-all duration-500 overflow-hidden shadow-sm">
+                                <div className="p-6 sm:p-10 flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
                                     {/* Entry ID & Date Node */}
-                                    <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-12 min-w-[160px]">
+                                    <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center lg:border-r border-slate-100 lg:pr-12 min-w-[160px]">
                                         <div className="space-y-1">
-                                            <p className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Manifest ID</p>
+                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Manifest ID</p>
                                             <p className="text-sm font-mono font-bold text-slate-900 dark:text-white tracking-tight">#{order.order_number}</p>
                                         </div>
-                                        <div className="space-y-1 lg:mt-8">
-                                            <p className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Registered Date</p>
-                                            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                        <div className="space-y-1 lg:mt-8 text-right lg:text-left">
+                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Registered Status</p>
+                                            <p className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Asset Summary Node */}
-                                    <div className="flex-1 flex items-center gap-8 min-w-0">
-                                        <div className="h-20 w-16 relative rounded border border-slate-100 overflow-hidden bg-slate-50 grayscale group-hover:grayscale-0 transition-all duration-700 flex-shrink-0">
+                                    <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6 lg:gap-10 min-w-0">
+                                        <div className="h-24 w-20 relative rounded border border-slate-100 overflow-hidden bg-slate-50 lg:grayscale lg:group-hover:grayscale-0 transition-all duration-700 flex-shrink-0 shadow-sm">
                                             {order.items?.[0]?.product.image ? (
                                                 <NextImage
                                                     src={getImageUrl(order.items[0].product.image)}
@@ -132,45 +132,51 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                                    <Package size={20} />
+                                                    <Package size={24} />
                                                 </div>
                                             )}
                                         </div>
                                         
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-3 mb-3">
-                                                <span className={`h-2.5 w-2.5 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
-                                                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-slate-900 dark:text-white">
-                                                    Status: {order.state_display}
+                                                <span className={`h-2 w-2 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
+                                                <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-slate-900 dark:text-white">
+                                                    {order.state_display}
                                                 </span>
                                             </div>
-                                            <h4 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-3 leading-tight">
+                                            <h4 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-4 leading-tight">
                                                 {order.items?.[0]?.product.name || 'Package Consignment'}
                                             </h4>
-                                            <div className="flex flex-wrap items-center gap-4">
-                                                <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em]">
-                                                    Logistics Node: Sovereign Hub
-                                                </p>
-                                                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-                                                <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em]">
-                                                    {order.items?.length || 0} Registered Assets
-                                                </p>
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Node</span>
+                                                    <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                                        Sovereign Hub
+                                                    </p>
+                                                </div>
+                                                <span className="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Assets</span>
+                                                    <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                                        {order.items?.length || 0} Registered
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Financial Valuation Node */}
-                                    <div className="lg:w-64 border-y lg:border-y-0 lg:border-x border-slate-100 py-10 lg:py-0 lg:px-12 flex flex-col justify-center lg:items-end">
-                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-4 w-full">
-                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Asset Valuation</p>
-                                            <p className="text-3xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
+                                    <div className="lg:w-64 flex flex-col justify-center lg:items-end border-t lg:border-t-0 lg:border-x border-slate-100 pt-6 lg:pt-0 lg:px-12">
+                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-2 w-full">
+                                            <p className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Valuation</p>
+                                            <p className="text-2xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
                                         </div>
                                         {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
                                             <div className="flex items-center justify-between lg:justify-end gap-3 w-full">
-                                                <p className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Outstanding</p>
-                                                <p className="text-base font-mono font-bold text-amber-700 dark:text-amber-500 tracking-tighter">
+                                                <p className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Balance</p>
+                                                <p className="text-sm font-mono font-bold text-amber-700 dark:text-amber-500 tracking-tighter">
                                                     ₵{balanceDue.toLocaleString()}
                                                 </p>
                                             </div>
