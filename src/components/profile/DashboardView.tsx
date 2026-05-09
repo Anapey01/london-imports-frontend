@@ -37,14 +37,14 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
             {/* Header / Protocol Briefing */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-slate-100 dark:border-white/10 pb-10">
                 <div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 block mb-2 text-slate-500 dark:text-slate-400">Authenticated Session</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] block mb-2 text-slate-500 dark:text-slate-400">Authenticated Session</span>
                     <h1 className="text-4xl sm:text-5xl font-serif font-bold tracking-tighter">
                         Welcome, <span className="italic text-pink-500">{displayName}.</span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-6">
                     <div className="text-right">
-                        <span className="text-[8px] font-black uppercase tracking-widest opacity-60 block text-slate-500 dark:text-slate-400">Account Tier</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest block text-slate-500 dark:text-slate-400">Account Tier</span>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Verified Hub Access</p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                         <div className="absolute top-0 left-0 w-1 h-full bg-slate-900 dark:bg-white/10" />
                         
                         <div className="p-8 sm:p-10">
-                            <div className="flex items-center gap-3 mb-10 opacity-70">
+                            <div className="flex items-center gap-3 mb-10 text-slate-500 dark:text-slate-300">
                                 <UserIcon className="w-4 h-4" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Identity Profile</h3>
                             </div>
@@ -73,24 +73,24 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                             <h3 className={`text-xl sm:text-2xl font-serif font-bold tracking-tight break-words ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                                 {user.first_name} {user.last_name}
                                             </h3>
-                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-[8px] font-black text-white rounded-full uppercase tracking-widest">
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-600 text-[8px] font-black text-white rounded-full uppercase tracking-widest">
                                                 <Crown className="w-3 h-3" />
                                                 Member
                                             </div>
                                         </div>
-                                        <p className="text-[10px] sm:text-xs font-mono opacity-70 lowercase tracking-tight break-all text-slate-500 dark:text-slate-400">{user.email}</p>
+                                        <p className="text-[10px] sm:text-xs font-mono lowercase tracking-tight break-all text-slate-600 dark:text-slate-300">{user.email}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-px bg-slate-200 dark:bg-white/10 border border-inherit">
+                            <div className="grid grid-cols-2 gap-px bg-slate-200 dark:bg-white/20 border border-inherit">
                                 <div className="p-6 bg-white dark:bg-slate-900">
-                                    <div className="flex items-center gap-2 mb-3 opacity-60">
-                                        <TrendingUp className="w-3 h-3 text-slate-500 dark:text-slate-400" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Accumulated Value</span>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <TrendingUp className="w-3 h-3 text-slate-400 dark:text-slate-400" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-200">Accumulated Value</span>
                                     </div>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-xs font-serif italic opacity-70 text-slate-400">₵</span>
+                                        <span className="text-xs font-serif italic text-slate-400 dark:text-slate-500 font-bold">₵</span>
                                         <span className={`text-xl sm:text-2xl font-serif font-bold tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                             {totalSpent.toLocaleString()}
                                         </span>
@@ -98,15 +98,15 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                 </div>
 
                                 <div className="p-6 bg-white dark:bg-slate-900 border-l border-inherit">
-                                    <div className="flex items-center gap-2 mb-3 opacity-60">
-                                        <ShoppingBag className="w-3 h-3 text-slate-500 dark:text-slate-400" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Order Manifest</span>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <ShoppingBag className="w-3 h-3 text-slate-400 dark:text-slate-400" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-200">Order Manifest</span>
                                     </div>
                                     <div className="flex items-baseline gap-2">
                                         <span className={`text-xl sm:text-2xl font-serif font-bold tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                             {orders.length}
                                         </span>
-                                        <span className="text-[9px] font-black opacity-60 uppercase tracking-widest text-slate-500 dark:text-slate-400">TXNS</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold">TXNS</span>
                                     </div>
                                 </div>
                             </div>
@@ -117,10 +117,10 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                     <section className={`border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                         <div className="p-8 border-b border-inherit flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <Package className="w-5 h-5 opacity-60 text-slate-400" />
-                                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-80 text-slate-600 dark:text-slate-400">Recent Manifests</h2>
+                                <Package className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-700 dark:text-slate-200">Recent Manifests</h2>
                             </div>
-                            <Link href="/profile/orders" className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 hover:opacity-100 transition-colors flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                            <Link href="/profile/orders" className="text-[10px] font-black uppercase tracking-[0.3em] hover:text-brand-emerald transition-colors flex items-center gap-2 text-slate-600 dark:text-slate-400">
                                 View Full Archive <ChevronRight className="w-3 h-3" />
                             </Link>
                         </div>
@@ -153,17 +153,17 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-3 mb-1">
-                                                    <p className="text-[10px] font-mono opacity-70 uppercase tracking-widest text-slate-500 dark:text-slate-400">REF: #{order.order_number}</p>
+                                                    <p className="text-[10px] font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300">REF: #{order.order_number}</p>
                                                     <div className={`px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${
                                                         isPaid ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
                                                     }`}>
                                                         {order.state_display}
                                                     </div>
                                                 </div>
-                                                <p className="text-lg font-serif font-bold tracking-tight mb-1 truncate uppercase">
+                                                <h4 className="text-lg font-serif font-bold tracking-tight mb-1 truncate uppercase text-slate-900 dark:text-white">
                                                     {firstItem?.product.name || 'Package Consignment'}
-                                                </p>
-                                                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 text-slate-400 dark:text-slate-500">
+                                                </h4>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                                                     Registered: {new Date(order.created_at).toLocaleDateString()}
                                                 </p>
                                             </div>
@@ -191,24 +191,24 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                 <div className="lg:col-span-4 space-y-12">
                     <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                         <div className="p-8 border-b border-inherit flex items-center gap-4">
-                            <Terminal className="w-5 h-5 opacity-70 text-slate-400" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-80 text-slate-600 dark:text-slate-400">System Node Status</h2>
+                            <Terminal className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-700 dark:text-slate-200">System Node Status</h2>
                         </div>
                         
                         <div className="p-8 space-y-4">
-                            <div className="grid grid-cols-2 gap-px bg-slate-200 dark:bg-white/10 border border-inherit">
+                            <div className="grid grid-cols-2 gap-px bg-slate-200 dark:bg-white/20 border border-inherit">
                                 <div className="p-6 bg-white dark:bg-slate-900 flex flex-col gap-3">
                                     <Clock className="w-5 h-5 text-amber-500" />
                                     <div className="space-y-1">
-                                        <span className="text-[8px] font-black uppercase tracking-widest opacity-60 text-slate-500 dark:text-slate-400">Pending Pay</span>
-                                        <p className="text-xl font-mono font-bold tracking-tighter">{pendingCount}</p>
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-200">Pending Pay</span>
+                                        <p className="text-xl font-mono font-bold tracking-tighter text-slate-900 dark:text-white">{pendingCount}</p>
                                     </div>
                                 </div>
                                 <div className="p-6 bg-white dark:bg-slate-900 flex flex-col gap-3 border-l border-inherit">
                                     <CheckCircle className="w-5 h-5 text-emerald-500" />
                                     <div className="space-y-1">
-                                        <span className="text-[8px] font-black uppercase tracking-widest opacity-60 text-slate-500 dark:text-slate-400">Fulfilled</span>
-                                        <p className="text-xl font-mono font-bold tracking-tighter">{completedCount}</p>
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-200">Fulfilled</span>
+                                        <p className="text-xl font-mono font-bold tracking-tighter text-slate-900 dark:text-white">{completedCount}</p>
                                     </div>
                                 </div>
                             </div>
@@ -226,14 +226,14 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
 
                         <div className="p-6 bg-slate-50 border-t border-inherit dark:bg-white/5 flex items-center gap-3">
                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80 text-slate-600 dark:text-slate-400">Identity Secure</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-700 dark:text-slate-200">Identity Secure</span>
                         </div>
                     </section>
 
                     <section className={`p-8 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                         <div className="flex items-center gap-3 mb-10">
-                            <OrderHistoryIcon className="w-4 h-4 opacity-70 text-slate-400" />
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 text-slate-600 dark:text-slate-400">Activity Ledger</h2>
+                            <OrderHistoryIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-700 dark:text-slate-200">Activity Ledger</h2>
                         </div>
                         
                         <div className="space-y-10 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-200 dark:before:bg-white/5">
@@ -242,11 +242,11 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                 return (
                                     <div key={order.order_number} className="relative pl-8">
                                         <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 ${isDark ? 'border-slate-950' : 'border-white'} ${isCompleted ? 'bg-emerald-500' : 'bg-slate-900'} z-10`} />
-                                        <span className={`text-[9px] font-black uppercase tracking-widest block mb-1 ${isCompleted ? 'text-emerald-500' : 'opacity-80 text-slate-500'}`}>
+                                        <span className={`text-[9px] font-black uppercase tracking-widest block mb-1 ${isCompleted ? 'text-emerald-500' : 'text-slate-600 dark:text-slate-200'}`}>
                                             {isCompleted ? 'Node Reached' : 'Active Protocol'}
                                         </span>
-                                        <p className="text-sm font-bold uppercase tracking-widest">Order #{order.order_number}</p>
-                                        <p className="text-[10px] opacity-60 mt-1 uppercase font-mono text-slate-400">{getTimeAgo(new Date(order.created_at))}</p>
+                                        <p className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-white">Order #{order.order_number}</p>
+                                        <p className="text-[10px] mt-1 uppercase font-mono text-slate-500 dark:text-slate-400 font-bold">{getTimeAgo(new Date(order.created_at))}</p>
                                     </div>
                                 );
                             })}
