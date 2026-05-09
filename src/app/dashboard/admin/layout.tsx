@@ -70,15 +70,17 @@ export default function AdminDashboardLayout({
 
     return (
         <div className={`min-h-screen transition-colors duration-700 ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'} selection:bg-emerald-100`}>
-            <AdminSidebar
-                isOpen={isSidebarOpen}
-                onClose={() => setIsSidebarOpen(false)}
-            />
+            <div className="print:hidden">
+                <AdminSidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                />
+            </div>
 
             {/* Main Content Area (Architectural Grid) */}
-            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50">
+            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 print:ml-0 print:border-none">
                 {/* 1. OPERATIONAL COMMAND HEADER */}
-                <div className={`sticky top-0 z-[30] backdrop-blur-md border-b ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-50'}`}>
+                <div className={`sticky top-0 z-[30] backdrop-blur-md border-b ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-50'} print:hidden`}>
                     <div className="max-w-[1600px] mx-auto px-8 py-8 flex items-center justify-between">
                         <div className="flex items-center gap-6">
                             {/* Mobile Terminal Toggle */}
@@ -128,7 +130,7 @@ export default function AdminDashboardLayout({
                 </div>
 
                 {/* 2. DASHBOARD CONTENT */}
-                <div className="max-w-[1600px] mx-auto p-8 md:p-12">
+                <div className="max-w-[1600px] mx-auto p-8 md:p-12 print:p-0">
                     {children}
                 </div>
             </main>

@@ -6,6 +6,7 @@ import { adminAPI } from '@/lib/api';
 import { getImageUrl } from '@/lib/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
     CreditCard,
     Package,
@@ -25,7 +26,8 @@ import {
     Crown,
     Calendar,
     ShoppingBag,
-    TrendingUp
+    TrendingUp,
+    Printer
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -434,6 +436,14 @@ export default function AdminOrderDetailPage() {
                             <div className={`px-4 py-1.5 rounded-full border border-slate-800 text-[9px] font-black uppercase tracking-widest ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
                                 {order.status.replace(/_/g, ' ')}
                             </div>
+                            
+                            <Link 
+                                href={`/dashboard/admin/orders/${order.id}/receipt`}
+                                className="flex items-center gap-3 px-6 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-pink-600 transition-all rounded-sm shadow-lg"
+                            >
+                                <Printer className="w-3.5 h-3.5" />
+                                Receipt
+                            </Link>
                         </div>
                     </div>
                 </div>

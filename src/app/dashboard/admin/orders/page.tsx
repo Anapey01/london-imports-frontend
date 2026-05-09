@@ -4,7 +4,7 @@
  */
 'use client';
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -17,17 +17,19 @@ import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const STATUS_TABS = ['All', 'PENDING_PAYMENT', 'PAID', 'OPEN_FOR_BATCH', 'IN_FULFILLMENT', 'IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'] as const;
+const STATUS_TABS = ['All', 'PENDING', 'NEW_ORDERS', 'WAREHOUSE', 'LOGISTICS', 'COMPLETED', 'CANCELLED'] as const;
 
-const labelMap: Record<string, string> = {
-    IN_TRANSIT: 'In Transit',
-    ARRIVED: 'Arrived',
-    DELIVERED: 'Delivered',
-    OUT_FOR_DELIVERY: 'Out for Delivery',
-    CANCELLED: 'Cancelled',
+const statusLabel = (s: string) => {
+    switch (s) {
+        case 'PENDING': return 'Pending';
+        case 'NEW_ORDERS': return 'New Orders';
+        case 'WAREHOUSE': return 'Warehouse';
+        case 'LOGISTICS': return 'Logistics';
+        case 'COMPLETED': return 'Completed';
+        case 'CANCELLED': return 'Cancelled';
+        default: return s;
+    }
 };
-
-const statusLabel = (s: string) => s === 'All' ? 'All' : s.replace(/_/g, ' ');
 
 interface Order {
     id: string;
@@ -96,18 +98,21 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
 export default function AdminOrdersPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+    const [isPending, startTransition] = useTransition();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('All');
-    const [searchTerm, setSearchTerm] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [bulkUpdating, setBulkUpdating] = useState(false);
+    const [bulkProgress, setBulkProgress] = useState(0);
+    const [bulkTotal, setBulkTotal] = useState(0);
     
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [apiCounts, setApiCounts] = useState<Record<string, number> | null>(null);
+    const [searchQuery, setSearchQuery] = useState(''); // Debounced search state
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -138,7 +143,7 @@ export default function AdminOrdersPage() {
         try {
             const params: Record<string, string | number | undefined> = { 
                 page: currentPage,
-                search: searchTerm || undefined
+                search: searchQuery || undefined
             };
             if (statusFilter !== 'All' && statusFilter !== 'ALL') {
                 params.status = statusFilter;
@@ -172,11 +177,29 @@ export default function AdminOrdersPage() {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, statusFilter, searchTerm]);
+    }, [currentPage, statusFilter, searchQuery]);
 
     useEffect(() => { loadOrders(); }, [loadOrders]);
+    
+    const loadOrdersRef = React.useRef(loadOrders);
+    useEffect(() => {
+        loadOrdersRef.current = loadOrders;
+    }, [loadOrders]);
 
-    const handleDelete = (id: string) => {
+    // Derived State
+    const filteredOrders = orders;
+    
+    const handleTabChange = useCallback((s: string) => {
+        startTransition(() => {
+            setStatusFilter(s);
+            setCurrentPage(1);
+            setSelectedIds(new Set());
+        });
+    }, []);
+
+
+
+    const handleDelete = useCallback((id: string) => {
         setConfirmModal({
             isOpen: true,
             title: 'Delete Order',
@@ -194,10 +217,10 @@ export default function AdminOrdersPage() {
                 }
             }
         });
-    };
+    }, []);
 
     const handleClearPending = async () => {
-        const pendingOrders = orders.filter(o => o.status === 'PENDING' || o.status === 'Pending' || o.status === 'PENDING_PAYMENT');
+        const pendingOrders = orders.filter(o => o.status === 'PENDING' || o.status === 'Pending' || o.status === 'PENDING_PAYMENT' || o.payment_status === 'PARTIAL');
         if (pendingOrders.length === 0) {
             addAlert('No pending orders to clear', 'info');
             return;
@@ -225,26 +248,30 @@ export default function AdminOrdersPage() {
     };
 
     // BULK ACTIONS
-    const toggleSelectAll = () => {
-        if (selectedIds.size === filteredOrders.length) {
-            setSelectedIds(new Set());
-        } else {
-            setSelectedIds(new Set(filteredOrders.map(o => o.id)));
-        }
-    };
-
-    const toggleSelect = (id: string) => {
-        setSelectedIds(prev => {
-            const s = new Set(prev);
-            if (s.has(id)) s.delete(id); else s.add(id);
-            return s;
+    const toggleSelectAll = useCallback(() => {
+        startTransition(() => {
+            if (selectedIds.size === filteredOrders.length) {
+                setSelectedIds(new Set());
+            } else {
+                setSelectedIds(new Set(filteredOrders.map(o => o.id)));
+            }
         });
-    };
+    }, [selectedIds.size, filteredOrders]);
 
-    const handleBulkStatus = (newStatus: string) => {
+    const toggleSelect = useCallback((id: string) => {
+        startTransition(() => {
+            setSelectedIds(prev => {
+                const s = new Set(prev);
+                if (s.has(id)) s.delete(id); else s.add(id);
+                return s;
+            });
+        });
+    }, []);
+
+    const handleBulkStatus = useCallback((newStatus: string) => {
         const ids = Array.from(selectedIds);
         if (ids.length === 0) return;
-        const label = labelMap[newStatus] || newStatus;
+        const label = statusLabel(newStatus);
 
         setConfirmModal({
             isOpen: true,
@@ -253,9 +280,17 @@ export default function AdminOrdersPage() {
             variant: 'warning',
             onConfirm: async () => {
                 setBulkUpdating(true);
+                setBulkProgress(0);
+                setBulkTotal(ids.length);
                 try {
-                    // BUG-07 FIX: backend field is `state`, not `status`
-                    await Promise.all(ids.map(id => adminAPI.updateOrder(id, { state: newStatus })));
+                    // Process in chunks of 5 to avoid overwhelming the network and causing SW timeouts
+                    const chunkSize = 5;
+                    for (let i = 0; i < ids.length; i += chunkSize) {
+                        const chunk = ids.slice(i, i + chunkSize);
+                        await Promise.all(chunk.map(id => adminAPI.updateOrder(id, { state: newStatus })));
+                        setBulkProgress(prev => prev + chunk.length);
+                    }
+
                     setOrders(prev => prev.map(o => {
                         if (selectedIds.has(o.id)) {
                             const isPaid = newStatus === 'PAID' || newStatus === 'OPEN_FOR_BATCH';
@@ -273,18 +308,21 @@ export default function AdminOrdersPage() {
                     addAlert(`Successfully updated ${ids.length} orders to ${label}`);
                 } catch (err) {
                     console.error(err);
-                    addAlert('Some orders failed to update', 'error');
+                    addAlert('Some orders failed to update. Please refresh and try again.', 'error');
                 } finally {
                     setBulkUpdating(false);
+                    setBulkProgress(0);
+                    setBulkTotal(0);
+                    loadOrdersRef.current(); // Refresh to get counts and updated data
                 }
             }
         });
-    };
+    }, [selectedIds]);
 
     // Server-side filtering is now used, so filteredOrders is just orders
-    const filteredOrders = orders;
 
-    const getStatusColor = (status: string) => {
+
+    const getStatusColor = useCallback((status: string) => {
         const colors: Record<string, string> = {
             PENDING: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
             PROCESSING: isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600',
@@ -295,9 +333,9 @@ export default function AdminOrdersPage() {
             CANCELLED: isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600',
         };
         return colors[status] || colors.PENDING;
-    };
+    }, [isDark]);
 
-    const getPaymentColor = (status: string) => {
+    const getPaymentColor = useCallback((status: string) => {
         const colors: Record<string, string> = {
             PAID: isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-600',
             PARTIAL: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
@@ -305,9 +343,9 @@ export default function AdminOrdersPage() {
             REFUNDED: isDark ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-600',
         };
         return colors[status] || colors.PENDING;
-    };
+    }, [isDark]);
 
-    const handleQuickUpdate = (orderId: string, newState: string, label: string) => {
+    const handleQuickUpdate = useCallback((orderId: string, newState: string, label: string) => {
         setConfirmModal({
             isOpen: true,
             title: `Confirm ${label}`,
@@ -318,7 +356,7 @@ export default function AdminOrdersPage() {
                 try {
                     await adminAPI.updateOrder(orderId, { state: newState });
                     addAlert(`Status updated to ${label}`);
-                    await loadOrders();
+                    await loadOrdersRef.current();
                 } catch (err) {
                     console.error(err);
                     addAlert('Update failed', 'error');
@@ -327,31 +365,37 @@ export default function AdminOrdersPage() {
                 }
             }
         });
-    };
+    }, []);
 
     const statusCounts = useMemo(() => {
         if (apiCounts) return apiCounts;
         
         return {
             All: orders.length,
-            PENDING_PAYMENT: orders.filter(o => o.payment_status !== 'PAID' && (o.status === 'PENDING_PAYMENT' || o.balance_due > 0)).length,
-            PAID: orders.filter(o => o.status === 'PAID' || o.status === 'PROCESSING').length,
-            OPEN_FOR_BATCH: orders.filter(o => o.status === 'OPEN_FOR_BATCH').length,
-            IN_FULFILLMENT: orders.filter(o => o.status === 'IN_FULFILLMENT').length,
-            IN_TRANSIT: orders.filter(o => o.status === 'IN_TRANSIT').length,
-            ARRIVED: orders.filter(o => o.status === 'ARRIVED').length,
-            OUT_FOR_DELIVERY: orders.filter(o => o.status === 'OUT_FOR_DELIVERY').length,
-            DELIVERED: orders.filter(o => o.status === 'DELIVERED').length,
+            PENDING: orders.filter(o => o.status === 'PENDING' || o.payment_status === 'PARTIAL').length,
+            NEW_ORDERS: orders.filter(o => o.status === 'PROCESSING' && o.payment_status === 'PAID').length,
+            WAREHOUSE: orders.filter(o => ['OPEN_FOR_BATCH', 'IN_FULFILLMENT'].includes(o.status)).length,
+            LOGISTICS: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.status)).length,
+            COMPLETED: orders.filter(o => o.status === 'DELIVERED').length,
             CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
         };
     }, [orders, apiCounts]);
 
     if (loading) {
         return (
-            <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className={`h-16 rounded-lg animate-pulse ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}></div>
-                ))}
+            <div className="space-y-12 animate-pulse">
+                <div className="h-32 bg-slate-50 border border-slate-100" />
+                <div className="space-y-4">
+                    {[...Array(8)].map((_, i) => (
+                        <div key={i} className="flex gap-4 h-20 border-b border-slate-50 items-center px-8">
+                            <div className="w-4 h-4 bg-slate-100" />
+                            <div className="w-24 h-3 bg-slate-100" />
+                            <div className="w-12 h-12 bg-slate-50" />
+                            <div className="flex-1 h-3 bg-slate-50" />
+                            <div className="w-32 h-3 bg-slate-100" />
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -373,92 +417,127 @@ export default function AdminOrdersPage() {
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                    <div className="relative w-full md:w-80 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="SEARCH ORDERS..."
-                            value={searchTerm}
-                            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
-                        />
-                    </div>
+                    <SearchField 
+                        value={searchQuery} 
+                        onChange={(val) => {
+                            setSearchQuery(val);
+                            setCurrentPage(1);
+                        }} 
+                    />
                     <button
                         onClick={handleClearPending}
                         className="flex items-center justify-center gap-3 px-8 py-4 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto"
                     >
                         <X className="w-3.5 h-3.5" />
-                        CLEAR PENDING ({statusCounts.PENDING_PAYMENT})
+                        CLEAR PENDING ({statusCounts.PENDING})
                     </button>
                 </div>
             </div>
 
             {/* 2. PROTOCOL FILTERS */}
             <div className="overflow-x-auto pb-6 -mx-8 px-8 scrollbar-hide">
-                <div className="flex gap-4 min-w-max">
-                    {STATUS_TABS.map(s => (
-                        <button
-                            key={s}
-                            onClick={() => { 
-                                setStatusFilter(s); 
-                                setCurrentPage(1);
-                                setSelectedIds(new Set()); 
-                            }}
-                            className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === s
-                                ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
-                                : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
-                                }`}
-                        >
-                            {statusLabel(s)}
-                            <span className="ml-3 opacity-30 tabular-nums">[{statusCounts[s as keyof typeof statusCounts] || 0}]</span>
-                        </button>
-                    ))}
-                </div>
+                <FilterTabs 
+                    activeTab={statusFilter}
+                    counts={statusCounts}
+                    onTabChange={handleTabChange}
+                />
             </div>
 
-            {/* 3. BULK EXECUTION BRIDGE */}
+            {/* 3. BULK ACTION PROTOCOL */}
             <AnimatePresence>
                 {selectedIds.size > 0 && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        className="sticky top-32 z-40 flex flex-wrap items-center gap-6 p-6 bg-slate-950 border border-slate-800 shadow-2xl"
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-4xl"
                     >
-                        <div className="flex items-center gap-4 border-r border-slate-800 pr-8">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
-                                {selectedIds.size} ORDERS SELECTED
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap gap-4">
-                            {[
-                                { status: 'IN_TRANSIT', label: 'SHIP TO GHANA', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
-                                { status: 'ARRIVED', label: 'MARK AS ARRIVED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' },
-                                { status: 'DELIVERED', label: 'MARK AS DELIVERED', color: 'bg-white text-slate-950 hover:bg-emerald-500 hover:text-white' }
-                            ].map(action => (
+                        {bulkUpdating && (
+                            <div className="absolute top-0 left-0 w-full h-1 bg-white/10 overflow-hidden">
+                                <motion.div 
+                                    className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: `${(bulkProgress / bulkTotal) * 100}%` }}
+                                    transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+                                />
+                            </div>
+                        )}
+                        <div className="bg-slate-950 shadow-2xl px-12 py-8 flex flex-wrap items-center justify-between gap-8 border border-white/10 backdrop-blur-xl">
+                            <div className="flex items-center gap-6">
+                                <div className="w-10 h-10 bg-white/10 flex items-center justify-center text-white text-[12px] font-black">
+                                    {selectedIds.size}
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white">
+                                        {bulkUpdating ? `Processing ${bulkProgress}/${bulkTotal}` : 'Orders Selected'}
+                                    </p>
+                                    <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40">
+                                        {bulkUpdating ? 'Synchronizing with Secure Hub' : 'Protocol Actions Ready'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                                {statusFilter === 'NEW_ORDERS' && (
+                                    <button
+                                        onClick={() => handleBulkStatus('OPEN_FOR_BATCH')}
+                                        disabled={bulkUpdating}
+                                        className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
+                                    >
+                                        MOVE TO WAREHOUSE
+                                    </button>
+                                )}
+
+                                {(statusFilter === 'WAREHOUSE' || statusFilter === 'All') && (
+                                    <button
+                                        onClick={() => handleBulkStatus('IN_TRANSIT')}
+                                        disabled={bulkUpdating}
+                                        className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
+                                    >
+                                        SHIP TO GHANA
+                                    </button>
+                                )}
+
+                                {(statusFilter === 'LOGISTICS' || statusFilter === 'All') && (
+                                    <>
+                                        <button
+                                            onClick={() => handleBulkStatus('ARRIVED')}
+                                            disabled={bulkUpdating}
+                                            className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
+                                        >
+                                            MARK AS ARRIVED
+                                        </button>
+                                        <button
+                                            onClick={() => handleBulkStatus('OUT_FOR_DELIVERY')}
+                                            disabled={bulkUpdating}
+                                            className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
+                                        >
+                                            READY FOR DELIVERY
+                                        </button>
+                                    </>
+                                )}
+
                                 <button
-                                    key={action.status}
-                                    onClick={() => handleBulkStatus(action.status)}
+                                    onClick={() => handleBulkStatus('DELIVERED')}
                                     disabled={bulkUpdating}
-                                    className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50 ${action.color}`}
+                                    className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
                                 >
-                                    {action.label}
+                                    MARK AS DELIVERED
                                 </button>
-                            ))}
-                            <button
-                                onClick={() => setSelectedIds(new Set())}
-                                className="px-6 py-3 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
-                            >
-                                CANCEL
-                            </button>
+
+                                <button
+                                    onClick={() => setSelectedIds(new Set())}
+                                    className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-white"
+                                >
+                                    CANCEL
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* 4. MASTER REGISTRY TABLE */}
-            <div className="bg-white border border-slate-100 overflow-hidden">
+            <div className={`bg-white border border-slate-100 overflow-hidden transition-opacity duration-300 ${isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
@@ -477,7 +556,7 @@ export default function AdminOrdersPage() {
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Date</th>
                                 <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
                                 <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">
-                                    {statusFilter === 'PENDING_PAYMENT' ? 'Balance Due' : 'Total'}
+                                    {statusFilter === 'PENDING' ? 'Balance Due' : 'Total'}
                                 </th>
                                 <th className="px-8 py-6"></th>
                             </tr>
@@ -516,7 +595,7 @@ export default function AdminOrdersPage() {
                     </p>
                     <div className="flex gap-px bg-slate-100 border border-slate-100">
                         <button
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
                             disabled={currentPage === 1 || loading}
                             className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 disabled:opacity-30 transition-all"
                         >
@@ -531,7 +610,7 @@ export default function AdminOrdersPage() {
                             return (
                                 <button
                                     key={pageNum}
-                                    onClick={() => setCurrentPage(pageNum)}
+                                    onClick={() => startTransition(() => setCurrentPage(pageNum))}
                                     className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${currentPage === pageNum
                                         ? 'bg-slate-950 text-white'
                                         : 'bg-white text-slate-400 hover:text-slate-900'
@@ -542,7 +621,7 @@ export default function AdminOrdersPage() {
                             );
                         })}
                         <button
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            onClick={() => startTransition(() => setCurrentPage(prev => Math.min(totalPages, prev + 1)))}
                             disabled={currentPage === totalPages || loading}
                             className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 disabled:opacity-30 transition-all"
                         >
@@ -597,10 +676,11 @@ const OrderRow = React.memo(({
     getPaymentColor, 
     statusFilter,
     handleQuickUpdate, 
-    handleDelete 
+    handleDelete,
+    getStatusColor
 }: OrderRowProps) => {
     return (
-        <tr className={`group transition-all duration-500 ${isSelected
+        <tr className={`group transition-colors duration-200 ${isSelected
                 ? 'bg-slate-50'
                 : 'bg-white hover:bg-slate-50/50'
             }`}
@@ -652,11 +732,8 @@ const OrderRow = React.memo(({
             </td>
             <td className="px-8 py-8 hidden lg:table-cell">
                 <div className="flex items-center gap-3">
-                    <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
-                        order.status === 'DELIVERED' ? 'text-emerald-600' : 
-                        order.status === 'CANCELLED' ? 'text-red-600' : 'text-slate-400'
-                    }`}>
-                        {order.status.replace(/_/g, ' ')}
+                    <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${getStatusColor(order.status)}`}>
+                        {statusLabel(order.status)}
                     </span>
                     <div className="w-1 h-1 rounded-full bg-slate-200" />
                     <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(order.payment_status)}`}>
@@ -666,13 +743,13 @@ const OrderRow = React.memo(({
             </td>
             <td className="px-8 py-8 text-right">
                 <span className="text-[12px] font-black text-slate-950 tabular-nums">
-                    ₵{(statusFilter === 'PENDING_PAYMENT' ? Number(order.balance_due) : Number(order.total_amount)).toLocaleString()}
+                    ₵{(statusFilter === 'PENDING' ? Number(order.balance_due) : Number(order.total_amount)).toLocaleString()}
                 </span>
             </td>
             <td className="px-8 py-8 text-right">
                 <div className="flex justify-end items-center gap-6">
                     <div className="flex items-center gap-2 sm:gap-4 transition-all">
-                        {order.status === 'PAID' && (
+                        {(order.status === 'PROCESSING' || order.status === 'PAID' || order.status === 'OPEN_FOR_BATCH') && (
                             <button 
                                 onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
                                 className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
@@ -682,15 +759,15 @@ const OrderRow = React.memo(({
                         )}
                         <Link
                             href={`/dashboard/admin/orders/${order.id}`}
-                            className="p-2 text-slate-400 hover:text-slate-900 transition-colors"
+                            className="p-4 text-slate-400 hover:text-slate-900 transition-colors"
                         >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-5 h-5" />
                         </Link>
                         <button
                             onClick={() => handleDelete(order.id)}
-                            className="p-2 text-slate-200 hover:text-red-600 transition-colors"
+                            className="p-4 text-slate-200 hover:text-red-600 transition-colors"
                         >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
@@ -698,3 +775,63 @@ const OrderRow = React.memo(({
         </tr>
     );
 });
+
+// Optimized Filter Tabs to prevent parent re-renders and provide instant feedback
+const FilterTabs = React.memo(({ activeTab, counts, onTabChange }: { 
+    activeTab: string; 
+    counts: Record<string, number>; 
+    onTabChange: (s: string) => void 
+}) => {
+    // Local state for instant UI response before parent transition yields
+    const [localActiveTab, setLocalActiveTab] = useState(activeTab);
+
+    useEffect(() => {
+        setLocalActiveTab(activeTab);
+    }, [activeTab]);
+
+    return (
+        <div className="flex gap-4 min-w-max">
+            {STATUS_TABS.map(s => (
+                <button
+                    key={s}
+                    onClick={() => {
+                        setLocalActiveTab(s);
+                        onTabChange(s);
+                    }}
+                    className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${localActiveTab === s
+                        ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
+                        : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
+                        }`}
+                >
+                    {statusLabel(s)}
+                    <span className="ml-3 opacity-30 tabular-nums">[{counts[s as keyof typeof counts] || 0}]</span>
+                </button>
+            ))}
+        </div>
+    );
+});
+
+// Optimized Search Component to prevent parent re-renders on every keystroke
+function SearchField({ value, onChange }: { value: string; onChange: (val: string) => void }) {
+    const [localValue, setLocalValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            onChange(localValue);
+        }, 400);
+        return () => clearTimeout(handler);
+    }, [localValue, onChange]);
+
+    return (
+        <div className="relative w-full md:w-80 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
+            <input
+                type="text"
+                placeholder="SEARCH ORDERS..."
+                value={localValue}
+                onChange={(e) => setLocalValue(e.target.value)}
+                className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
+            />
+        </div>
+    );
+}

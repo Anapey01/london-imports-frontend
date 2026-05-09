@@ -153,7 +153,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner transition-colors duration-300`} suppressHydrationWarning>
+      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner`} suppressHydrationWarning>
         <SkipToContent />
         <Suspense fallback={null}>
           <GoogleAnalytics />
