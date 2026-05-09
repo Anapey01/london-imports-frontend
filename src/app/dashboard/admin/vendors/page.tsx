@@ -8,8 +8,8 @@ import React, { useEffect, useState } from 'react';
 import { adminAPI } from '@/lib/api';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Building2, Trash2, Eye, ShieldCheck, Activity, MapPin, Calendar, CheckSquare, X } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
+import { Search, Building2, Eye, Activity, MapPin, Calendar, CheckSquare, X } from 'lucide-react';
 
 interface Vendor {
     id: string;
@@ -407,7 +407,11 @@ const VendorRow = React.memo(({
     vendor, 
     setSelectedVendor, 
     formatDate 
-}: any) => {
+}: { 
+    vendor: Vendor; 
+    setSelectedVendor: (vendor: Vendor) => void; 
+    formatDate: (date: string) => string; 
+}) => {
     return (
         <tr className="group hover:bg-slate-50/50 transition-all duration-500 cursor-pointer" onClick={() => setSelectedVendor(vendor)}>
             <td className="px-8 py-8">

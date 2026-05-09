@@ -4,13 +4,10 @@
  */
 'use client';
 
-import { useTheme } from '@/providers/ThemeProvider';
 import { useState } from 'react';
-import { BookOpen, Command, Terminal, Shield, HelpCircle } from 'lucide-react';
+import { Terminal, Shield } from 'lucide-react';
 
 export default function TutorialsPage() {
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
     const [activeTab, setActiveTab] = useState('products');
 
     const tutorials = {
