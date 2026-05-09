@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import NextImage from 'next/image';
 import { User } from '@/types';
-import { ShieldCheck, Camera, Calendar, Hash } from 'lucide-react';
+import { ShieldCheck, Camera } from 'lucide-react';
 
 const ProfileHeader = ({ user }: { user: User }) => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
