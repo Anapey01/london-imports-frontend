@@ -27,58 +27,72 @@ const ProfileHeader = ({ user }: { user: User }) => {
     };
 
     return (
-        <div className="w-full bg-white border-b border-slate-100 pt-24 pb-8 relative overflow-hidden">
-            <div className="max-w-6xl mx-auto px-6">
-                <div className="flex flex-col sm:flex-row items-center gap-8">
-                    {/* Compact Avatar */}
-                    <div className="relative group">
+        <div className="w-full bg-white border-b border-slate-100 pt-32 pb-16 relative">
+            <div className="max-w-4xl mx-auto px-6">
+                <div className="flex flex-col items-center text-center">
+                    {/* Editorial Avatar */}
+                    <div className="relative group mb-8">
                         <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" id="avatar-upload" />
-                        <label htmlFor="avatar-upload" className="cursor-pointer block relative p-1 rounded-full bg-slate-50 shadow-sm border border-slate-100 group-hover:scale-105 transition-transform duration-500">
-                            <div className="h-20 w-20 rounded-full overflow-hidden relative bg-slate-900 flex items-center justify-center">
+                        <label htmlFor="avatar-upload" className="cursor-pointer block relative p-1.5 rounded-full ring-1 ring-slate-100 group-hover:ring-slate-200 transition-all duration-700">
+                            <div className="h-28 w-28 rounded-full overflow-hidden relative bg-slate-900 flex items-center justify-center shadow-2xl">
                                 {avatarUrl ? (
-                                    <NextImage src={avatarUrl} alt="Avatar" fill className="object-cover" />
+                                    <NextImage src={avatarUrl} alt="Avatar" fill className="object-cover scale-105 group-hover:scale-100 transition-transform duration-700" />
                                 ) : (
-                                    <span className="text-xl font-serif italic text-white/20 select-none">{user.first_name?.[0]}</span>
+                                    <span className="text-3xl font-serif italic text-white/30 select-none">{user.first_name?.[0]}</span>
                                 )}
-                                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <Camera size={16} className="text-white" />
+                                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Camera size={20} className="text-white" />
                                 </div>
                             </div>
                         </label>
                     </div>
 
-                    {/* Minimalist Identity */}
-                    <div className="text-center sm:text-left min-w-0 flex-1">
-                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-1">
-                            {user.role === 'VENDOR' ? 'Vendor' : user.is_staff ? 'Staff' : 'Member'}
-                        </p>
-                        <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
-                            {user.first_name} {user.last_name}
-                        </h1>
-                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
-                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-full">
-                                <ShieldCheck size={10} className="text-brand-emerald" />
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{user.email}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-100/50 rounded-full">
-                                <ShieldCheck size={10} className="text-brand-emerald" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-brand-emerald">Verified Member</span>
-                            </div>
-                        </div>
+                    {/* Identity Hierarchy */}
+                    <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-300 mb-4">
+                        {user.is_staff ? 'Official Staff' : user.role === 'VENDOR' ? 'Partner Vendor' : 'Member'}
+                    </p>
+                    
+                    <h1 className="text-4xl md:text-5xl font-serif italic tracking-tight text-slate-900 mb-6 lowercase">
+                        {user.first_name} {user.last_name}
+                    </h1>
 
-                        {/* Inline Metrics */}
-                        <div className="flex items-center justify-center sm:justify-start gap-4 mt-4 text-slate-300">
-                            <div className="flex items-center gap-1.5">
-                                <Calendar size={10} />
-                                <span className="text-[9px] font-black uppercase tracking-widest leading-none">Est. {memberSince}</span>
-                            </div>
-                            <span className="w-1 h-1 rounded-full bg-slate-200" />
-                            <div className="flex items-center gap-1.5">
-                                <Hash size={10} />
-                                <span className="text-[9px] font-black uppercase tracking-widest leading-none">ID {user.id?.toString().slice(-4).toUpperCase() || 'OFFICIAL'}</span>
-                            </div>
+                    <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+                        <div className="flex items-center gap-2 px-4 py-1.5 border border-slate-100 rounded-full">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50/50 border border-emerald-100/50 rounded-full">
+                            <ShieldCheck size={12} className="text-emerald-500" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Verified Member</span>
                         </div>
                     </div>
+
+                    {/* Minimalist Metrics */}
+                    <div className="flex items-center justify-center gap-6 text-slate-300 border-t border-slate-50 pt-8 w-full max-w-xs">
+                        <div className="text-center">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-200 mb-1">Est.</p>
+                            <p className="text-[11px] font-black text-slate-400 tracking-tighter">{memberSince}</p>
+                        </div>
+                        <div className="w-px h-8 bg-slate-50" />
+                        <div className="text-center">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-200 mb-1">ID</p>
+                            <p className="text-[11px] font-black text-slate-400 tracking-tighter">#{user.id?.toString().slice(-4).toUpperCase() || '5313'}</p>
+                        </div>
+                    </div>
+
+                    {/* PORTAL LINK: Only for Admins or Vendors */}
+                    {(user.is_staff || user.role === 'VENDOR') && (
+                        <div className="mt-12">
+                            <a 
+                                href={user.is_staff ? '/admin' : '/dashboard/vendor'} 
+                                className="group flex items-center gap-3 px-8 py-3 bg-slate-900 text-white rounded-full transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5"
+                            >
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em]">
+                                    {user.is_staff ? 'Admin Console' : 'Vendor Dashboard'}
+                                </span>
+                                <div className="w-5 h-px bg-white/20 group-hover:w-8 transition-all" />
+                            </a>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
