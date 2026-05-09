@@ -153,18 +153,18 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-3 mb-1">
-                                                    <p className="text-[10px] font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300">REF: #{order.order_number}</p>
+                                                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-600 dark:text-slate-300">Manifest Node: #{order.order_number}</p>
                                                     <div className={`px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest ${
                                                         isPaid ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
                                                     }`}>
                                                         {order.state_display}
                                                     </div>
                                                 </div>
-                                                <h4 className="text-lg font-serif font-bold tracking-tight mb-1 truncate uppercase text-slate-900 dark:text-white">
+                                                <h4 className="text-xl sm:text-2xl font-serif font-bold tracking-tight mb-2 uppercase text-slate-900 dark:text-white leading-tight">
                                                     {firstItem?.product.name || 'Package Consignment'}
                                                 </h4>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                                                    Registered: {new Date(order.created_at).toLocaleDateString()}
+                                                <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                                                    Registered Status: {new Date(order.created_at).toLocaleDateString()}
                                                 </p>
                                             </div>
                                             <div className="w-full sm:w-auto text-left sm:text-right pt-4 sm:pt-0 border-t sm:border-t-0 border-inherit">

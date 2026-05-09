@@ -138,33 +138,39 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                         </div>
                                         
                                         <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className={`h-2 w-2 rounded-full ${statusStyles.bg} shadow-sm border border-black/5`} />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">
-                                                    {order.state_display}
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <span className={`h-2.5 w-2.5 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
+                                                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-slate-900 dark:text-white">
+                                                    Status: {order.state_display}
                                                 </span>
                                             </div>
-                                            <h4 className="text-xl font-serif font-bold text-slate-900 dark:text-white truncate uppercase tracking-tight mb-2">
+                                            <h4 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-3 leading-tight">
                                                 {order.items?.[0]?.product.name || 'Package Consignment'}
                                             </h4>
-                                            <p className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-[0.3em]">
-                                                Sovereign Logistics Hub • {order.items?.length || 0} Assets
-                                            </p>
+                                            <div className="flex flex-wrap items-center gap-4">
+                                                <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em]">
+                                                    Logistics Node: Sovereign Hub
+                                                </p>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                                                <p className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em]">
+                                                    {order.items?.length || 0} Registered Assets
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Financial Valuation Node */}
-                                    <div className="lg:w-56 border-y lg:border-y-0 lg:border-x border-slate-100 py-8 lg:py-0 lg:px-12 flex flex-col justify-center lg:items-end">
-                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-3 w-full">
-                                            <p className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Valuation</p>
-                                            <p className="text-2xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
+                                    <div className="lg:w-64 border-y lg:border-y-0 lg:border-x border-slate-100 py-10 lg:py-0 lg:px-12 flex flex-col justify-center lg:items-end">
+                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-4 w-full">
+                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Asset Valuation</p>
+                                            <p className="text-3xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
                                         </div>
                                         {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
                                             <div className="flex items-center justify-between lg:justify-end gap-3 w-full">
-                                                <p className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">Outstanding</p>
-                                                <p className="text-sm font-mono font-bold text-amber-700 dark:text-amber-500 tracking-tighter">
+                                                <p className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Outstanding</p>
+                                                <p className="text-base font-mono font-bold text-amber-700 dark:text-amber-500 tracking-tighter">
                                                     ₵{balanceDue.toLocaleString()}
                                                 </p>
                                             </div>
