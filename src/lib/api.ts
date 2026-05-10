@@ -258,6 +258,8 @@ export const paymentsAPI = {
     api.post('/payments/initiate/', { order_number: orderNumber, payment_type, amount }),
   verify: (data: string | object) =>
     api.post('/payments/verify/', typeof data === 'string' ? { reference: data } : data),
+  syncManual: (orderNumber: string, reference: string) =>
+    api.post('/payments/sync-manual/', { order_number: orderNumber, reference }),
   orderPayments: (orderNumber: string) => api.get(`/payments/order/${orderNumber}/`),
 };
 

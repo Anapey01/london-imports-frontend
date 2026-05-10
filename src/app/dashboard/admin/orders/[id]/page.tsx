@@ -250,6 +250,8 @@ export default function AdminOrderDetailPage() {
         amount: 0,
         reason: ''
     });
+    
+    const [manualReference, setManualReference] = useState('');
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -340,6 +342,27 @@ export default function AdminOrderDetailPage() {
                 }
             }
         });
+    };
+
+    const handleManualSync = async () => {
+        if (!manualReference || !order) {
+            addAlert('Reference and Order context required', 'error');
+            return;
+        }
+        
+        setUpdating(true);
+        try {
+            const { paymentsAPI } = await import('@/lib/api');
+            await paymentsAPI.syncManual(order.order_number, manualReference);
+            addAlert('Paystack verification successful');
+            setManualReference('');
+            await loadOrder();
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { error?: string } } };
+            addAlert(err.response?.data?.error || 'Verification failed', 'error');
+        } finally {
+            setUpdating(false);
+        }
     };
 
     const handleTransferPayment = async () => {
@@ -658,6 +681,26 @@ export default function AdminOrderDetailPage() {
                                             Balance <br /> Migration
                                         </span>
                                     </button>
+                                </div>
+
+                                <div className="pt-4 space-y-4">
+                                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Paystack Re-Sync</span>
+                                    <div className="space-y-3">
+                                        <input 
+                                            value={manualReference}
+                                            onChange={(e) => setManualReference(e.target.value)}
+                                            placeholder="PASTE PAYSTACK REFERENCE"
+                                            className="w-full p-4 bg-slate-500/5 border border-inherit text-[10px] font-mono tracking-widest outline-none focus:border-pink-500 transition-all uppercase"
+                                        />
+                                        <button 
+                                            onClick={handleManualSync}
+                                            disabled={updating || !manualReference}
+                                            className="w-full p-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-pink-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            {updating ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
+                                            Verify With Paystack
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="pt-4 space-y-2">
