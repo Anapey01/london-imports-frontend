@@ -84,8 +84,8 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
         },
         items_count: (order.items_count as number) || itemsSummary.length || 0,
         total_amount: Number(order.total || 0),
-        status: (order.status as string) || 'PENDING',
-        payment_status: (order.payment_status as string) || 'PENDING',
+        status: (order.state as string) || (order.status as string) || 'PENDING',
+        payment_status: Number(order.balance_due || 0) <= 0 ? 'PAID' : (Number(order.amount_paid || 0) > 0 ? 'PARTIAL' : 'PENDING'),
         amount_paid: Number(order.amount_paid || 0),
         balance_due: Number(order.balance_due || 0),
         is_installment: !!order.is_installment,
@@ -325,6 +325,7 @@ export default function AdminOrdersPage() {
     const getStatusColor = useCallback((status: string) => {
         const colors: Record<string, string> = {
             PENDING: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
+            PAID: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
             PROCESSING: isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600',
             IN_TRANSIT: isDark ? 'bg-indigo-900/30 text-indigo-400' : 'bg-indigo-100 text-indigo-600',
             ARRIVED: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600',
@@ -373,7 +374,7 @@ export default function AdminOrdersPage() {
         return {
             All: orders.length,
             PENDING: orders.filter(o => o.status === 'PENDING' || o.payment_status === 'PARTIAL').length,
-            NEW_ORDERS: orders.filter(o => o.status === 'PROCESSING' && o.payment_status === 'PAID').length,
+            NEW_ORDERS: orders.filter(o => o.status === 'PAID' && o.payment_status === 'PAID').length,
             WAREHOUSE: orders.filter(o => ['OPEN_FOR_BATCH', 'IN_FULFILLMENT'].includes(o.status)).length,
             LOGISTICS: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.status)).length,
             COMPLETED: orders.filter(o => o.status === 'DELIVERED').length,
