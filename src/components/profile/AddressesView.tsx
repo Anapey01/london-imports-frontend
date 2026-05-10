@@ -47,7 +47,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
 
     return (
         <div className="space-y-12 animate-fade-in-up">
-            {/* Architectural Header Archive */}
+            {/* Address Book Header */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
                     <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Saved Addresses</p>
@@ -66,7 +66,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                 )}
             </div>
 
-            {/* Primary Shipping Terminal */}
+            {/* Home Address Section */}
             {(user?.address || user?.city || user?.region) && (
                 <div className="space-y-6">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -169,7 +169,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                             </button>
                         </div>
                     </div>
-                    {/* Decorative Terminal Pattern */}
+                    {/* Background Pattern */}
                     <div className="absolute inset-0 bg-[radial-gradient(#ffffff_0.5px,transparent_0.5px)] [background-size:16px_16px] opacity-[0.03]" />
                 </form>
             )}

@@ -53,7 +53,7 @@ export default function SettingsView({ user }: { user: User }) {
 
     return (
         <div className="space-y-12 animate-fade-in-up pb-24">
-            {/* Architectural Header Archive */}
+            {/* Profile Settings Header */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
                 <div className="space-y-2">
                     <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">Account Settings</p>
@@ -92,7 +92,7 @@ export default function SettingsView({ user }: { user: User }) {
                                 <input id="last_name" type="text" placeholder="Enter last name" value={profileData.last_name} onChange={e => setProfileData({...profileData, last_name: e.target.value})} className={inputClass} />
                             </div>
                             <div className="space-y-1.5">
-                                <label htmlFor="email" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Email (Immutable)</label>
+                                <label htmlFor="email" className="text-[11px] font-black uppercase tracking-widest text-slate-500 px-1">Email (Cannot be changed)</label>
                                 <input id="email" type="email" value={user?.email} readOnly className={`${inputClass} bg-slate-50 border-transparent opacity-60 cursor-not-allowed`} placeholder="Email address" />
                             </div>
                             <div className="space-y-1.5">
@@ -162,7 +162,7 @@ export default function SettingsView({ user }: { user: User }) {
                             {[
                                 { id: 'email_notifications', label: 'Email Alerts', desc: 'Detailed order receipts' },
                                 { id: 'sms_notifications', label: 'SMS Alerts', desc: 'Real-time transit updates' },
-                                { id: 'whatsapp_notifications', label: 'WhatsApp Alerts', desc: 'Direct hub communication' },
+                                { id: 'whatsapp_notifications', label: 'WhatsApp Alerts', desc: 'Direct updates via WhatsApp' },
                             ].map(item => (
                                 <div key={item.id} className="flex items-center justify-between group">
                                     <div className="max-w-[140px]">
