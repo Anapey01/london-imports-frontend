@@ -43,7 +43,6 @@ const AddressesView = ({ user }: AddressesViewProps) => {
         saveAddresses(addresses.filter(a => a.id !== id));
     };
 
-    const inputClass = "w-full px-4 py-3 rounded-lg border outline-none transition-all text-[11px] font-black uppercase tracking-widest bg-surface-card border-border-standard text-content-primary focus:border-brand-emerald placeholder:text-content-secondary";
 
     return (
         <div className="space-y-12 animate-fade-in-up">
