@@ -67,9 +67,9 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             {/* Manifest Header Archive */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-slate-100 pb-8">
                 <div className="space-y-1">
-                    <p className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400">Order History Archive</p>
+                    <p className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400">Past Orders & History</p>
                     <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white leading-none">
-                        My <span className="italic text-brand-emerald">Manifests.</span>
+                        Order <span className="italic text-brand-emerald">History.</span>
                     </h2>
                 </div>
                 <div className="flex items-center gap-5 border border-slate-100 rounded-sm px-6 py-3 bg-slate-50/30">
@@ -82,7 +82,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                 : 'text-slate-400 hover:text-slate-600'
                                 }`}
                         >
-                            {status === 'ALL' ? 'Registry' : status}
+                            {status === 'ALL' ? 'All Orders' : status}
                             {filter === status && (
                                 <motion.div layoutId="filter-pill" className="absolute -bottom-1.5 left-0 right-0 h-[1px] bg-slate-900 rounded-full" />
                             )}
@@ -109,11 +109,11 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     {/* Entry ID & Date Node */}
                                     <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center lg:border-r border-slate-100 lg:pr-12 min-w-[160px]">
                                         <div className="space-y-1">
-                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Manifest ID</p>
+                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Order No.</p>
                                             <p className="text-sm font-mono font-bold text-slate-900 dark:text-white tracking-tight">#{order.order_number}</p>
                                         </div>
                                         <div className="space-y-1 lg:mt-8 text-right lg:text-left">
-                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Registered Status</p>
+                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Order Date</p>
                                             <p className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
@@ -141,24 +141,24 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                             <div className="flex items-center gap-3 mb-2">
                                                 <span className={`h-1.5 w-1.5 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
                                                 <span className="text-[8px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400 dark:text-white">
-                                                    {order.state_display}
+                                                    Status: {order.state_display}
                                                 </span>
                                             </div>
                                             <h4 className="text-base sm:text-lg font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-3 leading-tight group-hover:text-brand-emerald transition-colors">
-                                                {order.items?.[0]?.product.name || 'Package Consignment'}
+                                                {order.items?.[0]?.product.name || 'Your Package'}
                                             </h4>
                                             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 opacity-50">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Node</span>
+                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Location</span>
                                                     <p className="text-[9px] font-mono font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">
-                                                        Sovereign Hub
+                                                        London Hub
                                                     </p>
                                                 </div>
                                                 <span className="w-px h-2 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Assets</span>
+                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Items</span>
                                                     <p className="text-[9px] font-mono font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">
-                                                        {order.items?.length || 0} Registered
+                                                        {order.items?.length || 0} Total
                                                     </p>
                                                 </div>
                                             </div>
@@ -168,7 +168,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     {/* Financial Valuation Node */}
                                     <div className="lg:w-56 flex flex-col justify-center lg:items-end border-t lg:border-t-0 lg:border-x border-slate-100 pt-4 lg:pt-0 lg:px-10">
                                         <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-1.5 w-full">
-                                            <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Valuation</p>
+                                            <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Total Price</p>
                                             <p className="text-xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
