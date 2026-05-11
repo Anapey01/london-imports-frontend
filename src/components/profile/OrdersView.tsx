@@ -100,104 +100,134 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                 ) : (
                     filteredOrders.map((order: Order) => {
                         const balanceDue = parseFloat(order.balance_due?.toString() || '0');
-                        const isPending = (order.state === 'PENDING_PAYMENT' || order.state === 'DRAFT' || (balanceDue > 0 && order.state !== 'CANCELLED')) && order.state !== 'PAID';
+                        const totalAmount = parseFloat(order.total.toString());
+                        const amountPaid = parseFloat(order.amount_paid?.toString() || '0');
+                        const isPending = (balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'FAILED');
                         const statusStyles = getStatusStyles(order.state);
+                        
+                        // Calculate payment progress percentage
+                        const paymentProgress = Math.min(100, Math.round((amountPaid / totalAmount) * 100));
 
                         return (
-                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-sm hover:border-slate-300 transition-all duration-300 overflow-hidden">
-                                <div className="p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8">
+                            <div key={order.order_number} className="group bg-white border border-slate-100 rounded-sm hover:border-slate-300 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-md">
+                                <div className="p-6 sm:p-8 flex flex-col lg:flex-row gap-8">
                                     {/* Entry ID & Date Node */}
-                                    <div className="flex lg:flex-col lg:items-start items-center justify-between lg:justify-center lg:border-r border-slate-100 lg:pr-12 min-w-[160px]">
+                                    <div className="lg:w-48 flex lg:flex-col lg:items-start items-center justify-between lg:justify-start lg:border-r border-slate-100 lg:pr-8">
                                         <div className="space-y-1">
-                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Order No.</p>
-                                            <p className="text-sm font-mono font-bold text-slate-900 dark:text-white tracking-tight">#{order.order_number}</p>
+                                            <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Protocol ID</p>
+                                            <p className="text-sm font-mono font-bold text-slate-900 tracking-tight">#{order.order_number}</p>
                                         </div>
-                                        <div className="space-y-1 lg:mt-8 text-right lg:text-left">
-                                            <p className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Order Date</p>
-                                            <p className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                        <div className="space-y-1 lg:mt-10 text-right lg:text-left">
+                                            <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Registered</p>
+                                            <p className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
                                         </div>
-                                    </div>
-
-                                    {/* Asset Summary Node */}
-                                    <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6 lg:gap-10 min-w-0">
-                                        <div className="h-24 w-20 relative rounded border border-slate-100 overflow-hidden bg-slate-50 lg:grayscale lg:group-hover:grayscale-0 transition-all duration-700 flex-shrink-0 shadow-sm">
-                                            {order.items?.[0]?.product.image ? (
-                                                <NextImage
-                                                    src={getImageUrl(order.items[0].product.image)}
-                                                    alt={order.order_number}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                                    <Package size={24} />
-                                                </div>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className={`h-1.5 w-1.5 rounded-full ${statusStyles.bg} shadow-sm border border-black/5 animate-pulse`} />
-                                                <span className="text-[8px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400 dark:text-white">
-                                                    Status: {order.state_display}
+                                        <div className="hidden lg:block lg:mt-10">
+                                            <div className={`px-3 py-1.5 rounded-full ${statusStyles.lightBg} inline-flex items-center gap-2`}>
+                                                <span className={`h-1 w-1 rounded-full ${statusStyles.bg} animate-pulse`} />
+                                                <span className={`text-[8px] font-black uppercase tracking-widest ${statusStyles.text.replace('text-white', statusStyles.bg.replace('bg-', 'text-'))}`}>
+                                                    {order.state_display}
                                                 </span>
                                             </div>
-                                            <h4 className="text-base sm:text-lg font-serif font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-3 leading-tight group-hover:text-brand-emerald transition-colors">
-                                                {order.items?.[0]?.product.name || 'Your Package'}
-                                            </h4>
-                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 opacity-50">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Location</span>
-                                                    <p className="text-[9px] font-mono font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">
-                                                        London Hub
-                                                    </p>
-                                                </div>
-                                                <span className="w-px h-2 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Items</span>
-                                                    <p className="text-[9px] font-mono font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">
-                                                        {order.items?.length || 0} Total
-                                                    </p>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Financial Valuation Node */}
-                                    <div className="lg:w-56 flex flex-col justify-center lg:items-end border-t lg:border-t-0 lg:border-x border-slate-100 pt-4 lg:pt-0 lg:px-10">
-                                        <div className="flex items-baseline justify-between lg:justify-end gap-3 mb-1.5 w-full">
-                                            <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Total Price</p>
-                                            <p className="text-xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
-                                                ₵{parseFloat(order.total.toString()).toLocaleString()}
-                                            </p>
-                                        </div>
-                                        {balanceDue > 0 && order.state !== 'CANCELLED' && order.state !== 'PAID' && (
-                                            <div className="flex items-center justify-between lg:justify-end gap-3 w-full">
-                                                <p className="text-[8px] font-mono font-bold text-amber-600 uppercase tracking-widest">Balance</p>
-                                                <p className="text-xs font-mono font-bold text-amber-700 tracking-tighter">
-                                                    ₵{balanceDue.toLocaleString()}
-                                                </p>
+                                    {/* Asset Summary Node - The Content Area */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start gap-6 mb-8">
+                                            <div className="h-20 w-16 relative rounded-sm border border-slate-100 overflow-hidden bg-slate-50 flex-shrink-0">
+                                                {order.items?.[0]?.product.image ? (
+                                                    <NextImage
+                                                        src={getImageUrl(order.items[0].product.image)}
+                                                        alt={order.order_number}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                        <Package size={20} />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-[8px] font-mono font-bold text-brand-emerald uppercase tracking-[0.3em] mb-1">Package Contents</p>
+                                                <div className="space-y-1.5">
+                                                    {order.items?.map((item, idx) => (
+                                                        <div key={idx} className="flex items-baseline justify-between gap-4">
+                                                            <p className="text-[11px] font-bold text-slate-900 uppercase tracking-tight truncate max-w-[200px]">
+                                                                {item.product.name}
+                                                                {item.selected_size && <span className="ml-2 text-slate-400 font-normal">[{item.selected_size}]</span>}
+                                                            </p>
+                                                            <p className="text-[10px] font-mono text-slate-400">x{item.quantity}</p>
+                                                        </div>
+                                                    ))}
+                                                    {order.items && order.items.length > 2 && (
+                                                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest pt-1">
+                                                            + {order.items.length - 2} more items
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Installment Progress Archive */}
+                                        <div className="bg-slate-50/50 p-4 rounded-sm border border-slate-100/50">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Payment Integrity</p>
+                                                <p className="text-[9px] font-mono font-bold text-slate-900 uppercase tracking-widest">{paymentProgress}% Secured</p>
+                                            </div>
+                                            <div className="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
+                                                <motion.div 
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${paymentProgress}%` }}
+                                                    className={`h-full ${paymentProgress === 100 ? 'bg-emerald-500' : 'bg-brand-emerald'}`}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between mt-3">
+                                                <div className="flex gap-4">
+                                                    <div>
+                                                        <span className="text-[7px] text-slate-400 uppercase font-black block">Paid</span>
+                                                        <span className="text-[10px] font-mono font-bold text-slate-900 tracking-tighter">₵{amountPaid.toLocaleString()}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[7px] text-slate-400 uppercase font-black block">Balance</span>
+                                                        <span className={`text-[10px] font-mono font-bold tracking-tighter ${balanceDue > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
+                                                            ₵{balanceDue.toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-[7px] text-slate-400 uppercase font-black block">Total Valuation</span>
+                                                    <span className="text-[10px] font-mono font-bold text-slate-900 tracking-tighter">₵{totalAmount.toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Operational Bridge Node */}
-                                    <div className="lg:w-48 flex flex-col gap-2">
+                                    <div className="lg:w-48 flex flex-col gap-2 justify-center pt-6 lg:pt-0 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-8">
                                         <Link
                                             href={`/track?order=${order.order_number}`}
-                                            className="w-full py-3 border border-slate-900 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.4em] text-center rounded-sm hover:bg-slate-800 transition-all shadow-md"
+                                            className="w-full py-3.5 border border-slate-900 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.4em] text-center rounded-sm hover:bg-slate-800 transition-all shadow-md group-hover:-translate-y-0.5"
                                         >
-                                            Track
+                                            Track Order
                                         </Link>
                                         {isPending && (
                                             <Link
                                                 href={`/checkout?order=${order.order_number}`}
-                                                className="w-full py-3 border border-brand-emerald bg-brand-emerald text-white text-[10px] font-black uppercase tracking-[0.4em] text-center rounded-sm hover:bg-brand-emerald/90 transition-all"
+                                                className="w-full py-3.5 border border-brand-emerald bg-brand-emerald text-white text-[9px] font-black uppercase tracking-[0.4em] text-center rounded-sm hover:brightness-110 transition-all shadow-sm group-hover:-translate-y-0.5"
                                             >
-                                                Payment
+                                                Complete Payment
                                             </Link>
+                                        )}
+                                        {order.state === 'PENDING_PAYMENT' && amountPaid === 0 && (
+                                            <button 
+                                                onClick={() => setCancellingOrder(order.order_number)}
+                                                className="w-full py-2 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors"
+                                            >
+                                                Void Order
+                                            </button>
                                         )}
                                     </div>
                                 </div>
