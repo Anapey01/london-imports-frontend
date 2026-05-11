@@ -6,11 +6,11 @@ import ProductGridSection from '@/components/home/ProductGridSection';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "China to Ghana Sourcing & Logistics Hub",
-  description: "The premier sourcing house and logistics protocol bridging China manufacturing and Ghana retail. Buy from 1688 and Alibaba with Mobile Money.",
+  title: "London's Imports | China to Ghana Shopping & Shipping Center",
+  description: "Ghana's #1 shopping service and shipping system bridging China manufacturing and Ghana retail. Trusted by 5,000+ importers. Buy from 1688 and Alibaba with Mobile Money.",
   openGraph: {
-    title: "London's Imports | Premium China to Ghana Sourcing",
-    description: "Secure, factory-direct sourcing from Guangzhou to Accra. Pay with Momo, track your batch in real-time.",
+    title: "London's Imports | Premium China to Ghana Shopping",
+    description: "Secure, factory-direct shopping service from Guangzhou to Accra. Pay with Momo, track your batch in real-time.",
     url: 'https://londonsimports.com',
     siteName: "London's Imports",
     images: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         url: 'https://londonsimports.com/og-home.jpg',
         width: 1200,
         height: 630,
-        alt: "London's Imports - China to Ghana Logistics",
+        alt: "London's Imports - China to Ghana Shopping & Shipping Center",
       },
     ],
     locale: 'en_GH',
@@ -69,7 +69,7 @@ export default function HomePage() {
         <FeaturedSection />
       </Suspense>
 
-      {/* 4. The London Protocol: Brand & Logistics Manifesto (SEO Footer Position) */}
+      {/* 4. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
       <HomeSEOHeader />
 
       {/* 5. Deep Keyword SEO Accordion (Crawler Data Archive) */}

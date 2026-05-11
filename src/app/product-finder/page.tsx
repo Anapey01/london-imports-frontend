@@ -1,5 +1,5 @@
 /**
- * London's Imports — Premium AI Sourcing (Redesigned)
+ * London's Imports — Premium AI Search (Redesigned)
  * Editorial, asymmetrical layout with a focus on 'Human-First' logistics.
  */
 'use client';
@@ -31,7 +31,7 @@ interface AIAnalysis {
     confidence: 'HIGH' | 'MEDIUM' | 'LOW';
 }
 
-interface SourcingResult {
+interface ProductFinderResult {
     id: string;
     image_url: string;
     description: string;
@@ -40,7 +40,7 @@ interface SourcingResult {
     created_at: string;
 }
 
-export default function SourcingPage() {
+export default function ProductFinderPage() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,7 +48,7 @@ export default function SourcingPage() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [description, setDescription] = useState('');
     const [isUploading, setIsUploading] = useState(false);
-    const [result, setResult] = useState<SourcingResult | null>(null);
+    const [result, setResult] = useState<ProductFinderResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +87,7 @@ export default function SourcingPage() {
         try {
             const token = localStorage.getItem('access_token');
             if (!token) {
-                router.push('/login?redirect=/sourcing');
+                router.push('/login?redirect=/product-finder');
                 return;
             }
 
@@ -115,7 +115,7 @@ export default function SourcingPage() {
                 return;
             }
             if (res.status === 401) {
-                router.push('/login?redirect=/sourcing');
+                router.push('/login?redirect=/product-finder');
                 return;
             }
 
@@ -151,7 +151,7 @@ export default function SourcingPage() {
             {/* 1. LAYERED BACKGROUND TYPOGRAPHY */}
             <div className="absolute top-10 right-0 pointer-events-none select-none overflow-hidden aria-hidden opacity-10">
                 <span className="text-[15rem] md:text-[30rem] font-black text-slate-100 uppercase leading-none tracking-tighter block -mr-20">
-                    SOURCE
+                    FIND
                 </span>
             </div>
 
@@ -171,7 +171,7 @@ export default function SourcingPage() {
                             </span>
                         </div>
                         <h1 className="text-5xl md:text-8xl font-serif font-black leading-[0.9] tracking-tighter text-slate-900 mb-8 max-w-4xl">
-                            The Sourcing <br />
+                            The Product <br />
                             <span className="italic font-light text-slate-400 opacity-40">Intelligence</span> Engine.
                         </h1>
                         <p className="max-w-xl text-xl text-slate-600 font-medium leading-relaxed">
@@ -263,11 +263,11 @@ export default function SourcingPage() {
                                             className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-slate-900/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                                         >
                                             {isUploading ? (
-                                                <span className="animate-pulse">Deep Matching in Progress...</span>
+                                                <span className="animate-pulse">Finding Matches in Progress...</span>
                                             ) : (
                                                 <>
                                                     <Sparkles className="w-4 h-4 text-emerald-400" />
-                                                    Initiate AI Sourcing
+                                                    Start AI Search
                                                 </>
                                             )}
                                         </button>
@@ -279,7 +279,7 @@ export default function SourcingPage() {
                             <div className="bg-slate-50 border border-slate-100 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden">
                                 <div className="flex items-center gap-4 mb-10">
                                     <div className={`w-3 h-3 rounded-full ${result.status === 'ANALYZED' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse'}`} />
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Analysis Fragment #{result.id.slice(-4)}</span>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Search Results #{result.id.slice(-4)}</span>
                                 </div>
 
                                 <div className="flex gap-8 items-start mb-12">
@@ -300,7 +300,7 @@ export default function SourcingPage() {
                                             </div>
                                              <div className="flex flex-col gap-1">
                                                 <span className="text-[9px] font-black uppercase text-slate-400 mb-0.5 tracking-widest">Category ID</span>
-                                                <span className="text-lg font-bold">{result.ai_analysis?.category || 'Sourcing'}</span>
+                                                <span className="text-lg font-bold">{result.ai_analysis?.category || 'Search'}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -311,7 +311,7 @@ export default function SourcingPage() {
                                     <p className="text-xs text-slate-600 font-medium leading-relaxed">
                                         Status: <span className="text-slate-900 font-bold ml-1">{result.status}</span>. 
                                         {result.status === 'ANALYZED' 
-                                            ? ' Our sourcing desk has confirmed this item is available. We will contact you on WhatsApp with the direct factory quote.' 
+                                            ? ' Our shopping team has confirmed this item is available. We will contact you on WhatsApp with the direct factory quote.' 
                                             : ' Received. Our human agents in China are checking availability with secondary suppliers.'}
                                     </p>
                                 </div>

@@ -29,13 +29,13 @@ export default function NotFound() {
                 {/* Branding & Message */}
                 <div className="space-y-6">
                     <h1 className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-950 dark:text-white inline-block border-b border-slate-200 dark:border-slate-800 pb-2">
-                        Protocol Disruption
+                        Page Not Found
                     </h1>
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-950 dark:text-white uppercase transition-colors">
-                        Page Not Located
+                        Where did you go?
                     </h2>
                     <p className="text-[11px] font-medium uppercase tracking-widest leading-relaxed text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-                        The requested sourcing path is unavailable. It may have been decommissioned or moved to a new logistics hub.
+                        The requested shopping path is unavailable. It may have been removed or moved to a new shipping center.
                     </p>
                 </div>
 
@@ -53,14 +53,14 @@ export default function NotFound() {
                         className="flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-950 dark:text-white px-10 py-5 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-50 dark:hover:bg-slate-900 transition-all active:scale-95"
                     >
                         <Search className="w-4 h-4" />
-                        Search Sourcing
+                        Search Products
                     </Link>
                 </div>
 
                 {/* Quick Contact */}
                 <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-900">
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        Need Protocol Assistance? <br className="md:hidden" />
+                        Need Help? <br className="md:hidden" />
                         <Link href="/contact" className="text-slate-950 dark:text-white underline underline-offset-8 decoration-slate-200 dark:decoration-slate-800 hover:text-emerald-500 transition-colors ml-2">Contact Support</Link>
                     </p>
                 </div>

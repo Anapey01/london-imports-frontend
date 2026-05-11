@@ -6,13 +6,49 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import Script from 'next/script';
 
-const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => {
+interface GoogleResponse {
+    credential: string;
+}
+
+interface GoogleInterface {
+    accounts: {
+        id: {
+            initialize: (config: {
+                client_id: string;
+                callback: (response: GoogleResponse) => void;
+                auto_select: boolean;
+                cancel_on_tap_outside: boolean;
+            }) => void;
+            renderButton: (parent: HTMLElement, options: {
+                type: string;
+                theme: string;
+                size: string;
+                text: string;
+                shape: string;
+                logo_alignment: string;
+            }) => void;
+        };
+    };
+}
+
+const GoogleLoginButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => {
     const { googleLogin } = useAuthStore();
     const { showToast } = useToast();
     const router = useRouter();
     const googleButtonRef = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
     const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    const handleGoogleResponse = useCallback(async (response: GoogleResponse) => {
+        try {
+            await googleLogin(response.credential);
+            showToast('Success! Signed in with Google', 'success');
+            router.push('/');
+        } catch (error) {
+            console.error('Google Login Error:', error);
+            showToast('Google sign-in failed. Please try again.', 'error');
+        }
+    }, [googleLogin, router, showToast]);
 
     const initializeGoogle = useCallback(() => {
         if (!clientID) {
@@ -22,7 +58,9 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
             return;
         }
 
-        if ((window as any).google && googleButtonRef.current) {
+        const google = (window as unknown as { google: GoogleInterface }).google;
+
+        if (google && googleButtonRef.current) {
             try {
                 // Remove existing button if any to prevent duplicates on remount
                 if (googleButtonRef.current.hasChildNodes()) {
@@ -30,7 +68,7 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                 }
 
                 if (!isInitialized.current) {
-                    (window as any).google.accounts.id.initialize({
+                    google.accounts.id.initialize({
                         client_id: clientID,
                         callback: handleGoogleResponse,
                         auto_select: false,
@@ -39,7 +77,7 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                     isInitialized.current = true;
                 }
 
-                (window as any).google.accounts.id.renderButton(
+                google.accounts.id.renderButton(
                     googleButtonRef.current,
                     { 
                         type: 'standard',
@@ -54,12 +92,13 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
                 console.error('Error rendering Google button:', error);
             }
         }
-    }, [clientID, mode]);
+    }, [clientID, mode, handleGoogleResponse]);
 
     // Handle initial script mount and subsequent navigations
     useEffect(() => {
         const checkInterval = setInterval(() => {
-            if ((window as any).google) {
+            const google = (window as unknown as { google: GoogleInterface }).google;
+            if (google) {
                 initializeGoogle();
                 clearInterval(checkInterval);
             }
@@ -68,16 +107,6 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
         return () => clearInterval(checkInterval);
     }, [initializeGoogle]);
 
-    const handleGoogleResponse = useCallback(async (response: any) => {
-        try {
-            await googleLogin(response.credential);
-            showToast('Success! Signed in with Google', 'success');
-            router.push('/');
-        } catch (error) {
-            console.error('Google Login Error:', error);
-            showToast('Google sign-in failed. Please try again.', 'error');
-        }
-    }, [googleLogin, router]);
 
     return (
         <div className="w-full">
@@ -115,4 +144,4 @@ const GoogleProtocolButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' 
     );
 };
 
-export default GoogleProtocolButton;
+export default GoogleLoginButton;

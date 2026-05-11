@@ -116,7 +116,7 @@ export default function OrdersPage() {
 
                                         {/* Financial Ledger */}
                                         <div className="flex flex-col items-center sm:items-end justify-center gap-0.5 text-center sm:text-right min-w-[100px]">
-                                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Liability</p>
+                                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Total Amount</p>
                                             <p className="text-sm sm:text-base font-black text-slate-900 tabular-nums tracking-tighter">
                                                 GHS {parseFloat(order.total.toString()).toLocaleString()}
                                             </p>

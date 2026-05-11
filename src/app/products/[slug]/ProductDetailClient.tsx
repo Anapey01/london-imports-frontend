@@ -216,7 +216,7 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
             {data.narrative && (
                 <div className="relative py-8 border-y border-slate-100 dark:border-slate-900">
                     <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-surface px-6 text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald/40 italic">
-                        The Story
+                        Product Details
                     </span>
                     <p className="text-2xl lg:text-3xl font-serif font-medium text-content-primary leading-[1.3] tracking-tight text-center text-balance max-w-4xl mx-auto">
                         &ldquo;{data.narrative}&rdquo;
@@ -249,7 +249,7 @@ function EditorialSection({ data }: { data: Product['editorial_data'] }) {
                 <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-surface shadow-sm">
                     <div className="bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4 border-b border-slate-100 dark:border-slate-800">
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald">
-                            Provenance & Details
+                            Product Details
                         </span>
                     </div>
                     <div className="divide-y divide-slate-50 dark:divide-slate-900">
@@ -647,7 +647,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         const message = encodeURIComponent(
             `Hi London's Imports! I'm interested in the ${product.name} priced at ${formatPrice(currentPrice)}.\n\n` + 
             `Product Link: ${window.location.origin}/products/${product.slug}\n\n` +
-            `Can you help me with the sourcing details?`
+            `Can you help me with the shipping details?`
         );
         
         window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
@@ -754,7 +754,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     {formatPrice(currentPrice)}
                                 </span>
                                 <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-emerald mb-0.5 opacity-60">
-                                    Excl. Delivery
+                                    Plus shipping
                                 </span>
                                 
                                 <button 

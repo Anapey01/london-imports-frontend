@@ -10,13 +10,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { trackSignUp, trackEvent } from '@/lib/analytics';
 import { ArrowUpRight, ArrowRight, AlertCircle, ShieldCheck } from 'lucide-react';
-import GoogleProtocolButton from '@/components/auth/GoogleProtocolButton';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 export default function RegisterForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/';
-    const { register, logout, isLoading } = useAuthStore();
+    const { register, isLoading } = useAuthStore();
 
     useEffect(() => {
         trackEvent('form_start', { form_id: 'register' });
@@ -109,7 +109,7 @@ export default function RegisterForm() {
                 <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
             </div>
 
-            {/* 2. PROTOCOL FORM PANE */}
+            {/* 2. REGISTRATION FORM PANE */}
             <div className="flex items-center justify-center p-8 md:p-16 lg:p-24 bg-surface">
                 <div className="w-full max-w-sm">
                     <header className="mb-16">
@@ -273,7 +273,7 @@ export default function RegisterForm() {
                         </button>
 
                         <div className="pt-4 border-t border-border-standard">
-                            <GoogleProtocolButton mode="signup" />
+                            <GoogleLoginButton mode="signup" />
                         </div>
                     </form>
 

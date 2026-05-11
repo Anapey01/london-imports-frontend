@@ -33,7 +33,7 @@ const Footer = () => {
                              <div className="flex flex-col gap-1">
                                  <div className="h-px w-10 bg-content-primary" />
                                  <span className="text-[10px] font-black tracking-[0.4em] uppercase text-content-secondary">
-                                     China to Ghana Sourcing / 2026
+                                     China to Ghana Shopping / 2026
                                  </span>
                              </div>
                         </div>
@@ -62,7 +62,7 @@ const Footer = () => {
                                 <Star className="w-5 h-5" strokeWidth={1.5} />
                              </a>
                          </div>
-                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary italic">Trusted Sourcing</p>
+                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary italic">Verified Service</p>
                     </div>
                 </div>
 
@@ -70,12 +70,12 @@ const Footer = () => {
                 <div className="grid md:grid-cols-12 gap-px bg-border-standard border border-border-standard mb-24 font-sans">
                     {/* Column 01: Shop */}
                     <div className="bg-surface p-12 md:col-span-3">
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary mb-8 block">Shopping Hub</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary mb-8 block">Quick Links</span>
                         <ul className="space-y-4">
                             <li><Link href="/products" className="text-sm font-black text-content-primary hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest">China Shop</Link></li>
                             <li><Link href="/reviews" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Customer Reviews</Link></li>
                             <li><Link href="/how-it-works" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">How it Works</Link></li>
-                            <li><Link href="/faq" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Answer Hub (FAQ)</Link></li>
+                            <li><Link href="/faq" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">FAQ</Link></li>
                             <li><Link href="/blog" className="text-sm font-black text-content-primary hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-4">Our Blog</Link></li>
                         </ul>
                     </div>
@@ -107,7 +107,7 @@ const Footer = () => {
                         <div>
                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white mb-6 block italic">Join our Newsletter</span>
                             <p className="text-xs font-bold text-slate-600 dark:text-slate-400 leading-relaxed mb-10">
-                                Subscribe to monthly supply chain briefings and high-performance logistics items.
+                                Subscribe to monthly updates and new products and offers.
                             </p>
                         </div>
                         <div className="flex flex-col gap-6">
@@ -150,8 +150,8 @@ const Footer = () => {
                     <div className="text-right flex flex-col items-end gap-16">
                          <div className="flex items-center justify-end gap-12 group transition-opacity">
                               <div className="text-right">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-content-secondary block mb-1">Accra & Kumasi Hubs</span>
-                                  <p className="text-[10px] font-black text-content-primary uppercase tracking-tighter">Ghana Sourcing Expert</p>
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-content-secondary block mb-1">Accra & Kumasi Locations</span>
+                                  <p className="text-[10px] font-black text-content-primary uppercase tracking-tighter">Ghana Import Expert</p>
                               </div>
                               <ShieldCheck className="w-8 h-8 text-content-primary" strokeWidth={1} />
                          </div>

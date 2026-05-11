@@ -41,8 +41,8 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
                     </svg>
                 </div>
                 <div className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-2 italic">Success / Confirmed</div>
-                <div className="text-2xl font-serif font-black mb-1 text-slate-900 tracking-tight leading-none">Protocol Secure.</div>
-                <div className="text-[10px] mb-8 text-slate-400 font-bold uppercase tracking-widest leading-relaxed">Deposit of GHS 150.00 confirmed and batch locked.</div>
+                <div className="text-2xl font-serif font-black mb-1 text-slate-900 tracking-tight leading-none">Reserved.</div>
+                <div className="text-[10px] mb-8 text-slate-400 font-bold uppercase tracking-widest leading-relaxed">Deposit of GHS 150.00 confirmed and order secured.</div>
                 
                 <div className="bg-slate-50 border border-slate-100 p-4 w-full">
                     <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1 leading-none">Order Reference</div>
@@ -56,7 +56,7 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
         return (
             <div key="reserve-processing" className="h-full p-6 flex flex-col items-center justify-center text-center bg-white text-slate-900">
                 <div className="w-10 h-10 border-[3px] border-slate-100 border-t-slate-900 rounded-full animate-spin mb-8"></div>
-                <div className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-900 animate-pulse">Processing Protocol...</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-900 animate-pulse">Processing Payment...</div>
                 <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Waiting for MoMo confirmation</div>
             </div>
         );
@@ -65,14 +65,14 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
     return (
         <div key="reserve" className="h-full p-6 flex flex-col bg-white text-slate-900">
             <header className="border-b border-slate-900 pb-6 mb-8 text-center">
-                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">MoMo Payment / Batch 024</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">MoMo Payment</div>
                 <div className="text-xl font-serif font-black text-slate-900 tracking-tight">Reserve Slot</div>
             </header>
 
             <div className="border border-slate-100 p-6 mb-6 flex items-center gap-4 bg-slate-50 transition-colors">
                 <div className="w-10 h-10 bg-slate-900 flex items-center justify-center text-white font-black text-[10px] uppercase tracking-tighter">MTN</div>
                 <div className="flex-1">
-                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Interface Number</div>
+                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Phone Number</div>
                     <div className="text-[13px] font-black flex items-center text-slate-900 tabular-nums">
                         {phoneNumber}
                         <span className="inline-block w-0.5 h-4 ml-0.5 animate-pulse bg-slate-900"></span>
@@ -82,7 +82,7 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
 
             <div className="border-t border-slate-100 pt-6 mb-8">
                 <div className="flex justify-between items-baseline mb-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Inventory</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Item</span>
                     <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">iPhone 15 Pro Max</span>
                 </div>
                 <div className="flex justify-between items-baseline">
@@ -92,7 +92,7 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
             </div>
 
             <div className="mt-auto bg-slate-900 py-3 text-center shadow-xl shadow-slate-900/10">
-                <span className="text-white text-[10px] font-black uppercase tracking-[0.4em]">Execute Payment →</span>
+                <span className="text-white text-[10px] font-black uppercase tracking-[0.4em]">Pay Now →</span>
             </div>
         </div>
     );

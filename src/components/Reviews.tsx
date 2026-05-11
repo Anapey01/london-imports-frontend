@@ -7,7 +7,7 @@ const reviews = [
     {
         id: "ACT-01",
         name: "Hanneth Musah",
-        role: "Verified Protocol",
+        role: "Verified Customer",
         title: "Legitimate & Trusted Infrastructure.",
         text: "My satisfaction with the experience is absolute. London's Imports is genuine, patient, and reliable. My all-time preferred partner for West African logistics.",
         rating: 5,
@@ -17,7 +17,7 @@ const reviews = [
     {
         id: "ACT-02",
         name: "Gina Addison",
-        role: "Verified Protocol",
+        role: "Verified Customer",
         title: "Absolute Consistency and Updates.",
         text: "The reliability and patience shown throughout the process were exceptional. Continuous updates on transit status were provided without prompt.",
         rating: 5,
@@ -27,7 +27,7 @@ const reviews = [
     {
         id: "ACT-03",
         name: "Yesutor Emmanuella Yovogan",
-        role: "Verified Protocol",
+        role: "Verified Customer",
         title: "The Calm in Logistics Complexity.",
         text: "One of the most professional mini-importers in the corridor. A calm, humble, and highly efficient shopping experience. No exceptions.",
         rating: 5,
@@ -37,7 +37,7 @@ const reviews = [
     {
         id: "ACT-04",
         name: "Eddy Nyakus",
-        role: "Verified Protocol",
+        role: "Verified Customer",
         title: "A Benchmark for Integrity.",
         text: "Genuine, transparent, and reliable. What is ordered is truly what arrives—no misleading descriptions. Handled with architectural professionalism.",
         rating: 5,
@@ -47,7 +47,7 @@ const reviews = [
     {
         id: "ACT-05",
         name: "Wilhelmina Mensah",
-        role: "Verified Protocol",
+        role: "Verified Customer",
         title: "Unmatched Accuracy in Sourcing.",
         text: "This is the most trusted source I know. They provide exactly what is required. In a market of uncertainty, they are the anchor.",
         rating: 5,
@@ -56,7 +56,7 @@ const reviews = [
     {
         id: "ACT-06",
         name: "Kofy Smile",
-        role: "Verified Protocol",
+        role: "Verified Customer",
         title: "Leading the Digital Corridor.",
         text: "The best mini-importation framework in Ghana right now. The Paystack integration and streamlined logistics set them apart definitively.",
         rating: 5,
@@ -75,7 +75,7 @@ export default function Reviews() {
                         <div className="flex items-center gap-4 mb-8">
                             <span className="h-px w-10 bg-slate-900" />
                             <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">
-                                The Success Protocol / Verified Accounts 
+                                Customer Stories
                             </span>
                         </div>
                         <h2 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900">
@@ -91,7 +91,7 @@ export default function Reviews() {
                             ))}
                          </div>
                          <p className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-300">
-                            System Accuracy: 100%
+                            Verified Reviews
                          </p>
                     </div>
                 </div>
@@ -135,7 +135,7 @@ export default function Reviews() {
                                         <div className="flex items-center gap-3 mb-4">
                                             <MessageSquare className="w-3.5 h-3.5 text-slate-300" strokeWidth={1.5} />
                                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                                Correction / Response Hub
+                                                Support Response
                                             </span>
                                         </div>
                                         <p className="text-[11px] text-slate-500 font-bold italic leading-relaxed">
@@ -168,12 +168,12 @@ export default function Reviews() {
                          <div className="max-w-xl">
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6 block">Consolidated Analytics</span>
                             <p className="text-xl font-serif font-bold text-slate-400 leading-snug">
-                                Over 1,200 successful cross-border executions independently verified by the Africa Logistics Consortium.
+                                Over 1,200 successful deliveries independently verified.
                             </p>
                          </div>
                          <div className="flex items-center gap-12 opacity-20">
                              <div className="h-px w-24 bg-slate-900" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">Verified Legacy / 2026</span>
+                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">Verified Business / 2026</span>
                          </div>
                     </div>
                 </div>

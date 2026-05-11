@@ -17,14 +17,14 @@ import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const STATUS_TABS = ['All', 'PENDING', 'NEW_ORDERS', 'WAREHOUSE', 'LOGISTICS', 'COMPLETED', 'CANCELLED'] as const;
+const STATUS_TABS = ['All', 'PENDING', 'NEW_ORDERS', 'WAREHOUSE', 'SHIPPING', 'COMPLETED', 'CANCELLED'] as const;
 
 const statusLabel = (s: string) => {
     switch (s) {
         case 'PENDING': return 'Pending';
         case 'NEW_ORDERS': return 'New Orders';
-        case 'WAREHOUSE': return 'Warehouse';
-        case 'LOGISTICS': return 'Logistics';
+        case 'WAREHOUSE': return 'Processing';
+        case 'SHIPPING': return 'Shipping';
         case 'COMPLETED': return 'Completed';
         case 'CANCELLED': return 'Cancelled';
         default: return s;
@@ -376,7 +376,7 @@ export default function AdminOrdersPage() {
             PENDING: orders.filter(o => o.status === 'PENDING' || o.payment_status === 'PARTIAL').length,
             NEW_ORDERS: orders.filter(o => o.status === 'PAID' && o.payment_status === 'PAID').length,
             WAREHOUSE: orders.filter(o => ['OPEN_FOR_BATCH', 'IN_FULFILLMENT'].includes(o.status)).length,
-            LOGISTICS: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.status)).length,
+            SHIPPING: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.status)).length,
             COMPLETED: orders.filter(o => o.status === 'DELIVERED').length,
             CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
         };
@@ -473,7 +473,7 @@ export default function AdminOrdersPage() {
                                         {bulkUpdating ? `Processing ${bulkProgress}/${bulkTotal}` : 'Orders Selected'}
                                     </p>
                                     <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40">
-                                        {bulkUpdating ? 'Synchronizing with Secure Hub' : 'Protocol Actions Ready'}
+                                        {bulkUpdating ? 'Updating system...' : 'Actions ready'}
                                     </p>
                                 </div>
                             </div>
@@ -484,7 +484,7 @@ export default function AdminOrdersPage() {
                                         disabled={bulkUpdating}
                                         className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
                                     >
-                                        MOVE TO WAREHOUSE
+                                        MARK AS PROCESSING
                                     </button>
                                 )}
 
@@ -494,11 +494,11 @@ export default function AdminOrdersPage() {
                                         disabled={bulkUpdating}
                                         className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
                                     >
-                                        SHIP TO GHANA
+                                        MARK AS SHIPPED
                                     </button>
                                 )}
 
-                                {(statusFilter === 'LOGISTICS' || statusFilter === 'All') && (
+                                {(statusFilter === 'SHIPPING' || statusFilter === 'All') && (
                                     <>
                                         <button
                                             onClick={() => handleBulkStatus('ARRIVED')}

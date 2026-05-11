@@ -107,7 +107,7 @@ export default function CartPage() {
                                 href="/products"
                                 className="inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-950/20 institutional-focus"
                             >
-                                Start Sourcing
+                                Start Shopping
                             </Link>
                         </div>
                     )
@@ -273,7 +273,7 @@ export default function CartPage() {
                                          </>
                                      ) : (
                                          <>
-                                             Checkout Hub
+                                             Checkout Now
                                              <span className="opacity-30">/</span>
                                              GHS {total.toLocaleString()}
                                          </>
@@ -284,10 +284,10 @@ export default function CartPage() {
                             <div className="mt-6 flex flex-col items-center gap-2">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/40 flex items-center gap-2 italic">
                                     <ShieldCheck className="w-3 h-3" />
-                                    Secure Logistics Protocol
+                                    Secure Shipping
                                 </p>
                                 <p className="text-[9px] font-medium text-content-secondary/60 italic text-center">
-                                    Delivery schedules are calculated at the Logistics Hub.
+                                    Delivery schedules are calculated at the Shipping Hub.
                                 </p>
                             </div>
                         </div>

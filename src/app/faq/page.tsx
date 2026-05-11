@@ -77,13 +77,13 @@ export default function FAQPage() {
                     <div className="w-12 h-px bg-slate-900 dark:bg-white mb-10" />
                     <div className="flex flex-col md:flex-row justify-between items-end gap-10">
                         <div className="max-w-2xl">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-500 block mb-4">Query Repository / Knowledge Base</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-500 block mb-4">Help Center / FAQ</span>
                             <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter leading-none">
-                                FAQ <span className="italic font-normal">Repository.</span>
+                                FAQ <span className="italic font-normal">Help Center.</span>
                             </h1>
                         </div>
                         <p className="text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-[0.3em] max-w-sm leading-relaxed text-right font-black">
-                            Transparent, architectural, and direct. <br /> Our logistics protocol explained in detail.
+                            Transparent, professional, and direct. <br /> Our shipping process explained in detail.
                         </p>
                     </div>
                 </div>
@@ -136,20 +136,20 @@ export default function FAQPage() {
                 <div className="mt-32 border border-slate-50 dark:border-slate-900 grid md:grid-cols-2">
                     <div className="bg-white dark:bg-slate-900/50 p-12 md:p-16 flex flex-col justify-between group">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 mb-8 block font-sans">Human Interface Protocol 01</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 mb-8 block font-sans">Contact Support</span>
                             <h3 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-white mb-8 tracking-tighter leading-tight">
                                 Still have <br /> 
                                 <span className="italic font-normal">Unresolved Queries?</span>
                             </h3>
                         </div>
                         <p className="text-sm text-slate-400 dark:text-slate-500 font-medium leading-relaxed mb-12 max-w-xs">
-                            Our support desk manages complex logistics inquiries that fall outside the standard repository protocol.
+                            Our support team manages complex shipping questions that fall outside the standard FAQ.
                         </p>
                         <Link 
                             href="/contact" 
                             className="group/link inline-flex items-center gap-6 text-[10px] font-black text-slate-900 dark:text-white border-b-2 border-slate-900 dark:border-white pb-3 self-start hover:pr-8 transition-all uppercase tracking-[0.4em]"
                         >
-                            Contact Support Desk
+                            Contact Support Team
                             <ArrowUpRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
                         </Link>
                     </div>
@@ -161,11 +161,11 @@ export default function FAQPage() {
                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">SECURE</span>
                              </div>
                              <div className="flex items-center gap-4 border-b border-slate-900/5 dark:border-white/5 pb-4">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">ACCRA HUB</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">ACCRA LOCATION</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">ACTIVE</span>
                              </div>
                              <div className="flex items-center gap-4">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">TEMA CLEARING</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">TEMA CUSTOMS</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">LIVE</span>
                              </div>
                          </div>

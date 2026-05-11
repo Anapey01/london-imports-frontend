@@ -36,8 +36,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Ghana's #1 Mini Importation Service | Buy from China to Accra & Kumasi | London's Imports Ghana",
-  description: "London's Imports is Ghana's premier sourcing house and logistics protocol for mini-importation. We bridge the gap between China’s factory floors (1688, Alibaba) and your doorstep in Accra, Kumasi, and Tema. Secure, transparent, and built for the sophisticated Ghanaian importer.",
+  title: "Ghana's #1 China to Ghana Shopping & Shipping Service | London's Imports",
+  description: "London's Imports is Ghana's premier shopping service and shipping system for mini-importation. We bridge the gap between China’s factory floors (1688, Alibaba) and your doorstep in Accra, Kumasi, and Tema. Secure, transparent, and trusted by thousands of Ghanaian importers.",
   keywords: [
     // Primary - Ghana Geographic Focus
     "Mini Importation Ghana", "Buy from China to Ghana", "Shipping from China to Accra",
@@ -64,8 +64,8 @@ export const metadata: Metadata = {
     "London's Imports Ghana", "Londons Imports"
   ],
   openGraph: {
-    title: "London's Imports Ghana - #1 China to Accra Shipping",
-    description: "Ghana's trusted platform for importing goods from China. We handle shipping, customs, and doorstep delivery in Accra, Kumasi, Tema. Pay in Cedis via Momo.",
+    title: "London's Imports Ghana - #1 China to Ghana Shipping",
+    description: "Ghana's most trusted platform for shopping and shipping goods from China. We handle logistics, customs, and doorstep delivery in Accra, Kumasi, Tema. Pay easily in Cedis via Momo.",
     url: 'https://londonsimports.com',
     siteName: "London's Imports Ghana",
     images: [
@@ -101,8 +101,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Ghana's #1 Mini Importation Service | London's Imports Ghana",
-    description: "Ghana's premier sourcing house and logistics protocol for mini-importation. Secure, transparent, and built for the sophisticated Ghanaian importer.",
+    title: "Ghana's #1 China to Ghana Shopping Service | London's Imports",
+    description: "Ghana's premier shopping service and shipping system for mini-importation. Secure, transparent, and trusted by thousands of Ghanaian importers.",
     site: '@londonsimports',
     creator: '@londonsimports',
     images: ['https://londonsimports.com/og-image.jpg'],

@@ -132,7 +132,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                 { label: 'Address Label', placeholder: 'e.g. Home', value: formData.label, key: 'label' },
                                 { label: 'City', placeholder: 'e.g. Accra', value: formData.city, key: 'city' },
                                 { label: 'Region', placeholder: 'e.g. Greater Accra', value: formData.area, key: 'area' },
-                                { label: 'Landmark', placeholder: 'e.g. Near Hub', value: formData.landmark, key: 'landmark' },
+                                { label: 'Landmark', placeholder: 'e.g. Near Center', value: formData.landmark, key: 'landmark' },
                             ].map(field => (
                                 <div key={field.key} className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 px-1">{field.label}</label>

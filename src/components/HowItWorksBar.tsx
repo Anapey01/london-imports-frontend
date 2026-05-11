@@ -26,30 +26,30 @@ export default function HowItWorksBar() {
                         </div>
                     </div>
 
-                    {/* 2. PROTOCOL */}
+                    {/* 2. VERIFICATION */}
                     <div className="flex flex-col items-center text-center group">
                         <div className="mb-4">
                             <PackageCheck className="w-5 h-5 text-emerald-600 transition-transform group-hover:scale-110" strokeWidth={1} />
                         </div>
                         <div className="w-full">
-                            <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Protocol</span>
-                            <h3 className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Procure</h3>
+                            <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Quality</span>
+                            <h3 className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Verify</h3>
                             <p className="hidden md:block text-[11px] leading-relaxed text-slate-400 font-medium max-w-[150px] mx-auto">
-                                A rigorous verification process for every piece.
+                                A rigorous quality check for every piece.
                             </p>
                         </div>
                     </div>
 
-                    {/* 3. JOURNEY */}
+                    {/* 3. DELIVERY */}
                     <div className="flex flex-col items-center text-center group">
                         <div className="mb-4">
                             <Plane className="w-5 h-5 text-emerald-600 transition-transform group-hover:scale-110" strokeWidth={1} />
                         </div>
                         <div className="w-full">
-                            <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Journey</span>
+                            <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2">Shipping</span>
                             <h3 className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Deliver</h3>
                             <p className="hidden md:block text-[11px] leading-relaxed text-slate-400 font-medium max-w-[150px] mx-auto">
-                                High-performance logistics to your doorstep.
+                                Safe delivery to your doorstep.
                             </p>
                         </div>
                     </div>

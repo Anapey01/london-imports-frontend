@@ -48,9 +48,9 @@ const LOGISTICS_TEMPLATES = [
     },
     {
         id: 'ghana-arrived',
-        title: 'Arrived at Ghana Hub',
-        subject: 'Shipment Arrival: Your items are now at our London\'s Imports Hub!',
-        message: 'Hello,\n\nGreat news! Your shipment has successfully arrived at our London\'s Imports Hub in Ghana and has been sorted.\n\nYou can now come for collection at our hub or wait for our last-mile delivery team to contact you.\n\nHub Location: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for your patience.',
+        title: 'Arrived in Ghana',
+        subject: 'Shipment Arrival: Your items are now at London\'s Imports!',
+        message: 'Hello,\n\nGreat news! Your shipment has successfully arrived at London\'s Imports in Ghana and has been sorted.\n\nYou can now come for collection at our center or wait for our last-mile delivery team to contact you.\n\nLocation: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for your patience.',
         icon: Map
     },
     {
@@ -64,7 +64,7 @@ const LOGISTICS_TEMPLATES = [
         id: 'ready-delivery',
         title: 'Ready for Collection',
         subject: 'Order Ready: Come pick up your items!',
-        message: 'Hello,\n\nGreat news! Your order is now cleared and ready for collection at our London\'s Imports Hub. If you requested doorstep delivery, our courier will be in touch with you shortly.\n\nPlease remember to bring your Order ID.',
+        message: 'Hello,\n\nGreat news! Your order is now cleared and ready for collection at London\'s Imports. If you requested doorstep delivery, our courier will be in touch with you shortly.\n\nPlease remember to bring your Order ID.',
         icon: CheckCircle
     },
     {
@@ -81,7 +81,7 @@ const JOURNEY_FILTERS = [
     { key: 'state:OPEN_FOR_BATCH', label: 'At GZ Warehouse', icon: Package },
     { key: 'state:IN_FULFILLMENT', label: 'Loaded/Packed', icon: FileText },
     { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
-    { key: 'state:ARRIVED', label: 'Arrived at Ghana Hub', icon: MapPin },
+    { key: 'state:ARRIVED', label: 'Arrived in Ghana', icon: MapPin },
     { key: 'state:OUT_FOR_DELIVERY', label: 'Out for Local Delivery', icon: Anchor },
     { key: 'manual', label: 'Manual Email List', icon: Edit3 },
 ];
@@ -145,7 +145,7 @@ export default function AdminBroadcastPage() {
                 const multiLink = `https://wa.me/${data.contacts[0].phone}`;
                 window.open(multiLink, '_blank');
             }
-        } catch (err) {
+        } catch {
             addAlert('Failed to fetch audience contacts.', 'error');
         } finally {
             setSending(false);
@@ -420,7 +420,7 @@ export default function AdminBroadcastPage() {
                                                     isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                                                 } ${target === 'manual' ? 'opacity-30 cursor-not-allowed' : ''}`}
                                             >
-                                                {sending ? 'FETCHING...' : 'WhatsApp Link Hub'}
+                                                {sending ? 'FETCHING...' : 'WhatsApp Contact List'}
                                             </button>
                                         </div>
                                     </motion.form>

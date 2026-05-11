@@ -19,8 +19,8 @@ interface OperationsFunnelProps {
 export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps) {
     const icons = {
         'Processing': Clock,
-        'Loading/Transit': Package,
-        'Last Mile': PlaneLanding,
+        'In Transit': Package,
+        'Arrived': PlaneLanding,
         'Completed': CheckCircle2
     };
 
@@ -30,8 +30,8 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
         <div className="space-y-12">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0">
                 <div>
-                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-950 uppercase">PIPELINE FLOW</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 italic">Order stage distribution</p>
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-950 uppercase">SHIPPING STATUS</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 italic">Current order distribution</p>
                 </div>
                 <div className="text-left sm:text-right border-l-2 sm:border-l-0 sm:border-r-0 border-slate-900 pl-4 sm:pl-0">
                     <span className="text-3xl font-serif font-bold text-slate-950 tabular-nums">{totalOrders}</span>
@@ -49,7 +49,7 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
                             isDark ? 'bg-slate-950 hover:bg-slate-900' : 'bg-white hover:bg-slate-50'
                         }`}>
                             <div className="flex items-center justify-between mb-8">
-                                <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Phase_{idx.toString().padStart(2, '0')}</span>
+                                <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">STAGE_{idx + 1}</span>
                                 <Icon className="w-5 h-5 text-slate-400 group-hover:text-slate-900 transition-colors" strokeWidth={1.5} />
                             </div>
 
@@ -78,11 +78,11 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-12 py-6 border-t border-slate-50">
                 <div className="flex items-center gap-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Sync_Status: Verified</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">System synced</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Stream: Encrypted</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Secure connection</span>
                 </div>
             </div>
         </div>

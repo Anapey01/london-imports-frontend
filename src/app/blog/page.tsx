@@ -10,8 +10,8 @@ import { siteConfig } from '@/config/site';
 import { getImageUrl } from '@/lib/image';
 
 export const metadata: Metadata = {
-    title: 'Logistics & Scaling | Editorial Publication',
-    description: 'Guides, tips, and insights on importing from China to Ghana. Comprehensive strategy for international sourcing.',
+    title: 'Shopping & Scaling | Business Journal',
+    description: 'Guides, tips, and insights on importing from China to Ghana. Comprehensive strategy for international shopping.',
 };
 
 interface BlogPost {
@@ -49,10 +49,10 @@ const fallbackArticles = [
     {
         id: 0,
         slug: 'how-to-buy-from-1688-in-ghana',
-        title: 'The 1688 Framework: Sourcing from Global Production Hubs.',
-        excerpt: 'A comprehensive operational guide to ordering from 1688 manufacturing centers and managing transit to the Accra Hub.',
+        title: 'The 1688 Framework: Buying from Global Factories.',
+        excerpt: 'A comprehensive operational guide to ordering from 1688 manufacturing centers and managing transit to the Accra Location.',
         category: 'PROTOCOL-01',
-        category_display: 'Protocol',
+        category_display: 'Tips',
         featured_image: null,
         author_name: 'Strategic Sourcing',
         is_featured: true,
@@ -62,8 +62,8 @@ const fallbackArticles = [
     {
         id: 1,
         slug: 'mini-importation-beginners-guide',
-        title: 'Micro-Logistic Scaling: Establishing Local Infrastructure.',
-        excerpt: 'Operational insights for beginners transitioning from individual sourcing to commercial-grade import pipelines in Ghana.',
+        title: 'Growing Your Business: Building Your Import System.',
+        excerpt: 'Operational insights for beginners transitioning from individual sourcing to professional import services in Ghana.',
         category: 'STRATEGY-02',
         category_display: 'Strategy',
         featured_image: null,
@@ -75,8 +75,8 @@ const fallbackArticles = [
     {
         id: 2,
         slug: 'customs-duty-calculator-ghana',
-        title: 'Fiscal Liability: Navigating the GH Common External Tariff.',
-        excerpt: 'A strategic deep-dive into the statutory duty bands at Tema Port and their impact on commercial retail scaling.',
+        title: 'Import Fees: Understanding Ghana Customs Rates.',
+        excerpt: 'A strategic deep-dive into the import tax categories at Tema Port and their impact on commercial retail scaling.',
         category: 'FISCAL-03',
         category_display: 'Fiscal',
         featured_image: null,
@@ -198,7 +198,7 @@ export default async function BlogPage() {
                                     <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{article.author_name}</span>
                                     <div className="flex items-center gap-3">
                                         <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest pb-1 border-b border-slate-900 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                                            Execute Review
+                                            Read Article
                                         </span>
                                         <ArrowUpRight className="w-3.5 h-3.5 text-slate-900 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                     </div>
@@ -211,7 +211,7 @@ export default async function BlogPage() {
                 <div className="mt-48 pt-32 border-t border-slate-100 grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100">
                     <div className="bg-white p-12 md:p-20 flex flex-col justify-between group">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-10 block font-sans">Human Interface 02</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-10 block font-sans">Atelier Journal</span>
                             <h3 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-10 tracking-tighter leading-[0.85]">
                                 Stay Refined. <br /> 
                                 <span className="italic font-light text-slate-200">Stay Ahead.</span>
@@ -224,7 +224,7 @@ export default async function BlogPage() {
                         <div className="flex flex-col gap-6 max-w-sm">
                             <input 
                                 type="email" 
-                                title="Protocol Email"
+                                title="Business Email"
                                 placeholder="Your Industry Email..." 
                                 className="bg-transparent border-b border-slate-100 text-[11px] font-black uppercase tracking-widest text-slate-900 py-4 outline-none focus:border-slate-900 transition-colors"
                             />

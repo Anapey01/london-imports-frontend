@@ -114,11 +114,11 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     {/* Entry ID & Date Node */}
                                     <div className="lg:w-48 flex lg:flex-col lg:items-start items-center justify-between lg:justify-start lg:border-r border-slate-100 lg:pr-8">
                                         <div className="space-y-1">
-                                            <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Protocol ID</p>
+                                            <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Order Number</p>
                                             <p className="text-sm font-mono font-bold text-slate-900 tracking-tight">#{order.order_number}</p>
                                         </div>
                                         <div className="space-y-1 lg:mt-10 text-right lg:text-left">
-                                            <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Registered</p>
+                                            <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Order Date</p>
                                             <p className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </p>
@@ -151,7 +151,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[8px] font-mono font-bold text-brand-emerald uppercase tracking-[0.3em] mb-1">Package Contents</p>
+                                                <p className="text-[8px] font-mono font-bold text-brand-emerald uppercase tracking-[0.3em] mb-1">Order Items</p>
                                                 <div className="space-y-1.5">
                                                     {order.items?.map((item, idx) => (
                                                         <div key={idx} className="flex items-baseline justify-between gap-4">
@@ -171,11 +171,11 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                             </div>
                                         </div>
 
-                                        {/* Installment Progress Archive */}
+                                        {/* Installment Progress */}
                                         <div className="bg-slate-50/50 p-4 rounded-sm border border-slate-100/50">
                                             <div className="flex items-center justify-between mb-2">
-                                                <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Payment Integrity</p>
-                                                <p className="text-[9px] font-mono font-bold text-slate-900 uppercase tracking-widest">{paymentProgress}% Secured</p>
+                                                <p className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Payment Progress</p>
+                                                <p className="text-[9px] font-mono font-bold text-slate-900 uppercase tracking-widest">{paymentProgress}% Paid</p>
                                             </div>
                                             <div className="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
                                                 <motion.div 
@@ -198,7 +198,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <span className="text-[7px] text-slate-400 uppercase font-black block">Total Valuation</span>
+                                                    <span className="text-[7px] text-slate-400 uppercase font-black block">Total Amount</span>
                                                     <span className="text-[10px] font-mono font-bold text-slate-900 tracking-tighter">₵{totalAmount.toLocaleString()}</span>
                                                 </div>
                                             </div>
@@ -226,7 +226,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                 onClick={() => setCancellingOrder(order.order_number)}
                                                 className="w-full py-2 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors"
                                             >
-                                                Void Order
+                                                Cancel Order
                                             </button>
                                         )}
                                     </div>

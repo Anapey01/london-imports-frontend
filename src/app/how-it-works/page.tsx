@@ -40,7 +40,7 @@ export default function HowItWorksPage() {
         {
             id: 'STEP 04',
             title: 'Inspection & Pickup',
-            desc: 'Check your items at our Accra Hub. Pay the final balance when you collect them.',
+            desc: 'Check your items at our Accra Center. Pay the final balance when you collect them.',
             icon: <Truck className="w-5 h-5" strokeWidth={1} />
         }
     ];
@@ -49,7 +49,7 @@ export default function HowItWorksPage() {
         "@context": "https://schema.org",
         "@type": "HowTo",
         "name": "How to Import from China to Ghana",
-        "description": "A 4-step architectural protocol for international logistics and sourcing via London's Imports.",
+        "description": "A 4-step process for buying and shipping products via London's Imports.",
         "step": steps.map((s, i) => ({
             "@type": "HowToStep",
             "position": i + 1,
@@ -59,7 +59,7 @@ export default function HowItWorksPage() {
         })),
         "totalTime": "P56D",
         "supply": [
-            { "@type": "HowToSupply", "name": "Digital Payment Interface" },
+            { "@type": "HowToSupply", "name": "Mobile Money Payment" },
             { "@type": "HowToSupply", "name": "London's Imports Service Access" }
         ]
     };
@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
                 <div className="grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100 mb-24">
                     <div className="bg-white p-12 md:p-20 flex flex-col justify-between group">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-10 block">Action Step 01</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-10 block">Step 01</span>
                             <h3 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-10 tracking-tighter leading-[0.85]">
                                 Ready to <br /> 
                                 <span className="italic font-light text-slate-200">Place an Order?</span>

@@ -58,13 +58,13 @@ export async function generateMetadata(
     const productTitle = `Buy ${product.name} - ${formattedPrice} | London's Imports Ghana`;
     
     // Architectural Description Refinement for Sourcing Authority
-    const productDescription = product.description?.substring(0, 140) || `Buy ${product.name} from London's Imports. Ghana's #1 sourcing house for premium imports from China. Pay with Momo.`;
+    const productDescription = product.description?.substring(0, 140) || `Buy ${product.name} from London's Imports. Ghana's #1 import shop for premium imports from China. Pay with Momo.`;
     const pageUrl = `${siteConfig.baseUrl}/products/${slug}`;
 
     return {
         metadataBase: new URL(siteConfig.baseUrl),
         title: productTitle,
-        description: `${productDescription} | Sourcing from China to Accra & Kumasi: ${formattedPrice}`,
+        description: `${productDescription} | Shipping from China to Accra & Kumasi: ${formattedPrice}`,
         openGraph: {
             title: productTitle,
             description: productDescription,

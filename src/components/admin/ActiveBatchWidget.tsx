@@ -26,12 +26,12 @@ export default function ActiveBatchWidget({ batch, isDark }: ActiveBatchWidgetPr
                 isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'
             }`}>
                 <AlertCircle className="w-8 h-8 text-slate-100 mb-6" strokeWidth={1} />
-                <h3 className="font-black text-[11px] uppercase tracking-[0.4em] text-slate-900">MANIFEST_NULL</h3>
+                <h3 className="font-black text-[11px] uppercase tracking-[0.4em] text-slate-900">NO ACTIVE BATCH</h3>
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-4 max-w-[200px]">
-                    No active shipment protocol detected. Initiate new batch to begin pre-order cycle.
+                    No active shipping batch found. Start a new batch to accept orders.
                 </p>
                 <Link href="/dashboard/admin/logistics" className="mt-8 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all">
-                    INITIATE_PROTOCOL
+                    START NEW BATCH
                 </Link>
             </div>
         );
@@ -95,7 +95,7 @@ export default function ActiveBatchWidget({ batch, isDark }: ActiveBatchWidgetPr
                 className="mt-auto flex items-center justify-between p-6 bg-slate-950 text-white group transition-all"
             >
                 <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">Logistics Console</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">Shipping Manager</p>
                     <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Manage global shipping batches</p>
                 </div>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-emerald-400" />

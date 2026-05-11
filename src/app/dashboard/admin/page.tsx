@@ -247,7 +247,7 @@ export default function AdminDashboardPage() {
                 <div className="lg:col-span-8 bg-white px-4 py-10 sm:p-12">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-12 sm:mb-16">
                         <div>
-                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">REVENUE TRENDS</h2>
+                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">SALES OVERVIEW</h2>
                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Revenue over time</p>
                         </div>
                         <div className="flex bg-slate-50 p-1 w-fit">
@@ -287,7 +287,7 @@ export default function AdminDashboardPage() {
             <div className="bg-white border border-slate-100 px-4 py-10 sm:p-12">
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-8 bg-slate-900" />
-                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FUNNEL</h2>
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FLOW</h2>
                 </div>
                 <OperationsFunnel 
                     isDark={isDark} 
@@ -308,7 +308,7 @@ export default function AdminDashboardPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
                             <input 
                                 type="text" 
-                                placeholder="SEARCH ORDERS..."
+                                placeholder="FIND AN ORDER..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all w-full md:w-64"
@@ -478,7 +478,7 @@ const OrderRow = React.memo(({
                             {order?.status?.replace('_', ' ')}
                         </span>
                         {isStuck && (
-                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Execution Delayed" />
+                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Needs Attention" />
                         )}
                     </div>
                 </td>

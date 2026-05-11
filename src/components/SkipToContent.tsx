@@ -14,7 +14,7 @@ export default function SkipToContent() {
         >
             <span className="flex items-center gap-3">
                 <span className="h-px w-6 bg-brand-emerald/40" />
-                Skip To Protocol Content
+                Skip to content
                 <span className="h-px w-6 bg-brand-emerald/40" />
             </span>
         </a>

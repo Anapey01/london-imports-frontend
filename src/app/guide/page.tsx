@@ -4,7 +4,7 @@
  */
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { BookOpen, Search, ArrowRight, Wallet, TrendingUp, HelpCircle, Package, Globe } from 'lucide-react';
+import { BookOpen, Search, ArrowRight, Wallet, TrendingUp, Package } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: "How to Start Mini-Importation in Ghana 2026 | Ultimate Beginner's Guide",
@@ -66,7 +66,7 @@ export default function GuidePage() {
                     <div className="flex items-center gap-4 mb-10">
                         <span className="h-px w-10 bg-emerald-700/30" />
                         <span className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-800">
-                            Educational Core <span className="text-slate-200 mx-1">/</span> Strategic Sourcing 2026
+                            Educational Core <span className="text-slate-200 mx-1">/</span> Strategic Shopping 2026
                         </span>
                     </div>
 
@@ -74,10 +74,10 @@ export default function GuidePage() {
                         <div className="lg:col-span-8">
                             <h1 className="text-5xl md:text-8xl font-serif font-black leading-[0.9] tracking-tighter text-slate-900 mb-10">
                                 Global <br />
-                                <span className="italic font-light text-slate-400 opacity-40">Sourcing Manual</span>.
+                                <span className="italic font-light text-slate-400 opacity-40">Shopping Manual</span>.
                             </h1>
                             <p className="max-w-xl text-xl md:text-2xl text-slate-600 font-medium leading-relaxed">
-                                Everything you need to know to start sourcing from China and building a profitable business in Accra & beyond.
+                                Everything you need to know to start shopping from China and building a profitable business in Accra & beyond.
                             </p>
                         </div>
                         <div className="lg:col-span-4 lg:flex flex-col items-end pb-4 hidden">
@@ -143,13 +143,13 @@ export default function GuidePage() {
                     <div className="bg-slate-900 p-12 lg:p-16 rounded-[4rem] text-white shadow-2xl relative overflow-hidden group">
                          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                          <div className="flex items-center gap-3 mb-10">
-                            <Globe className="w-5 h-5 text-emerald-400" />
+                            <span className="w-5 h-5 border border-emerald-400/20 rounded-full flex items-center justify-center text-[10px] text-emerald-400">GH</span>
                             <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Inventory Secret</h4>
                          </div>
                          <h3 className="text-2xl lg:text-4xl font-serif font-black italic mb-6 leading-tight">Skip Alibaba. <br />Go Factory Direct.</h3>
                          <p className="text-slate-400 font-medium leading-relaxed mb-8">Most Alibaba suppliers are middlemen. Use 1688.com for direct factory prices. We translate the Chinese interface and negotiate the MOQ for you.</p>
-                         <Link href="/sourcing" className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-white border-b border-white pb-2 hover:gap-6 transition-all duration-300">
-                             AI Sourcing System <ArrowRight className="w-4 h-4" />
+                         <Link href="/product-finder" className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-white border-b border-white pb-2 hover:gap-6 transition-all duration-300">
+                             AI Search System <ArrowRight className="w-4 h-4" />
                          </Link>
                     </div>
 
@@ -159,7 +159,7 @@ export default function GuidePage() {
                             <h4 className="text-xs font-black uppercase tracking-widest text-emerald-700">Risk Mitigation</h4>
                          </div>
                          <h3 className="text-2xl lg:text-4xl font-black mb-6 leading-tight tracking-tighter">Inspect Before <br />Departure.</h3>
-                         <p className="text-emerald-900/60 font-medium leading-relaxed mb-8">Never pay for poor quality. We offer high-res photos and physical inspections at our GZ Hub before your items ever touch a plane or ship.</p>
+                         <p className="text-emerald-900/60 font-medium leading-relaxed mb-8">Never pay for poor quality. We offer high-res photos and physical inspections at our GZ Office before your items ever touch a plane or ship.</p>
                          <Link href="/customs" className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-emerald-700 border-b border-emerald-700 pb-2 hover:gap-6 transition-all duration-300">
                              Customs Knowledge <ArrowRight className="w-4 h-4" />
                          </Link>
@@ -176,8 +176,8 @@ export default function GuidePage() {
                             <Link href="/register" className="h-20 bg-slate-900 text-white flex items-center justify-center rounded-[2rem] font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all shadow-2xl flex-1">
                                 Join Now
                             </Link>
-                            <Link href="/sourcing" className="h-20 bg-white border-2 border-slate-100 text-slate-900 flex items-center justify-center rounded-[2rem] font-black uppercase tracking-widest text-xs hover:border-slate-300 transition-all flex-1">
-                                Sourcing Desk
+                            <Link href="/product-finder" className="h-20 bg-white border-2 border-slate-100 text-slate-900 flex items-center justify-center rounded-[2rem] font-black uppercase tracking-widest text-xs hover:border-slate-300 transition-all flex-1">
+                                Shopping Desk
                             </Link>
                         </div>
                     </div>
@@ -187,7 +187,7 @@ export default function GuidePage() {
     );
 }
 
-function ShieldCheck(props: any) {
+function ShieldCheck(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

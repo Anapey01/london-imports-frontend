@@ -45,12 +45,12 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 const fallbackArticles: Record<string, BlogPost> = {
     'how-to-buy-from-1688-in-ghana': {
         id: 0,
-        title: 'The 1688 Framework: Sourcing from Global Production Hubs.',
+        title: 'How to Buy from 1688: A Complete Guide for Ghana.',
         slug: 'how-to-buy-from-1688-in-ghana',
-        excerpt: 'A comprehensive operational guide to ordering from 1688 manufacturing centers and managing transit to the Accra Hub.',
+        excerpt: 'A comprehensive guide to ordering from 1688 and managing your shipments to Accra and Kumasi.',
         content: `1688.com is the primary wholesale marketplace for factory-direct sourcing in China. Operating at the 12,000km gap requires a rigorous operational framework.
 
-## Why 1688 Protocol?
+## Why 1688 Process?
 
 Pricing at 1688 manufacturing hubs is typically 30-50% more efficient than standard consumer portals because the architecture is designed for high-volume domestic procurement.
 
@@ -58,11 +58,11 @@ Pricing at 1688 manufacturing hubs is typically 30-50% more efficient than stand
 
 Browse the network via Chrome translation. Focus on verification: look for high-performance ratings and historical fulfillment data.
 
-## Phase 02: Link Transmission
+## Phase 02: Sharing Links
 
 Submit your product identifiers (URLs) to the London's Imports procurement desk. We verify supplier integrity and provide total CIF valuation.
 
-## Phase 03: Settlement & Execution
+## Phase 03: Payment & Ordering
 
 Execute payment via the local digital gateway (Momo/Card). No international credit facility required.
 
@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!article) return { title: 'Journal Entry | London\'s Imports' };
 
     return {
-        title: `${article.title} | Journal Index`,
+        title: `${article.title} | London's Imports Blog`,
         description: article.excerpt,
         alternates: {
             canonical: `${siteConfig.baseUrl}/blog/${slug}`,
@@ -116,7 +116,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                     className="group inline-flex items-center gap-4 text-[9px] font-black mb-16 text-slate-300 hover:text-slate-900 transition-colors uppercase tracking-[0.5em]"
                 >
                     <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-                    Archive Directory
+                    Back to Blog
                 </Link>
 
                 <h1 className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold text-slate-900 mb-16 tracking-tighter leading-[0.85]">
@@ -126,7 +126,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                 <div className="flex flex-col items-center gap-8 pt-12 border-t border-slate-50">
                     <div className="flex items-center gap-4">
                         <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.4em] font-sans">
-                            Author: {article.author_name || 'Protocol Hub'}
+                            Author: {article.author_name || 'Atelier Team'}
                         </span>
                     </div>
                     <div className="flex items-center gap-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">
@@ -222,7 +222,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8 block">Document Footer</span>
                             <h3 className="text-3xl font-serif font-bold text-slate-900 mb-6 tracking-tighter leading-none">
                                 End of <br /> 
-                                <span className="italic font-light text-slate-200">the Entry.</span>
+                                <span className="italic font-light text-slate-200">the Article.</span>
                             </h3>
                         </div>
                         <Link

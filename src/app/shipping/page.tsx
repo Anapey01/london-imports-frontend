@@ -17,18 +17,18 @@ export default function ShippingPage() {
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-12 bg-slate-900 dark:bg-white" />
                     <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400 dark:text-slate-500">
-                        Logistics Protocol / West Africa
+                        Shipping Services / West Africa
                     </span>
                 </div>
                 
                 <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white mb-16">
                     Global <br />
-                    <span className="italic font-light text-slate-200 dark:text-slate-800">Transitions</span>.
+                    <span className="italic font-light text-slate-200 dark:text-slate-800">Shipping</span>.
                 </h1>
 
                 <div className="max-w-2xl">
                     <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                        Motion creates value. We bridge the 12,000km divide between Guangzhou’s industrial hubs and the streets of Accra with architectural precision.
+                        Motion creates value. We bridge the 12,000km divide between Guangzhou’s markets and the streets of Accra with careful planning.
                     </p>
                 </div>
             </header>
@@ -40,7 +40,7 @@ export default function ShippingPage() {
                     {/* AIR EXPRESS - HIGH SPEED */}
                     <div className="bg-white dark:bg-slate-950 p-12 md:p-20 flex flex-col group">
                         <div className="mb-16">
-                            <span className="text-[10px] font-black tracking-[0.3em] text-emerald-600 dark:text-emerald-500 mb-6 block italic">Protocol 01 / Rapid</span>
+                            <span className="text-[10px] font-black tracking-[0.3em] text-emerald-600 dark:text-emerald-500 mb-6 block italic">Option 01 / Rapid</span>
                             <div className="flex items-start justify-between">
                                 <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                                     Air Express
@@ -51,13 +51,13 @@ export default function ShippingPage() {
  
                         <div className="space-y-12 mb-20 flex-1">
                             <div className="border-t border-slate-50 dark:border-slate-900 pt-8">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Clearing Window</span>
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Delivery Time</span>
                                 <p className="text-xl font-bold text-slate-900 dark:text-white">7 - 14 Days Arrival</p>
-                                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium italic mt-1">Post-Landing in Accra Hub</p>
+                                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium italic mt-1">Arrival in Accra</p>
                             </div>
 
                             <div className="border-t border-slate-50 dark:border-slate-900 pt-8">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Cargo Integrity</span>
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Best For</span>
                                 <p className="text-xl font-bold text-slate-900 dark:text-white">Tech, Fashion & Medical</p>
                             </div>
                         </div>
@@ -74,7 +74,7 @@ export default function ShippingPage() {
                     {/* SEA ECONOMY - HIGH VOLUME */}
                     <div className="bg-white dark:bg-slate-950 p-12 md:p-20 flex flex-col group border-l border-slate-100 dark:border-slate-900 md:mt-24">
                         <div className="mb-16">
-                            <span className="text-[10px] font-black tracking-[0.3em] text-blue-500 dark:text-blue-400 mb-6 block italic">Protocol 02 / Volume</span>
+                            <span className="text-[10px] font-black tracking-[0.3em] text-blue-500 dark:text-blue-400 mb-6 block italic">Option 02 / Volume</span>
                             <div className="flex items-start justify-between">
                                 <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                                     Sea Economy
@@ -85,13 +85,13 @@ export default function ShippingPage() {
 
                         <div className="space-y-12 mb-20 flex-1">
                             <div className="border-t border-slate-50 dark:border-slate-900 pt-8">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Voyage Cycle</span>
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Shipping Time</span>
                                 <p className="text-xl font-bold text-slate-900 dark:text-white">8 - 9 Weeks Total</p>
                                 <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium italic mt-1">From Departure to Final Mile</p>
                             </div>
  
                             <div className="border-t border-slate-50 dark:border-slate-900 pt-8">
-                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Cargo Integrity</span>
+                                <span className="text-[9px] font-black text-slate-300 dark:text-slate-700 tracking-[0.2em] mb-4 block">Best For</span>
                                 <p className="text-xl font-bold text-slate-900 dark:text-white">Heavy Goods & Furniture</p>
                             </div>
                         </div>
@@ -129,12 +129,12 @@ export default function ShippingPage() {
                         },
                         { 
                             icon: MapPin, 
-                            title: "Nationwide Logic", 
+                            title: "Nationwide Delivery", 
                             text: "Door-to-door delivery in Accra and Tema, with convenient branch pickups in Kumasi for the northern regions." 
                         },
                         { 
                             icon: Truck, 
-                            title: "Human Brokerage", 
+                            title: "Customs Clearance", 
                             text: "We handle all the paperwork. Real clearing agents in Tema ensuring smooth gate exits." 
                         }
                     ].map((item, i) => (

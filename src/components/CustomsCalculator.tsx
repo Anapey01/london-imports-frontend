@@ -58,15 +58,15 @@ export default function CustomsCalculator() {
             <header className="border-b border-slate-900 pb-12 mb-16">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
                     <div className="max-w-2xl">
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-600 block mb-6 italic">Fiscal Audit CP-2026</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-600 block mb-6 italic">Tax Estimator 2026</span>
                         <h2 className="text-4xl md:text-7xl font-serif font-bold tracking-tight text-slate-900 leading-[0.85]">
-                            Projected Tax <br />
-                            Assessment.
+                            Estimated <br />
+                            Import Tax.
                         </h2>
                     </div>
                     <div className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 space-y-1 text-right tabular-nums">
                         <div>Ref: LI-ACCRA-EST</div>
-                        <div>Protocol: GH-CET-2026/27</div>
+                        <div>Updated: 2026</div>
                     </div>
                 </div>
             </header>
@@ -77,7 +77,7 @@ export default function CustomsCalculator() {
                     <div className="space-y-16">
                         {/* 01. FOB */}
                         <div className="group border-b border-slate-200 focus-within:border-slate-900 transition-colors pb-6">
-                            <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">01. Original Invoice Value (FOB GHS)</label>
+                            <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">01. Item Price (GHS)</label>
                             <input
                                 type="number"
                                 value={fobValue}
@@ -101,7 +101,7 @@ export default function CustomsCalculator() {
 
                         {/* 03. Category */}
                         <div className="group border-b border-slate-200 focus-within:border-slate-900 transition-colors pb-6">
-                             <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">03. Tariff Band Classification</label>
+                             <label className="block text-[9px] font-black tracking-[0.4em] uppercase text-slate-400 mb-8">03. Item Category</label>
                              <div className="relative">
                                 <select
                                     value={category}
@@ -134,7 +134,7 @@ export default function CustomsCalculator() {
                         
                         <div className="flex-1 space-y-8">
                             <div className="flex justify-between items-baseline border-b border-white pb-6">
-                                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">CIF Base</span>
+                                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">Total Value</span>
                                 <span className="text-xl font-bold text-slate-900 font-mono tracking-tight tabular-nums">
                                     {results.cif.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                 </span>
@@ -161,7 +161,7 @@ export default function CustomsCalculator() {
 
                         <div className="mt-16 pt-12 border-t border-slate-200">
                             <div className="flex flex-col gap-4 mb-16 px-2">
-                                <span className="text-[10px] font-black tracking-widest uppercase text-emerald-600 block italic leading-none">Total Expenditure Liability (EST)</span>
+                                <span className="text-[10px] font-black tracking-widest uppercase text-emerald-600 block italic leading-none">Total Estimated Tax</span>
                                 <div className="text-6xl md:text-8xl font-serif font-bold tracking-tighter text-slate-900 leading-[0.8]">
                                     {results.totalTaxes.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                     <span className="text-2xl ml-1 font-mono opacity-20">.{(results.totalTaxes % 1).toFixed(2).substring(2)}</span>
@@ -172,10 +172,10 @@ export default function CustomsCalculator() {
                             <div className="pt-10 border-t border-slate-100 group/cta">
                                 <h5 className="text-3xl font-serif font-bold italic mb-6 text-slate-900 leading-tight">
                                     Why pay individual <br /> 
-                                    <span className="text-slate-300">obstacles?</span>
+                                    <span className="text-slate-300">fees?</span>
                                 </h5>
                                 <p className="text-[12px] text-slate-400 font-medium leading-relaxed mb-10">
-                                    Our consolidation service slashes total liability by grouping high-value items within commercial shipments.
+                                    Our consolidation service lowers your total tax by grouping high-value items within commercial shipments.
                                 </p>
                                 <button
                                     onClick={() => router.push('/products')}

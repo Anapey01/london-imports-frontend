@@ -58,7 +58,7 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({ activeStep }) => {
                 <div className="w-8 h-8 rounded-full bg-white p-0.5 border border-slate-100 flex items-center justify-center overflow-hidden grayscale">
                     <Image src="/logo.jpg" alt="Logo" width={28} height={28} className="w-full h-full object-cover" />
                 </div>
-                <span className="text-[10px] font-black tracking-widest text-slate-900 uppercase">London&apos;s Protocol</span>
+                <span className="text-[10px] font-black tracking-widest text-slate-900 uppercase">Our Process</span>
             </div>
 
             {/* Search Bar with Typewriter */}
@@ -114,7 +114,7 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({ activeStep }) => {
             {/* Selection Status */}
             {selectedProduct !== null && (
                 <div className="mt-4 bg-emerald-600 rounded-lg py-3 text-center animate-fade-in-up shadow-xl shadow-emerald-600/20">
-                    <span className="text-white text-[11px] font-black uppercase tracking-widest">Protocol 01 / Initiate</span>
+                    <span className="text-white text-[11px] font-black uppercase tracking-widest">Step 01 / Start</span>
                 </div>
             )}
         </div>,
@@ -135,7 +135,7 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({ activeStep }) => {
             <div className="text-[11px] font-black text-emerald-600 mb-2 uppercase tracking-[0.3em] font-sans italic">Delivered / Arrival</div>
             <div className="text-3xl font-serif font-black text-slate-900 mb-6 leading-none">Arrival Complete.</div>
             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-10 leading-relaxed">
-                Your order has reached the Accra Hub and is ready for local dispatch.
+                Your order has reached the Accra Shipping Center and is ready for local dispatch.
             </div>
             <div className="bg-slate-900 text-white rounded px-6 py-4 text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/20">
                 Final Settlement: GHS 250

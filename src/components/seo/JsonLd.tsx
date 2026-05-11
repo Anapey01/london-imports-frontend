@@ -14,7 +14,7 @@ export function OrganizationSchema() {
     "legalName": "London's Imports Ghana Limited",
     "alternateName": ["Mini Importation Ghana", "Londons Imports GH"],
     "url": "https://londonsimports.com",
-    "description": "Ghana's leading mini-importation logistics and sourcing platform. Shop from China (1688, Alibaba, Taobao) directly to Accra, Kumasi, and Tema. Independent Ghanaian entity with local doorstep delivery.",
+    "description": "Ghana's leading shopping service and shipping system (mini-importation, air freight, and procurement). Shop from 1688, Alibaba, and Taobao directly to Accra, Kumasi, and Tema. Trusted by thousands of Ghanaian business owners with door-to-door delivery.",
     "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
     "telephone": [`+${siteConfig.whatsapp}`, `+${siteConfig.concierge}`],
@@ -29,7 +29,7 @@ export function OrganizationSchema() {
       {
         "@type": "ContactPoint",
         "telephone": `+${siteConfig.concierge}`,
-        "contactType": "concierge and order tracking",
+        "contactType": "order help and tracking",
         "areaServed": "GH",
         "availableLanguage": "en"
       }
@@ -72,9 +72,13 @@ export function OrganizationSchema() {
       { "@type": "City", "name": "Teshie" },
       { "@type": "City", "name": "Nungua" },
       { "@type": "City", "name": "Lashibi" },
-      { "@type": "City", "name": "Kumasi" },
       { "@type": "City", "name": "Takoradi" },
+      { "@type": "City", "name": "Cape Coast" },
+      { "@type": "City", "name": "Koforidua" },
+      { "@type": "City", "name": "Sunyani" },
+      { "@type": "City", "name": "Tamale" },
       { "@type": "AdministrativeArea", "name": "Greater Accra Region" },
+      { "@type": "AdministrativeArea", "name": "Ashanti Region" },
       { "@type": "Country", "name": "Ghana" }
     ],
     "priceRange": "GH₵₵",
@@ -112,7 +116,7 @@ export function OrganizationSchema() {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Sourcing Agent",
+            "name": "Shopping Agent",
             "description": "Find suppliers on 1688 and Alibaba for Ghana businesses"
           }
         }
@@ -235,7 +239,7 @@ export function BreadcrumbSchema() {
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://londonsimports.com" },
       { "@type": "ListItem", "position": 2, "name": "Products", "item": "https://londonsimports.com/products" },
       { "@type": "ListItem", "position": 3, "name": "How it Works", "item": "https://londonsimports.com/how-it-works" },
-      { "@type": "ListItem", "position": 4, "name": "Sourcing Hub", "item": "https://londonsimports.com/blog" }
+      { "@type": "ListItem", "position": 4, "name": "Shopping Tips", "item": "https://londonsimports.com/blog" }
     ]
   };
 

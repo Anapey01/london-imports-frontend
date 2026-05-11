@@ -26,16 +26,16 @@ export const TrackScreen: React.FC<TrackScreenProps> = ({ activeStep }) => {
     }, [activeStep]);
 
     const steps = [
-        { label: 'Order Confirmed', id: 'LOG-01' },
-        { label: 'Shipped (Guangzhou)', id: 'LOG-02' },
-        { label: 'Arrival (Accra Hub)', id: 'LOG-03' },
-        { label: 'Local Dispatch', id: 'LOG-04' },
+        { label: 'Order Confirmed', id: 'ORD-01' },
+        { label: 'Shipped from China', id: 'SHP-02' },
+        { label: 'Arrived in Ghana', id: 'ARR-03' },
+        { label: 'Local Delivery', id: 'DLV-04' },
     ];
 
     return (
         <div key="track" className="h-full p-6 flex flex-col relative bg-white text-slate-900">
             <header className="border-b border-slate-900 pb-6 mb-8">
-                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 italic">Tracking Protocol #LI-0847</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-2 italic">Order Tracking #LI-0847</div>
                 <div className="text-xl font-serif font-black text-slate-900 tracking-tight">iPhone 15 Pro Max</div>
             </header>
 
@@ -81,8 +81,8 @@ export const TrackScreen: React.FC<TrackScreenProps> = ({ activeStep }) => {
                             </svg>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 mb-1 leading-none">PROTOCOL UPDATE</div>
-                            <div className="text-[10px] font-bold text-white leading-tight uppercase tracking-tight">Your order #LI-0847 has reached the Accra Hub Hub.</div>
+                            <div className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 mb-1 leading-none">ORDER UPDATE</div>
+                            <div className="text-[10px] font-bold text-white leading-tight uppercase tracking-tight">Your order #LI-0847 has reached the Accra Center.</div>
                         </div>
                     </div>
                 </div>

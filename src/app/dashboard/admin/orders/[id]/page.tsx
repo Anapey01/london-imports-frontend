@@ -36,12 +36,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 // --- Integrated Components ---
 
 const STEPS = [
-    { id: 'PENDING', label: 'Registered', icon: Package },
-    { id: 'PROCESSING', label: 'Hub Consolidation', icon: Package },
-    { id: 'IN_TRANSIT', label: 'Global Corridor', icon: Truck },
-    { id: 'ARRIVED', label: 'GH Hub Arrival', icon: MapPin },
-    { id: 'OUT_FOR_DELIVERY', label: 'Dispatch', icon: Truck },
-    { id: 'DELIVERED', label: 'Finality', icon: CheckCircle2 },
+    { id: 'PENDING', label: 'Order Placed', icon: Package },
+    { id: 'PROCESSING', label: 'Processing', icon: Package },
+    { id: 'IN_TRANSIT', label: 'In Transit', icon: Truck },
+    { id: 'ARRIVED', label: 'Arrived in Hub', icon: MapPin },
+    { id: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', icon: Truck },
+    { id: 'DELIVERED', label: 'Delivered', icon: CheckCircle2 },
 ];
 
 function LogisticsStepper({ status, isDark }: { status: string; isDark: boolean }) {
@@ -77,7 +77,7 @@ function LogisticsStepper({ status, isDark }: { status: string; isDark: boolean 
                             
                             <div className="mt-4 flex flex-col items-center text-center">
                                 <span className={`text-[8px] font-mono tracking-[0.2em] uppercase mb-1 transition-all duration-500 ${isCurrent ? 'opacity-100 text-pink-500 font-black' : 'opacity-20'}`}>
-                                    {isCurrent ? 'Current' : `Node 0${idx + 1}`}
+                                    {isCurrent ? 'Current' : `Stage ${idx + 1}`}
                                 </span>
                                 <span className={`text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${isCurrent ? 'opacity-100' : 'opacity-30'}`}>
                                     {step.label}
@@ -118,7 +118,7 @@ function CustomerIntelligenceCard({ customer, isDark }: { customer: Customer; is
             <div className="p-10">
                 <div className="flex items-center gap-3 mb-10 opacity-40">
                     <User className="w-4 h-4" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Customer Identity Profile</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Customer Details</h3>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-12 gap-8 sm:gap-0">
@@ -182,7 +182,7 @@ function CustomerIntelligenceCard({ customer, isDark }: { customer: Customer; is
                     </div>
                     <div className="text-left sm:text-right">
                         <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block">Account Status</span>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Verified Hub Access</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Verified Customer</p>
                     </div>
                 </div>
             </div>
@@ -299,8 +299,8 @@ export default function AdminOrderDetailPage() {
     const handleUpdateStatus = (newStatus: string) => {
         setConfirmModal({
             isOpen: true,
-            title: 'Protocol Authorization',
-            message: `Authorize transition of order status to ${newStatus.replace(/_/g, ' ')}?`,
+            title: 'Update Order Status',
+            message: `Are you sure you want to change the status to ${newStatus.replace(/_/g, ' ')}?`,
             variant: newStatus === 'CANCELLED' ? 'danger' : 'warning',
             onConfirm: async () => {
                 setUpdating(true);
@@ -322,8 +322,8 @@ export default function AdminOrderDetailPage() {
         
         setConfirmModal({
             isOpen: true,
-            title: 'Credit Override Authorization',
-            message: `Manual credit entry for balance: ₵${balance.toLocaleString()}. This will bypass automated banking synchronization. Proceed?`,
+            title: 'Confirm Manual Payment',
+            message: `This will mark the balance of ₵${balance.toLocaleString()} as paid manually. Continue?`,
             variant: 'warning',
             onConfirm: async () => {
                 setUpdating(true);
@@ -441,12 +441,12 @@ export default function AdminOrderDetailPage() {
                         className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all w-fit"
                     >
                         <ChevronLeft className="w-4 h-4" />
-                        Back to Register
+                        Back to Orders
                     </button>
                     
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
                         <div className="flex items-center gap-4">
-                            <span className="font-mono text-[10px] tracking-[0.2em] opacity-30">REF NO:</span>
+                            <span className="font-mono text-[10px] tracking-[0.2em] opacity-30">ORDER NO:</span>
                             <h1 className="font-mono text-sm sm:text-lg font-bold tracking-tighter truncate max-w-[150px] sm:max-w-none">#{order.order_number}</h1>
                         </div>
 
@@ -529,14 +529,14 @@ export default function AdminOrderDetailPage() {
                                             <p className="text-lg font-mono tracking-tighter">₵{parseFloat(order.subtotal).toLocaleString()}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30">Freight & Logistics</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30">Shipping</span>
                                             <p className="text-lg font-mono tracking-tighter">₵{parseFloat(order.delivery_fee).toLocaleString()}</p>
                                         </div>
                                     </div>
                                     
                                     <div className="flex justify-between items-end">
                                         <div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500 block mb-2">Total Value</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500 block mb-2">Total Amount</span>
                                             <h3 className="text-5xl font-serif font-bold tracking-tighter leading-none">
                                                 ₵{parseFloat(order.total).toLocaleString()}
                                             </h3>
@@ -651,13 +651,13 @@ export default function AdminOrderDetailPage() {
                         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="p-8 border-b border-inherit flex items-center gap-4">
                                 <Terminal className="w-5 h-5 opacity-20" />
-                                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Override Terminal</h2>
+                                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Admin Actions</h2>
                             </div>
                             
                             <div className="p-8 space-y-4">
                                 {whatsappUrl && (
                                     <a href={whatsappUrl} target="_blank" className="w-full flex items-center justify-between p-6 bg-[#25D366] text-white font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
-                                        Open Messaging Bridge
+                                        WhatsApp Customer
                                         <MessageCircle className="w-5 h-5" />
                                     </a>
                                 )}
@@ -669,7 +669,7 @@ export default function AdminOrderDetailPage() {
                                     >
                                         <CreditCard className="w-5 h-5 text-purple-500" />
                                         <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                                            Credit <br /> Override
+                                            Mark as <br /> Paid
                                         </span>
                                     </button>
                                     <button 
@@ -678,7 +678,7 @@ export default function AdminOrderDetailPage() {
                                     >
                                         <ArrowRightLeft className="w-5 h-5 text-blue-500" />
                                         <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                                            Balance <br /> Migration
+                                            Transfer <br /> Payment
                                         </span>
                                     </button>
                                 </div>
@@ -707,19 +707,19 @@ export default function AdminOrderDetailPage() {
                                     <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Protocol Transitions</span>
                                     <div className="grid grid-cols-1 gap-2">
                                         <button onClick={() => handleUpdateStatus('IN_TRANSIT')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
-                                            Authorize Shipment
+                                            Mark as Shipped
                                             <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
                                         </button>
                                         <button onClick={() => handleUpdateStatus('ARRIVED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
-                                            Authorize Arrival
+                                            Mark as Arrived
                                             <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
                                         </button>
                                         <button onClick={() => handleUpdateStatus('DELIVERED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
-                                            Authorize Finality
+                                            Mark as Delivered
                                             <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
                                         </button>
                                         <button onClick={() => handleUpdateStatus('CANCELLED')} className="w-full p-4 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-left">
-                                            Void Transaction
+                                            Cancel Order
                                         </button>
                                     </div>
                                 </div>
@@ -727,14 +727,14 @@ export default function AdminOrderDetailPage() {
 
                             <div className="p-6 bg-slate-500/5 border-t border-inherit flex items-center gap-3">
                                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">System Integrity Verified</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Security Verified</span>
                             </div>
                         </section>
 
                         <section className={`p-8 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="flex items-center gap-3 mb-10">
                                 <OrderHistoryIcon className="w-4 h-4 opacity-20" />
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Operational Log</h2>
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Activity Log</h2>
                             </div>
                             
                             <div className="space-y-10 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1px] before:bg-inherit">
@@ -746,8 +746,8 @@ export default function AdminOrderDetailPage() {
                                 </div>
                                 <div className="relative pl-8 opacity-40">
                                     <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-slate-950 dark:border-slate-950 bg-slate-500 z-10" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest block mb-1">Event: Registration</span>
-                                    <p className="text-sm font-bold uppercase tracking-widest">Entry Created</p>
+                                    <span className="text-[9px] font-black uppercase tracking-widest block mb-1">Event: Order Created</span>
+                                    <p className="text-sm font-bold uppercase tracking-widest">Order Created</p>
                                     <p className="text-[10px] mt-1 font-mono">{new Date(order.created_at).toLocaleString()}</p>
                                 </div>
                             </div>
@@ -764,8 +764,8 @@ export default function AdminOrderDetailPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             className={`w-full max-w-xl border p-12 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-2xl'}`}
                         >
-                            <h2 className="text-4xl font-serif font-bold tracking-tighter mb-2">Ledger Adjustment</h2>
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-12">Internal Balance Migration Protocol</p>
+                            <h2 className="text-4xl font-serif font-bold tracking-tighter mb-2">Transfer Payment</h2>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-12">Transfer balance between orders</p>
                             
                             <div className="space-y-10">
                                 <div className="space-y-3">

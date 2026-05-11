@@ -32,8 +32,8 @@ export async function generateMetadata(
         };
     }
 
-    const title = `${category.name} Imports Ghana | Quality Sourced from China | London's Imports`;
-    const description = `Shop our curated ${category.name} collection. High-quality imports from China (1688, Alibaba) delivered to Accra, Kumasi, and Tema. Pay with Momo, door-to-door delivery.`;
+    const title = `${category.name} | China to Ghana Shopping & Shipping | London's Imports`;
+    const description = `Shop ${category.name} from China (1688, Alibaba) with easy shipping to Accra, Kumasi, and Tema. Pay with Momo, door-to-door delivery. Trusted by thousands in Ghana.`;
 
     return {
         title,
@@ -171,13 +171,13 @@ export default async function CategoryPage({ params }: Props) {
                          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
                             <Package className="w-6 h-6 text-slate-200" strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-xl font-bold text-slate-950 mb-4 tracking-[0.2em] uppercase leading-tight">Sourcing Now</h2>
+                        <h2 className="text-xl font-bold text-slate-950 mb-4 tracking-[0.2em] uppercase leading-tight">Arriving Soon</h2>
                         <p className="text-slate-400 mb-10 leading-relaxed text-[15px] font-light max-w-md mx-auto">
                             The <span className="font-semibold text-slate-900">{category.name}</span> collection is currently in transit from our mainland suppliers. New drops every week.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                             <Link 
-                                href="/sourcing" 
+                                href="/product-finder" 
                                 className="bg-slate-950 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-200 text-[11px] tracking-widest uppercase"
                             >
                                 Custom Request
@@ -196,7 +196,7 @@ export default async function CategoryPage({ params }: Props) {
             {/* Why Choose Us Bar */}
             <div className="bg-slate-900 py-12 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h3 className="text-2xl font-bold mb-4">Why source {category.name} with London's?</h3>
+                    <h3 className="text-2xl font-bold mb-4">Why shop {category.name} with London&apos;s?</h3>
                     <div className="grid md:grid-cols-3 gap-8">
                         <div>
                             <div className="text-pink-400 font-bold text-4xl mb-2">01</div>

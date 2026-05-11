@@ -536,7 +536,7 @@ function CheckoutPage() {
             <div className="min-h-screen flex items-center justify-center bg-surface">
                 <div className="flex flex-col items-center gap-4">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-950"></div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary">Preparing Hub...</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary">Loading...</p>
                 </div>
             </div>
         );
@@ -556,7 +556,7 @@ function CheckoutPage() {
                         onClick={() => router.push('/products')}
                         className="w-full py-4 bg-slate-950 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all"
                     >
-                        Back to Sourcing
+                        Back to Shop
                     </button>
                     <button 
                         onClick={() => fetchCart()}
@@ -664,7 +664,7 @@ function CheckoutPage() {
                                     <div className="pt-6 border-t border-border-standard flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Ready for dispatch</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Ready for shipping</span>
                                         </div>
                                         <button 
                                             type="button"

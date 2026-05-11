@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { setAnalyticsUser, trackLogin, trackEvent } from '@/lib/analytics';
 import { ArrowUpRight, ArrowRight, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
-import GoogleProtocolButton from '@/components/auth/GoogleProtocolButton';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 function LoginFormContent() {
     const router = useRouter();
@@ -191,7 +191,7 @@ function LoginFormContent() {
                         </button>
 
                         <div className="pt-6 border-t border-border-standard">
-                            <GoogleProtocolButton mode="signin" />
+                            <GoogleLoginButton mode="signin" />
                         </div>
                     </form>
 

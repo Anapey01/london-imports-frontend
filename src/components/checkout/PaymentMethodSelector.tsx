@@ -215,12 +215,12 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                         </>
                     )}
 
-                    {/* Financial Roadmap - Hardened UX for Installments */}
+                    {/* Financial Summary - Hardened UX for Installments */}
                     {(paymentType === 'DEPOSIT' || paymentType === 'CUSTOM') && (
                         <div className="mx-2 p-5 rounded-2xl bg-slate-50 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-500">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                                <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-900">Payment Roadmap</h3>
+                                <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-900">Payment Summary</h3>
                             </div>
                             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                                 <div className="space-y-1">
@@ -248,7 +248,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                             </div>
                             <div className="mt-4 p-3 bg-white/60 rounded-lg border border-slate-100">
                                 <p className="text-[8px] font-bold text-slate-500 italic leading-relaxed">
-                                    * Your order enters the shipping pipeline today. The pending balance will be due once the items arrive at the Ghana Hub.
+                                    * Your order enters the shipping process today. The pending balance will be due once the items arrive at the Ghana Location.
                                 </p>
                             </div>
                         </div>

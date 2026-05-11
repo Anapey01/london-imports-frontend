@@ -82,13 +82,13 @@ interface MobileMenuDrawerProps {
 
 const ACTION_ITEMS = [
     { name: 'Ready to Ship', href: '/products?status=READY_TO_SHIP', icon: Zap, color: 'text-emerald-500' },
-    { name: 'Find Products', href: '/sourcing', icon: Scan, color: 'text-slate-900' },
+    { name: 'Search', href: '/product-finder', icon: Scan, color: 'text-slate-900' },
 ];
 
 const SHOP_ITEMS = [
     { name: 'Customer Reviews', href: '/reviews', icon: Star },
     { name: 'How it Works', href: '/how-it-works', icon: Info },
-    { name: 'Answer Hub (FAQ)', href: '/faq', icon: HelpCircle },
+    { name: 'FAQ', href: '/faq', icon: HelpCircle },
     { name: 'Our Blog', href: '/story', icon: BookOpen },
     { name: 'Track My Items', href: '/track', icon: Truck },
 ];
@@ -192,7 +192,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 {/* 2. DIRECTORY CONTENT (Vertical Ledger) */}
                 <div className="flex-1 overflow-y-auto px-4 py-8 space-y-2">
                     
-                    {/* ACCOUNT PROTOCOL */}
+                    {/* YOUR ACCOUNT */}
                     <div className="mb-10">
                         <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-6 block px-4">Your Account</span>
                         {isAuthenticated ? (
@@ -234,7 +234,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         )}
                     </div>
 
-                    {/* ACTION LEDGER */}
+                    {/* QUICK LINKS */}
                     <div className="mb-10">
                         <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-6 block px-4">Quick Links</span>
                         {ACTION_ITEMS.map((item) => (
@@ -252,7 +252,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             </Link>
                         ))}
                         
-                        {/* WhatsApp Protocol */}
+                        {/* WhatsApp Support */}
                         <a 
                             href={siteConfig.socials.whatsapp}
                             target="_blank" 
@@ -263,7 +263,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 <MessageCircle className="w-4 h-4 text-emerald-500" strokeWidth={1.5} />
                                 <div className="flex flex-col">
                                     <span className="text-[13px] font-black uppercase tracking-widest text-content-primary">WhatsApp Orders</span>
-                                    <span className="text-[8px] font-bold text-content-secondary uppercase tracking-widest italic">Direct Liaison</span>
+                                    <span className="text-[8px] font-bold text-content-secondary uppercase tracking-widest italic">Direct Support</span>
                                 </div>
                             </div>
                             <ArrowUpRight className="w-4 h-4 text-content-secondary group-hover:text-content-primary transition-colors" />
@@ -305,7 +305,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         )}
                     </div>
 
-                    {/* SHOP PROTOCOLS ACCORDION */}
+                    {/* SHOPPING HELP */}
                     <div className="mb-6">
                         <button
                             type="button"
@@ -337,7 +337,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         )}
                     </div>
 
-                    {/* INSTITUTIONAL SUPPORT ACCORDION */}
+                    {/* OUR COMPANY */}
                     <div className="mb-6">
                         <button
                             type="button"
@@ -386,7 +386,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 {/* 3. UTILITY FOOTER (High-Contrast Monochrome) */}
                 <div className="mt-auto border-t border-border-standard pt-10 pb-16 px-8">
                      <div className="flex items-center justify-between mb-10">
-                          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary">Terminal Mode</span>
+                          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary">Dark Mode</span>
                           <ThemeToggle />
                      </div>
                      
@@ -410,7 +410,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                       
                       <div className="flex items-center justify-between opacity-40">
                            <div className="h-px flex-1 bg-border-standard mr-4" />
-                           <span className="text-[10px] font-black text-content-primary uppercase tracking-[0.3em] italic whitespace-nowrap">2026 Operational Protocol</span>
+                           <span className="text-[10px] font-black text-content-primary uppercase tracking-[0.3em] italic whitespace-nowrap">2026 Service Standard</span>
                       </div>
                  </div>
             </div>

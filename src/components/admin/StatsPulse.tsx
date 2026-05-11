@@ -34,13 +34,13 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
         {
             label: 'Total Revenue',
             value: stats.totalRevenue.toLocaleString(),
-            subtitle: `Realized Net`,
+            subtitle: `Paid in Full`,
             icon: BadgeDollarSign,
             trend: 8.2,
             prefix: '₵'
         },
         {
-            label: 'Pipeline Value',
+            label: 'Future Sales',
             value: stats.potentialRevenue.toLocaleString(),
             subtitle: `${stats.pendingOrders} Pending`,
             icon: Zap,
@@ -48,9 +48,9 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
             prefix: '₵'
         },
         {
-            label: 'Active Catalog',
+            label: 'Product List',
             value: stats.totalProducts.toLocaleString(),
-            subtitle: 'Verified SKU',
+            subtitle: 'Total Items',
             icon: Package,
             trend: 0,
             prefix: ''
@@ -77,7 +77,7 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-6">
                             <span className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 group-hover:text-slate-900 transition-colors">
-                                Node_{idx.toString().padStart(2, '0')}
+                                STAT_{idx + 1}
                             </span>
                             <div className="flex-1 h-px bg-slate-50 group-hover:bg-slate-200 transition-colors" />
                             {card.trend !== 0 && (

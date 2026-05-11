@@ -22,7 +22,7 @@
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* ===== LIGHT MODE VARIABLES (STATIONERY PROTOCOL) ===== */
+/* ===== LIGHT MODE VARIABLES (STATIONERY STANDARDS) ===== */
 :root {
   --bg-primary: #ffffff;
   --bg-secondary: #faf9f6; /* Off-white stationery feel */
@@ -38,7 +38,7 @@
   --font-weight-product-name: 200; /* Ultra-thin Atelier Aesthetic */
 }
 
-/* ===== DEEP MIDNIGHT VARIABLES (GLOBAL PROTOCOL) ===== */
+/* ===== DEEP MIDNIGHT VARIABLES (GLOBAL STANDARDS) ===== */
 [data-theme='dark'],
 .dark {
   --bg-primary: #020617; /* Midnight Base (Slate 950) */
@@ -88,8 +88,8 @@
   color: #cbd5e1 !important;
 }
 
-/* INSTITUTIONAL FOCUS PROTOCOL: Perceivable visibility for keyboard users */
-.institutional-focus:focus-visible {
+/* STANDARD FOCUS: Perceivable visibility for keyboard users */
+.standard-focus:focus-visible {
   @apply outline-none ring-2 ring-content-primary ring-offset-2 ring-offset-surface rounded-full transition-all duration-200;
 }
 
@@ -583,7 +583,7 @@ a, button, [role="button"] {
   filter: invert(1);
 }
 
-/* Institutional Utilities - Mobile Interaction Hardening */
+/* Common Utilities - Mobile Interaction Hardening */
 .tap-highlight-none {
   -webkit-tap-highlight-color: transparent !important;
   box-shadow: none !important;

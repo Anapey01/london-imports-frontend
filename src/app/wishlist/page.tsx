@@ -89,7 +89,7 @@ export default function WishlistPage() {
 
                 <div className="mt-24 pt-12 border-t border-border-standard">
                     <p className="text-xs font-black text-content-primary leading-relaxed uppercase tracking-[0.2em] italic">
-                        Personal procurement portfolio. London's Imports Global Hub 2026. Data encrypted via SSL-SHA256.
+                        Personal procurement portfolio. London's Imports Global 2026. Data encrypted via SSL-SHA256.
                     </p>
                 </div>
             </div>

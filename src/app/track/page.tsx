@@ -56,8 +56,7 @@ export default function TrackOrderPage() {
         setTrackingData(null);
 
         // Auto-dismiss error
-        const timer = setTimeout(() => setError(''), 4000);
-        const clearTimer = () => clearTimeout(timer);
+        setTimeout(() => setError(''), 4000);
 
         try {
             const response = await api.get(`/orders/track/public/${cleanNumber}/`);
@@ -227,9 +226,9 @@ export default function TrackOrderPage() {
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                     {[
-                                        { label: 'Origin Facility', loc: 'China Hub', done: true },
+                                        { label: 'Origin Facility', loc: 'China Office', done: true },
                                         { label: 'Ocean/Air Transit', loc: 'International Waters', done: false },
-                                        { label: 'Destination Hub', loc: 'Ghana Arrival Port', done: false },
+                                        { label: 'Destination', loc: 'Ghana Arrival Port', done: false },
                                     ].map((milestone, idx) => (
                                         <div key={idx} className={`p-4 rounded-xl border transition-all ${milestone.done ? 'bg-gray-50 border-gray-100 opacity-100' : 'bg-white border-dashed border-gray-200 opacity-60'}`}>
                                             <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">{milestone.loc}</p>

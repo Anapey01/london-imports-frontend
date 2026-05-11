@@ -57,7 +57,7 @@ export default function CookieBanner() {
                                     Privacy Preferences
                                 </p>
                                 <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                    We use cookies to personalize your sourcing journey and ensure the platform runs smoothly. Acknowledge our use of cookies to proceed.
+                                    We use cookies to personalize your shopping journey and ensure the platform runs smoothly. Acknowledge our use of cookies to proceed.
                                 </p>
                             </div>
                         </div>
@@ -106,7 +106,7 @@ export default function CookieBanner() {
                             {/* Essential */}
                             <div className="flex justify-between items-center group">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Essential Protocol</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Essential Cookies</p>
                                     <p className="text-[9px] font-medium uppercase tracking-widest text-slate-400">Required for cart & login stability.</p>
                                 </div>
                                 <div className="w-10 h-10 border border-slate-950 dark:border-white flex items-center justify-center opacity-50 cursor-not-allowed">
@@ -132,7 +132,7 @@ export default function CookieBanner() {
                             {/* Marketing */}
                             <div className="flex justify-between items-center group">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Sourcing Alerts</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Shopping Alerts</p>
                                     <p className="text-[9px] font-medium uppercase tracking-widest text-slate-400">Personalized deals & trend tracking.</p>
                                 </div>
                                 <button 

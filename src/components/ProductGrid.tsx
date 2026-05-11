@@ -278,8 +278,8 @@ export default function ProductGrid({
                         aria-atomic="true"
                     >
                         <span>Active Filters:</span>
-                        {category && <span className="text-content-primary border-b border-current">CAT_{category}</span>}
-                        {status && <span className="text-content-primary border-b border-current">STS_{status}</span>}
+                        {category && <span className="text-content-primary border-b border-current">{category.toUpperCase()}</span>}
+                        {status && <span className="text-content-primary border-b border-current">{status.replace("_", " ")}</span>}
                         {search && <span className="text-content-primary border-b border-current">&quot;{search}&quot;</span>}
                         <button onClick={clearFilters} className="ml-4 text-brand-emerald hover:text-content-primary transition-colors text-xs institutional-focus">[ × ]</button>
                     </div>
@@ -327,7 +327,7 @@ export default function ProductGrid({
 
                         {!hasNextPage && products.length > PAGE_SIZE && (
                             <div className="mt-20 text-center py-10 opacity-20">
-                                <p className="text-[9px] font-black uppercase tracking-[0.5em]">EndOfCollection</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.5em]">End of Collection</p>
                             </div>
                         )}
                     </>
@@ -336,7 +336,7 @@ export default function ProductGrid({
                          <Zap className="w-10 h-10 text-content-secondary mx-auto mb-8 opacity-10" />
                          <h3 className="text-2xl font-serif font-bold text-content-primary mb-4">No results found.</h3>
                          <p className="text-xs text-content-secondary font-medium max-w-xs mx-auto leading-relaxed mb-10 opacity-60">
-                            Our scouts are currently in the field. Let our sourcing team find your specific piece directly.
+                            Our scouts are currently in the field. Let our shopping team find your specific piece directly.
                          </p>
                          <div className="flex justify-center">
                             <a
@@ -345,7 +345,7 @@ export default function ProductGrid({
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-content-primary border-b-2 border-content-primary pb-2 hover:text-brand-emerald hover:border-brand-emerald transition-all institutional-focus group"
                             >
-                                Request Custom Sourcing
+                                Find a Product for Me
                                 <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-2 transition-transform" />
                             </a>
                          </div>

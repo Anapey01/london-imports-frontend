@@ -58,7 +58,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
             return initialBanners.map(banner => ({
                 id: banner.id,
                 title: banner.title || "Promotional Drop",
-                subtitle: banner.subtitle || "The latest curations from our global sourcing network.",
+                subtitle: banner.subtitle || "The latest curations from our suppliers.",
                 ctaText: banner.cta_text || "Shop Collection",
                 ctaLink: banner.cta_link || "/products",
                 image: banner.image,
@@ -73,8 +73,8 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
         return shuffled.slice(0, 7).map((product, idx) => ({
             id: product.id,
             title: product.display_name || product.short_name || product.name,
-            subtitle: product.category_name || "New Arrival / Top Tier Sourcing",
-            ctaText: "Source Now",
+            subtitle: product.category_name || "New Arrival / Top Quality",
+            ctaText: "Shop Now",
             ctaLink: `/products/${product.slug}`,
             image: product.image || "/assets/placeholder-product.png",
             bgClass: "bg-surface",
@@ -119,7 +119,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
             onBlur={() => setIsHovered(false)}
         >
             {/* 0. SEO Authority Header - Visually Hidden H1 for WCAG 1.3.1 */}
-            <h1 className="sr-only">London&apos;s Imports - Premium China to Ghana Sourcing &amp; Mini-Importation Hub</h1>
+            <h1 className="sr-only">London&apos;s Imports - Premium China to Ghana Shopping &amp; Shipping</h1>
 
             <div className="relative h-[400px] sm:h-[500px] md:h-[600px]">
                 {slides.map((slide, index) => {
@@ -195,7 +195,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                             <button
                                 key={index}
                                 onClick={() => goToSlide(index)}
-                                className={`h-0.5 transition-all duration-700 institutional-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
+                                className={`h-0.5 transition-all duration-700 standard-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
                                 aria-label={`Slide ${index + 1}`}
                             />
                         ))}
@@ -204,7 +204,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                     {/* Industrial Pause/Play Protocol */}
                     <button
                         onClick={() => setIsPaused(!isPaused)}
-                        className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary hover:text-content-primary transition-colors institutional-focus flex items-center gap-3 px-2"
+                        className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary hover:text-content-primary transition-colors standard-focus flex items-center gap-3 px-2"
                         aria-label={isPaused ? "Play Carousel" : "Pause Carousel"}
                     >
                         <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />

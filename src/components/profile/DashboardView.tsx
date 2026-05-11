@@ -60,7 +60,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                         <div className="p-8 sm:p-10">
                             <div className="flex items-center gap-3 mb-10 text-slate-500 dark:text-slate-300">
                                 <UserIcon className="w-4 h-4" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Identity Profile</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Profile Information</h3>
                             </div>
 
                             <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-12 gap-8">
@@ -169,7 +169,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                             <div className="w-full sm:w-auto text-left sm:text-right pt-4 sm:pt-0 border-t sm:border-t-0 border-inherit">
                                                 <p className="text-xl font-mono tracking-tighter mb-1">₵{parseFloat(order.total?.toString() || '0').toLocaleString()}</p>
                                                 <div className="flex items-center gap-2 sm:justify-end">
-                                                    <span className="text-[8px] font-black uppercase tracking-widest opacity-60 text-slate-400">Protocol View</span>
+                                                    <span className="text-[8px] font-black uppercase tracking-widest opacity-60 text-slate-400">View Details</span>
                                                     <ArrowRight className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-all text-slate-400" />
                                                 </div>
                                             </div>
@@ -250,7 +250,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                 );
                             })}
                             {orders.length === 0 && (
-                                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 text-center text-slate-500">No ledger entries</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 text-center text-slate-500">No activity found</p>
                             )}
                         </div>
                     </section>

@@ -50,16 +50,16 @@ export default function ContactPageContent() {
     };
 
     const faqs = [
-        { q: "How do I track my order?", a: "Log in to your dashboard and navigate to 'Trace My Batch'. Each order is tracked via a unique Batch ID with real-time updates from Guangzhou to Accra." },
-        { q: "What is your refund policy?", a: "We offer 100% money-back guarantee for items that do not meet our authenticity standards or fail to arrive within the committed window." },
-        { q: "Do you deliver to my region?", a: "Yes, we deliver to all 16 regions of Ghana. Our primary logistics hubs are in Accra, Kumasi, and Tamale." }
+        { q: "How do I track my order?", a: "Log in to your dashboard and navigate to 'Track My Order'. Each order has real-time updates from our warehouse in China to your doorstep in Ghana." },
+        { q: "What is your refund policy?", a: "We offer 100% money-back guarantee for items that do not meet our quality standards or fail to arrive within the committed window." },
+        { q: "Do you deliver to my region?", a: "Yes, we deliver to all 16 regions of Ghana. Our primary delivery hubs are in Accra, Kumasi, and Tamale." }
     ];
 
     const supportChannels = [
         {
             title: "WhatsApp Support",
-            label: "Main Logistics Line",
-            desc: "The fastest way to reach our general logistics team.",
+            label: "Main Support Line",
+            desc: "The fastest way to reach our support team.",
             icon: <MessageCircle className="w-8 h-8" />,
             color: "bg-green-600",
             link: `${siteConfig.socials.whatsapp}?text=Hi%20London's%20Imports!%20I%20need%20help%20with...`
@@ -67,15 +67,15 @@ export default function ContactPageContent() {
         {
             title: "Email Support",
             label: "24h Response",
-            desc: "For formal inquiries and bulk order sourcing.",
+            desc: "For inquiries and bulk orders.",
             icon: <Mail className="w-8 h-8" />,
             color: "bg-slate-950",
             link: `mailto:${siteConfig.supportEmail}`
         },
         {
-            title: "Global HQ",
+            title: "Headquarters",
             label: "Accra, Ghana",
-            desc: "Our primary operating unit in West Africa.",
+            desc: "Our main office in West Africa.",
             icon: <Globe className="w-8 h-8" />,
             color: "bg-green-600",
             link: siteConfig.addressMapLink
@@ -115,13 +115,13 @@ export default function ContactPageContent() {
                 }
             `}} />
 
-            {/* 1. Support Hero (Institutional Header) */}
+            {/* 1. Support Hero (Support Header) */}
             <section className="relative pt-32 pb-20 bg-white dark:bg-slate-950 border-b border-slate-50 dark:border-slate-900">
                 <div className="max-w-[1400px] mx-auto px-10">
                     <div className="w-12 h-px bg-slate-900 dark:bg-white mb-10" />
                     <div className="flex flex-col md:flex-row justify-between items-end gap-10">
                         <div className="max-w-2xl">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-4">Terminal Support / Repository</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-4">Support Center</span>
                             <motion.h1
                                 initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -136,7 +136,7 @@ export default function ContactPageContent() {
                             transition={{ delay: 0.2 }}
                             className="text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-[0.3em] max-w-sm leading-relaxed text-right font-black"
                         >
-                            Connecting our global logistics network <br /> to your institutional doorstep.
+                            Connecting our shipping network <br /> to your doorstep.
                         </motion.p>
                     </div>
                 </div>
@@ -165,46 +165,46 @@ export default function ContactPageContent() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-3 text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest border-b border-slate-900 dark:border-white pb-1 hover:pr-4 transition-all"
                             >
-                                Execute Connection <ArrowRight className="w-3 h-3" />
+                                Message Us <ArrowRight className="w-3 h-3" />
                             </a>
                         </motion.div>
                     ))}
                 </div>
             </section>
 
-            {/* 3. Detailed Contact & Location (Institutional Grid) */}
+            {/* 3. Detailed Contact & Location (Support Grid) */}
             <section className="py-40 bg-white dark:bg-slate-950 border-b border-slate-50 dark:border-slate-900">
                 <div className="max-w-[1400px] mx-auto px-10">
                     <div className="grid lg:grid-cols-2 gap-32 items-start">
                         <div className="space-y-16">
                             <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-6">HQ / Logistics Nerve Center</span>
-                                <h2 className="text-4xl md:text-5xl font-serif font-bold mb-8 text-slate-900 dark:text-white tracking-tighter">Operating <span className="italic font-normal">Headquarters.</span></h2>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-6">Main Office</span>
+                                <h2 className="text-4xl md:text-5xl font-serif font-bold mb-8 text-slate-900 dark:text-white tracking-tighter">Our <span className="italic font-normal">Headquarters.</span></h2>
                                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-lg">
-                                    Our headquarters in Accra serves as the high-precision nerve center for distribution across the West African corridor.
+                                    Our headquarters in Accra serves as the main hub for distribution across Ghana.
                                 </p>
                             </div>
     
                             <div className="grid grid-cols-2 gap-12 border-t border-slate-50 dark:border-slate-900 pt-16">
                                 <div>
-                                    <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Physical Node</h4>
+                                    <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Location</h4>
                                     <p className="text-slate-400 dark:text-slate-500 text-[11px] leading-relaxed uppercase tracking-tight font-black">{siteConfig.address}</p>
                                 </div>
                                 <div>
-                                    <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Operational Window</h4>
-                                    <p className="text-slate-400 dark:text-slate-500 text-[11px] leading-relaxed uppercase tracking-tight font-black">Mon - Fri / 0900 - 1800</p>
-                                    <p className="text-slate-400 dark:text-slate-500 text-[11px] leading-relaxed uppercase tracking-tight font-black">Sat / 1000 - 1600</p>
+                                    <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Opening Hours</h4>
+                                    <p className="text-slate-400 dark:text-slate-500 text-[11px] leading-relaxed uppercase tracking-tight font-black">Mon - Fri / 09:00 - 18:00</p>
+                                    <p className="text-slate-400 dark:text-slate-500 text-[11px] leading-relaxed uppercase tracking-tight font-black">Sat / 10:00 - 16:00</p>
                                 </div>
                             </div>
     
                             <div className="flex items-center gap-16 border-t border-slate-50 dark:border-slate-900 pt-16">
                                 <div>
-                                    <div className="text-4xl font-serif font-bold text-slate-900 dark:text-white">92%</div>
-                                    <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Precision Index</div>
+                                    <div className="text-4xl font-serif font-bold text-slate-900 dark:text-white">99%</div>
+                                    <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Delivery Success</div>
                                 </div>
                                 <div>
                                     <div className="text-4xl font-serif font-bold text-slate-900 dark:text-white">24h</div>
-                                    <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Protocol SLA</div>
+                                    <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Response Time</div>
                                 </div>
                             </div>
                         </div>
@@ -232,10 +232,10 @@ export default function ContactPageContent() {
             <section className="py-40 bg-slate-50 dark:bg-slate-950/50 border-y border-slate-100 dark:border-slate-900">
                 <div className="max-w-[1400px] mx-auto px-10 grid lg:grid-cols-2 gap-32">
                     <div className="flex flex-col justify-center">
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-600 block mb-8 italic">Direct Communication Protocol</span>
-                        <h2 className="text-4xl md:text-6xl font-serif font-bold mb-10 text-slate-900 dark:text-white tracking-tighter leading-none">Order <br /><span className="italic font-normal">Concierge.</span></h2>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-600 block mb-8 italic">Direct Message</span>
+                        <h2 className="text-4xl md:text-6xl font-serif font-bold mb-10 text-slate-900 dark:text-white tracking-tighter leading-none">Order <br /><span className="italic font-normal">Support.</span></h2>
                         <p className="text-slate-600 dark:text-slate-400 text-sm mb-12 leading-relaxed max-w-sm font-medium">
-                            Seeking a VIP sourcing request or tracking a premium batch? Execute a direct connection with our logistics team for priority handling.
+                            Need a special request or tracking an order? Message our team for priority help.
                         </p>
     
                         <div className="space-y-4">
@@ -255,7 +255,7 @@ export default function ContactPageContent() {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="absolute -top-12 left-0 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[9px] font-black px-4 py-2 uppercase tracking-widest shadow-2xl"
                                     >
-                                        Copied to Ledger
+                                        Copied
                                     </motion.span>
                                 )}
                             </div>
@@ -269,7 +269,7 @@ export default function ContactPageContent() {
                                     <CheckCircle className="w-10 h-10" />
                                 </div>
                                 <div>
-                                    <h3 className="text-3xl font-serif font-bold text-slate-900 dark:text-white mb-4 tracking-tight underline decoration-emerald-500/30">Transmission Received</h3>
+                                    <h3 className="text-3xl font-serif font-bold text-slate-900 dark:text-white mb-4 tracking-tight underline decoration-emerald-500/30">Message Received</h3>
                                     <p className="text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-[0.3em] font-black">Our team will respond within 24 hours.</p>
                                 </div>
                                 <button
@@ -288,7 +288,7 @@ export default function ContactPageContent() {
                                 )}
                                 <div className="grid md:grid-cols-2 gap-12">
                                     <div className="space-y-4">
-                                        <label className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Sender Identity</label>
+                                        <label className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Your Name</label>
                                         <input
                                             type="text"
                                             required
@@ -299,7 +299,7 @@ export default function ContactPageContent() {
                                         />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Digital Node</label>
+                                        <label className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Email Address</label>
                                         <input
                                             type="email"
                                             required
@@ -311,7 +311,7 @@ export default function ContactPageContent() {
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Inquiry Protocol</label>
+                                    <label className="text-[9px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Subject</label>
                                     <select
                                         required
                                         aria-label="Inquiry Type"
@@ -319,21 +319,21 @@ export default function ContactPageContent() {
                                         onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                                         className="w-full bg-transparent border-b border-slate-100 dark:border-slate-800 py-3 text-slate-900 dark:text-white focus:border-slate-950 dark:focus:border-white outline-none transition-all font-serif text-xl appearance-none cursor-pointer"
                                     >
-                                        <option value="" className="dark:bg-slate-900">Select Protocol...</option>
+                                        <option value="" className="dark:bg-slate-900">Select Subject...</option>
                                         {subjectOptions.map(opt => (
                                             <option key={opt.value} value={opt.value} className="dark:bg-slate-900">{opt.label}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[9px] font-black text-slate-500 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Message Payload</label>
+                                    <label className="text-[9px] font-black text-slate-500 dark:text-slate-600 uppercase tracking-[0.5em] block leading-none">Your Message</label>
                                     <textarea
                                         required
                                         value={formData.message}
                                         onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                                         rows={4}
                                         className="w-full bg-transparent border-b border-slate-100 dark:border-slate-800 py-3 text-slate-900 dark:text-white focus:border-slate-950 dark:focus:border-white outline-none transition-all font-serif text-xl resize-none placeholder:text-slate-200 dark:placeholder:text-slate-800"
-                                        placeholder="Detailed inquiry summary..."
+                                        placeholder="How can we help?"
                                     />
                                 </div>
                                 <button
@@ -341,7 +341,7 @@ export default function ContactPageContent() {
                                     disabled={loading}
                                     className="w-full bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-24 font-black flex items-center justify-center gap-6 transition-all active:scale-[0.99] disabled:opacity-50 uppercase tracking-[0.6em] text-[11px] group"
                                 >
-                                    {loading ? 'Transmitting...' : 'Execute Submission'} <Send className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                                    {loading ? 'Sending...' : 'Send Message'} <Send className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                                 </button>
                             </form>
                         )}
@@ -354,11 +354,11 @@ export default function ContactPageContent() {
                 <div className="max-w-[1400px] mx-auto px-10 relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-10">
                         <div className="max-w-2xl">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-6">Territorial Coverage / Global Node</span>
-                            <h2 className="text-4xl md:text-5xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white leading-none">Logistics <span className="italic font-normal">Network.</span></h2>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-6">Delivery Area</span>
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white leading-none">Shipping <span className="italic font-normal">Network.</span></h2>
                         </div>
                         <p className="text-slate-500 dark:text-slate-500 max-w-sm text-[10px] uppercase tracking-[0.3em] leading-relaxed font-black text-right">
-                            Delivering authentic electronics and lifestyle <br /> products across all 16 regions of the Republic.
+                            Delivering genuine electronics and lifestyle <br /> products across all 16 regions of Ghana.
                         </p>
                     </div>
  
@@ -387,9 +387,9 @@ export default function ContactPageContent() {
             <section className="py-40 bg-white dark:bg-slate-950">
                 <div className="max-w-4xl mx-auto px-10">
                     <div className="text-center mb-20">
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-600 block mb-6 italic underline decoration-slate-200 dark:decoration-slate-800 underline-offset-8 text-center">Institutional FAQ Repository</span>
-                        <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 tracking-tighter text-slate-900 dark:text-white">Query <span className="italic font-normal">Repository.</span></h2>
-                        <p className="text-slate-500 dark:text-slate-500 font-medium text-xs uppercase tracking-widest text-center mt-8">Quick access to common logistics and sourcing protocols.</p>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-600 block mb-6 italic underline decoration-slate-200 dark:decoration-slate-800 underline-offset-8 text-center">FAQ</span>
+                        <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 tracking-tighter text-slate-900 dark:text-white">Your <span className="italic font-normal">Questions.</span></h2>
+                        <p className="text-slate-500 dark:text-slate-500 font-medium text-xs uppercase tracking-widest text-center mt-8">Quick access to common shipping and order questions.</p>
                     </div>
  
                     <div className="space-y-0 border-t border-slate-50 dark:border-slate-900">
@@ -430,7 +430,7 @@ export default function ContactPageContent() {
                             href="/faq"
                             className="inline-flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.5em] text-slate-900 dark:text-white border-b-2 border-slate-900 dark:border-white pb-3 hover:pr-8 transition-all group"
                         >
-                            Execute Full Repository <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                            See all FAQs <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                         </Link>
                     </div>
                 </div>

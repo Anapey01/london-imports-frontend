@@ -4,25 +4,39 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, Truck, Package, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Truck, Package, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { ordersAPI } from '@/lib/api';
 import OrderRecommendations from './OrderRecommendations';
 
-interface SuccessManifestProps {
+interface OrderSuccessProps {
     orderNumber: string;
     method?: string;
+}
+
+interface OrderItem {
+    id: string;
+    product_name: string;
+    product?: {
+        image?: string;
+        primary_image?: string;
+    };
+}
+
+interface Order {
+    items: OrderItem[];
+    amount_paid: string | number;
+    balance_due: string | number;
 }
 
 const BACKDROPS = [
     { id: 'noir', path: '/assets/success/noir.png', theme: 'dark' },
     { id: 'white', path: '/assets/success/white.png', theme: 'light' },
-    { id: 'hub', path: '/assets/success/hub.png', theme: 'tech' }
+    { id: 'center', path: '/assets/success/hub.png', theme: 'tech' }
 ];
 
-const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
-    const [orderData, setOrderData] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
+const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
+    const [orderData, setOrderData] = useState<Order | null>(null);
     
     // Select a random backdrop on mount
     const backdrop = useMemo(() => {
@@ -35,9 +49,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                 const response = await ordersAPI.detail(orderNumber);
                 setOrderData(response.data);
             } catch (err) {
-                console.error("Failed to fetch order details for success manifest:", err);
-            } finally {
-                setIsLoading(false);
+                console.error("Failed to fetch order details for success view:", err);
             }
         };
 
@@ -61,7 +73,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                         {/* Selected Premium Backdrop */}
                         <Image
                             src={backdrop.path}
-                            alt="London's Import Premium Background"
+                            alt="London's Imports Premium Background"
                             fill
                             className="object-cover transition-transform duration-[5000ms] ease-out scale-110 group-hover:scale-100"
                             priority
@@ -108,7 +120,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                 className="flex justify-between items-end border-t border-white/30 pt-4"
                             >
                                 <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Customer Order</span>
+                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Your Order</span>
                                     <p className="text-[10px] font-mono text-white/90">#{orderNumber}</p>
                                 </div>
                                 <div className="text-right space-y-1">
@@ -161,7 +173,7 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                                             </div>
                                             <div className="flex justify-between text-xs">
                                                 <span className="text-slate-500">Name:</span>
-                                                <span className="font-bold text-slate-900">{siteConfig.momoName || "London's Imports Hub"}</span>
+                                                <span className="font-bold text-slate-900">{siteConfig.momoName || "London's Imports"}</span>
                                             </div>
                                             <div className="flex justify-between text-xs pt-2 border-t border-brand-emerald/10">
                                                 <span className="text-slate-500">Reference:</span>
@@ -262,13 +274,13 @@ const SuccessManifest = ({ orderNumber, method }: SuccessManifestProps) => {
                 className="mt-20 flex flex-col items-center gap-6 opacity-30 px-4 text-center"
             >
                 <div className="flex items-center gap-6 grayscale">
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Order Confirmation Summary</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Thank You</span>
                     <div className="w-1 h-1 bg-slate-500 rounded-full" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Transaction Confirmed</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Success</span>
                 </div>
             </motion.div>
         </div>
     );
 };
 
-export default SuccessManifest;
+export default OrderSuccess;
