@@ -3,7 +3,7 @@ import { getAbsoluteImageUrl } from '@/lib/image';
 
 // Use Edge runtime for native image generation (Zero-dependency)
 export const runtime = 'edge';
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 /**
  * XML Escape helper to prevent malformed SVG structure
@@ -174,7 +174,7 @@ export async function GET(request: Request) {
       status: 200,
       headers: { 
           'Content-Type': 'image/svg+xml',
-          'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400'
+          'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=86400'
       }
     });
 

@@ -1,7 +1,7 @@
 import AboutPageContent from './AboutPageContent';
 import { Metadata } from 'next';
 
-export const revalidate = 60; // 1 minute for faster updates during verification
+export const revalidate = 86400; // 24 hours
 export const metadata: Metadata = {
     title: 'Institutional Narrative | London\'s Imports Ghana',
     description: 'Learn about London\'s Imports, the premier sourcing house and logistics protocol bridging China manufacturing and Ghana retail.',
