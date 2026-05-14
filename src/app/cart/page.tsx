@@ -180,7 +180,7 @@ export default function CartPage() {
                                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                                         <div className="space-y-1">
                                             <h3 className="text-sm font-medium text-content-primary line-clamp-2 leading-tight uppercase tracking-tight italic">
-                                                {item.product.display_name || item.product.short_name || item.product.sku || item.product.name}
+                                                {item.product.display_name || item.product.short_name || item.product.name}
                                             </h3>
                                             <div className="flex flex-col pt-1">
                                                 <span className="text-xl font-medium text-content-primary tabular-nums leading-none tracking-tighter italic">
