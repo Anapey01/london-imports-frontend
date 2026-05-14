@@ -5,8 +5,8 @@ import { getVendor, getAllVendors } from '@/lib/fetchers';
 import ProductGrid from '@/components/ProductGrid';
 import { MapPin, ShieldCheck, Truck } from 'lucide-react';
 
-// ISR: Revalidate vendor store pages every 24 hours (Vercel free tier limit)
-export const revalidate = 86400;
+// ISR: Revalidate every 10 seconds during restructuring
+export const revalidate = 10;
 
 interface Props {
     params: Promise<{

@@ -79,7 +79,7 @@ export const useCartStore = create<CartState>()(
             isMerging: false,
             itemCount: 0,
             selectedItemIds: [],
-            version: 0,
+            version: 1,
 
             fetchCart: async () => {
                 const reqVersion = get().version + 1;

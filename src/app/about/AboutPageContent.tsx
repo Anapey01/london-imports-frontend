@@ -107,13 +107,13 @@ export default function AboutPageContent() {
                         <div className="w-full lg:w-1/3 aspect-[4/5] h-[600px] relative border border-slate-900 grayscale">
                             <Image
                                 src="/assets/about/ceo.png"
-                                alt="Abagail - Founder & CEO"
+                                alt="Miss London - Founder & CEO"
                                 fill
                                 className="object-cover opacity-90"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-20" />
                             <div className="absolute bottom-12 left-12">
-                                <h4 className="text-3xl font-serif font-bold text-white mb-2 leading-none">Abagail</h4>
+                                <h4 className="text-3xl font-serif font-bold text-white mb-2 leading-none">Miss London</h4>
                                 <p className="text-[9px] text-white/60 uppercase font-black tracking-[0.5em]">Executive Director / Founder</p>
                             </div>
                         </div>

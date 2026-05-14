@@ -136,7 +136,7 @@ export default function ProductGrid({
         <div className="flex flex-col lg:flex-row gap-16 py-12">
             {/* 1. MINIMALIST SIDEBAR (Editorial Pro) */}
             {!hideFilters && (
-                <aside className="hidden lg:block w-72 flex-shrink-0 space-y-16 sticky top-32 self-start">
+                <aside className="hidden lg:block w-72 flex-shrink-0 space-y-16 sticky top-32 self-start max-h-[calc(100vh-160px)] overflow-y-auto no-scrollbar pr-4">
                     
                     {/* Search Registry Hardened for Understandability */}
                     <div className="pb-10 border-b border-border-standard group">
@@ -173,7 +173,7 @@ export default function ProductGrid({
                             >
                                 All Arrivals
                             </button>
-                            {categories.map((cat: Category) => (
+                            {categories.map((cat: any) => (
                                 <button
                                     key={cat.id}
                                     onClick={() => updateSearch({ category: cat.slug })}

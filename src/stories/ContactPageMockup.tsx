@@ -232,11 +232,11 @@ export const ContactPageMockup = () => {
                             <div className="grid md:grid-cols-2 gap-5">
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
-                                    <input type="text" className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 transition-all font-medium text-sm" placeholder="Abena Serwaa" />
+                                    <input type="text" className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 transition-all font-medium text-sm" placeholder="Miss London" />
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
-                                    <input type="email" className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 transition-all font-medium text-sm" placeholder="abena@company.gh" />
+                                    <input type="email" className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-900 focus:ring-1 focus:ring-orange-500 transition-all font-medium text-sm" placeholder="misslondon@londonsimports.com" />
                                 </div>
                             </div>
                             <div className="space-y-1.5">

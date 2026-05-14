@@ -75,7 +75,7 @@ export const AboutPageMockup = () => {
                         <div className="w-full lg:w-1/3 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border-8 border-white bg-slate-300 relative">
                             <div className="absolute inset-0 flex items-center justify-center font-black text-white/20 text-2xl uppercase tracking-widest text-center">CEO IMAGE</div>
                             <div className="absolute bottom-6 left-6 z-20 text-white">
-                                <h4 className="text-xl font-bold">Abena Serwaa</h4>
+                                <h4 className="text-xl font-bold">Miss London</h4>
                                 <p className="text-orange-400 text-[10px] uppercase font-black">Founder & CEO</p>
                             </div>
                         </div>

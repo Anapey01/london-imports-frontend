@@ -4,8 +4,8 @@ import ProductGrid from '@/components/ProductGrid';
 import ShopHeader from '@/components/ShopHeader';
 import { Metadata } from 'next';
 
-// ISR: Revalidate every 24 hours (to stay within Vercel 1,000 writes/month limit)
-export const revalidate = 86400;
+// ISR: Revalidate every 10 seconds during restructuring
+export const revalidate = 10;
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>

@@ -217,7 +217,7 @@ const SourcingDashboardView = () => (
                 <tbody className="divide-y">
                     {[
                         {
-                            user: 'Abena Mensah',
+                            user: 'Miss London',
                             phone: '+233 24xxx',
                             status: 'New',
                             color: '#7c3aed',
