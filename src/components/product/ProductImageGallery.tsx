@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 import { getImageUrl } from '@/lib/image';
@@ -40,6 +40,22 @@ export default function ProductImageGallery({
     reservationsCount = 0
 }: ProductImageGalleryProps) {
     const [isPlaying, setIsPlaying] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    // Auto-play when isPlaying becomes true (Reliability Bridge for iOS)
+    useEffect(() => {
+        if (isPlaying && videoRef.current) {
+            videoRef.current.play().catch(err => {
+                console.error("Video playback failed:", err);
+                // Fallback: If it fails without muted, try with muted
+                if (videoRef.current) {
+                    videoRef.current.muted = true;
+                    videoRef.current.play().catch(e => console.error("Muted playback also failed:", e));
+                }
+            });
+        }
+    }, [isPlaying]);
+
 
     // Helper to normalize image objects
     const allImages = [
@@ -190,11 +206,16 @@ export default function ProductImageGallery({
                         ) : (
                             video ? (
                                 <video
+                                    ref={videoRef}
                                     controls
-                                    autoPlay
+                                    playsInline
+                                    webkit-playsinline="true"
+                                    muted={false}
+                                    preload="auto"
+                                    loop
                                     className="w-full h-full object-cover"
                                 >
-                                    <source src={video} type="video/mp4" />
+                                    <source src={getImageUrl(video)} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             ) : videoUrl ? (

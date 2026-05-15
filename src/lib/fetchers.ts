@@ -68,7 +68,8 @@ export async function getProducts(params: Record<string, string> = {}) {
                 const isTestProduct = name === 'shoe' || name === 'test';
                 
                 // Exclude if it's a known placeholder name OR has no image in production
-                return !isTestProduct && hasImage;
+                // OR if it's a discreet item (Privacy Gatekeeper)
+                return !isTestProduct && hasImage && !product.is_discreet;
             });
             
             if (data.results.length !== originalCount) {

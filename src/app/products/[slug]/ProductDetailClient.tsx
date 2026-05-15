@@ -681,7 +681,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 productName={product.name} 
                 category={product.category?.name} 
             />
-            <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
+            <main className="max-w-7xl mx-auto px-4 pt-8 pb-12 sm:pt-12 sm:pb-8 sm:px-6 lg:px-8">
                 {/* Visual Breadcrumbs for SEO and Navigation */}
                 <nav className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-content-secondary mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide py-4 border-b border-border-standard">
                     <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
@@ -739,7 +739,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     </div>
                                 )}
                             </div>
-                            <h1 className="text-3xl lg:text-5xl font-serif font-atelier text-content-primary leading-[1] tracking-tighter text-balance">
+                            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-serif font-atelier text-content-primary leading-[1.1] tracking-tighter text-balance">
                                 {product.name}
                             </h1>
                             {product.subtitle && (
@@ -750,7 +750,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             
                             {/* 2. Pricing Architecture (Elegant & Subtle) */}
                             <div className="flex items-baseline flex-wrap gap-4 pt-2">
-                                <span className="text-3xl lg:text-4xl font-serif font-medium text-content-primary tracking-tighter tabular-nums leading-none">
+                                <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-medium text-content-primary tracking-tighter tabular-nums leading-none">
                                     {formatPrice(currentPrice)}
                                 </span>
                                 <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-emerald mb-0.5 opacity-60">
@@ -881,7 +881,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                         <div className="mt-12 mb-4 group/desc">
                             <h2 className="text-[10px] font-bold text-content-secondary uppercase tracking-[0.3em] mb-4">Description</h2>
-                            <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-6'}`}>
+                            <div className={`relative transition-all duration-700 ease-in-out overflow-hidden ${isDescriptionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-32'}`}>
                                 <div className="text-content-primary leading-relaxed text-sm select-none">
                                     {product.editorial_data ? (
                                         <EditorialSection data={product.editorial_data} />
@@ -890,7 +890,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     )}
                                 </div>
                                 {!isDescriptionExpanded && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-white via-white/40 to-transparent dark:from-slate-950 dark:via-slate-950/40 dark:to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-surface via-surface/80 to-transparent backdrop-blur-[1px] pointer-events-none" />
                                 )}
                             </div>
                             <button
