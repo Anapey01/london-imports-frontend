@@ -24,6 +24,16 @@ interface DeliveryDetailsProps {
 }
 
 const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress, setSaveAddress, activeStep, setActiveStep }: DeliveryDetailsProps) => {
+    const [localDelivery, setLocalDelivery] = React.useState(delivery);
+
+    // Sync from parent if parent changes (e.g., loaded from session/API)
+    React.useEffect(() => {
+        setLocalDelivery(delivery);
+    }, [delivery.address, delivery.city, delivery.region, delivery.delivery_gps, delivery.notes]);
+
+    const handleBlur = () => {
+        setDelivery(localDelivery);
+    };
     const isExpanded = activeStep === 1;
     const hasAddress = delivery.address && delivery.city && delivery.region;
 
@@ -68,8 +78,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 type="text"
                                 name="address"
                                 autoComplete="shipping street-address"
-                                value={delivery.address}
-                                onChange={(e) => setDelivery({ ...delivery, address: e.target.value })}
+                                value={localDelivery.address}
+                                onChange={(e) => setLocalDelivery({ ...localDelivery, address: e.target.value })}
+                                onBlur={handleBlur}
                                 placeholder="E.G. HOUSE NUMBER / STREET NAME"
                                 required
                                 className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight"
@@ -83,8 +94,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 type="text"
                                 name="city"
                                 autoComplete="shipping address-level2"
-                                value={delivery.city}
-                                onChange={(e) => setDelivery({ ...delivery, city: e.target.value })}
+                                value={localDelivery.city}
+                                onChange={(e) => setLocalDelivery({ ...localDelivery, city: e.target.value })}
+                                onBlur={handleBlur}
                                 placeholder="ACCRA"
                                 required
                                 className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight"
@@ -98,8 +110,12 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                     id="ship-region"
                                     name="region"
                                     autoComplete="shipping address-level1"
-                                    value={delivery.region}
-                                    onChange={(e) => setDelivery({ ...delivery, region: e.target.value })}
+                                    value={localDelivery.region}
+                                    onChange={(e) => {
+                                        const newLocal = { ...localDelivery, region: e.target.value };
+                                        setLocalDelivery(newLocal);
+                                        setDelivery(newLocal); // Select changes should propagate immediately
+                                    }}
                                     required
                                     className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight appearance-none cursor-pointer"
                                 >
@@ -127,8 +143,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 id="ship-gps"
                                 type="text"
                                 name="delivery_gps"
-                                value={delivery.delivery_gps || ''}
-                                onChange={(e) => setDelivery({ ...delivery, delivery_gps: e.target.value })}
+                                value={localDelivery.delivery_gps || ''}
+                                onChange={(e) => setLocalDelivery({ ...localDelivery, delivery_gps: e.target.value })}
+                                onBlur={handleBlur}
                                 placeholder="GA-183-9023"
                                 className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-[0.2em] font-mono uppercase"
                             />
@@ -140,8 +157,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 <textarea
                                     id="ship-notes"
                                     name="notes"
-                                    value={delivery.notes}
-                                    onChange={(e) => setDelivery({ ...delivery, notes: e.target.value })}
+                                    value={localDelivery.notes}
+                                    onChange={(e) => setLocalDelivery({ ...localDelivery, notes: e.target.value })}
+                                    onBlur={handleBlur}
                                     rows={3}
                                     className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight resize-none italic"
                                     placeholder="Leave with security / Call on arrival..."
@@ -149,7 +167,10 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 {hasAddress && (
                                     <button 
                                         type="button"
-                                        onClick={() => setActiveStep(2)}
+                                        onClick={() => {
+                                            setDelivery(localDelivery);
+                                            setActiveStep(2);
+                                        }}
                                         className="px-8 py-3 bg-content-primary text-surface text-[10px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all h-fit shadow-lg institutional-focus"
                                     >
                                         Use address
