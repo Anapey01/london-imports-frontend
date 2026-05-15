@@ -35,12 +35,11 @@ export default function CartPage() {
         return () => clearTimeout(timer);
     }, [fetchCart]);
 
-    const accessToken = useAuthStore((state) => state.accessToken);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-    const hasToken = !!accessToken;
     
     // MINIMAL FIX: Ensure we use the server cart items when authenticated, otherwise guest items.
-    const items = (isAuthenticated && hasToken) ? (cart?.items || []) : guestItems;
+    // Removed hasToken check because HttpOnly cookies mean accessToken might be null even when authenticated.
+    const items = isAuthenticated ? (cart?.items || []) : guestItems;
 
     // Derived totals
     const subtotal = items.reduce((sum, i) => sum + Number(i.unit_price || 0) * i.quantity, 0);
