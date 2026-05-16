@@ -754,7 +754,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                                     {formatPrice(currentPrice)}
                                 </span>
                                 <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-emerald mb-0.5 opacity-60">
-                                    Plus shipping
+                                    Minus shipping
                                 </span>
                                 
                                 <button 

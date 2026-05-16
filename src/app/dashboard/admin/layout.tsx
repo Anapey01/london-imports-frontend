@@ -45,7 +45,7 @@ export default function AdminDashboardLayout({
         // If authenticated, check roles
         if (isAuthenticated && storeUser) {
             if (storeUser.role !== 'ADMIN' && !storeUser.is_staff && !storeUser.is_superuser) {
-                router.push('/');
+                router.push('/admin/login');
                 return;
             }
             setUser(storeUser as unknown as User);

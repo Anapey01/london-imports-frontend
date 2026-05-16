@@ -149,12 +149,11 @@ export const useCartStore = create<CartState>()(
                     set(state => ({ itemCount: state.itemCount + quantity }));
                     try {
                         const res = await ordersAPI.addToCart(product.id, quantity, size, selectedColor, selectedVariant?.id);
-                        if (get().version <= reqVersion) {
-                            set({ 
-                                cart: res.data, 
-                                itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0) 
-                            });
-                        }
+                        set({ 
+                            cart: res.data, 
+                            itemCount: res.data.items.reduce((s: number, i: CartItem) => s + i.quantity, 0),
+                            version: reqVersion
+                        });
                     } catch (error) {
                         // Rollback on error
                         set(state => ({ itemCount: Math.max(0, state.itemCount - quantity) }));

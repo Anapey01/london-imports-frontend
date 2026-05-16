@@ -79,7 +79,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-            <div className={!mounted ? 'opacity-0' : 'transition-opacity duration-300'}>
+            <div style={{ visibility: !mounted ? 'hidden' : 'visible' }} className="transition-all duration-300">
                 {children}
             </div>
         </ThemeContext.Provider>

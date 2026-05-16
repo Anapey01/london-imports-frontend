@@ -179,7 +179,7 @@ api.interceptors.response.use(
         const err = refreshError as { response?: { status?: number } };
         const status = err.response?.status;
         
-        if (err.response && (status === 400 || status === 401 || status === 403)) {
+        if (err.response && (status === 400 || status === 401)) {
           const { useAuthStore } = await import('@/stores/authStore');
           useAuthStore.getState().logout();
           
