@@ -54,7 +54,7 @@ export async function getProducts(params: Record<string, string> = {}) {
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 3600 }, // Increased to 1 hour to prevent Vercel ISR Write exhaustion & allow Neon DB to sleep
+            next: { revalidate: 86400 }, // Aligned with 24-hour page cache for maximum Vercel & Neon DB Free Tier conservation
         });
 
         const data = await res.json();
