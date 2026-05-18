@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -26,6 +26,7 @@ export default function Navbar() {
     const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [, startTransition] = useTransition();
 
     useEffect(() => {
         setMounted(true);
@@ -101,7 +102,9 @@ export default function Navbar() {
                                     const form = e.currentTarget;
                                     const query = (form.elements.namedItem('search') as HTMLInputElement).value;
                                     if (query.trim().length >= 2) {
-                                        router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                        startTransition(() => {
+                                            router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                        });
                                     }
                                 }}
                                 className="relative flex items-center w-full bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full px-8 py-2.5 focus-within:border-content-primary focus-within:bg-surface transition-all group"
@@ -161,7 +164,9 @@ export default function Navbar() {
                                 const form = e.currentTarget;
                                 const query = (form.elements.namedItem('search') as HTMLInputElement).value;
                                 if (query.trim().length >= 2) {
-                                    router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                    startTransition(() => {
+                                        router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+                                    });
                                 }
                             }}
                             className="relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full px-5 py-1.5 focus-within:border-content-primary transition-all"

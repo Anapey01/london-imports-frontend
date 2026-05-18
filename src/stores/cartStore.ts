@@ -58,6 +58,7 @@ interface CartState {
     guestItems: CartItem[];
     isLoading: boolean;
     isMerging: boolean;
+    isFetching: boolean;
     itemCount: number;
     selectedItemIds: string[]; // Changed to string[] for easier persistence
     version: number;
@@ -77,13 +78,15 @@ export const useCartStore = create<CartState>()(
             guestItems: [],
             isLoading: false,
             isMerging: false,
+            isFetching: false,
             itemCount: 0,
             selectedItemIds: [],
             version: 1,
 
             fetchCart: async () => {
-                const reqVersion = get().version + 1;
-                set({ version: reqVersion });
+                if (get().isFetching) return;
+                set({ isFetching: true });
+                if (!get().cart) set({ isLoading: true });
 
                 const isAuthenticated = useAuthStore.getState().isAuthenticated;
                 
@@ -108,23 +111,21 @@ export const useCartStore = create<CartState>()(
                     }
 
                     try {
-                        if (!get().cart) set({ isLoading: true });
                         const response = await ordersAPI.cart({ t: Date.now() });
-                        if (get().version === reqVersion) {
-                            const serverItems = response.data.items || [];
-                            set({ 
-                                cart: response.data, 
-                                itemCount: serverItems.reduce((s: number, i: CartItem) => s + i.quantity, 0),
-                                isLoading: false 
-                            });
-                        }
+                        const serverItems = response.data.items || [];
+                        set({ 
+                            cart: response.data, 
+                            itemCount: serverItems.reduce((s: number, i: CartItem) => s + i.quantity, 0),
+                            isLoading: false,
+                            isFetching: false 
+                        });
                     } catch {
-                        if (get().version === reqVersion) set({ isLoading: false });
+                        set({ isLoading: false, isFetching: false });
                     }
                 } else {
                     // Guest mode: use persisted guestItems
                     const { guestItems } = get();
-                    set({ itemCount: guestItems.reduce((s, i) => s + i.quantity, 0) });
+                    set({ itemCount: guestItems.reduce((s, i) => s + i.quantity, 0), isFetching: false });
                 }
             },
 
@@ -211,7 +212,7 @@ export const useCartStore = create<CartState>()(
             },
 
             clearCart: () => {
-                set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: [] });
+                set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: [], isFetching: false, isLoading: false });
             },
 
             setSelectedItems: (ids) => set({ selectedItemIds: ids }),

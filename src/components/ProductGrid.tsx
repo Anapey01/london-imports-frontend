@@ -11,7 +11,7 @@ import { siteConfig } from '@/config/site';
 import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
 import { trackViewItemList, trackViewSearchResults } from '@/lib/analytics';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 import { Zap, ArrowRight, Search, ListFilter, Loader2 } from 'lucide-react';
 
 interface Category {
@@ -54,6 +54,7 @@ export default function ProductGrid({
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+    const [, startTransition] = useTransition();
 
     // Derived state from URL - always reactive
     const category = searchParams.get('category') || initialCategory;
@@ -102,11 +103,15 @@ export default function ProductGrid({
                 params.delete(name);
             }
         });
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        startTransition(() => {
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        });
     };
 
     const clearFilters = () => {
-        router.push(pathname, { scroll: false });
+        startTransition(() => {
+            router.push(pathname, { scroll: false });
+        });
     };
 
     const products = infiniteData 

@@ -83,7 +83,7 @@ const ProfileHeader = ({ user }: { user: User }) => {
                     {(user.is_staff || user.role === 'VENDOR') && (
                         <div className="mt-12">
                             <a 
-                                href={user.is_staff ? '/admin' : '/dashboard/vendor'} 
+                                href={user.is_staff ? '/dashboard/admin' : '/dashboard/vendor'} 
                                 className="group flex items-center gap-3 px-8 py-3 bg-slate-900 text-white rounded-full transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5"
                             >
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em]">
