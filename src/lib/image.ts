@@ -45,6 +45,13 @@ export const getImageUrl = (path: string | null | undefined): string => {
     // If it looks like a Cloudinary Public ID (e.g. products/shoe1)
     // We return a CLEAN Cloudinary URL so the loader can inject params correctly
     if (path.includes('/') && !path.startsWith('/')) {
+        const isVideo = path.includes('video') || path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.avi');
+        if (isVideo) {
+            // Automatically optimize the video on Cloudinary:
+            // f_auto: select best format (e.g. webm/mp4)
+            // q_auto: select best quality compression to reduce size while keeping HD
+            return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/f_auto,q_auto/${path}`;
+        }
         return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${path}`;
     }
 
