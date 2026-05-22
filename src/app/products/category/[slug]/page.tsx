@@ -9,10 +9,15 @@ import { Package } from 'lucide-react';
 export const revalidate = 86400;
 
 export async function generateStaticParams() {
-    const categories = await getCategories();
-    return Array.isArray(categories) ? categories.map((cat: { slug: string }) => ({
-        slug: cat.slug,
-    })) : [];
+    try {
+        const categories = await getCategories();
+        return Array.isArray(categories) ? categories.map((cat: { slug: string }) => ({
+            slug: cat.slug,
+        })) : [];
+    } catch (e) {
+        console.error("[Build] Failed to generate static params for categories:", e);
+        return [];
+    }
 }
 
 type Props = {

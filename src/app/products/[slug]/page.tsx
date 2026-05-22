@@ -10,10 +10,15 @@ export const revalidate = 86400;
 
 // Pre-render top 50 products at build time
 export async function generateStaticParams() {
-    const products = await getProducts({ limit: '50' });
-    return products.results.map((product: { slug: string }) => ({
-        slug: product.slug,
-    }));
+    try {
+        const products = await getProducts({ limit: '50' });
+        return Array.isArray(products?.results) ? products.results.map((product: { slug: string }) => ({
+            slug: product.slug,
+        })) : [];
+    } catch (e) {
+        console.error("[Build] Failed to generate static params for products:", e);
+        return [];
+    }
 }
 
 type Props = {

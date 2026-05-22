@@ -16,10 +16,15 @@ interface Props {
 
 // Generate static params for SSG optimization
 export async function generateStaticParams() {
-    const vendors = await getAllVendors();
-    return vendors.map((vendor: { slug: string }) => ({
-        slug: vendor.slug,
-    }));
+    try {
+        const vendors = await getAllVendors();
+        return Array.isArray(vendors) ? vendors.map((vendor: { slug: string }) => ({
+            slug: vendor.slug,
+        })) : [];
+    } catch (e) {
+        console.error("[Build] Failed to generate static params for store:", e);
+        return [];
+    }
 }
 
 export default async function VendorStorePage({ params }: Props) {

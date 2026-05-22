@@ -1,13 +1,21 @@
-import { getProducts } from '@/lib/fetchers';
+import { getProductPreviews } from '@/lib/fetchers';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 
 const BASE_URL = 'https://londonsimports.com';
 
+// Cache images sitemap for 24 hours to reduce Vercel CPU and Neon DB usage
+export const revalidate = 86400;
+
 export async function GET() {
     // 1. Fetch Products
-    const productsData = await getProducts({ limit: '1000' });
-    const products = productsData.results || [];
+    let products: any[] = [];
+    try {
+        const productsData = await getProductPreviews({ limit: '1000' });
+        products = productsData.results || [];
+    } catch (e) {
+        console.error("Error fetching products for image sitemap:", e);
+    }
 
     // 2. Fetch Blog Posts
     let blogPosts: { slug: string; title: string; featured_image?: string }[] = [];

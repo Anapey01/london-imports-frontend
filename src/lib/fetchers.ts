@@ -5,7 +5,7 @@ const API_BASE_URL = siteConfig.apiUrl;
 /**
  * Robust fetch with timeout and retry logic for Render's Cold Starts
  */
-async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 2) {
+async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 1) {
     const timeout = 60000; // 60 seconds timeout (to handle Render.com cold starts)
     
     for (let i = 0; i <= retries; i++) {
@@ -57,6 +57,10 @@ export async function getProducts(params: Record<string, string> = {}) {
             next: { revalidate: 86400 }, // Aligned with 24-hour page cache for maximum Vercel & Neon DB Free Tier conservation
         });
 
+        if (!res.ok) {
+            throw new Error(`Failed to fetch products: ${res.status} ${res.statusText}`);
+        }
+
         const data = await res.json();
         
         // Final Gatekeeper: Archive Exclusion Filter
@@ -80,7 +84,45 @@ export async function getProducts(params: Record<string, string> = {}) {
         return data;
     } catch (error) {
         console.error("Error fetching products:", error);
-        return { count: 0, results: [] };
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return { count: 0, results: [] };
+        }
+        throw error;
+    }
+}
+
+export async function getProductPreviews(params: Record<string, string> = {}) {
+    try {
+        const queryString = new URLSearchParams(params).toString();
+        const url = `${API_BASE_URL}/products/preview/?${queryString}`;
+
+        const res = await fetchWithRetry(url, {
+            next: { revalidate: 86400 },
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch product previews: ${res.status} ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        
+        // Final Gatekeeper: Archive Exclusion Filter
+        if (process.env.NODE_ENV === 'production' && data.results) {
+            data.results = data.results.filter((product: any) => {
+                const name = (product.name || '').toLowerCase();
+                const hasImage = !!product.image;
+                const isTestProduct = name === 'shoe' || name === 'test';
+                return !isTestProduct && hasImage && !product.is_discreet;
+            });
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error fetching product previews:", error);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return { count: 0, results: [] };
+        }
+        throw error;
     }
 }
 
@@ -120,11 +162,17 @@ export async function getCategories() {
         const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
             next: { revalidate: 86400 }
         });
-        if (!res.ok) return [];
+        if (!res.ok) {
+            throw new Error(`Failed to fetch categories: ${res.status} ${res.statusText}`);
+        }
         const data = await res.json();
         return data.results || data;
-    } catch {
-        return [];
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return [];
+        }
+        throw error;
     }
 }
 
@@ -133,12 +181,18 @@ export async function getCategory(slug: string) {
         const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
             next: { revalidate: 86400 }
         });
-        if (!res.ok) return null;
+        if (!res.ok) {
+            throw new Error(`Failed to fetch categories for category lookup: ${res.status} ${res.statusText}`);
+        }
         const data = await res.json();
         const categories = data.results || data;
         return categories.find((cat: { slug: string }) => cat.slug === slug) || null;
-    } catch {
-        return null;
+    } catch (error) {
+        console.error(`Error fetching category ${slug}:`, error);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return null;
+        }
+        throw error;
     }
 }
 
@@ -149,26 +203,44 @@ export async function getProduct(slug: string) {
             next: { revalidate: 86400 }
         });
 
-        if (!res.ok) {
-            console.error(`[SSR] Error fetching product ${slug}: ${res.status} ${res.statusText}`);
+        if (res.status === 404) {
             return null;
+        }
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch product ${slug}: ${res.status} ${res.statusText}`);
         }
 
         return await res.json();
     } catch (e) {
         console.error(`[SSR] Exception fetching product ${slug}:`, e);
-        return null;
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return null;
+        }
+        throw e;
     }
 }
 
 export async function getProductMetadata(slug: string) {
-    const fullProduct = await getProduct(slug);
-    if (fullProduct) return fullProduct;
+    try {
+        const fullProduct = await getProduct(slug);
+        if (fullProduct) return fullProduct;
+    } catch (e) {
+        console.error(`[SSR] Error during primary metadata fetch for ${slug}:`, e);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            // continue
+        } else {
+            throw e;
+        }
+    }
 
     const url = `${API_BASE_URL}/products/preview/?slug=${slug}`;
     try {
         const res = await fetchWithRetry(url, { next: { revalidate: 86400 } });
-        if (!res.ok) return null;
+        if (res.status === 404) return null;
+        if (!res.ok) {
+            throw new Error(`Failed to fetch product metadata preview: ${res.status} ${res.statusText}`);
+        }
 
         const data = await res.json();
         const previewItem = data.results && data.results.length > 0 ? data.results[0] : null;
@@ -185,6 +257,10 @@ export async function getProductMetadata(slug: string) {
         }
     } catch (e) {
         console.error(`[SSR] Exception fetching preview fallback for ${slug}:`, e);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return null;
+        }
+        throw e;
     }
 
     return null;
@@ -194,11 +270,17 @@ export async function getVendor(slug: string) {
     const url = `${API_BASE_URL}/vendors/${slug}/`;
     try {
         const res = await fetchWithRetry(url, { next: { revalidate: 86400 } });
-        if (!res.ok) return null;
+        if (res.status === 404) return null;
+        if (!res.ok) {
+            throw new Error(`Failed to fetch vendor ${slug}: ${res.status} ${res.statusText}`);
+        }
         return await res.json();
     } catch (e) {
         console.error(`[SSR] Exception fetching vendor ${slug}:`, e);
-        return null;
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return null;
+        }
+        throw e;
     }
 }
 
@@ -206,12 +288,17 @@ export async function getAllVendors() {
     const url = `${API_BASE_URL}/vendors/`;
     try {
         const res = await fetchWithRetry(url, { next: { revalidate: 86400 } });
-        if (!res.ok) return [];
+        if (!res.ok) {
+            throw new Error(`Failed to fetch all vendors: ${res.status} ${res.statusText}`);
+        }
         const data = await res.json();
         return data.results || data;
     } catch (e) {
         console.error("[SSR] Exception fetching all vendors:", e);
-        return [];
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return [];
+        }
+        throw e;
     }
 }
 
@@ -219,18 +306,20 @@ export async function getHeroBanners() {
     const url = `${API_BASE_URL}/products/banners/`;
     try {
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 86400 } // Cache for 24 hours, but revalidates
+            next: { revalidate: 86400 }
         });
 
         if (!res.ok) {
-            console.error(`[SSR] Error fetching banners: ${res.status}`);
-            return [];
+            throw new Error(`Failed to fetch banners: ${res.status} ${res.statusText}`);
         }
 
         const data = await res.json();
         return data.results || data || [];
     } catch (e) {
         console.error("[SSR] Exception fetching banners:", e);
-        return [];
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return [];
+        }
+        throw e;
     }
 }

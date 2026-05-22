@@ -4,6 +4,9 @@ import { getImageUrl } from '@/lib/image';
 
 const BASE_URL = 'https://londonsimports.com';
 
+// Cache Google Shopping Feed for 24 hours to reduce Vercel CPU and Neon DB usage
+export const revalidate = 86400;
+
 export async function GET() {
   try {
     // 1. Fetch products (Max 1000 for the feed)
