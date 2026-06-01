@@ -24,7 +24,8 @@ export async function GET() {
             next: { revalidate: 86400 }
         });
         if (blogRes.ok) {
-            blogPosts = await blogRes.json();
+            const data = await blogRes.json();
+            blogPosts = Array.isArray(data) ? data : (data.results || []);
         }
     } catch (e) {
         console.error("Error fetching blog posts for image sitemap:", e);

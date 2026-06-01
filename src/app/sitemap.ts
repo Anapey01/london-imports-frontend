@@ -50,7 +50,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             next: { revalidate: 86400 } // Revalidate every 24 hours
         });
         if (blogRes.ok) {
-            blogPosts = await blogRes.json();
+            const data = await blogRes.json();
+            blogPosts = Array.isArray(data) ? data : (data.results || []);
         }
     } catch {
         // Fallback to static slugs if API fails
