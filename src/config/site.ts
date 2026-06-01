@@ -5,7 +5,7 @@
 export const siteConfig = {
     name: "London's Imports | China to Ghana Shopping & Logistics",
     baseUrl: 'https://londonsimports.com',
-    apiUrl: process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1' : 'https://london-imports-api.onrender.com/api/v1'),
+    apiUrl: process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1' : 'https://api.londonsimports.com/api/v1'),
     whatsapp: '233545247009', // Main Shop Line
     concierge: '233541096372', // Specialized Sourcing/Support
     momoNumber: '055 812 3456', // Direct Mobile Money line
