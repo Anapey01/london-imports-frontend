@@ -3,8 +3,19 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import withPWAInit from "@ducanh2912/next-pwa";
 
-// Fallback for build time if siteConfig is not accessible
 const DEFAULT_API_ROOT = 'https://london-imports-api.onrender.com';
+const apiRoot = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_ROOT;
+
+let apiOrigin = DEFAULT_API_ROOT;
+let apiHost = 'london-imports-api.onrender.com';
+
+try {
+  const parsed = new URL(apiRoot);
+  apiOrigin = parsed.origin;
+  apiHost = parsed.hostname;
+} catch (e) {
+  console.error("Failed to parse NEXT_PUBLIC_API_URL:", e);
+}
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -40,29 +51,58 @@ const withPWA = withPWAInit({
         handler: 'NetworkOnly',
       },
       {
-        // 2. Product API - SWR for Instant loading on flaky networks (GET ONLY)
-        urlPattern: ({ url, request }) => 
-          url.origin === 'https://london-imports-api.onrender.com' && 
-          url.pathname.startsWith('/api/v1/') &&
-          request.method === 'GET' &&
-          !url.pathname.includes('/auth/') && 
-          !url.pathname.includes('/orders/') && 
-          !url.pathname.includes('/cart/'),
+        // 2. Public API GETs (Products, Blogs, Public Vendors) - SWR with Server Cache-Control Enforcement
+        urlPattern: ({ url, request }) => {
+          if (url.origin !== apiOrigin || request.method !== 'GET') {
+            return false;
+          }
+
+          // Aggressively normalize path BEFORE any matching:
+          // 1. Collapse all runs of consecutive slashes (e.g. // → /)
+          // 2. Ensure exactly one trailing slash
+          const normalizedPath = url.pathname
+            .replace(/\/{2,}/g, '/')          // collapse accidental duplicate slashes
+            .replace(/\/+$/, '') + '/';        // strip trailing slashes, then add exactly one
+
+          const segments = normalizedPath.split('/').filter(Boolean);
+          if (segments[0] !== 'api' || segments[1] !== 'v1') return false;
+
+          const resource = segments[2];
+          const isPublicResource = ['products', 'blog', 'vendors'].includes(resource);
+          if (!isPublicResource) return false;
+
+          // List endpoints: /api/v1/products/, /api/v1/blog/, /api/v1/vendors/
+          if (segments.length === 3) return true;
+
+          // Detail endpoints: /api/v1/products/<slug>/, /api/v1/blog/<slug>/, /api/v1/vendors/<slug>/
+          if (segments.length === 4) {
+            const slug = segments[3];
+            const isPrivateSlug = ['admin', 'preview', 'dashboard', 'profile', 'payouts'].includes(slug);
+            return !isPrivateSlug;
+          }
+
+          const allowedDeepPaths = [
+            '/api/v1/products/categories/',
+            '/api/v1/products/banners/',
+            '/api/v1/products/trending/'
+          ];
+          return allowedDeepPaths.includes(normalizedPath);
+        },
         handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'api-data-swr',
           expiration: {
             maxEntries: 100,
-            maxAgeSeconds: 15 * 60, // 15 mins for data
+            maxAgeSeconds: 15 * 60,
           },
           cacheableResponse: {
-            statuses: [0, 200],
+            statuses: [200],
           },
         },
       },
       {
         // 3. API - Other methods (Auth, Orders POST) - NetworkOnly
-        urlPattern: ({ url }) => url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/api/v1/'),
+        urlPattern: ({ url }) => url.origin === apiOrigin && url.pathname.startsWith('/api/v1/'),
         handler: 'NetworkOnly',
       },
       {
@@ -102,7 +142,7 @@ const withPWA = withPWAInit({
         urlPattern: ({ url }) =>
           url.origin === 'https://res.cloudinary.com' ||
           url.origin.includes('wikimedia.org') ||
-          (url.origin === 'https://london-imports-api.onrender.com' && url.pathname.startsWith('/media/')),
+          (url.origin === apiOrigin && url.pathname.startsWith('/media/')),
         handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'image-cache',
@@ -126,9 +166,9 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.google.com.gh https://*.gstatic.com https://accounts.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com https://accounts.google.com",
-  `img-src 'self' data: https: blob: https://res.cloudinary.com https://london-imports-api.onrender.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
+  `img-src 'self' data: https: blob: https://res.cloudinary.com ${apiOrigin} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
   "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self' https://res.cloudinary.com https://london-imports-api.onrender.com http://127.0.0.1:8000 http://localhost:8000 https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://vercel.live https://*.wikimedia.org`,
+  `connect-src 'self' https://res.cloudinary.com ${apiOrigin} http://127.0.0.1:8000 http://localhost:8000 https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://vercel.live https://*.wikimedia.org`,
   "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live https://accounts.google.com",
   "worker-src 'self' blob:",
   "child-src 'self' blob:",
@@ -172,7 +212,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'london-imports-api.onrender.com',
+        hostname: apiHost,
         pathname: '/media/**',
       },
       {
@@ -206,7 +246,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Link',
-            value: '<https://london-imports-api.onrender.com>; rel=preconnect'
+            value: `<${apiOrigin}>; rel=preconnect`
           },
           {
             key: 'Strict-Transport-Security',

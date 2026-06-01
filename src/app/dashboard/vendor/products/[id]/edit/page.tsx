@@ -12,6 +12,8 @@ import Image from 'next/image';
 import { compressImage } from '@/lib/imageUtils';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
+import { ProductVariantEditor } from './ProductVariantEditor';
+import { ProductImageUploader } from './ProductImageUploader';
 
 export default function EditProductPage() {
     const { theme } = useTheme();
@@ -276,96 +278,15 @@ export default function EditProductPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <input
-                                        type="checkbox"
-                                        id="hasVariants"
-                                        checked={hasVariants}
-                                        onChange={(e) => setHasVariants(e.target.checked)}
-                                        className="w-4 h-4 text-pink-600 rounded border-gray-300 focus:ring-pink-500"
-                                    />
-                                    <label htmlFor="hasVariants" className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                        Has Multiple Options? (Different sizes/prices)
-                                    </label>
-                                </div>
-
-                                {!hasVariants ? (
-                                    <div>
-                                        <label htmlFor="price" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                            Price (GH₵)
-                                        </label>
-                                        <input
-                                            id="price"
-                                            type="number"
-                                            name="price"
-                                            required={!hasVariants}
-                                            step="0.01"
-                                            value={formData.price}
-                                            onChange={handleChange}
-                                            className={inputClasses}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        <div className={`p-4 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
-                                            <h4 className={`text-sm font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>Product Variations</h4>
-                                            <div className="space-y-3">
-                                                {variants.map((variant, index) => (
-                                                    <div key={index} className="flex gap-2 items-start">
-                                                        <div className="flex-1">
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Size/Option (e.g. Small)"
-                                                                value={variant.name}
-                                                                onChange={(e) => {
-                                                                    const newVariants = [...variants];
-                                                                    newVariants[index].name = e.target.value;
-                                                                    setVariants(newVariants);
-                                                                }}
-                                                                className={`w-full px-3 py-2 text-sm rounded-lg border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                                                                required
-                                                            />
-                                                        </div>
-                                                        <div className="w-24">
-                                                            <input
-                                                                type="number"
-                                                                placeholder="Price"
-                                                                value={variant.price}
-                                                                onChange={(e) => {
-                                                                    const newVariants = [...variants];
-                                                                    newVariants[index].price = e.target.value;
-                                                                    setVariants(newVariants);
-                                                                }}
-                                                                className={`w-full px-3 py-2 text-sm rounded-lg border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                                                                required
-                                                            />
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            aria-label="Remove variant"
-                                                            onClick={() => {
-                                                                if (variants.length > 1) {
-                                                                    const newVariants = variants.filter((_, i) => i !== index);
-                                                                    setVariants(newVariants);
-                                                                }
-                                                            }}
-                                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                                                        >
-                                                            <X className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => setVariants([...variants, { name: '', price: '', stock_quantity: '0' }])}
-                                                className="mt-3 text-sm text-pink-600 font-medium flex items-center gap-1 hover:text-pink-700"
-                                            >
-                                                <Plus className="w-4 h-4" /> Add Another Option
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                                <ProductVariantEditor
+                                    hasVariants={hasVariants}
+                                    setHasVariants={setHasVariants}
+                                    variants={variants}
+                                    setVariants={setVariants}
+                                    price={formData.price}
+                                    onPriceChange={handleChange}
+                                    inputClasses={inputClasses}
+                                />
                             </div>
 
                             <div>
@@ -452,137 +373,25 @@ export default function EditProductPage() {
                 </div>
 
                 {/* Image Upload */}
-                <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
-                    <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Product Images</h3>
-
-                    {/* Main Image */}
-                    <div className="mb-6">
-                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                            Main Display Image
-                        </label>
-
-                        {/* Existing Main Image Preview */}
-                        {product?.image && !formData.image && (
-                            <div className="mb-4 relative w-32 h-32 rounded-lg overflow-hidden">
-                                <Image
-                                    src={getImageUrl(product.image)}
-                                    alt="Current Main"
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                        )}
-
-                        <div className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors ${isDark ? 'border-slate-700 hover:border-pink-500 hover:bg-slate-800' : 'border-gray-300 hover:border-pink-500 hover:bg-pink-50'}`}>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
-                                id="image-upload"
-                            />
-                            <label htmlFor="image-upload" className="cursor-pointer text-center w-full flex flex-col items-center justify-center relative min-h-[200px]">
-                                {formData.image ? (
-                                    <div className="text-pink-600 font-medium">Selected: {formData.image.name}</div>
-                                ) : product?.image ? (
-                                    <div className="relative w-full h-48">
-                                        <Image
-                                            src={getImageUrl(product.image)}
-                                            alt="Current Product Image"
-                                            fill
-                                            className="object-contain rounded-lg mb-4"
-                                        />
-                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                            <span className="text-white font-medium">Click to change</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-16 h-16 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Upload className="w-8 h-8" />
-                                        </div>
-                                        <p className={`font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Click to upload main image</p>
-                                        <p className="text-sm text-gray-500">SVG, PNG, JPG or GIF (max. 5MB)</p>
-                                    </>
-                                )}
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* Additional Images */}
-                    <div>
-                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                            Additional Images (Gallery)
-                        </label>
-
-                        {/* Existing Gallery Images */}
-                        {product?.images && product.images.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                                {product.images.map((img: ProductImage) => (
-                                    <div key={img.id} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                                        <Image
-                                            src={getImageUrl(img.image)}
-                                            alt={img.alt_text || "Gallery"}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                        {/* Delete button (would need API endpoint implementation to actually delete single image) */}
-                                        {/* For now we just show them. Implementing delete requires backend 'destroy' on ProductImageViewSet or similar */}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        <div className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors mb-4 ${isDark ? 'border-slate-700 hover:border-pink-500 hover:bg-slate-800' : 'border-gray-300 hover:border-pink-500 hover:bg-pink-50'}`}>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={(e) => {
-                                    if (e.target.files) {
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            images: [...prev.images, ...Array.from(e.target.files!)]
-                                        }));
-                                    }
-                                }}
-                                className="hidden"
-                                id="gallery-upload"
-                            />
-                            <label htmlFor="gallery-upload" className="cursor-pointer text-center w-full">
-                                <div className="flex flex-col items-center">
-                                    <Plus className="w-8 h-8 text-gray-400 mb-2" />
-                                    <span className="text-sm text-gray-500">Add more images</span>
-                                </div>
-                            </label>
-                        </div>
-
-                        {/* New Upload Preview List */}
-                        {formData.images.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                {formData.images.map((file, index) => (
-                                    <div key={index} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                                        <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500 p-2 text-center">
-                                            {file.name}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            title="Remove image"
-                                            aria-label="Remove image"
-                                            onClick={() => setFormData(prev => ({
-                                                ...prev,
-                                                images: prev.images.filter((_, i) => i !== index)
-                                            }))}
-                                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <ProductImageUploader
+                    productImage={product?.image || null}
+                    productGallery={product?.images || []}
+                    formDataImage={formData.image}
+                    formDataGallery={formData.images}
+                    onImageChange={handleImageChange}
+                    onGalleryChange={(e) => {
+                        if (e.target.files) {
+                            setFormData(prev => ({
+                                ...prev,
+                                images: [...prev.images, ...Array.from(e.target.files!)]
+                            }));
+                        }
+                    }}
+                    onRemoveGalleryImage={(index) => setFormData(prev => ({
+                        ...prev,
+                        images: prev.images.filter((_, i) => i !== index)
+                    }))}
+                />
 
                 <div className="flex justify-end pt-4 gap-4">
                     <Link

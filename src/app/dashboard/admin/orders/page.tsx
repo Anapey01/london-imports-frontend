@@ -5,19 +5,21 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useMemo, useTransition } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
-import { getImageUrl } from '@/lib/image';
 import {
-    ChevronRight, ChevronLeft, Eye, Trash2, Package, X, CheckSquare, Square, Search
+    ChevronRight, ChevronLeft, Package, X, CheckSquare, Square
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
-const STATUS_TABS = ['All', 'PENDING', 'NEW_ORDERS', 'WAREHOUSE', 'SHIPPING', 'COMPLETED', 'CANCELLED'] as const;
+// Extracted components
+import OrderRow from '@/components/admin/orders/list/OrderRow';
+import type { Order } from '@/components/admin/orders/list/OrderRow';
+import FilterTabs from '@/components/admin/orders/list/FilterTabs';
+import SearchField from '@/components/admin/orders/list/SearchField';
+import BulkActionBar from '@/components/admin/orders/list/BulkActionBar';
 
 const statusLabel = (s: string) => {
     switch (s) {
@@ -30,28 +32,6 @@ const statusLabel = (s: string) => {
         default: return s;
     }
 };
-
-interface Order {
-    id: string;
-    order_number?: string;
-    customer: {
-        name: string;
-        email: string;
-        avatar?: string;
-    };
-    items_count: number;
-    total_amount: number;
-    status: string;
-    payment_status: string;
-    amount_paid: number;
-    balance_due: number;
-    is_installment: boolean;
-    created_at: string;
-    thumbnail?: string;
-    items?: Record<string, unknown>[];
-}
-
-// Unified Order interfaces moved to types.ts or defined explicitly
 
 function mapAPIOrder(order: Record<string, unknown>): Order {
     if (!order) return {
@@ -112,7 +92,7 @@ export default function AdminOrdersPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [apiCounts, setApiCounts] = useState<Record<string, number> | null>(null);
-    const [searchQuery, setSearchQuery] = useState(''); // Debounced search state
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -162,7 +142,7 @@ export default function AdminOrdersPage() {
                 if (Array.isArray(data.results)) {
                     ordersArray = data.results;
                     setTotalCount(data.count || data.results.length);
-                    setTotalPages(Math.ceil((data.count || data.results.length) / 100)); // Match backend PAGE_SIZE=100
+                    setTotalPages(Math.ceil((data.count || data.results.length) / 100));
                 } else if (Array.isArray(data)) {
                     ordersArray = data;
                     setTotalCount(data.length);
@@ -196,8 +176,6 @@ export default function AdminOrdersPage() {
             setSelectedIds(new Set());
         });
     }, []);
-
-
 
     const handleDelete = useCallback((id: string) => {
         setConfirmModal({
@@ -283,7 +261,6 @@ export default function AdminOrdersPage() {
                 setBulkProgress(0);
                 setBulkTotal(ids.length);
                 try {
-                    // Process in chunks of 5 to avoid overwhelming the network and causing SW timeouts
                     const chunkSize = 5;
                     for (let i = 0; i < ids.length; i += chunkSize) {
                         const chunk = ids.slice(i, i + chunkSize);
@@ -313,14 +290,11 @@ export default function AdminOrdersPage() {
                     setBulkUpdating(false);
                     setBulkProgress(0);
                     setBulkTotal(0);
-                    loadOrdersRef.current(); // Refresh to get counts and updated data
+                    loadOrdersRef.current();
                 }
             }
         });
     }, [selectedIds]);
-
-    // Server-side filtering is now used, so filteredOrders is just orders
-
 
     const getStatusColor = useCallback((status: string) => {
         const colors: Record<string, string> = {
@@ -445,97 +419,15 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* 3. BULK ACTION PROTOCOL */}
-            <AnimatePresence>
-                {selectedIds.size > 0 && (
-                    <motion.div
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-4xl"
-                    >
-                        {bulkUpdating && (
-                            <div className="absolute top-0 left-0 w-full h-1 bg-white/10 overflow-hidden">
-                                <motion.div 
-                                    className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                                    initial={{ width: "0%" }}
-                                    animate={{ width: `${(bulkProgress / bulkTotal) * 100}%` }}
-                                    transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                                />
-                            </div>
-                        )}
-                        <div className="bg-slate-950 shadow-2xl px-12 py-8 flex flex-wrap items-center justify-between gap-8 border border-white/10 backdrop-blur-xl">
-                            <div className="flex items-center gap-6">
-                                <div className="w-10 h-10 bg-white/10 flex items-center justify-center text-white text-[12px] font-black">
-                                    {selectedIds.size}
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white">
-                                        {bulkUpdating ? `Processing ${bulkProgress}/${bulkTotal}` : 'Orders Selected'}
-                                    </p>
-                                    <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40">
-                                        {bulkUpdating ? 'Updating system...' : 'Actions ready'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-wrap gap-4">
-                                {statusFilter === 'NEW_ORDERS' && (
-                                    <button
-                                        onClick={() => handleBulkStatus('OPEN_FOR_BATCH')}
-                                        disabled={bulkUpdating}
-                                        className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                    >
-                                        MARK AS PROCESSING
-                                    </button>
-                                )}
-
-                                {(statusFilter === 'WAREHOUSE' || statusFilter === 'All') && (
-                                    <button
-                                        onClick={() => handleBulkStatus('IN_TRANSIT')}
-                                        disabled={bulkUpdating}
-                                        className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                    >
-                                        MARK AS SHIPPED
-                                    </button>
-                                )}
-
-                                {(statusFilter === 'SHIPPING' || statusFilter === 'All') && (
-                                    <>
-                                        <button
-                                            onClick={() => handleBulkStatus('ARRIVED')}
-                                            disabled={bulkUpdating}
-                                            className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                        >
-                                            MARK AS ARRIVED
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkStatus('OUT_FOR_DELIVERY')}
-                                            disabled={bulkUpdating}
-                                            className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                        >
-                                            READY FOR DELIVERY
-                                        </button>
-                                    </>
-                                )}
-
-                                <button
-                                    onClick={() => handleBulkStatus('DELIVERED')}
-                                    disabled={bulkUpdating}
-                                    className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                >
-                                    MARK AS DELIVERED
-                                </button>
-
-                                <button
-                                    onClick={() => setSelectedIds(new Set())}
-                                    className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-white"
-                                >
-                                    CANCEL
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <BulkActionBar
+                selectedCount={selectedIds.size}
+                statusFilter={statusFilter}
+                bulkUpdating={bulkUpdating}
+                bulkProgress={bulkProgress}
+                bulkTotal={bulkTotal}
+                onBulkStatus={handleBulkStatus}
+                onClearSelection={() => setSelectedIds(new Set())}
+            />
 
             {/* 4. MASTER REGISTRY TABLE */}
             <div className={`bg-white border border-slate-100 overflow-hidden transition-opacity duration-300 ${isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
@@ -654,185 +546,6 @@ export default function AdminOrdersPage() {
                     ))}
                 </AnimatePresence>
             </div>
-        </div>
-    );
-}
-
-interface OrderRowProps {
-    order: Order;
-    isDark: boolean;
-    isSelected: boolean;
-    toggleSelect: (id: string) => void;
-    getPaymentColor: (status: string) => string;
-    statusFilter: string;
-    handleQuickUpdate: (id: string, state: string, label: string) => void;
-    handleDelete: (id: string) => void;
-    getStatusColor: (status: string) => string;
-}
-
-const OrderRow = React.memo(({ 
-    order, 
-    isSelected, 
-    toggleSelect, 
-    getPaymentColor, 
-    statusFilter,
-    handleQuickUpdate, 
-    handleDelete,
-    getStatusColor
-}: OrderRowProps) => {
-    return (
-        <tr className={`group transition-colors duration-200 ${isSelected
-                ? 'bg-slate-50'
-                : 'bg-white hover:bg-slate-50/50'
-            }`}
-        >
-            <td className="px-8 py-8">
-                <button onClick={() => toggleSelect(order.id)}>
-                    {isSelected
-                        ? <CheckSquare className="w-4 h-4 text-slate-950" />
-                        : <Square className="w-4 h-4 text-slate-200 group-hover:text-slate-400" />
-                    }
-                </button>
-            </td>
-            <td className="px-8 py-8">
-                <div className="flex items-center gap-4">
-                    <span className="font-mono text-[12px] font-black tracking-tighter text-slate-900">
-                        #{order.order_number || order.id.slice(0, 8)}
-                    </span>
-                </div>
-            </td>
-            <td className="px-8 py-8">
-                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-lg overflow-hidden flex items-center justify-center relative group-hover:border-slate-900 transition-all">
-                    {order.thumbnail ? (
-                        <Image 
-                            src={getImageUrl(order.thumbnail)} 
-                            alt="Order Preview" 
-                            fill 
-                            className="object-cover"
-                        />
-                    ) : (
-                        <Package size={16} className="text-slate-200" />
-                    )}
-                </div>
-            </td>
-            <td className="px-8 py-8">
-                <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
-                        {order.customer.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-[11px] font-black uppercase tracking-widest truncate text-slate-950">{order.customer.name}</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate hidden sm:block italic">{order.customer.email}</p>
-                    </div>
-                </div>
-            </td>
-            <td className="px-8 py-8 hidden lg:table-cell">
-                <p className="text-[10px] font-black text-slate-400 uppercase tabular-nums">
-                    {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase()}
-                </p>
-            </td>
-            <td className="px-8 py-8 hidden lg:table-cell">
-                <div className="flex items-center gap-3">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${getStatusColor(order.status)}`}>
-                        {statusLabel(order.status)}
-                    </span>
-                    <div className="w-1 h-1 rounded-full bg-slate-200" />
-                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(order.payment_status)}`}>
-                        {order.payment_status}
-                    </span>
-                </div>
-            </td>
-            <td className="px-8 py-8 text-right">
-                <span className="text-[12px] font-black text-slate-950 tabular-nums">
-                    ₵{(statusFilter === 'PENDING' ? Number(order.balance_due) : Number(order.total_amount)).toLocaleString()}
-                </span>
-            </td>
-            <td className="px-8 py-8 text-right">
-                <div className="flex justify-end items-center gap-6">
-                    <div className="flex items-center gap-2 sm:gap-4 transition-all">
-                        {(order.status === 'PROCESSING' || order.status === 'PAID' || order.status === 'OPEN_FOR_BATCH') && (
-                            <button 
-                                onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
-                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
-                            >
-                                SHIP
-                            </button>
-                        )}
-                        <Link
-                            href={`/dashboard/admin/orders/${order.id}`}
-                            className="p-4 text-slate-400 hover:text-slate-900 transition-colors"
-                        >
-                            <Eye className="w-5 h-5" />
-                        </Link>
-                        <button
-                            onClick={() => handleDelete(order.id)}
-                            className="p-4 text-slate-200 hover:text-red-600 transition-colors"
-                        >
-                            <Trash2 className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    );
-});
-
-// Optimized Filter Tabs to prevent parent re-renders and provide instant feedback
-const FilterTabs = React.memo(({ activeTab, counts, onTabChange }: { 
-    activeTab: string; 
-    counts: Record<string, number>; 
-    onTabChange: (s: string) => void 
-}) => {
-    // Local state for instant UI response before parent transition yields
-    const [localActiveTab, setLocalActiveTab] = useState(activeTab);
-
-    useEffect(() => {
-        setLocalActiveTab(activeTab);
-    }, [activeTab]);
-
-    return (
-        <div className="flex gap-4 min-w-max">
-            {STATUS_TABS.map(s => (
-                <button
-                    key={s}
-                    onClick={() => {
-                        setLocalActiveTab(s);
-                        onTabChange(s);
-                    }}
-                    className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${localActiveTab === s
-                        ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
-                        : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
-                        }`}
-                >
-                    {statusLabel(s)}
-                    <span className="ml-3 opacity-30 tabular-nums">[{counts[s as keyof typeof counts] || 0}]</span>
-                </button>
-            ))}
-        </div>
-    );
-});
-
-// Optimized Search Component to prevent parent re-renders on every keystroke
-function SearchField({ value, onChange }: { value: string; onChange: (val: string) => void }) {
-    const [localValue, setLocalValue] = useState(value);
-
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            onChange(localValue);
-        }, 400);
-        return () => clearTimeout(handler);
-    }, [localValue, onChange]);
-
-    return (
-        <div className="relative w-full md:w-80 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
-            <input
-                type="text"
-                placeholder="SEARCH ORDERS..."
-                value={localValue}
-                onChange={(e) => setLocalValue(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
-            />
         </div>
     );
 }

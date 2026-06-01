@@ -16,84 +16,14 @@ export const api = axios.create({
   },
 });
 
-// In-memory token cache to bypass localStorage race conditions during login
-let _accessToken: string | null = null;
-
-/**
- * Update the in-memory token cache. 
- * Called by authStore to ensure API client has the latest token immediately.
- */
+/// Deprecated - Kept as dummy function for compatibility with imports
 export const setTokens = (access: string | null) => {
-    _accessToken = access;
+    // No-op. Authentication handled entirely by backend HttpOnly cookies.
 };
 
-// Initialize from localStorage if available (for page refreshes)
-if (typeof window !== 'undefined') {
-    try {
-        const authStorage = localStorage.getItem('auth-storage');
-        if (authStorage) {
-            const parsed = JSON.parse(authStorage);
-            _accessToken = parsed.state?.accessToken;
-        }
-    } catch {
-        // Silent fail on initialization
-    }
-}
-
-// Request interceptor to add Auth token
+// Request interceptor: No need to attach Authorization header. Cookies are sent automatically with withCredentials: true.
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // 1. Try in-memory token first (fastest, most reliable for just-logged-in)
-    let token = _accessToken;
-
-    // 2. Fallback to localStorage if memory token is missing (safety)
-    if (!token) {
-        const authStorage = localStorage.getItem('auth-storage');
-        if (authStorage) {
-            try {
-                const parsed = JSON.parse(authStorage);
-                token = parsed.state?.accessToken;
-                // Sync back to memory for next time
-                _accessToken = token;
-            } catch (e) {
-                console.error('[API] Failed to parse auth storage', e);
-            }
-        }
-    }
-
-    // List of public endpoints where we should NOT send the token
-    const publicEndpoints = [
-      '/auth/register/',
-      '/auth/login/',
-      '/auth/google/',
-      '/auth/register/vendor/',
-      '/auth/register/partner/',
-      '/auth/password/reset/', 
-      '/products/',
-      '/vendors/',
-      '/blog/',
-      '/orders/stats/',
-    ];
-
-    // Check if URL starts with a public endpoint
-    const isPublicEndpoint = publicEndpoints.some(endpoint =>
-      config.url && config.url.startsWith(endpoint)
-    );
-
-    const isGetRequest = config.method?.toLowerCase() === 'get';
-
-    // 4. BUT NEVER for auth endpoints (to avoid sending old/expired tokens during new login)
-    const isAuthEndpoint = config.url?.includes('/auth/login/') || 
-                          config.url?.includes('/auth/register/') ||
-                          config.url?.includes('/auth/google/');
-
-    if (token && (!isPublicEndpoint || !isGetRequest) && !isAuthEndpoint) {
-      config.headers.Authorization = `Bearer ${token}`;
-      if (process.env.NODE_ENV === 'development') {
-          console.debug(`[API] Auth header added to ${config.url}`);
-      }
-    }
-
     // CRITICAL FIX: If data is FormData, let browser set Content-Type (multipart)
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
@@ -104,14 +34,14 @@ api.interceptors.request.use((config) => {
 
 // Handle token refresh on 401
 let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
+let refreshSubscribers: (() => void)[] = [];
 
-function subscribeTokenRefresh(cb: (token: string) => void) {
+function subscribeTokenRefresh(cb: () => void) {
   refreshSubscribers.push(cb);
 }
 
-function onRefreshed(token: string) {
-  refreshSubscribers.map((cb) => cb(token));
+function onRefreshed() {
+  refreshSubscribers.map((cb) => cb());
   refreshSubscribers = [];
 }
 
@@ -123,8 +53,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve) => {
-          subscribeTokenRefresh((token: string) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+          subscribeTokenRefresh(() => {
             resolve(api(originalRequest));
           });
         });
@@ -134,48 +63,18 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const authStorage = typeof window !== 'undefined' ? localStorage.getItem('auth-storage') : null;
-        let refreshToken = null;
-        if (authStorage) {
-            try {
-                const parsed = JSON.parse(authStorage);
-                refreshToken = parsed.state?.refreshToken;
-            } catch (e) {
-                console.error('[API] Failed to parse auth storage for refresh', e);
-            }
-        }
+        // Attempt refresh (the refresh token cookie is sent automatically by the browser)
+        await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
         
-        // GUARD: If no refresh token, don't even try. Just reject so caller handles it.
-        if (!refreshToken) {
-          isRefreshing = false;
-          return Promise.reject(error);
-        }
-
-        // Attempt refresh
-        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh: refreshToken }, { withCredentials: true });
-
-        const { access } = response.data;
-        if (access) {
-          // Update the store directly
-          const { useAuthStore } = await import('@/stores/authStore');
-          useAuthStore.setState({ accessToken: access });
-          
-          // Update memory cache
-          setTokens(access);
-          
-          onRefreshed(access);
-        }
-        
+        onRefreshed();
         isRefreshing = false;
 
-        // Ensure the retry uses the new token
-        originalRequest.headers.Authorization = `Bearer ${access}`;
         return api(originalRequest);
       } catch (refreshError: unknown) {
         isRefreshing = false;
         refreshSubscribers = [];
         
-        // Refresh failed - User must login
+        // Refresh failed - User session is fully expired
         const err = refreshError as { response?: { status?: number } };
         const status = err.response?.status;
         

@@ -38,25 +38,25 @@ export default function OrderRecommendations() {
 
     if (!isLoading && recommendations.length === 0 && trending.length === 0) return null;
 
-    const Section = ({ title, products }: { title: string, products: Product[] }) => (
-        <div className="space-y-8">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 text-center">
-                {title}
-            </h2>
-            <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 gap-4 sm:gap-6 pb-4 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                {products.map(product => (
-                    <div key={product.id} className="flex-none w-[75%] md:w-auto snap-center">
-                        <ProductCard 
-                            product={product} 
-                            variant="compact"
-                            hideRating
-                            hideProgress
-                        />
-                    </div>
-                ))}
-            </div>
+const Section = ({ title, products }: { title: string, products: Product[] }) => (
+    <div className="space-y-8">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 text-center">
+            {title}
+        </h2>
+        <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 gap-4 sm:gap-6 pb-4 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+            {products.map(product => (
+                <div key={product.id} className="flex-none w-[75%] md:w-auto snap-center">
+                    <ProductCard 
+                        product={product} 
+                        variant="compact"
+                        hideRating
+                        hideProgress
+                    />
+                </div>
+            ))}
         </div>
-    );
+    </div>
+);
 
     return (
         <motion.div 

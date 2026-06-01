@@ -3,228 +3,21 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { adminAPI } from '@/lib/api';
-import { getImageUrl } from '@/lib/image';
 import { useTheme } from '@/providers/ThemeProvider';
-import Image from 'next/image';
 import Link from 'next/link';
-import {
-    CreditCard,
-    Package,
-    ChevronLeft,
-    MapPin,
-    MessageCircle,
-    ArrowRightLeft,
-    History as OrderHistoryIcon,
-    ArrowRight,
-    Terminal,
-    FileText,
-    ShieldCheck,
-    Truck,
-    CheckCircle2,
-    Loader2,
-    User,
-    Crown,
-    Calendar,
-    ShoppingBag,
-    TrendingUp,
-    Printer
-} from 'lucide-react';
+import { ChevronLeft, Printer, Loader2 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
-// --- Integrated Components ---
-
-const STEPS = [
-    { id: 'PENDING', label: 'Order Placed', icon: Package },
-    { id: 'PROCESSING', label: 'Processing', icon: Package },
-    { id: 'IN_TRANSIT', label: 'In Transit', icon: Truck },
-    { id: 'ARRIVED', label: 'Arrived in Hub', icon: MapPin },
-    { id: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', icon: Truck },
-    { id: 'DELIVERED', label: 'Delivered', icon: CheckCircle2 },
-];
-
-function LogisticsStepper({ status, isDark }: { status: string; isDark: boolean }) {
-    const currentStepIndex = STEPS.findIndex(s => s.id === status);
-    
-    return (
-        <div className="w-full overflow-x-auto pb-6 scrollbar-hide">
-            <div className="relative flex justify-between min-w-[700px] px-4">
-                <div className={`absolute top-4 left-0 right-0 h-px ${isDark ? 'bg-white/5' : 'bg-slate-200'}`} />
-                <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }}
-                    className="absolute top-4 left-0 h-px bg-pink-500"
-                />
-
-                {STEPS.map((step, idx) => {
-                    const isCompleted = idx <= currentStepIndex;
-                    const isCurrent = idx === currentStepIndex;
-                    
-                    return (
-                        <div key={step.id} className="relative z-10 flex flex-col items-center group flex-1">
-                            <motion.div 
-                                initial={false}
-                                animate={{ 
-                                    scale: isCurrent ? 1.1 : 1,
-                                    borderColor: isCompleted ? '#ec4899' : isDark ? 'rgba(255,255,255,0.05)' : '#e2e8f0',
-                                    backgroundColor: isCurrent ? (isDark ? '#000' : '#fff') : 'transparent'
-                                }}
-                                className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500`}
-                            >
-                                <div className={`w-1 h-1 rounded-full ${isCompleted ? 'bg-pink-500' : isDark ? 'bg-white/10' : 'bg-slate-300'}`} />
-                            </motion.div>
-                            
-                            <div className="mt-4 flex flex-col items-center text-center">
-                                <span className={`text-[8px] font-mono tracking-[0.2em] uppercase mb-1 transition-all duration-500 ${isCurrent ? 'opacity-100 text-pink-500 font-black' : 'opacity-20'}`}>
-                                    {isCurrent ? 'Current' : `Stage ${idx + 1}`}
-                                </span>
-                                <span className={`text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${isCurrent ? 'opacity-100' : 'opacity-30'}`}>
-                                    {step.label}
-                                </span>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
-
-interface CustomerStats {
-    ltv: number;
-    order_count: number;
-    join_date: string;
-    is_vip: boolean;
-}
-
-interface Customer {
-    name: string;
-    email: string;
-    phone: string;
-    stats: CustomerStats;
-}
-
-function CustomerIntelligenceCard({ customer, isDark }: { customer: Customer; isDark: boolean }) {
-    const joinDate = new Date(customer.stats.join_date).toLocaleDateString('en-GB', { 
-        month: 'long', 
-        year: 'numeric' 
-    });
-
-    return (
-        <div className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'} relative group`}>
-            <div className="absolute top-0 left-0 w-1 h-full bg-slate-900 dark:bg-white/10" />
-            
-            <div className="p-10">
-                <div className="flex items-center gap-3 mb-10 opacity-40">
-                    <User className="w-4 h-4" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Customer Details</h3>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-12 gap-8 sm:gap-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                        <div className={`w-16 h-16 rounded-full border flex items-center justify-center text-xl font-serif font-bold shrink-0 ${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-100 text-slate-900'}`}>
-                            {customer.name[0].toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-3 mb-1">
-                                <h3 className={`text-xl sm:text-2xl font-serif font-bold tracking-tight break-words ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                    {customer.name}
-                                </h3>
-                                {customer.stats.is_vip && (
-                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-[8px] font-black text-white rounded-full uppercase tracking-widest">
-                                        <Crown className="w-3 h-3" />
-                                        VIP
-                                    </div>
-                                )}
-                            </div>
-                            <p className="text-[10px] sm:text-xs font-mono opacity-40 lowercase tracking-tight break-all">{customer.email}</p>
-                            <p className="text-[10px] sm:text-xs font-mono opacity-40 mt-1 uppercase tracking-widest">{customer.phone}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
-                    <div className="p-6 bg-white dark:bg-slate-900">
-                        <div className="flex items-center gap-2 mb-3 opacity-30">
-                            <TrendingUp className="w-3 h-3" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">Lifetime Value</span>
-                        </div>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-xs font-serif italic opacity-40">₵</span>
-                            <span className={`text-xl sm:text-2xl font-serif font-bold tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {customer.stats.ltv.toLocaleString()}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="p-6 bg-white dark:bg-slate-900 border-t sm:border-t-0 sm:border-l border-inherit">
-                        <div className="flex items-center gap-2 mb-3 opacity-30">
-                            <ShoppingBag className="w-3 h-3" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">Order Count</span>
-                        </div>
-                        <div className="flex items-baseline gap-2">
-                            <span className={`text-xl sm:text-2xl font-serif font-bold tracking-tighter ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {customer.stats.order_count}
-                            </span>
-                            <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">TXNS</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-10 pt-8 border-t border-inherit flex flex-col sm:flex-row sm:items-center justify-between gap-8 sm:gap-0">
-                    <div className="flex items-center gap-4">
-                        <Calendar className="w-4 h-4 opacity-20" />
-                        <div className="space-y-0.5">
-                            <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block">Established Member</span>
-                            <p className="text-[10px] font-bold uppercase tracking-widest">{joinDate}</p>
-                        </div>
-                    </div>
-                    <div className="text-left sm:text-right">
-                        <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block">Account Status</span>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Verified Customer</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// --- End Integrated Components ---
-
-interface OrderItem {
-    id: string;
-    product_name: string;
-    quantity: number;
-    price: string;
-    image: string;
-    size?: string;
-    color?: string;
-}
-
-interface OrderDetail {
-    id: string;
-    order_number: string;
-    customer: string;
-    email: string;
-    phone: string;
-    total: string;
-    subtotal: string;
-    delivery_fee: string;
-    status: string;
-    payment_status: string;
-    amount_paid: string;
-    balance_due: string;
-    is_installment: boolean;
-    created_at: string;
-    delivery_address: string;
-    delivery_city: string;
-    delivery_region: string;
-    delivery_gps?: string;
-    customer_notes?: string;
-    items: OrderItem[];
-    customer_stats: CustomerStats;
-}
+import { OrderDetail } from '@/types/order';
+import { LogisticsStepper } from '@/components/admin/orders/detail/LogisticsStepper';
+import { CustomerIntelligenceCard } from '@/components/admin/orders/detail/CustomerIntelligenceCard';
+import { OrderItemsList } from '@/components/admin/orders/detail/OrderItemsList';
+import { DeliveryAddressManager } from '@/components/admin/orders/detail/DeliveryAddressManager';
+import { AdminActionsPanel } from '@/components/admin/orders/detail/AdminActionsPanel';
+import { ActivityLog } from '@/components/admin/orders/detail/ActivityLog';
+import { TransferPaymentModal } from '@/components/admin/orders/detail/TransferPaymentModal';
 
 export default function AdminOrderDetailPage() {
     const params = useParams();
@@ -478,7 +271,6 @@ export default function AdminOrderDetailPage() {
                         <section className={`p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="flex items-center justify-between mb-12">
                                 <div className="flex items-center gap-4">
-                                    <Truck className="w-5 h-5 opacity-20" />
                                     <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Shipping Status</h2>
                                 </div>
                                 <span className="text-[10px] font-mono opacity-30 uppercase">Tracking Update</span>
@@ -486,155 +278,25 @@ export default function AdminOrderDetailPage() {
                             <LogisticsStepper status={order.status} isDark={isDark} />
                         </section>
 
-                        <section className={`border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-                            <div className="p-8 border-b border-inherit flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <FileText className="w-5 h-5 opacity-20" />
-                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Order Items</h2>
-                                </div>
-                                <span className="text-[10px] font-mono opacity-30 uppercase">{order.items.length} ITEMS TOTAL</span>
-                            </div>
-                            
-                            <div className="divide-y divide-inherit">
-                                {order.items.map((item) => (
-                                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 group hover:bg-slate-500/5 transition-colors">
-                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 overflow-hidden border border-inherit shrink-0 grayscale group-hover:grayscale-0 transition-all duration-700">
-                                            <Image
-                                                src={getImageUrl(item.image)}
-                                                alt={item.product_name}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-lg sm:text-xl font-serif font-bold tracking-tight mb-2 leading-none">{item.product_name}</p>
-                                            <div className="flex gap-4">
-                                                <span className="text-[10px] font-mono opacity-40 uppercase">COLOR: {item.color || 'STND'}</span>
-                                                <span className="text-[10px] font-mono opacity-40 uppercase">SIZE: {item.size || 'STND'}</span>
-                                            </div>
-                                        </div>
-                                        <div className="w-full sm:w-auto text-left sm:text-right pt-4 sm:pt-0 border-t sm:border-t-0 border-inherit">
-                                            <p className="text-xl sm:text-2xl font-mono tracking-tighter mb-1">₵{parseFloat(item.price).toLocaleString()}</p>
-                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-20 italic">QUANTITY: {item.quantity}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                        <OrderItemsList 
+                            items={order.items}
+                            subtotal={order.subtotal}
+                            deliveryFee={order.delivery_fee}
+                            total={order.total}
+                            amountPaid={order.amount_paid}
+                            balanceDue={order.balance_due}
+                            isDark={isDark}
+                        />
 
-                            <div className="p-12 bg-slate-500/5 border-t border-inherit">
-                                <div className="max-w-md ml-auto space-y-6">
-                                    <div className="grid grid-cols-2 gap-4 pb-6 border-b border-dashed border-inherit">
-                                        <div className="space-y-1">
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30">Subtotal</span>
-                                            <p className="text-lg font-mono tracking-tighter">₵{parseFloat(order.subtotal).toLocaleString()}</p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30">Shipping</span>
-                                            <p className="text-lg font-mono tracking-tighter">₵{parseFloat(order.delivery_fee).toLocaleString()}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex justify-between items-end">
-                                        <div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500 block mb-2">Total Amount</span>
-                                            <h3 className="text-5xl font-serif font-bold tracking-tighter leading-none">
-                                                ₵{parseFloat(order.total).toLocaleString()}
-                                            </h3>
-                                        </div>
-                                        <div className="text-right space-y-2">
-                                            <div className="flex items-center gap-3 justify-end">
-                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Paid:</span>
-                                                <span className="text-sm font-mono text-emerald-500 font-bold">₵{parseFloat(order.amount_paid).toLocaleString()}</span>
-                                            </div>
-                                            <div className="flex items-center gap-3 justify-end">
-                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Due:</span>
-                                                <span className={`text-sm font-mono font-bold ${parseFloat(order.balance_due) > 0 ? 'text-rose-500' : 'opacity-20'}`}>
-                                                    ₵{parseFloat(order.balance_due).toLocaleString()}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section className={`p-6 sm:p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-10">
-                                <div className="flex items-center gap-4">
-                                    <MapPin className="w-5 h-5 opacity-20" />
-                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Delivery Address</h2>
-                                </div>
-                                <button
-                                    onClick={isEditingDelivery ? handleSaveDelivery : () => {
-                                        setEditForm({
-                                            delivery_address: order.delivery_address || '',
-                                            delivery_city: order.delivery_city || '',
-                                            delivery_region: order.delivery_region || '',
-                                            delivery_gps: order.delivery_gps || '',
-                                            customer_notes: order.customer_notes || ''
-                                        });
-                                        setIsEditingDelivery(true);
-                                    }}
-                                    className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 opacity-40 hover:opacity-100 transition-opacity w-fit"
-                                >
-                                    {isEditingDelivery ? 'Save Changes' : 'Edit Address'}
-                                </button>
-                            </div>
-
-                            {!isEditingDelivery ? (
-                                <div className="grid md:grid-cols-2 gap-12">
-                                    <div className="space-y-6">
-                                        <div>
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-2">Street Address</span>
-                                            <p className="text-2xl font-serif font-bold tracking-tight leading-tight">{order.delivery_address}</p>
-                                        </div>
-                                        <div className="flex gap-12">
-                                            <div>
-                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-1">City</span>
-                                                <p className="text-sm font-bold uppercase tracking-widest">{order.delivery_city}</p>
-                                            </div>
-                                            <div>
-                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-1">Region</span>
-                                                <p className="text-sm font-bold uppercase tracking-widest">{order.delivery_region}</p>
-                                            </div>
-                                        </div>
-                                        {order.delivery_gps && (
-                                            <div className="inline-flex items-center gap-3 px-4 py-2 bg-slate-500/5 border border-inherit font-mono text-[10px] tracking-widest">
-                                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                COORD: {order.delivery_gps}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="bg-slate-500/5 p-8 border-l-2 border-pink-500">
-                                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-4">Shipping Notes</span>
-                                        <p className="text-sm font-medium italic opacity-60 leading-relaxed">
-                                            &quot;{order.customer_notes || 'No special directives logged for this shipment.'}&quot;
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                                    <input
-                                        value={editForm.delivery_address}
-                                        onChange={(e) => setEditForm({ ...editForm, delivery_address: e.target.value })}
-                                        className={`col-span-2 p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all`}
-                                        placeholder="STREET & LANDMARKS"
-                                    />
-                                    <input
-                                        value={editForm.delivery_city}
-                                        onChange={(e) => setEditForm({ ...editForm, delivery_city: e.target.value })}
-                                        className="p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all"
-                                        placeholder="CITY HUB"
-                                    />
-                                    <input
-                                        value={editForm.delivery_region}
-                                        onChange={(e) => setEditForm({ ...editForm, delivery_region: e.target.value })}
-                                        className="p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all"
-                                        placeholder="REGION"
-                                    />
-                                </div>
-                            )}
-                        </section>
+                        <DeliveryAddressManager
+                            order={order}
+                            isDark={isDark}
+                            isEditingDelivery={isEditingDelivery}
+                            editForm={editForm}
+                            setEditForm={setEditForm}
+                            setIsEditingDelivery={setIsEditingDelivery}
+                            handleSaveDelivery={handleSaveDelivery}
+                        />
                     </div>
 
                     <div className="lg:col-span-4 space-y-12">
@@ -648,186 +310,38 @@ export default function AdminOrderDetailPage() {
                             isDark={isDark} 
                         />
 
-                        <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-                            <div className="p-8 border-b border-inherit flex items-center gap-4">
-                                <Terminal className="w-5 h-5 opacity-20" />
-                                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Admin Actions</h2>
-                            </div>
-                            
-                            <div className="p-8 space-y-4">
-                                {whatsappUrl && (
-                                    <a href={whatsappUrl} target="_blank" className="w-full flex items-center justify-between p-6 bg-[#25D366] text-white font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
-                                        WhatsApp Customer
-                                        <MessageCircle className="w-5 h-5" />
-                                    </a>
-                                )}
-                                
-                                <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
-                                    <button 
-                                        onClick={handleMarkAsPaid}
-                                        className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all"
-                                    >
-                                        <CreditCard className="w-5 h-5 text-purple-500" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                                            Mark as <br /> Paid
-                                        </span>
-                                    </button>
-                                    <button 
-                                        onClick={openTransferModal}
-                                        className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all border-l border-inherit"
-                                    >
-                                        <ArrowRightLeft className="w-5 h-5 text-blue-500" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                                            Transfer <br /> Payment
-                                        </span>
-                                    </button>
-                                </div>
+                        <AdminActionsPanel
+                            whatsappUrl={whatsappUrl}
+                            updating={updating}
+                            manualReference={manualReference}
+                            setManualReference={setManualReference}
+                            handleMarkAsPaid={handleMarkAsPaid}
+                            openTransferModal={openTransferModal}
+                            handleManualSync={handleManualSync}
+                            handleUpdateStatus={handleUpdateStatus}
+                            isDark={isDark}
+                        />
 
-                                <div className="pt-4 space-y-4">
-                                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Paystack Re-Sync</span>
-                                    <div className="space-y-3">
-                                        <input 
-                                            value={manualReference}
-                                            onChange={(e) => setManualReference(e.target.value)}
-                                            placeholder="PASTE PAYSTACK REFERENCE"
-                                            className="w-full p-4 bg-slate-500/5 border border-inherit text-[10px] font-mono tracking-widest outline-none focus:border-pink-500 transition-all uppercase"
-                                        />
-                                        <button 
-                                            onClick={handleManualSync}
-                                            disabled={updating || !manualReference}
-                                            className="w-full p-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-pink-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
-                                        >
-                                            {updating ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
-                                            Verify With Paystack
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 space-y-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Protocol Transitions</span>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        <button onClick={() => handleUpdateStatus('IN_TRANSIT')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
-                                            Mark as Shipped
-                                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
-                                        </button>
-                                        <button onClick={() => handleUpdateStatus('ARRIVED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
-                                            Mark as Arrived
-                                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
-                                        </button>
-                                        <button onClick={() => handleUpdateStatus('DELIVERED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
-                                            Mark as Delivered
-                                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
-                                        </button>
-                                        <button onClick={() => handleUpdateStatus('CANCELLED')} className="w-full p-4 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-left">
-                                            Cancel Order
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="p-6 bg-slate-500/5 border-t border-inherit flex items-center gap-3">
-                                <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Security Verified</span>
-                            </div>
-                        </section>
-
-                        <section className={`p-8 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-                            <div className="flex items-center gap-3 mb-10">
-                                <OrderHistoryIcon className="w-4 h-4 opacity-20" />
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Activity Log</h2>
-                            </div>
-                            
-                            <div className="space-y-10 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1px] before:bg-inherit">
-                                <div className="relative pl-8">
-                                    <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-slate-950 dark:border-slate-950 bg-emerald-500 z-10" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 block mb-1">State: Active</span>
-                                    <p className="text-sm font-bold uppercase tracking-widest">{order.status.replace(/_/g, ' ')}</p>
-                                    <p className="text-[10px] opacity-30 mt-1 uppercase font-mono">Synced via London Hub Control</p>
-                                </div>
-                                <div className="relative pl-8 opacity-40">
-                                    <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-slate-950 dark:border-slate-950 bg-slate-500 z-10" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest block mb-1">Event: Order Created</span>
-                                    <p className="text-sm font-bold uppercase tracking-widest">Order Created</p>
-                                    <p className="text-[10px] mt-1 font-mono">{new Date(order.created_at).toLocaleString()}</p>
-                                </div>
-                            </div>
-                        </section>
+                        <ActivityLog order={order} isDark={isDark} />
                     </div>
                 </div>
             </main>
 
             <AnimatePresence>
                 {isTransferModalOpen && (
-                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-md">
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className={`w-full max-w-xl border p-12 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-2xl'}`}
-                        >
-                            <h2 className="text-4xl font-serif font-bold tracking-tighter mb-2">Transfer Payment</h2>
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-12">Transfer balance between orders</p>
-                            
-                            <div className="space-y-10">
-                                <div className="space-y-3">
-                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-30">Target Reference</label>
-                                    <select
-                                        value={transferData.target_order_id}
-                                        onChange={(e) => setTransferData({ ...transferData, target_order_id: e.target.value })}
-                                        className="w-full p-6 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-inherit focus:border-pink-500 transition-all"
-                                    >
-                                        <option value="">SELECT DESTINATION ENTRY...</option>
-                                        {customerOrders.map(o => (
-                                            <option key={o.id} value={o.id}>
-                                                #{o.order_number} (CAPACITY: ₵{parseFloat(o.total).toLocaleString()})
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-12">
-                                    <div className="space-y-3">
-                                        <label className="text-[9px] font-black uppercase tracking-widest opacity-30">Migration Amount</label>
-                                        <div className="flex items-baseline gap-4 border-b border-inherit pb-2">
-                                            <span className="text-xl font-serif italic text-pink-500">₵</span>
-                                            <input
-                                                type="number"
-                                                value={transferData.amount}
-                                                onChange={(e) => setTransferData({ ...transferData, amount: parseFloat(e.target.value) })}
-                                                className="bg-transparent text-3xl font-mono tracking-tighter outline-none w-full"
-                                                placeholder="0.00"
-                                            />
-                                        </div>
-                                        <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest opacity-60">Limit: ₵{parseFloat(order.amount_paid).toLocaleString()}</p>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[9px] font-black uppercase tracking-widest opacity-30">Audit Justification</label>
-                                        <input
-                                            value={transferData.reason}
-                                            onChange={(e) => setTransferData({ ...transferData, reason: e.target.value })}
-                                            className="w-full py-4 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-[10px] border-inherit focus:border-pink-500 transition-all"
-                                            placeholder="REASON FOR ADJUSTMENT"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 mt-20">
-                                <button onClick={() => setIsTransferModalOpen(false)} className="p-6 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-slate-500/5">
-                                    Abort
-                                </button>
-                                <button 
-                                    onClick={handleTransferPayment}
-                                    disabled={updating || !transferData.target_order_id || transferData.amount <= 0}
-                                    className="p-6 bg-pink-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black disabled:opacity-30 transition-all"
-                                >
-                                    {updating ? 'Executing...' : 'Authorize Migration'}
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
+                    <TransferPaymentModal
+                        customerOrders={customerOrders}
+                        transferData={transferData}
+                        setTransferData={setTransferData}
+                        updating={updating}
+                        handleTransferPayment={handleTransferPayment}
+                        setIsTransferModalOpen={setIsTransferModalOpen}
+                        isDark={isDark}
+                    />
                 )}
             </AnimatePresence>
 
+            {/* Existing Modals and Alerts */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
@@ -837,30 +351,19 @@ export default function AdminOrderDetailPage() {
                 variant={confirmModal.variant}
             />
 
-            <div className="fixed bottom-12 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center gap-4 px-4">
-                <AnimatePresence mode="popLayout">
+            <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-3">
+                <AnimatePresence>
                     {alerts.map(alert => (
-                        <div key={alert.id} className="pointer-events-auto">
-                            <AuraAlert
-                                id={alert.id}
-                                message={alert.message}
-                                type={alert.type}
-                                onClose={removeAlert}
-                            />
-                        </div>
+                        <AuraAlert
+                            key={alert.id}
+                            id={alert.id}
+                            type={alert.type}
+                            message={alert.message}
+                            onClose={() => removeAlert(alert.id)}
+                        />
                     ))}
                 </AnimatePresence>
             </div>
-
-            <style jsx global>{`
-                .bg-stationery {
-                    background-color: #FAFAFA;
-                    background-image: 
-                        linear-gradient(#f0f0f0 1px, transparent 1px),
-                        linear-gradient(90deg, #f0f0f0 1px, transparent 1px);
-                    background-size: 40px 40px;
-                }
-            `}</style>
         </div>
     );
 }

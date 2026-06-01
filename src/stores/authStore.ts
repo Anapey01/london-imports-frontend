@@ -30,8 +30,6 @@ interface User {
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
-    accessToken: string | null;
-    refreshToken: string | null;
     isLoading: boolean;
 
     login: (username: string, password: string) => Promise<void>;
@@ -47,25 +45,19 @@ export const useAuthStore = create<AuthState>()(
         (set, get) => ({
             user: null,
             isAuthenticated: false,
-            accessToken: null,
-            refreshToken: null,
             isLoading: false,
 
             login: async (username: string, password: string) => {
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.login({ username, password });
-                    const { access, refresh, user } = response.data.tokens || response.data;
+                    const userObj = response.data.user || response.data;
                     
-                    if (access) {
+                    if (userObj) {
                         set({ 
-                            accessToken: access, 
-                            refreshToken: refresh,
-                            user: user,
+                            user: userObj,
                             isAuthenticated: true
                         });
-                        // Sync with API client memory cache immediately
-                        setTokens(access);
                     }
                 } finally {
                     set({ isLoading: false });
@@ -76,14 +68,11 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.register(data);
-                    const { user, tokens } = response.data;
+                    const { user } = response.data;
 
-                    if (tokens?.access) {
-                        set({ accessToken: tokens.access, refreshToken: tokens.refresh });
-                        setTokens(tokens.access);
+                    if (user) {
+                        set({ user, isAuthenticated: true });
                     }
-
-                    set({ user, isAuthenticated: true });
                 } finally {
                     set({ isLoading: false });
                 }
@@ -93,12 +82,12 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
                 try {
                     const response = await authAPI.googleLogin(idToken);
-                    const { access, refresh } = response.data.tokens || response.data;
-                    if (access) {
-                        set({ accessToken: access, refreshToken: refresh });
-                        setTokens(access);
+                    const { user } = response.data;
+                    if (user) {
+                        set({ user, isAuthenticated: true });
+                    } else {
+                        await get().fetchUser();
                     }
-                    await get().fetchUser();
                 } finally {
                     set({ isLoading: false });
                 }
@@ -109,8 +98,7 @@ export const useAuthStore = create<AuthState>()(
                     await authAPI.logout();
                 } catch { }
 
-                set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
-                setTokens(null);
+                set({ user: null, isAuthenticated: false });
             },
 
             fetchUser: async () => {
@@ -136,8 +124,6 @@ export const useAuthStore = create<AuthState>()(
             partialize: (state) => ({
                 user: state.user,
                 isAuthenticated: state.isAuthenticated,
-                accessToken: state.accessToken,
-                refreshToken: state.refreshToken
             }),
         }
     )

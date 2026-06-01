@@ -7,7 +7,11 @@ import Link from 'next/link';
 import { ArrowRight, Truck, Package, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { ordersAPI } from '@/lib/api';
-import OrderRecommendations from './OrderRecommendations';
+import dynamic from 'next/dynamic';
+
+const OrderRecommendations = dynamic(() => import('./OrderRecommendations'), {
+    ssr: false, // Wait until client-side so we don't block the initial success render
+});
 
 interface OrderSuccessProps {
     orderNumber: string;
@@ -29,10 +33,14 @@ interface Order {
     balance_due: string | number;
 }
 
+import noirBg from '../../../public/assets/success/noir.png';
+import whiteBg from '../../../public/assets/success/white.png';
+import hubBg from '../../../public/assets/success/hub.png';
+
 const BACKDROPS = [
-    { id: 'noir', path: '/assets/success/noir.png', theme: 'dark' },
-    { id: 'white', path: '/assets/success/white.png', theme: 'light' },
-    { id: 'center', path: '/assets/success/hub.png', theme: 'tech' }
+    { id: 'noir', path: noirBg, theme: 'dark' },
+    { id: 'white', path: whiteBg, theme: 'light' },
+    { id: 'center', path: hubBg, theme: 'tech' }
 ];
 
 const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
@@ -65,7 +73,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden shadow-diffusion-2xl border border-slate-100 dark:border-slate-800"
+                className="bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800"
             >
                 <div className="grid lg:grid-cols-2">
                     {/* Visual Section: Dynamic Product Display */}
@@ -75,7 +83,10 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                             src={backdrop.path}
                             alt="London's Imports Premium Background"
                             fill
-                            className="object-cover transition-transform duration-[5000ms] ease-out scale-110 group-hover:scale-100"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                            quality={60}
+                            placeholder="blur"
+                            className="object-cover transition-transform duration-[5000ms] ease-out scale-110 group-hover:scale-100 transform-gpu will-change-transform"
                             priority
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
@@ -92,12 +103,13 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 >
                                     <div className="relative w-full aspect-square max-w-[280px]">
                                         {/* Premium Frame/Shadow for the product */}
-                                        <div className="absolute inset-4 bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl rotate-3" />
-                                        <div className="absolute inset-0 bg-white dark:bg-slate-800 rounded-2xl shadow-diffusion-2xl overflow-hidden -rotate-2 border border-white/50 dark:border-slate-700">
+                                        <div className="absolute inset-4 bg-white/20 dark:bg-white/5 rounded-3xl border border-white/20 shadow-2xl rotate-3" />
+                                        <div className="absolute inset-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden -rotate-2 border border-white/50 dark:border-slate-700">
                                             <Image 
                                                 src={firstItem.product?.primary_image || firstItem.product?.image || '/placeholder.jpg'}
                                                 alt={firstItem.product_name}
                                                 fill
+                                                sizes="280px"
                                                 className="object-cover"
                                             />
                                             {productCount > 1 && (
