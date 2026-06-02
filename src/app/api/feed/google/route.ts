@@ -5,12 +5,12 @@ import { getImageUrl } from '@/lib/image';
 const BASE_URL = 'https://londonsimports.com';
 
 // Cache Google Shopping Feed for 24 hours to reduce Vercel CPU and Neon DB usage
-export const revalidate = 86400;
+export const revalidate = 604800;
 
 export async function GET() {
   try {
     // 1. Fetch products (Max 1000 for the feed)
-    const productsData = await getProducts({ limit: '1000' });
+    const productsData = await getProducts({ limit: '1000' }, 604800);
     const products = productsData.results || [];
 
     // 2. Generate XML Header
@@ -78,7 +78,7 @@ export async function GET() {
     return new NextResponse(xml, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
+        'Cache-Control': 'public, s-maxage=604800, stale-while-revalidate=86400',
       },
     });
   } catch (error) {

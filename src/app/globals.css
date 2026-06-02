@@ -323,6 +323,16 @@ a, button, [role="button"] {
   }
 }
 
+/* Drawer slide-in animation */
+@keyframes slideInDrawer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 /* Slide in from right */
 @keyframes slideInRight {
   from {
@@ -382,6 +392,10 @@ a, button, [role="button"] {
 
 .animate-slide-left {
   animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.animate-drawer-in {
+  animation: slideInDrawer 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-right {

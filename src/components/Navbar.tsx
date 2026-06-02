@@ -8,15 +8,11 @@ import { useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 import { Search, Menu, User, ShoppingBag } from 'lucide-react';
-
-// Lazy load heavy interactive components
-
-const MobileMenuDrawer = dynamic(() => import('./MobileMenuDrawer'));
+import MobileMenuDrawer from './MobileMenuDrawer';
 
 export default function Navbar() {
     const router = useRouter();
@@ -65,7 +61,7 @@ export default function Navbar() {
                     {/* Tier 1: Logo & Actions */}
                     <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">
                         {/* Left Group: Brand & Index */}
-                        <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
+                        <div className="flex items-center gap-8 md:gap-16 shrink-0">
                             <Link href="/" className="flex items-center gap-4 group">
                                 <div className="relative w-9 h-9 md:w-11 md:h-11 border border-content-primary overflow-hidden bg-slate-50 dark:bg-slate-900">
                                     <Image
@@ -86,7 +82,11 @@ export default function Navbar() {
                             </Link>
 
                             <button
-                                onClick={() => setMobileMenuOpen(true)}
+                                onClick={() => {
+                                    startTransition(() => {
+                                        setMobileMenuOpen(true);
+                                    });
+                                }}
                                 className="hidden lg:flex items-center gap-3 group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all"
                             >
                                 <Menu className="w-4 h-4" strokeWidth={1} />
@@ -118,7 +118,7 @@ export default function Navbar() {
                                 />
                                 <button 
                                     type="submit"
-                                    className="bg-brand-emerald dark:bg-slate-800 text-white dark:text-white px-8 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-brand-accent dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700"
+                                    className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-8 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700"
                                 >
                                     Search
                                 </button>
@@ -126,7 +126,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Right Group: Personal Actions */}
-                        <div className="flex items-center gap-6 md:gap-10 flex-shrink-0">
+                        <div className="flex items-center gap-6 md:gap-10 shrink-0">
                             <div className="flex items-center gap-6 md:gap-10">
                                 <Link href={authLink} className="hidden md:flex items-center gap-3 group uppercase tracking-[0.4em] text-[10px] font-black text-content-secondary hover:text-content-primary transition-all">
                                     <User className="w-4 h-4" strokeWidth={1} />
@@ -146,7 +146,11 @@ export default function Navbar() {
                                 </Link>
 
                                 <button
-                                    onClick={() => setMobileMenuOpen(true)}
+                                    onClick={() => {
+                                        startTransition(() => {
+                                            setMobileMenuOpen(true);
+                                        });
+                                    }}
                                     className="md:hidden w-10 h-10 flex items-center justify-center text-content-primary"
                                 >
                                     <Menu className="w-6 h-6" strokeWidth={1} />
@@ -180,7 +184,7 @@ export default function Navbar() {
                             />
                             <button 
                                 type="submit"
-                                className="bg-brand-emerald dark:bg-slate-800 text-white dark:text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border border-transparent dark:border-slate-700"
+                                className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700"
                             >
                                 Search
                             </button>

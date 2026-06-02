@@ -8,10 +8,10 @@ import { notFound } from 'next/navigation';
 // ISR: Revalidate product pages every 24 hours
 export const revalidate = 86400;
 
-// Pre-render top 50 products at build time
+// Pre-render top 20 products at build time
 export async function generateStaticParams() {
     try {
-        const products = await getProducts({ limit: '50' });
+        const products = await getProducts({ limit: '20' });
         return Array.isArray(products?.results) ? products.results.map((product: { slug: string }) => ({
             slug: product.slug,
         })) : [];

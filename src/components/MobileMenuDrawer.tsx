@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
@@ -111,11 +111,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
     const drawerRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-    useLayoutEffect(() => {
-        if (drawerRef.current) {
-            drawerRef.current.style.transform = isOpen ? 'translateX(0)' : 'translateX(-100%)';
-        }
-    }, [isOpen]);
+
 
     const { data: categoriesData } = useQuery({
         queryKey: ['categories'],
@@ -155,7 +151,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 transition-opacity duration-500"
+                className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 animate-fade-in"
                 onClick={onClose}
                 aria-hidden="true"
             />
@@ -163,7 +159,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
             {/* Drawer (Solid Canvas) */}
             <div
                 ref={drawerRef}
-                className="fixed inset-y-0 left-0 w-full max-w-[340px] md:max-w-[450px] bg-surface z-[1000] flex flex-col shadow-2xl border-r border-border-standard transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                className="fixed inset-y-0 left-0 w-full max-w-[280px] sm:max-w-[320px] bg-surface z-1000 flex flex-col shadow-2xl border-r border-border-standard animate-drawer-in"
                 role="dialog"
                 aria-modal="true"
             >

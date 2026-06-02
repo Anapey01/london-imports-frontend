@@ -5,13 +5,13 @@ import { siteConfig } from '@/config/site';
 const BASE_URL = 'https://londonsimports.com';
 
 // Cache images sitemap for 24 hours to reduce Vercel CPU and Neon DB usage
-export const revalidate = 86400;
+export const revalidate = 604800;
 
 export async function GET() {
     // 1. Fetch Products
-    let products: any[] = [];
+    let products: { image: string; slug: string; name: string }[] = [];
     try {
-        const productsData = await getProductPreviews({ limit: '1000' });
+        const productsData = await getProductPreviews({ limit: '1000' }, 604800);
         products = productsData.results || [];
     } catch (e) {
         console.error("Error fetching products for image sitemap:", e);
@@ -21,7 +21,7 @@ export async function GET() {
     let blogPosts: { slug: string; title: string; featured_image?: string }[] = [];
     try {
         const blogRes = await fetch(`${siteConfig.apiUrl}/blog/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 604800 }
         });
         if (blogRes.ok) {
             const data = await blogRes.json();
@@ -74,7 +74,7 @@ export async function GET() {
     return new Response(xml, {
         headers: {
             'Content-Type': 'application/xml',
-            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200'
+            'Cache-Control': 'public, s-maxage=604800, stale-while-revalidate=86400'
         },
     });
 }

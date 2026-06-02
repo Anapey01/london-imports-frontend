@@ -181,7 +181,6 @@ export default function OrderDetailPage() {
                                                     alt={item.product_name}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    unoptimized
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-slate-300">

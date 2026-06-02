@@ -48,13 +48,13 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
     throw new Error(`Failed to fetch ${url} after ${retries} retries`);
 }
 
-export async function getProducts(params: Record<string, string> = {}) {
+export async function getProducts(params: Record<string, string> = {}, revalidate = 86400) {
     try {
         const queryString = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 86400 }, // Aligned with 24-hour page cache for maximum Vercel & Neon DB Free Tier conservation
+            next: { revalidate }, // Configurable revalidation (defaults to 24h)
         });
 
         if (!res.ok) {
@@ -91,13 +91,13 @@ export async function getProducts(params: Record<string, string> = {}) {
     }
 }
 
-export async function getProductPreviews(params: Record<string, string> = {}) {
+export async function getProductPreviews(params: Record<string, string> = {}, revalidate = 86400) {
     try {
         const queryString = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/products/preview/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 86400 },
+            next: { revalidate },
         });
 
         if (!res.ok) {
@@ -157,10 +157,10 @@ export async function getAvailableProducts(limit = 10) {
     });
 }
 
-export async function getCategories() {
+export async function getCategories(revalidate = 86400) {
     try {
         const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate }
         });
         if (!res.ok) {
             throw new Error(`Failed to fetch categories: ${res.status} ${res.statusText}`);

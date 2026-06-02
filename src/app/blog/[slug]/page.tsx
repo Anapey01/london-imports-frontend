@@ -105,7 +105,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     return (
         <article className="min-h-screen bg-white relative pb-32 selection:bg-emerald-100 font-sans">
             {/* Reading Progress Indicator (Architectural) */}
-            <div className="fixed top-0 left-0 w-full h-[1.5px] z-[60] bg-slate-50">
+            <div className="fixed top-0 left-0 w-full h-[1.5px] z-60 bg-slate-50">
                 <div id="reading-progress" className="h-full bg-slate-900 transition-all duration-300 w-0"></div>
             </div>
 
@@ -191,7 +191,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             <main className="max-w-3xl mx-auto px-6 py-24">
                 {/* Visual Anchor (Sharp Edge) */}
                 {article.featured_image && (
-                    <div className="relative w-full aspect-[2/1] overflow-hidden mb-24 border border-slate-100 grayscale hover:grayscale-0 transition-all duration-1000">
+                    <div className="relative w-full aspect-2/1 overflow-hidden mb-24 border border-slate-100 grayscale hover:grayscale-0 transition-all duration-1000">
                         <Image
                             src={getImageUrl(article.featured_image)}
                             alt={article.title}
@@ -216,7 +216,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                 </div>
 
                 {/* 3. END OF PROTOCOL (Architectural Navigation) */}
-                <div className="mt-48 pt-24 border-t border-slate-100 grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100">
+                <div className="mt-48 pt-24 grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100">
                     <div className="bg-white p-12 md:p-16 flex flex-col justify-between group">
                         <div>
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8 block">Document Footer</span>

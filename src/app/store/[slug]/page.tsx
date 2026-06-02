@@ -61,7 +61,7 @@ export default async function VendorStorePage({ params }: Props) {
                     />
                 ) : (
                     <div
-                        className="absolute inset-0 opacity-90 bg-[image:linear-gradient(135deg,var(--store-primary)_0%,#111827_100%)]"
+                        className="absolute inset-0 opacity-90 bg-[linear-gradient(135deg,var(--store-primary)_0%,#111827_100%)]"
                         aria-hidden="true"
                     />
                 )}
@@ -160,7 +160,7 @@ export default async function VendorStorePage({ params }: Props) {
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-900">Latest Products</h2>
                             {/* Use custom color for decoration */}
-                            <div className="h-1 w-20 rounded-full bg-[var(--store-primary)]" />
+                            <div className="h-1 w-20 rounded-full bg-(--store-primary)" />
                         </div>
 
                         {/* The Grid - Filtered by Vendor Slug */}

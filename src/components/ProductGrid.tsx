@@ -141,7 +141,7 @@ export default function ProductGrid({
         <div className="flex flex-col lg:flex-row gap-16 py-12">
             {/* 1. MINIMALIST SIDEBAR (Editorial Pro) */}
             {!hideFilters && (
-                <aside className="hidden lg:block w-72 flex-shrink-0 space-y-16 sticky top-32 self-start max-h-[calc(100vh-160px)] overflow-y-auto no-scrollbar pr-4">
+                <aside className="hidden lg:block w-72 shrink-0 space-y-16 sticky top-32 self-start max-h-[calc(100vh-160px)] overflow-y-auto no-scrollbar pr-4">
                     
                     {/* Search Registry Hardened for Understandability */}
                     <div className="pb-10 border-b border-border-standard group">
@@ -167,22 +167,22 @@ export default function ProductGrid({
 
                     {/* Collections - Hardened Labels */}
                     <div className="pb-10 border-b border-border-standard">
-                        <h3 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 mb-8">
+                        <h3 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 mb-8">
                             <ListFilter className="w-3 h-3" />
                             Product Categories
                         </h3>
                         <div className="space-y-4">
                             <button
                                 onClick={() => updateSearch({ category: '' })}
-                                className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${!category ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-content-secondary opacity-40 hover:opacity-100 hover:text-content-primary hover:pl-2 pl-0'}`}
+                                className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${!category ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:pl-2 pl-0'}`}
                             >
                                 All Arrivals
                             </button>
-                            {categories.map((cat: any) => (
+                            {categories.map((cat: { id: string | number; name: string; slug: string }) => (
                                 <button
                                     key={cat.id}
                                     onClick={() => updateSearch({ category: cat.slug })}
-                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${category === cat.slug ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-content-secondary opacity-40 hover:opacity-100 hover:text-content-primary hover:pl-2 pl-0'}`}
+                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${category === cat.slug ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:pl-2 pl-0'}`}
                                 >
                                     {cat.name}
                                 </button>
@@ -192,7 +192,7 @@ export default function ProductGrid({
 
                     {/* Pipeline / Status - Hardened Labels */}
                     <div className="pb-10 border-b border-border-standard">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 mb-8">Order Status</h3>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 mb-8">Order Status</h3>
                         <div className="space-y-4">
                             {[
                                 { label: 'All Items', value: '' },
@@ -203,7 +203,7 @@ export default function ProductGrid({
                                 <button
                                     key={s.value}
                                     onClick={() => updateSearch({ status: s.value })}
-                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${status === s.value ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-content-secondary opacity-40 hover:opacity-100 hover:text-content-primary hover:pl-2 pl-0'}`}
+                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${status === s.value ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:pl-2 pl-0'}`}
                                 >
                                     {s.label}
                                 </button>
@@ -213,7 +213,7 @@ export default function ProductGrid({
 
                     {/* Valuation (Price Range) - Hardened Labels & Links */}
                     <div>
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-40 mb-8">Price Range (GHS)</h3>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 mb-8">Price Range (GHS)</h3>
                         <div className="flex items-center gap-4">
                             <div className="flex-1">
                                 <label htmlFor="price-min" className="sr-only">Minimum Price</label>

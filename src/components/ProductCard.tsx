@@ -126,7 +126,6 @@ export default function ProductCard({
                             alt={`${product.name} - China Import to Ghana`}
                             fill
                             priority={priority}
-                            unoptimized={imageUrl.startsWith('http')}
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                             className="object-contain group-hover/card:scale-110 transition-transform duration-500 ease-in-out px-4 py-8"
                             onError={() => setImageError(true)}

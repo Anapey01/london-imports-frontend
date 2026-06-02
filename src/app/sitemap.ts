@@ -3,7 +3,7 @@ import { getProductPreviews, getCategories } from '@/lib/fetchers';
 import { siteConfig } from '@/config/site';
 
 // Cache sitemap for 24 hours to reduce Vercel CPU usage
-export const revalidate = 86400;
+export const revalidate = 604800;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://londonsimports.com';
@@ -13,8 +13,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let categories: any[] = [];
     try {
         const [productsData, categoriesData] = await Promise.all([
-            getProductPreviews({ limit: '1000' }),
-            getCategories()
+            getProductPreviews({ limit: '1000' }, 604800),
+            getCategories(604800)
         ]);
         products = productsData.results || [];
         categories = Array.isArray(categoriesData) ? categoriesData : [];
@@ -38,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productUrls = products.map((product: ProductSitemap) => ({
         url: `${baseUrl}/products/${product.slug}`,
         lastModified: new Date(product.updated_at || product.created_at || new Date()),
-        changeFrequency: 'daily' as const,
+        changeFrequency: 'weekly' as const,
         priority: 0.8,
     }));
 
@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
         const apiUrl = siteConfig.apiUrl.replace(/\/api\/v1$/, '');
         const blogRes = await fetch(`${apiUrl}/api/v1/blog/`, {
-            next: { revalidate: 86400 } // Revalidate every 24 hours
+            next: { revalidate: 604800 } // Revalidate every 7 days
         });
         if (blogRes.ok) {
             const data = await blogRes.json();

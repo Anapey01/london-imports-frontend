@@ -15,7 +15,7 @@ export default function ClientDbRecovery({ children }: ClientDbRecoveryProps) {
     useEffect(() => {
         // Run a fast check to see if the database is alive
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
+        const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 seconds timeout (to allow for Render cold starts)
 
         const apiUrl = siteConfig.apiUrl;
 

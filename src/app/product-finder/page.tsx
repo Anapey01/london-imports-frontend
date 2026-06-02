@@ -172,7 +172,7 @@ export default function ProductFinderPage() {
                         </div>
                         <h1 className="text-5xl md:text-8xl font-serif font-black leading-[0.9] tracking-tighter text-slate-900 mb-8 max-w-4xl">
                             The Product <br />
-                            <span className="italic font-light text-slate-400 opacity-40">Intelligence</span> Engine.
+                            <span className="italic font-light text-slate-500">Intelligence</span> Engine.
                         </h1>
                         <p className="max-w-xl text-xl text-slate-600 font-medium leading-relaxed">
                             Upload a single screenshot from TikTok, Instagram, or 1688. 
@@ -209,7 +209,7 @@ export default function ProductFinderPage() {
 
                                     {previewUrl ? (
                                         <div className="space-y-6">
-                                            <div className="relative w-full max-w-[280px] mx-auto aspect-square rounded-[2rem] overflow-hidden border-4 border-white shadow-xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+                                            <div className="relative w-full max-w-[280px] mx-auto aspect-square rounded-4xl overflow-hidden border-4 border-white shadow-xl -rotate-2 hover:rotate-0 transition-transform duration-500">
                                                 <Image src={previewUrl} alt="Product Preview" fill className="object-cover" unoptimized />
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); resetForm(); }}
@@ -231,9 +231,9 @@ export default function ProductFinderPage() {
                                                 <Camera className="w-6 h-6 text-white" strokeWidth={1.5} />
                                             </div>
                                             <div className="flex flex-col gap-2">
-                                                <h3 className="text-lg font-bold text-slate-900">Drop your reference here</h3>
-                                                <p className="text-sm text-slate-500 max-w-[240px] mx-auto">Upload a screenshot from Instagram, 1688, or TikTok.</p>
-                                            </div>
+                                                 <h2 className="text-lg font-bold text-slate-900">Drop your reference here</h2>
+                                                 <p className="text-sm text-slate-500 max-w-[240px] mx-auto">Upload a screenshot from Instagram, 1688, or TikTok.</p>
+                                             </div>
                                         </div>
                                     )}
                                 </div>
@@ -283,7 +283,7 @@ export default function ProductFinderPage() {
                                 </div>
 
                                 <div className="flex gap-8 items-start mb-12">
-                                     <div className="relative w-32 h-40 rounded-2xl overflow-hidden border border-white shadow-xl flex-shrink-0">
+                                     <div className="relative w-32 h-40 rounded-2xl overflow-hidden border border-white shadow-xl shrink-0">
                                         <Image src={result.image_url} alt="Uploaded" fill className="object-cover" unoptimized />
                                     </div>
                                     <div className="flex-1">
@@ -307,7 +307,7 @@ export default function ProductFinderPage() {
                                 </div>
 
                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-50 mb-10">
-                                    <h4 className="text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Our Global Verdict</h4>
+                                     <h3 className="text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">Our Global Verdict</h3>
                                     <p className="text-xs text-slate-600 font-medium leading-relaxed">
                                         Status: <span className="text-slate-900 font-bold ml-1">{result.status}</span>. 
                                         {result.status === 'ANALYZED' 
@@ -333,10 +333,10 @@ export default function ProductFinderPage() {
                                 { icon: ArrowRight, title: "Momo Conversion", text: "Forget USD/CNY rates. Pay entirely in Cedis via Mobile Money at fixed rates." }
                             ].map((item, i) => (
                                 <div key={i} className="flex flex-col gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
-                                        <item.icon className="w-4 h-4 text-emerald-600" />
-                                    </div>
-                                    <h4 className="font-bold text-slate-900 tracking-tight underline decoration-emerald-100 decoration-4 underline-offset-4">{item.title}</h4>
+                                     <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                                         <item.icon className="w-4 h-4 text-emerald-600" />
+                                     </div>
+                                     <h2 className="font-bold text-slate-900 tracking-tight underline decoration-emerald-100 decoration-4 underline-offset-4">{item.title}</h2>
                                     <p className="text-xs text-slate-500 font-medium leading-relaxed">{item.text}</p>
                                 </div>
                             ))}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { Order } from '@/types';
@@ -15,6 +15,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
     const [filter, setFilter] = useState('ALL');
     const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [, startTransition] = useTransition();
 
     const filteredOrders = filter === 'ALL'
         ? orders
@@ -76,7 +77,11 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                     {['ALL', 'PENDING', 'COMPLETED'].map(status => (
                         <button
                             key={status}
-                            onClick={() => setFilter(status)}
+                            onClick={() => {
+                                startTransition(() => {
+                                    setFilter(status);
+                                });
+                            }}
                             className={`text-[9px] font-mono font-bold uppercase tracking-[0.3em] transition-all relative ${filter === status
                                 ? 'text-slate-900'
                                 : 'text-slate-400 hover:text-slate-600'
@@ -84,7 +89,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                         >
                             {status === 'ALL' ? 'All Orders' : status}
                             {filter === status && (
-                                <motion.div layoutId="filter-pill" className="absolute -bottom-1.5 left-0 right-0 h-[1px] bg-slate-900 rounded-full" />
+                                <div className="absolute -bottom-1.5 left-0 right-0 h-px bg-slate-900 dark:bg-white rounded-full animate-fade-in" />
                             )}
                         </button>
                     ))}
@@ -136,7 +141,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                     {/* Asset Summary Node - The Content Area */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-start gap-6 mb-8">
-                                            <div className="h-20 w-16 relative rounded-sm border border-slate-100 overflow-hidden bg-slate-50 flex-shrink-0">
+                                            <div className="h-20 w-16 relative rounded-sm border border-slate-100 overflow-hidden bg-slate-50 shrink-0">
                                                 {order.items?.[0]?.product.image ? (
                                                     <NextImage
                                                         src={getImageUrl(order.items[0].product.image)}
@@ -240,7 +245,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
             {/* Cancellation Modal */}
             <AnimatePresence>
                 {cancellingOrder && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
