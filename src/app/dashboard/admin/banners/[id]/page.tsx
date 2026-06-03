@@ -100,8 +100,9 @@ export default function EditBannerPage() {
                 cloudinaryData.append('file', imageFile);
                 cloudinaryData.append('upload_preset', 'londons_imports');
 
+                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
                 const uploadRes = await fetch(
-                    `https://api.cloudinary.com/v1_1/onrender/image/upload`,
+                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
                     { method: 'POST', body: cloudinaryData }
                 );
                 
