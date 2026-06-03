@@ -64,7 +64,8 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
         },
         items_count: (order.items_count as number) || itemsSummary.length || 0,
         total_amount: Number(order.total || 0),
-        status: (order.state as string) || (order.status as string) || 'PENDING',
+        status: (order.status as string) || (order.state as string) || 'PENDING',
+        state: (order.state as string) || (order.status as string) || 'PENDING',
         payment_status: Number(order.balance_due || 0) <= 0 ? 'PAID' : (Number(order.amount_paid || 0) > 0 ? 'PARTIAL' : 'PENDING'),
         amount_paid: Number(order.amount_paid || 0),
         balance_due: Number(order.balance_due || 0),
@@ -136,7 +137,11 @@ export default function AdminOrdersPage() {
             let ordersArray: Record<string, unknown>[] = [];
             if (data) {
                 if (data.counts) {
-                    setApiCounts(data.counts);
+                    const mappedCounts = { ...data.counts };
+                    if ('LOGISTICS' in mappedCounts) {
+                        mappedCounts.SHIPPING = mappedCounts.LOGISTICS;
+                    }
+                    setApiCounts(mappedCounts);
                 }
                 
                 if (Array.isArray(data.results)) {
@@ -347,12 +352,15 @@ export default function AdminOrdersPage() {
         
         return {
             All: orders.length,
-            PENDING: orders.filter(o => o.status === 'PENDING' || o.payment_status === 'PARTIAL').length,
-            NEW_ORDERS: orders.filter(o => o.status === 'PAID' && o.payment_status === 'PAID').length,
-            WAREHOUSE: orders.filter(o => ['OPEN_FOR_BATCH', 'IN_FULFILLMENT'].includes(o.status)).length,
-            SHIPPING: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.status)).length,
-            COMPLETED: orders.filter(o => o.status === 'DELIVERED').length,
-            CANCELLED: orders.filter(o => o.status === 'CANCELLED').length,
+            PENDING: orders.filter(o => 
+                ['DRAFT', 'PENDING_PAYMENT', 'FRAUD_REVIEW'].includes(o.state || '') || 
+                (o.payment_status === 'PARTIAL' && ['PAID', 'OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state || ''))
+            ).length,
+            NEW_ORDERS: orders.filter(o => o.state === 'PAID' && o.payment_status === 'PAID').length,
+            WAREHOUSE: orders.filter(o => ['OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state || '') && o.payment_status === 'PAID').length,
+            SHIPPING: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.state || '')).length,
+            COMPLETED: orders.filter(o => o.state === 'DELIVERED').length,
+            CANCELLED: orders.filter(o => ['FAILED', 'CANCELLED', 'REFUNDED', 'ABANDONED'].includes(o.state || '')).length,
         };
     }, [orders, apiCounts]);
 

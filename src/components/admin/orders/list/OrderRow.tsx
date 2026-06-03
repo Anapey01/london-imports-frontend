@@ -15,6 +15,7 @@ interface Order {
     items_count: number;
     total_amount: number;
     status: string;
+    state?: string;
     payment_status: string;
     amount_paid: number;
     balance_due: number;
