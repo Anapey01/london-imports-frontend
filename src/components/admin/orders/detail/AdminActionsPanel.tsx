@@ -1,7 +1,6 @@
-import { Terminal, MessageCircle, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 
 interface AdminActionsPanelProps {
-    whatsappUrl: string | null;
     updating: boolean;
     manualReference: string;
     setManualReference: (ref: string) => void;
@@ -13,7 +12,6 @@ interface AdminActionsPanelProps {
 }
 
 export function AdminActionsPanel({
-    whatsappUrl,
     updating,
     manualReference,
     setManualReference,
@@ -31,12 +29,7 @@ export function AdminActionsPanel({
             </div>
             
             <div className="p-8 space-y-4">
-                {whatsappUrl && (
-                    <a href={whatsappUrl} target="_blank" rel="noreferrer" className="w-full flex items-center justify-between p-6 bg-[#25D366] text-white font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
-                        WhatsApp Customer
-                        <MessageCircle className="w-5 h-5" />
-                    </a>
-                )}
+                
                 
                 <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
                     <button 

@@ -16,6 +16,7 @@ import { CustomerIntelligenceCard } from '@/components/admin/orders/detail/Custo
 import { OrderItemsList } from '@/components/admin/orders/detail/OrderItemsList';
 import { DeliveryAddressManager } from '@/components/admin/orders/detail/DeliveryAddressManager';
 import { AdminActionsPanel } from '@/components/admin/orders/detail/AdminActionsPanel';
+import { WhatsAppConcierge } from '@/components/admin/orders/detail/WhatsAppConcierge';
 import { ActivityLog } from '@/components/admin/orders/detail/ActivityLog';
 import { TransferPaymentModal } from '@/components/admin/orders/detail/TransferPaymentModal';
 
@@ -217,13 +218,7 @@ export default function AdminOrderDetailPage() {
 
     if (!order) return null;
 
-    const whatsappUrl = (() => {
-        if (!order.phone) return null;
-        let cleanPhone = order.phone.replace(/\D/g, '');
-        if (cleanPhone.startsWith('0')) cleanPhone = '233' + cleanPhone.substring(1);
-        else if (cleanPhone.length === 9) cleanPhone = '233' + cleanPhone;
-        return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hi ${order.customer}, regarding order #${order.order_number} from London's Imports:`)}`;
-    })();
+
 
     return (
         <div className={`min-h-screen pb-32 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FAFAFA] text-slate-900'}`}>
@@ -310,8 +305,9 @@ export default function AdminOrderDetailPage() {
                             isDark={isDark} 
                         />
 
+                        <WhatsAppConcierge order={order} isDark={isDark} />
+
                         <AdminActionsPanel
-                            whatsappUrl={whatsappUrl}
                             updating={updating}
                             manualReference={manualReference}
                             setManualReference={setManualReference}
