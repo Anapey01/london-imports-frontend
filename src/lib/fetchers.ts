@@ -48,13 +48,13 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
     throw new Error(`Failed to fetch ${url} after ${retries} retries`);
 }
 
-export async function getProducts(params: Record<string, string> = {}, revalidate = 86400) {
+export async function getProducts(params: Record<string, string> = {}, revalidate = 900) {
     try {
         const queryString = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
-            next: { revalidate }, // Configurable revalidation (defaults to 24h)
+            next: { revalidate }, // Configurable revalidation (defaults to 15m)
         });
 
         if (!res.ok) {
@@ -91,7 +91,7 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
     }
 }
 
-export async function getProductPreviews(params: Record<string, string> = {}, revalidate = 86400) {
+export async function getProductPreviews(params: Record<string, string> = {}, revalidate = 900) {
     try {
         const queryString = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/products/preview/?${queryString}`;
