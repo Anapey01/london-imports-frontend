@@ -164,7 +164,14 @@ export default function AdminOrdersPage() {
         }
     }, [currentPage, statusFilter, searchQuery]);
 
-    useEffect(() => { loadOrders(); }, [loadOrders]);
+    useEffect(() => {
+        loadOrders();
+        
+        // Auto-refresh when switching back from Django Admin tab
+        const handleFocus = () => loadOrders();
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [loadOrders]);
     
     const loadOrdersRef = React.useRef(loadOrders);
     useEffect(() => {
