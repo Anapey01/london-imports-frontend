@@ -7,7 +7,7 @@ import { Product } from '../../types';
 import { Product as CartProduct } from '@/stores/cartStore';
 
 // ISR: Revalidate marketplace page every 24 hours (Vercel free tier limit)
-export const revalidate = 86400;
+export const revalidate = 604800; // 7 days
 
 export const metadata = {
     title: 'Marketplace | London\'s Imports',

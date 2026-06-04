@@ -5,7 +5,7 @@ import ShopHeader from '@/components/ShopHeader';
 import { Metadata } from 'next';
 
 // ISR: Revalidate every 10 seconds during restructuring
-export const revalidate = 86400; // 24 hours
+export const revalidate = 604800; // 7 days
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>

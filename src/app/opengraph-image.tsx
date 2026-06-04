@@ -4,6 +4,7 @@ import { ImageResponse } from 'next/og';
 import { siteConfig } from '@/config/site';
 
 export const runtime = 'edge';
+export const revalidate = 604800; // 7 days — cache homepage OG image
 
 // Image metadata
 export const alt = 'London\'s Imports - Mini Importation Ghana';

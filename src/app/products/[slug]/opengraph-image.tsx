@@ -13,6 +13,7 @@ import React, { CSSProperties } from 'react';
  */
 
 export const runtime = 'edge';
+export const revalidate = 604800; // 7 days — prevents fresh render on every bot crawl
 export const contentType = 'image/png';
 export const size = { width: 1200, height: 630 };
 

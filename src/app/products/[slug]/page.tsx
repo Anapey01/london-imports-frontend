@@ -6,12 +6,12 @@ import { siteConfig } from '@/config/site';
 import { notFound } from 'next/navigation';
 
 // ISR: Revalidate product pages every 24 hours
-export const revalidate = 86400;
+export const revalidate = 604800; // 7 days — reduce ISR CPU usage
 
 // Pre-render top 20 products at build time
 export async function generateStaticParams() {
     try {
-        const products = await getProducts({ limit: '20' });
+        const products = await getProducts({ limit: '200' });
         return Array.isArray(products?.results) ? products.results.map((product: { slug: string }) => ({
             slug: product.slug,
         })) : [];

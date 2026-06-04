@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Package } from 'lucide-react';
 
 // ISR: Revalidate category pages every 24 hours
-export const revalidate = 86400;
+export const revalidate = 604800; // 7 days
 
 export async function generateStaticParams() {
     try {

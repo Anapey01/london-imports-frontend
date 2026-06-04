@@ -6,7 +6,7 @@ import ProductGrid from '@/components/ProductGrid';
 import { MapPin, ShieldCheck, Truck } from 'lucide-react';
 
 // ISR: Revalidate every 10 seconds during restructuring
-export const revalidate = 86400; // 24 hours
+export const revalidate = 604800; // 7 days
 
 interface Props {
     params: Promise<{
