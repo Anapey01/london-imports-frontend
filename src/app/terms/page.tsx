@@ -1,6 +1,9 @@
 import React from 'react';
 import { Metadata } from 'next';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
     title: 'Terms & Conditions | London\'s Imports',
     description: 'Terms and conditions for using London\'s Imports services.',

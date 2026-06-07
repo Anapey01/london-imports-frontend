@@ -9,6 +9,9 @@ import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getImageUrl } from '@/lib/image';
 
+// ISR: Revalidate blog listing every 24 hours
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
     title: 'Shopping & Scaling | Business Journal',
     description: 'Guides, tips, and insights on importing from China to Ghana. Comprehensive strategy for international shopping.',

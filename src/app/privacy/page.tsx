@@ -1,6 +1,9 @@
 import React from 'react';
 import { siteConfig } from '@/config/site';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata = {
     title: 'Privacy Policy | London\'s Imports',
     description: 'Privacy policy explaining how London\'s Imports collects, uses, and protects your personal information.',

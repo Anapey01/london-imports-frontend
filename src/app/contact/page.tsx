@@ -1,6 +1,9 @@
 import ContactPageContent from './ContactPageContent';
 import { Metadata } from 'next';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
     title: 'Support Center | London\'s Imports Ghana',
     description: 'Get in touch with London\'s Imports for logistics, sourcing, and wholesale inquiries. Our team in Accra and Guangzhou is ready to assist you.',

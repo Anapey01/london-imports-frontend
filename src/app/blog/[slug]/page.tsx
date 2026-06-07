@@ -11,6 +11,9 @@ import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
 import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
 
+// ISR: Revalidate blog articles every 24 hours
+export const revalidate = 86400;
+
 interface BlogPost {
     id: number;
     title: string;

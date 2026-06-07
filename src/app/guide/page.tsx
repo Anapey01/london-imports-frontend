@@ -6,6 +6,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { BookOpen, Search, ArrowRight, Wallet, TrendingUp, Package } from 'lucide-react';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
     title: "How to Start Mini-Importation in Ghana 2026 | Ultimate Beginner's Guide",
     description: "Learn how to import goods from China (1688, Alibaba) to Ghana. Step-by-step guide on sourcing, paying with Momo, and consolidated shipping. Start your profitable business today.",

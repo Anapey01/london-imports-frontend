@@ -3,6 +3,9 @@ import CustomsCalculator from '@/components/CustomsCalculator';
 import Link from 'next/link';
 import { ShieldCheck, Scale, AlertCircle, ArrowUpRight, Zap } from 'lucide-react';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
     title: 'Ghana Customs Duty Estimator 2026 | Calculate Import Taxes',
     description: 'Free tool to calculate Import Duty, VAT, and Levies for goods shipping to Ghana. Estimate your clearing costs at Tema/Kotoka or use ours services to save.',

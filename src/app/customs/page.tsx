@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { ShieldCheck, Scale, FileText, AlertTriangle, Calculator, ArrowUpRight } from 'lucide-react';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
     title: "Ghana Customs Clearance Services | Import Duties Simplified | London's Imports",
     description: "Navigate Ghana Customs (GRA) with ease. We handle all import duties, VAT, and levies for your China imports. Transparent, flat-rate shipping to Accra & Tema. No hidden port fees.",

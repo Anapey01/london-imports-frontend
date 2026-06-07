@@ -3,6 +3,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Truck, Plane, Ship, Package, ShieldCheck, MapPin, ArrowUpRight } from 'lucide-react';
 
+// ISR: Revalidate static info page every 7 days
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
     title: "China to Ghana Shipping Services | Air & Sea Freight | London's Imports",
     description: "Reliable shipping from China (1688, Alibaba) to Accra, Kumasi, and Tema. Affordable air freight (7-14 days) and sea freight (45 days). We handle consolidation and door-to-door delivery.",

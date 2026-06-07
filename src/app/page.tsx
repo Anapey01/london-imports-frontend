@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 
+// ISR: Revalidate homepage every 24 hours
+export const revalidate = 86400;
+
 import HeroSection from '@/components/home/HeroSection';
 import ProductGridSection from '@/components/home/ProductGridSection';
 import { Metadata } from 'next';
