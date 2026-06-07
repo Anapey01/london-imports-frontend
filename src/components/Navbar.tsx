@@ -152,6 +152,7 @@ export default function Navbar() {
                                         });
                                     }}
                                     className="md:hidden w-10 h-10 flex items-center justify-center text-content-primary"
+                                    aria-label="Open Mobile Menu"
                                 >
                                     <Menu className="w-6 h-6" strokeWidth={1} />
                                 </button>

@@ -25,14 +25,14 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-source-serif",
-  preload: false, // Prevents efficiency warnings; browser loads it when CSS is parsed
+  preload: true,
 });
 
 const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-montserrat",
-  preload: false, // Avoid preloading warnings if not used in first paint
+  preload: true,
 });
 
 export const metadata: Metadata = {
