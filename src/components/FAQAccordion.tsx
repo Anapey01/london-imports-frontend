@@ -69,7 +69,7 @@ export default function FAQAccordion() {
                     <div
                         className={`overflow-hidden transition-all duration-200 ${openIndex === index ? 'max-h-48' : 'max-h-0'}`}
                     >
-                        <p className="px-6 pb-4 nuclear-text opacity-40 font-bold leading-relaxed">
+                        <p className="px-6 pb-4 text-content-secondary font-bold leading-relaxed">
                             {faq.answer}
                         </p>
                     </div>

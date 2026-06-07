@@ -124,7 +124,7 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                                 className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-content-primary placeholder:text-content-secondary/40 py-3"
                             />
                             {query && (
-                                <button type="button" onClick={() => setQuery('')} className="p-2 text-content-secondary hover:text-content-primary mr-2">
+                                <button type="button" onClick={() => setQuery('')} className="p-2 text-content-secondary hover:text-content-primary mr-2" aria-label="Clear Search Input">
                                     <X className="w-5 h-5" />
                                 </button>
                             )}

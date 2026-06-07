@@ -28,7 +28,7 @@
   --bg-secondary: #faf9f6; /* Off-white stationery feel */
   --bg-card: #ffffff;
   --text-primary: #1e293b; /* Slate 900 for Light Mode */
-  --text-secondary: #64748b;
+  --text-secondary: #475569;
   --text-muted: #94a3b8;
   --border-color: #f1f5f9;
   --accent-primary: #000000;
@@ -619,4 +619,22 @@ input:-webkit-autofill:active {
 .dark input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px var(--bg-primary) inset !important;
   -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+/* Elite Page Entrance Keyframes */
+@keyframes eliteEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-elite-entrance {
+  animation: eliteEntrance 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  will-change: transform, opacity;
+  opacity: 0;
 }

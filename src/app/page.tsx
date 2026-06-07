@@ -57,10 +57,8 @@ export default function HomePage() {
       {/* WhatsApp Floating Button - Homepage Only */}
       <WhatsAppButton />
 
-      {/* 1. Hero Carousel (Landing visuals) - STREAMED with Skeleton */}
-      <Suspense fallback={<div className="h-[400px] sm:h-[600px] bg-surface-card animate-pulse" />}>
-        <HeroSection />
-      </Suspense>
+      {/* 1. Hero Carousel (Landing visuals) */}
+      <HeroSection />
 
       {/* 2. SALES FIRST: Immediate Product Feed (Amazon-style grid) - STREAMED with Skeleton */}
       <Suspense fallback={<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 h-96 bg-surface-card animate-pulse" />}>

@@ -1,24 +1,17 @@
-'use client';
-
-import { motion } from 'framer-motion';
+import React from 'react';
 
 /**
  * 🎭 Global Page Transition Template
  * Next.js 'template.tsx' re-mounts on every navigation, 
  * making it the perfect place for entrance animations.
+ * 
+ * Optimized: Uses high-performance CSS animations in globals.css 
+ * to prevent loading client-side JavaScript (framer-motion).
  */
 export default function Template({ children }: { children: React.ReactNode }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1], // Custom "Elite" ease-out
-                delay: 0.05
-            }}
-        >
+        <div className="animate-elite-entrance">
             {children}
-        </motion.div>
+        </div>
     );
 }

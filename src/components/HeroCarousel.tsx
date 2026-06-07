@@ -67,10 +67,8 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
         }
 
         // Fallback to Products if no banners exist - SHUFFLED DYNAMIC POOL
-        // Using a simple shuffle to ensure "all the product" eventually gets hero exposure
-        const shuffled = [...initialProducts].sort(() => 0.5 - Math.random());
-        
-        return shuffled.slice(0, 7).map((product, idx) => ({
+        // Already shuffled and sliced on the server
+        return initialProducts.map((product, idx) => ({
             id: product.id,
             title: product.display_name || product.short_name || product.name,
             subtitle: product.category_name || "New Arrival / Top Quality",

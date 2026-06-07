@@ -57,7 +57,7 @@ export default function HomeSEOHeader() {
                         <div className="flex flex-col gap-3 max-w-[140px]">
                             <Compass className="w-5 h-5 text-brand-emerald/40" strokeWidth={1} />
                             <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-1">Factory Direct</h4>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-1">Factory Direct</h3>
                                 <p className="text-[10px] text-content-secondary leading-tight">Direct WeChat Pay integration.</p>
                             </div>
                         </div>
@@ -66,7 +66,7 @@ export default function HomeSEOHeader() {
                         <div className="flex flex-col gap-3 max-w-[140px]">
                             <Ship className="w-5 h-5 text-brand-emerald/40" strokeWidth={1} strokeLinecap="round" />
                             <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-1">Weekly Shipments</h4>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-1">Weekly Shipments</h3>
                                 <p className="text-[10px] text-content-secondary leading-tight">Combined China air shipping.</p>
                             </div>
                         </div>
@@ -75,7 +75,7 @@ export default function HomeSEOHeader() {
                         <div className="flex flex-col gap-3 max-w-[140px]">
                             <Globe className="w-5 h-5 text-brand-emerald/40" strokeWidth={1} />
                             <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-1">Ghana Cleared</h4>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-1">Ghana Cleared</h3>
                                 <p className="text-[10px] text-content-secondary leading-tight">Airport clearing.</p>
                             </div>
                         </div>

@@ -177,7 +177,7 @@ export default function ProductCard({
                 <div>
                      {!hideProgress && (
                          <div className="flex items-start justify-between gap-4 mb-2">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-500">Premium Import</span>
+                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-800 dark:text-emerald-400">Premium Import</span>
                             <ArrowUpRight className="w-3 h-3 text-content-secondary group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
                          </div>
                      )}

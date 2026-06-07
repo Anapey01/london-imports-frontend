@@ -56,7 +56,7 @@ export default function CookieBanner() {
                                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                                     Privacy Preferences
                                 </p>
-                                <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                                <p className="text-[11px] font-medium leading-relaxed text-slate-600 dark:text-slate-400 uppercase tracking-widest">
                                     We use cookies to personalize your shopping journey and ensure the platform runs smoothly. Acknowledge our use of cookies to proceed.
                                 </p>
                             </div>
@@ -65,7 +65,7 @@ export default function CookieBanner() {
                         <div className="flex flex-col sm:flex-row items-center gap-6 w-full">
                             <button
                                 onClick={() => setShowSettings(true)}
-                                className="w-full sm:w-auto text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-950 dark:hover:text-white flex items-center gap-2 group transition-colors"
+                                className="w-full sm:w-auto text-[9px] font-black uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white flex items-center gap-2 group transition-colors"
                             >
                                 <Settings className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" strokeWidth={1} />
                                 Manage Settings
@@ -73,7 +73,7 @@ export default function CookieBanner() {
                             <div className="flex flex-col sm:flex-row gap-4 w-full sm:ml-auto">
                                 <Link 
                                     href="/privacy" 
-                                    className="hidden sm:inline-flex text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-950 dark:hover:text-white items-center h-12"
+                                    className="hidden sm:inline-flex text-[9px] font-black uppercase tracking-[0.2em] text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white items-center h-12"
                                 >
                                     Privacy Policy
                                 </Link>
@@ -95,7 +95,7 @@ export default function CookieBanner() {
                             </p>
                             <button 
                                 onClick={() => setShowSettings(false)} 
-                                className="text-slate-400 hover:text-slate-950 dark:hover:text-white"
+                                className="text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white"
                                 aria-label="Close Settings"
                             >
                                 <X className="w-5 h-5" strokeWidth={1} />
@@ -103,11 +103,11 @@ export default function CookieBanner() {
                         </div>
 
                         <div className="space-y-6">
-                            {/* Essential */}
+                             {/* Essential */}
                             <div className="flex justify-between items-center group">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Essential Cookies</p>
-                                    <p className="text-[9px] font-medium uppercase tracking-widest text-slate-400">Required for cart & login stability.</p>
+                                    <p className="text-[9px] font-medium uppercase tracking-widest text-slate-600 dark:text-slate-400">Required for cart & login stability.</p>
                                 </div>
                                 <div className="w-10 h-10 border border-slate-950 dark:border-white flex items-center justify-center opacity-50 cursor-not-allowed">
                                     <Check className="w-4 h-4 text-slate-950 dark:text-white" />
@@ -118,7 +118,7 @@ export default function CookieBanner() {
                             <div className="flex justify-between items-center group">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Performance Tools</p>
-                                    <p className="text-[9px] font-medium uppercase tracking-widest text-slate-400">Helps us improve your page experience.</p>
+                                    <p className="text-[9px] font-medium uppercase tracking-widest text-slate-600 dark:text-slate-400">Helps us improve your page experience.</p>
                                 </div>
                                 <button 
                                     onClick={() => toggle('analytics')}
@@ -133,7 +133,7 @@ export default function CookieBanner() {
                             <div className="flex justify-between items-center group">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Shopping Alerts</p>
-                                    <p className="text-[9px] font-medium uppercase tracking-widest text-slate-400">Personalized deals & trend tracking.</p>
+                                    <p className="text-[9px] font-medium uppercase tracking-widest text-slate-600 dark:text-slate-400">Personalized deals & trend tracking.</p>
                                 </div>
                                 <button 
                                     onClick={() => toggle('marketing')}
@@ -148,7 +148,7 @@ export default function CookieBanner() {
                         <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-900">
                              <button
                                 onClick={() => setShowSettings(false)}
-                                className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors"
+                                className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors"
                             >
                                 Back
                             </button>

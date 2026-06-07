@@ -173,13 +173,13 @@ export default function CategoryCards() {
                                 </div>
 
                                 <div className="mt-4 flex justify-between items-center">
-                                    <Link href={card.ctaLink} className="text-sm font-medium text-green-700 hover:text-slate-950 hover:underline transition-colors">
+                                    <Link href={card.ctaLink} className="text-sm font-medium text-brand-emerald hover:text-slate-950 hover:underline transition-colors">
                                         {card.ctaText}
                                     </Link>
                                     {/* Conversion Trigger */}
                                     <Link
                                         href="/register"
-                                        className="text-xs font-bold text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-700 transition-all shadow-sm active:scale-95"
+                                        className="text-xs font-bold text-white bg-brand-emerald px-4 py-2 rounded-full hover:bg-emerald-700 transition-all shadow-sm active:scale-95"
                                     >
                                         Sign Up
                                     </Link>

@@ -49,7 +49,7 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-slate-400 hover:text-green-600 transition-all border border-slate-100 rounded-lg hover:border-green-100 hover:bg-green-50/30"
+                className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-slate-700 dark:text-slate-300 transition-all border border-slate-200 dark:border-slate-800 hover:border-green-100 hover:bg-green-50/30 hover:text-green-600"
                 aria-label="Share on WhatsApp"
             >
                 <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.2} />
@@ -57,7 +57,7 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
 
             <button
                 onClick={handleShare}
-                className="h-9 sm:h-11 flex items-center gap-2 px-3 sm:pr-5 sm:pl-4 text-[9px] uppercase tracking-[0.3em] font-semibold text-slate-400 border border-slate-100 rounded-lg hover:border-slate-200 hover:text-slate-900 transition-all font-sans whitespace-nowrap"
+                className="h-9 sm:h-11 flex items-center gap-2 px-3 sm:pr-5 sm:pl-4 text-[9px] uppercase tracking-[0.3em] font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-900 transition-all font-sans whitespace-nowrap"
             >
                 {copied ? (
                     <>
