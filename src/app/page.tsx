@@ -7,7 +7,6 @@ export const revalidate = 86400;
 import HeroSection from '@/components/home/HeroSection';
 import ProductGridSection from '@/components/home/ProductGridSection';
 import { Metadata } from 'next';
-import ClientDbRecovery from '@/components/home/ClientDbRecovery';
 
 export const metadata: Metadata = {
   title: "London's Imports | China to Ghana Shopping & Shipping Center",
@@ -54,36 +53,34 @@ import HomeSEOHeader from '@/components/home/HomeSEOHeader';
  */
 export default function HomePage() {
   return (
-    <ClientDbRecovery>
-      <div className="min-h-screen bg-surface pb-20 transition-colors duration-500">
-        {/* WhatsApp Floating Button - Homepage Only */}
-        <WhatsAppButton />
+    <div className="min-h-screen bg-surface pb-20 transition-colors duration-500">
+      {/* WhatsApp Floating Button - Homepage Only */}
+      <WhatsAppButton />
 
-        {/* 1. Hero Carousel (Landing visuals) - STREAMED with Skeleton */}
-        <Suspense fallback={<div className="h-[400px] sm:h-[600px] bg-surface-card animate-pulse" />}>
-          <HeroSection />
-        </Suspense>
+      {/* 1. Hero Carousel (Landing visuals) - STREAMED with Skeleton */}
+      <Suspense fallback={<div className="h-[400px] sm:h-[600px] bg-surface-card animate-pulse" />}>
+        <HeroSection />
+      </Suspense>
 
-        {/* 2. SALES FIRST: Immediate Product Feed (Amazon-style grid) - STREAMED with Skeleton */}
-        <Suspense fallback={<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 h-96 bg-surface-card animate-pulse" />}>
-          <ProductGridSection />
-        </Suspense>
+      {/* 2. SALES FIRST: Immediate Product Feed (Amazon-style grid) - STREAMED with Skeleton */}
+      <Suspense fallback={<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 h-96 bg-surface-card animate-pulse" />}>
+        <ProductGridSection />
+      </Suspense>
 
-        {/* 3. Featured Horizontal Carousel (Urgency Protocol) */}
-        <Suspense fallback={<div className="h-64 bg-surface-card animate-pulse rounded-lg mx-4" />}>
-          <FeaturedSection />
-        </Suspense>
+      {/* 3. Featured Horizontal Carousel (Urgency Protocol) */}
+      <Suspense fallback={<div className="h-64 bg-surface-card animate-pulse rounded-lg mx-4" />}>
+        <FeaturedSection />
+      </Suspense>
 
-        {/* 4. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
-        <HomeSEOHeader />
+      {/* 4. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
+      <HomeSEOHeader />
 
-        {/* 5. Deep Keyword SEO Accordion (Crawler Data Archive) */}
-        <SEOAccordion />
-        
-        {/* Search Engine Optimization: Structured Data */}
-        <FaqSchema />
-      </div>
-    </ClientDbRecovery>
+      {/* 5. Deep Keyword SEO Accordion (Crawler Data Archive) */}
+      <SEOAccordion />
+      
+      {/* Search Engine Optimization: Structured Data */}
+      <FaqSchema />
+    </div>
   );
 }
 
