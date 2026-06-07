@@ -43,6 +43,9 @@ const statusLabel = (s: string) => {
         case 'NEW_ORDERS': return 'New Orders';
         case 'WAREHOUSE': return 'Processing';
         case 'SHIPPING': return 'Shipping';
+        case 'IN_TRANSIT': return 'Shipping';
+        case 'ARRIVED': return 'Arrived';
+        case 'OUT_FOR_DELIVERY': return 'Out for Delivery';
         case 'COMPLETED': return 'Completed';
         case 'CANCELLED': return 'Cancelled';
         default: return s;
@@ -135,6 +138,30 @@ const OrderRow = React.memo(({
                                 className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
                             >
                                 SHIP
+                            </button>
+                        )}
+                        {order.status === 'IN_TRANSIT' && (
+                            <button 
+                                onClick={() => handleQuickUpdate(order.id, 'ARRIVED', 'Mark as Arrived in Ghana')}
+                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                            >
+                                ARRIVE
+                            </button>
+                        )}
+                        {order.status === 'ARRIVED' && (
+                            <button 
+                                onClick={() => handleQuickUpdate(order.id, 'OUT_FOR_DELIVERY', 'Ready for Delivery')}
+                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                            >
+                                DISPATCH
+                            </button>
+                        )}
+                        {order.status === 'OUT_FOR_DELIVERY' && (
+                            <button 
+                                onClick={() => handleQuickUpdate(order.id, 'DELIVERED', 'Deliver Order')}
+                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                            >
+                                DELIVER
                             </button>
                         )}
                         <Link

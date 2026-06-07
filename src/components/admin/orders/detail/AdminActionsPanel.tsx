@@ -83,6 +83,10 @@ export function AdminActionsPanel({
                             Mark as Arrived
                             <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
                         </button>
+                        <button onClick={() => handleUpdateStatus('OUT_FOR_DELIVERY')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
+                            Mark as Out for Delivery
+                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
+                        </button>
                         <button onClick={() => handleUpdateStatus('DELIVERED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
                             Mark as Delivered
                             <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />

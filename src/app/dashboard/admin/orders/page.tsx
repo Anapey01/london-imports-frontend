@@ -27,6 +27,9 @@ const statusLabel = (s: string) => {
         case 'NEW_ORDERS': return 'New Orders';
         case 'WAREHOUSE': return 'Processing';
         case 'SHIPPING': return 'Shipping';
+        case 'IN_TRANSIT': return 'Shipping';
+        case 'ARRIVED': return 'Arrived';
+        case 'OUT_FOR_DELIVERY': return 'Out for Delivery';
         case 'COMPLETED': return 'Completed';
         case 'CANCELLED': return 'Cancelled';
         default: return s;
@@ -127,7 +130,7 @@ export default function AdminOrdersPage() {
                 search: searchQuery || undefined
             };
             if (statusFilter !== 'All' && statusFilter !== 'ALL') {
-                params.status = statusFilter;
+                params.status = statusFilter === 'SHIPPING' ? 'LOGISTICS' : statusFilter;
             }
             
             const response = await adminAPI.orders(params);
@@ -295,9 +298,10 @@ export default function AdminOrdersPage() {
                     }));
                     setSelectedIds(new Set());
                     addAlert(`Successfully updated ${ids.length} orders to ${label}`);
-                } catch (err) {
+                } catch (err: any) {
                     console.error(err);
-                    addAlert('Some orders failed to update. Please refresh and try again.', 'error');
+                    const message = err.response?.data?.error || err.response?.data?.detail || 'Some orders failed to update. Please refresh and try again.';
+                    addAlert(message, 'error');
                 } finally {
                     setBulkUpdating(false);
                     setBulkProgress(0);
@@ -344,9 +348,10 @@ export default function AdminOrdersPage() {
                     await adminAPI.updateOrder(orderId, { state: newState });
                     addAlert(`Status updated to ${label}`);
                     await loadOrdersRef.current();
-                } catch (err) {
+                } catch (err: any) {
                     console.error(err);
-                    addAlert('Update failed', 'error');
+                    const message = err.response?.data?.error || err.response?.data?.detail || 'Update failed';
+                    addAlert(message, 'error');
                 } finally {
                     setLoading(false);
                 }

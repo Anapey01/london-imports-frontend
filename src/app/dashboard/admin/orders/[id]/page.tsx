@@ -102,8 +102,9 @@ export default function AdminOrderDetailPage() {
                     await adminAPI.updateOrder(orderId, { status: newStatus });
                     addAlert(`Status updated: ${newStatus.replace(/_/g, ' ')}`);
                     await loadOrder(); 
-                } catch {
-                    addAlert('Authorization failed', 'error');
+                } catch (error: any) {
+                    const message = error.response?.data?.error || error.response?.data?.detail || 'Authorization failed';
+                    addAlert(message, 'error');
                 } finally {
                     setUpdating(false);
                 }
@@ -129,8 +130,9 @@ export default function AdminOrderDetailPage() {
                     });
                     addAlert('Manual credit override successful');
                     await loadOrder();
-                } catch {
-                    addAlert('Credit override rejected', 'error');
+                } catch (error: any) {
+                    const message = error.response?.data?.error || error.response?.data?.detail || 'Credit override rejected';
+                    addAlert(message, 'error');
                 } finally {
                     setUpdating(false);
                 }
@@ -201,8 +203,9 @@ export default function AdminOrderDetailPage() {
             addAlert('Dispatch protocols updated');
             await loadOrder();
             setIsEditingDelivery(false);
-        } catch {
-            addAlert('Update failed', 'error');
+        } catch (error: any) {
+            const message = error.response?.data?.error || error.response?.data?.detail || 'Update failed';
+            addAlert(message, 'error');
         } finally {
             setUpdating(false);
         }
