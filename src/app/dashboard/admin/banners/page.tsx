@@ -16,7 +16,6 @@ import {
     ExternalLink,
     AlertCircle,
     Layout,
-    ArrowUpRight,
     Layers
 } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';

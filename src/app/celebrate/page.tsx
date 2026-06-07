@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { Calendar, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { Calendar, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 
 export default function BirthdayClubPage() {
@@ -37,6 +37,7 @@ export default function BirthdayClubPage() {
         try {
             await authAPI.updateBirthday(dob);
             setIsSuccess(true);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             if (err.response?.status === 403) {
                 router.push('/verify-email?reason=birthday_club');
@@ -97,6 +98,7 @@ export default function BirthdayClubPage() {
                             {/* Visual Column */}
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-brand-emerald/10 scale-95 blur-2xl group-hover:scale-105 transition-transform duration-700" />
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img 
                                     src="/editorial_birthday_club_1777830829352.png" 
                                     alt="Birthday Club" 

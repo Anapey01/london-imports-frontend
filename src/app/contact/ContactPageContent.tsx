@@ -154,7 +154,7 @@ export default function ContactPageContent() {
                             className="p-12 group hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors duration-500"
                         >
                             <div className="w-12 h-12 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white group-hover:border-slate-900 dark:group-hover:border-white transition-all mb-8">
-                                {React.cloneElement(channel.icon as React.ReactElement<any>, { className: "w-5 h-5" })}
+                                {React.cloneElement(channel.icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5" })}
                             </div>
                             <span className="text-emerald-600 dark:text-emerald-500 text-[9px] uppercase font-black tracking-[0.4em] mb-4 block leading-none">{channel.label}</span>
                             <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4 group-hover:italic transition-all">{channel.title}</h3>

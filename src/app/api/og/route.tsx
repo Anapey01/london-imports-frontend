@@ -40,7 +40,7 @@ async function getBase64Image(url: string | null): Promise<string | null> {
         
         for (let i = 0; i < len; i += CHUNK_SIZE) {
             const chunk = bytes.subarray(i, i + CHUNK_SIZE);
-            binary += String.fromCharCode.apply(null, chunk as any);
+            binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
         }
         
         const base64String = btoa(binary);
@@ -118,7 +118,6 @@ export async function GET(request: Request) {
     const displayLines = lines.slice(0, 3); // Max 3 lines
 
     // --- SANITIZE INPUTS FOR XML SAFETY ---
-    const sTitle = xmlEscape(title);
     const sType = xmlEscape(type);
     const sPrice = xmlEscape(price);
     const sBrand = "London&apos;s Imports Ghana"; // Pre-escaped literal

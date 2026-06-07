@@ -4,7 +4,7 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 export async function POST(req: Request) {
     try {
-        const { orderNumber, customerEmail, method } = await req.json();
+        const { orderNumber, customerEmail } = await req.json();
 
         if (!RESEND_API_KEY) {
             console.warn('RESEND_API_KEY is not configured in environment variables.');

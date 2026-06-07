@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ShieldCheck, Scale, FileText, AlertTriangle, Calculator, ArrowUpRight } from 'lucide-react';
+import { ShieldCheck, Scale, FileText, AlertTriangle, ArrowUpRight } from 'lucide-react';
 
 // ISR: Revalidate static info page every 7 days
 export const revalidate = 604800;
