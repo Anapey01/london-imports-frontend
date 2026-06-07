@@ -99,7 +99,7 @@ export default function AdminLogisticsPage() {
             };
             
             if (statusFilter !== 'All') {
-                params.status = statusFilter;
+                params.status = statusFilter === 'PROCESSING' ? 'WAREHOUSE' : statusFilter;
             }
             
             const response = await adminAPI.orders(params);
