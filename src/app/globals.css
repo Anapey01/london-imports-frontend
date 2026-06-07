@@ -638,3 +638,33 @@ input:-webkit-autofill:active {
   will-change: transform, opacity;
   opacity: 0;
 }
+
+/* Toast & Alert Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-alert-in {
+  animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastProgress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.animate-toast-progress {
+  animation: toastProgress 4s linear forwards;
+  transform-origin: left;
+}

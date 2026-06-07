@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle, Loader2 } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
@@ -52,17 +51,14 @@ export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
     }, [id, type]);
 
     return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+        <div
             className={`
                 relative flex items-center gap-4 px-6 py-4 
                 rounded-2xl border backdrop-blur-2xl
                 ${styles[type]} ${shadows[type]}
                 pointer-events-auto cursor-pointer group
                 max-w-[400px] w-full mx-auto mb-3
+                animate-alert-in
             `}
             onClick={() => type !== 'processing' && onClose(id)}
         >
@@ -92,15 +88,10 @@ export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
 
             {/* Subtle Progress Bar for Auto-close */}
             {type !== 'processing' && (
-                <motion.div
-                    key={`progress-${id}`}
-                    initial={{ scaleX: 1 }}
-                    animate={{ scaleX: 0 }}
-                    transition={{ duration: 4, ease: 'linear' }}
-                    style={{ originX: 0 }}
-                    className={`absolute bottom-0 left-0 right-0 h-[2px] opacity-30 ${type === 'success' ? 'bg-emerald-400' : 'bg-rose-400'}`}
+                <div
+                    className={`absolute bottom-0 left-0 right-0 h-[2px] opacity-30 ${type === 'success' ? 'bg-emerald-400' : 'bg-rose-400'} animate-toast-progress`}
                 />
             )}
-        </motion.div>
+        </div>
     );
 }

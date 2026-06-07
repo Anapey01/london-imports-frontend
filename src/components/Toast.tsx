@@ -6,7 +6,6 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { AuraAlert, AlertType } from './AuraAlert';
-import { AnimatePresence } from 'framer-motion';
 
 interface Toast {
     id: string;
@@ -53,17 +52,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 aria-live="polite"
                 aria-atomic="true"
             >
-                <AnimatePresence mode="popLayout" initial={false}>
-                    {toasts.map(toast => (
-                        <AuraAlert
-                            key={toast.id}
-                            id={toast.id}
-                            message={toast.message}
-                            type={toast.type}
-                            onClose={removeToast}
-                        />
-                    ))}
-                </AnimatePresence>
+                {toasts.map(toast => (
+                    <AuraAlert
+                        key={toast.id}
+                        id={toast.id}
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={removeToast}
+                    />
+                ))}
             </div>
         </ToastContext.Provider>
     );

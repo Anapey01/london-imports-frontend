@@ -14,15 +14,39 @@ export default function CookieBanner() {
     });
 
     useEffect(() => {
-        // Initial check for consent state
         if (typeof window !== 'undefined') {
             const stored = localStorage.getItem('london_imports_cookie_consent_v2');
             if (stored) {
                 setIsVisible(false);
-            } else {
-                const timer = setTimeout(() => setIsVisible(true), 1500);
-                return () => clearTimeout(timer);
+                return;
             }
+
+            let timer: NodeJS.Timeout;
+            const showBanner = () => {
+                setIsVisible(true);
+                cleanup();
+            };
+
+            const cleanup = () => {
+                clearTimeout(timer);
+                window.removeEventListener('scroll', showBanner);
+                window.removeEventListener('touchstart', showBanner);
+                window.removeEventListener('pointerdown', showBanner);
+                window.removeEventListener('mousemove', showBanner);
+                window.removeEventListener('keydown', showBanner);
+            };
+
+            // Setup interaction listeners
+            window.addEventListener('scroll', showBanner, { passive: true });
+            window.addEventListener('touchstart', showBanner, { passive: true });
+            window.addEventListener('pointerdown', showBanner, { passive: true });
+            window.addEventListener('mousemove', showBanner, { passive: true });
+            window.addEventListener('keydown', showBanner, { passive: true });
+
+            // Fallback timer of 5 seconds (safely after primary LCP measurements)
+            timer = setTimeout(showBanner, 5000);
+
+            return cleanup;
         }
     }, []);
 
