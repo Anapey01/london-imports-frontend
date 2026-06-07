@@ -2,8 +2,8 @@ import { getRecentProducts } from '@/lib/fetchers';
 import HeroOverlayProducts from '@/components/HeroOverlayProducts';
 
 export default async function ProductGridSection() {
-    // Fetch data specifically for the main grid (limit to 12 for high-performance mobile loading)
-    const recentData = await getRecentProducts(12);
+    // Fetch data specifically for the main grid (100 items for the full homepage experience)
+    const recentData = await getRecentProducts(100);
     const products = recentData?.results || [];
     
     // SERVER-SIDE LOG: Definitively confirming product arrival

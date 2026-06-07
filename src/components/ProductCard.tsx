@@ -1,7 +1,7 @@
 'use client';
 
 import { useCartStore, Product } from '@/stores/cartStore';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
@@ -27,23 +27,18 @@ export default function ProductCard({
     hideRating = false,
     hideProgress = false,
 }: ProductCardProps) {
-    const [isAdding, setIsAdding] = useState(false);
+    const [status, setStatus] = useState<'idle' | 'adding' | 'success'>('idle');
     const [imageError, setImageError] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
     
     const { showToast } = useToast();
 
-    // Prevent hydration mismatch for wishlist state
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
     const addToCart = useCartStore(state => state.addToCart);
-    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
+    const addToWishlist = useWishlistStore(state => state.addToWishlist);
+    const removeFromWishlist = useWishlistStore(state => state.removeFromWishlist);
     
-    // Only determine wishlist status after mount to avoid server/client mismatch
-    const isWishlisted = isMounted ? isInWishlist(product.id) : false;
+    // Select isWishlisted directly to prevent re-rendering when other items change.
+    // Use suppressHydrationWarning on the toggle button to eliminate useEffect layout hydrations.
+    const isWishlisted = useWishlistStore(state => state.items.some(item => item.id === product.id));
 
     const toggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -69,13 +64,13 @@ export default function ProductCard({
         const displayName = product.display_name || product.short_name || product.name;
 
         try {
-            setIsAdding(true);
+            setStatus('adding');
             await addToCart({ ...product, image: product.image || "" });
             
             // Success Feedback
-            setShowSuccess(true);
+            setStatus('success');
             showToast(`Added ${displayName} to basket`, 'success');
-            setTimeout(() => setShowSuccess(false), 2000);
+            setTimeout(() => setStatus('idle'), 2000);
             setTimeout(() => trackAddToCart(product), 0);
         } catch (error: unknown) {
             const err = error as { message?: string };
@@ -87,9 +82,7 @@ export default function ProductCard({
                 console.error("Add to cart error:", error);
                 showToast("Failed to add to basket", "error");
             }
-            setShowSuccess(false);
-        } finally {
-            setIsAdding(false);
+            setStatus('idle');
         }
     };
 
@@ -144,17 +137,18 @@ export default function ProductCard({
                         title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                         aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
                         className={`w-11 h-11 flex items-center justify-center rounded-full bg-surface-card border border-border-standard shadow-sm transition-all institutional-focus ${isWishlisted ? "text-rose-500" : "text-content-secondary hover:text-content-primary"}`}
+                        suppressHydrationWarning
                     >
-                        <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-current" : ""}`} strokeWidth={2} />
+                        <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-current" : ""}`} strokeWidth={2} suppressHydrationWarning />
                     </button>
                     <button
                         onClick={handleAddToCart}
-                        disabled={isAdding}
+                        disabled={status === 'adding'}
                         title="Add to cart"
-                        aria-label={showSuccess ? `Successfully added ${product.name} to basket` : `Add ${product.name} to basket`}
-                        className={`w-11 h-11 flex items-center justify-center rounded-full border shadow-sm transition-all duration-300 institutional-focus ${showSuccess ? "bg-brand-emerald border-brand-emerald text-white" : "bg-surface-card border-border-standard text-content-secondary hover:text-content-primary"}`}
+                        aria-label={status === 'success' ? `Successfully added ${product.name} to basket` : `Add ${product.name} to basket`}
+                        className={`w-11 h-11 flex items-center justify-center rounded-full border shadow-sm transition-all duration-300 institutional-focus ${status === 'success' ? "bg-brand-emerald border-brand-emerald text-white" : "bg-surface-card border-border-standard text-content-secondary hover:text-content-primary"}`}
                     >
-                        {showSuccess ? (
+                        {status === 'success' ? (
                             <Check className="w-3.5 h-3.5 animate-in zoom-in duration-300" strokeWidth={3} />
                         ) : (
                             <ShoppingBag className="w-3.5 h-3.5" strokeWidth={2} />
