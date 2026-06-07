@@ -58,9 +58,9 @@ export async function generateMetadata(
         style: 'currency',
         currency: 'GHS',
         maximumFractionDigits: 0
-    }).format(product.price);
+    }).format(product.price || 0);
 
-    const productTitle = `Buy ${product.name} - ${formattedPrice} | London's Imports Ghana`;
+    const productTitle = `Buy ${product.name || 'Premium Product'} - ${formattedPrice} | London's Imports Ghana`;
     
     // Architectural Description Refinement for Sourcing Authority
     const productDescription = product.description?.substring(0, 140) || `Buy ${product.name} from London's Imports. Ghana's #1 import shop for premium imports from China. Pay with Momo.`;
@@ -97,7 +97,7 @@ export async function generateMetadata(
             canonical: pageUrl,
         },
         other: {
-            'product:price:amount': product.price.toString(),
+            'product:price:amount': product.price?.toString() || '0',
             'product:price:currency': 'GHS',
             'product:availability': product.preorder_status === 'READY_TO_SHIP' ? 'instock' : 'oos',
         }
