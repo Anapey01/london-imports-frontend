@@ -36,6 +36,21 @@ const statusLabel = (s: string) => {
     }
 };
 
+// Maps backend states to frontend display statuses (mirrors backend STATE_MAP)
+const STATE_MAP_FRONTEND: Record<string, string> = {
+    'DRAFT': 'PENDING_PAYMENT',
+    'PENDING_PAYMENT': 'PENDING_PAYMENT',
+    'PAID': 'PROCESSING',
+    'OPEN_FOR_BATCH': 'PROCESSING',
+    'CUTOFF_REACHED': 'PROCESSING',
+    'IN_FULFILLMENT': 'PROCESSING',
+    'IN_TRANSIT': 'IN_TRANSIT',
+    'ARRIVED': 'ARRIVED',
+    'OUT_FOR_DELIVERY': 'OUT_FOR_DELIVERY',
+    'DELIVERED': 'DELIVERED',
+    'CANCELLED': 'CANCELLED',
+};
+
 function mapAPIOrder(order: Record<string, unknown>): Order {
     if (!order) return {
         id: Math.random().toString(),
@@ -286,9 +301,11 @@ export default function AdminOrdersPage() {
                     setOrders(prev => prev.map(o => {
                         if (selectedIds.has(o.id)) {
                             const isPaid = newStatus === 'PAID' || newStatus === 'OPEN_FOR_BATCH';
+                            const mappedStatus = STATE_MAP_FRONTEND[newStatus] || newStatus;
                             return { 
                                 ...o, 
-                                status: newStatus,
+                                status: mappedStatus,
+                                state: newStatus,
                                 payment_status: isPaid ? 'PAID' : o.payment_status,
                                 amount_paid: isPaid ? o.total_amount : o.amount_paid,
                                 balance_due: isPaid ? 0 : o.balance_due
@@ -343,17 +360,22 @@ export default function AdminOrdersPage() {
             message: `Transition order to ${label}? This will trigger automated logistics notifications.`,
             variant: 'warning',
             onConfirm: async () => {
-                setLoading(true);
+                // OPTIMISTIC UI: Update the order row immediately, don't blank the page
+                const newMappedStatus = STATE_MAP_FRONTEND[newState] || newState;
+                setOrders(prev => prev.map(o => 
+                    o.id === orderId ? { ...o, status: newMappedStatus, state: newState } : o
+                ));
                 try {
                     await adminAPI.updateOrder(orderId, { state: newState });
                     addAlert(`Status updated to ${label}`);
-                    await loadOrdersRef.current();
+                    // Background refresh — don't await, don't block
+                    loadOrdersRef.current().catch(() => {});
                 } catch (err: any) {
                     console.error(err);
-                    const message = err.response?.data?.error || err.response?.data?.detail || 'Update failed';
+                    const message = err.response?.data?.error || err.response?.data?.detail || 'Update failed. Please try again.';
                     addAlert(message, 'error');
-                } finally {
-                    setLoading(false);
+                    // Revert optimistic update on failure
+                    loadOrdersRef.current().catch(() => {});
                 }
             }
         });
