@@ -1,6 +1,7 @@
 export interface User {
     first_name?: string;
     last_name?: string;
+    name?: string;
     email?: string;
     phone?: string;
     date_joined?: string;
