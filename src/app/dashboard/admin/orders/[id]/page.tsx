@@ -97,14 +97,26 @@ export default function AdminOrderDetailPage() {
             message: `Are you sure you want to change the status to ${newStatus.replace(/_/g, ' ')}?`,
             variant: newStatus === 'CANCELLED' ? 'danger' : 'warning',
             onConfirm: async () => {
+                // OPTIMISTIC UI: Update the status immediately before the server responds
+                if (order) {
+                    setOrder({
+                        ...order,
+                        status: newStatus,
+                        state: newStatus
+                    });
+                }
+                
                 setUpdating(true);
                 try {
                     await adminAPI.updateOrder(orderId, { status: newStatus });
                     addAlert(`Status updated: ${newStatus.replace(/_/g, ' ')}`);
-                    await loadOrder(); 
+                    // Load actual order in background without blocking
+                    loadOrder().catch(() => {});
                 } catch (error: any) {
                     const message = error.response?.data?.error || error.response?.data?.detail || 'Authorization failed';
                     addAlert(message, 'error');
+                    // Revert UI if it fails
+                    loadOrder().catch(() => {});
                 } finally {
                     setUpdating(false);
                 }
