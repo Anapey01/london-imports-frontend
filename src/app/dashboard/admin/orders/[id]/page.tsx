@@ -298,6 +298,17 @@ export default function AdminOrderDetailPage() {
                     </div>
 
                     <div className="lg:col-span-4 space-y-12">
+                        <AdminActionsPanel
+                            updating={updating}
+                            manualReference={manualReference}
+                            setManualReference={setManualReference}
+                            handleMarkAsPaid={handleMarkAsPaid}
+                            openTransferModal={openTransferModal}
+                            handleManualSync={handleManualSync}
+                            handleUpdateStatus={handleUpdateStatus}
+                            isDark={isDark}
+                        />
+
                         <CustomerIntelligenceCard 
                             customer={{
                                 name: order.customer,
@@ -309,17 +320,6 @@ export default function AdminOrderDetailPage() {
                         />
 
                         <WhatsAppConcierge order={order} isDark={isDark} />
-
-                        <AdminActionsPanel
-                            updating={updating}
-                            manualReference={manualReference}
-                            setManualReference={setManualReference}
-                            handleMarkAsPaid={handleMarkAsPaid}
-                            openTransferModal={openTransferModal}
-                            handleManualSync={handleManualSync}
-                            handleUpdateStatus={handleUpdateStatus}
-                            isDark={isDark}
-                        />
 
                         <ActivityLog order={order} isDark={isDark} />
                     </div>
