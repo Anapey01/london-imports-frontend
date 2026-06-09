@@ -84,6 +84,7 @@ export default function AdminLogisticsPage() {
     const [statusFilter, setStatusFilter] = useState('PROCESSING');
     const [searchQuery, setSearchQuery] = useState('');
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [apiCounts, setApiCounts] = useState<Record<string, number> | null>(null);
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -107,6 +108,10 @@ export default function AdminLogisticsPage() {
             
             const ordersData = data.results || data || [];
             setOrders(ordersData.map(mapAPIOrder));
+            
+            if (data.counts) {
+                setApiCounts(data.counts);
+            }
             
             if (data.count !== undefined) {
                 setTotalCount(data.count);
@@ -170,18 +175,25 @@ export default function AdminLogisticsPage() {
 
             {/* 2. PROTOCOL FILTERS */}
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {STATUS_TABS.map(s => (
+                {STATUS_TABS.map(s => {
+                    const count = apiCounts ? (s === 'PROCESSING' ? apiCounts['WAREHOUSE'] : (s === 'All' ? apiCounts['LOGISTICS'] + apiCounts['WAREHOUSE'] + apiCounts['COMPLETED'] : apiCounts[s === 'DELIVERED' ? 'COMPLETED' : s])) : undefined;
+                    return (
                     <button
                         key={s}
                         onClick={() => { setStatusFilter(s); setCurrentPage(1); }}
-                        className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === s
+                        className={`px-8 py-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === s
                             ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
                             : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                             }`}
                     >
-                        {s === 'All' ? 'All Shipments' : s.replace(/_/g, ' ')}
+                        <span>{s === 'All' ? 'All Shipments' : s.replace(/_/g, ' ')}</span>
+                        {count !== undefined && (
+                            <span className={`px-1.5 py-0.5 rounded-sm text-[9px] ${statusFilter === s ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                                {count}
+                            </span>
+                        )}
                     </button>
-                ))}
+                )})}
             </div>
 
             {/* 3. LOGISTICS REGISTRY TABLE */}
