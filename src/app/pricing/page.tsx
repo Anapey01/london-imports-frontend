@@ -120,7 +120,7 @@ export default function PricingPage() {
                                 <h3 className="text-2xl font-serif font-bold italic text-slate-900 dark:text-white">Transaction Security</h3>
                             </div>
                             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                All online transactions are securely routed through Paystack, utilizing bank-grade encryption and supporting MTN MoMo, Telecel Cash, AT Money, and Visa/Mastercard payments. London&apos;s Imports does not store your card details.
+                                All online transactions are securely routed through our integrated payment gateways (including Hubtel, Paystack, and other licensed providers), utilizing bank-grade encryption and supporting MTN MoMo, Telecel Cash, AT Money, and Visa/Mastercard payments. London&apos;s Imports does not store your card details.
                             </p>
                         </div>
 

@@ -43,7 +43,7 @@ export default function TermsPage() {
 
                     <section className="space-y-6">
                         <h2 className="text-2xl font-serif font-bold tracking-tight">2. Payments</h2>
-                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">We accept Mobile Money and Cards via Paystack. Full payment is required for immediate purchases. Pre-orders may require a deposit.</p>
+                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">We accept Mobile Money and Cards via our secure payment gateway partners (including Hubtel, Paystack, etc.). Full payment is required for immediate purchases. Pre-orders may require a deposit.</p>
                     </section>
 
                     <section className="space-y-6">

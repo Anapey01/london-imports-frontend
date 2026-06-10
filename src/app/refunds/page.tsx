@@ -145,7 +145,7 @@ export default function RefundsPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Card & Bank Accounts</span>
                             <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">5 – 10 Business Days</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                Transactions funded via local or international credit cards are reversed through Paystack, subject to gateway and issuing bank clearing times.
+                                Transactions funded via local or international credit cards are reversed through our payment gateways, subject to gateway and issuing bank clearing times.
                             </p>
                         </div>
                     </div>

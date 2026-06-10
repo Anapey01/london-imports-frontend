@@ -17,7 +17,7 @@ const faqs = [
     },
     {
         question: "Is my payment secure?",
-        answer: "Yes! All payments are processed through Paystack, Ghana's leading payment provider. Your funds are held securely until your order is delivered."
+        answer: "Yes! All payments are processed securely through our transaction gateway partners (including Hubtel, Paystack, and other licensed providers). Your funds are held securely until your order is processed."
     },
     {
         question: "Can I cancel my order?",

@@ -21,7 +21,7 @@ export default function PrivacyPage() {
                 <ul className="list-disc pl-6 space-y-2">
                     <li>Name, email address, and phone number</li>
                     <li>Delivery address</li>
-                    <li>Payment information (processed securely via Paystack)</li>
+                    <li>Payment information (processed securely via our integrated payment gateways)</li>
                     <li>Order history and preferences</li>
                 </ul>
 
@@ -38,13 +38,13 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">3. Information Sharing</h2>
                 <p>We do not sell or rent your personal information. We may share your data with:</p>
                 <ul className="list-disc pl-6 space-y-2">
-                    <li>Payment processors (Paystack) to process transactions</li>
+                    <li>Payment processors (including Hubtel and Paystack) to process transactions</li>
                     <li>Delivery partners to fulfill your orders</li>
                     <li>Legal authorities when required by law</li>
                 </ul>
 
                 <h2 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">4. Data Security</h2>
-                <p>We implement appropriate security measures to protect your personal information. All payment transactions are encrypted and processed through Paystack&apos;s secure platform.</p>
+                <p>We implement appropriate security measures to protect your personal information. All payment transactions are encrypted and processed through our payment gateway partners' secure platforms.</p>
 
                 <h2 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">5. Your Rights</h2>
                 <p>You have the right to:</p>
