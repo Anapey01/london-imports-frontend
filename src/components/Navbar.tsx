@@ -29,7 +29,7 @@ export default function Navbar() {
 
     // Fetch categories client-side using React Query
     const { data: categoriesData } = useQuery({
-        queryKey: ['categories'],
+        queryKey: ['product-categories'],
         queryFn: async () => {
             const res = await productsAPI.categories();
             return res.data?.results || res.data || [];
