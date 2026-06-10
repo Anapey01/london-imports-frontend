@@ -8,6 +8,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
@@ -104,12 +105,24 @@ const SUPPORT_ITEMS = [
 ];
 
 export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerProps) {
+    const router = useRouter();
     const { isAuthenticated, logout } = useAuthStore();
     const [productsOpen, setProductsOpen] = useState(false);
     const [supportOpen, setSupportOpen] = useState(false);
     const [shopOpen, setShopOpen] = useState(false);
     const drawerRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+    const handleLinkClick = (href: string, e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || (e.button && e.button === 1)) {
+            return;
+        }
+        e.preventDefault();
+        onClose();
+        setTimeout(() => {
+            router.push(href);
+        }, 0);
+    };
 
 
 
@@ -165,7 +178,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
             >
                 {/* 1. INSTITUTIONAL HEADER */}
                 <div className="flex items-center justify-between px-8 py-8 border-b border-border-standard sticky top-0 z-20 bg-surface">
-                    <Link href="/" onClick={onClose} className="flex items-center gap-4 group">
+                    <Link href="/" onClick={(e) => handleLinkClick('/', e)} className="flex items-center gap-4 group">
                         <div className="relative w-10 h-10 border border-content-primary overflow-hidden">
                             <Image src="/logo.jpg" alt="Logo" fill className="object-cover" />
                         </div>
@@ -193,7 +206,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                         <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-6 block px-4">Your Account</span>
                         {isAuthenticated ? (
                             <>
-                                <Link href="/profile" onClick={onClose} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
+                                <Link href="/profile" onClick={(e) => handleLinkClick('/profile', e)} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
                                     <div className="flex items-center gap-6">
                                         <User className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
                                         <span className="text-[13px] font-black uppercase tracking-widest text-content-primary">Profile Dashboard</span>
@@ -201,7 +214,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     <ArrowUpRight className="w-4 h-4 text-content-secondary group-hover:text-content-primary transition-colors" />
                                 </Link>
                                 {useAuthStore.getState().user?.is_staff && (
-                                    <Link href="/dashboard/admin" onClick={onClose} className="flex items-center justify-between p-4 group transition-all bg-emerald-500/5 hover:bg-emerald-500/10 border-b border-emerald-500/20 institutional-focus">
+                                    <Link href="/dashboard/admin" onClick={(e) => handleLinkClick('/dashboard/admin', e)} className="flex items-center justify-between p-4 group transition-all bg-emerald-500/5 hover:bg-emerald-500/10 border-b border-emerald-500/20 institutional-focus">
                                         <div className="flex items-center gap-6">
                                             <Zap className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
                                             <span className="text-[13px] font-black uppercase tracking-widest text-emerald-600">Admin Command</span>
@@ -212,14 +225,14 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             </>
                         ) : (
                             <div className="flex flex-col">
-                                <Link href="/login" onClick={onClose} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
+                                <Link href="/login" onClick={(e) => handleLinkClick('/login', e)} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
                                     <div className="flex items-center gap-6">
                                         <User className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
                                         <span className="text-[13px] font-black uppercase tracking-widest text-content-primary">Login</span>
                                     </div>
                                     <ArrowUpRight className="w-4 h-4 text-content-secondary group-hover:text-content-primary transition-colors" />
                                 </Link>
-                                <Link href="/register" onClick={onClose} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
+                                <Link href="/register" onClick={(e) => handleLinkClick('/register', e)} className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus">
                                     <div className="flex items-center gap-6">
                                         <UserPlus className="w-4 h-4 text-content-primary" strokeWidth={1.5} />
                                         <span className="text-[13px] font-black uppercase tracking-widest text-content-primary">Create Account</span>
@@ -237,7 +250,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <Link 
                                 key={item.href}
                                 href={item.href}
-                                onClick={onClose}
+                                onClick={(e) => handleLinkClick(item.href, e)}
                                 className="flex items-center justify-between p-4 group transition-all hover:bg-surface-card border-b border-border-standard institutional-focus"
                             >
                                 <div className="flex items-center gap-6">
@@ -285,11 +298,12 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <div id="products-accordion" className="bg-surface-card py-4 transition-all">
                                 {categories.map((cat: { id: string; name: string; slug: string }) => {
                                     const Icon = getCategoryIcon(cat.name);
+                                    const categoryUrl = `/products?category=${cat.slug}`;
                                     return (
                                         <Link 
                                             key={cat.id}
-                                            href={`/products?category=${cat.slug}`}
-                                            onClick={onClose}
+                                            href={categoryUrl}
+                                            onClick={(e) => handleLinkClick(categoryUrl, e)}
                                             className="flex items-center gap-6 px-12 py-3.5 hover:italic transition-all institutional-focus"
                                         >
                                             <Icon className="w-3.5 h-3.5 text-content-secondary" strokeWidth={1.5} />
@@ -322,7 +336,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     <Link 
                                         key={item.name}
                                         href={item.href}
-                                        onClick={onClose}
+                                        onClick={(e) => handleLinkClick(item.href, e)}
                                         className="flex items-center gap-6 px-12 py-3 hover:italic transition-all"
                                     >
                                         <item.icon className="w-3.5 h-3.5 text-content-secondary" strokeWidth={1.5} />
@@ -354,7 +368,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                     <Link 
                                         key={item.name}
                                         href={item.href}
-                                        onClick={onClose}
+                                        onClick={(e) => handleLinkClick(item.href, e)}
                                         className="flex items-center gap-6 px-12 py-3 hover:italic transition-all"
                                     >
                                         <item.icon className="w-3.5 h-3.5 text-content-secondary" strokeWidth={1.5} />
