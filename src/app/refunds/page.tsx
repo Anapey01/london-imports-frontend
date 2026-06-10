@@ -159,8 +159,48 @@ export default function RefundsPage() {
                     </div>
                 </div>
             </section>
+            {/* Dispute & Complaint Resolution Process */}
+            <section className="py-20 border-t border-slate-50 dark:border-slate-900 bg-slate-50/10 dark:bg-slate-900/5">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="mb-16">
+                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-4 block">Resolution Framework</span>
+                        <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Dispute Handling Process</h2>
+                    </header>
 
-            {/* 5. Support Callout */}
+                    <div className="grid md:grid-cols-4 gap-12 border-t border-slate-900 dark:border-slate-800 pt-16">
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 block">Step 01: Submission</span>
+                            <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white italic">How & Where to File</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Customers must file claims in writing via our official WhatsApp Concierge (+233 54 524 7009), support email (info@londonsimports.com), or the online contact form at /contact.
+                            </p>
+                        </div>
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 block">Step 02: Verification</span>
+                            <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white italic">Required Information</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Please provide your order number (#LI-XXXXX), a detailed description of the issue, and clear photo/video evidence of the packaging, shipping label, and the product itself.
+                            </p>
+                        </div>
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 block">Step 03: Review Timeline</span>
+                            <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white italic">24 – 48 Hours Response</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Our support audit team will review your ticket and respond within 24 to 48 hours to confirm receipt and provide an initial assessment or request additional details.
+                            </p>
+                        </div>
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 block">Step 04: Resolution</span>
+                            <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white italic">Outcome & Settlement</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Approved claims will result in either a refund (processed within MoMo/Bank timelines) or a replacement item dispatched in the next cargo batch. Rejected claims will be detailed in writing.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 6. Support Callout */}
             <section className="py-24 bg-slate-900 text-white">
                 <div className="max-w-7xl mx-auto px-6 text-center">
                     <HelpCircle className="w-12 h-12 text-emerald-500 mx-auto mb-8" strokeWidth={1} />
