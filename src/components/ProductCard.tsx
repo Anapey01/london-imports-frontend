@@ -189,9 +189,9 @@ export default function ProductCard({
                     <div className={`font-semibold text-content-primary tracking-tighter ${variant === 'compact' ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
                         {formatPrice(product.price)}
                     </div>
-                    {!hideRating && (
-                        <span className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors whitespace-nowrap ${product.preorder_status === 'READY_TO_SHIP' ? 'text-emerald-500' : 'text-content-secondary'}`}>
-                            {product.preorder_status === 'READY_TO_SHIP' ? 'INSTANT' : 'PRE-ORDER'}
+                    {!hideRating && product.preorder_status === 'READY_TO_SHIP' && (
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] transition-colors whitespace-nowrap text-emerald-500">
+                            INSTANT
                         </span>
                     )}
                 </div>

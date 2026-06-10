@@ -310,9 +310,10 @@ export default function AdminOrdersPage() {
                     }));
                     setSelectedIds(new Set());
                     addAlert(`Successfully updated ${ids.length} orders to ${label}`);
-                } catch (err: any) {
+                } catch (err) {
                     console.error(err);
-                    const message = err.response?.data?.error || err.response?.data?.detail || 'Some orders failed to update. Please refresh and try again.';
+                    const errorResponse = err as { response?: { data?: { error?: string; detail?: string } } };
+                    const message = errorResponse.response?.data?.error || errorResponse.response?.data?.detail || 'Some orders failed to update. Please refresh and try again.';
                     addAlert(message, 'error');
                 } finally {
                     setBulkUpdating(false);
@@ -365,9 +366,10 @@ export default function AdminOrdersPage() {
                     addAlert(`Status updated to ${label}`);
                     // Background refresh — don't await, don't block
                     loadOrdersRef.current().catch(() => {});
-                } catch (err: any) {
+                } catch (err) {
                     console.error(err);
-                    const message = err.response?.data?.error || err.response?.data?.detail || 'Update failed. Please try again.';
+                    const errorResponse = err as { response?: { data?: { error?: string; detail?: string } } };
+                    const message = errorResponse.response?.data?.error || errorResponse.response?.data?.detail || 'Update failed. Please try again.';
                     addAlert(message, 'error');
                     // Revert optimistic update on failure
                     loadOrdersRef.current().catch(() => {});

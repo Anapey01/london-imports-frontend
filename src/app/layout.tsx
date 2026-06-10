@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Source_Serif_4, Montserrat } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
 import Providers from "@/providers/Providers";
 import PWAUpdater from "@/components/PWAUpdater";
@@ -13,7 +12,6 @@ import SkipToContent from "@/components/SkipToContent";
 import { 
   OrganizationSchema, 
   WebsiteSchema, 
-  FaqSchema, 
   BreadcrumbSchema,
   AccessibilitySchema
 } from "@/components/seo/JsonLd";

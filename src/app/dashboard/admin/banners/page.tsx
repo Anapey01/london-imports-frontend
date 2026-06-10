@@ -18,7 +18,7 @@ import {
     Layout,
     Layers
 } from 'lucide-react';
-import { useTheme } from '@/providers/ThemeProvider';
+
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
@@ -35,8 +35,6 @@ interface Banner {
 }
 
 export default function AdminBannersPage() {
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
     
     const [banners, setBanners] = useState<Banner[]>([]);
     const [isLoading, setIsLoading] = useState(true);

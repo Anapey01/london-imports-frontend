@@ -29,12 +29,13 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
             }
             
             return response;
-        } catch (err: any) {
+        } catch (err) {
             clearTimeout(id);
-            if (err.name === 'AbortError') {
+            const errorObj = err as Error;
+            if (errorObj.name === 'AbortError') {
                 console.error(`[SSR] Fetch timeout for ${url}`);
             } else {
-                console.error(`[SSR] Fetch error for ${url}:`, err.message);
+                console.error(`[SSR] Fetch error for ${url}:`, errorObj.message);
             }
             
             if (i < retries) {
@@ -66,7 +67,7 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
         // Final Gatekeeper: Archive Exclusion Filter
         if (process.env.NODE_ENV === 'production' && data.results) {
             const originalCount = data.results.length;
-            data.results = data.results.filter((product: any) => {
+            data.results = data.results.filter((product: { name?: string; image?: string; is_discreet?: boolean }) => {
                 const name = (product.name || '').toLowerCase();
                 const hasImage = !!product.image;
                 const isTestProduct = name === 'shoe' || name === 'test';
@@ -108,7 +109,7 @@ export async function getProductPreviews(params: Record<string, string> = {}, re
         
         // Final Gatekeeper: Archive Exclusion Filter
         if (process.env.NODE_ENV === 'production' && data.results) {
-            data.results = data.results.filter((product: any) => {
+            data.results = data.results.filter((product: { name?: string; image?: string; is_discreet?: boolean }) => {
                 const name = (product.name || '').toLowerCase();
                 const hasImage = !!product.image;
                 const isTestProduct = name === 'shoe' || name === 'test';

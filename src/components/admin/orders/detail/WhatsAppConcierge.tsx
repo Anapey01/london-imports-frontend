@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { MessageSquare, Send, HelpCircle, FileText } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { MessageSquare, Send, HelpCircle } from 'lucide-react';
 import { OrderDetail } from '@/types/order';
 
 interface WhatsAppConciergeProps {
@@ -29,7 +29,7 @@ export function WhatsAppConcierge({ order, isDark }: WhatsAppConciergeProps) {
     });
     const statusLabel = order.status.replace(/_/g, ' ');
 
-    const templates: Template[] = [
+    const templates: Template[] = useMemo(() => [
         {
             id: 'restored_order',
             name: 'Order Restored (Error Fix)',
@@ -97,7 +97,16 @@ London's Imports Team`
             description: 'Start with a simple customer salutation and write everything custom.',
             templateText: `Hi ${order.customer},`
         }
-    ];
+    ], [
+        order.customer,
+        order.order_number,
+        order.delivery_address,
+        order.delivery_city,
+        firstItemName,
+        formattedAmountPaid,
+        formattedBalance,
+        statusLabel
+    ]);
 
     // Update message content when template selection changes
     useEffect(() => {
@@ -105,7 +114,7 @@ London's Imports Team`
         if (selected) {
             setMessageContent(selected.templateText);
         }
-    }, [selectedTemplateId, order]);
+    }, [selectedTemplateId, templates]);
 
     const getCleanPhone = (phone: string) => {
         let clean = phone.replace(/\D/g, '');
