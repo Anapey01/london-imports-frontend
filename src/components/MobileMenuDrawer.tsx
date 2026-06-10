@@ -51,7 +51,8 @@ import {
     Sun,
     Crown,
     Package,
-    Facebook
+    Facebook,
+    AlertOctagon
 } from 'lucide-react';
 
 // Mapping category names/keywords to Lucide icons for dynamic categories
@@ -102,6 +103,7 @@ const SUPPORT_ITEMS = [
     { name: 'Contact Support', href: '/contact', icon: Mail },
     { name: 'Terms of Use', href: '/terms', icon: FileText },
     { name: 'Privacy Policy', href: '/privacy', icon: Shield },
+    { name: 'Prohibited Items', href: '/prohibited-items', icon: AlertOctagon },
 ];
 
 export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerProps) {

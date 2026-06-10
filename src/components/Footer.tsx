@@ -88,7 +88,7 @@ const Footer = () => {
                             <li><Link href="/contact" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Contact Support</Link></li>
                             <li><Link href="/terms" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Terms of Use</Link></li>
                             <li><Link href="/privacy" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Privacy Policy</Link></li>
-                            <li><Link href="/shipping-policy" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Shipping Policy</Link></li>
+                            <li><Link href="/prohibited-items" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Prohibited Items</Link></li>
                             <li><Link href="/refunds" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Refund Policy</Link></li>
                         </ul>
                     </div>
