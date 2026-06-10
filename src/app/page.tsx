@@ -38,6 +38,9 @@ export const metadata: Metadata = {
 const FeaturedSection = dynamic(() => import('@/components/home/FeaturedSection'), {
   loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg mx-4" />,
 });
+const TrustSection = dynamic(() => import('@/components/home/TrustSection'), {
+  loading: () => <div className="h-[400px] bg-surface animate-pulse" />,
+});
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 const SEOAccordion = dynamic(() => import('@/components/home/SEOAccordion'));
 import HomeSEOHeader from '@/components/home/HomeSEOHeader';
@@ -48,8 +51,9 @@ import HomeSEOHeader from '@/components/home/HomeSEOHeader';
  * 1. Hero Section (Visual Impact)
  * 2. Product Grid (SALES PRIORITY - #1 After Hero)
  * 3. Featured Drops (Urgency)
- * 4. Brand Manifesto (SEO & Authority Archive)
- * 5. SEO Accordion (Deep Keyword Crawl)
+ * 4. Trust Signals (Dynamic proof, reviews, stats)
+ * 5. Brand Manifesto (SEO & Authority Archive)
+ * 6. SEO Accordion (Deep Keyword Crawl)
  */
 export default function HomePage() {
   return (
@@ -70,10 +74,15 @@ export default function HomePage() {
         <FeaturedSection />
       </Suspense>
 
-      {/* 4. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
+      {/* 4. Trust Signals: Dynamic statistics, product reviews, and delivery photos */}
+      <Suspense fallback={<div className="h-[400px] bg-surface animate-pulse" />}>
+        <TrustSection />
+      </Suspense>
+
+      {/* 5. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
       <HomeSEOHeader />
 
-      {/* 5. Deep Keyword SEO Accordion (Crawler Data Archive) */}
+      {/* 6. Deep Keyword SEO Accordion (Crawler Data Archive) */}
       <SEOAccordion />
       
       {/* Search Engine Optimization: Structured Data */}

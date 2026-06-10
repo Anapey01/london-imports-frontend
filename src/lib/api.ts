@@ -123,6 +123,8 @@ export const productsAPI = {
   recordSearch: (query: string) => api.post('/products/record-search/', { query }),
   addReview: (slug: string, data: { rating: number; comment: string }) => 
     api.post(`/products/${slug}/reviews/`, data),
+  deliveryPhotos: () => api.get('/products/delivery-photos/'),
+  latestReviews: () => api.get('/products/reviews/latest/'),
 };
 
 export const ordersAPI = {
@@ -239,6 +241,12 @@ export const adminAPI = {
   updateBlogPost: (id: string, data: unknown) => api.patch(`/admin/blog/${id}/`, data),
   deleteBlogPost: (id: string) => api.delete(`/admin/blog/${id}/`),
   publishBlogPost: (id: string) => api.post(`/admin/blog/${id}/publish/`),
+
+  // Delivery Photos Gallery management
+  deliveryPhotos: (params?: unknown) => api.get('/products/admin/delivery-photos/', { params }),
+  createDeliveryPhoto: (data: unknown) => api.post('/products/admin/delivery-photos/', data),
+  updateDeliveryPhoto: (id: string, data: unknown) => api.patch(`/products/admin/delivery-photos/${id}/`, data),
+  deleteDeliveryPhoto: (id: string) => api.delete(`/products/admin/delivery-photos/${id}/`),
 };
 
 // Public Blog API

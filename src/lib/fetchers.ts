@@ -323,3 +323,47 @@ export async function getHeroBanners() {
         throw e;
     }
 }
+
+export async function getDeliveryPhotos() {
+    const url = `${API_BASE_URL}/products/delivery-photos/`;
+    try {
+        const res = await fetchWithRetry(url, {
+            next: { revalidate: 86400 } // Revalidate every 24 hours
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch delivery photos: ${res.status} ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        return data.results || data || [];
+    } catch (e) {
+        console.error("[SSR] Exception fetching delivery photos:", e);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return [];
+        }
+        return [];
+    }
+}
+
+export async function getLatestReviews() {
+    const url = `${API_BASE_URL}/products/reviews/latest/`;
+    try {
+        const res = await fetchWithRetry(url, {
+            next: { revalidate: 3600 } // Revalidate every hour
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch latest reviews: ${res.status} ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        return data.results || data || [];
+    } catch (e) {
+        console.error("[SSR] Exception fetching latest reviews:", e);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return [];
+        }
+        return [];
+    }
+}

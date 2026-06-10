@@ -26,7 +26,8 @@ import {
     ShieldCheck,
     LayoutPanelTop,
     Mail,
-    ArrowRightLeft
+    ArrowRightLeft,
+    Image
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -53,6 +54,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         { name: 'BROADCAST', href: '/dashboard/admin/broadcast', icon: Mail },
         { name: 'ANALYTICS', href: '/dashboard/admin/analytics', icon: BarChart3 },
         { name: 'BANNERS', href: '/dashboard/admin/banners', icon: LayoutPanelTop },
+        { name: 'GALLERY', href: '/dashboard/admin/gallery', icon: Image },
         { name: 'CONFIG', href: '/dashboard/admin/settings', icon: Settings },
         { name: 'ACADEMY', href: '/dashboard/admin/tutorials', icon: PlayCircle },
     ];
