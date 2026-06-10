@@ -130,11 +130,14 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
     const { data: categoriesData } = useQuery({
         queryKey: ['categories'],
-        queryFn: productsAPI.categories,
+        queryFn: async () => {
+            const res = await productsAPI.categories();
+            return res.data?.results || res.data || [];
+        },
         staleTime: 1000 * 60 * 60,
     });
 
-    const categories = categoriesData?.data?.results || categoriesData?.data || [];
+    const categories = Array.isArray(categoriesData) ? categoriesData : [];
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
