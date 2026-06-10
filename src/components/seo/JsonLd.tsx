@@ -14,7 +14,7 @@ export function OrganizationSchema() {
     "legalName": "London's Imports Ghana Limited",
     "alternateName": ["Mini Importation Ghana", "Londons Imports GH"],
     "url": "https://londonsimports.com",
-    "description": "Ghana's leading shopping service and shipping system (mini-importation, air freight, and procurement). Shop from 1688, Alibaba, and Taobao directly to Accra, Kumasi, and Tema. Trusted by thousands of Ghanaian business owners with door-to-door delivery.",
+    "description": "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Fast, secure, and reliable international shipping, logistics, and customs clearance.",
     "logo": "https://londonsimports.com/logo.jpg",
     "image": "https://londonsimports.com/og-image.jpg",
     "telephone": [`+${siteConfig.whatsapp}`, `+${siteConfig.concierge}`],
@@ -116,8 +116,8 @@ export function OrganizationSchema() {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Shopping Agent",
-            "description": "Find suppliers on 1688 and Alibaba for Ghana businesses"
+            "name": "Global Curation",
+            "description": "Source and curate products from global manufacturing markets for Ghana businesses"
           }
         }
       ]
@@ -168,7 +168,7 @@ export function FaqSchema() {
         "name": "How do I buy from China to Ghana?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "With London's Imports, you can easily buy from China (1688, Alibaba, Taobao) and have it shipped to Ghana. Simply browse our products, place your order, pay with Mobile Money, and we handle shipping, customs clearance, and doorstep delivery to Accra, Tema, Kumasi, and anywhere in Ghana."
+          "text": "London's Imports makes it simple to source and ship products from global markets (including platforms like 1688 and Alibaba) directly to Ghana. Browse our catalog, place your order, pay via Mobile Money, and we handle the sourcing, international logistics, customs clearance, and doorstep delivery to Accra, Tema, Kumasi, and nationwide."
         }
       },
       {

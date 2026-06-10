@@ -37,8 +37,8 @@ export async function generateMetadata(
         };
     }
 
-    const title = `${category.name} | China to Ghana Shopping & Shipping | London's Imports`;
-    const description = `Shop ${category.name} from China (1688, Alibaba) with easy shipping to Accra, Kumasi, and Tema. Pay with Momo, door-to-door delivery. Trusted by thousands in Ghana.`;
+    const title = `${category.name} | Global Sourcing & Shipping | London's Imports`;
+    const description = `Shop ${category.name} sourced from global manufacturing markets with reliable shipping to Accra, Kumasi, and Tema. Pay easily in GHS via Mobile Money.`;
 
     return {
         title,
@@ -205,8 +205,8 @@ export default async function CategoryPage({ params }: Props) {
                     <div className="grid md:grid-cols-3 gap-8">
                         <div>
                             <div className="text-pink-400 font-bold text-4xl mb-2">01</div>
-                            <h4 className="font-semibold text-lg mb-2">Direct Supplier Links</h4>
-                            <p className="text-gray-400 text-sm">We buy straight from the source in China at wholesale prices.</p>
+                            <h4 className="font-semibold text-lg mb-2">Direct Sourcing Links</h4>
+                            <p className="text-gray-400 text-sm">We source straight from global manufacturing hubs at wholesale rates.</p>
                         </div>
                         <div>
                             <div className="text-pink-400 font-bold text-4xl mb-2">02</div>

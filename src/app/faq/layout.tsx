@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'FAQ Repository | London\'s Imports Ghana',
-    description: 'Find answers to common questions about mini-importation, shipping from China to Ghana, payments with Momo, and customs clearance.',
+    description: 'Find answers to common questions about global product sourcing, international logistics and shipping to Ghana, payments with Momo, and customs clearance.',
     openGraph: {
         title: 'FAQ Repository | London\'s Imports Ghana',
         description: 'Transparent, architectural answers to your logistics and sourcing queries.',
@@ -25,7 +25,7 @@ const faqSchema = {
             "name": "How do I buy from China to Ghana?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "With London's Imports, you can easily buy from China (1688, Alibaba, Taobao) and have it shipped to Ghana. Simply browse our products, place your order, pay with Mobile Money, and we handle shipping, customs clearance, and doorstep delivery to Accra, Tema, Kumasi, and anywhere in Ghana."
+                "text": "London's Imports makes it simple to source and ship products from global markets (including platforms like 1688 and Alibaba) directly to Ghana. Browse our catalog, place your order, pay via Mobile Money, and we handle the sourcing, international logistics, customs clearance, and doorstep delivery to Accra, Tema, Kumasi, and nationwide."
             }
         },
         {

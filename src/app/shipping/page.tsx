@@ -7,8 +7,8 @@ import { Truck, Plane, Ship, Package, ShieldCheck, MapPin, ArrowUpRight } from '
 export const revalidate = 604800;
 
 export const metadata: Metadata = {
-    title: "China to Ghana Shipping Services | Air & Sea Freight | London's Imports",
-    description: "Reliable shipping from China (1688, Alibaba) to Accra, Kumasi, and Tema. Affordable air freight (7-14 days) and sea freight (45 days). We handle consolidation and door-to-door delivery.",
+    title: "International Shipping Services to Ghana | Air & Sea Freight | London's Imports",
+    description: "Reliable shipping from international manufacturing markets to Accra, Kumasi, and Tema. Affordable air freight (7-14 days) and sea freight (45 days) with consolidation and doorstep delivery.",
     keywords: ["Shipping from China to Ghana", "Air freight China to Accra", "Sea shipping Guangzhou to Tema", "1688 shipping agent Ghana", "Door to door delivery Ghana"],
 };
 
@@ -123,7 +123,7 @@ export default function ShippingPage() {
                         { 
                             icon: Package, 
                             title: "Advanced Consolidation", 
-                            text: "We combine your 1688 and Alibaba orders into one shipment at our Guangzhou hub to slash your shipping fees." 
+                            text: "We combine your orders from global platforms and suppliers into one shipment at our logistics hubs to slash your shipping fees." 
                         },
                         { 
                             icon: ShieldCheck, 

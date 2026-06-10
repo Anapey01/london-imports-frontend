@@ -35,7 +35,7 @@ export default function Error({
                     <span className="font-sans font-bold text-base md:text-lg tracking-[0.3em] text-white uppercase">
                         LONDON&apos;S <span className="text-emerald-400 italic font-serif font-semibold tracking-normal">IMPORTS</span>
                     </span>
-                    <span className="text-[8px] uppercase tracking-[0.4em] text-slate-400 font-bold">China to Ghana Shipping</span>
+                    <span className="text-[8px] uppercase tracking-[0.4em] text-slate-400 font-bold">Sourcing &amp; Logistics</span>
                 </div>
                 
                 <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-widest bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 uppercase">
@@ -55,7 +55,7 @@ export default function Error({
                         Sourcing is <span className="italic text-emerald-400">active</span>.
                     </h1>
                     <p className="text-sm md:text-base text-slate-300 leading-relaxed max-w-md mx-auto">
-                        We are completing database maintenance. Send your 1688 / Alibaba links to our team on WhatsApp for manual quotes and instant processing.
+                        We are completing database maintenance. Send your product sourcing links or inquiries to our team on WhatsApp for manual quotes and instant processing.
                     </p>
                 </div>
 

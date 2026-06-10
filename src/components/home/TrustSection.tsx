@@ -107,9 +107,9 @@ export default function TrustSection() {
         {
             user_name: "Abena K.",
             rating: 5,
-            comment: "Sourcing from 1688 used to be a headache with payments and consolidation. London's Imports handled everything, cleared customs, and delivered right to my boutique in Accra. Absolutely seamless.",
+            comment: "Sourcing products from overseas manufacturers used to be a headache with payments and consolidation. London's Imports handled everything, cleared customs, and delivered right to my boutique in Accra. Absolutely seamless.",
             is_verified: true,
-            product_name: "Guangzhou consolidation service",
+            product_name: "Global consolidation service",
         },
         {
             user_name: "Kofi A.",
@@ -149,7 +149,7 @@ export default function TrustSection() {
                             A Foundation built on <span className="font-serif italic font-normal">Trust.</span>
                         </h2>
                         <p className="text-sm text-content-secondary mt-4 font-medium leading-relaxed">
-                            No estimates. No ambiguities. We bridge China factory floors and Ghana retail with verified data, logistics transparency, and direct shipping proof.
+                            No estimates. No ambiguities. We bridge global factory floors and Ghana retail with verified data, logistics transparency, and direct shipping proof.
                         </p>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ export default function TrustSection() {
                             {stats ? `${stats.verified_vendors}+` : "24+"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Verified Factories</h3>
-                        <p className="text-[10px] text-content-secondary leading-tight">Direct relationship with authenticated manufacturers in China.</p>
+                        <p className="text-[10px] text-content-secondary leading-tight">Direct relationship with authenticated global manufacturers.</p>
                     </div>
 
                     <div className="space-y-2">
@@ -185,7 +185,7 @@ export default function TrustSection() {
                             99.9%
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Authenticity Rate</h3>
-                        <p className="text-[10px] text-content-secondary leading-tight">Visual quality check and inventory match at our Guangzhou warehouse.</p>
+                        <p className="text-[10px] text-content-secondary leading-tight">Visual quality check and inventory match at our international sorting hubs.</p>
                     </div>
                 </div>
 
