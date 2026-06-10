@@ -11,7 +11,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
-import { Search, Menu, User, ShoppingBag } from 'lucide-react';
+import { Search, Menu, User, ShoppingBag, ChevronDown } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '@/lib/api';
 import MobileMenuDrawer from './MobileMenuDrawer';
 
 export default function Navbar() {
@@ -23,6 +25,28 @@ export default function Navbar() {
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [, startTransition] = useTransition();
+    const [selectedCategory, setSelectedCategory] = useState('');
+
+    // Fetch categories client-side using React Query
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: async () => {
+            const res = await productsAPI.categories();
+            return res.data?.results || res.data || [];
+        },
+        staleTime: 1000 * 60 * 60, // 1 hour
+    });
+    
+    // Safety check for hydration: render list only after mount
+    const categories = mounted ? (categoriesData || []) : [];
+
+    // Sync selectedCategory state with URL category parameter on path change
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            setSelectedCategory(params.get('category') || '');
+        }
+    }, [pathname]);
 
     useEffect(() => {
         setMounted(true);
@@ -100,28 +124,57 @@ export default function Navbar() {
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     const form = e.currentTarget;
-                                    const query = (form.elements.namedItem('search') as HTMLInputElement).value;
-                                    if (query.trim().length >= 2) {
-                                        startTransition(() => {
-                                            router.push(`/products?search=${encodeURIComponent(query.trim())}`);
-                                        });
+                                    const query = (form.elements.namedItem('search') as HTMLInputElement).value.trim();
+                                    
+                                    const params: string[] = [];
+                                    if (query) {
+                                        params.push(`search=${encodeURIComponent(query)}`);
                                     }
+                                    if (selectedCategory) {
+                                        params.push(`category=${encodeURIComponent(selectedCategory)}`);
+                                    }
+                                    
+                                    startTransition(() => {
+                                        router.push(`/products${params.length > 0 ? `?${params.join('&')}` : ''}`);
+                                    });
                                 }}
-                                className="relative flex items-center w-full bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full px-8 py-2.5 focus-within:border-content-primary focus-within:bg-surface transition-all group"
+                                className="relative flex items-center w-full bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary focus-within:bg-surface transition-all group"
                             >
-                                <Search className="w-4 h-4 text-content-secondary mr-4 opacity-50" strokeWidth={1.5} />
-                                <input
-                                    name="search"
-                                    type="text"
-                                    placeholder="Search products, brands and categories"
-                                    className="flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/30 py-1"
-                                />
-                                <button 
-                                    type="submit"
-                                    className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-8 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700"
-                                >
-                                    Search
-                                </button>
+                                {/* Desktop Category Dropdown */}
+                                <div className="relative flex items-center shrink-0 pl-5 pr-3 border-r border-border-standard/80 self-stretch my-1.5">
+                                    <select
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        className="bg-transparent text-xs font-bold text-content-secondary hover:text-content-primary cursor-pointer pr-5 outline-none border-none appearance-none max-w-[140px] truncate"
+                                        aria-label="Filter by category"
+                                    >
+                                        <option value="">All Categories</option>
+                                        {categories.map((cat: any) => (
+                                            <option key={cat.id || cat.slug} value={cat.slug} className="dark:bg-slate-900 dark:text-white">
+                                                {cat.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-3 pointer-events-none text-content-secondary opacity-60">
+                                        <ChevronDown className="w-3.5 h-3.5" />
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 flex items-center pl-3 pr-2">
+                                    <Search className="w-4 h-4 text-content-secondary mr-3 opacity-50" strokeWidth={1.5} />
+                                    <input
+                                        name="search"
+                                        type="text"
+                                        placeholder="Search products, brands and categories"
+                                        className="flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/30 py-1"
+                                    />
+                                    <button 
+                                        type="submit"
+                                        className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-8 py-2 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700 shrink-0"
+                                    >
+                                        Search
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
@@ -167,28 +220,57 @@ export default function Navbar() {
                             onSubmit={(e) => {
                                 e.preventDefault();
                                 const form = e.currentTarget;
-                                const query = (form.elements.namedItem('search') as HTMLInputElement).value;
-                                if (query.trim().length >= 2) {
-                                    startTransition(() => {
-                                        router.push(`/products?search=${encodeURIComponent(query.trim())}`);
-                                    });
+                                const query = (form.elements.namedItem('search') as HTMLInputElement).value.trim();
+                                
+                                const params: string[] = [];
+                                if (query) {
+                                    params.push(`search=${encodeURIComponent(query)}`);
                                 }
+                                if (selectedCategory) {
+                                    params.push(`category=${encodeURIComponent(selectedCategory)}`);
+                                }
+                                
+                                startTransition(() => {
+                                    router.push(`/products${params.length > 0 ? `?${params.join('&')}` : ''}`);
+                                });
                             }}
-                            className="relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full px-5 py-1.5 focus-within:border-content-primary transition-all"
+                            className="relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary transition-all"
                         >
-                            <Search className="w-4 h-4 text-content-secondary mr-3 opacity-50" strokeWidth={1.5} />
-                            <input
-                                name="search"
-                                type="text"
-                                placeholder="Search products..."
-                                className="flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/40 py-1"
-                            />
-                            <button 
-                                type="submit"
-                                className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700"
-                            >
-                                Search
-                            </button>
+                            {/* Mobile Category Dropdown */}
+                            <div className="relative flex items-center shrink-0 pl-4 pr-2 border-r border-border-standard/80 self-stretch my-1">
+                                <select
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                    className="bg-transparent text-[11px] font-bold text-content-secondary hover:text-content-primary cursor-pointer pr-4 outline-none border-none appearance-none max-w-[80px] truncate"
+                                    aria-label="Filter by category"
+                                >
+                                    <option value="">All</option>
+                                    {categories.map((cat: any) => (
+                                        <option key={cat.id || cat.slug} value={cat.slug} className="dark:bg-slate-900 dark:text-white">
+                                            {cat.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-2 pointer-events-none text-content-secondary opacity-60">
+                                    <ChevronDown className="w-3 h-3" />
+                                </div>
+                            </div>
+
+                            <div className="flex-grow flex items-center pl-2.5 pr-1 py-0.5">
+                                <Search className="w-3.5 h-3.5 text-content-secondary mr-2 opacity-50" strokeWidth={1.5} />
+                                <input
+                                    name="search"
+                                    type="text"
+                                    placeholder="Search products..."
+                                    className="flex-1 bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/40 py-0.5"
+                                />
+                                <button 
+                                    type="submit"
+                                    className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700 shrink-0"
+                                >
+                                    Search
+                                </button>
+                            </div>
                         </form>
                     </div>
                     )}
