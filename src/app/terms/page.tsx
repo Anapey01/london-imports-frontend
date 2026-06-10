@@ -52,7 +52,38 @@ export default function TermsPage() {
                     </section>
 
                     <section className="space-y-6">
-                        <h2 className="text-2xl font-serif font-bold tracking-tight">4. Support <span className="italic font-normal">Channels</span></h2>
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">4. Customer <span className="italic font-normal">Responsibility</span></h2>
+                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                            Customers using our sourcing and import services assume full responsibility for:
+                        </p>
+                        <ul className="list-disc pl-6 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
+                            <li><strong>Correct Product Selection:</strong> Ensuring the accuracy of specifications, sizes, quantities, and variations when submitting order links.</li>
+                            <li><strong>Accurate Delivery Details:</strong> Providing correct local delivery addresses, contact numbers, and recipient details to avoid delays or lost shipments.</li>
+                            <li><strong>Import Compliance:</strong> Verifying that all sourced products comply with Ghana Customs regulations, standards, and import guidelines. We do not source or transport illegal, banned, or restricted items.</li>
+                        </ul>
+                    </section>
+
+                    <section className="space-y-6">
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">5. Supplier & <span className="italic font-normal">Manufacturer Status</span></h2>
+                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                            London&apos;s Imports is a logistics and sourcing coordination business. We are not the manufacturer, creator, or producer of the products listed or sourced. All warranties, quality concerns, and product specifications are the sole representation of the third-party suppliers in China.
+                        </p>
+                    </section>
+
+                    <section className="space-y-6">
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">6. Limitation <span className="italic font-normal">of Liability</span></h2>
+                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                            To the maximum extent permitted by law, London&apos;s Imports shall not be held liable for:
+                        </p>
+                        <ul className="list-disc pl-6 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
+                            <li><strong>Supplier Defects & Faults:</strong> Minor product discrepancies, manufacturing defects, or supplier packaging errors that fall outside our visual consolidation verification standard.</li>
+                            <li><strong>Logistical Delays:</strong> Delays in international air or sea cargo shipping resulting from weather, customs backlog, flight/vessel cancellations, or public holidays.</li>
+                            <li><strong>Customs Seizures:</strong> Shipments detained, confiscated, or seized by customs authorities due to regulatory queries, documentation inspections, or brand authenticity disputes beyond our reasonable control.</li>
+                        </ul>
+                    </section>
+
+                    <section className="space-y-6">
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">7. Support <span className="italic font-normal">Channels</span></h2>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">For any inquiries, please contact our support team via our verified WhatsApp or business email.</p>
                     </section>
 
