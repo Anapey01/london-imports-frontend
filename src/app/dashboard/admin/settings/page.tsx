@@ -91,6 +91,9 @@ export default function AdminSettingsPage() {
         maxOrderAmount: 10000,
         deliveryFee: 15,
         freeDeliveryThreshold: 200,
+        historicalShipments: 5000,
+        historicalVendors: 24,
+        authenticityRate: 99.9,
     });
 
     const [confirmModal, setConfirmModal] = useState<{
@@ -278,6 +281,31 @@ export default function AdminSettingsPage() {
                         label="Free Delivery Threshold (GHS)"
                         value={settings.freeDeliveryThreshold}
                         onChange={(v: string) => setSettings({ ...settings, freeDeliveryThreshold: parseFloat(v) || 0 })}
+                        type="number"
+                        isDark={isDark}
+                    />
+                </Section>
+
+                {/* Platform Statistics */}
+                <Section title="Platform Statistics" isDark={isDark}>
+                    <InputField
+                        label="Historical Shipments Baseline"
+                        value={settings.historicalShipments}
+                        onChange={(v: string) => setSettings({ ...settings, historicalShipments: parseInt(v) || 0 })}
+                        type="number"
+                        isDark={isDark}
+                    />
+                    <InputField
+                        label="Historical Verified Factories Baseline"
+                        value={settings.historicalVendors}
+                        onChange={(v: string) => setSettings({ ...settings, historicalVendors: parseInt(v) || 0 })}
+                        type="number"
+                        isDark={isDark}
+                    />
+                    <InputField
+                        label="Authenticity Rate (%)"
+                        value={settings.authenticityRate}
+                        onChange={(v: string) => setSettings({ ...settings, authenticityRate: parseFloat(v) || 0 })}
                         type="number"
                         isDark={isDark}
                     />

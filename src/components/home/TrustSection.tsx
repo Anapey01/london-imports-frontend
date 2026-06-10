@@ -182,7 +182,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-brand-emerald tracking-tighter">
-                            99.9%
+                            {stats ? `${stats.authenticity_rate}%` : "99.9%"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Authenticity Rate</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Visual quality check and inventory match at our international sorting hubs.</p>
