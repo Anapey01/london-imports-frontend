@@ -17,7 +17,7 @@ const faqs = [
     {
         id: "DEL-01",
         question: "How long does delivery take?",
-        answer: "Delivery windows are shown on each product (typically 8-9 weeks). We use date ranges, not exact dates, to ensure honest timelines. You'll receive updates at each milestone."
+        answer: "Delivery windows are shown on each product page. Sea cargo typically takes 30–60 business days (typically 8–9 weeks), and air cargo takes 7–14 business days from our Guangzhou warehouse. We use realistic date ranges to ensure transparency."
     },
     {
         id: "PAY-01",

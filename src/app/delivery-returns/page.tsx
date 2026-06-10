@@ -45,21 +45,21 @@ export default function DeliveryReturnsPage() {
                     <div className="grid md:grid-cols-3 gap-12 border-t border-slate-900 dark:border-slate-800 pt-16 mb-16">
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Zone 01: Greater Accra & Tema</span>
-                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">1 – 4 Business Days</h3>
+                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">1 – 3 Business Days</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                                 Delivered to your door or available for self-pickup at our Accra operating hub.
                             </p>
                         </div>
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Zone 02: Regional Capitals</span>
-                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">3 – 7 Business Days</h3>
+                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">3 – 5 Business Days</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                                 Forwarded to main regional transit stations for client collection or regional delivery.
                             </p>
                         </div>
                         <div className="space-y-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Zone 03: Remote Areas</span>
-                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">5 – 8 Business Days</h3>
+                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">5 – 7 Business Days</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                                 Handled through secondary logistics networks. Delivery dates depend on carrier schedules.
                             </p>

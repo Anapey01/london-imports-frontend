@@ -38,7 +38,7 @@ export default function TermsPage() {
 
                     <section className="space-y-6">
                         <h2 className="text-2xl font-serif font-bold tracking-tight">1. Pre-Ordering</h2>
-                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">All items are subject to availability. Pre-order delivery times are estimated delivery times (typically 8-9 weeks from China to Ghana).</p>
+                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">All items are subject to availability. Pre-order delivery times are estimated transit times (typically 30–60 business days for sea freight, or 7–14 business days for air freight from Guangzhou, China to Accra, Ghana).</p>
                     </section>
 
                     <section className="space-y-6">
