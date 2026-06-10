@@ -274,7 +274,68 @@ export default function AboutPageContent() {
                 </div>
             </section>
 
-            {/* 6. REGIONAL DIRECTORY (Vertical Minimalist Index) */}
+            {/* 6. BUSINESS TRANSPARENCY (Corporate Ledger) */}
+            <section className="py-32 border-b border-slate-50 dark:border-slate-900">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="mb-24">
+                        <div className="flex items-center gap-4 mb-8">
+                             <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Corporate Registry</span>
+                        </div>
+                        <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Business Transparency</h2>
+                    </header>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 border-t border-slate-900 dark:border-slate-800 pt-16">
+                        {/* Column 1: Registered Name */}
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Registered Entity</span>
+                            <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white italic">NAA ATSWEI ENTERPRISE</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                Officially registered under the Registration of Business Names Act, 1962 (No. 151) of the Republic of Ghana.
+                            </p>
+                        </div>
+                        
+                        {/* Column 2: Registry Ledger */}
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Registry details</span>
+                            <div className="space-y-2">
+                                <p className="text-xs font-black text-slate-900 dark:text-white tracking-widest uppercase">
+                                    REG. NO: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">BN516170426</span>
+                                </p>
+                                <p className="text-xs font-black text-slate-900 dark:text-white tracking-widest uppercase">
+                                    TIN: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">P0067185401</span>
+                                </p>
+                                <p className="text-xs font-black text-slate-900 dark:text-white tracking-widest uppercase">
+                                    ESTABLISHED: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">2024 (Registered 2026)</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Column 3: Contact & Support */}
+                        <div className="space-y-4 md:col-span-2 lg:col-span-1">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Contact & Support</span>
+                            <div className="space-y-4 text-xs font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
+                                <div>
+                                    <strong className="text-slate-900 dark:text-white tracking-widest uppercase text-[10px] block mb-1">Office Headquarters</strong>
+                                    <span>Danfa Road near Twinkle Angle School, Danfa, Accra, Ghana</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <strong className="text-slate-900 dark:text-white tracking-widest uppercase text-[10px] block mb-1">Email Support</strong>
+                                        <a href="mailto:info@londonsimports.com" className="hover:text-slate-900 dark:hover:text-white transition-colors">info@londonsimports.com</a>
+                                    </div>
+                                    <div>
+                                        <strong className="text-slate-900 dark:text-white tracking-widest uppercase text-[10px] block mb-1">Phone / WhatsApp</strong>
+                                        <a href="tel:+233545247009" className="hover:text-slate-900 dark:hover:text-white transition-colors">+233 54 524 7009</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 7. REGIONAL DIRECTORY (Vertical Minimalist Index) */}
             <section className="py-32 bg-slate-900 text-white">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="grid lg:grid-cols-12 gap-24">

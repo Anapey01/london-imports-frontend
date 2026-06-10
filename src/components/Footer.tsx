@@ -88,6 +88,8 @@ const Footer = () => {
                             <li><Link href="/contact" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Contact Support</Link></li>
                             <li><Link href="/terms" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Terms of Use</Link></li>
                             <li><Link href="/privacy" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Privacy Policy</Link></li>
+                            <li><Link href="/shipping-policy" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Shipping Policy</Link></li>
+                            <li><Link href="/refunds" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Refund Policy</Link></li>
                         </ul>
                     </div>
 
@@ -96,6 +98,8 @@ const Footer = () => {
                         <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary mb-8 block">Shipping & Delivery</span>
                         <ul className="space-y-4">
                             <li><Link href="/shipping" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Shipping Services</Link></li>
+                            <li><Link href="/shipping-policy" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Shipping Policy</Link></li>
+                            <li><Link href="/pricing" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Pricing Transparency</Link></li>
                             <li><Link href="/customs" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Customs Help</Link></li>
                             <li><Link href="/guide" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">How to Start Business</Link></li>
                             <li><Link href="/track" className="text-sm font-black text-brand-emerald dark:text-emerald-500 hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-4">Track My Items</Link></li>

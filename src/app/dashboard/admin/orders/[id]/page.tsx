@@ -101,8 +101,7 @@ export default function AdminOrderDetailPage() {
                 if (order) {
                     setOrder({
                         ...order,
-                        status: newStatus,
-                        state: newStatus
+                        status: newStatus
                     });
                 }
                 

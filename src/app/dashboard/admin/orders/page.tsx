@@ -4,7 +4,7 @@
  */
 'use client';
 
-import React, { useEffect, useState, useCallback, useMemo, useTransition } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import {
@@ -97,7 +97,7 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
 export default function AdminOrdersPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
-    const [isPending, startTransition] = useTransition();
+
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('All');
@@ -200,11 +200,10 @@ export default function AdminOrdersPage() {
     const filteredOrders = orders;
     
     const handleTabChange = useCallback((s: string) => {
-        startTransition(() => {
-            setStatusFilter(s);
-            setCurrentPage(1);
-            setSelectedIds(new Set());
-        });
+        setLoading(true);
+        setStatusFilter(s);
+        setCurrentPage(1);
+        setSelectedIds(new Set());
     }, []);
 
     const handleDelete = useCallback((id: string) => {
@@ -257,22 +256,18 @@ export default function AdminOrdersPage() {
 
     // BULK ACTIONS
     const toggleSelectAll = useCallback(() => {
-        startTransition(() => {
-            if (selectedIds.size === filteredOrders.length) {
-                setSelectedIds(new Set());
-            } else {
-                setSelectedIds(new Set(filteredOrders.map(o => o.id)));
-            }
-        });
+        if (selectedIds.size === filteredOrders.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filteredOrders.map(o => o.id)));
+        }
     }, [selectedIds.size, filteredOrders]);
 
     const toggleSelect = useCallback((id: string) => {
-        startTransition(() => {
-            setSelectedIds(prev => {
-                const s = new Set(prev);
-                if (s.has(id)) s.delete(id); else s.add(id);
-                return s;
-            });
+        setSelectedIds(prev => {
+            const s = new Set(prev);
+            if (s.has(id)) s.delete(id); else s.add(id);
+            return s;
         });
     }, []);
 
@@ -472,7 +467,7 @@ export default function AdminOrdersPage() {
             />
 
             {/* 4. MASTER REGISTRY TABLE */}
-            <div className={`bg-white border border-slate-100 overflow-hidden transition-opacity duration-300 ${isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            <div className="bg-white border border-slate-100 overflow-hidden transition-opacity duration-300 opacity-100">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
@@ -530,7 +525,10 @@ export default function AdminOrdersPage() {
                     </p>
                     <div className="flex gap-px bg-slate-100 border border-slate-100">
                         <button
-                            onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
+                            onClick={() => {
+                                setLoading(true);
+                                setCurrentPage(prev => Math.max(1, prev - 1));
+                            }}
                             disabled={currentPage === 1 || loading}
                             className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 disabled:opacity-30 transition-all"
                         >
@@ -545,7 +543,10 @@ export default function AdminOrdersPage() {
                             return (
                                 <button
                                     key={pageNum}
-                                    onClick={() => startTransition(() => setCurrentPage(pageNum))}
+                                    onClick={() => {
+                                        setLoading(true);
+                                        setCurrentPage(pageNum);
+                                    }}
                                     className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${currentPage === pageNum
                                         ? 'bg-slate-950 text-white'
                                         : 'bg-white text-slate-400 hover:text-slate-900'
@@ -556,7 +557,10 @@ export default function AdminOrdersPage() {
                             );
                         })}
                         <button
-                            onClick={() => startTransition(() => setCurrentPage(prev => Math.min(totalPages, prev + 1)))}
+                            onClick={() => {
+                                setLoading(true);
+                                setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                            }}
                             disabled={currentPage === totalPages || loading}
                             className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 disabled:opacity-30 transition-all"
                         >

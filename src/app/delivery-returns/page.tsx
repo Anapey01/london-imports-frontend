@@ -1,229 +1,190 @@
-/**
- * Delivery & Returns Page
- * Mimicking Jumia's delivery timeline and zone information
- */
 import React from 'react';
-import { ShoppingCart, Check, Truck, Package, MapPin, Clock, Info } from 'lucide-react';
+import { Metadata } from 'next';
+import { ShieldCheck, Truck, RotateCcw, AlertOctagon, HelpCircle, FileText, XCircle } from 'lucide-react';
 
-// ISR: Revalidate static info page every 7 days
-export const revalidate = 604800;
+export const revalidate = 604800; // Cache for 7 days
+
+export const metadata: Metadata = {
+    title: "Delivery & Returns Policy | NAA ATSWEI ENTERPRISE | London's Imports",
+    description: "Official delivery zones, shipping timelines, returns to China policy, wrong items, and damaged goods conditions for London's Imports.",
+};
 
 export default function DeliveryReturnsPage() {
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto space-y-8">
-
-                {/* Dark 3D Timeline Banner */}
-                <div className="bg-[#1f1f1f] rounded-2xl p-8 pt-10 text-center shadow-2xl relative overflow-hidden ring-1 ring-white/10">
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-16 tracking-wider font-sans uppercase">
-                        Delivery Timelines
-                    </h1>
-
-                    <div className="relative max-w-3xl mx-auto mb-8">
-                        {/* Connecting Line */}
-                        <div className="absolute top-[28px] left-4 right-4 h-[3px] bg-gray-700 -z-0 rounded-full"></div>
-
-                        <div className="grid grid-cols-4 gap-4 relative z-10">
-
-                            {/* Step 1: ORDER */}
-                            <div className="flex flex-col items-center group">
-                                <span className="text-[11px] md:text-xs font-black text-[#ff3385] mb-2 uppercase tracking-widest">Order</span>
-                                {/* Dot */}
-                                <div className="w-5 h-5 rounded-full bg-[#ff3385] border-4 border-[#1f1f1f] shadow-sm mb-4"></div>
-                                {/* Icon Box */}
-                                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-b from-[#ff3385] to-[#cc0052] rounded-2xl shadow-[0_8px_0_#99003d] flex items-center justify-center transform group-hover:translate-y-1 group-hover:shadow-[0_4px_0_#99003d] transition-all duration-200 border-t border-white/20">
-                                    <ShoppingCart className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-md" />
-                                </div>
-                            </div>
-
-                            {/* Step 2: CONFIRM */}
-                            <div className="flex flex-col items-center group">
-                                <span className="text-[11px] md:text-xs font-black text-[#ff9933] mb-2 uppercase tracking-widest">Confirm</span>
-                                {/* Dot */}
-                                <div className="w-5 h-5 rounded-full bg-[#ff9933] border-4 border-[#1f1f1f] shadow-sm mb-4"></div>
-                                {/* Icon Box */}
-                                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-b from-[#ff9933] to-[#cc6600] rounded-2xl shadow-[0_8px_0_#994d00] flex items-center justify-center transform group-hover:translate-y-1 group-hover:shadow-[0_4px_0_#994d00] transition-all duration-200 border-t border-white/20">
-                                    <Check className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-md" />
-                                </div>
-                            </div>
-
-                            {/* Step 3: SHIP */}
-                            <div className="flex flex-col items-center group">
-                                <span className="text-[11px] md:text-xs font-black text-[#ffcc00] mb-2 uppercase tracking-widest">Ship</span>
-                                {/* Dot */}
-                                <div className="w-5 h-5 rounded-full bg-[#ffcc00] border-4 border-[#1f1f1f] shadow-sm mb-4"></div>
-                                {/* Icon Box */}
-                                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-b from-[#ffcc00] to-[#b38f00] rounded-2xl shadow-[0_8px_0_#806600] flex items-center justify-center transform group-hover:translate-y-1 group-hover:shadow-[0_4px_0_#806600] transition-all duration-200 border-t border-white/20">
-                                    <Truck className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-md" />
-                                </div>
-                            </div>
-
-                            {/* Step 4: DELIVER */}
-                            <div className="flex flex-col items-center group">
-                                <span className="text-[11px] md:text-xs font-black text-[#33cc33] mb-2 uppercase tracking-widest">Deliver</span>
-                                {/* Dot */}
-                                <div className="w-5 h-5 rounded-full bg-[#33cc33] border-4 border-[#1f1f1f] shadow-sm mb-4"></div>
-                                {/* Icon Box */}
-                                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-b from-[#33cc33] to-[#248f24] rounded-2xl shadow-[0_8px_0_#196619] flex items-center justify-center transform group-hover:translate-y-1 group-hover:shadow-[0_4px_0_#196619] transition-all duration-200 border-t border-white/20">
-                                    <Package className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-md" />
-                                </div>
-                            </div>
-
+        <div className="min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-200 selection:bg-emerald-100 pb-32">
+            
+            {/* 1. Header & Introduction */}
+            <section className="pt-40 pb-24 border-b border-slate-50 dark:border-slate-900">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="mb-16">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="h-px w-12 bg-slate-900 dark:bg-white" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Policies / 04</span>
                         </div>
+                        <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white mb-8">
+                            Delivery & <br />
+                            <span className="italic font-light text-slate-200 dark:text-slate-800 uppercase tracking-widest text-[0.4em] block mt-4">Returns Policy.</span>
+                        </h1>
+                    </div>
+                    <div className="max-w-3xl">
+                        <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-[1.8]">
+                            We establish strict guidelines for regional logistics and returns. Below is our formal framework detailing local delivery parameters and returns processing.
+                        </p>
                     </div>
                 </div>
+            </section>
 
-                {/* Zones */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700">
-                    {/* Zone 1 */}
-                    <div className="bg-gray-800 text-white p-4 font-bold flex items-center gap-3">
-                        <MapPin className="w-6 h-6 text-gray-400" />
-                        <span className="text-lg">Zone 1 (Greater Accra)</span>
-                    </div>
-                    <div className="p-6 grid gap-6">
-                        <div className="flex justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-4">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300">Express Delivery</span>
-                            <div className="text-right">
-                                <span className="block text-2xl font-bold text-gray-900 dark:text-white">1 - 2</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Business Days</span>
-                            </div>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300">Standard Shipping</span>
-                            <div className="text-right">
-                                <span className="block text-2xl font-bold text-gray-900 dark:text-white">2 - 4</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Business Days</span>
-                            </div>
-                        </div>
-                    </div>
+            {/* 2. Delivery Zones Ledger */}
+            <section className="py-24 border-b border-slate-50 dark:border-slate-900 bg-slate-50/20 dark:bg-slate-900/10">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="mb-16">
+                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-4 block">Logistics Zones</span>
+                        <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Local Delivery Timelines</h2>
+                    </header>
 
-                    {/* Separator */}
-                    <div className="h-3 bg-gray-50 dark:bg-slate-900 border-y border-gray-100 dark:border-slate-700"></div>
-
-                    {/* Zone 2 */}
-                    <div className="bg-gray-800 text-white p-4 font-bold flex items-center gap-3">
-                        <Truck className="w-6 h-6 text-gray-400" />
-                        <span className="text-lg">Zone 2 (Regional Capitals)</span>
-                    </div>
-                    <div className="p-6 grid gap-6">
-                        <div className="flex justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-4">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300">Express Delivery</span>
-                            <div className="text-right">
-                                <span className="block text-2xl font-bold text-gray-900 dark:text-white">3 - 4</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Business Days</span>
-                            </div>
+                    <div className="grid md:grid-cols-3 gap-12 border-t border-slate-900 dark:border-slate-800 pt-16 mb-16">
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Zone 01: Greater Accra & Tema</span>
+                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">1 – 4 Business Days</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Delivered to your door or available for self-pickup at our Accra operating hub.
+                            </p>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300">Standard Shipping</span>
-                            <div className="text-right">
-                                <span className="block text-2xl font-bold text-gray-900 dark:text-white">5 - 7</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Business Days</span>
-                            </div>
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Zone 02: Regional Capitals</span>
+                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">3 – 7 Business Days</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Forwarded to main regional transit stations for client collection or regional delivery.
+                            </p>
+                        </div>
+                        <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Zone 03: Remote Areas</span>
+                            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">5 – 8 Business Days</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Handled through secondary logistics networks. Delivery dates depend on carrier schedules.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Separator */}
-                    <div className="h-3 bg-gray-50 dark:bg-slate-900 border-y border-gray-100 dark:border-slate-700"></div>
-
-                    {/* Zone 3 */}
-                    <div className="bg-gray-800 text-white p-4 font-bold flex items-center gap-3">
-                        <Clock className="w-6 h-6 text-gray-400" />
-                        <span className="text-lg">Zone 3 (Remote Areas)</span>
+                    <div className="p-8 border border-slate-100 dark:border-slate-900 bg-white dark:bg-slate-950/50 flex gap-6">
+                        <Truck className="w-6 h-6 text-slate-900 dark:text-white flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                            <strong>Standard Attempt Limits:</strong> Door deliveries will be attempted up to **3 times** over 3 consecutive business days. If undelivered, items are returned to our Accra warehouse. Items held at pickup stations must be collected within **5 days** of notification.
+                        </p>
                     </div>
-                    <div className="p-6 grid gap-6">
-                        <div className="flex justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-4">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300">Express Delivery</span>
-                            <div className="text-right">
-                                <span className="block text-2xl font-bold text-gray-900 dark:text-white">5 - 6</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Business Days</span>
+                </div>
+            </section>
+
+            {/* 3. Returns Policy Grid */}
+            <section className="py-24 border-b border-slate-50 dark:border-slate-900">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="mb-16">
+                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-4 block">Return Policy Rules</span>
+                        <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Returns & Sourcing Liabilities</h2>
+                    </header>
+
+                    <div className="grid md:grid-cols-2 gap-px bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:bg-slate-800">
+                        {/* Section A: Returns to China & Shipping Costs */}
+                        <div className="bg-white dark:bg-slate-950 p-12 md:p-16 flex flex-col justify-between">
+                            <div className="space-y-10">
+                                <div>
+                                    <div className="flex justify-between items-start mb-6">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Section 01</span>
+                                        <AlertOctagon className="w-6 h-6 text-slate-400" strokeWidth={1.5} />
+                                    </div>
+                                    <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4 italic">Returns to China</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                        Due to international shipping costs, supplier policies, and customs regulations, Londonsimports does not generally facilitate returns of goods back to China after delivery to Ghana. Sourcing risks should be considered prior to order payment.
+                                    </p>
+                                </div>
+                                <div className="border-t border-slate-50 dark:border-slate-900 pt-8">
+                                    <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4 italic">Return Shipping Responsibility</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                        Customers may return approved items directly to the Accra warehouse at no cost. Where a customer chooses to use a courier service, the customer is responsible for local return shipping costs unless otherwise agreed by Londonsimports. Sourcing and transaction handling fees are strictly non-refundable once incurred.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300">Standard Shipping</span>
-                            <div className="text-right">
-                                <span className="block text-2xl font-bold text-gray-900 dark:text-white">6 - 8</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Business Days</span>
+
+                        {/* Section B: Wrong Goods vs Damaged Goods */}
+                        <div className="bg-white dark:bg-slate-950 p-12 md:p-16 flex flex-col justify-between border-l border-slate-200 dark:border-slate-800">
+                            <div className="space-y-10">
+                                <div>
+                                    <div className="flex justify-between items-start mb-6">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Section 02</span>
+                                        <RotateCcw className="w-6 h-6 text-slate-400" strokeWidth={1.5} />
+                                    </div>
+                                    <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4 italic">Damaged & Defective Claims</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                        Claims relating to damaged, defective, missing, or incorrect items must be reported **within 72 hours of delivery or collection**. Claims submitted outside this 72-hour window will be rejected.
+                                    </p>
+                                </div>
+                                <div className="border-t border-slate-50 dark:border-slate-900 pt-8">
+                                    <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4 italic">Wrong Goods Received</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                        If you receive an incorrect item (wrong size, color, or model different from your invoice), report it **within 72 hours**. The product must remain **completely unused, in its original packaging, and with all labels/tags intact** to qualify for local exchange or refund processing.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                {/* Location Examples Table */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-slate-700">
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <Info className="w-5 h-5 text-gray-400" />
-                        Affected Locations
-                    </h3>
-                    <div className="overflow-x-auto rounded-lg border border-gray-100 dark:border-slate-700">
-                        <table className="w-full text-sm text-left text-gray-600 dark:text-slate-300">
-                            <thead className="bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white font-bold uppercase text-xs">
-                                <tr>
-                                    <th className="px-6 py-4">Zone 2 Examples</th>
-                                    <th className="px-6 py-4">Zone 3 Examples</th>
-                                    <th className="px-6 py-4">Zone 4 Examples</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                                <tr className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                                    <td className="px-6 py-4">Amasaman</td>
-                                    <td className="px-6 py-4">Ahafo</td>
-                                    <td className="px-6 py-4">Bono East</td>
-                                </tr>
-                                <tr className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                                    <td className="px-6 py-4">Dawhenya</td>
-                                    <td className="px-6 py-4">Ashanti</td>
-                                    <td className="px-6 py-4">North East</td>
-                                </tr>
-                                <tr className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                                    <td className="px-6 py-4">Dodowa</td>
-                                    <td className="px-6 py-4">Bono</td>
-                                    <td className="px-6 py-4">Northern</td>
-                                </tr>
-                                <tr className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                                    <td className="px-6 py-4">Kasoa</td>
-                                    <td className="px-6 py-4">Central</td>
-                                    <td className="px-6 py-4">Savannah</td>
-                                </tr>
-                            </tbody>
-                        </table>
+            {/* 4. Evidence & Exclusions */}
+            <section className="py-24 border-b border-slate-50 dark:border-slate-900 bg-slate-50/20 dark:bg-slate-900/10">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid md:grid-cols-2 gap-12">
+                        {/* Evidence Requirements */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 mb-4">
+                                <FileText className="w-6 h-6 text-slate-900 dark:text-white" strokeWidth={1.5} />
+                                <h3 className="text-2xl font-serif font-bold italic text-slate-900 dark:text-white">Evidence Requirements</h3>
+                            </div>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Customers are required to provide photographs, videos, packaging materials, waybills, or other supporting evidence when submitting a claim. Photographic evidence must clearly capture the issue alongside the shipping barcode/label on the package.
+                            </p>
+                        </div>
+
+                        {/* Exclusions */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 mb-4">
+                                <XCircle className="w-6 h-6 text-rose-500" strokeWidth={1.5} />
+                                <h3 className="text-2xl font-serif font-bold italic text-slate-900 dark:text-white">Claim Exclusions</h3>
+                            </div>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                Claims may be rejected where:
+                            </p>
+                            <ul className="list-disc pl-6 text-xs text-slate-500 dark:text-slate-400 space-y-2 font-medium">
+                                <li>The item has been used.</li>
+                                <li>The item has been altered, washed, or repaired.</li>
+                                <li>Original supplier packaging, barcodes, or boxes are unavailable.</li>
+                                <li>Damage resulted from misuse, handling, or assembly after delivery.</li>
+                                <li>The 72-hour reporting window has expired.</li>
+                            </ul>
+                        </div>
                     </div>
-                    <p className="mt-4 text-xs text-gray-500 dark:text-slate-500 italic">
-                        * Timelines quoted are business days (Monday to Friday), excluding weekends and holidays.
+                </div>
+            </section>
+
+            {/* 5. Support Callout */}
+            <section className="py-24 bg-slate-900 text-white">
+                <div className="max-w-7xl mx-auto px-6 text-center">
+                    <HelpCircle className="w-12 h-12 text-emerald-500 mx-auto mb-8" strokeWidth={1} />
+                    <h2 className="text-4xl md:text-5xl font-serif font-bold italic text-white tracking-tighter mb-6">Need Sourcing Assistance?</h2>
+                    <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-md mx-auto mb-8">
+                        Our support team is available to assist with order tracking, supplier clarifications, and claims audits.
                     </p>
-                </div>
-
-                {/* Delivery Methods Info */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-8 border border-gray-100 dark:border-slate-700">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 uppercase tracking-wide border-b border-gray-100 dark:border-slate-700 pb-4">
-                        Delivery Methods
-                    </h3>
-
-                    <div className="space-y-8">
-                        <div>
-                            <h4 className="font-bold text-gray-800 dark:text-slate-200 flex items-center gap-3 text-lg">
-                                <div className="w-8 h-8 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-500 flex items-center justify-center font-bold">1</div>
-                                Door Delivery
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-slate-400 mt-2 leading-relaxed ml-11">
-                                Delivery time starts from the day you place your order to the day one of our delivery associates makes a first attempt to deliver to you.
-                                <strong className="text-gray-900 dark:text-white block mt-1">Delivery will be attempted 3 times over 3 business days (7.00 am to 5.30pm) after which the item will be cancelled.</strong>
-                            </p>
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold text-gray-800 dark:text-slate-200 flex items-center gap-3 text-lg">
-                                <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center font-bold">2</div>
-                                Pickup Stations
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-slate-400 mt-2 leading-relaxed ml-11">
-                                Delivery time starts from the day you place your order to when you receive the first SMS to pick up your order from our pickup station.
-                                <strong className="text-gray-900 dark:text-white block mt-1">Ensure you pickup your item within 5 days, otherwise it will be cancelled.</strong>
-                            </p>
-                        </div>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="mailto:info@londonsimports.com" className="inline-block px-8 py-3 border border-white text-white uppercase tracking-widest text-[10px] font-black hover:bg-white hover:text-slate-900 transition-colors">
+                            Email Support
+                        </a>
+                        <a href="https://wa.me/233545247009" target="_blank" rel="noopener" className="inline-block px-8 py-3 bg-emerald-500 text-slate-950 uppercase tracking-widest text-[10px] font-black hover:bg-emerald-600 transition-colors">
+                            Contact WhatsApp
+                        </a>
                     </div>
                 </div>
-
-            </div>
+            </section>
         </div>
     );
 }
