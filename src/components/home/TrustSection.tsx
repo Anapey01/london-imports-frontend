@@ -63,7 +63,8 @@ export default function TrustSection() {
 
                 // Fetch latest 5-star product reviews
                 const reviewsRes = await productsAPI.latestReviews();
-                setReviews(reviewsRes.data.results || reviewsRes.data || []);
+                const reviewsData = reviewsRes.data?.results || reviewsRes.data;
+                setReviews(Array.isArray(reviewsData) ? reviewsData : []);
             } catch (err) {
                 console.error("Error loading trust signals:", err);
             }

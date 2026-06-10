@@ -37,8 +37,8 @@ export default function Navbar() {
         staleTime: 1000 * 60 * 60, // 1 hour
     });
     
-    // Safety check for hydration: render list only after mount
-    const categories = mounted ? (categoriesData || []) : [];
+    // Safety check for hydration: render list only after mount and ensure it is an array
+    const categories = (mounted && Array.isArray(categoriesData)) ? categoriesData : [];
 
     // Sync selectedCategory state with URL category parameter on path change
     useEffect(() => {
@@ -141,7 +141,7 @@ export default function Navbar() {
                                 className="relative flex items-center w-full bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary focus-within:bg-surface transition-all group"
                             >
                                 {/* Desktop Category Dropdown */}
-                                <div className="relative flex items-center shrink-0 pl-5 pr-3 border-r border-border-standard/80 self-stretch my-1.5">
+                                <div className="relative flex items-center shrink-0 bg-slate-100 dark:bg-slate-800/80 pl-6 pr-3 -ml-1 -my-1 self-stretch rounded-l-full border-r border-border-standard/80">
                                     <select
                                         value={selectedCategory}
                                         onChange={(e) => setSelectedCategory(e.target.value)}
@@ -237,7 +237,7 @@ export default function Navbar() {
                             className="relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary transition-all"
                         >
                             {/* Mobile Category Dropdown */}
-                            <div className="relative flex items-center shrink-0 pl-4 pr-2 border-r border-border-standard/80 self-stretch my-1">
+                            <div className="relative flex items-center shrink-0 bg-slate-100 dark:bg-slate-800/80 pl-4 pr-2 -ml-1 -my-1 self-stretch rounded-l-full border-r border-border-standard/80">
                                 <select
                                     value={selectedCategory}
                                     onChange={(e) => setSelectedCategory(e.target.value)}

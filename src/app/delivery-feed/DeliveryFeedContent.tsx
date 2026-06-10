@@ -26,7 +26,7 @@ export default function DeliveryFeedContent() {
         staleTime: 1000 * 60 * 10, // Cache client-side for 10 minutes
     });
 
-    const photos: DeliveryPhoto[] = photosData || [];
+    const photos: DeliveryPhoto[] = Array.isArray(photosData) ? photosData : [];
 
     return (
         <div className="min-h-screen bg-surface">
