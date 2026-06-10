@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { formatPrice } from '@/lib/format';
 import { type CartItem } from '@/stores/cartStore';
 import { type OrderItem } from '@/types';
@@ -89,19 +90,40 @@ export default function ReviewItemsStep({
                             ))}
                     </div>
                     
-                    <div className="pt-6 border-t border-border-standard flex items-center justify-between">
+                    <div className="pt-6 border-t border-border-standard flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Ready for shipping</span>
                         </div>
-                        <button 
-                            type="button"
-                            onClick={() => onSubmit()}
-                            disabled={isLoading}
-                            className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100"
-                        >
-                            {isLoading ? 'Processing...' : 'Place your order'}
-                        </button>
+                        <div className="flex flex-col items-center sm:items-end gap-2.5 w-full sm:w-auto max-w-md">
+                            <button 
+                                type="button"
+                                onClick={() => onSubmit()}
+                                disabled={isLoading}
+                                className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100 w-full sm:w-auto text-center"
+                            >
+                                {isLoading ? 'Processing...' : 'Place your order'}
+                            </button>
+                            <p className="text-[10px] text-content-secondary text-center sm:text-right leading-relaxed font-medium">
+                                By making payment, you agree to our{' '}
+                                <Link href="/terms" className="underline hover:text-content-primary transition-colors">
+                                    Terms
+                                </Link>
+                                ,{' '}
+                                <Link href="/privacy" className="underline hover:text-content-primary transition-colors">
+                                    Privacy Policy
+                                </Link>
+                                ,{' '}
+                                <Link href="/refunds" className="underline hover:text-content-primary transition-colors">
+                                    Refund Policy
+                                </Link>
+                                , and{' '}
+                                <Link href="/shipping-policy" className="underline hover:text-content-primary transition-colors">
+                                    Shipping Policy
+                                </Link>
+                                .
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

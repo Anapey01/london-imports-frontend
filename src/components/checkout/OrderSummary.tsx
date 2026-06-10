@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ShieldCheck, Truck } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
 import type { CartItem } from '@/stores/cartStore';
@@ -95,8 +96,24 @@ const OrderSummary = ({
                     )}
                 </button>
 
-                <p className="text-[9px] text-content-secondary text-center leading-relaxed font-medium">
-                    By placing your order, you agree to our <span className="underline cursor-pointer">Terms of Use</span> and <span className="underline cursor-pointer">Privacy Policy</span>.
+                <p className="text-[10px] text-content-secondary text-center leading-relaxed font-medium">
+                    By making payment, you agree to our{' '}
+                    <Link href="/terms" className="underline hover:text-content-primary transition-colors">
+                        Terms
+                    </Link>
+                    ,{' '}
+                    <Link href="/privacy" className="underline hover:text-content-primary transition-colors">
+                        Privacy Policy
+                    </Link>
+                    ,{' '}
+                    <Link href="/refunds" className="underline hover:text-content-primary transition-colors">
+                        Refund Policy
+                    </Link>
+                    , and{' '}
+                    <Link href="/shipping-policy" className="underline hover:text-content-primary transition-colors">
+                        Shipping Policy
+                    </Link>
+                    .
                 </p>
             </div>
 
