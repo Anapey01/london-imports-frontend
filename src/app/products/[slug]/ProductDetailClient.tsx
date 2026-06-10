@@ -13,9 +13,8 @@ import StickyMobileCart from '@/components/StickyMobileCart';
 import VariantSelector from '@/components/product/VariantSelector';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import { formatPrice } from '@/lib/format';
-import { trackViewItem, trackAddToCart, trackWhatsAppContact, trackEvent, trackProductAffinity } from '@/lib/analytics';
 import { useToast } from '@/components/Toast';
-import { GroupBuyProgress } from '@/components/GroupBuyProgress';
+import { trackViewItem, trackAddToCart, trackWhatsAppContact, trackEvent, trackProductAffinity } from '@/lib/analytics';
 import { siteConfig } from '@/config/site';
 import PropensityTracker from '@/components/analytics/PropensityTracker';
 
@@ -446,13 +445,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                             effectiveRating={Number(effectiveRating)} 
                         />
 
-                        <div className="border-y border-slate-50 dark:border-slate-900 py-0">
-                            <GroupBuyProgress
-                                current={product.reservations_count || 0}
-                                target={product.target_quantity || 100}
-                                variant="compact"
-                            />
-                        </div>
+
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {product.available_colors && product.available_colors.length > 0 && (
