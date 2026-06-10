@@ -30,6 +30,7 @@ interface DeliveryPhoto {
     id: string;
     image: string;
     caption: string;
+    category: string;
     order: number;
     is_active: boolean;
     created_at: string;
@@ -47,6 +48,7 @@ export default function AdminGalleryPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingPhoto, setEditingPhoto] = useState<DeliveryPhoto | null>(null);
     const [caption, setCaption] = useState('');
+    const [category, setCategory] = useState('DELIVERY');
     const [order, setOrder] = useState(0);
     const [isActive, setIsActive] = useState(true);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -97,6 +99,7 @@ export default function AdminGalleryPage() {
     const handleOpenAdd = () => {
         setEditingPhoto(null);
         setCaption('');
+        setCategory('DELIVERY');
         setOrder(photos.length ? Math.max(...photos.map(p => p.order)) + 10 : 10);
         setIsActive(true);
         setImageFile(null);
@@ -107,6 +110,7 @@ export default function AdminGalleryPage() {
     const handleOpenEdit = (photo: DeliveryPhoto) => {
         setEditingPhoto(photo);
         setCaption(photo.caption || '');
+        setCategory(photo.category || 'DELIVERY');
         setOrder(photo.order);
         setIsActive(photo.is_active);
         setImageFile(null);
@@ -159,6 +163,7 @@ export default function AdminGalleryPage() {
 
             const payload = {
                 caption,
+                category,
                 order,
                 is_active: isActive,
                 image: imageUrl
@@ -279,6 +284,16 @@ export default function AdminGalleryPage() {
                             <div className="absolute top-4 left-4 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 text-[8px] font-mono text-white tracking-widest flex items-center gap-2">
                                 <Layers className="w-3 h-3 text-emerald-400" />
                                 ORDER: {photo.order}
+                            </div>
+
+                            {/* Category Badge */}
+                            <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 text-[8px] font-mono text-white tracking-widest uppercase">
+                                {photo.category === 'DELIVERY' ? 'DELIVERY PROOF' :
+                                 photo.category === 'TEAM' ? 'OUR TEAM' :
+                                 photo.category === 'OFFICE' ? 'OUR OFFICE' :
+                                 photo.category === 'WAREHOUSE' ? 'OUR WAREHOUSE' :
+                                 photo.category === 'PACKAGING' ? 'PACKAGING OP' :
+                                 photo.category === 'PICKUP' ? 'CUSTOMER PICKUP' : photo.category || 'DELIVERY'}
                             </div>
 
                             {/* Action icons overlay */}
@@ -417,6 +432,26 @@ export default function AdminGalleryPage() {
                                             </>
                                         )}
                                     </div>
+                                </div>
+
+                                {/* Category */}
+                                <div className="space-y-2">
+                                    <label htmlFor="category" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+                                        Asset Category
+                                    </label>
+                                    <select
+                                        id="category"
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 uppercase tracking-wider bg-white transition-colors"
+                                    >
+                                        <option value="DELIVERY">Delivery Proof (Homepage)</option>
+                                        <option value="TEAM">Our Team (About Page)</option>
+                                        <option value="OFFICE">Our Office (About Page)</option>
+                                        <option value="WAREHOUSE">Our Warehouse (About Page)</option>
+                                        <option value="PACKAGING">Packaging Operations (About Page)</option>
+                                        <option value="PICKUP">Customer Pickup (About Page)</option>
+                                    </select>
                                 </div>
 
                                 {/* Caption */}

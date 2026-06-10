@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ordersAPI } from '@/lib/api';
+import { ordersAPI, productsAPI } from '@/lib/api';
 
 interface AboutStats {
     regions: number;
@@ -18,6 +18,16 @@ interface AboutStats {
     orders: number;
     products: number;
     authenticity: number;
+}
+
+interface DeliveryPhoto {
+    id: string;
+    image: string;
+    caption: string;
+    category: string;
+    order: number;
+    is_active: boolean;
+    created_at: string;
 }
 
 export default function AboutPageContent() {
@@ -28,10 +38,12 @@ export default function AboutPageContent() {
         products: 0,
         authenticity: 100
     });
+    const [activeTab, setActiveTab] = useState<'ALL' | 'TEAM' | 'OFFICE' | 'WAREHOUSE' | 'PACKAGING' | 'PICKUP'>('ALL');
+    const [operationalPhotos, setOperationalPhotos] = useState<DeliveryPhoto[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        const fetchStats = async () => {
+        const fetchStatsAndPhotos = async () => {
             try {
                 const response = await ordersAPI.getPublicStats();
                 if (response.data) {
@@ -43,13 +55,23 @@ export default function AboutPageContent() {
                         authenticity: response.data.authenticity_rate || 100,
                     });
                 }
-                setIsLoaded(true);
             } catch (error) {
                 console.error('Failed to fetch stats:', error);
-                setIsLoaded(true); 
             }
+
+            try {
+                const response = await productsAPI.deliveryPhotos();
+                const allPhotos = response.data.results || response.data || [];
+                // Filter out 'DELIVERY' category since that goes on the homepage
+                const opPhotos = allPhotos.filter((p: any) => p.category !== 'DELIVERY');
+                setOperationalPhotos(opPhotos);
+            } catch (error) {
+                console.error('Failed to fetch operational photos:', error);
+            }
+
+            setIsLoaded(true);
         };
-        fetchStats();
+        fetchStatsAndPhotos();
     }, []);
 
     const ghanaRegions = [
@@ -270,6 +292,112 @@ export default function AboutPageContent() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 5.5 OPERATIONAL GALLERY (Behind the Scenes Proof) */}
+            <section className="py-32 border-b border-slate-50 dark:border-slate-900 bg-slate-50/10 dark:bg-slate-900/5">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+                        <div>
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Operational Evidence</span>
+                            </div>
+                            <h2 className="text-5xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Behind The Scenes</h2>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-4 max-w-xl">
+                                Real business presence. See our active team, sorting offices, warehouse operations, packaging processes, and client pickups in real time.
+                            </p>
+                        </div>
+                    </header>
+
+                    {/* Tab Selectors */}
+                    <div className="flex flex-wrap gap-3 mb-12 border-b border-slate-50 dark:border-slate-900 pb-6">
+                        {[
+                            { key: 'ALL', label: 'All Operations' },
+                            { key: 'TEAM', label: 'Our Team' },
+                            { key: 'OFFICE', label: 'Our Office' },
+                            { key: 'WAREHOUSE', label: 'Warehouses' },
+                            { key: 'PACKAGING', label: 'Packaging' },
+                            { key: 'PICKUP', label: 'Client Pickups' }
+                        ].map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key as any)}
+                                className={`px-5 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] transition-all border ${
+                                    activeTab === tab.key
+                                        ? 'bg-slate-950 text-white border-slate-950'
+                                        : 'bg-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white border-slate-100 dark:border-slate-800'
+                                }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Gallery Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {/* Filtered Photos */}
+                        {operationalPhotos.filter(p => activeTab === 'ALL' ? true : p.category === activeTab).map((photo) => (
+                            <div key={photo.id} className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 flex flex-col justify-between group">
+                                <div className="aspect-[4/3] relative w-full bg-slate-50 dark:bg-slate-900 overflow-hidden">
+                                    <Image
+                                        src={photo.image}
+                                        alt={photo.caption || 'Operational photo'}
+                                        fill
+                                        className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                                    />
+                                    <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 text-[8px] font-mono text-white tracking-widest uppercase">
+                                        {photo.category === 'TEAM' ? 'OUR TEAM' :
+                                         photo.category === 'OFFICE' ? 'OUR OFFICE' :
+                                         photo.category === 'WAREHOUSE' ? 'OUR WAREHOUSE' :
+                                         photo.category === 'PACKAGING' ? 'PACKAGING OP' :
+                                         photo.category === 'PICKUP' ? 'CUSTOMER PICKUP' : photo.category}
+                                    </div>
+                                </div>
+                                <div className="p-6">
+                                    <p className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-slate-100 line-clamp-2">
+                                        {photo.caption || "London's Imports Operations"}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* Fallback Cards when category is empty */}
+                        {operationalPhotos.filter(p => activeTab === 'ALL' ? true : p.category === activeTab).length === 0 && (
+                            <div className="col-span-full py-20 text-center border border-dashed border-slate-100 dark:border-slate-800 px-6">
+                                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">No Active Photos Uploaded Yet</p>
+                                <p className="text-[10px] text-slate-300 font-bold uppercase tracking-tight mb-8">
+                                    Real operational photos are dynamically updated by the admin team via the management panel.
+                                </p>
+                                <div className="max-w-md mx-auto grid grid-cols-1 gap-4">
+                                    {activeTab !== 'ALL' && (
+                                        <div className="bg-slate-50 dark:bg-slate-900/50 p-8 border border-slate-100 dark:border-slate-800 text-left space-y-4">
+                                            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                                                {activeTab === 'TEAM' && '1. Sourcing & Support Team'}
+                                                {activeTab === 'OFFICE' && '2. Sourcing Office'}
+                                                {activeTab === 'WAREHOUSE' && '3. Consolidation Warehouse'}
+                                                {activeTab === 'PACKAGING' && '4. Neutral Packaging & Quality Check'}
+                                                {activeTab === 'PICKUP' && '5. Customer Pickup Hub'}
+                                            </h4>
+                                            <p className="text-xs text-slate-500 leading-relaxed">
+                                                {activeTab === 'TEAM' && 'Our team consists of dedicated logistics managers and support coordinators based at our Danfa Headquarters and Guangzhou hub, directing weekly shipments.'}
+                                                {activeTab === 'OFFICE' && 'Our office in Danfa, Accra, serves as the central hub for local delivery coordination, tracking updates, and manual order assistance.'}
+                                                {activeTab === 'WAREHOUSE' && 'We process and consolidate goods at our secure Guangzhou facilities, checking dimensions and tracking IDs to calculate final shipping costs.'}
+                                                {activeTab === 'PACKAGING' && 'Every package undergoes quality checks and is wrapped in neutral, high-durability packaging to shield it from cargo handling.'}
+                                                {activeTab === 'PICKUP' && 'Customers are welcome to visit our Danfa outlet for manual pickups, saving on local shipping couriers.'}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {activeTab === 'ALL' && (
+                                        <div className="text-[10px] font-mono text-slate-300 dark:text-slate-700">
+                                            ADD PHOTOS VIA [ADMIN DASHBOARD &gt; GALLERY] TO POPULATE THIS VIEW
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>

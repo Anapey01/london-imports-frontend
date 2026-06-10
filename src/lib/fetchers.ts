@@ -324,8 +324,11 @@ export async function getHeroBanners() {
     }
 }
 
-export async function getDeliveryPhotos() {
-    const url = `${API_BASE_URL}/products/delivery-photos/`;
+export async function getDeliveryPhotos(category?: string) {
+    let url = `${API_BASE_URL}/products/delivery-photos/`;
+    if (category) {
+        url += `?category=${category}`;
+    }
     try {
         const res = await fetchWithRetry(url, {
             next: { revalidate: 86400 } // Revalidate every 24 hours
@@ -338,7 +341,7 @@ export async function getDeliveryPhotos() {
         const data = await res.json();
         return data.results || data || [];
     } catch (e) {
-        console.error("[SSR] Exception fetching delivery photos:", e);
+        console.error(`[SSR] Exception fetching delivery photos for category ${category}:`, e);
         if (process.env.NEXT_IS_BUILDING === 'true') {
             return [];
         }

@@ -123,7 +123,7 @@ export const productsAPI = {
   recordSearch: (query: string) => api.post('/products/record-search/', { query }),
   addReview: (slug: string, data: { rating: number; comment: string }) => 
     api.post(`/products/${slug}/reviews/`, data),
-  deliveryPhotos: () => api.get('/products/delivery-photos/'),
+  deliveryPhotos: (params?: unknown) => api.get('/products/delivery-photos/', { params }),
   latestReviews: () => api.get('/products/reviews/latest/'),
 };
 

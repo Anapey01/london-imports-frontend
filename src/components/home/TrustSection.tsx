@@ -68,7 +68,7 @@ export default function TrustSection() {
                 setReviews(reviewsRes.data.results || reviewsRes.data || []);
 
                 // Fetch delivery gallery photos
-                const photosRes = await productsAPI.deliveryPhotos();
+                const photosRes = await productsAPI.deliveryPhotos({ category: 'DELIVERY' });
                 setPhotos(photosRes.data.results || photosRes.data || []);
             } catch (err) {
                 console.error("Error loading trust signals:", err);
