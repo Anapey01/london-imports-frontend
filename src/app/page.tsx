@@ -9,11 +9,11 @@ import ProductGridSection from '@/components/home/ProductGridSection';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "London's Imports | China to Ghana Shopping & Shipping Center",
-  description: "Ghana's #1 shopping service and shipping system bridging China manufacturing and Ghana retail. Trusted by 5,000+ importers. Buy from 1688 and Alibaba with Mobile Money.",
+  title: "London's Imports | Global Sourcing & Shipping Center",
+  description: "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Trusted by 5,000+ business owners.",
   openGraph: {
-    title: "London's Imports | Premium China to Ghana Shopping",
-    description: "Secure, factory-direct shopping service from Guangzhou to Accra. Pay with Momo, track your batch in real-time.",
+    title: "London's Imports | Premium Global Sourcing & Shipping",
+    description: "Secure, global sourcing and shipping service delivering directly to your door in Ghana. Pay with Momo, track your batch in real-time.",
     url: 'https://londonsimports.com',
     siteName: "London's Imports",
     images: [

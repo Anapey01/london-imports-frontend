@@ -28,8 +28,8 @@ export default function HomeSEOHeader() {
 
                         {/* Refined H2: High-Contrast Editorial Size */}
                         <h2 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight text-content-primary mb-6">
-                            Mini Importation <span className="italic font-light text-content-secondary/40 mx-1">&amp;</span> <br className="hidden md:block" />
-                            Chinese Shipping for <span className="relative">
+                            Global Sourcing <span className="italic font-light text-content-secondary/40 mx-1">&amp;</span> <br className="hidden md:block" />
+                            International Shipping for <span className="relative">
                                 Accra.
                                 <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-brand-emerald/10" />
                             </span>
@@ -37,7 +37,7 @@ export default function HomeSEOHeader() {
 
                         {/* Compressed Value Prop - 'Perceivable' Hardened */}
                         <p className="text-sm md:text-base text-content-secondary font-medium leading-relaxed max-w-lg mb-8">
-                            Bridging the 12,000km distance between <span className="text-content-primary font-bold italic">China’s factory floors</span> and your doorstep in Ghana. Weekly air shipments from Guangzhou. Secure 1688 sourcing. 
+                            Bridging the distance between <span className="text-content-primary font-bold italic">global manufacturing markets</span> and your doorstep in Ghana. Weekly air shipments from international hubs. Secure product sourcing and logistics.
                         </p>
 
                         {/* Minimalist CTA - 'Perceivable' Hardened */}

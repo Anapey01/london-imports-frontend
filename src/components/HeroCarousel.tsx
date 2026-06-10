@@ -117,7 +117,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
             onBlur={() => setIsHovered(false)}
         >
             {/* 0. SEO Authority Header - Visually Hidden H1 for WCAG 1.3.1 */}
-            <h1 className="sr-only">London&apos;s Imports - Premium China to Ghana Shopping &amp; Shipping</h1>
+            <h1 className="sr-only">London&apos;s Imports - Global Sourcing &amp; International Shipping</h1>
 
             <div className="relative h-[400px] sm:h-[500px] md:h-[600px]">
                 {slides.map((slide, index) => {

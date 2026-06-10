@@ -3,7 +3,7 @@
  * Use this to avoid hardcoding strings everywhere!
  */
 export const siteConfig = {
-    name: "London's Imports | China to Ghana Shopping & Logistics",
+    name: "London's Imports | Global Sourcing & Logistics",
     baseUrl: 'https://londonsimports.com',
     apiUrl: process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1' : 'https://api.londonsimports.com/api/v1'),
     whatsapp: '233545247009', // Main Shop Line
@@ -11,7 +11,7 @@ export const siteConfig = {
     momoNumber: '055 812 3456', // Direct Mobile Money line
     momoName: "London's Imports Hub",
     supportEmail: 'info@londonsimports.com',
-    description: "Ghana's easiest way to buy from China. Shop 1688 and Alibaba with Momo. Fast shipping to Accra & Kumasi. Reliable mini-importation for all businesses.",
+    description: "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Fast, secure, and reliable international shipping.",
     defaults: {
         deliveryWeeks: 3,
         preOrderCutoffDays: 14,
