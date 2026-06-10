@@ -51,9 +51,7 @@ interface UserReview {
 export default function TrustSection() {
     const [stats, setStats] = useState<PlatformStats | null>(null);
     const [reviews, setReviews] = useState<UserReview[]>([]);
-    const [photos, setPhotos] = useState<DeliveryPhoto[]>([]);
     const [activeReviewIdx, setActiveReviewIdx] = useState(0);
-    const [lightboxImage, setLightboxImage] = useState<{ url: string; caption: string } | null>(null);
 
     // Fetch data dynamically from backend
     useEffect(() => {
@@ -66,10 +64,6 @@ export default function TrustSection() {
                 // Fetch latest 5-star product reviews
                 const reviewsRes = await productsAPI.latestReviews();
                 setReviews(reviewsRes.data.results || reviewsRes.data || []);
-
-                // Fetch delivery gallery photos
-                const photosRes = await productsAPI.deliveryPhotos({ category: 'DELIVERY' });
-                setPhotos(photosRes.data.results || photosRes.data || []);
             } catch (err) {
                 console.error("Error loading trust signals:", err);
             }
@@ -77,18 +71,6 @@ export default function TrustSection() {
 
         fetchTrustData();
     }, []);
-
-    const galleryRef = useRef<HTMLDivElement>(null);
-
-    const scrollGallery = (direction: 'left' | 'right') => {
-        if (galleryRef.current) {
-            const amount = 340; // width of one card + gap
-            galleryRef.current.scrollBy({
-                left: direction === 'left' ? -amount : amount,
-                behavior: 'smooth'
-            });
-        }
-    };
 
     const nextReview = () => {
         if (reviews.length > 0) {
@@ -324,117 +306,31 @@ export default function TrustSection() {
                     </div>
                 </div>
 
-                {/* 4. REAL-WORLD DELIVERY PROOF GALLERY */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between">
+                {/* 4. REAL-WORLD DELIVERY PROOF TEASER */}
+                <div className="bg-primary-surface border border-primary-surface/60 rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 mt-12">
+                    <div className="max-w-xl space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-content-primary">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-content-primary">
                                 LOGISTICS & DELIVERY FEED
                             </h3>
                         </div>
-                        
-                        {/* Scroll buttons */}
-                        {photos.length > 0 && (
-                            <div className="flex items-center gap-2">
-                                <button 
-                                    onClick={() => scrollGallery('left')} 
-                                    className="p-2 border border-border-standard hover:border-content-primary transition-all rounded-full"
-                                    aria-label="Scroll gallery left"
-                                >
-                                    <ChevronLeft className="w-3.5 h-3.5 text-content-primary" />
-                                </button>
-                                <button 
-                                    onClick={() => scrollGallery('right')} 
-                                    className="p-2 border border-border-standard hover:border-content-primary transition-all rounded-full"
-                                    aria-label="Scroll gallery right"
-                                >
-                                    <ChevronRight className="w-3.5 h-3.5 text-content-primary" />
-                                </button>
-                            </div>
-                        )}
+                        <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-content-primary font-sans">
+                            Real-World <span className="font-serif italic font-normal text-brand-emerald">Delivery Proof</span>
+                        </h3>
+                        <p className="text-sm text-content-secondary leading-relaxed font-medium">
+                            We bridge global factory floors and Ghana retail with verified data, logistics transparency, and direct shipping proof. View our live delivery feed to see weekly consolidated air and sea cargo shipments arriving at our Accra & Kumasi hubs.
+                        </p>
                     </div>
-
-                    {/* Gallery scroll viewport */}
-                    <div 
-                        ref={galleryRef}
-                        className="flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-hide scroll-smooth snap-x snap-mandatory"
+                    <Link
+                        href="/delivery-feed"
+                        className="bg-slate-950 dark:bg-slate-800 text-white px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700 whitespace-nowrap shadow-lg shadow-slate-950/10 flex items-center gap-2 group"
                     >
-                        {photos.map((photo) => (
-                            <div 
-                                key={photo.id}
-                                onClick={() => setLightboxImage({ url: photo.image, caption: photo.caption })}
-                                className="min-w-[280px] md:min-w-[320px] aspect-[4/3] relative border border-border-standard bg-slate-50 cursor-pointer overflow-hidden group snap-start"
-                            >
-                                <Image
-                                    src={photo.image}
-                                    alt={photo.caption || 'Delivery photo'}
-                                    fill
-                                    className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                                />
-                                
-                                {/* Hover overlay for caption */}
-                                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                                    {photo.caption && (
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-white">
-                                            {photo.caption}
-                                        </p>
-                                    )}
-                                    <span className="text-[8px] font-mono text-emerald-400 tracking-widest uppercase mt-1 flex items-center gap-1.5">
-                                        View Full Proof <ExternalLink className="w-2.5 h-2.5" />
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-
-                        {photos.length === 0 && (
-                            <div className="w-full py-16 text-center border border-dashed border-border-standard col-span-full">
-                                <Package className="w-8 h-8 text-border-standard mx-auto mb-3" />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/40">Logistics feed updating shortly...</p>
-                            </div>
-                        )}
-                    </div>
+                        <span>View Delivery Feed</span>
+                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </Link>
                 </div>
             </div>
-
-            {/* 5. LIGHTBOX MODAL */}
-            {lightboxImage && (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-                    {/* Backdrop */}
-                    <div 
-                        className="absolute inset-0 bg-slate-950/80 backdrop-blur-md cursor-zoom-out"
-                        onClick={() => setLightboxImage(null)}
-                    />
-                    
-                    {/* Modal Content */}
-                    <div className="relative max-w-4xl w-full max-h-[85vh] flex flex-col items-center justify-center z-10 animate-scale-in">
-                        <button 
-                            onClick={() => setLightboxImage(null)}
-                            className="absolute -top-12 right-0 p-2.5 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all z-20 focus:outline-none"
-                            title="Close preview"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-
-                        <div className="relative w-full aspect-[4/3] md:aspect-[16/10] bg-black border border-white/10 overflow-hidden shadow-2xl">
-                            <Image
-                                src={lightboxImage.url}
-                                alt={lightboxImage.caption || 'Delivery Proof'}
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-
-                        {lightboxImage.caption && (
-                            <div className="mt-4 px-6 py-2 bg-slate-900/60 backdrop-blur-md border border-white/5 text-center">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white">
-                                    {lightboxImage.caption}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
         </section>
     );
 }
