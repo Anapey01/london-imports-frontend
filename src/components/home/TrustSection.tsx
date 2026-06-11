@@ -141,7 +141,7 @@ export default function TrustSection() {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 border-y border-border-standard py-12">
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-brand-emerald tracking-tighter">
-                            {stats ? `${stats.orders_fulfilled.toLocaleString()}+` : "5,000+"}
+                            {stats && stats.orders_fulfilled != null ? `${stats.orders_fulfilled.toLocaleString()}+` : "5,000+"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Successful Shipments</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Consolidated air and sea cargo delivered to Accra & Kumasi.</p>
@@ -149,7 +149,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-content-primary tracking-tighter">
-                            {stats ? `${stats.years_in_operation}+` : "4+"} Years
+                            {stats && stats.years_in_operation != null ? `${stats.years_in_operation}+` : "4+"} Years
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">In Active Operation</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Providing reliable logistic links and sourcing hubs since 2022.</p>
@@ -157,7 +157,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-content-primary tracking-tighter">
-                            {stats ? `${stats.verified_vendors}+` : "24+"}
+                            {stats && stats.verified_vendors != null ? `${stats.verified_vendors}+` : "24+"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Verified Factories</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Direct relationship with authenticated global manufacturers.</p>
@@ -165,7 +165,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-brand-emerald tracking-tighter">
-                            {stats ? `${stats.authenticity_rate}%` : "99.9%"}
+                            {stats && stats.authenticity_rate != null ? `${stats.authenticity_rate}%` : "99.9%"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Authenticity Rate</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Visual quality check and inventory match at our international sorting hubs.</p>
@@ -308,27 +308,27 @@ export default function TrustSection() {
                 </div>
 
                 {/* 4. REAL-WORLD DELIVERY PROOF TEASER */}
-                <div className="bg-primary-surface border border-primary-surface/60 rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 mt-12">
-                    <div className="max-w-xl space-y-4">
-                        <div className="flex items-center gap-3">
-                            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-content-primary">
-                                LOGISTICS & DELIVERY FEED
-                            </h3>
+                <div className="bg-surface-card border border-border-standard rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 mt-12">
+                    <div className="max-w-lg space-y-2.5">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1 h-1 rounded-full bg-brand-emerald" />
+                            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-brand-emerald">
+                                Logistics Feed
+                            </span>
                         </div>
-                        <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-content-primary font-sans">
+                        <h3 className="text-xl md:text-2xl font-bold tracking-tight text-content-primary font-sans">
                             Real-World <span className="font-serif italic font-normal text-brand-emerald">Delivery Proof</span>
                         </h3>
-                        <p className="text-sm text-content-secondary leading-relaxed font-medium">
-                            We bridge global factory floors and Ghana retail with verified data, logistics transparency, and direct shipping proof. View our live delivery feed to see weekly consolidated air and sea cargo shipments arriving at our Accra & Kumasi hubs.
+                        <p className="text-xs text-content-secondary leading-relaxed font-medium">
+                            Live shipping updates. View weekly air and sea cargo arrivals at our Accra & Kumasi hubs.
                         </p>
                     </div>
                     <Link
                         href="/delivery-feed"
-                        className="bg-slate-950 dark:bg-slate-800 text-white px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700 whitespace-nowrap shadow-lg shadow-slate-950/10 flex items-center gap-2 group"
+                        className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap shadow-md flex items-center gap-2 group self-start sm:self-auto"
                     >
-                        <span>View Delivery Feed</span>
-                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        <span>View Live Feed</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </Link>
                 </div>
             </div>
