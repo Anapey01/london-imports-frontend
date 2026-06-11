@@ -250,7 +250,7 @@ export default function AboutPageContent() {
                         </div>
                         <div className="space-y-6">
                             <span className="text-xs font-black uppercase tracking-widest text-slate-500 block">Orders Delivered</span>
-                            <div className="text-8xl font-serif font-black tracking-tighter text-white tabular-nums border-b border-white/10 pb-8">{isLoaded ? (stats.orders >= 1000 ? (stats.orders / 1000).toFixed(1) + "k" : stats.orders) : '--'}</div>
+                            <div className="text-8xl font-serif font-black tracking-tighter text-white tabular-nums border-b border-white/10 pb-8">{isLoaded ? `${stats.orders.toLocaleString()}+` : '--'}</div>
                             <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-relaxed italic">Verified Success Rate</p>
                         </div>
                         <div className="space-y-6">
