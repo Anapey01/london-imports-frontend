@@ -110,7 +110,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
 
     return (
         <div 
-            className="relative w-full max-w-7xl mx-auto overflow-hidden bg-surface border-b border-border-standard group/carousel"
+            className="relative w-full overflow-hidden bg-surface border-b border-border-standard group/carousel"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onFocus={() => setIsHovered(true)}
@@ -179,7 +179,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                      </div>
                                 </div>
 
-                            </div>
+                             </div>
                         </div>
                     );
                 })}
@@ -187,27 +187,31 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
 
             {/* Pagination & Timing Controls - 'Operable' Hardened 2.2.2 */}
             {slides.length > 1 && (
-                <div className="absolute bottom-12 left-12 flex items-center gap-8 z-40">
-                    <div className="flex gap-4">
-                        {slides.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => goToSlide(index)}
-                                className={`h-0.5 transition-all duration-700 standard-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
-                                aria-label={`Slide ${index + 1}`}
-                            />
-                        ))}
-                    </div>
+                <div className="absolute bottom-12 left-0 right-0 z-40">
+                    <div className="max-w-7xl mx-auto px-6 sm:px-12 w-full">
+                        <div className="flex items-center gap-8">
+                            <div className="flex gap-4">
+                                {slides.map((_, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => goToSlide(index)}
+                                        className={`h-0.5 transition-all duration-700 standard-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
+                                        aria-label={`Slide ${index + 1}`}
+                                    />
+                                ))}
+                            </div>
 
-                    {/* Industrial Pause/Play Protocol */}
-                    <button
-                        onClick={() => setIsPaused(!isPaused)}
-                        className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary hover:text-content-primary transition-colors standard-focus flex items-center gap-3 px-2"
-                        aria-label={isPaused ? "Play Carousel" : "Pause Carousel"}
-                    >
-                        <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                        {isPaused ? 'RESUME' : 'PAUSE'}
-                    </button>
+                            {/* Industrial Pause/Play Protocol */}
+                            <button
+                                onClick={() => setIsPaused(!isPaused)}
+                                className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary hover:text-content-primary transition-colors standard-focus flex items-center gap-3 px-2"
+                                aria-label={isPaused ? "Play Carousel" : "Pause Carousel"}
+                            >
+                                <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                                {isPaused ? 'RESUME' : 'PAUSE'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

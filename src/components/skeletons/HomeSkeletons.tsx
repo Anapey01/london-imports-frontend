@@ -1,8 +1,8 @@
 
 export function HeroSkeleton() {
     return (
-        <div className="w-full max-w-7xl mx-auto mt-4 px-4 sm:px-6 lg:px-8">
-            <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] bg-gray-200 animate-pulse rounded-xl">
+        <div className="w-full bg-surface border-b border-border-standard">
+            <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] bg-gray-200 dark:bg-slate-900 animate-pulse">
                 <div className="absolute inset-0 flex items-center justify-center text-gray-400">
                     <span className="sr-only">Loading...</span>
                 </div>
