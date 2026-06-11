@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
 import { Product } from '@/stores/cartStore';
+import { cleanProductName } from '@/lib/format';
 
 interface ProductCarouselShelfProps {
     title: string;
@@ -113,7 +114,7 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                                     </div>
                                     {/* Label */}
                                     <p className="text-xs text-slate-800 dark:text-slate-200 font-normal mt-2 line-clamp-2 leading-snug group-hover:text-slate-950 dark:group-hover:text-white transition-colors min-h-[30px]">
-                                        {product.name}
+                                        {cleanProductName(product)}
                                     </p>
                                 </Link>
                             </div>

@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getImageUrl, cloudinaryLoader } from '@/lib/image';
 import { trackViewPromotion, trackSelectPromotion } from '@/lib/analytics';
+import { cleanProductName } from '@/lib/format';
 
 interface HeroSlide {
     id: string | number;
@@ -48,7 +49,7 @@ interface HeroCarouselProps {
 }
 
 function getDynamicHeroCopy(product: Product): { title: string; subtitle: string } {
-    let title = product.display_name || product.short_name || product.name || '';
+    let title = cleanProductName(product);
     
     // 1. Truncate at common separators like - (with space before), |, /, (, [ to strip off sizes/options
     const separators = [' -', ' |', ' /', ' (', ' ['];

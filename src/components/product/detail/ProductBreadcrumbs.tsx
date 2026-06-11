@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Product } from '@/types/product';
+import { cleanProductName } from '@/lib/format';
 
 export function ProductBreadcrumbs({ product }: { product: Product }) {
     return (
@@ -24,7 +25,7 @@ export function ProductBreadcrumbs({ product }: { product: Product }) {
             )}
             <span className="mx-4 text-border-standard">/</span>
             <span className="text-slate-900 dark:text-white">
-                {product.display_name || product.short_name || product.name}
+                {cleanProductName(product)}
             </span>
         </nav>
     );

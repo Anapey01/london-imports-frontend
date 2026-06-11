@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
 import { siteConfig } from '@/config/site';
 import { notFound } from 'next/navigation';
+import { cleanProductName } from '@/lib/format';
 
 // ISR: Revalidate product pages every 24 hours
 export const revalidate = 604800; // 7 days — reduce ISR CPU usage
@@ -60,10 +61,11 @@ export async function generateMetadata(
         maximumFractionDigits: 0
     }).format(product.price || 0);
 
-    const productTitle = `Buy ${product.name || 'Premium Product'} - ${formattedPrice} | London's Imports Ghana`;
+    const cleanedName = cleanProductName(product);
+    const productTitle = `Buy ${cleanedName || 'Premium Product'} - ${formattedPrice} | London's Imports Ghana`;
     
     // Architectural Description Refinement for Sourcing Authority
-    const productDescription = product.description?.substring(0, 140) || `Buy ${product.name} from London's Imports. Ghana's #1 import shop for premium imports from China. Pay with Momo.`;
+    const productDescription = product.description?.substring(0, 140) || `Buy ${cleanedName} from London's Imports. Ghana's #1 import shop for premium imports from China. Pay with Momo.`;
     const pageUrl = `${siteConfig.baseUrl}/products/${slug}`;
 
     return {
@@ -82,7 +84,7 @@ export async function generateMetadata(
                     url: getAbsoluteImageUrl(product.image),
                     width: 1200,
                     height: 630,
-                    alt: product.name,
+                    alt: cleanProductName(product),
                 }
             ],
         },
@@ -116,7 +118,7 @@ export default async function ProductDetailPage({ params }: Props) {
         '@graph': [
             {
                 '@type': 'Product',
-                'name': product.name,
+                'name': cleanProductName(product),
                 'image': getAbsoluteImageUrl(product.image),
                 'description': product.description,
                 'sku': `LI-${product.id}`,
@@ -185,7 +187,7 @@ export default async function ProductDetailPage({ params }: Props) {
                     {
                         "@type": "ListItem",
                         "position": 4,
-                        "name": product.name,
+                        "name": cleanProductName(product),
                         "item": `${siteConfig.baseUrl}/products/${slug}`
                     }
                 ]

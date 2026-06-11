@@ -6,6 +6,7 @@ import NextImage from 'next/image';
 import { Order } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { ordersAPI } from '@/lib/api';
+import { cleanProductName } from '@/lib/format';
 import { useToast } from '@/components/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package } from 'lucide-react';
@@ -161,7 +162,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                                     {order.items?.map((item, idx) => (
                                                         <div key={idx} className="flex items-baseline justify-between gap-4">
                                                             <p className="text-[11px] font-bold text-slate-900 uppercase tracking-tight truncate max-w-[200px]">
-                                                                {item.product.name}
+                                                                {cleanProductName(item.product)}
                                                                 {item.selected_size && <span className="ml-2 text-slate-400 font-normal">[{item.selected_size}]</span>}
                                                             </p>
                                                             <p className="text-[10px] font-mono text-slate-400">x{item.quantity}</p>

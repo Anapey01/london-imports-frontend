@@ -20,6 +20,7 @@ import { Order, User } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { getTimeAgo } from '@/lib/date';
 import { useTheme } from '@/providers/ThemeProvider';
+import { cleanProductName } from '@/lib/format';
 
 const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
     const { theme } = useTheme();
@@ -160,7 +161,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                                     </div>
                                                 </div>
                                                 <h4 className="text-xl sm:text-2xl font-serif font-bold tracking-tighter mb-2 uppercase text-slate-900 dark:text-white leading-tight">
-                                                    {firstItem?.product.name || 'Your Package'}
+                                                    {firstItem?.product ? cleanProductName(firstItem.product) : 'Your Package'}
                                                 </h4>
                                                 <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
                                                     Order Date: {new Date(order.created_at).toLocaleDateString()}

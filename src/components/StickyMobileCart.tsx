@@ -1,7 +1,7 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { cleanProductName } from '@/lib/format';
 
 interface StickyMobileCartProps {
     product: {
@@ -61,7 +61,7 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
                 {/* Product Info (Truncated) */}
                 <div className="flex-1 min-w-0">
                     <p className="text-[9px] font-black nuclear-text opacity-40 uppercase tracking-[0.2em] truncate mb-0.5">
-                        {product.display_name || product.short_name || product.name}
+                        {cleanProductName(product)}
                     </p>
                     <p className="text-[15px] font-black nuclear-text tabular-nums tracking-tighter leading-none">
                         {product.price?.toLocaleString('en-GH', { style: 'currency', currency: 'GHS' })}
@@ -77,7 +77,7 @@ export default function StickyMobileCart({ product, isAdding, onAddToCart, trigg
                         active:scale-95 transition-all disabled:opacity-30 disabled:active:scale-100
                         flex items-center gap-3
                     "
-                    aria-label={`Add ${product.name} to cart`}
+                    aria-label={`Add ${cleanProductName(product)} to cart`}
                 >
                     {isAdding ? (
                         <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white dark:border-slate-950/30 dark:border-t-slate-950 rounded-full animate-spin" />

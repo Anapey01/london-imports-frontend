@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
 import { Product } from '@/stores/cartStore';
+import { cleanProductName } from '@/lib/format';
 
 export interface CardItem {
     title: string;
@@ -58,7 +59,7 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                             />
                                                         </div>
                                                         <p className="text-[11px] text-slate-800 dark:text-slate-200 font-normal mt-1 line-clamp-1 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
-                                                            {product.short_name || product.name}
+                                                            {cleanProductName(product)}
                                                         </p>
                                                     </Link>
                                                 );
@@ -85,7 +86,7 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                             />
                                                         </div>
                                                         <p className="text-xs text-slate-800 dark:text-slate-200 font-normal mt-2 line-clamp-1 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
-                                                            {product.name}
+                                                            {cleanProductName(product)}
                                                         </p>
                                                     </Link>
                                                 );

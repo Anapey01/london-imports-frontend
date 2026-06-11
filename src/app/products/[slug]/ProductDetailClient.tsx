@@ -12,7 +12,7 @@ import { getImageUrl } from '@/lib/image';
 import StickyMobileCart from '@/components/StickyMobileCart';
 import VariantSelector from '@/components/product/VariantSelector';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, cleanProductName } from '@/lib/format';
 import { useToast } from '@/components/Toast';
 import { trackViewItem, trackAddToCart, trackWhatsAppContact, trackEvent, trackProductAffinity } from '@/lib/analytics';
 import { siteConfig } from '@/config/site';
@@ -327,7 +327,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
         setIsAdding(true);
         try {
-            const displayName = product.display_name || product.short_name || product.name;
+            const displayName = cleanProductName(product);
             await addToCart(product as any, quantity, selectedSize, selectedColor, selectedVariant || undefined);
             trackAddToCart(product, quantity);
             showToast(`Added ${quantity}x ${displayName} to cart`, 'success');
@@ -379,10 +379,11 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const handleWhatsAppContact = () => {
         if (!product) return;
-        trackWhatsAppContact(`${product.name} (${formatPrice(currentPrice)})`, 'concierge');
+        const cleanedName = cleanProductName(product);
+        trackWhatsAppContact(`${cleanedName} (${formatPrice(currentPrice)})`, 'concierge');
         
         const message = encodeURIComponent(
-            `Hi London's Imports! I'm interested in the ${product.name} priced at ${formatPrice(currentPrice)}.\n\n` + 
+            `Hi London's Imports! I'm interested in the ${cleanedName} priced at ${formatPrice(currentPrice)}.\n\n` + 
             `Product Link: ${window.location.origin}/products/${product.slug}\n\n` +
             `Can you help me with the shipping details?`
         );
@@ -392,9 +393,10 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
     const handleShare = async () => {
         if (!product) return;
+        const cleanedName = cleanProductName(product);
         const shareData = {
-            title: product.name,
-            text: `Check out this ${product.name} on London's Imports!`,
+            title: cleanedName,
+            text: `Check out this ${cleanedName} on London's Imports!`,
             url: window.location.href
         };
         try {
@@ -415,7 +417,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         <div className="bg-surface min-h-screen pb-20">
             <PropensityTracker 
                 productId={product.id} 
-                productName={product.name} 
+                productName={cleanProductName(product)} 
                 category={product.category?.name} 
             />
             <main className="max-w-7xl mx-auto px-4 pt-8 pb-12 sm:pt-12 sm:pb-8 sm:px-6 lg:px-8">
@@ -425,7 +427,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
                     <ProductImageGallery
                         mainImage={product.image}
-                        productName={product.name}
+                        productName={cleanProductName(product)}
                         images={product.images}
                         video={product.video}
                         videoUrl={product.video_url}
@@ -529,7 +531,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 currentSlug={product.slug}
                 categorySlug={product.category?.slug}
                 isDiscreet={product.is_discreet}
-                onProductClick={(p: any) => trackProductAffinity(product.name, p)}
+                onProductClick={(p: any) => trackProductAffinity(cleanProductName(product), p)}
             />
 
             <ProductReviews

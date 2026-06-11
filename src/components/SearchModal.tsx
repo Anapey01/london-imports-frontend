@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, cleanProductName } from '@/lib/format';
 import { Search, X, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { trackSearch, trackViewSearchResults, trackSelectPromotion } from '@/lib/analytics';
 import { useUIStore } from '@/stores/uiStore';
@@ -163,13 +163,13 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                                     >
                                         <div className="w-20 h-20 bg-surface-card rounded-xl overflow-hidden border border-border-standard flex-shrink-0">
                                             {product.image ? (
-                                                <Image src={product.image} alt={product.name} width={80} height={80} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
+                                                <Image src={product.image} alt={cleanProductName(product)} width={80} height={80} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center opacity-20"><Package /></div>
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-lg font-bold text-content-primary truncate">{product.name}</h4>
+                                            <h4 className="text-lg font-bold text-content-primary truncate">{cleanProductName(product)}</h4>
                                             <p className="text-brand-emerald font-black mt-1">{formatPrice(product.price)}</p>
                                         </div>
                                         <ArrowRight className="w-5 h-5 text-content-secondary group-hover:text-brand-emerald group-hover:translate-x-2 transition-all" />

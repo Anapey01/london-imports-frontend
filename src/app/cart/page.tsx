@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { getImageUrl } from '@/lib/image';
+import { cleanProductName } from '@/lib/format';
 import { siteConfig } from '@/config/site';
 import { ShoppingBag, Minus, Plus, ArrowLeft, ShieldCheck, Phone } from 'lucide-react';
 import { trackBeginCheckout, trackAddToCart, trackUserIntent } from '@/lib/analytics';
@@ -179,7 +180,7 @@ export default function CartPage() {
                                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                                         <div className="space-y-1">
                                             <h3 className="text-sm font-medium text-content-primary line-clamp-2 leading-tight uppercase tracking-tight italic">
-                                                {item.product.display_name || item.product.short_name || item.product.name}
+                                                {cleanProductName(item.product)}
                                             </h3>
                                             <div className="flex flex-col pt-1">
                                                 <span className="text-xl font-medium text-content-primary tabular-nums leading-none tracking-tighter italic">
@@ -216,7 +217,7 @@ export default function CartPage() {
                                                 }}
                                                 className="text-[10px] font-black uppercase tracking-widest text-content-secondary hover:text-red-500 transition-colors institutional-focus"
                                                 title="Remove item"
-                                                aria-label={`Remove ${item.product.name} from basket`}
+                                                aria-label={`Remove ${cleanProductName(item.product)} from basket`}
                                             >
                                                 Remove
                                             </button>

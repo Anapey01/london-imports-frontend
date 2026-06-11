@@ -4,7 +4,7 @@ import { useCartStore, Product } from '@/stores/cartStore';
 import { useState } from 'react';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Heart, ShoppingBag, ArrowUpRight } from 'lucide-react';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, cleanProductName } from '@/lib/format';
 import { trackAddToCart, trackSelectItem, trackAddToWishlist } from '@/lib/analytics';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
@@ -61,7 +61,7 @@ export default function ProductCard({
         e.preventDefault();
         e.stopPropagation();
         
-        const displayName = product.display_name || product.short_name || product.name;
+        const displayName = cleanProductName(product);
 
         try {
             setStatus('adding');
@@ -176,7 +176,7 @@ export default function ProductCard({
                          </div>
                      )}
                      <h3 className={`product-name-weight text-content-primary tracking-tight leading-tight line-clamp-2 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
-                         {product.display_name || product.short_name || product.name}
+                         {cleanProductName(product)}
                      </h3>
                      {product.subtitle && (
                          <p className="text-[10px] text-content-secondary mt-1 font-medium italic opacity-80">

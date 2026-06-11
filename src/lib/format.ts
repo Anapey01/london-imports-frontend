@@ -22,3 +22,32 @@ export const formatNumber = (num: number | string) => {
 
     return numericValue.toLocaleString('en-GH');
 };
+
+export const cleanProductName = (product: { name?: string; display_name?: string; short_name?: string }) => {
+    const rawName = product.display_name || product.short_name || product.name || '';
+    const clean = rawName.trim();
+    const len = clean.length;
+    
+    // 1. Check if string can be split into two identical halves
+    if (len > 0 && len % 2 === 0) {
+        const half = len / 2;
+        const firstHalf = clean.substring(0, half);
+        const secondHalf = clean.substring(half);
+        if (firstHalf === secondHalf) {
+            return firstHalf;
+        }
+    }
+    
+    // 2. Also check if there's a word-level duplication or space-separated halves
+    const words = clean.split(/\s+/);
+    if (words.length > 0 && words.length % 2 === 0) {
+        const halfWords = words.length / 2;
+        const firstHalfWords = words.slice(0, halfWords).join(' ');
+        const secondHalfWords = words.slice(halfWords).join(' ');
+        if (firstHalfWords.toLowerCase() === secondHalfWords.toLowerCase()) {
+            return words.slice(0, halfWords).join(' ');
+        }
+    }
+    
+    return clean;
+};

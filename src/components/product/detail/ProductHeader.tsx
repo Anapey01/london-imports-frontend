@@ -1,5 +1,5 @@
 import StarRating from '@/components/StarRating';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, cleanProductName } from '@/lib/format';
 import { Product } from '@/types/product';
 
 interface ProductHeaderProps {
@@ -21,7 +21,7 @@ export function ProductHeader({ product, currentPrice, effectiveRating }: Produc
                 )}
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-5xl font-serif font-atelier text-content-primary leading-[1.1] tracking-tighter text-balance">
-                {product.name}
+                {cleanProductName(product)}
             </h1>
             {product.subtitle && (
                 <p className="text-xs lg:text-sm font-medium text-content-secondary tracking-[0.2em] uppercase opacity-60 mt-1">
