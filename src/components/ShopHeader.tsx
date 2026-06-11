@@ -42,7 +42,7 @@ export default function ShopHeader({
                 paddingBottom: isScrolled ? '1rem' : '4rem'
             }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className={`bg-surface border-b-2 border-border-standard overflow-hidden sticky top-0 md:relative z-40 backdrop-blur-xl transition-all duration-300`}
+            className={`bg-surface border-b-2 border-border-standard overflow-hidden sticky top-16 md:relative md:top-auto z-30 backdrop-blur-xl transition-all duration-300`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
                 <div className="relative z-10 flex flex-col items-center">

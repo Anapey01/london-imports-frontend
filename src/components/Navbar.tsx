@@ -109,7 +109,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b will-change-transform ${isScrolled ? 'bg-surface/90 backdrop-blur-md border-border-standard' : 'bg-surface border-transparent'}`}>
+            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-surface/90 backdrop-blur-md border-border-standard' : 'bg-surface border-transparent'}`}>
                 <div className="max-w-[1800px] mx-auto px-4 md:px-12">
                     {/* Tier 1: Logo & Actions */}
                     <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">
