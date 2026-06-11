@@ -135,7 +135,7 @@ export default async function Image() {
                             height="60"
                             {...{ style: styles.logo }}
                         />
-                        <span {...{ style: styles.badgeText }}>Trusted by 1000+ businesses</span>
+                        <span {...{ style: styles.badgeText }}>Trusted by businesses across Ghana</span>
                     </div>
                 </div>
 

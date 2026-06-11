@@ -7,7 +7,7 @@ export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "London's Imports | Global Sourcing & Shipping Center",
-  description: "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Trusted by 5,000+ business owners.",
+  description: "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Trusted by businesses across Ghana.",
   openGraph: {
     title: "London's Imports | Premium Global Sourcing & Shipping",
     description: "Secure, global sourcing and shipping service delivering directly to your door in Ghana. Pay with Momo, track your batch in real-time.",

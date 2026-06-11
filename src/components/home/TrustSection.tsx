@@ -141,7 +141,7 @@ export default function TrustSection() {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 border-y border-border-standard py-12">
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-brand-emerald tracking-tighter">
-                            {stats && stats.orders_fulfilled != null ? `${stats.orders_fulfilled.toLocaleString()}+` : "5,000+"}
+                            {stats && stats.orders_fulfilled != null ? `${stats.orders_fulfilled.toLocaleString()}+` : "—"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Successful Shipments</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Consolidated air and sea cargo delivered to Accra & Kumasi.</p>
@@ -149,7 +149,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-content-primary tracking-tighter">
-                            {stats && stats.years_in_operation != null ? `${stats.years_in_operation}+` : "4+"} Years
+                            {stats && stats.years_in_operation != null ? `${stats.years_in_operation}+ Years` : "—"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">In Active Operation</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Providing reliable logistic links and sourcing hubs since 2022.</p>
@@ -157,7 +157,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-content-primary tracking-tighter">
-                            {stats && stats.verified_vendors != null ? `${stats.verified_vendors}+` : "24+"}
+                            {stats && stats.verified_vendors != null ? `${stats.verified_vendors}+` : "—"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Verified Factories</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Direct relationship with authenticated global manufacturers.</p>
@@ -165,7 +165,7 @@ export default function TrustSection() {
 
                     <div className="space-y-2">
                         <p className="text-4xl md:text-5xl font-black text-brand-emerald tracking-tighter">
-                            {stats && stats.authenticity_rate != null ? `${stats.authenticity_rate}%` : "99.9%"}
+                            {stats && stats.authenticity_rate != null ? `${stats.authenticity_rate}%` : "—"}
                         </p>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-content-primary">Authenticity Rate</h3>
                         <p className="text-[10px] text-content-secondary leading-tight">Visual quality check and inventory match at our international sorting hubs.</p>
