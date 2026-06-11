@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Instagram, Facebook, Star, ArrowUpRight, MapPin, ShieldCheck } from 'lucide-react';
+import { Instagram, Facebook, Star, ArrowUpRight, MapPin, ShieldCheck, Smartphone, CreditCard, Wallet } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 const Footer = () => {
@@ -161,12 +161,21 @@ const Footer = () => {
                          </div>
 
                          {/* Payment Ledger (High Contrast Monochrome) */}
-                         <div className="flex items-center gap-8 border-t border-border-standard pt-8 mt-4 grayscale group-hover:grayscale-0 transition-all duration-700">
-                              <span className="text-[10px] font-black text-content-primary uppercase tracking-widest">MTN MOMO</span>
+                         <div className="flex items-center gap-8 border-t border-border-standard pt-8 mt-4 grayscale group-hover:grayscale-0 transition-all duration-700 text-content-primary">
+                              <div className="flex items-center gap-2">
+                                  <Smartphone className="w-3.5 h-3.5" strokeWidth={1.5} />
+                                  <span className="text-[10px] font-black uppercase tracking-widest">MTN MOMO</span>
+                              </div>
                               <div className="h-px w-8 bg-content-primary" />
-                              <span className="text-[10px] font-black text-content-primary uppercase tracking-widest">VISA / MC</span>
+                              <div className="flex items-center gap-2">
+                                  <CreditCard className="w-3.5 h-3.5" strokeWidth={1.5} />
+                                  <span className="text-[10px] font-black uppercase tracking-widest">VISA / MC</span>
+                              </div>
                               <div className="h-px w-8 bg-content-primary" />
-                              <span className="text-[10px] font-black text-content-primary uppercase tracking-widest">PAYSTACK</span>
+                              <div className="flex items-center gap-2">
+                                  <Wallet className="w-3.5 h-3.5" strokeWidth={1.5} />
+                                  <span className="text-[10px] font-black uppercase tracking-widest">HUBTEL</span>
+                              </div>
                          </div>
                     </div>
                 </div>

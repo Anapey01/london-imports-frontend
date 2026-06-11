@@ -113,9 +113,9 @@ export default async function HomePage() {
       linkHref: "/products?category=accessories"
     },
     {
-      title: "Available stock ready to ship",
+      title: "Instant Availability",
       products: readyRes?.results || [],
-      linkText: "Shop available items",
+      linkText: "Shop ready stock",
       linkHref: "/products?status=READY_TO_SHIP"
     }
   ];
