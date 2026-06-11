@@ -336,21 +336,21 @@ export default function Navbar() {
                                 </div>
                             </div>
 
-                            <div className="flex-grow flex items-center pl-2.5 pr-1 py-0.5">
+                            <div className="flex-grow flex items-center pl-3 pr-2 py-0.5">
                                 <Search className="w-3.5 h-3.5 text-content-secondary mr-2 opacity-50" strokeWidth={1.5} />
                                 <input
                                     name="search"
                                     type="text"
                                     placeholder="Search products..."
-                                    className="flex-1 bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/40 py-0.5"
+                                    className="flex-grow bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/40 py-0.5"
                                 />
-                                <button 
-                                    type="submit"
-                                    className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border border-transparent dark:border-slate-700 shrink-0"
-                                >
-                                    Search
-                                </button>
                             </div>
+                            <button 
+                                type="submit"
+                                className="bg-slate-950 dark:bg-slate-800 text-white dark:text-white px-5 -mr-1 -my-1 self-stretch rounded-r-full text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-brand-emerald transition-all active:scale-95 border-l border-border-standard/80 shrink-0 flex items-center justify-center"
+                            >
+                                Search
+                            </button>
                         </form>
                     </div>
                     )}
