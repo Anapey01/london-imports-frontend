@@ -47,59 +47,57 @@ interface HeroCarouselProps {
     initialBanners?: Banner[];
 }
 
-function getPremiumHeroCopy(product: Product): { title: string; subtitle: string } {
-    const name = (product.name || '').toLowerCase();
+function getDynamicHeroCopy(product: Product): { title: string; subtitle: string } {
+    let title = product.display_name || product.short_name || product.name || '';
     
-    if (name.includes('stove') || name.includes('oven')) {
-        return {
-            title: "Culinary Precision",
-            subtitle: "Professional-grade cooktops designed for modern homes."
-        };
+    // 1. Truncate at common separators like - (with space before), |, /, (, [ to strip off sizes/options
+    const separators = [' -', ' |', ' /', ' (', ' ['];
+    for (const sep of separators) {
+        const idx = title.indexOf(sep);
+        if (idx > -1) {
+            title = title.substring(0, idx);
+        }
     }
-    if (name.includes('jeans') || name.includes('distressed')) {
-        return {
-            title: "Premium Denim",
-            subtitle: "Handcrafted distressed detail. Tailored for classic comfort."
-        };
+    
+    // 2. Remove common specific auxiliary specifications that clutter headings
+    title = title
+        .replace(/vertical\s+one-piece\s+stove\s+lighter/gi, '')
+        .replace(/one-piece\s+stove\s+lighter/gi, '')
+        .replace(/stove\s+lighter/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+        
+    // 3. Capitalize properly
+    title = title.split(' ').map(word => {
+        if (!word) return '';
+        const lower = word.toLowerCase();
+        const prepositions = ['with', 'for', 'of', 'in', 'at', 'by', 'and', 'or', 'a', 'an', 'the', 'to'];
+        return prepositions.includes(lower) ? lower : word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+    
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+    
+    // 4. Ensure it doesn't end on prepositions
+    const titleWords = title.split(' ');
+    const lastWord = titleWords[titleWords.length - 1]?.toLowerCase();
+    const endingPrepositions = ['with', 'for', 'of', 'in', 'at', 'by', 'and', 'or', 'a', 'an', 'the', 'to'];
+    if (endingPrepositions.includes(lastWord) && titleWords.length > 1) {
+        titleWords.pop();
+        title = titleWords.join(' ');
     }
-    if (name.includes('wax') || name.includes('heater')) {
-        return {
-            title: "At-Home Salon",
-            subtitle: "Professional beauty systems for salon-grade skin care."
-        };
+    
+    // 5. Length safeguard: truncate if still too long (e.g. > 50 characters)
+    if (title.length > 50) {
+        title = title.substring(0, 47) + '...';
     }
-    if (name.includes('xylophone') || name.includes('toy') || name.includes('kids')) {
-        return {
-            title: "Artisan Play",
-            subtitle: "Inspiring musical creativity with natural wood design."
-        };
-    }
-    if (name.includes('sofa') || name.includes('backrest')) {
-        return {
-            title: "Refined Comfort",
-            subtitle: "Minimalist low-profile seating for contemporary spaces."
-        };
-    }
-    if (name.includes('towel') || name.includes('bath')) {
-        return {
-            title: "Luxe Bath Linens",
-            subtitle: "Plush, 100% organic cotton sets for resort-level luxury."
-        };
-    }
-    if (name.includes('sweatpants') || name.includes('pants') || name.includes('loungewear')) {
-        return {
-            title: "Premium Loungewear",
-            subtitle: "Heavyweight French terry comfort, engineered to last."
-        };
-    }
-
-    // Default premium fallback
-    const rawTitle = product.display_name || product.short_name || product.name;
-    // Clean up title if it's too long
-    const cleanTitle = rawTitle.length > 30 ? rawTitle.split(' ').slice(0, 3).join(' ') : rawTitle;
+    
+    // 6. Generate premium category-based subtitle
+    const category = product.category_name || "Premium Sourcing";
+    const subtitle = `Explore our curated selection of handpicked ${category.toLowerCase()} essentials.`;
+    
     return {
-        title: cleanTitle || "Curated Design",
-        subtitle: product.category_name || "Handpicked global curations, sourced directly to your door."
+        title: title || "Curated Design",
+        subtitle
     };
 }
 
@@ -125,7 +123,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
         // Fallback to Products if no banners exist - SHUFFLED DYNAMIC POOL
         // Already shuffled and sliced on the server
         return initialProducts.map((product, idx) => {
-            const copy = getPremiumHeroCopy(product);
+            const copy = getDynamicHeroCopy(product);
             return {
                 id: product.id,
                 title: copy.title,
