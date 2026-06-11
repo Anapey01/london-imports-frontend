@@ -75,7 +75,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
     }));
 
+    // Fetch vendor store slugs for sitemap
+    let vendorSlugs: { slug: string }[] = [];
+    try {
+        const apiUrl = siteConfig.apiUrl.replace(/\/api\/v1$/, '');
+        const vendorRes = await fetch(`${apiUrl}/api/v1/vendors/`, {
+            next: { revalidate: 604800 }
+        });
+        if (vendorRes.ok) {
+            const data = await vendorRes.json();
+            vendorSlugs = Array.isArray(data) ? data : (data.results || []);
+        }
+    } catch {
+        // Vendor stores will be discovered via internal links
+    }
+
+    const vendorUrls = vendorSlugs.map((vendor) => ({
+        url: `${baseUrl}/store/${vendor.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+    }));
+
     return [
+        // ── Tier 1: Core commercial pages (highest priority) ──
         {
             url: baseUrl,
             lastModified: new Date(),
@@ -89,11 +112,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
         },
         {
+            url: `${baseUrl}/market`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.9,
+        },
+
+        // ── Tier 2: High-value discovery & trust pages ──
+        {
             url: `${baseUrl}/blog`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,
         },
+        {
+            url: `${baseUrl}/about`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/reviews`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/delivery-feed`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/sell`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/product-finder`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+
+        // ── Tier 3: Informational & service pages ──
         {
             url: `${baseUrl}/contact`,
             lastModified: new Date(),
@@ -102,6 +165,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         {
             url: `${baseUrl}/how-it-works`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/guide`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/faq`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/pricing`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/shipping`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/customs`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/customs-estimator`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/track`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.6,
@@ -118,8 +223,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'monthly',
             priority: 0.5,
         },
+
+        // ── Tier 4: Legal & policy pages ──
+        {
+            url: `${baseUrl}/terms`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.4,
+        },
+        {
+            url: `${baseUrl}/privacy`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.4,
+        },
+        {
+            url: `${baseUrl}/shipping-policy`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.4,
+        },
+        {
+            url: `${baseUrl}/refunds`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.4,
+        },
+        {
+            url: `${baseUrl}/prohibited-items`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.3,
+        },
+
+        // ── Dynamic URLs ──
         ...blogUrls,
         ...productUrls,
         ...categoryUrls,
+        ...vendorUrls,
     ];
 }

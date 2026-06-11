@@ -7,16 +7,25 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: [
         '/api/',
+        '/dashboard/',
+        '/admin/',
         '/checkout/',
         '/cart/',
         '/orders/',
         '/login/',
         '/register/',
         '/profile/',
+        '/password-reset/',
+        '/verify-email/',
+        '/wishlist/',
+        '/celebrate/',
         '/*?*',        // Block all query parameters to prevent duplicate indexing
         '/*_rsc*',     // Block Next.js internal data payloads
       ],
     },
-    sitemap: 'https://londonsimports.com/sitemap.xml',
+    sitemap: [
+      'https://londonsimports.com/sitemap.xml',
+      'https://londonsimports.com/sitemap-images.xml',
+    ],
   }
 }
