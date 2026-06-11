@@ -193,7 +193,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                         <div className="mb-6 overflow-hidden">
                                             {/* 'Perceivable' Hardened: Removed opacity for absolute 4.5:1 contrast */}
                                             <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary mb-4 animate-slide-right">
-                                                London&apos;s Imports / 0{index + 1}
+                                                London&apos;s Imports
                                             </span>
                                             <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-bold text-content-primary leading-[0.9] tracking-tighter mb-8 max-w-md">
                                                 {slide.title}
