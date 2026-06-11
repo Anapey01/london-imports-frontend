@@ -52,7 +52,7 @@ export default async function HomePage() {
   const [
     fashionRes, bagsRes, lifestyleRes, accessoriesRes,
     beautyRes, shoesRes, readyRes, featuredRes,
-    trendingRes, newArrivalsRes
+    trendingRes, newArrivalsRes, perfumesRes
   ] = await Promise.all([
     getProducts({ category: 'fashion', limit: '4' }).catch(() => ({ results: [] })),
     getProducts({ category: 'bags', limit: '4' }).catch(() => ({ results: [] })),
@@ -63,7 +63,8 @@ export default async function HomePage() {
     getProducts({ status: 'READY_TO_SHIP', limit: '4' }).catch(() => ({ results: [] })),
     getProducts({ featured: 'true', limit: '12' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-reservations_count', limit: '12' }).catch(() => ({ results: [] })),
-    getProducts({ ordering: '-created_at', limit: '12' }).catch(() => ({ results: [] }))
+    getProducts({ ordering: '-created_at', limit: '12' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'perfumes', limit: '4' }).catch(() => ({ results: [] }))
   ]);
 
   const group1Cards = [
@@ -107,10 +108,10 @@ export default async function HomePage() {
       linkHref: "/products?category=heels-and-shoes"
     },
     {
-      title: "Accessories & Gadgets",
-      products: accessoriesRes?.results || [],
-      linkText: "Discover more",
-      linkHref: "/products?category=accessories"
+      title: "Arabian Perfumes",
+      products: perfumesRes?.results || [],
+      linkText: "See all perfumes",
+      linkHref: "/products?category=perfumes"
     },
     {
       title: "Instant Availability",
