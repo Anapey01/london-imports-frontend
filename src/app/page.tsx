@@ -136,14 +136,14 @@ export default async function HomePage() {
         <HeroSection />
       </Suspense>
 
-      {/* 2. Bold Value Proposition Above the Fold */}
-      <ValueProp />
-
-      {/* 3. Visual Trust Strip */}
+      {/* 2. Visual Trust Strip */}
       <TrustStrip />
 
-      {/* 4. Category Feature Cards (Group 1) */}
-      <CategoryFeatureCards cards={group1Cards} overlap={false} />
+      {/* 3. Category Feature Cards (Group 1 - Overlaps Hero Carousel on Desktop) */}
+      <CategoryFeatureCards cards={group1Cards} overlap={true} />
+
+      {/* 3.5 Bold Value Proposition */}
+      <ValueProp />
 
       {/* 4. Curated Picks Horizontal Carousel */}
       <ProductCarouselShelf title="Curated Picks" products={featured} />
