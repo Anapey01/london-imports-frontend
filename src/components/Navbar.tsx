@@ -7,7 +7,7 @@
 import { useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
@@ -19,6 +19,7 @@ import MobileMenuDrawer from './MobileMenuDrawer';
 export default function Navbar() {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { isAuthenticated, user } = useAuthStore();
     const { itemCount, fetchCart } = useCartStore();
     const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
@@ -26,6 +27,7 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [, startTransition] = useTransition();
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // Fetch categories client-side using React Query
     const { data: categoriesData } = useQuery({
@@ -40,13 +42,40 @@ export default function Navbar() {
     // Safety check for hydration: render list only after mount and ensure it is an array
     const categories = (mounted && Array.isArray(categoriesData)) ? categoriesData : [];
 
-    // Sync selectedCategory state with URL category parameter on path change
-    useEffect(() => {
+    const handleCategoryChange = (categorySlug: string, isMobile = false) => {
+        setSelectedCategory(categorySlug);
+        
+        let query = '';
         if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            setSelectedCategory(params.get('category') || '');
+            const inputs = document.querySelectorAll('input[name="search"]') as NodeListOf<HTMLInputElement>;
+            for (let i = 0; i < inputs.length; i++) {
+                const input = inputs[i];
+                const isDesktopForm = input.closest('.hidden.md\\:flex') !== null;
+                const isMobileForm = input.closest('.md\\:hidden') !== null;
+                if ((isMobile && isMobileForm) || (!isMobile && isDesktopForm)) {
+                    query = input.value.trim();
+                    break;
+                }
+            }
         }
-    }, [pathname]);
+        
+        const params: string[] = [];
+        if (query) {
+            params.push(`search=${encodeURIComponent(query)}`);
+        }
+        if (categorySlug) {
+            params.push(`category=${encodeURIComponent(categorySlug)}`);
+        }
+        
+        startTransition(() => {
+            router.push(`/products${params.length > 0 ? `?${params.join('&')}` : ''}`);
+        });
+    };
+
+    // Sync selectedCategory state with URL category parameter
+    useEffect(() => {
+        setSelectedCategory(searchParams.get('category') || '');
+    }, [searchParams]);
 
     useEffect(() => {
         setMounted(true);
@@ -141,23 +170,74 @@ export default function Navbar() {
                                 className="relative flex items-center w-full bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary focus-within:bg-surface transition-all group"
                             >
                                 {/* Desktop Category Dropdown */}
-                                <div className="relative flex items-center shrink-0 bg-slate-100 dark:bg-slate-800/80 pl-6 pr-3 -ml-1 -my-1 self-stretch rounded-l-full border-r border-border-standard/80">
-                                    <select
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
-                                        className="bg-transparent text-xs font-bold text-content-secondary hover:text-content-primary cursor-pointer pr-5 outline-none border-none appearance-none max-w-[140px] truncate"
-                                        aria-label="Filter by category"
+                                <div className="relative flex items-center shrink-0 -ml-1 -my-1 self-stretch rounded-l-full border-r border-border-standard/80">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                        className="h-full flex items-center gap-2 pl-6 pr-8 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-xs font-bold text-content-secondary hover:text-content-primary transition-all duration-200 rounded-l-full outline-none select-none min-w-[125px] max-w-[160px] justify-between"
+                                        aria-haspopup="listbox"
+                                        aria-expanded={isDropdownOpen}
                                     >
-                                        <option value="">All Categories</option>
-                                        {categories.map((cat: any) => (
-                                            <option key={cat.id || cat.slug} value={cat.slug} className="dark:bg-slate-900 dark:text-white">
-                                                {cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <div className="absolute right-3 pointer-events-none text-content-secondary opacity-60">
-                                        <ChevronDown className="w-3.5 h-3.5" />
-                                    </div>
+                                        <span className="truncate max-w-[95px]">
+                                            {selectedCategory ? (categories.find(c => c.slug === selectedCategory)?.name || 'Category') : 'All Categories'}
+                                        </span>
+                                        <ChevronDown className={`w-3.5 h-3.5 text-content-secondary transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'opacity-60'}`} />
+                                    </button>
+
+                                    {isDropdownOpen && (
+                                        <>
+                                            <div 
+                                                className="fixed inset-0 z-40 cursor-default" 
+                                                onClick={() => setIsDropdownOpen(false)}
+                                            />
+                                            <div 
+                                                className="absolute top-[calc(100%+8px)] left-0 w-64 bg-surface dark:bg-slate-950 border border-border-standard rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-2.5 z-50 max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200"
+                                                role="listbox"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleCategoryChange('');
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                    className={`w-full text-left px-5 py-2.5 text-xs font-semibold tracking-wide transition-all duration-150 flex items-center justify-between ${
+                                                        !selectedCategory
+                                                            ? 'bg-brand-emerald/10 text-brand-emerald dark:bg-brand-emerald/20 dark:text-emerald-400 font-bold'
+                                                            : 'text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-900/40 hover:text-content-primary'
+                                                    }`}
+                                                    role="option"
+                                                    aria-selected={!selectedCategory}
+                                                >
+                                                    <span>All Categories</span>
+                                                    {!selectedCategory && (
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
+                                                    )}
+                                                </button>
+                                                {categories.map((cat: any) => (
+                                                    <button
+                                                        key={cat.id || cat.slug}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            handleCategoryChange(cat.slug);
+                                                            setIsDropdownOpen(false);
+                                                        }}
+                                                        className={`w-full text-left px-5 py-2.5 text-xs font-semibold tracking-wide transition-all duration-150 flex items-center justify-between ${
+                                                            selectedCategory === cat.slug
+                                                                ? 'bg-brand-emerald/10 text-brand-emerald dark:bg-brand-emerald/20 dark:text-emerald-400 font-bold'
+                                                                : 'text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-900/40 hover:text-content-primary'
+                                                        }`}
+                                                        role="option"
+                                                        aria-selected={selectedCategory === cat.slug}
+                                                    >
+                                                        <span>{cat.name}</span>
+                                                        {selectedCategory === cat.slug && (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
 
                                 <div className="flex-1 flex items-center pl-3 pr-2">
@@ -240,7 +320,7 @@ export default function Navbar() {
                             <div className="relative flex items-center shrink-0 bg-slate-100 dark:bg-slate-800/80 pl-4 pr-2 -ml-1 -my-1 self-stretch rounded-l-full border-r border-border-standard/80">
                                 <select
                                     value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                    onChange={(e) => handleCategoryChange(e.target.value, true)}
                                     className="bg-transparent text-[11px] font-bold text-content-secondary hover:text-content-primary cursor-pointer pr-4 outline-none border-none appearance-none max-w-[80px] truncate"
                                     aria-label="Filter by category"
                                 >
