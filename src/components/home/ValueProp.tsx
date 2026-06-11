@@ -5,7 +5,7 @@ import { Compass, Ship, ShieldCheck, Smartphone } from 'lucide-react';
 
 export default function ValueProp() {
     return (
-        <section className="bg-white dark:bg-slate-950 border-b border-border-standard py-12 lg:py-16 relative z-20 transition-colors duration-500">
+        <section className="w-full overflow-x-hidden bg-white dark:bg-slate-950 border-b border-border-standard py-12 lg:py-16 relative z-20 transition-colors duration-500">
             {/* Subtle premium background grain texture */}
             <div className="absolute inset-0 opacity-[0.015] pointer-events-none bg-[url('/noise.svg')] mix-blend-overlay" />
             

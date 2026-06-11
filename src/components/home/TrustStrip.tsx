@@ -50,7 +50,7 @@ export default function TrustStrip() {
     const doubleItems = [...items, ...items];
 
     return (
-        <section className="bg-white dark:bg-slate-950 border-y border-slate-100/80 dark:border-slate-900/80 py-3 relative z-20 overflow-hidden select-none opacity-50 hover:opacity-100 transition-opacity duration-300">
+        <section className="w-full overflow-hidden bg-white dark:bg-slate-950 border-y border-slate-100/80 dark:border-slate-900/80 py-3 relative z-20 select-none opacity-50 hover:opacity-100 transition-opacity duration-300">
             <style dangerouslySetInnerHTML={{ __html: marqueeAnimation }} />
             
             <div className="w-full overflow-hidden relative">

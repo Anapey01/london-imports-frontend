@@ -21,7 +21,7 @@ interface CategoryFeatureCardsProps {
 
 export default function CategoryFeatureCards({ cards = [], overlap = false }: CategoryFeatureCardsProps) {
     return (
-        <section className={`px-4 max-w-7xl mx-auto ${overlap ? 'mt-6 lg:-mt-28 mb-6' : 'py-6'} relative z-25`}>
+        <section className={`w-full overflow-x-hidden px-4 max-w-7xl mx-auto ${overlap ? 'mt-6 lg:-mt-28 mb-6' : 'py-6'} relative z-25`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 {cards.slice(0, 4).map((card, cardIndex) => {
                     const hasFourOrMore = card.products.length >= 4;

@@ -151,7 +151,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner`} suppressHydrationWarning>
+      <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner overflow-x-hidden w-full`} suppressHydrationWarning>
         <SkipToContent />
         <Suspense fallback={null}>
           <GoogleAnalytics />
@@ -161,7 +161,7 @@ export default async function RootLayout({
         <Providers>
           <PWAUpdater />
           <NavbarWrapper />
-          <main id="main-content" className="pb-20 md:pb-0 outline-none">{children}</main>
+          <main id="main-content" className="pb-20 md:pb-0 outline-none w-full overflow-x-hidden">{children}</main>
           <FooterWrapper />
           <MobileBottomNavWrapper />
         </Providers>

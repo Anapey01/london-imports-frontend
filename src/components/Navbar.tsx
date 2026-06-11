@@ -109,7 +109,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-surface/90 backdrop-blur-md border-border-standard' : 'bg-surface border-transparent'}`}>
+            <nav className={`w-full sticky top-0 z-40 transition-all duration-500 border-b ${isScrolled ? 'bg-surface/90 backdrop-blur-md border-border-standard' : 'bg-surface border-transparent'}`}>
                 <div className="max-w-[1800px] mx-auto px-4 md:px-12">
                     {/* Tier 1: Logo & Actions */}
                     <div className="flex justify-between items-center h-16 md:h-24 gap-4 md:gap-12">
@@ -314,7 +314,7 @@ export default function Navbar() {
                                     router.push(`/products${params.length > 0 ? `?${params.join('&')}` : ''}`);
                                 });
                             }}
-                            className="relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary transition-all"
+                            className="w-full relative flex items-center bg-slate-50 dark:bg-slate-900 border border-border-standard rounded-full p-1 focus-within:border-content-primary transition-all"
                         >
                             {/* Mobile Category Dropdown */}
                             <div className="relative flex items-center shrink-0 bg-slate-100 dark:bg-slate-800/80 pl-4 pr-2 -ml-1 -my-1 self-stretch rounded-l-full border-r border-border-standard/80">

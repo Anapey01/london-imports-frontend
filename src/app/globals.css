@@ -61,6 +61,8 @@
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -243,6 +245,8 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Focus styles - strictly disabled per user request to eliminate 'blue lines' or 'green stuff' */
