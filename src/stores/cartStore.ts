@@ -9,6 +9,7 @@ export interface Product {
     id: string;
     name: string;
     slug: string;
+    short_name?: string | null;
     image?: string | null;
     primary_image?: string | null;
     price: number;

@@ -16,6 +16,7 @@ export interface Product {
     id: string;
     name: string;
     slug: string;
+    short_name?: string | null;
     description: string;
     price: number | string;
     category: Category | string; // Can be object or ID depending on context
