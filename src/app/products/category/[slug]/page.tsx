@@ -199,28 +199,86 @@ export default async function CategoryPage({ params }: Props) {
             </div>
 
             {/* Why Choose Us Bar */}
-            <div className="bg-slate-900 py-12 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h3 className="text-2xl font-bold mb-4">Why shop {category.name} with London&apos;s?</h3>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <div>
-                            <div className="text-pink-400 font-bold text-4xl mb-2">01</div>
-                            <h4 className="font-semibold text-lg mb-2">Direct Sourcing Links</h4>
-                            <p className="text-gray-400 text-sm">We source straight from global manufacturing hubs at wholesale rates.</p>
+            <section className="bg-slate-950 py-24 border-t border-slate-900 text-white overflow-hidden relative">
+                {/* Subtle noise pattern overlay & gradient glows */}
+                <div className="absolute inset-0 opacity-[0.015] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/p6.png')]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-emerald/10 blur-[120px] rounded-full pointer-events-none" />
+                <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-pink-500/5 blur-[100px] rounded-full pointer-events-none" />
+
+                <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <span className="h-[1px] w-8 bg-brand-emerald/40" />
+                        <span className="text-[9px] font-black tracking-[0.4em] uppercase text-brand-emerald">
+                            Value Proposition
+                        </span>
+                        <span className="h-[1px] w-8 bg-brand-emerald/40" />
+                    </div>
+                    
+                    <div 
+                        role="heading" 
+                        aria-level={3} 
+                        className="text-3xl md:text-5xl font-bold font-sans tracking-tight text-white mb-20 leading-tight"
+                    >
+                        Why shop <span className="font-serif italic font-normal text-brand-emerald">{category.name}</span> with London&apos;s?
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 max-w-6xl mx-auto">
+                        {/* Pillar 1 */}
+                        <div className="flex flex-col items-center text-center p-8 rounded-[2rem] border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/[0.08] hover:shadow-2xl hover:shadow-emerald-950/10 hover:-translate-y-1 transition-all duration-500 group">
+                            <div className="flex items-baseline gap-2 mb-6">
+                                <span className="text-5xl font-serif font-light text-pink-500 transition-transform duration-500 group-hover:scale-110">01</span>
+                                <span className="text-[9px] font-mono font-black tracking-widest text-slate-500 uppercase">/ sourcing</span>
+                            </div>
+                            <div 
+                                role="heading" 
+                                aria-level={4} 
+                                className="text-lg font-bold text-white tracking-tight font-sans mb-3"
+                            >
+                                Direct Sourcing Links
+                            </div>
+                            <p className="text-slate-400 text-xs md:text-sm font-light leading-relaxed max-w-[240px]">
+                                We source straight from global manufacturing hubs at wholesale rates.
+                            </p>
                         </div>
-                        <div>
-                            <div className="text-pink-400 font-bold text-4xl mb-2">02</div>
-                            <h4 className="font-semibold text-lg mb-2">Hassle-Free Shipping</h4>
-                            <p className="text-gray-400 text-sm">No port drama. We handle customs and deliver to your doorstep.</p>
+
+                        {/* Pillar 2 */}
+                        <div className="flex flex-col items-center text-center p-8 rounded-[2rem] border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/[0.08] hover:shadow-2xl hover:shadow-emerald-950/10 hover:-translate-y-1 transition-all duration-500 group">
+                            <div className="flex items-baseline gap-2 mb-6">
+                                <span className="text-5xl font-serif font-light text-pink-500 transition-transform duration-500 group-hover:scale-110">02</span>
+                                <span className="text-[9px] font-mono font-black tracking-widest text-slate-500 uppercase">/ logistics</span>
+                            </div>
+                            <div 
+                                role="heading" 
+                                aria-level={4} 
+                                className="text-lg font-bold text-white tracking-tight font-sans mb-3"
+                            >
+                                Hassle-Free Shipping
+                            </div>
+                            <p className="text-slate-400 text-xs md:text-sm font-light leading-relaxed max-w-[240px]">
+                                No port drama. We handle customs and deliver straight to your doorstep.
+                            </p>
                         </div>
-                        <div>
-                            <div className="text-pink-400 font-bold text-4xl mb-2">03</div>
-                            <h4 className="font-semibold text-lg mb-2">Pay in GHS</h4>
-                            <p className="text-gray-400 text-sm">Pay with MTN or Vodafone Momo. No international card needed.</p>
+
+                        {/* Pillar 3 */}
+                        <div className="flex flex-col items-center text-center p-8 rounded-[2rem] border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/[0.08] hover:shadow-2xl hover:shadow-emerald-950/10 hover:-translate-y-1 transition-all duration-500 group">
+                            <div className="flex items-baseline gap-2 mb-6">
+                                <span className="text-5xl font-serif font-light text-pink-500 transition-transform duration-500 group-hover:scale-110">03</span>
+                                <span className="text-[9px] font-mono font-black tracking-widest text-slate-500 uppercase">/ currency</span>
+                            </div>
+                            <div 
+                                role="heading" 
+                                aria-level={4} 
+                                className="text-lg font-bold text-white tracking-tight font-sans mb-3"
+                            >
+                                Pay in GHS
+                            </div>
+                            <p className="text-slate-400 text-xs md:text-sm font-light leading-relaxed max-w-[240px]">
+                                Pay with MTN or Vodafone Momo. No international credit card needed.
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     );
 }
