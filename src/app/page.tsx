@@ -1,8 +1,35 @@
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import { Metadata } from 'next';
 
 // ISR: Revalidate homepage every 24 hours
 export const revalidate = 86400;
+
+export const metadata: Metadata = {
+  title: "London's Imports | Global Sourcing & Shipping Center",
+  description: "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Trusted by 5,000+ business owners.",
+  openGraph: {
+    title: "London's Imports | Premium Global Sourcing & Shipping",
+    description: "Secure, global sourcing and shipping service delivering directly to your door in Ghana. Pay with Momo, track your batch in real-time.",
+    url: 'https://londonsimports.com',
+    siteName: "London's Imports",
+    images: [
+      {
+        url: 'https://londonsimports.com/og-home.jpg',
+        width: 1200,
+        height: 630,
+        alt: "London's Imports - China to Ghana Shopping & Shipping Center",
+      },
+    ],
+    locale: 'en_GH',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@londonsimports',
+    creator: '@londonsimports',
+  },
+};
 
 import HeroSection from '@/components/home/HeroSection';
 import TrustStrip from '@/components/home/TrustStrip';
@@ -14,6 +41,11 @@ import { getProducts } from '@/lib/fetchers';
 // Lazy load below-the-fold components to reduce initial bundle
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 const SEOAccordion = dynamic(() => import('@/components/home/SEOAccordion'));
+const TrustSection = dynamic(() => import('@/components/home/TrustSection'), {
+  loading: () => <div className="h-[400px] bg-surface animate-pulse" />,
+});
+import HomeSEOHeader from '@/components/home/HomeSEOHeader';
+import { FaqSchema } from '@/components/seo/JsonLd';
 
 export default async function HomePage() {
   // Fetch data for grids and carousels from local database categories
@@ -120,8 +152,19 @@ export default async function HomePage() {
       {/* 7. New Arrivals Horizontal Carousel */}
       <ProductCarouselShelf title="New Arrivals" products={newArrivals} />
 
-      {/* 8. SEO Content - Mini-Importation & Consolidation Keywords */}
+      {/* 8. Trust Signals: Dynamic statistics, product reviews, and delivery photos */}
+      <Suspense fallback={<div className="h-[400px] bg-surface animate-pulse" />}>
+        <TrustSection />
+      </Suspense>
+
+      {/* 9. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
+      <HomeSEOHeader />
+
+      {/* 10. Deep Keyword SEO Accordion (Crawler Data Archive) */}
       <SEOAccordion />
+
+      {/* Search Engine Optimization: Structured Data */}
+      <FaqSchema />
     </div>
   );
 }
