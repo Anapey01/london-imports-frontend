@@ -5,90 +5,125 @@ import dynamic from 'next/dynamic';
 export const revalidate = 86400;
 
 import HeroSection from '@/components/home/HeroSection';
-import ProductGridSection from '@/components/home/ProductGridSection';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: "London's Imports | Global Sourcing & Shipping Center",
-  description: "London’s Imports sources and curates products from global manufacturing markets and delivers them to customers in Ghana. Trusted by 5,000+ business owners.",
-  openGraph: {
-    title: "London's Imports | Premium Global Sourcing & Shipping",
-    description: "Secure, global sourcing and shipping service delivering directly to your door in Ghana. Pay with Momo, track your batch in real-time.",
-    url: 'https://londonsimports.com',
-    siteName: "London's Imports",
-    images: [
-      {
-        url: 'https://londonsimports.com/og-home.jpg',
-        width: 1200,
-        height: 630,
-        alt: "London's Imports - China to Ghana Shopping & Shipping Center",
-      },
-    ],
-    locale: 'en_GH',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@londonsimports',
-    creator: '@londonsimports',
-  },
-};
+import TrustStrip from '@/components/home/TrustStrip';
+import CategoryFeatureCards from '@/components/home/CategoryFeatureCards';
+import ProductCarouselShelf from '@/components/home/ProductCarouselShelf';
+import { HeroSkeleton } from '@/components/skeletons/HomeSkeletons';
+import { getProducts } from '@/lib/fetchers';
 
 // Lazy load below-the-fold components to reduce initial bundle
-const FeaturedSection = dynamic(() => import('@/components/home/FeaturedSection'), {
-  loading: () => <div className="h-64 bg-gray-50 animate-pulse rounded-lg mx-4" />,
-});
-const TrustSection = dynamic(() => import('@/components/home/TrustSection'), {
-  loading: () => <div className="h-[400px] bg-surface animate-pulse" />,
-});
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 const SEOAccordion = dynamic(() => import('@/components/home/SEOAccordion'));
-import HomeSEOHeader from '@/components/home/HomeSEOHeader';
 
-/**
- * London's Imports - Home Entry Point
- * Layout Architecture:
- * 1. Hero Section (Visual Impact)
- * 2. Product Grid (SALES PRIORITY - #1 After Hero)
- * 3. Featured Drops (Urgency)
- * 4. Trust Signals (Dynamic proof, reviews, stats)
- * 5. Brand Manifesto (SEO & Authority Archive)
- * 6. SEO Accordion (Deep Keyword Crawl)
- */
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch data for grids and carousels from local database categories
+  const [
+    fashionRes, bagsRes, lifestyleRes, accessoriesRes,
+    beautyRes, shoesRes, readyRes, featuredRes,
+    trendingRes, newArrivalsRes
+  ] = await Promise.all([
+    getProducts({ category: 'fashion', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'bags', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'home-lifestyle', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'accessories', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'beauty-personal-care', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'heels-and-shoes', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ status: 'READY_TO_SHIP', limit: '4' }).catch(() => ({ results: [] })),
+    getProducts({ featured: 'true', limit: '12' }).catch(() => ({ results: [] })),
+    getProducts({ ordering: '-reservations_count', limit: '12' }).catch(() => ({ results: [] })),
+    getProducts({ ordering: '-created_at', limit: '12' }).catch(() => ({ results: [] }))
+  ]);
+
+  const group1Cards = [
+    {
+      title: "Shop Fashion for less",
+      products: fashionRes?.results || [],
+      linkText: "See all fashion",
+      linkHref: "/products?category=fashion"
+    },
+    {
+      title: "Explore Bags collection",
+      products: bagsRes?.results || [],
+      linkText: "See all bags",
+      linkHref: "/products?category=bags"
+    },
+    {
+      title: "Home & Lifestyle",
+      products: lifestyleRes?.results || [],
+      linkText: "See all home & lifestyle",
+      linkHref: "/products?category=home-lifestyle"
+    },
+    {
+      title: "Accessories & Trends",
+      products: accessoriesRes?.results || [],
+      linkText: "See all accessories",
+      linkHref: "/products?category=accessories"
+    }
+  ];
+
+  const group2Cards = [
+    {
+      title: "Level up your beauty",
+      products: beautyRes?.results || [],
+      linkText: "See all beauty",
+      linkHref: "/products?category=beauty-personal-care"
+    },
+    {
+      title: "Heels & Shoes",
+      products: shoesRes?.results || [],
+      linkText: "See all heels & shoes",
+      linkHref: "/products?category=heels-and-shoes"
+    },
+    {
+      title: "Accessories & Gadgets",
+      products: accessoriesRes?.results || [],
+      linkText: "Discover more",
+      linkHref: "/products?category=accessories"
+    },
+    {
+      title: "Available stock ready to ship",
+      products: readyRes?.results || [],
+      linkText: "Shop available items",
+      linkHref: "/products?status=READY_TO_SHIP"
+    }
+  ];
+
+  const featured = featuredRes?.results || [];
+  const trending = trendingRes?.results || [];
+  const newArrivals = newArrivalsRes?.results || [];
+
   return (
-    <div className="min-h-screen bg-surface pb-20 transition-colors duration-500">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* WhatsApp Floating Button - Homepage Only */}
       <WhatsAppButton />
 
-      {/* 1. Hero Carousel (Landing visuals) */}
-      <HeroSection />
-
-      {/* 2. SALES FIRST: Immediate Product Feed (Amazon-style grid) - STREAMED with Skeleton */}
-      <Suspense fallback={<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 h-96 bg-surface-card animate-pulse" />}>
-        <ProductGridSection />
+      {/* 1. Hero Carousel (Landing visuals) - Suspense for Immediate Shell Paint */}
+      <Suspense fallback={<HeroSkeleton />}>
+        <HeroSection />
       </Suspense>
 
-      {/* 3. Featured Horizontal Carousel (Urgency Protocol) */}
-      <Suspense fallback={<div className="h-64 bg-surface-card animate-pulse rounded-lg mx-4" />}>
-        <FeaturedSection />
-      </Suspense>
+      {/* 2. Visual Trust Strip */}
+      <TrustStrip />
 
-      {/* 4. Trust Signals: Dynamic statistics, product reviews, and delivery photos */}
-      <Suspense fallback={<div className="h-[400px] bg-surface animate-pulse" />}>
-        <TrustSection />
-      </Suspense>
+      {/* 3. Category Feature Cards (Group 1 - Overlaps Hero Carousel on Desktop) */}
+      <CategoryFeatureCards cards={group1Cards} overlap={true} />
 
-      {/* 5. Our Approach: Brand & Shipping Info (SEO Footer Position) */}
-      <HomeSEOHeader />
+      {/* 4. Curated Picks Horizontal Carousel */}
+      <ProductCarouselShelf title="Curated Picks" products={featured} />
 
-      {/* 6. Deep Keyword SEO Accordion (Crawler Data Archive) */}
+      {/* 5. Category Feature Cards (Group 2) */}
+      <CategoryFeatureCards cards={group2Cards} overlap={false} />
+
+      {/* 6. Trending Now Horizontal Carousel */}
+      <ProductCarouselShelf title="Trending Now" products={trending} />
+
+      {/* 7. New Arrivals Horizontal Carousel */}
+      <ProductCarouselShelf title="New Arrivals" products={newArrivals} />
+
+      {/* 8. SEO Content - Mini-Importation & Consolidation Keywords */}
       <SEOAccordion />
-      
-      {/* Search Engine Optimization: Structured Data */}
-      <FaqSchema />
     </div>
   );
 }
 
-import { FaqSchema } from '@/components/seo/JsonLd';
+
