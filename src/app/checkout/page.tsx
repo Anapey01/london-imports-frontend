@@ -450,7 +450,7 @@ function CheckoutPage() {
                         
                     console.error('Payment initiation failed:', serverMessage);
                     trackPaymentLifecycle('failure', { step: 'initiation', error: serverMessage, provider: 'hubtel' });
-                    setError('Payment gateway error. Please try again or use WhatsApp.');
+                    setError(serverMessage || 'Payment gateway error. Please try again or use WhatsApp.');
                     setIsLoading(false);
                 }
             } else {
