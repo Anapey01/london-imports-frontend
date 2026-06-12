@@ -77,17 +77,17 @@
   }
 }
 
-/* NUCLEAR CONTRAST UTILITIES: Forced visibility for critical UX elements */
+/* Theme-aware text utilities */
 .nuclear-text {
-  color: var(--text-primary) !important;
+  color: var(--text-primary);
 }
 
 .nuclear-svg {
-  color: var(--text-secondary) !important;
+  color: var(--text-secondary);
 }
 
 .dark .nuclear-svg {
-  color: #cbd5e1 !important;
+  color: #cbd5e1;
 }
 
 /* STANDARD FOCUS: Perceivable visibility for keyboard users */
@@ -117,13 +117,7 @@
   border-color: var(--border-color);
 }
 
-/* DEMILITARIZED: All aggressive global overrides removed. 
-   Theme-aware styles are now handled via:
-   1. CSS Variables (--bg-primary, --text-primary)
-   2. Surgical Tailwind 'dark:' variants within components
-*/
 
-/* Transitioned to component-level variants for specific colors */
 
 /* Dark mode - Reviews section gradient masks */
 [data-theme='dark'] .from-white {
@@ -134,94 +128,7 @@
   --tw-gradient-to: transparent !important;
 }
 
-/* Phone mockup - always keep light theme for realistic phone UI */
-.phone-mockup {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
 
-.phone-mockup * {
-  color: #111827 !important;
-}
-
-.phone-mockup .bg-white,
-.phone-mockup [class*="bg-white"] {
-  background-color: #ffffff !important;
-}
-
-.phone-mockup .bg-gray-100,
-.phone-mockup [class*="bg-gray-100"] {
-  background-color: #f3f4f6 !important;
-}
-
-.phone-mockup .bg-gray-50,
-.phone-mockup [class*="bg-gray-50"] {
-  background-color: #f9fafb !important;
-}
-
-.phone-mockup .bg-yellow-50 {
-  background-color: #fefce8 !important;
-}
-
-.phone-mockup .bg-yellow-400 {
-  background-color: #facc15 !important;
-}
-
-.phone-mockup .bg-green-100 {
-  background-color: #dcfce7 !important;
-}
-
-.phone-mockup .bg-pink-50 {
-  background-color: #fdf2f8 !important;
-}
-
-.phone-mockup .text-gray-900 {
-  color: #111827 !important;
-}
-
-.phone-mockup .text-gray-800 {
-  color: #1f2937 !important;
-}
-
-.phone-mockup .text-gray-700 {
-  color: #374151 !important;
-}
-
-.phone-mockup .text-gray-600 {
-  color: #4b5563 !important;
-}
-
-.phone-mockup .text-gray-500 {
-  color: #6b7280 !important;
-}
-
-.phone-mockup .text-gray-400 {
-  color: #9ca3af !important;
-}
-
-.phone-mockup .text-gray-300 {
-  color: #d1d5db !important;
-}
-
-.phone-mockup .text-pink-500 {
-  color: #ec4899 !important;
-}
-
-.phone-mockup .text-pink-700 {
-  color: #be185d !important;
-}
-
-.phone-mockup .text-green-500 {
-  color: #22c55e !important;
-}
-
-.phone-mockup .border-pink-200 {
-  border-color: #fbcfe8 !important;
-}
-
-.phone-mockup .border-pink-500 {
-  border-color: #ec4899 !important;
-}
 
 /* Hide scrollbar utilities */
 .scrollbar-hide::-webkit-scrollbar,
@@ -263,19 +170,10 @@ html {
   max-width: 100%;
 }
 
-/* Focus styles - strictly disabled per user request to eliminate 'blue lines' or 'green stuff' */
-*:focus, 
-*:focus-visible,
-*:focus-within {
-  outline: none !important;
-  box-shadow: none !important;
-  box-shadow: 0 0 0 0 transparent !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-
-a, button, [role="button"] {
-  -webkit-tap-highlight-color: transparent !important;
-  outline: none !important;
+/* Tap highlight suppression for interactive elements */
+a, button, [role="button"], input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 /* ===== ANIMATIONS ===== */
@@ -304,42 +202,9 @@ a, button, [role="button"] {
   }
 }
 
-/* Progress bar animation for silent loaders */
-@keyframes progress {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(0); }
-  100% { transform: translateX(100%); }
-}
 
-.animate-progress {
-  animation: progress 1.5s ease-in-out infinite;
-}
 
-/* Scale in animation */
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
 
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Slide in from left */
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
 /* Drawer slide-in animation */
 @keyframes slideInDrawer {
@@ -364,18 +229,7 @@ a, button, [role="button"] {
   }
 }
 
-/* Float animation for hero image */
-@keyframes float {
 
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
-}
 
 /* Shimmer for progress bars */
 @keyframes shimmer {
@@ -392,7 +246,6 @@ a, button, [role="button"] {
   }
 }
 
-/* Shimmer for loading skeletons */
 
 /* ===== ANIMATION UTILITIES ===== */
 
@@ -404,13 +257,7 @@ a, button, [role="button"] {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-.animate-scale-in {
-  animation: scaleIn 0.6s ease-out forwards;
-}
 
-.animate-slide-left {
-  animation: slideInLeft 0.8s ease-out forwards;
-}
 
 .animate-drawer-in {
   animation: slideInDrawer 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -420,35 +267,7 @@ a, button, [role="button"] {
   animation: slideInRight 0.8s ease-out forwards;
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
 
-/* Staggered delays for children */
-.delay-100 {
-  animation-delay: 0.1s;
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-300 {
-  animation-delay: 0.3s;
-}
-
-.delay-400 {
-  animation-delay: 0.4s;
-}
-
-.delay-500 {
-  animation-delay: 0.5s;
-}
-
-/* Start with opacity 0 for animation elements */
-.animate-on-scroll {
-  opacity: 0;
-}
 
 /* ===== SKELETON LOADING ===== */
 
@@ -458,48 +277,7 @@ a, button, [role="button"] {
   animation: shimmer 1.5s infinite;
 }
 
-/* ===== BUTTONS ===== */
 
-.btn-primary {
-  background-color: #f472b6;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  box-shadow: 0 4px 14px -4px rgba(244, 114, 182, 0.3);
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  background-color: #ec4899;
-  box-shadow: 0 6px 20px -4px rgba(244, 114, 182, 0.35);
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background-color: white;
-  color: #f472b6;
-  border: 1.5px solid #f472b6;
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background-color: #f472b6;
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* ===== GRADIENT TEXT ===== */
-
-.gradient-text {
-  background: linear-gradient(135deg, #f43f5e, #64748b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
 /* ===== MARQUEE ANIMATION ===== */
 @keyframes marquee {
@@ -605,11 +383,7 @@ a, button, [role="button"] {
     0 50px 100px 0 rgba(0,0,0,0.12);
 }
 
-.text-editorial-title {
-  font-family: var(--font-source-serif), serif;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
-}
+
 
 [data-theme='dark'] .bg-stationery::before {
   opacity: 0.04;
