@@ -208,7 +208,7 @@ export default function TrustSection() {
                             </p>
                             
                             {displayedReviews[activeReviewIdx]?.product_name && (
-                                <div className="flex items-center gap-2 text-[9px] font-mono text-content-secondary/60">
+                                <div className="flex items-center gap-2 text-[9px] font-mono text-content-secondary">
                                     <Package className="w-3.5 h-3.5" />
                                     <span>PURCHASED: {displayedReviews[activeReviewIdx]?.product_name.toUpperCase()}</span>
                                 </div>
@@ -236,7 +236,7 @@ export default function TrustSection() {
                                     >
                                         <ChevronLeft className="w-3.5 h-3.5 text-content-primary" />
                                     </button>
-                                    <span className="text-[9px] font-mono text-content-secondary/60">
+                                    <span className="text-[9px] font-mono text-content-secondary">
                                         {activeReviewIdx + 1} / {displayedReviews.length}
                                     </span>
                                     <button 

@@ -39,7 +39,7 @@ const Footer = () => {
                         </div>
                         <h2 className="text-6xl md:text-8xl font-serif font-bold leading-[0.85] tracking-tighter text-content-primary">
                             London&apos;s <br />
-                            <span className="italic font-light text-content-secondary opacity-40">Imports.</span>
+                            <span className="italic font-light text-content-secondary opacity-70">Imports.</span>
                         </h2>
                     </div>
 

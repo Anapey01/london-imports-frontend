@@ -32,7 +32,6 @@ export const metadata: Metadata = {
 };
 
 import HeroSection from '@/components/home/HeroSection';
-import ValueProp from '@/components/home/ValueProp';
 import TrustStrip from '@/components/home/TrustStrip';
 import CategoryFeatureCards from '@/components/home/CategoryFeatureCards';
 import ProductCarouselShelf from '@/components/home/ProductCarouselShelf';
@@ -142,8 +141,6 @@ export default async function HomePage() {
       {/* 3. Category Feature Cards (Group 1 - Overlaps Hero Carousel on Desktop) */}
       <CategoryFeatureCards cards={group1Cards} overlap={true} />
 
-      {/* 3.5 Bold Value Proposition */}
-      <ValueProp />
 
       {/* 4. Curated Picks Horizontal Carousel */}
       <ProductCarouselShelf title="Curated Picks" products={featured} />

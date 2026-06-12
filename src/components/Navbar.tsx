@@ -240,13 +240,13 @@ export default function Navbar() {
                                     )}
                                 </div>
 
-                                <div className="flex-1 flex items-center pl-3 pr-2">
-                                    <Search className="w-4 h-4 text-content-secondary mr-3 opacity-50" strokeWidth={1.5} />
+                                <div className="flex-1 flex items-center pl-3 pr-2 min-w-0">
+                                    <Search className="w-4 h-4 text-content-secondary mr-3 opacity-50 shrink-0" strokeWidth={1.5} />
                                     <input
                                         name="search"
                                         type="text"
                                         placeholder="Search products, brands and categories"
-                                        className="flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/30 py-1"
+                                        className="w-full min-w-0 flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/30 py-1"
                                     />
                                     <button 
                                         type="submit"
@@ -336,13 +336,13 @@ export default function Navbar() {
                                 </div>
                             </div>
 
-                            <div className="flex-grow flex items-center pl-3 pr-2 py-0.5">
-                                <Search className="w-3.5 h-3.5 text-content-secondary mr-2 opacity-50" strokeWidth={1.5} />
+                            <div className="flex-grow flex items-center pl-3 pr-2 py-0.5 min-w-0">
+                                <Search className="w-3.5 h-3.5 text-content-secondary mr-2 opacity-50 shrink-0" strokeWidth={1.5} />
                                 <input
                                     name="search"
                                     type="text"
                                     placeholder="Search products..."
-                                    className="flex-grow bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/40 py-0.5"
+                                    className="w-full min-w-0 flex-grow bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/40 py-0.5"
                                 />
                             </div>
                             <button 

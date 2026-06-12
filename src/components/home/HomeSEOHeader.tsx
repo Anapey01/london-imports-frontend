@@ -28,7 +28,7 @@ export default function HomeSEOHeader() {
 
                         {/* Refined H2: High-Contrast Editorial Size */}
                         <h2 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight text-content-primary mb-6">
-                            Global Sourcing <span className="italic font-light text-content-secondary/40 mx-1">&amp;</span> <br className="hidden md:block" />
+                            Global Sourcing <span className="italic font-light text-content-secondary/70 mx-1">&amp;</span> <br className="hidden md:block" />
                             International Shipping for <span className="relative">
                                 Accra.
                                 <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-brand-emerald/10" />
@@ -85,10 +85,10 @@ export default function HomeSEOHeader() {
 
                 {/* Logistics Accent: Shipping Status - 'Perceivable' Hardened */}
                 <div className="mt-16 flex items-center justify-between border-t border-border-standard pt-8">
-                     <span className="text-[8px] font-black uppercase tracking-[0.5em] text-content-secondary/40">China Warehouse // GZ.ACC-SHELL-2026</span>
+                     <span className="text-[8px] font-black uppercase tracking-[0.5em] text-content-secondary/70">China Warehouse // GZ.ACC-SHELL-2026</span>
                      <div className="flex items-center gap-4">
                         <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald animate-pulse" />
-                        <span className="text-[8px] font-black uppercase tracking-[0.5em] text-content-secondary/40">Shipments moving</span>
+                        <span className="text-[8px] font-black uppercase tracking-[0.5em] text-content-secondary/70">Shipments moving</span>
                      </div>
                 </div>
             </div>

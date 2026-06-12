@@ -159,11 +159,13 @@ export default async function RootLayout({
         </Suspense>
 
         <Providers>
-          <PWAUpdater />
-          <NavbarWrapper />
-          <main id="main-content" className="pb-20 md:pb-0 outline-none w-full overflow-x-hidden">{children}</main>
-          <FooterWrapper />
-          <MobileBottomNavWrapper />
+          <div className="w-full overflow-x-hidden relative flex flex-col min-h-screen">
+            <PWAUpdater />
+            <NavbarWrapper />
+            <main id="main-content" className="flex-grow pb-20 md:pb-0 outline-none w-full overflow-x-hidden">{children}</main>
+            <FooterWrapper />
+            <MobileBottomNavWrapper />
+          </div>
         </Providers>
       </body>
     </html>

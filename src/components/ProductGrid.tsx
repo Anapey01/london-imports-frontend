@@ -110,7 +110,11 @@ export default function ProductGrid({
 
     const clearFilters = () => {
         startTransition(() => {
-            router.push(pathname, { scroll: false });
+            if (pathname?.includes('/products/category/')) {
+                router.push('/products', { scroll: false });
+            } else {
+                router.push(pathname || '/products', { scroll: false });
+            }
         });
     };
 

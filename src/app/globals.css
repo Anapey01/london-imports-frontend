@@ -223,23 +223,37 @@
   border-color: #ec4899 !important;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Hide scrollbar utilities */
+.scrollbar-hide::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.scrollbar-hide,
+.no-scrollbar {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
+/* Custom scrollbar - Desktop Only */
+@media (hover: hover) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
 }
 
 /* Smooth scrolling */
@@ -500,6 +514,7 @@ a, button, [role="button"] {
 
 .animate-marquee {
   animation: marquee 40s linear infinite;
+  width: max-content;
   min-width: -webkit-fill-available;
 
   @supports (min-width: fit-content) {

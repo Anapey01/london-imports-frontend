@@ -3,24 +3,7 @@
 import React from 'react';
 import { Truck, ShieldCheck, Award, Smartphone } from 'lucide-react';
 
-const marqueeAnimation = `
-@keyframes marquee {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee 35s linear infinite;
-}
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-`;
+
 
 export default function TrustStrip() {
     const items = [
@@ -50,9 +33,8 @@ export default function TrustStrip() {
     const doubleItems = [...items, ...items];
 
     return (
-        <section className="w-full overflow-hidden bg-white dark:bg-slate-950 border-y border-slate-100/80 dark:border-slate-900/80 py-3 relative z-20 select-none opacity-50 hover:opacity-100 transition-opacity duration-300">
-            <style dangerouslySetInnerHTML={{ __html: marqueeAnimation }} />
-            
+        <section className="md:hidden w-full overflow-hidden bg-white dark:bg-slate-950 border-y border-slate-100/80 dark:border-slate-900/80 py-3 relative z-20 select-none opacity-50 hover:opacity-100 transition-opacity duration-300">
+
             <div className="w-full overflow-hidden relative">
                 {/* Faded edges overlay for premium depth */}
                 <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white dark:from-slate-950 to-transparent z-10 pointer-events-none" />
