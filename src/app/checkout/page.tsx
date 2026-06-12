@@ -79,7 +79,7 @@ function CheckoutPage() {
     const [error, setError] = useState('');
     
     // Toggle Gateway
-    const PAYMENT_GATEWAY: string = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
+    const isHubtel = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY !== 'PAYSTACK';
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
@@ -195,7 +195,7 @@ function CheckoutPage() {
     }, [cart]);
 
     useEffect(() => {
-        if (isPaystackLoaded || PAYMENT_GATEWAY !== 'PAYSTACK') return;
+        if (isPaystackLoaded || isHubtel) return;
 
         const scriptId = 'paystack-inline-js';
         if (document.getElementById(scriptId)) {
@@ -211,7 +211,7 @@ function CheckoutPage() {
             setIsPaystackLoaded(true);
         };
         document.body.appendChild(script);
-    }, [isPaystackLoaded, PAYMENT_GATEWAY]);
+    }, [isPaystackLoaded, isHubtel]);
 
     useEffect(() => {
         if (orderNumberParam && isAuthenticated) {
@@ -425,7 +425,7 @@ function CheckoutPage() {
                 return;
             }
 
-            if (PAYMENT_GATEWAY === 'HUBTEL') {
+            if (isHubtel) {
                 trackPaymentLifecycle('selection', { provider: 'hubtel', amount: paymentAmount });
 
                 try {
