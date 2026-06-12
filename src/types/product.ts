@@ -61,7 +61,7 @@ export interface Product {
     available_colors?: string[];
     available_sizes?: string[];
     category?: { name: string; slug?: string };
-    origin_country?: string;
+    shipping_origin?: string;
     delivery_window_text?: string;
     video?: string;
     video_url?: string;

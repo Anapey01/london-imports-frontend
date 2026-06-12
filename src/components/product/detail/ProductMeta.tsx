@@ -11,7 +11,7 @@ export function ProductMeta({ product }: { product: Product }) {
             {/* Origin */}
             <div className="bg-surface py-6 flex flex-col gap-2 pl-8">
                 <span className="text-[9px] font-black text-content-secondary uppercase tracking-[0.4em]">Made In</span>
-                <span className="text-xs font-bold text-content-primary uppercase tracking-widest">{product.origin_country || 'Guangzhou, CN'}</span>
+                <span className="text-xs font-bold text-content-primary uppercase tracking-widest">{product.shipping_origin || 'Guangzhou, CN'}</span>
             </div>
             {/* Verification */}
             <div className="bg-surface py-6 flex flex-col gap-2 border-t border-border-standard">
