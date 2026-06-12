@@ -384,7 +384,7 @@ function CheckoutPage() {
 
             const orderPayload = {
                 item_ids: targetItemIds,
-                order_number: orderNumberParam || undefined,
+                order_number: checkoutOrder?.order_number || orderNumberParam || undefined,
                 delivery_address: delivery.address,
                 delivery_city: delivery.city,
                 delivery_region: delivery.region,
