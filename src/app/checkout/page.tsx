@@ -79,7 +79,7 @@ function CheckoutPage() {
     const [error, setError] = useState('');
     
     // Toggle Gateway
-    const PAYMENT_GATEWAY = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
+    const PAYMENT_GATEWAY: string = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 

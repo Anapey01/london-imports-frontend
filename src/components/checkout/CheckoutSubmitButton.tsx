@@ -25,7 +25,7 @@ const CheckoutSubmitButton = ({
     connectionProgress,
     setPaymentType
 }: CheckoutSubmitButtonProps) => {
-    const PAYMENT_GATEWAY = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
+    const PAYMENT_GATEWAY: string = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
     const progressRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
