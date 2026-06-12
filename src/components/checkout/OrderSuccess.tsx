@@ -225,7 +225,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     },
                                     { 
                                         id: '03', 
-                                        title: 'Ready to Ship', 
+                                        title: 'Available', 
                                         desc: 'You will receive delivery updates on WhatsApp very soon.',
                                         icon: Truck
                                     }

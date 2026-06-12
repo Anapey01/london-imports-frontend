@@ -24,6 +24,7 @@ interface ProductImageGalleryProps {
     deliveryWindowText?: string;
     categoryName?: string;
     reservationsCount?: number;
+    stockQuantity?: number;
 }
 
 export default function ProductImageGallery({
@@ -37,7 +38,8 @@ export default function ProductImageGallery({
     preorderStatus,
     deliveryWindowText,
     categoryName,
-    reservationsCount = 0
+    reservationsCount = 0,
+    stockQuantity
 }: ProductImageGalleryProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -127,7 +129,7 @@ export default function ProductImageGallery({
                     </div>
                     <div className="space-y-1">
                         <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">
-                            {preorderStatus === 'READY_TO_SHIP' ? 'Ships within 24h' : deliveryWindowText}
+                            {preorderStatus === 'READY_TO_SHIP' ? 'Available Now' : deliveryWindowText}
                         </p>
                         <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold">Delivery</p>
                     </div>
@@ -137,7 +139,7 @@ export default function ProductImageGallery({
                 <div className="flex flex-col items-center text-center gap-3 group">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-500/40 transition-transform duration-500 group-hover:scale-110 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-emerald-600' : 'bg-primary-surface'}`}>
                         <span className={`text-[11px] font-black tracking-tighter ${preorderStatus === 'READY_TO_SHIP' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-                            {preorderStatus === 'READY_TO_SHIP' ? 'NOW' : 'PRE'}
+                            {preorderStatus === 'READY_TO_SHIP' ? 'AVL' : 'PRE'}
                         </span>
                     </div>
                     <div className="space-y-1">
@@ -156,7 +158,7 @@ export default function ProductImageGallery({
                                 </svg>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">In Stock</p>
+                                <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">{stockQuantity !== undefined ? `${stockQuantity} Units` : 'In Stock'}</p>
                                 <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold text-center">Available</p>
                             </div>
                         </>

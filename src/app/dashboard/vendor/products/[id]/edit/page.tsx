@@ -321,7 +321,7 @@ export default function EditProductPage() {
                                     className={inputClasses}
                                 >
                                     <option value="PREORDER">Pre-order (Standard)</option>
-                                    <option value="READY_TO_SHIP">Ready to Ship (Available Now)</option>
+                                    <option value="READY_TO_SHIP">Available (Instant Purchase)</option>
                                     <option value="CLOSING_SOON">Closing Soon</option>
                                 </select>
                             </div>

@@ -426,8 +426,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
                     <ProductImageGallery
-                        mainImage={product.image}
-                        productName={cleanProductName(product)}
+                        mainImage={product.image || ""}
+                        productName={product.name}
                         images={product.images}
                         video={product.video}
                         videoUrl={product.video_url}
@@ -437,6 +437,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         deliveryWindowText={product.delivery_window_text}
                         categoryName={product.category?.name}
                         reservationsCount={product.reservations_count}
+                        stockQuantity={product.stock_quantity}
                     />
 
                     <div className="flex flex-col gap-8 flex-1">

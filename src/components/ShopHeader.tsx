@@ -77,7 +77,7 @@ export default function ShopHeader({
                         className="font-serif font-black tracking-tighter leading-[0.85] text-content-primary md:text-8xl lg:text-9xl transition-all"
                     >
                         {isAvailableItems
-                            ? 'Ready to Ship'
+                            ? 'Available'
                             : featured
                                 ? <>The <span className="italic font-light">Featured</span> Drop</>
                                 : category

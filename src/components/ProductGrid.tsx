@@ -131,7 +131,7 @@ export default function ProductGrid({
                 let listName = 'General Product List';
                 if (category) listName = `Category: ${category}`;
                 if (featured) listName = 'Featured Products';
-                if (status === 'READY_TO_SHIP') listName = 'Ready to Ship';
+                if (status === 'READY_TO_SHIP') listName = 'Available';
                 if (vendorSlug) listName = `Vendor: ${vendorSlug}`;
 
                 trackViewItemList(products, listName);
@@ -202,7 +202,7 @@ export default function ProductGrid({
                                 { label: 'All Items', value: '' },
                                 { label: 'Pre-order', value: 'PREORDER' },
                                 { label: 'Closing Soon', value: 'CLOSING_SOON' },
-                                { label: 'Ready to Ship', value: 'READY_TO_SHIP' },
+                                { label: 'Available', value: 'READY_TO_SHIP' },
                             ].map((s) => (
                                 <button
                                     key={s.value}

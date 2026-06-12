@@ -23,7 +23,7 @@ export async function generateMetadata(
 
     // Default Metadata
     const defaultMetaTitle = isAvailableItems
-        ? 'Ready to Ship Items | Fast Delivery Ghana | London\'s Imports'
+        ? 'Available Items | Fast Delivery Ghana | London\'s Imports'
         : featured
             ? 'Upcoming Drops & Exclusive Collections | London\'s Imports'
             : 'Shop All Imports from China | Quality Pre-order Deals | London\'s Imports';
@@ -102,7 +102,7 @@ export default async function ProductsPage({ searchParams }: Props) {
             {
                 "@type": "CollectionPage",
                 "name": isAvailableItems
-                    ? "Ready to Ship Items"
+                    ? "Available Items"
                     : featured
                         ? "Upcoming Drops"
                         : category

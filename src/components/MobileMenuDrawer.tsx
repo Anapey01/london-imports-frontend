@@ -83,7 +83,7 @@ interface MobileMenuDrawerProps {
 }
 
 const ACTION_ITEMS = [
-    { name: 'Ready to Ship', href: '/products?status=READY_TO_SHIP', icon: Zap, color: 'text-emerald-500' },
+    { name: 'Available', href: '/products?status=READY_TO_SHIP', icon: Zap, color: 'text-emerald-500' },
     { name: 'Search', href: '/product-finder', icon: Scan, color: 'text-slate-900' },
 ];
 
