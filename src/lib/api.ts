@@ -157,6 +157,8 @@ export const ordersAPI = {
 export const paymentsAPI = {
   initiate: (orderNumber: string, payment_type: string, amount?: number) =>
     api.post('/payments/initiate/', { order_number: orderNumber, payment_type, amount }),
+  initiateHubtel: (orderNumber: string, payment_type: string, amount?: number) =>
+    api.post('/payments/hubtel/initiate/', { order_number: orderNumber, payment_type, amount }),
   verify: (data: string | object) =>
     api.post('/payments/verify/', typeof data === 'string' ? { reference: data } : data),
   syncManual: (orderNumber: string, reference: string) =>

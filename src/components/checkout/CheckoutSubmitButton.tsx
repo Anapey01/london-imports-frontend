@@ -25,6 +25,7 @@ const CheckoutSubmitButton = ({
     connectionProgress,
     setPaymentType
 }: CheckoutSubmitButtonProps) => {
+    const PAYMENT_GATEWAY = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
     const progressRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
@@ -37,7 +38,7 @@ const CheckoutSubmitButton = ({
         <div className="mt-8">
             <button
                 type="submit"
-                disabled={isLoading || (paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
+                disabled={isLoading || (PAYMENT_GATEWAY === 'PAYSTACK' && paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
                 id="checkout-pay-button"
                 className={`w-full py-6 px-10 rounded-2xl font-black transition-all active:scale-[0.98] duration-700 uppercase tracking-[0.4em] text-[10px] flex items-center justify-center gap-4 shadow-diffusion-2xl border-2 border-transparent ${paymentType === 'WHATSAPP' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-black dark:hover:bg-slate-100 hover:shadow-glow-emerald/20'}`}
             >
@@ -61,12 +62,12 @@ const CheckoutSubmitButton = ({
                             </>
                         ) : (
                             <>
-                                {(!isPaystackLoaded || (isLoading && !window.PaystackPop)) ? (
+                                {(!isPaystackLoaded && PAYMENT_GATEWAY === 'PAYSTACK' || (isLoading && (!window.PaystackPop && PAYMENT_GATEWAY === 'PAYSTACK'))) ? (
                                     <div className="flex flex-col items-center w-full gap-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-3 h-3 border border-white/20 border-t-white dark:border-slate-950/20 dark:border-t-slate-950 rounded-full animate-spin" />
                                             <span className="text-[8px] tracking-[0.3em]">
-                                                {connectionTimeout ? 'Connecting to Bank...' : 'Starting Secure Payment...'}
+                                                {connectionTimeout ? 'Connecting to Bank...' : (PAYMENT_GATEWAY === 'HUBTEL' ? 'Redirecting to Secure Checkout...' : 'Starting Secure Payment...')}
                                             </span>
                                         </div>
                                         <div className="w-full h-[1px] bg-white/5 dark:bg-slate-950/5 relative overflow-hidden">
@@ -96,7 +97,7 @@ const CheckoutSubmitButton = ({
                                     </div>
                                 ) : (
                                     <>
-                                        Complete Payment — {formatPrice(paymentAmount)}
+                                        {PAYMENT_GATEWAY === 'HUBTEL' ? 'Proceed to Hubtel' : 'Complete Payment'} — {formatPrice(paymentAmount)}
                                     </>
                                 )}
                             </>
@@ -106,7 +107,9 @@ const CheckoutSubmitButton = ({
             </button>
 
             <div className="mt-8 flex items-center justify-center gap-6 opacity-10 hover:opacity-30 transition-opacity duration-700 grayscale">
-                <span className="text-[7px] font-black uppercase tracking-[0.4em] nuclear-text">Paystack Encrypted</span>
+                <span className="text-[7px] font-black uppercase tracking-[0.4em] nuclear-text">
+                    {PAYMENT_GATEWAY === 'HUBTEL' ? 'Hubtel Secure' : 'Paystack Encrypted'}
+                </span>
                 <div className="w-1 h-1 bg-slate-900 dark:bg-white rounded-full" />
                 <span className="text-[7px] font-black uppercase tracking-[0.4em] nuclear-text">Zero Data Retention</span>
             </div>

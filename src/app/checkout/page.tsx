@@ -77,6 +77,9 @@ function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
     const [error, setError] = useState('');
+    
+    // Toggle Gateway
+    const PAYMENT_GATEWAY = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'HUBTEL';
     const [paymentType, setPaymentType] = useState<'FULL' | 'DEPOSIT' | 'CUSTOM' | 'BALANCE' | 'WHATSAPP'>('FULL');
     const [customAmount, setCustomAmount] = useState('');
 
@@ -192,7 +195,7 @@ function CheckoutPage() {
     }, [cart]);
 
     useEffect(() => {
-        if (isPaystackLoaded) return;
+        if (isPaystackLoaded || PAYMENT_GATEWAY !== 'PAYSTACK') return;
 
         const scriptId = 'paystack-inline-js';
         if (document.getElementById(scriptId)) {
@@ -208,7 +211,7 @@ function CheckoutPage() {
             setIsPaystackLoaded(true);
         };
         document.body.appendChild(script);
-    }, [isPaystackLoaded]);
+    }, [isPaystackLoaded, PAYMENT_GATEWAY]);
 
     useEffect(() => {
         if (orderNumberParam && isAuthenticated) {
@@ -415,72 +418,103 @@ function CheckoutPage() {
                 return;
             }
 
-            const paystack = window.PaystackPop;
-            if (!paystack) {
-                trackPaymentLifecycle('failure', { error_code: 'paystack_not_found', provider: 'paystack' });
-                throw new Error("Payment gateway not ready. Please try again or use WhatsApp.");
-            }
-
-            // BUG-17 FIX: Guard against zero/negative payment amounts before opening Paystack
+            // BUG-17 FIX: Guard against zero/negative payment amounts before opening gateway
             if (paymentAmount <= 0) {
                 setError('Payment amount is invalid. Please refresh and try again.');
                 setIsLoading(false);
                 return;
             }
 
-            trackPaymentLifecycle('selection', { provider: 'paystack', amount: paymentAmount });
+            if (PAYMENT_GATEWAY === 'HUBTEL') {
+                trackPaymentLifecycle('selection', { provider: 'hubtel', amount: paymentAmount });
 
-            const handler = paystack.setup({
-                key: publicKey,
-                email: user?.email || '',
-                amount: Math.round(paymentAmount * 100),
-                currency: 'GHS',
-                ref: `LI-${Date.now()}-${orderToPay?.order_number}`,
-                metadata: {
-                    custom_fields: [
-                        { display_name: "Order Number", variable_name: "order_number", value: orderToPay?.order_number || '' },
-                        { display_name: "Payment Type", variable_name: "payment_type", value: paymentType }
-                    ]
-                },
-                callback: (response: PaystackResponse) => {
-                    trackPaymentLifecycle('authorization', { reference: response.reference, provider: 'paystack' });
-                    handleVerification(response);
-                },
-                onClose: () => {
-                    setIsLoading(false);
-                    setError('Payment window closed. You can resume this order anytime from your dashboard.');
-                }
-            });
-            handler.openIframe();
-
-            async function handleVerification(response: PaystackResponse) {
                 try {
-                    setIsLoading(true);
-                    await paymentsAPI.verify({
-                        reference: response.reference,
-                        order_number: orderToPay?.order_number || '',
-                        payment_type: paymentType,
-                        amount: paymentAmount
-                    });
-                    
-                    if (saveAddress) await fetchUser();
-                    if (orderToPay) trackPurchase(orderToPay, response.reference);
-                    trackPaymentLifecycle('success', { order_number: orderToPay?.order_number, provider: 'paystack' });
-                    
-                    clearCart();
-                    sessionStorage.removeItem('londons_checkout_delivery');
-                    router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
-                } catch (verifyErr: unknown) {
-                    const axiosErr = verifyErr as BackendError;
+                    const paymentRes = await paymentsAPI.initiateHubtel(orderToPay?.order_number || '', paymentType, paymentAmount);
+                    if (paymentRes.data && paymentRes.data.checkout_url) {
+                        trackPaymentLifecycle('authorization', { reference: paymentRes.data.checkout_id, provider: 'hubtel' });
+                        
+                        if (saveAddress) await fetchUser();
+                        clearCart();
+                        sessionStorage.removeItem('londons_checkout_delivery');
+                        
+                        window.location.href = paymentRes.data.checkout_url;
+                    } else {
+                        throw new Error("Invalid response from payment gateway");
+                    }
+                } catch (paymentErr: unknown) {
+                    const axiosErr = paymentErr as BackendError;
                     const errorData = axiosErr.response?.data;
                     const serverMessage = (typeof errorData === 'object' && errorData !== null)
-                        ? (errorData.error || errorData.message || errorData.detail || String(verifyErr))
-                        : (typeof errorData === 'string' ? errorData : String(verifyErr));
+                        ? (errorData.error || errorData.message || errorData.detail || String(paymentErr))
+                        : (typeof errorData === 'string' ? errorData : String(paymentErr));
                         
-                    console.error('Verification failed:', serverMessage);
-                    trackPaymentLifecycle('failure', { step: 'verification', error: serverMessage, provider: 'paystack' });
-                    setError('Payment check failed. Please message us on WhatsApp with your order number.');
+                    console.error('Payment initiation failed:', serverMessage);
+                    trackPaymentLifecycle('failure', { step: 'initiation', error: serverMessage, provider: 'hubtel' });
+                    setError('Payment gateway error. Please try again or use WhatsApp.');
                     setIsLoading(false);
+                }
+            } else {
+                // FALLBACK: PAYSTACK
+                const paystack = window.PaystackPop;
+                if (!paystack) {
+                    trackPaymentLifecycle('failure', { error_code: 'paystack_not_found', provider: 'paystack' });
+                    throw new Error("Payment gateway not ready. Please try again or use WhatsApp.");
+                }
+
+                trackPaymentLifecycle('selection', { provider: 'paystack', amount: paymentAmount });
+
+                const handler = paystack.setup({
+                    key: publicKey,
+                    email: user?.email || '',
+                    amount: Math.round(paymentAmount * 100),
+                    currency: 'GHS',
+                    ref: `LI-${Date.now()}-${orderToPay?.order_number}`,
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Order Number", variable_name: "order_number", value: orderToPay?.order_number || '' },
+                            { display_name: "Payment Type", variable_name: "payment_type", value: paymentType }
+                        ]
+                    },
+                    callback: (response: PaystackResponse) => {
+                        trackPaymentLifecycle('authorization', { reference: response.reference, provider: 'paystack' });
+                        handleVerification(response);
+                    },
+                    onClose: () => {
+                        setIsLoading(false);
+                        setError('Payment window closed. You can resume this order anytime from your dashboard.');
+                    }
+                });
+                handler.openIframe();
+
+                async function handleVerification(response: PaystackResponse) {
+                    try {
+                        setIsLoading(true);
+                        await paymentsAPI.verify({
+                            reference: response.reference,
+                            order_number: orderToPay?.order_number || '',
+                            payment_type: paymentType,
+                            amount: paymentAmount
+                        });
+                        
+                        if (saveAddress) await fetchUser();
+                        if (orderToPay) trackPurchase(orderToPay, response.reference);
+                        trackPaymentLifecycle('success', { order_number: orderToPay?.order_number, provider: 'paystack' });
+                        
+                        clearCart();
+                        sessionStorage.removeItem('londons_checkout_delivery');
+                        router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
+                    } catch (verifyErr: unknown) {
+                        const axiosErr = verifyErr as BackendError;
+                        const errorData = axiosErr.response?.data;
+                        const serverMessage = (typeof errorData === 'object' && errorData !== null)
+                            ? (errorData.error || errorData.message || errorData.detail || String(verifyErr))
+                            : (typeof errorData === 'string' ? errorData : String(verifyErr));
+                            
+                        console.error('Verification failed:', serverMessage);
+                        trackPaymentLifecycle('failure', { step: 'verification', error: serverMessage, provider: 'paystack' });
+                        setError('Payment check failed. Please message us on WhatsApp with your order number.');
+                        setIsLoading(false);
+                    }
                 }
             }
         } catch (err: unknown) {
