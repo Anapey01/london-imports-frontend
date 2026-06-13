@@ -136,12 +136,30 @@ export default function OrdersPage() {
                                                 Details
                                             </Link>
                                             {isPendingPayment ? (
-                                                <Link
-                                                    href={`/checkout?order=${order.order_number}`}
-                                                    className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm"
-                                                >
-                                                    Pay Balance
-                                                </Link>
+                                                <>
+                                                    <Link
+                                                        href={`/checkout?order=${order.order_number}`}
+                                                        className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm"
+                                                    >
+                                                        Pay Balance
+                                                    </Link>
+                                                    <button
+                                                        onClick={async (e) => {
+                                                            e.preventDefault();
+                                                            if (confirm('Are you sure you want to cancel this order?')) {
+                                                                try {
+                                                                    await ordersAPI.cancelOrder(order.order_number);
+                                                                    window.location.reload();
+                                                                } catch (err) {
+                                                                    alert('Failed to cancel order.');
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center border border-red-200 text-red-600 hover:bg-red-50 transition-all"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
                                             ) : (
                                                 <Link
                                                     href={`/track?order=${order.order_number}`}

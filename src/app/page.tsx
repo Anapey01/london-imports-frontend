@@ -54,41 +54,55 @@ export default async function HomePage() {
     beautyRes, shoesRes, readyRes, featuredRes,
     trendingRes, newArrivalsRes, perfumesRes
   ] = await Promise.all([
-    getProducts({ category: 'fashion', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'bags', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'home-lifestyle', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'accessories', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'beauty-personal-care', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'heels-and-shoes', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ status: 'READY_TO_SHIP', limit: '4' }).catch(() => ({ results: [] })),
-    getProducts({ featured: 'true', limit: '12' }).catch(() => ({ results: [] })),
-    getProducts({ ordering: '-reservations_count', limit: '12' }).catch(() => ({ results: [] })),
-    getProducts({ ordering: '-created_at', limit: '12' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'perfumes', limit: '4' }).catch(() => ({ results: [] }))
+    getProducts({ category: 'fashion', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'bags', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'home-lifestyle', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'accessories', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'beauty-personal-care', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'heels-and-shoes', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ status: 'READY_TO_SHIP', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ featured: 'true', limit: '24' }).catch(() => ({ results: [] })),
+    getProducts({ ordering: '-reservations_count', limit: '24' }).catch(() => ({ results: [] })),
+    getProducts({ ordering: '-created_at', limit: '24' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'perfumes', limit: '15' }).catch(() => ({ results: [] }))
   ]);
+
+  const seenIds = new Set<string>();
+  // Helper to deduplicate items globally and limit the final array
+  const dedupeAndLimit = (items: any[], limit: number) => {
+    const unique = [];
+    for (const item of items || []) {
+      if (!seenIds.has(item.id)) {
+        seenIds.add(item.id);
+        unique.push(item);
+        if (unique.length === limit) break;
+      }
+    }
+    return unique;
+  };
 
   const group1Cards = [
     {
       title: "Shop Fashion for less",
-      products: fashionRes?.results || [],
+      products: dedupeAndLimit(fashionRes?.results, 4),
       linkText: "See all fashion",
       linkHref: "/products?category=fashion"
     },
     {
       title: "Explore Bags collection",
-      products: bagsRes?.results || [],
+      products: dedupeAndLimit(bagsRes?.results, 4),
       linkText: "See all bags",
       linkHref: "/products?category=bags"
     },
     {
       title: "Home & Lifestyle",
-      products: lifestyleRes?.results || [],
+      products: dedupeAndLimit(lifestyleRes?.results, 4),
       linkText: "See all home & lifestyle",
       linkHref: "/products?category=home-lifestyle"
     },
     {
       title: "Accessories & Trends",
-      products: accessoriesRes?.results || [],
+      products: dedupeAndLimit(accessoriesRes?.results, 4),
       linkText: "See all accessories",
       linkHref: "/products?category=accessories"
     }
@@ -97,33 +111,33 @@ export default async function HomePage() {
   const group2Cards = [
     {
       title: "Level up your beauty",
-      products: beautyRes?.results || [],
+      products: dedupeAndLimit(beautyRes?.results, 4),
       linkText: "See all beauty",
       linkHref: "/products?category=beauty-personal-care"
     },
     {
       title: "Heels & Shoes",
-      products: shoesRes?.results || [],
+      products: dedupeAndLimit(shoesRes?.results, 4),
       linkText: "See all heels & shoes",
       linkHref: "/products?category=heels-and-shoes"
     },
     {
       title: "Arabian Perfumes",
-      products: perfumesRes?.results || [],
+      products: dedupeAndLimit(perfumesRes?.results, 4),
       linkText: "See all perfumes",
       linkHref: "/products?category=perfumes"
     },
     {
       title: "Instant Availability",
-      products: readyRes?.results || [],
+      products: dedupeAndLimit(readyRes?.results, 4),
       linkText: "Shop ready stock",
       linkHref: "/products?status=READY_TO_SHIP"
     }
   ];
 
-  const featured = featuredRes?.results || [];
-  const trending = trendingRes?.results || [];
-  const newArrivals = newArrivalsRes?.results || [];
+  const featured = dedupeAndLimit(featuredRes?.results, 12);
+  const trending = dedupeAndLimit(trendingRes?.results, 12);
+  const newArrivals = dedupeAndLimit(newArrivalsRes?.results, 12);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
