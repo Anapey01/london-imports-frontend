@@ -33,23 +33,9 @@ interface Order {
     balance_due: string | number;
 }
 
-import noirBg from '../../../public/assets/success/noir.png';
-import whiteBg from '../../../public/assets/success/white.png';
-import hubBg from '../../../public/assets/success/hub.png';
-
-const BACKDROPS = [
-    { id: 'noir', path: noirBg, theme: 'dark' },
-    { id: 'white', path: whiteBg, theme: 'light' },
-    { id: 'center', path: hubBg, theme: 'tech' }
-];
 
 const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
     const [orderData, setOrderData] = useState<Order | null>(null);
-    
-    // Select a random backdrop on mount
-    const backdrop = useMemo(() => {
-        return BACKDROPS[Math.floor(Math.random() * BACKDROPS.length)];
-    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -110,19 +96,9 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
             >
                 <div className="grid lg:grid-cols-2">
                     {/* Visual Section: Dynamic Product Display */}
-                    <div className="relative h-[400px] lg:h-auto bg-slate-100 dark:bg-slate-950 overflow-hidden group">
-                        {/* Selected Premium Backdrop */}
-                        <Image
-                            src={backdrop.path}
-                            alt="London's Imports Premium Background"
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                            quality={60}
-                            placeholder="blur"
-                            className="object-cover transition-transform duration-[5000ms] ease-out scale-110 group-hover:scale-100 transform-gpu will-change-transform"
-                            priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
+                    <div className="relative h-[400px] lg:h-auto bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 overflow-hidden group">
+                        {/* Simple Gradient Background Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
                         
                         {/* Dynamic Product Image Overlay */}
                         <AnimatePresence mode="wait">
