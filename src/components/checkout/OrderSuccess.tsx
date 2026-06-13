@@ -52,17 +52,50 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
     }, []);
 
     useEffect(() => {
-        const fetchOrder = async () => {
-            try {
-                const response = await ordersAPI.detail(orderNumber);
-                setOrderData(response.data);
-            } catch (err) {
-                console.error("Failed to fetch order details for success view:", err);
+        let cancelled = false;
+
+        const fetchAndVerify = async () => {
+            if (!orderNumber) return;
+
+            // If this is a Hubtel payment, trigger verify-payment on the order first
+            // This is a fallback in case the webhook hasn't processed yet
+            if (method === 'hubtel') {
+                try {
+                    await ordersAPI.verifyPayment(orderNumber);
+                } catch {
+                    // Non-critical: webhook may have already processed it
+                    console.debug('[OrderSuccess] verify-payment fallback completed (may already be processed)');
+                }
             }
+
+            // Fetch order data (potentially updated by verification above)
+            const fetchOrder = async (attempt = 1): Promise<void> => {
+                try {
+                    const response = await ordersAPI.detail(orderNumber);
+                    if (cancelled) return;
+                    setOrderData(response.data);
+
+                    // If amount_paid is still 0 and this is hubtel, retry a couple times
+                    const amountPaid = parseFloat(String(response.data?.amount_paid || '0'));
+                    if (method === 'hubtel' && amountPaid === 0 && attempt < 4) {
+                        await new Promise(r => setTimeout(r, 3000));
+                        if (!cancelled) {
+                            // Re-trigger verification before retrying
+                            try { await ordersAPI.verifyPayment(orderNumber); } catch {}
+                            return fetchOrder(attempt + 1);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch order details for success view:", err);
+                }
+            };
+
+            await fetchOrder();
         };
 
-        if (orderNumber) fetchOrder();
-    }, [orderNumber]);
+        fetchAndVerify();
+        return () => { cancelled = true; };
+    }, [orderNumber, method]);
 
     const firstItem = orderData?.items?.[0];
     const productCount = orderData?.items?.length || 0;
