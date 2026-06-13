@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useEffect, Suspense } from 'react';
+import React, { useCallback, useRef, useEffect, Suspense } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/Toast';
@@ -139,7 +139,7 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
             {/* Standardized Atelier Button Container */}
             <div 
                 ref={googleButtonRef} 
-                className="w-full flex items-center justify-center min-h-[50px] transition-all duration-500" 
+                className="w-full flex items-center justify-center min-h-[50px] transition-colors duration-500" 
             />
             
             {!clientID && process.env.NODE_ENV === 'development' && (
@@ -156,10 +156,12 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
 }
 
 // Wrapper for Suspense (Required for useSearchParams)
-const GoogleLoginButton = ({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => (
+const GoogleLoginButton = React.memo(({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) => (
     <Suspense fallback={<div className="h-20 w-full animate-pulse bg-slate-50" />}>
         <GoogleButtonContent mode={mode} />
     </Suspense>
-);
+));
+
+GoogleLoginButton.displayName = 'GoogleLoginButton';
 
 export default GoogleLoginButton;

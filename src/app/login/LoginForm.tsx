@@ -76,7 +76,7 @@ function LoginFormContent() {
         }
     };
 
-    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-all placeholder:text-content-secondary/30 text-content-primary uppercase tracking-widest";
+    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-colors placeholder:text-content-secondary/30 text-content-primary uppercase tracking-widest";
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
