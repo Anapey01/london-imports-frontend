@@ -6,7 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import { Product } from '@/stores/cartStore';
 import { motion } from 'framer-motion';
 
-export default function OrderRecommendations() {
+export default function OrderRecommendations({ orderItems }: { orderItems?: any[] }) {
     const [recommendations, setRecommendations] = useState<Product[]>([]);
     const [trending, setTrending] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -15,12 +15,37 @@ export default function OrderRecommendations() {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                // Fetch random items for "You Might Also Like"
-                const recResponse = await productsAPI.list({ limit: 8 });
-                const recResults = recResponse.data.results || [];
+                // Determine user's recent shopping behavior from their order
+                const categories = orderItems 
+                    ? [...new Set(orderItems.map(item => item.product?.category?.slug || item.product?.category).filter(Boolean))]
+                    : [];
+
+                let recResults: Product[] = [];
+
+                if (categories.length > 0) {
+                    // Fetch items from the same category to provide smart "You Might Also Like" recommendations
+                    const recResponse = await productsAPI.list({ category: categories[0], limit: 8 });
+                    recResults = recResponse.data.results || [];
+                    
+                    // Filter out items the user just bought
+                    const orderItemIds = orderItems?.map(item => item.product?.id) || [];
+                    recResults = recResults.filter(p => !orderItemIds.includes(p.id));
+                }
+
+                // Fallback to random popular items if needed to fill the list
+                if (recResults.length < 4) {
+                    const fallbackResponse = await productsAPI.list({ limit: 12 });
+                    const fallbackResults = fallbackResponse.data.results || [];
+                    
+                    const existingIds = new Set(recResults.map(p => p.id));
+                    const orderItemIds = orderItems?.map(item => item.product?.id) || [];
+                    
+                    const validFallbacks = fallbackResults.filter(p => !existingIds.has(p.id) && !orderItemIds.includes(p.id));
+                    recResults = [...recResults, ...validFallbacks];
+                }
                 
-                // Shuffle and pick 4
-                const shuffledRec = [...recResults].sort(() => 0.5 - Math.random()).slice(0, 4);
+                // Shuffle to keep it fresh and pick 4
+                const shuffledRec = recResults.sort(() => 0.5 - Math.random()).slice(0, 4);
                 setRecommendations(shuffledRec);
 
                 // Fetch trending/featured for "Viewed by Most"

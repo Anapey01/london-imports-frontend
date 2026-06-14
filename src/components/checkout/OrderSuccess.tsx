@@ -177,7 +177,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
             </motion.div>
 
             {/* Discovery Sections */}
-            <OrderRecommendations />
+            <OrderRecommendations orderItems={orderData?.items} />
 
             {/* Footer */}
             <motion.div 
