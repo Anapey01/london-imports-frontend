@@ -139,36 +139,6 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                             </motion.div>
 
                             <div className="space-y-4">
-                                <p className="text-[14px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm">
-                                    {method === 'whatsapp' 
-                                        ? "Items reserved. Complete Mobile Money payment below to finalize."
-                                        : "Payment secured. We are preparing your items for international shipment."}
-                                </p>
-
-                                {method === 'whatsapp' && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="bg-brand-emerald/5 border border-brand-emerald/20 rounded-2xl p-6 space-y-3"
-                                    >
-                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-emerald">Mobile Money Payment</p>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-xs">
-                                                <span className="text-slate-500">Momo Number:</span>
-                                                <span className="font-bold text-slate-900">{siteConfig.momoNumber || '055 812 3456'}</span>
-                                            </div>
-                                            <div className="flex justify-between text-xs">
-                                                <span className="text-slate-500">Name:</span>
-                                                <span className="font-bold text-slate-900">{siteConfig.momoName || "London's Imports"}</span>
-                                            </div>
-                                            <div className="flex justify-between text-xs pt-2 border-t border-brand-emerald/10">
-                                                <span className="text-slate-500">Reference:</span>
-                                                <span className="font-bold text-brand-emerald">{orderNumber}</span>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-
                                 {orderData && (
                                     <div className="flex gap-8 py-4 border-y border-slate-100 dark:border-slate-800">
                                         <div className="space-y-1">
@@ -183,50 +153,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 )}
                             </div>
 
-                            <div className="space-y-8 pt-4">
-                                {[
-                                    { 
-                                        id: '01', 
-                                        title: 'Processing', 
-                                        desc: 'Securing items with global partners.',
-                                        icon: Package
-                                    },
-                                    { 
-                                        id: '02', 
-                                        title: 'Inspection', 
-                                        desc: 'Verifying quality before transit.',
-                                        icon: ShieldCheck
-                                    },
-                                    { 
-                                        id: '03', 
-                                        title: 'Dispatch', 
-                                        desc: 'Updates sent via WhatsApp.',
-                                        icon: Truck
-                                    }
-                                ].map((step, idx) => (
-                                    <motion.div 
-                                        key={step.id}
-                                        initial={{ opacity: 0, x: 10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.8 + (idx * 0.1) }}
-                                        className="flex gap-6 group"
-                                    >
-                                        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-emerald-600 group-hover:text-white dark:group-hover:bg-emerald-500 shadow-sm">
-                                            <step.icon className="w-5 h-5" strokeWidth={1.5} />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-[13px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
-                                                {step.title}
-                                            </h3>
-                                            <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-2">
-                                                {step.desc}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            <div className="pt-10 flex flex-col sm:flex-row gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <Link 
                                     href="/orders"
                                     className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-16 rounded-2xl font-semibold text-[10px] uppercase tracking-widest text-center hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
