@@ -212,6 +212,10 @@ export const useCartStore = create<CartState>()(
             },
 
             clearCart: () => {
+                const isAuthenticated = useAuthStore.getState().isAuthenticated;
+                if (isAuthenticated) {
+                    ordersAPI.clearCart().catch(() => {});
+                }
                 set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: [], isFetching: false, isLoading: false });
             },
 
