@@ -69,6 +69,7 @@ export default async function HomePage() {
 
   const seenIds = new Set<string>();
   // Helper to deduplicate items globally and limit the final array
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dedupeAndLimit = (items: any[], limit: number) => {
     const unique = [];
     for (const item of items || []) {
