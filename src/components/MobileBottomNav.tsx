@@ -73,7 +73,6 @@ export default function MobileBottomNav() {
                             key={item.name}
                             href={item.href}
                             className={`flex flex-col items-center justify-center flex-1 py-1 group relative transition-all institutional-focus rounded-lg outline-none tap-highlight-none ${isActive ? 'text-brand-emerald' : 'text-content-secondary'}`}
-                            aria-label={item.name}
                         >
                             {content}
                         </Link>

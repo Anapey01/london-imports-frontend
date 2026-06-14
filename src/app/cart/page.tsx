@@ -121,8 +121,7 @@ export default function CartPage() {
                                 </h2>
                                 <button
                                     onClick={handleCheckout}
-                                    className="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:underline institutional-focus px-2 py-1"
-                                    aria-label="Quick Checkout"
+                                    className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-500 hover:underline institutional-focus px-2 py-1"
                                 >
                                     Checkout Now
                                 </button>
@@ -201,7 +200,7 @@ export default function CartPage() {
                                             </div>
                                             
                                             <p className={`text-[10px] font-black uppercase tracking-[0.2em] pt-2 ${
-                                                (!item.product.is_preorder && item.product.stock_quantity === 0) ? 'text-red-500' : 'text-emerald-600'
+                                                (!item.product.is_preorder && item.product.stock_quantity === 0) ? 'text-red-600 dark:text-red-500' : 'text-emerald-700 dark:text-emerald-500'
                                             }`}>
                                                 {item.product.is_preorder 
                                                     ? 'Shipment Incoming'
@@ -264,7 +263,7 @@ export default function CartPage() {
                                 <button
                                      onClick={handleCheckout}
                                      disabled={isLoading}
-                                     className="flex-1 h-11 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800/50 disabled:cursor-not-allowed text-white rounded-none font-black uppercase tracking-[0.3em] text-[10px] transition-all flex items-center justify-center gap-4 active:scale-95 institutional-focus"
+                                     className="flex-1 h-11 bg-emerald-700 hover:bg-emerald-600 disabled:bg-emerald-900/50 disabled:cursor-not-allowed text-white rounded-none font-black uppercase tracking-[0.3em] text-[10px] transition-all flex items-center justify-center gap-4 active:scale-95 institutional-focus"
                                  >
                                      {isLoading ? (
                                          <>
@@ -282,11 +281,11 @@ export default function CartPage() {
                             </div>
                             
                             <div className="mt-6 flex flex-col items-center gap-2">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/40 flex items-center gap-2 italic">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/70 dark:text-content-secondary/60 flex items-center gap-2 italic">
                                     <ShieldCheck className="w-3 h-3" />
                                     Secure Shipping
                                 </p>
-                                <p className="text-[9px] font-medium text-content-secondary/60 italic text-center">
+                                <p className="text-[9px] font-medium text-content-secondary/80 italic text-center">
                                     Delivery schedules are calculated at the Shipping Hub.
                                 </p>
                             </div>
