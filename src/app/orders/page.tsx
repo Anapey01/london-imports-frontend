@@ -96,32 +96,34 @@ export default function OrdersPage() {
                                         {/* Core Identification */}
                                         <div className="flex-1 min-w-0 flex flex-col justify-center text-center sm:text-left">
                                             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-                                                <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                                                <h3 className="text-sm font-semibold text-slate-900 tracking-tight">
                                                     #{order.order_number}
                                                 </h3>
-                                                <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest border border-black/5 ${
-                                                    isPaid ? 'bg-emerald-500 text-white shadow-sm' : 'bg-amber-500 text-white shadow-sm'
+                                                <span className={`px-2 py-1 rounded text-[10px] font-semibold uppercase tracking-widest border ${
+                                                    isPaid ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'
                                                 }`}>
                                                     {order.state_display}
                                                 </span>
                                             </div>
-                                            <p className="text-[10px] font-bold uppercase tracking-widest">
-                                                {new Date(order.created_at).toLocaleDateString()}
-                                            </p>
-                                            <span className="w-1 h-1 rounded-full bg-slate-100" />
-                                            <p className="text-[10px] font-bold uppercase tracking-widest">
-                                                {order.items?.length || 0} ITEMS
-                                            </p>
+                                            <div className="flex items-center gap-2 mt-1.5 opacity-80">
+                                                <p className="text-[10px] font-medium uppercase tracking-widest">
+                                                    {new Date(order.created_at).toLocaleDateString()}
+                                                </p>
+                                                <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                                <p className="text-[10px] font-medium uppercase tracking-widest">
+                                                    {order.items?.length || 0} ITEMS
+                                                </p>
+                                            </div>
                                         </div>
 
                                         {/* Financial Ledger */}
                                         <div className="flex flex-col items-center sm:items-end justify-center gap-0.5 text-center sm:text-right min-w-[100px]">
-                                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Total Amount</p>
-                                            <p className="text-sm sm:text-base font-black text-slate-900 tabular-nums tracking-tighter">
+                                            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-slate-500">Total Amount</p>
+                                            <p className="text-sm sm:text-base font-semibold text-slate-900 tabular-nums tracking-tighter">
                                                 GHS {parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
                                             {balanceDue > 0 && !isPaid && (
-                                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">
+                                                <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest">
                                                     DUE: {balanceDue.toLocaleString()}
                                                 </p>
                                             )}
@@ -131,7 +133,7 @@ export default function OrdersPage() {
                                         <div className="flex flex-row sm:flex-col items-center justify-center gap-2 w-full sm:w-36 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-50">
                                             <Link
                                                 href={`/orders/${order.order_number}`}
-                                                className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center transition-all bg-slate-950 text-white hover:bg-slate-800 shadow-sm"
+                                                className="flex-1 sm:w-full py-2.5 rounded-lg text-[10px] font-semibold uppercase tracking-widest text-center transition-all border border-slate-200 text-slate-800 hover:bg-slate-50 shadow-sm"
                                             >
                                                 Details
                                             </Link>
@@ -139,7 +141,7 @@ export default function OrdersPage() {
                                                 <>
                                                     <Link
                                                         href={`/checkout?order=${order.order_number}`}
-                                                        className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center bg-brand-emerald text-white hover:bg-brand-emerald/90 transition-all shadow-sm"
+                                                        className="flex-1 sm:w-full py-2.5 rounded-lg text-[10px] font-semibold uppercase tracking-widest text-center bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-sm"
                                                     >
                                                         Pay Balance
                                                     </Link>
@@ -155,7 +157,7 @@ export default function OrdersPage() {
                                                                 }
                                                             }
                                                         }}
-                                                        className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center border border-red-200 text-red-600 hover:bg-red-50 transition-all"
+                                                        className="flex-1 sm:w-full py-2.5 rounded-lg text-[10px] font-semibold uppercase tracking-widest text-center text-red-600 hover:bg-red-50/50 transition-all"
                                                     >
                                                         Cancel
                                                     </button>
@@ -163,7 +165,7 @@ export default function OrdersPage() {
                                             ) : (
                                                 <Link
                                                     href={`/track?order=${order.order_number}`}
-                                                    className="flex-1 sm:w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-center border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all"
+                                                    className="flex-1 sm:w-full py-2.5 rounded-lg text-[10px] font-semibold uppercase tracking-widest text-center border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all"
                                                 >
                                                     Track
                                                 </Link>

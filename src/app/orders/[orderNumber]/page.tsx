@@ -166,8 +166,8 @@ export default function OrderDetailPage() {
                         {/* Compact Product Rows */}
                         <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
                             <div className="px-6 sm:p-8 py-6 border-b border-slate-100 dark:border-slate-800">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white flex items-center gap-2">
-                                    <Package size={14} className="text-emerald-600" />
+                                <h3 className="text-[10px] font-semibold uppercase tracking-widest text-slate-900 dark:text-white flex items-center gap-2">
+                                    <Package size={14} className="text-slate-500" />
                                     Items In Shipment
                                 </h3>
                             </div>
@@ -189,10 +189,10 @@ export default function OrderDetailPage() {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-1 mb-1">
+                                            <h4 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white uppercase tracking-tight line-clamp-1 mb-1">
                                                 {item.product_name}
                                             </h4>
-                                            <div className="flex flex-wrap items-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                                            <div className="flex flex-wrap items-center gap-4 text-[9px] font-medium text-slate-500 uppercase tracking-widest">
                                                 <span>Qty: <span className="text-slate-900 dark:text-white">{item.quantity}</span></span>
                                                 {item.selected_size && (
                                                     <>
@@ -205,7 +205,7 @@ export default function OrderDetailPage() {
                                             </div>
                                         </div>
                                         <div className="text-right flex-shrink-0">
-                                            <p className="text-sm sm:text-lg font-black text-slate-900 dark:text-white tabular-nums">
+                                            <p className="text-sm sm:text-lg font-semibold text-slate-900 dark:text-white tabular-nums">
                                                 GHS {Number(item.total_price).toLocaleString()}
                                             </p>
                                         </div>
@@ -247,39 +247,39 @@ export default function OrderDetailPage() {
                     {/* RIGHT COLUMN: Financial Summary (4 Cols) */}
                     <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
                         <section className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-border-standard shadow-sm">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-content-primary mb-8 flex items-center gap-2">
-                                <Receipt size={14} className="text-brand-emerald" />
+                            <h3 className="text-[10px] font-semibold uppercase tracking-widest text-content-primary mb-8 flex items-center gap-2">
+                                <Receipt size={14} className="text-slate-500" />
                                 Financial Summary
                             </h3>
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-baseline">
-                                    <span className="text-[9px] font-black uppercase text-content-secondary opacity-50 tracking-widest">Subtotal</span>
-                                    <span className="text-sm font-bold text-content-primary tabular-nums">GHS {Number(order.subtotal).toLocaleString()}</span>
+                                    <span className="text-[9px] font-medium uppercase text-content-secondary opacity-70 tracking-widest">Subtotal</span>
+                                    <span className="text-sm font-medium text-content-primary tabular-nums">GHS {Number(order.subtotal).toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-baseline">
-                                    <span className="text-[9px] font-black uppercase text-content-secondary opacity-50 tracking-widest">Shipping</span>
-                                    <span className="text-sm font-bold text-content-primary tabular-nums">GHS {Number(order.delivery_fee).toLocaleString()}</span>
+                                    <span className="text-[9px] font-medium uppercase text-content-secondary opacity-70 tracking-widest">Shipping</span>
+                                    <span className="text-sm font-medium text-content-primary tabular-nums">GHS {Number(order.delivery_fee).toLocaleString()}</span>
                                 </div>
                                 
                                 <div className="pt-6 border-t border-border-standard">
                                     <div className="flex justify-between items-end mb-6">
-                                        <span className="text-[9px] font-black uppercase text-content-secondary tracking-widest">Total Order Value</span>
-                                        <span className="text-2xl font-black text-content-primary tracking-tight tabular-nums leading-none">
+                                        <span className="text-[9px] font-semibold uppercase text-content-secondary tracking-widest">Total Order Value</span>
+                                        <span className="text-2xl font-semibold text-content-primary tracking-tight tabular-nums leading-none">
                                             GHS {Number(order.total).toLocaleString()}
                                         </span>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <div className="flex justify-between items-center px-4 py-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
-                                            <span className="text-[8px] font-black uppercase text-emerald-700 dark:text-emerald-400 tracking-widest">Settled</span>
-                                            <span className="text-sm font-black text-emerald-800 dark:text-emerald-100 uppercase">GHS {Number(order.amount_paid).toLocaleString()}</span>
+                                        <div className="flex justify-between items-center px-4 py-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                                            <span className="text-[8px] font-semibold uppercase text-emerald-700 dark:text-emerald-400 tracking-widest">Settled</span>
+                                            <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-100 uppercase">GHS {Number(order.amount_paid).toLocaleString()}</span>
                                         </div>
 
                                         {balanceDue > 0 && (
                                             <div className="flex justify-between items-center px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-border-standard">
-                                                <span className="text-[8px] font-black uppercase text-amber-600 tracking-widest">Balance Due</span>
-                                                <span className="text-sm font-black text-amber-700 uppercase">GHS {Number(balanceDue).toLocaleString()}</span>
+                                                <span className="text-[8px] font-semibold uppercase text-amber-600 tracking-widest">Balance Due</span>
+                                                <span className="text-sm font-semibold text-amber-700 uppercase">GHS {Number(balanceDue).toLocaleString()}</span>
                                             </div>
                                         )}
                                     </div>
