@@ -63,24 +63,22 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
             >
                 <div className="grid lg:grid-cols-2">
                     {/* Visual Section: Dynamic Product Display */}
-                    <div className="relative h-[400px] lg:h-auto bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 overflow-hidden group">
-                        {/* Simple Gradient Background Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
+                    <div className="relative h-[400px] lg:h-auto bg-transparent overflow-hidden group">
+                        {/* Simple Background Overlay (if needed for text contrast, or remove) */}
+                        <div className="absolute inset-0 bg-transparent" />
                         
                         {/* Dynamic Product Image Overlay */}
                         <AnimatePresence mode="wait">
                             {firstItem && (
                                 <motion.div 
                                     key={firstItem.id}
-                                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    transition={{ delay: 0.6, duration: 0.8, type: "spring" }}
+                                    transition={{ duration: 0.4, type: "spring" }}
                                     className="absolute inset-0 flex items-center justify-center p-12"
                                 >
                                     <div className="relative w-full aspect-square max-w-[280px]">
-                                        {/* Premium Frame/Shadow for the product */}
-                                        <div className="absolute inset-4 bg-white/20 dark:bg-white/5 rounded-3xl border border-white/20 shadow-2xl rotate-3" />
-                                        <div className="absolute inset-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden -rotate-2 border border-white/50 dark:border-slate-700">
+                                        <div className="absolute inset-0 bg-transparent rounded-2xl overflow-hidden shadow-2xl">
                                             <Image 
                                                 src={firstItem.product?.primary_image || firstItem.product?.image || '/placeholder.jpg'}
                                                 alt={firstItem.product_name}
@@ -103,17 +101,17 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                         <div className="absolute bottom-8 left-8 right-8">
                             <motion.div 
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.8 }}
-                                transition={{ delay: 1.5 }}
-                                className="flex justify-between items-end border-t border-white/30 pt-4"
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="flex justify-between items-end border-t border-slate-200 dark:border-slate-800 pt-4"
                             >
                                 <div className="space-y-1">
-                                    <span className="text-[8px] font-semibold text-white uppercase tracking-[0.3em]">Your Order</span>
-                                    <p className="text-[10px] font-mono text-white/90">#{orderNumber}</p>
+                                    <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-[0.3em]">Your Order</span>
+                                    <p className="text-[10px] font-mono text-slate-900 dark:text-white">#{orderNumber}</p>
                                 </div>
                                 <div className="text-right space-y-1">
-                                    <span className="text-[8px] font-semibold text-white uppercase tracking-[0.3em]">Confirmation Date</span>
-                                    <p className="text-[10px] font-mono text-white/90">{new Date().toLocaleDateString('en-GB')}</p>
+                                    <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-[0.3em]">Confirmation Date</span>
+                                    <p className="text-[10px] font-mono text-slate-900 dark:text-white">{new Date().toLocaleDateString('en-GB')}</p>
                                 </div>
                             </motion.div>
                         </div>
