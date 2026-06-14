@@ -153,10 +153,10 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 )}
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                            <div className="flex flex-wrap items-center gap-8 pt-4">
                                 <Link 
                                     href="/orders"
-                                    className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-16 rounded-2xl font-semibold text-[10px] uppercase tracking-widest text-center hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
+                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2"
                                 >
                                     View My Orders
                                     <ArrowRight className="w-3 h-3" />
@@ -165,9 +165,9 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     href={`https://wa.me/${siteConfig.concierge}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 bg-white dark:bg-slate-800 text-slate-950 dark:text-white h-16 rounded-2xl font-semibold text-[10px] uppercase tracking-widest text-center border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3"
+                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2"
                                 >
-                                    WhatsApp Support
+                                    Contact Support
                                     <MessageSquare className="w-3 h-3" />
                                 </a>
                             </div>
