@@ -54,125 +54,153 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div
-            className={`min-h-screen flex items-center justify-center px-4 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
-        >
-            <div className={`w-full max-w-md`}>
-                {/* Logo & Title */}
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-500/25">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        <div className={`min-h-screen flex items-center justify-center p-4 lg:p-8 transition-colors duration-700 ${isDark ? 'bg-slate-950' : 'bg-slate-50'} relative overflow-hidden`}>
+            {/* Background Architectural Grid Pattern */}
+            <div className={`absolute inset-0 pointer-events-none ${isDark ? 'opacity-[0.03]' : 'opacity-[0.02]'}`} 
+                 style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '4rem 4rem' }} 
+            />
+
+            {/* Glowing Accent Orb */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-rose-500/20 rounded-full blur-[120px] pointer-events-none opacity-50" />
+
+            <div className="w-full max-w-lg relative z-10">
+                <div className="flex flex-col items-center mb-12 relative">
+                    <div className="absolute w-px h-16 bg-slate-200 dark:bg-slate-800 -top-16 left-1/2 -translate-x-1/2" />
+                    <div className={`w-16 h-16 border flex items-center justify-center mb-8 relative z-10 bg-white dark:bg-slate-950 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                        <svg className={`w-6 h-6 ${isDark ? 'text-white' : 'text-slate-900'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
+                        <div className="absolute -inset-1 border border-slate-900/5 dark:border-white/5" />
                     </div>
-                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        Admin Portal
+                    <h1 className={`text-3xl font-serif font-bold tracking-tight text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        System Authentication
                     </h1>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        London's Imports Management
-                    </p>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="h-px w-8 bg-rose-500" />
+                        <p className={`text-[10px] font-black uppercase tracking-[0.4em] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                            AUTHORIZED PERSONNEL ONLY
+                        </p>
+                        <div className="h-px w-8 bg-rose-500" />
+                    </div>
                 </div>
 
-                {/* Login Form */}
-                <div className={`rounded-2xl border p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'} shadow-xl`}>
+                {/* Login Form Card */}
+                <div className={`bg-white dark:bg-slate-950 border ${isDark ? 'border-slate-800' : 'border-slate-200'} p-8 sm:p-12 relative group`}>
+                    {/* Decorative Corner Accents */}
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-slate-900 dark:border-white opacity-20 -translate-x-px -translate-y-px" />
+                    <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-slate-900 dark:border-white opacity-20 translate-x-px -translate-y-px" />
+                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-slate-900 dark:border-white opacity-20 -translate-x-px translate-y-px" />
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-slate-900 dark:border-white opacity-20 translate-x-px translate-y-px" />
+
                     {error && (
-                        <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-                            <p className="text-sm text-red-500 flex items-center gap-2">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                        <div className="mb-8 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 flex items-start gap-3">
+                            <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                            <p className="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest leading-relaxed">
                                 {error}
                             </p>
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Username
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.username}
-                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                required
-                                className={`w-full px-4 py-3 rounded-xl border text-sm transition-colors ${isDark
-                                    ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500'
-                                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-pink-500'
-                                    } focus:outline-none focus:ring-2 focus:ring-pink-500/20`}
-                                placeholder="Enter your username"
-                            />
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="space-y-6">
+                            <div className="relative">
+                                <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-400 bg-white'}`}>
+                                    Access ID
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                    required
+                                    spellCheck={false}
+                                    className={`w-full px-5 py-4 bg-transparent border text-sm transition-all outline-none ${isDark
+                                        ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
+                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-300 focus:border-rose-500'
+                                        }`}
+                                    placeholder="Enter your system username"
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-400 bg-white'}`}>
+                                    Passkey
+                                </label>
+                                <input
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    required
+                                    className={`w-full px-5 py-4 bg-transparent border text-sm transition-all outline-none tracking-[0.2em] ${isDark
+                                        ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
+                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-300 focus:border-rose-500'
+                                        }`}
+                                    placeholder="••••••••••••"
+                                />
+                            </div>
                         </div>
 
-                        <div>
-                            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                required
-                                className={`w-full px-4 py-3 rounded-xl border text-sm transition-colors ${isDark
-                                    ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500'
-                                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-pink-500'
-                                    } focus:outline-none focus:ring-2 focus:ring-pink-500/20`}
-                                placeholder="Enter your password"
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between pt-2">
                             <Link
                                 href="/admin/forgot-password"
-                                className="text-sm text-pink-500 hover:text-pink-600 font-medium transition-colors"
+                                className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
                             >
-                                Forgot Password?
+                                Recover Passkey
                             </Link>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className={`w-full py-5 flex items-center justify-center gap-3 transition-all ${
+                                isDark ? 'bg-white hover:bg-slate-200 text-slate-950' : 'bg-slate-950 hover:bg-slate-800 text-white'
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                             {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    Authenticating...
-                                </span>
+                                <>
+                                    <div className={`w-3 h-3 border-2 border-t-transparent rounded-full animate-spin ${isDark ? 'border-slate-900' : 'border-white'}`} />
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">VERIFYING...</span>
+                                </>
                             ) : (
-                                'Sign In to Admin'
+                                <>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">INITIALIZE SESSION</span>
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </>
                             )}
                         </button>
                     </form>
 
-                    {/* Security Notice */}
-                    <div className={`mt-6 p-3 rounded-lg text-center ${isDark ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
-                        <p className={`text-xs flex items-center justify-center gap-1.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <div className={`mt-10 pt-6 border-t ${isDark ? 'border-slate-800/50' : 'border-slate-100'} flex items-center gap-4`}>
+                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'}`}>
+                            <svg className={`w-3.5 h-3.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
-                            Secure admin portal. Unauthorized access attempts are logged.
+                        </div>
+                        <p className={`text-[9px] font-bold uppercase tracking-widest leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                            Secure Node. All authentication <br />
+                            attempts are logged and monitored.
                         </p>
                     </div>
                 </div>
 
-                {/* Back to Main Site */}
-                <div className="text-center mt-6 space-y-2">
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Need an admin account?{' '}
-                        <Link
-                            href="/admin/signup"
-                            className="text-pink-500 hover:text-pink-600 font-medium transition-colors"
-                        >
-                            Create one (Secret key required)
-                        </Link>
-                    </p>
+                {/* Footer Navigation */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-12">
                     <Link
                         href="/"
-                        className={`block text-sm ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'} transition-colors`}
+                        className={`text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 ${isDark ? 'text-slate-500 hover:text-white' : 'text-slate-400 hover:text-slate-900'}`}
                     >
-                        ← Back to main site
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        RETURN TO PUBLIC SITE
+                    </Link>
+                    
+                    <Link
+                        href="/admin/signup"
+                        className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isDark ? 'text-rose-500 hover:text-rose-400' : 'text-rose-600 hover:text-rose-500'}`}
+                    >
+                        REQUEST CLEARANCE
                     </Link>
                 </div>
             </div>
