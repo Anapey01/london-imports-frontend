@@ -105,6 +105,9 @@ export const metadata: Metadata = {
     creator: '@londonsimports',
     images: ['https://londonsimports.com/og-image.jpg'],
   },
+  other: {
+    "facebook-domain-verification": "7f54f2wk8m9t0w6nxxs4p0bs9vv1op",
+  },
 };
 
 export const viewport: Viewport = {
