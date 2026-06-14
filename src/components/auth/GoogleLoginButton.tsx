@@ -42,23 +42,26 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
     const isInitialized = useRef(false);
     const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
-    const handleGoogleResponse = useCallback(async (response: GoogleResponse) => {
-        try {
-            await googleLogin(response.credential);
-            const successMsg = mode === 'signup' 
-                ? 'Welcome to Atelier! Your account is ready.' 
-                : 'Success! Signed in with Google';
-            
-            showToast(successMsg, 'success');
-            
-            // Critical: Respect the redirect parameter for smooth checkout flows
-            router.push(redirect);
-        } catch (error: unknown) {
-            console.error('[Atelier Auth] Google Handshake Failed:', error);
-            const err = error as { response?: { data?: { error?: string } } };
-            const errorMsg = err.response?.data?.error || 'Google authentication failed. Please try again.';
-            showToast(errorMsg, 'error');
-        }
+    const handleGoogleResponse = useCallback((response: GoogleResponse) => {
+        // Defer heavy React state updates to the next tick to prevent INP blocking from Google's iframe
+        setTimeout(async () => {
+            try {
+                await googleLogin(response.credential);
+                const successMsg = mode === 'signup' 
+                    ? 'Welcome to Atelier! Your account is ready.' 
+                    : 'Success! Signed in with Google';
+                
+                showToast(successMsg, 'success');
+                
+                // Critical: Respect the redirect parameter for smooth checkout flows
+                router.push(redirect);
+            } catch (error: unknown) {
+                console.error('[Atelier Auth] Google Handshake Failed:', error);
+                const err = error as { response?: { data?: { error?: string } } };
+                const errorMsg = err.response?.data?.error || 'Google authentication failed. Please try again.';
+                showToast(errorMsg, 'error');
+            }
+        }, 0);
     }, [googleLogin, router, showToast, redirect, mode]);
 
     const initializeGoogle = useCallback(() => {
