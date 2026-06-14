@@ -20,27 +20,45 @@ export default function OrderRecommendations({ orderItems }: { orderItems?: any[
                     ? [...new Set(orderItems.map(item => item.product?.category?.slug || item.product?.category).filter(Boolean))]
                     : [];
 
-                let recResults: Product[] = [];
+                const productNames = orderItems
+                    ? orderItems.map(item => item.product_name || item.product?.name).filter(Boolean)
+                    : [];
 
-                if (categories.length > 0) {
-                    // Fetch items from the same category to provide smart "You Might Also Like" recommendations
-                    const recResponse = await productsAPI.list({ category: categories[0], limit: 8 });
-                    recResults = recResponse.data.results || [];
-                    
-                    // Filter out items the user just bought
-                    const orderItemIds = orderItems?.map(item => item.product?.id) || [];
-                    recResults = recResults.filter(p => !orderItemIds.includes(p.id));
+                let recResults: Product[] = [];
+                const orderItemIds = orderItems?.map(item => item.product?.id) || [];
+
+                // 1. Ultra-Smart Match: Search by Brand/Keyword (Usually the first word of the product name)
+                if (productNames.length > 0) {
+                    // Extract the first word of the first item (typically the brand name like "Gucci", "Nike", etc.)
+                    const mainKeyword = productNames[0].split(' ')[0];
+                    if (mainKeyword && mainKeyword.length > 2) {
+                        try {
+                            const searchResponse = await productsAPI.list({ search: mainKeyword, limit: 8 });
+                            const searchHits = searchResponse.data.results || [];
+                            recResults = searchHits.filter((p: Product) => !orderItemIds.includes(p.id));
+                        } catch (e) {
+                            console.error("Smart keyword search failed", e);
+                        }
+                    }
                 }
 
-                // Fallback to random popular items if needed to fill the list
+                // 2. Category Match: If keyword match didn't yield enough results, fill with same-category items
+                if (recResults.length < 4 && categories.length > 0) {
+                    const recResponse = await productsAPI.list({ category: categories[0], limit: 8 });
+                    const catResults = recResponse.data.results || [];
+                    
+                    const existingIds = new Set(recResults.map(p => p.id));
+                    const validCatHits = catResults.filter((p: Product) => !existingIds.has(p.id) && !orderItemIds.includes(p.id));
+                    recResults = [...recResults, ...validCatHits];
+                }
+
+                // 3. Global Fallback: If still not enough, fetch random popular items
                 if (recResults.length < 4) {
                     const fallbackResponse = await productsAPI.list({ limit: 12 });
                     const fallbackResults = fallbackResponse.data.results || [];
                     
                     const existingIds = new Set(recResults.map(p => p.id));
-                    const orderItemIds = orderItems?.map(item => item.product?.id) || [];
-                    
-                    const validFallbacks = fallbackResults.filter(p => !existingIds.has(p.id) && !orderItemIds.includes(p.id));
+                    const validFallbacks = fallbackResults.filter((p: Product) => !existingIds.has(p.id) && !orderItemIds.includes(p.id));
                     recResults = [...recResults, ...validFallbacks];
                 }
                 
