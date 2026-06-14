@@ -121,7 +121,7 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                                 value={query}
                                 onChange={e => setQuery(e.target.value)}
                                 placeholder="Search products, brands and categories"
-                                className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-content-primary placeholder:text-content-secondary/40 py-3"
+                                className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-content-primary placeholder:text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 py-3"
                             />
                             {query && (
                                 <button type="button" onClick={() => setQuery('')} className="p-2 text-content-secondary hover:text-content-primary mr-2" aria-label="Clear Search Input">

@@ -65,7 +65,7 @@ export default function SettingsView({ user }: { user: User }) {
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-3 px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-600"
+                        className="flex items-center gap-3 px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-700 dark:text-emerald-500"
                     >
                         <CheckCircle2 size={16} className="animate-bounce" />
                         <span className="text-[11px] font-black uppercase tracking-[0.2em]">Profile Updated</span>

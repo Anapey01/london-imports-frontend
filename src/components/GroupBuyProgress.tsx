@@ -72,7 +72,7 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
                             {formatNumber(remaining)} more to ship
                         </span>
                     ) : (
-                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black">
+                        <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-500 dark:text-emerald-400 font-black">
                             <Package className="w-3 h-3" />
                             Available
                         </span>

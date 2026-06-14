@@ -75,7 +75,7 @@ export const TrackScreen: React.FC<TrackScreenProps> = ({ activeStep }) => {
             {showSMS && (
                 <div className="absolute top-4 left-4 right-4 bg-slate-950 text-white p-4 shadow-2xl animate-fade-in-up z-10 ring-1 ring-white/10">
                     <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded bg-emerald-600 flex items-center justify-center flex-shrink-0 animate-bounce">
+                        <div className="w-8 h-8 rounded bg-emerald-700 flex items-center justify-center flex-shrink-0 animate-bounce">
                             <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
                                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
                             </svg>

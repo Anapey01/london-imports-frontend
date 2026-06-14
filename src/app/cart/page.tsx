@@ -113,7 +113,7 @@ export default function CartPage() {
                             <h2 className="text-xl font-medium mb-4 tracking-widest uppercase text-slate-950 dark:text-white">Your basket is empty</h2>
                             <Link
                                 href="/products"
-                                className="inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-950/20 institutional-focus"
+                                className="inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-slate-950/20 institutional-focus"
                             >
                                 Start Shopping
                             </Link>
@@ -271,7 +271,7 @@ export default function CartPage() {
                                 <button
                                      onClick={handleCheckout}
                                      disabled={isLoading}
-                                     className="flex-1 h-11 bg-emerald-700 hover:bg-emerald-600 disabled:bg-emerald-900/50 disabled:cursor-not-allowed text-white rounded-none font-black uppercase tracking-[0.3em] text-[10px] transition-all flex items-center justify-center gap-4 active:scale-95 institutional-focus"
+                                     className="flex-1 h-11 bg-emerald-700 hover:bg-emerald-700 disabled:bg-emerald-900/50 disabled:cursor-not-allowed text-white rounded-none font-black uppercase tracking-[0.3em] text-[10px] transition-all flex items-center justify-center gap-4 active:scale-95 institutional-focus"
                                  >
                                      {isLoading ? (
                                          <>
@@ -289,7 +289,7 @@ export default function CartPage() {
                             </div>
                             
                             <div className="mt-6 flex flex-col items-center gap-2">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/70 dark:text-content-secondary/60 flex items-center gap-2 italic">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 flex items-center gap-2 italic">
                                     <ShieldCheck className="w-3 h-3" />
                                     Secure Shipping
                                 </p>

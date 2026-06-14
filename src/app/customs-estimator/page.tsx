@@ -59,7 +59,7 @@ export default function CustomsEstimatorPage() {
                         <div className="bg-white p-12 md:p-20 group">
                             <div className="flex items-center gap-3 mb-10">
                                 <Zap className="w-5 h-5 text-emerald-500 fill-emerald-500" strokeWidth={1} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 italic">Audit Protocol AT-01 / Savings</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-700 dark:text-emerald-500 italic">Audit Protocol AT-01 / Savings</span>
                             </div>
                             <h3 className="text-4xl font-serif font-bold text-slate-900 mb-8 tracking-tighter leading-[0.9]">
                                 Individual taxes & <br />
@@ -113,7 +113,7 @@ export default function CustomsEstimatorPage() {
                             }
                         ].map((item, i) => (
                             <div key={i} className="flex flex-col gap-6 group">
-                                <h5 className="text-2xl font-serif font-bold text-slate-900 tracking-tighter leading-tight group-hover:text-emerald-600 transition-colors">
+                                <h5 className="text-2xl font-serif font-bold text-slate-900 tracking-tighter leading-tight group-hover:text-emerald-700 dark:text-emerald-500 transition-colors">
                                     {item.q}
                                 </h5>
                                 <p className="text-sm text-slate-400 font-medium leading-relaxed italic border-l border-slate-100 pl-6">

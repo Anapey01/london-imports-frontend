@@ -77,14 +77,14 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
             {/* Minimal Pipeline Header */}
             <div className="flex items-center justify-between mb-8 opacity-60">
                 <div className="flex items-center gap-2">
-                    <Globe size={12} className="text-emerald-600" />
+                    <Globe size={12} className="text-emerald-700 dark:text-emerald-500" />
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 dark:text-white">
-                        Global Logistics Pipeline: GZ <span className="text-emerald-600 mx-1">→</span> ACCRA
+                        Global Logistics Pipeline: GZ <span className="text-emerald-700 dark:text-emerald-500 mx-1">→</span> ACCRA
                     </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Live Status</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-500">Live Status</span>
                 </div>
             </div>
 
@@ -128,7 +128,7 @@ export default function ShipmentTracker({ currentState }: ShipmentTrackerProps) 
                                     <h4 className={`text-[9px] font-black uppercase tracking-tight leading-tight transition-colors mb-1 ${isPast ? 'text-slate-900 dark:text-white' : 'text-slate-300'}`}>
                                         {milestone.label}
                                     </h4>
-                                    <p className={`text-[8px] font-bold uppercase tracking-widest opacity-60 ${isActive ? 'text-emerald-600 opacity-100' : 'text-slate-400'}`}>
+                                    <p className={`text-[8px] font-bold uppercase tracking-widest opacity-60 ${isActive ? 'text-emerald-700 dark:text-emerald-500 opacity-100' : 'text-slate-400'}`}>
                                         {milestone.sublabel}
                                     </p>
                                 </div>

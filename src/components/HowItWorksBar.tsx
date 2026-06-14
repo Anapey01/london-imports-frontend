@@ -15,7 +15,7 @@ export default function HowItWorksBar() {
                     {/* 1. SELECTION */}
                     <div className="flex flex-col items-center text-center group">
                         <div className="mb-4">
-                            <ShoppingBag className="w-5 h-5 text-emerald-600 transition-transform group-hover:scale-110" strokeWidth={1} />
+                            <ShoppingBag className="w-5 h-5 text-emerald-700 dark:text-emerald-500 transition-transform group-hover:scale-110" strokeWidth={1} />
                         </div>
                         <div className="w-full">
                             <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Selection</span>
@@ -29,7 +29,7 @@ export default function HowItWorksBar() {
                     {/* 2. VERIFICATION */}
                     <div className="flex flex-col items-center text-center group">
                         <div className="mb-4">
-                            <PackageCheck className="w-5 h-5 text-emerald-600 transition-transform group-hover:scale-110" strokeWidth={1} />
+                            <PackageCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-500 transition-transform group-hover:scale-110" strokeWidth={1} />
                         </div>
                         <div className="w-full">
                             <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Quality</span>
@@ -43,7 +43,7 @@ export default function HowItWorksBar() {
                     {/* 3. DELIVERY */}
                     <div className="flex flex-col items-center text-center group">
                         <div className="mb-4">
-                            <Plane className="w-5 h-5 text-emerald-600 transition-transform group-hover:scale-110" strokeWidth={1} />
+                            <Plane className="w-5 h-5 text-emerald-700 dark:text-emerald-500 transition-transform group-hover:scale-110" strokeWidth={1} />
                         </div>
                         <div className="w-full">
                             <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Shipping</span>

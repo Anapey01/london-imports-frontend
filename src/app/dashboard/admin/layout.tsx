@@ -117,7 +117,7 @@ export default function AdminDashboardLayout({
                                     <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">System Status</p>
                                     <div className="flex items-center gap-1.5 justify-end">
                                         <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                                        <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter">Online</p>
+                                        <p className="text-[9px] font-bold text-emerald-700 dark:text-emerald-500 uppercase tracking-tighter">Online</p>
                                     </div>
                                 </div>
                             </div>

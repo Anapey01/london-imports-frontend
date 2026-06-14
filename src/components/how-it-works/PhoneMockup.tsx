@@ -113,7 +113,7 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({ activeStep }) => {
 
             {/* Selection Status */}
             {selectedProduct !== null && (
-                <div className="mt-4 bg-emerald-600 rounded-lg py-3 text-center animate-fade-in-up shadow-xl shadow-emerald-600/20">
+                <div className="mt-4 bg-emerald-700 rounded-lg py-3 text-center animate-fade-in-up shadow-xl shadow-emerald-600/20">
                     <span className="text-white text-[11px] font-black uppercase tracking-widest">Step 01 / Start</span>
                 </div>
             )}
@@ -132,7 +132,7 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({ activeStep }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <div className="text-[11px] font-black text-emerald-600 mb-2 uppercase tracking-[0.3em] font-sans italic">Delivered / Arrival</div>
+            <div className="text-[11px] font-black text-emerald-700 dark:text-emerald-500 mb-2 uppercase tracking-[0.3em] font-sans italic">Delivered / Arrival</div>
             <div className="text-3xl font-serif font-black text-slate-900 mb-6 leading-none">Arrival Complete.</div>
             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-10 leading-relaxed">
                 Your order has reached the Accra Shipping Center and is ready for local dispatch.

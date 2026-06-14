@@ -10,7 +10,7 @@ const ToggleSwitch = ({ enabled, onChange, label, description }: ToggleSwitchPro
         {(label || description) && (
             <div className="space-y-1">
                 {label && <p className="text-[11px] font-black uppercase tracking-widest text-content-primary">{label}</p>}
-                {description && <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/60 italic">{description}</p>}
+                {description && <p className="text-[10px] font-black uppercase tracking-widest text-content-secondary/80 dark:text-content-secondary/70 italic">{description}</p>}
             </div>
         )}
         <button

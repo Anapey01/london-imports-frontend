@@ -445,7 +445,7 @@ const OrderRow = React.memo(({
             >
                 <td className="px-8 py-8">
                     <div className="flex items-center gap-4">
-                        <span className={`font-mono text-[12px] font-black tracking-tighter ${fresh ? 'text-emerald-600' : 'text-slate-900'}`}>
+                        <span className={`font-mono text-[12px] font-black tracking-tighter ${fresh ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-900'}`}>
                             #{order?.order_number}
                         </span>
                         {fresh && (
@@ -472,7 +472,7 @@ const OrderRow = React.memo(({
                 <td className="px-8 py-8 hidden md:table-cell">
                     <div className="flex items-center gap-3">
                         <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${
-                            order?.status === 'COMPLETED' ? 'text-emerald-600' : 
+                            order?.status === 'COMPLETED' ? 'text-emerald-700 dark:text-emerald-500' : 
                             order?.status === 'CANCELLED' ? 'text-red-600' : 'text-slate-500'
                         }`}>
                             {order?.status?.replace('_', ' ')}
@@ -528,7 +528,7 @@ const OrderRow = React.memo(({
                                                     navigator.clipboard.writeText(order.phone || '');
                                                     addAlert('Phone number copied.', 'success');
                                                 }}
-                                                className="text-[9px] font-black uppercase tracking-widest text-emerald-600 border-b border-emerald-600 pb-1 mt-4 hover:text-emerald-500"
+                                                className="text-[9px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-500 border-b border-emerald-600 pb-1 mt-4 hover:text-emerald-500"
                                             >
                                                 COPY PHONE
                                             </button>

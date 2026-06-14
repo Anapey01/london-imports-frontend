@@ -16,7 +16,7 @@ export function ProductHeader({ product, currentPrice, effectiveRating }: Produc
                 {product.is_discreet && (
                     <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-2">
                         <div className="w-1 h-1 bg-emerald-500 rounded-full" />
-                        <span className="text-[7px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">Discreet</span>
+                        <span className="text-[7px] font-black text-emerald-700 dark:text-emerald-500 dark:text-emerald-400 uppercase tracking-[0.2em]">Discreet</span>
                     </div>
                 )}
             </div>

@@ -43,7 +43,7 @@ export default function PasswordResetPage() {
         }
     };
 
-    const inputClass = "block w-full pl-12 pr-4 py-4 bg-surface-card border border-border-standard rounded-2xl focus:border-brand-emerald focus:ring-0 focus:outline-none transition-all placeholder:text-content-secondary/30 text-content-primary uppercase tracking-widest text-[12px] font-black";
+    const inputClass = "block w-full pl-12 pr-4 py-4 bg-surface-card border border-border-standard rounded-2xl focus:border-brand-emerald focus:ring-0 focus:outline-none transition-all placeholder:text-content-secondary/60 dark:text-content-secondary/50 text-content-primary uppercase tracking-widest text-[12px] font-black";
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-surface py-12 px-4 md:px-6 selection:bg-emerald-100/30">
@@ -89,7 +89,7 @@ export default function PasswordResetPage() {
 
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Mail className="h-5 w-5 text-content-secondary/40 group-focus-within:text-brand-emerald transition-colors" strokeWidth={1.5} />
+                                <Mail className="h-5 w-5 text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 group-focus-within:text-brand-emerald transition-colors" strokeWidth={1.5} />
                             </div>
                             <input
                                 type="email"
@@ -121,7 +121,7 @@ export default function PasswordResetPage() {
                     </form>
                 )}
 
-                <footer className="mt-12 text-center text-[10px] font-black uppercase tracking-widest text-content-secondary/40">
+                <footer className="mt-12 text-center text-[10px] font-black uppercase tracking-widest text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70">
                     Recovered your credentials?{' '}
                     <Link href="/login" className="text-content-primary hover:text-brand-emerald transition-all border-b border-border-standard hover:border-brand-emerald pb-0.5 ml-1">
                         Sign In Gateway

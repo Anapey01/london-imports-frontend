@@ -225,7 +225,7 @@ export default function AdminBroadcastPage() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 ${
-                                status.type === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                                status.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:text-emerald-500' : 'bg-red-50 text-red-600'
                             }`}
                         >
                             {status.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
@@ -358,7 +358,7 @@ export default function AdminBroadcastPage() {
                                                     className={`w-full h-32 p-6 rounded-2xl border outline-none transition-all resize-none text-sm font-medium ${
                                                         isDark 
                                                         ? 'bg-slate-900 border-slate-700 text-emerald-400 focus:border-emerald-500' 
-                                                        : 'bg-white border-gray-100 text-emerald-600 focus:border-emerald-500 shadow-sm'
+                                                        : 'bg-white border-gray-100 text-emerald-700 dark:text-emerald-500 focus:border-emerald-500 shadow-sm'
                                                     }`}
                                                     placeholder="customer1@example.com, customer2@example.com..."
                                                     required={target === 'manual'}

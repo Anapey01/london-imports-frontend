@@ -76,7 +76,7 @@ function LoginFormContent() {
         }
     };
 
-    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-colors placeholder:text-content-secondary/30 text-content-primary uppercase tracking-widest";
+    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-colors placeholder:text-content-secondary/60 dark:text-content-secondary/50 text-content-primary uppercase tracking-widest";
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
@@ -136,7 +136,7 @@ function LoginFormContent() {
                             <div className="group">
                                 <label 
                                     htmlFor="login-username"
-                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-4 group-focus-within:text-brand-emerald transition-colors"
+                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-4 group-focus-within:text-brand-emerald transition-colors"
                                 >
                                     Email or Username
                                 </label>
@@ -157,11 +157,11 @@ function LoginFormContent() {
                                 <div className="flex items-center justify-between mb-4">
                                     <label 
                                         htmlFor="login-password"
-                                        className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 group-focus-within:text-brand-emerald transition-colors"
+                                        className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 group-focus-within:text-brand-emerald transition-colors"
                                     >
                                         Your Password
                                     </label>
-                                    <Link href="/password-reset" className="text-[9px] font-black text-content-secondary/40 hover:text-brand-emerald transition-colors uppercase tracking-widest border-b border-transparent hover:border-brand-emerald">
+                                    <Link href="/password-reset" className="text-[9px] font-black text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 hover:text-brand-emerald transition-colors uppercase tracking-widest border-b border-transparent hover:border-brand-emerald">
                                         Forgot password?
                                     </Link>
                                 </div>
@@ -196,7 +196,7 @@ function LoginFormContent() {
                     </form>
 
                     <footer className="mt-20 pt-16 border-t border-border-standard flex flex-col items-center gap-8">
-                         <p className="text-[10px] font-black text-content-secondary/40 uppercase tracking-widest">New to London&apos;s Imports?</p>
+                         <p className="text-[10px] font-black text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 uppercase tracking-widest">New to London&apos;s Imports?</p>
                          <Link href="/register" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-content-primary hover:text-brand-emerald transition-all uppercase tracking-[0.3em] pb-2 border-b border-border-standard hover:border-brand-emerald">
                             Create Account
                             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />

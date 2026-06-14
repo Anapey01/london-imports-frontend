@@ -589,7 +589,7 @@ function CheckoutPage() {
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                     <button 
                         onClick={() => router.push('/products')}
-                        className="w-full py-4 bg-slate-950 text-white rounded-xl font-semibold text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all"
+                        className="w-full py-4 bg-slate-950 text-white rounded-xl font-semibold text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all"
                     >
                         Back to Shop
                     </button>

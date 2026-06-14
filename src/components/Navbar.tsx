@@ -246,7 +246,7 @@ export default function Navbar() {
                                         name="search"
                                         type="text"
                                         placeholder="Search products, brands and categories"
-                                        className="w-full min-w-0 flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/30 py-1"
+                                        className="w-full min-w-0 flex-1 bg-transparent border-none outline-none text-sm font-medium text-content-primary placeholder:text-content-secondary/60 dark:text-content-secondary/50 py-1"
                                     />
                                     <button 
                                         type="submit"
@@ -342,7 +342,7 @@ export default function Navbar() {
                                     name="search"
                                     type="text"
                                     placeholder="Search products..."
-                                    className="w-full min-w-0 flex-grow bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/40 py-0.5"
+                                    className="w-full min-w-0 flex-grow bg-transparent border-none outline-none text-xs font-medium text-content-primary placeholder:text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 py-0.5"
                                 />
                             </div>
                             <button 

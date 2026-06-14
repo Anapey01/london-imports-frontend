@@ -86,7 +86,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                             <div className="flex-1 space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
+                                    <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
                                         Default Address
                                     </span>
                                 </div>

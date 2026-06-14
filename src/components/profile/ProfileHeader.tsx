@@ -62,7 +62,7 @@ const ProfileHeader = ({ user }: { user: User }) => {
                         </div>
                         <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50/50 border border-emerald-100/50 rounded-full">
                             <ShieldCheck size={12} className="text-emerald-500" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Verified Member</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-500">Verified Member</span>
                         </div>
                     </div>
 

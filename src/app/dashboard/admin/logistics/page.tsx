@@ -328,7 +328,7 @@ const LogisticsRow = React.memo(({
                             onClick={() => copyToClipboard(order.delivery_gps, order.id + '-gps')}
                             className={`flex items-center justify-between gap-4 px-4 py-2 border text-[10px] font-black uppercase tracking-widest transition-all ${
                                 copiedId === order.id + '-gps' 
-                                ? 'bg-emerald-600 border-emerald-600 text-white' 
+                                ? 'bg-emerald-700 border-emerald-600 text-white' 
                                 : 'bg-slate-50 border-slate-50 text-slate-400 hover:border-slate-900 hover:text-slate-900'
                             }`}
                         >

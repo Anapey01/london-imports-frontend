@@ -58,7 +58,7 @@ export default function OrdersPage() {
                         </div>
                         <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-3">No shipments yet</h2>
                         <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-8">Start your pre-order journey today</p>
-                        <Link href="/products" className="inline-flex items-center px-10 py-4 bg-slate-950 text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-sm">
+                        <Link href="/products" className="inline-flex items-center px-10 py-4 bg-slate-950 text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-sm">
                             Explore Collections
                         </Link>
                     </div>

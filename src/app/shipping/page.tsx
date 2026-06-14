@@ -43,7 +43,7 @@ export default function ShippingPage() {
                     {/* AIR EXPRESS - HIGH SPEED */}
                     <div className="bg-white dark:bg-slate-950 p-12 md:p-20 flex flex-col group">
                         <div className="mb-16">
-                            <span className="text-[10px] font-black tracking-[0.3em] text-emerald-600 dark:text-emerald-500 mb-6 block italic">Option 01 / Rapid</span>
+                            <span className="text-[10px] font-black tracking-[0.3em] text-emerald-700 dark:text-emerald-500 mb-6 block italic">Option 01 / Rapid</span>
                             <div className="flex items-start justify-between">
                                 <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                                     Air Express

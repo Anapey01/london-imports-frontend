@@ -30,7 +30,7 @@ export default function ActiveBatchWidget({ batch, isDark }: ActiveBatchWidgetPr
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-4 max-w-[200px]">
                     No active shipping batch found. Start a new batch to accept orders.
                 </p>
-                <Link href="/dashboard/admin/logistics" className="mt-8 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all">
+                <Link href="/dashboard/admin/logistics" className="mt-8 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all">
                     START NEW BATCH
                 </Link>
             </div>

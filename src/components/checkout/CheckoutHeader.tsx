@@ -16,7 +16,7 @@ const CheckoutHeader = () => (
                 Checkout
             </h1>
 
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-500 dark:text-emerald-400">
                 <Lock className="w-4 h-4" strokeWidth={2.5} />
                 <span className="text-[10px] font-semibold uppercase tracking-[0.2em] font-sans">Secure Checkout</span>
             </div>

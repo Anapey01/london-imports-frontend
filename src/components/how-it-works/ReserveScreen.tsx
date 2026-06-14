@@ -40,7 +40,7 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <div className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-2 italic">Success / Confirmed</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-700 dark:text-emerald-500 mb-2 italic">Success / Confirmed</div>
                 <div className="text-2xl font-serif font-black mb-1 text-slate-900 tracking-tight leading-none">Reserved.</div>
                 <div className="text-[10px] mb-8 text-slate-400 font-bold uppercase tracking-widest leading-relaxed">Deposit of GHS 150.00 confirmed and order secured.</div>
                 
@@ -87,7 +87,7 @@ export const ReserveScreen: React.FC<ReserveScreenProps> = ({ activeStep }) => {
                 </div>
                 <div className="flex justify-between items-baseline">
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initial Deposit</span>
-                    <span className="text-xl font-serif font-black text-emerald-600 tabular-nums tracking-tighter">GHS 150.00</span>
+                    <span className="text-xl font-serif font-black text-emerald-700 dark:text-emerald-500 tabular-nums tracking-tighter">GHS 150.00</span>
                 </div>
             </div>
 

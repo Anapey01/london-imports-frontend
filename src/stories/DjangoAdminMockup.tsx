@@ -156,7 +156,7 @@ const ProductEditorView = () => (
                 <section>
                     <div className="bg-[#f2f2f2] px-4 py-2 border-l-4 border-emerald-500 mb-6 flex items-center justify-between">
                         <h3 className="text-sm font-bold text-[#666] uppercase tracking-wider">🎨 4. Variants & Media</h3>
-                        <span className="text-[10px] text-emerald-600 font-bold italic">💡 Simply type values separated by commas!</span>
+                        <span className="text-[10px] text-emerald-700 dark:text-emerald-500 font-bold italic">💡 Simply type values separated by commas!</span>
                     </div>
                     <div className="grid grid-cols-2 gap-8 px-4">
                         <div className="space-y-2">
@@ -257,7 +257,7 @@ const SourcingDashboardView = () => (
                                     <div>
                                         <div className="text-[10px] text-emerald-700 font-black italic uppercase">AI MATCH FOUND</div>
                                         <div className="text-xs font-bold text-slate-800">{req.finding}</div>
-                                        <div className="text-xs font-black text-emerald-600">{req.price}</div>
+                                        <div className="text-xs font-black text-emerald-700 dark:text-emerald-500">{req.price}</div>
                                     </div>
                                 </div>
                             </td>

@@ -137,7 +137,7 @@ export default function ProductImageGallery({
 
                 {/* Category Unit */}
                 <div className="flex flex-col items-center text-center gap-3 group">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-500/40 transition-transform duration-500 group-hover:scale-110 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-emerald-600' : 'bg-primary-surface'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-500/40 transition-transform duration-500 group-hover:scale-110 ${preorderStatus === 'READY_TO_SHIP' ? 'bg-emerald-700' : 'bg-primary-surface'}`}>
                         <span className={`text-[11px] font-black tracking-tighter ${preorderStatus === 'READY_TO_SHIP' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
                             {preorderStatus === 'READY_TO_SHIP' ? 'AVL' : 'PRE'}
                         </span>
@@ -198,7 +198,7 @@ export default function ProductImageGallery({
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center pl-1 shadow-lg">
-                                            <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-6 h-6 text-emerald-700 dark:text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z" />
                                             </svg>
                                         </div>

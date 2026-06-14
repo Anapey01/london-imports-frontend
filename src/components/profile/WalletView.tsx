@@ -113,7 +113,7 @@ const WalletView = () => {
                                     <div className="flex items-center gap-3 mb-1">
                                         <p className="text-xs font-black uppercase tracking-widest text-slate-900">Mobile Money</p>
                                         {method.isDefault && (
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Primary</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:text-emerald-500 border border-emerald-100">Primary</span>
                                         )}
                                     </div>
                                     <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 tabular-nums">{maskNumber(method.number)}</p>

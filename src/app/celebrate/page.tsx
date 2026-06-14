@@ -119,11 +119,11 @@ export default function BirthdayClubPage() {
 
                                 <form onSubmit={handleSubmit} className="space-y-8">
                                     <div className="group">
-                                        <label htmlFor="dob" className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-4 transition-colors group-focus-within:text-brand-emerald">
+                                        <label htmlFor="dob" className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-4 transition-colors group-focus-within:text-brand-emerald">
                                             Select Date
                                         </label>
                                         <div className="relative">
-                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-secondary/30" />
+                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-secondary/60 dark:text-content-secondary/50" />
                                             <input
                                                 id="dob"
                                                 type="date"
@@ -151,7 +151,7 @@ export default function BirthdayClubPage() {
                                     </button>
                                 </form>
 
-                                <p className="mt-12 text-[9px] font-bold text-content-secondary/40 uppercase tracking-[0.2em] leading-relaxed italic">
+                                <p className="mt-12 text-[9px] font-bold text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 uppercase tracking-[0.2em] leading-relaxed italic">
                                     Your info is safe with us. We only use your order history to pick a gift you&apos;ll actually love.
                                 </p>
                             </div>

@@ -197,7 +197,7 @@ const WhatsAppMomoDemo = () => {
                                     Thanks Kwame! 💫 We&apos;ve reserved 1 unit of **Nike Air Max &apos;Glow&apos;** for you.
                                     <div className="mt-2 bg-slate-50 p-2 rounded border border-blue-100 flex flex-col gap-1">
                                         <span className="text-[9px] font-black text-blue-600 uppercase">Paystack Secure Link</span>
-                                        <span className="text-emerald-600 font-bold">GH₵ 1,450.00</span>
+                                        <span className="text-emerald-700 dark:text-emerald-500 font-bold">GH₵ 1,450.00</span>
                                         <div className="text-blue-500 underline font-medium truncate">paystack.com/pay/liq9921</div>
                                     </div>
                                     <div className="mt-2 text-[9px] text-slate-400 italic">
@@ -308,7 +308,7 @@ const AIVisualSourcingDemo = () => {
                                     </div>
                                     <div>
                                         <span className="block text-emerald-800 font-black text-xl">Sourcing Successful!</span>
-                                        <span className="text-emerald-600 text-sm font-bold">3 Direct Sources Found</span>
+                                        <span className="text-emerald-700 dark:text-emerald-500 text-sm font-bold">3 Direct Sources Found</span>
                                     </div>
                                 </div>
 
@@ -319,7 +319,7 @@ const AIVisualSourcingDemo = () => {
                                     <div className="flex-1">
                                         <span className="block text-xs font-black text-slate-500 uppercase italic">BEST MATCH</span>
                                         <span className="block font-bold text-slate-800">Designer Bag V2</span>
-                                        <span className="text-lg font-black text-emerald-600">GH₵ 850</span>
+                                        <span className="text-lg font-black text-emerald-700 dark:text-emerald-500">GH₵ 850</span>
                                     </div>
                                     <button
                                         onClick={handleConfirm}
@@ -330,7 +330,7 @@ const AIVisualSourcingDemo = () => {
                                 </div>
                                 <button
                                     onClick={() => setStatus('idle')}
-                                    className="w-full mt-4 text-emerald-600 text-[10px] font-bold uppercase tracking-widest hover:underline"
+                                    className="w-full mt-4 text-emerald-700 dark:text-emerald-500 text-[10px] font-bold uppercase tracking-widest hover:underline"
                                 >
                                     Try Another Search
                                 </button>
@@ -483,7 +483,7 @@ const FullCheckoutFlowDemo = () => {
 
             {step === 3 && (
                 <div className="text-center space-y-6 py-10 animate-in zoom-in-95">
-                    <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                    <div className="w-24 h-24 bg-emerald-100 text-emerald-700 dark:text-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
                         <CheckCircle size={48} />
                     </div>
                     <div>

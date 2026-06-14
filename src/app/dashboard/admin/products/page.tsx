@@ -264,7 +264,7 @@ export default function AdminProductsPage() {
                     </button>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="px-6 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all flex items-center gap-3"
+                        className="px-6 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center gap-3"
                     >
                         <Plus className="w-4 h-4" />
                         ADD PRODUCT

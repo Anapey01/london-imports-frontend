@@ -347,7 +347,7 @@ export default function AdminVendorsPage() {
                                     <button
                                         onClick={() => handleVerify(selectedVendor)}
                                         disabled={actionLoading}
-                                        className="flex-1 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-emerald-600 transition-all disabled:opacity-50"
+                                        className="flex-1 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-emerald-700 transition-all disabled:opacity-50"
                                     >
                                         {actionLoading ? 'PROCESSING...' : 'AUTHORIZE PARTNER'}
                                     </button>
@@ -366,7 +366,7 @@ export default function AdminVendorsPage() {
                                     className={`w-full py-4 text-[10px] font-black uppercase tracking-[0.4em] transition-all disabled:opacity-50 ${
                                         selectedVendor.status === 'VERIFIED' 
                                         ? 'bg-slate-50 text-slate-400 hover:bg-red-600 hover:text-white' 
-                                        : 'bg-slate-950 text-white hover:bg-emerald-600'
+                                        : 'bg-slate-950 text-white hover:bg-emerald-700'
                                     }`}
                                 >
                                     {selectedVendor.status === 'VERIFIED' ? 'SUSPEND PARTNER' : 'RESTORE PARTNER'}

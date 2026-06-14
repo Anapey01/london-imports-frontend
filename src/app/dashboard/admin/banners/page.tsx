@@ -161,7 +161,7 @@ export default function AdminBannersPage() {
 
                 <Link
                     href="/dashboard/admin/banners/new"
-                    className="px-8 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all flex items-center gap-3"
+                    className="px-8 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center gap-3"
                 >
                     <Plus className="w-4 h-4" />
                     ADD BANNER

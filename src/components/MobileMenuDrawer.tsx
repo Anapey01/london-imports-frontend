@@ -221,8 +221,8 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                                 {useAuthStore.getState().user?.is_staff && (
                                     <Link href="/dashboard/admin" onClick={(e) => handleLinkClick('/dashboard/admin', e)} className="flex items-center justify-between p-4 group transition-all bg-emerald-500/5 hover:bg-emerald-500/10 border-b border-emerald-500/20 institutional-focus">
                                         <div className="flex items-center gap-6">
-                                            <Zap className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
-                                            <span className="text-[13px] font-black uppercase tracking-widest text-emerald-600">Admin Command</span>
+                                            <Zap className="w-4 h-4 text-emerald-700 dark:text-emerald-500" strokeWidth={1.5} />
+                                            <span className="text-[13px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-500">Admin Command</span>
                                         </div>
                                         <ArrowUpRight className="w-4 h-4 text-emerald-500 transition-colors" />
                                     </Link>

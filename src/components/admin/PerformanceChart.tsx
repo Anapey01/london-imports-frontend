@@ -42,7 +42,7 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
                                 onClick={() => onRangeChange(rangeValue)}
                                 className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
                                     isActive 
-                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' 
+                                    ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-200' 
                                     : `border border-primary-surface ${isDark ? 'text-slate-400' : 'text-nuclear-text'} hover:bg-primary-surface/40`
                                 }`}
                             >

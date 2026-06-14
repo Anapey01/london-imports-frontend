@@ -251,7 +251,7 @@ export default function AdminUsersPage() {
                         <div className="flex flex-col gap-3 pt-6">
                             <button
                                 onClick={() => setSelectedUser(null)}
-                                className="w-full py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all"
+                                className="w-full py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all"
                             >
                                 SAVE CHANGES
                             </button>

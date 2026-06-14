@@ -58,7 +58,7 @@ export default function CustomsCalculator() {
             <header className="border-b border-slate-900 pb-12 mb-16">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10">
                     <div className="max-w-2xl">
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-600 block mb-6 italic">Tax Estimator 2026</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-700 dark:text-emerald-500 block mb-6 italic">Tax Estimator 2026</span>
                         <h2 className="text-4xl md:text-7xl font-serif font-bold tracking-tight text-slate-900 leading-[0.85]">
                             Estimated <br />
                             Import Tax.
@@ -161,7 +161,7 @@ export default function CustomsCalculator() {
 
                         <div className="mt-16 pt-12 border-t border-slate-200">
                             <div className="flex flex-col gap-4 mb-16 px-2">
-                                <span className="text-[10px] font-black tracking-widest uppercase text-emerald-600 block italic leading-none">Total Estimated Tax</span>
+                                <span className="text-[10px] font-black tracking-widest uppercase text-emerald-700 dark:text-emerald-500 block italic leading-none">Total Estimated Tax</span>
                                 <div className="text-6xl md:text-8xl font-serif font-bold tracking-tighter text-slate-900 leading-[0.8]">
                                     {results.totalTaxes.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                     <span className="text-2xl ml-1 font-mono opacity-20">.{(results.totalTaxes % 1).toFixed(2).substring(2)}</span>

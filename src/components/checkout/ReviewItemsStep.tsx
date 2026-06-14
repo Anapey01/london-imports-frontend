@@ -93,7 +93,7 @@ export default function ReviewItemsStep({
                     <div className="pt-6 border-t border-border-standard flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-600">Ready for shipping</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 dark:text-emerald-500">Ready for shipping</span>
                         </div>
                         <div className="flex flex-col items-center sm:items-end gap-2.5 w-full sm:w-auto max-w-md">
                             <button 

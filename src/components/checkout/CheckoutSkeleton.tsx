@@ -46,7 +46,7 @@ export default function CheckoutSkeleton() {
                                 </div>
                             </div>
                             <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                                <div className="h-14 bg-slate-900 dark:bg-emerald-600 rounded-xl" />
+                                <div className="h-14 bg-slate-900 dark:bg-emerald-700 rounded-xl" />
                             </div>
                         </div>
                     </div>

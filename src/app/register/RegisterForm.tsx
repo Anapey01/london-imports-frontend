@@ -81,7 +81,7 @@ export default function RegisterForm() {
         }
     };
 
-    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-all placeholder:text-content-secondary/30 text-content-primary uppercase tracking-widest";
+    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-all placeholder:text-content-secondary/60 dark:text-content-secondary/50 text-content-primary uppercase tracking-widest";
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
@@ -136,7 +136,7 @@ export default function RegisterForm() {
                                 <div className="group">
                                     <label 
                                         htmlFor="reg-first-name"
-                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-2 transition-colors group-focus-within:text-brand-emerald"
                                     >
                                         First Name
                                     </label>
@@ -155,7 +155,7 @@ export default function RegisterForm() {
                                 <div className="group">
                                     <label 
                                         htmlFor="reg-last-name"
-                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-2 transition-colors group-focus-within:text-brand-emerald"
                                     >
                                         Last Name
                                     </label>
@@ -176,7 +176,7 @@ export default function RegisterForm() {
                             <div className="group">
                                 <label 
                                     htmlFor="reg-email"
-                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-2 transition-colors group-focus-within:text-brand-emerald"
                                 >
                                     Email Address
                                 </label>
@@ -196,7 +196,7 @@ export default function RegisterForm() {
                             <div className="group">
                                 <label 
                                     htmlFor="reg-phone"
-                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                    className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-2 transition-colors group-focus-within:text-brand-emerald"
                                 >
                                     Phone Number
                                 </label>
@@ -217,7 +217,7 @@ export default function RegisterForm() {
                                 <div className="group">
                                     <label 
                                         htmlFor="reg-password"
-                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-2 transition-colors group-focus-within:text-brand-emerald"
                                     >
                                         Create Password
                                     </label>
@@ -234,7 +234,7 @@ export default function RegisterForm() {
                                         placeholder="••••••••"
                                         aria-describedby="password-hint"
                                     />
-                                    <p id="password-hint" className="mt-2 text-[9px] font-bold text-content-secondary/40 uppercase tracking-widest italic">
+                                    <p id="password-hint" className="mt-2 text-[9px] font-bold text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 uppercase tracking-widest italic">
                                         Must be at least 8 characters.
                                     </p>
                                 </div>
@@ -242,7 +242,7 @@ export default function RegisterForm() {
                                 <div className="group">
                                     <label 
                                         htmlFor="reg-password-confirm"
-                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/60 mb-2 transition-colors group-focus-within:text-brand-emerald"
+                                        className="block text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary/80 dark:text-content-secondary/70 mb-2 transition-colors group-focus-within:text-brand-emerald"
                                     >
                                         Confirm Password
                                     </label>
@@ -278,7 +278,7 @@ export default function RegisterForm() {
                     </form>
 
                     <footer className="mt-16 pt-12 border-t border-border-standard flex flex-col items-center gap-6">
-                         <p className="text-[10px] font-black text-content-secondary/40 uppercase tracking-widest">Already a member?</p>
+                         <p className="text-[10px] font-black text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 uppercase tracking-widest">Already a member?</p>
                          <Link href="/login" className="group/link inline-flex items-center gap-4 text-[11px] font-black text-content-primary hover:text-brand-emerald transition-all uppercase tracking-[0.3em] pb-1 border-b border-border-standard hover:border-brand-emerald">
                             Sign In Instead
                             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />

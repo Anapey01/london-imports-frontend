@@ -334,7 +334,7 @@ export default function ProductFinderPage() {
                             ].map((item, i) => (
                                 <div key={i} className="flex flex-col gap-4">
                                      <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
-                                         <item.icon className="w-4 h-4 text-emerald-600" />
+                                         <item.icon className="w-4 h-4 text-emerald-700 dark:text-emerald-500" />
                                      </div>
                                      <h2 className="font-bold text-slate-900 tracking-tight underline decoration-emerald-100 decoration-4 underline-offset-4">{item.title}</h2>
                                     <p className="text-xs text-slate-500 font-medium leading-relaxed">{item.text}</p>

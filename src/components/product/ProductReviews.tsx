@@ -232,7 +232,7 @@ export default function ProductReviews({
                                     {!showForm && (
                                         <button 
                                             onClick={handleShareClick}
-                                            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-[0.98] group/btn shadow-xl shadow-emerald-500/10"
+                                            className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-[0.98] group/btn shadow-xl shadow-emerald-500/10"
                                         >
                                             Post Experience
                                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -311,7 +311,7 @@ export default function ProductReviews({
                                         <button
                                             type="submit"
                                             disabled={isSubmitting || comment.length < 5 || !isAuthenticated}
-                                            className="w-full py-5 bg-emerald-600 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all disabled:opacity-20 active:scale-[0.98] shadow-xl shadow-emerald-500/20"
+                                            className="w-full py-5 bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all disabled:opacity-20 active:scale-[0.98] shadow-xl shadow-emerald-500/20"
                                         >
                                             {isSubmitting ? 'Posting...' : 'Submit Review'}
                                         </button>
@@ -344,7 +344,7 @@ export default function ProductReviews({
                                                                 {review.user_name || 'Verified Customer'}
                                                             </h4>
                                                             {review.is_verified && (
-                                                                <span className="text-[8px] font-black text-white bg-emerald-600 px-2 py-0.5 rounded-sm uppercase tracking-wider border border-emerald-500/40 shadow-sm">
+                                                                <span className="text-[8px] font-black text-white bg-emerald-700 px-2 py-0.5 rounded-sm uppercase tracking-wider border border-emerald-500/40 shadow-sm">
                                                                     Verified
                                                                 </span>
                                                             )}
@@ -373,7 +373,7 @@ export default function ProductReviews({
                                     {!showForm && (
                                         <button 
                                             onClick={handleShareClick}
-                                            className="px-8 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/10"
+                                            className="px-8 py-3 bg-emerald-700 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/10"
                                         >
                                             Drop a Review
                                         </button>

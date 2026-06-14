@@ -134,7 +134,7 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-border-standard/50"></div>
                 </div>
-                <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary/30">
+                <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary/60 dark:text-content-secondary/50">
                     <span className="bg-surface px-6">Or continue with Google</span>
                 </div>
             </div>
@@ -151,7 +151,7 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
                 </p>
             )}
 
-            <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.2em] text-content-secondary/20">
+            <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.2em] text-content-secondary/50 dark:text-content-secondary/40">
                 Official Google Security Protocol
             </p>
         </div>

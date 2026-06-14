@@ -242,7 +242,7 @@ const DashboardView = ({ orders, user }: { orders: Order[]; user: User }) => {
                                 return (
                                     <div key={order.order_number} className="relative pl-10">
                                         <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 ${isDark ? 'border-slate-950' : 'border-white'} ${isCompleted ? 'bg-emerald-500' : 'bg-gray-900'} z-10`} />
-                                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] block mb-1 ${isCompleted ? 'text-emerald-500' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] block mb-1 ${isCompleted ? 'text-emerald-500' : 'text-emerald-700 dark:text-emerald-500 dark:text-emerald-400'}`}>
                                             {isCompleted ? 'Completed' : 'In Progress'}
                                         </span>
                                         <p className="text-sm font-bold uppercase tracking-widest text-black dark:text-white">ID: #{order.order_number}</p>

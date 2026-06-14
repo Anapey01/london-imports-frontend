@@ -246,7 +246,7 @@ export default function AdminGalleryPage() {
 
                 <button
                     onClick={handleOpenAdd}
-                    className="px-8 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all flex items-center gap-3"
+                    className="px-8 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center gap-3"
                 >
                     <Plus className="w-4 h-4" />
                     ADD PHOTO
@@ -510,7 +510,7 @@ export default function AdminGalleryPage() {
                                     <button
                                         type="submit"
                                         disabled={isSaving}
-                                        className="px-8 py-3 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center gap-3 disabled:opacity-50"
+                                        className="px-8 py-3 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-3 disabled:opacity-50"
                                     >
                                         {isSaving ? (
                                             <>

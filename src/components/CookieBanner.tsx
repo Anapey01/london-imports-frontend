@@ -73,7 +73,7 @@ export default function CookieBanner() {
                     <div className="flex flex-col gap-4">
                         <div className="flex items-start gap-3">
                             <div className="flex w-8 h-8 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/80 items-center justify-center shrink-0">
-                                <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-500" strokeWidth={2} />
+                                <Shield className="w-4 h-4 text-emerald-700 dark:text-emerald-500" strokeWidth={2} />
                             </div>
                             <div className="space-y-1">
                                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-950 dark:text-white flex items-center gap-2">

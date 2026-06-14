@@ -212,7 +212,7 @@ export default function RefundsPage() {
                         <a href="mailto:info@londonsimports.com" className="inline-block px-8 py-3 border border-white text-white uppercase tracking-widest text-[10px] font-black hover:bg-white hover:text-slate-900 transition-colors">
                             Email Support
                         </a>
-                        <a href="https://wa.me/233545247009" target="_blank" rel="noopener" className="inline-block px-8 py-3 bg-emerald-500 text-slate-950 uppercase tracking-widest text-[10px] font-black hover:bg-emerald-600 transition-colors">
+                        <a href="https://wa.me/233545247009" target="_blank" rel="noopener" className="inline-block px-8 py-3 bg-emerald-500 text-slate-950 uppercase tracking-widest text-[10px] font-black hover:bg-emerald-700 transition-colors">
                             Contact WhatsApp
                         </a>
                     </div>

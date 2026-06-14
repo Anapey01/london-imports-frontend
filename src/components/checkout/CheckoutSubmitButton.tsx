@@ -40,7 +40,7 @@ const CheckoutSubmitButton = ({
                 type="submit"
                 disabled={isLoading || (!isHubtel && paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
                 id="checkout-pay-button"
-                className={`w-full py-6 px-10 rounded-2xl font-semibold transition-all active:scale-[0.98] duration-700 uppercase tracking-[0.4em] text-[10px] flex items-center justify-center gap-4 shadow-diffusion-2xl border-2 border-transparent ${paymentType === 'WHATSAPP' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-black dark:hover:bg-slate-100 hover:shadow-glow-emerald/20'}`}
+                className={`w-full py-6 px-10 rounded-2xl font-semibold transition-all active:scale-[0.98] duration-700 uppercase tracking-[0.4em] text-[10px] flex items-center justify-center gap-4 shadow-diffusion-2xl border-2 border-transparent ${paymentType === 'WHATSAPP' ? 'bg-emerald-700 hover:bg-emerald-700 text-white' : 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-black dark:hover:bg-slate-100 hover:shadow-glow-emerald/20'}`}
             >
                 {!canPay ? (
                     <span className="flex items-center gap-3 opacity-20">

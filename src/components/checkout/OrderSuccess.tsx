@@ -127,9 +127,9 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                             >
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
-                                        <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                        <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-500 dark:text-emerald-400" />
                                     </div>
-                                    <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">
+                                    <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-700 dark:text-emerald-500 dark:text-emerald-400">
                                         Congratulations!
                                     </span>
                                 </div>

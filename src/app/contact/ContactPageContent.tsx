@@ -156,7 +156,7 @@ export default function ContactPageContent() {
                             <div className="w-12 h-12 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white group-hover:border-slate-900 dark:group-hover:border-white transition-all mb-8">
                                 {React.cloneElement(channel.icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5" })}
                             </div>
-                            <span className="text-emerald-600 dark:text-emerald-500 text-[9px] uppercase font-black tracking-[0.4em] mb-4 block leading-none">{channel.label}</span>
+                            <span className="text-emerald-700 dark:text-emerald-500 text-[9px] uppercase font-black tracking-[0.4em] mb-4 block leading-none">{channel.label}</span>
                             <h3 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-4 group-hover:italic transition-all">{channel.title}</h3>
                             <p className="text-slate-400 dark:text-slate-500 text-xs leading-relaxed mb-10 max-w-[260px]">{channel.desc}</p>
                             <a
@@ -246,7 +246,7 @@ export default function ContactPageContent() {
                                 <div className="flex items-center gap-6 text-slate-900 dark:text-white mb-2">
                                     <Phone className="w-5 h-5 text-slate-300 dark:text-slate-700 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
                                     <span className="font-serif text-4xl font-bold tracking-tight">+{siteConfig.concierge.replace(/(\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}</span>
-                                    {copied ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5 text-slate-200 dark:text-slate-800 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />}
+                                    {copied ? <Check className="w-5 h-5 text-emerald-700 dark:text-emerald-500" /> : <Copy className="w-5 h-5 text-slate-200 dark:text-slate-800 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />}
                                 </div>
                                 <div className="w-full h-px bg-slate-900 dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
                                 {copied && (
@@ -265,7 +265,7 @@ export default function ContactPageContent() {
                     <div className="bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-16 shadow-2xl shadow-slate-950/5">
                         {submitted ? (
                             <div className="h-full flex flex-col items-center justify-center text-center py-10 space-y-8">
-                                <div className="w-20 h-20 border border-emerald-500 flex items-center justify-center text-emerald-600">
+                                <div className="w-20 h-20 border border-emerald-500 flex items-center justify-center text-emerald-700 dark:text-emerald-500">
                                     <CheckCircle className="w-10 h-10" />
                                 </div>
                                 <div>

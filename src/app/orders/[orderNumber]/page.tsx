@@ -153,7 +153,7 @@ export default function OrderDetailPage() {
                         {!['CANCELLED', 'REFUNDED', 'PENDING_PAYMENT'].includes(order.state) && (
                             <section className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-8 flex items-center gap-2">
-                                    <Truck size={14} className="text-emerald-600" />
+                                    <Truck size={14} className="text-emerald-700 dark:text-emerald-500" />
                                     Shipment Journey
                                 </h3>
                                 <ShipmentTracker 

@@ -233,7 +233,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Pay Later</p>
-                                    <p className="text-sm font-semibold text-emerald-600">
+                                    <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-500">
                                         {paymentType === 'DEPOSIT'
                                             ? formatPrice(currentOrderData.delivery_fee || 0)
                                             : formatPrice(selectedTotal - Number(customAmount || 0))}
