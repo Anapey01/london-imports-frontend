@@ -55,13 +55,14 @@ export default function AdminDashboardLayout({
 
     if (authLoading || checking) {
         return (
-            <div
-                className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
-            >
-                <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Loading admin panel...</p>
-                </div>
+            <div className={`min-h-screen transition-colors duration-700 ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'} selection:bg-emerald-100`}>
+                <div className="hidden md:block fixed inset-y-0 left-0 w-64 bg-slate-950 border-r border-slate-900" />
+                <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
+                        <p className={`text-[10px] font-black tracking-widest uppercase ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>INITIALIZING SYSTEM...</p>
+                    </div>
+                </main>
             </div>
         );
     }

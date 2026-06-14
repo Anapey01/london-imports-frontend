@@ -192,17 +192,20 @@ export default function AdminDashboardPage() {
 
     if (loading) {
         return (
-            <div className="space-y-10 animate-pulse pb-20">
-                <div className="h-10 w-48 bg-primary-surface rounded-lg mb-8" />
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="space-y-16 pb-32 animate-pulse">
+                {/* 1. OPERATIONAL TELEMETRY SKELETON */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-100 border border-slate-100">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="h-40 rounded-[2rem] bg-primary-surface" />
+                        <div key={i} className={`h-[240px] ${isDark ? 'bg-slate-950' : 'bg-white'}`} />
                     ))}
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 h-80 rounded-[2.5rem] bg-primary-surface" />
-                    <div className="h-80 rounded-[2.5rem] bg-primary-surface" />
+                {/* 2. SYSTEM ANALYTICS BRIDGE SKELETON */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-px bg-slate-50 lg:bg-slate-100 border border-slate-100">
+                    <div className="lg:col-span-8 bg-white px-4 py-10 sm:p-12 h-[600px]" />
+                    <div className="lg:col-span-4 bg-slate-50/50 px-4 py-10 sm:p-12 border-t lg:border-t-0 lg:border-l border-slate-100 h-[600px]" />
                 </div>
+                {/* 3. LOGISTICS PIPELINE STATUS SKELETON */}
+                <div className="bg-white border border-slate-100 px-4 py-10 sm:p-12 h-[200px]" />
             </div>
         );
     }

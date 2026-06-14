@@ -397,18 +397,32 @@ export default function AdminOrdersPage() {
 
     if (loading) {
         return (
-            <div className="space-y-12 animate-pulse">
-                <div className="h-32 bg-slate-50 border border-slate-100" />
-                <div className="space-y-4">
-                    {[...Array(8)].map((_, i) => (
-                        <div key={i} className="flex gap-4 h-20 border-b border-slate-50 items-center px-8">
-                            <div className="w-4 h-4 bg-slate-100" />
-                            <div className="w-24 h-3 bg-slate-100" />
-                            <div className="w-12 h-12 bg-slate-50" />
-                            <div className="flex-1 h-3 bg-slate-50" />
-                            <div className="w-32 h-3 bg-slate-100" />
-                        </div>
-                    ))}
+            <div className="space-y-12 pb-32 animate-pulse">
+                {/* 1. COMMAND HEADER SKELETON */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
+                    <div className="space-y-4">
+                        <div className="h-10 w-64 bg-slate-100" />
+                        <div className="h-4 w-48 bg-slate-50" />
+                    </div>
+                    <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                        <div className="h-12 w-full md:w-64 bg-slate-50" />
+                        <div className="h-12 w-full md:w-48 bg-slate-50" />
+                    </div>
+                </div>
+
+                {/* 2. PROTOCOL FILTERS SKELETON */}
+                <div className="h-12 w-full bg-slate-50" />
+
+                {/* 4. MASTER REGISTRY TABLE SKELETON */}
+                <div className="bg-white border border-slate-100 overflow-hidden opacity-100">
+                    <div className="h-16 bg-slate-50/50 border-b border-slate-100" />
+                    <div className="divide-y divide-slate-50">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="flex gap-4 h-24 items-center px-8 bg-white">
+                                <div className="w-full h-8 bg-slate-50/50" />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
