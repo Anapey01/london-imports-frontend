@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
                     </h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="h-px w-8 bg-rose-500" />
-                        <p className={`text-[10px] font-black uppercase tracking-[0.4em] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                        <p className={`text-[10px] font-black uppercase tracking-[0.4em] ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
                             AUTHORIZED PERSONNEL ONLY
                         </p>
                         <div className="h-px w-8 bg-rose-500" />
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="space-y-6">
                             <div className="relative">
-                                <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-400 bg-white'}`}>
+                                <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-600 bg-white'}`}>
                                     Access ID
                                 </label>
                                 <input
@@ -115,14 +115,14 @@ export default function AdminLoginPage() {
                                     spellCheck={false}
                                     className={`w-full px-5 py-4 bg-transparent border text-sm transition-all outline-none ${isDark
                                         ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
-                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-300 focus:border-rose-500'
+                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
                                         }`}
                                     placeholder="Enter your system username"
                                 />
                             </div>
 
                             <div className="relative">
-                                <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-400 bg-white'}`}>
+                                <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-600 bg-white'}`}>
                                     Passkey
                                 </label>
                                 <input
@@ -132,7 +132,7 @@ export default function AdminLoginPage() {
                                     required
                                     className={`w-full px-5 py-4 bg-transparent border text-sm transition-all outline-none tracking-[0.2em] ${isDark
                                         ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
-                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-300 focus:border-rose-500'
+                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
                                         }`}
                                     placeholder="••••••••••••"
                                 />
@@ -142,7 +142,7 @@ export default function AdminLoginPage() {
                         <div className="flex items-center justify-between pt-2">
                             <Link
                                 href="/admin/forgot-password"
-                                className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
+                                className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                             >
                                 Recover Passkey
                             </Link>
@@ -173,11 +173,11 @@ export default function AdminLoginPage() {
 
                     <div className={`mt-10 pt-6 border-t ${isDark ? 'border-slate-800/50' : 'border-slate-100'} flex items-center gap-4`}>
                         <div className={`w-8 h-8 rounded-full border flex items-center justify-center ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'}`}>
-                            <svg className={`w-3.5 h-3.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className={`w-3.5 h-3.5 ${isDark ? 'text-slate-500' : 'text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
-                        <p className={`text-[9px] font-bold uppercase tracking-widest leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                        <p className={`text-[9px] font-bold uppercase tracking-widest leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
                             Secure Node. All authentication <br />
                             attempts are logged and monitored.
                         </p>
@@ -188,7 +188,7 @@ export default function AdminLoginPage() {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-12">
                     <Link
                         href="/"
-                        className={`text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 ${isDark ? 'text-slate-500 hover:text-white' : 'text-slate-400 hover:text-slate-900'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 ${isDark ? 'text-slate-500 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -198,7 +198,7 @@ export default function AdminLoginPage() {
                     
                     <Link
                         href="/admin/signup"
-                        className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isDark ? 'text-rose-500 hover:text-rose-400' : 'text-rose-600 hover:text-rose-500'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isDark ? 'text-rose-500 hover:text-rose-400' : 'text-rose-700 hover:text-rose-600'}`}
                     >
                         REQUEST CLEARANCE
                     </Link>
