@@ -253,7 +253,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                     <button
                                         key={index}
                                         onClick={() => goToSlide(index)}
-                                        className={`h-0.5 transition-all duration-700 standard-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
+                                        className={`relative before:absolute before:-inset-4 h-0.5 transition-all duration-700 standard-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
                                         aria-label={`Slide ${index + 1}`}
                                     />
                                 ))}

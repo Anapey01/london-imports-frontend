@@ -19,7 +19,7 @@ export default function HowItWorksBar() {
                         </div>
                         <div className="w-full">
                             <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Selection</span>
-                            <h3 className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">You Select</h3>
+                            <div className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">You Select</div>
                             <p className="hidden md:block text-[11px] leading-relaxed text-slate-600 font-medium max-w-[150px] mx-auto">
                                 Curated collections from the world&apos;s leading hubs.
                             </p>
@@ -33,7 +33,7 @@ export default function HowItWorksBar() {
                         </div>
                         <div className="w-full">
                             <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Quality</span>
-                            <h3 className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Verify</h3>
+                            <div className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Verify</div>
                             <p className="hidden md:block text-[11px] leading-relaxed text-slate-600 font-medium max-w-[150px] mx-auto">
                                 A rigorous quality check for every piece.
                             </p>
@@ -47,7 +47,7 @@ export default function HowItWorksBar() {
                         </div>
                         <div className="w-full">
                             <span className="block text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Shipping</span>
-                            <h3 className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Deliver</h3>
+                            <div className="text-[11px] md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">We Deliver</div>
                             <p className="hidden md:block text-[11px] leading-relaxed text-slate-600 font-medium max-w-[150px] mx-auto">
                                 Safe delivery to your doorstep.
                             </p>

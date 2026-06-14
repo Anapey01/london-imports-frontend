@@ -106,7 +106,8 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                                     <div className="relative aspect-square w-full bg-transparent p-2 flex items-center justify-center overflow-hidden">
                                         <Image
                                             src={imageUrl}
-                                            alt={product.name}
+                                            alt=""
+                                            aria-hidden="true"
                                             fill
                                             sizes="(max-width: 640px) 140px, 160px"
                                             className="object-contain hover:scale-105 transition-transform duration-300 p-2"

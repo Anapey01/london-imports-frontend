@@ -52,7 +52,8 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                         <div className="relative aspect-square w-full bg-transparent p-1 flex items-center justify-center overflow-hidden">
                                                             <Image
                                                                 src={imageUrl}
-                                                                alt={product.name}
+                                                                alt=""
+                                                                aria-hidden="true"
                                                                 fill
                                                                 sizes="(max-width: 640px) 25vw, 15vw"
                                                                 className="object-contain hover:scale-105 transition-transform duration-300 p-1"
@@ -79,7 +80,8 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                         <div className="relative aspect-[4/3] w-full bg-transparent p-2 flex items-center justify-center overflow-hidden">
                                                             <Image
                                                                 src={imageUrl}
-                                                                alt={product.name}
+                                                                alt=""
+                                                                aria-hidden="true"
                                                                 fill
                                                                 sizes="(max-width: 640px) 50vw, 25vw"
                                                                 className="object-contain hover:scale-105 transition-transform duration-300 p-2"

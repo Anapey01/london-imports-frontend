@@ -38,7 +38,7 @@ export const GroupBuyProgress: React.FC<GroupBuyProgressProps> = ({
                         className="h-full bg-emerald-500 transition-all duration-1000 ease-out"
                     />
                 </div>
-                <span className="text-[7px] font-black nuclear-text opacity-40 uppercase tracking-widest whitespace-nowrap">
+                <span className="text-[7px] font-black nuclear-text opacity-70 uppercase tracking-widest whitespace-nowrap">
                     {remaining > 0 ? `${formatNumber(remaining)} more` : 'Ready'}
                 </span>
             </div>
