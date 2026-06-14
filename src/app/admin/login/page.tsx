@@ -25,6 +25,9 @@ export default function AdminLoginPage() {
         setError('');
         setLoading(true);
 
+        // Yield to browser to paint loading spinner (fixes INP)
+        await new Promise(resolve => setTimeout(resolve, 10));
+
         try {
             // Use unified authStore to handle login and persistence
             await login(formData.username, formData.password);

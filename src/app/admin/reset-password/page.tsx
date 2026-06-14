@@ -50,6 +50,9 @@ function ResetPasswordForm() {
 
         setLoading(true);
 
+        // Yield to browser to paint loading spinner (fixes INP)
+        await new Promise(resolve => setTimeout(resolve, 10));
+
         try {
             await authAPI.confirmPasswordReset({
                 uid,

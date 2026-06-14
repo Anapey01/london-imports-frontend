@@ -22,6 +22,9 @@ export default function ForgotPasswordPage() {
         setStatus('loading');
         setMessage('');
 
+        // Yield to browser to paint loading spinner (fixes INP)
+        await new Promise(resolve => setTimeout(resolve, 10));
+
         try {
             await authAPI.requestPasswordReset({ email });
             setStatus('success');
