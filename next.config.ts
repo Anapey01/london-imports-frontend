@@ -267,6 +267,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Security-Policy',
             value: CSP
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(self), geolocation=(self), browsing-topics=()'
           }
         ],
       },
