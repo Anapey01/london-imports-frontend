@@ -74,7 +74,9 @@ export function ConfirmModal({
                                     {cancelText}
                                 </button>
                                 <button
-                                    onClick={() => {
+                                    onClick={async () => {
+                                        // Yield to main thread to fix INP (lets button click visual paint first)
+                                        await new Promise(resolve => setTimeout(resolve, 10));
                                         onConfirm();
                                         onClose();
                                     }}
