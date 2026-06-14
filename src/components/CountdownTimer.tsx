@@ -97,17 +97,6 @@ export default function CountdownTimer({
         );
     }
 
-    const sizeClasses = {
-        sm: 'text-xs gap-1',
-        md: 'text-sm gap-2',
-        lg: 'text-base gap-3'
-    };
-
-    const unitClasses = {
-        sm: 'w-8 h-8 text-xs',
-        md: 'w-10 h-10 text-sm',
-        lg: 'w-12 h-12 text-base'
-    };
 
     return (
         <div className={`flex items-center ${sizeClasses[size]} ${className}`}>
