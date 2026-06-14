@@ -54,7 +54,7 @@ export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
         <div
             className={`
                 relative flex items-center gap-4 px-6 py-4 
-                rounded-2xl border backdrop-blur-2xl
+                rounded-none border backdrop-blur-2xl
                 ${styles[type]} ${shadows[type]}
                 pointer-events-auto cursor-pointer group
                 max-w-[400px] w-full mx-auto mb-3
@@ -67,7 +67,7 @@ export function AuraAlert({ id, message, type, onClose }: AuraAlertProps) {
             </div>
             
             <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-white/90 leading-snug">
+                <p className="text-[13px] font-normal text-white/90 leading-snug">
                     {message}
                 </p>
             </div>
