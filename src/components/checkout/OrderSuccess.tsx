@@ -139,10 +139,10 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                             </motion.div>
 
                             <div className="space-y-4">
-                                <p className="text-[16px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-md">
+                                <p className="text-[14px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm">
                                     {method === 'whatsapp' 
-                                        ? "We've reserved your items. To finalize your order, please follow the Mobile Money instructions below to complete your payment."
-                                        : "We've received your payment and started the process of getting your items ready for shipment from our global partners."}
+                                        ? "Items reserved. Complete Mobile Money payment below to finalize."
+                                        : "Payment secured. We are preparing your items for international shipment."}
                                 </p>
 
                                 {method === 'whatsapp' && (
@@ -187,20 +187,20 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 {[
                                     { 
                                         id: '01', 
-                                        title: 'Processing Order', 
-                                        desc: 'We are securing your items with our international partners.',
+                                        title: 'Processing', 
+                                        desc: 'Securing items with global partners.',
                                         icon: Package
                                     },
                                     { 
                                         id: '02', 
-                                        title: 'Quality Check', 
-                                        desc: 'Each item is inspected before being packed for safe transit.',
+                                        title: 'Inspection', 
+                                        desc: 'Verifying quality before transit.',
                                         icon: ShieldCheck
                                     },
                                     { 
                                         id: '03', 
-                                        title: 'Available', 
-                                        desc: 'You will receive delivery updates on WhatsApp very soon.',
+                                        title: 'Dispatch', 
+                                        desc: 'Updates sent via WhatsApp.',
                                         icon: Truck
                                     }
                                 ].map((step, idx) => (
