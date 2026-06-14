@@ -59,8 +59,16 @@ export default function CartPage() {
 
     if (!mounted) {
         return (
-            <div className="min-h-screen bg-primary-surface pt-32 pb-20 flex justify-center">
-                <div className="w-8 h-8 border-4 border-slate-950 dark:border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen bg-surface pb-40 transition-all duration-500">
+                <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-border-standard px-4 h-16 flex items-center gap-4">
+                    <div className="p-2 -ml-2 w-10 h-10" />
+                    <h1 className="text-xl font-black uppercase tracking-[0.25em] text-slate-950 dark:text-white">
+                        Cart
+                    </h1>
+                </header>
+                <div className="max-w-3xl mx-auto flex justify-center py-24">
+                    <div className="w-8 h-8 border-4 border-slate-950 dark:border-white border-t-transparent rounded-full animate-spin opacity-20"></div>
+                </div>
             </div>
         );
     }
