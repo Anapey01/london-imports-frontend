@@ -34,7 +34,7 @@
             return (
                 <div className="min-h-screen flex items-center justify-center bg-secondary-surface">
                     <div className="text-center space-y-4">
-                        <h1 className="text-2xl font-black tracking-tighter">Order Complete</h1>
+                        <h1 className="text-2xl font-semibold tracking-tighter">Order Complete</h1>
                         <p className="text-sm text-slate-500">Redirecting you to your order summary...</p>
                     </div>
                 </div>

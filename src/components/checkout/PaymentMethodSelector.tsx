@@ -60,11 +60,11 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
             {/* Header Section */}
             <div className="flex items-center justify-between p-6 sm:p-7 border-b border-border-standard/50">
                 <div className="flex items-center gap-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all duration-500 ${isExpanded ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface text-content-secondary'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-500 ${isExpanded ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface text-content-secondary'}`}>
                         2
                     </div>
                     <div>
-                        <h2 className={`font-black uppercase tracking-widest text-[11px] transition-colors ${isExpanded ? 'text-content-primary' : 'text-content-secondary'}`}>
+                        <h2 className={`font-semibold uppercase tracking-widest text-[11px] transition-colors ${isExpanded ? 'text-content-primary' : 'text-content-secondary'}`}>
                             Payment Method
                         </h2>
                         {!isExpanded && isCompleted && (
@@ -78,7 +78,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                 {isCompleted && (
                     <button 
                         onClick={() => setActiveStep(2)}
-                        className="text-[10px] font-black uppercase tracking-widest text-brand-emerald hover:opacity-80 transition-all px-4 py-2 bg-brand-emerald/10 rounded-lg"
+                        className="text-[10px] font-semibold uppercase tracking-widest text-brand-emerald hover:opacity-80 transition-all px-4 py-2 bg-brand-emerald/10 rounded-lg"
                     >
                         Change
                     </button>
@@ -96,7 +96,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 </div>
                             </div>
                             <div className="relative z-10">
-                                <span className="block font-black text-content-primary text-lg tracking-tight mb-1">Clear Balance</span>
+                                <span className="block font-semibold text-content-primary text-lg tracking-tight mb-1">Clear Balance</span>
                                 <p className="text-[10px] text-content-secondary font-bold leading-relaxed max-w-[240px]">Finalizing the remaining balance for this order.</p>
                             </div>
                         </div>
@@ -113,8 +113,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 />
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
-                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'FULL' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Plus Shipping Fee)</span>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal)} today (Full Settlement)</p>
+                                        <span className={`block font-semibold tracking-tight text-base transition-colors ${paymentType === 'FULL' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Plus Shipping Fee)</span>
+                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal)} today (Full Settlement)</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'FULL' ? 'border-content-primary scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'FULL' && <div className="w-1.5 h-1.5 bg-content-primary rounded-full" />}
@@ -133,8 +133,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 />
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
-                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'DEPOSIT' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Minus Shipping Fee)</span>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))} today • Pay Shipping Later</p>
+                                        <span className={`block font-semibold tracking-tight text-base transition-colors ${paymentType === 'DEPOSIT' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Minus Shipping Fee)</span>
+                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))} today • Pay Shipping Later</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'DEPOSIT' ? 'border-content-primary scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'DEPOSIT' && <div className="w-1.5 h-1.5 bg-content-primary rounded-full" />}
@@ -154,10 +154,10 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-1.5">
                                         <div className="flex items-center gap-2">
-                                            <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'WHATSAPP' ? 'text-brand-emerald' : 'text-content-secondary'}`}>Direct Momo</span>
-                                            <span className="text-[6px] font-black uppercase tracking-[0.3em] bg-brand-emerald text-surface px-1.5 py-0.5 rounded-full">Fast</span>
+                                            <span className={`block font-semibold tracking-tight text-base transition-colors ${paymentType === 'WHATSAPP' ? 'text-brand-emerald' : 'text-content-secondary'}`}>Direct Momo</span>
+                                            <span className="text-[6px] font-semibold uppercase tracking-[0.3em] bg-brand-emerald text-surface px-1.5 py-0.5 rounded-full">Fast</span>
                                         </div>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em] leading-relaxed max-w-[240px]">Pay securely via WhatsApp Concierge</p>
+                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em] leading-relaxed max-w-[240px]">Pay securely via WhatsApp Concierge</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'WHATSAPP' ? 'border-brand-emerald scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'WHATSAPP' && <div className="w-1.5 h-1.5 bg-brand-emerald rounded-full" />}
@@ -168,8 +168,8 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                             <label className={`block relative p-5 sm:p-6 rounded-2xl cursor-pointer transition-all duration-300 border-2 ${paymentType === 'CUSTOM' ? 'border-border-standard bg-content-primary/[0.02]' : 'border-transparent hover:bg-content-primary/[0.01]'}`}>
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="space-y-0.5">
-                                        <span className={`block font-black tracking-tight text-base transition-colors ${paymentType === 'CUSTOM' ? 'text-content-primary' : 'text-content-secondary'}`}>Flexible Installment</span>
-                                        <p className="text-[8px] text-content-secondary font-black uppercase tracking-[0.2em]">
+                                        <span className={`block font-semibold tracking-tight text-base transition-colors ${paymentType === 'CUSTOM' ? 'text-content-primary' : 'text-content-secondary'}`}>Flexible Installment</span>
+                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">
                                             {(orderNumberParam || (currentOrderData as any).order_number) ? 'Pay any amount towards your balance' : 'Choose your own amount'}
                                         </p>
                                     </div>
@@ -193,7 +193,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                     <div className="animate-in slide-in-from-top-2 duration-300">
                                         <div className="relative group">
                                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">GHS</span>
+                                                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">GHS</span>
                                             </div>
                                             <input
                                                 type="number"
@@ -204,7 +204,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                                     setCustomAmount(e.target.value);
                                                 }}
                                                 placeholder="0.00"
-                                                className="w-full pl-16 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-xl text-lg font-black text-content-primary tabular-nums placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
+                                                className="w-full pl-16 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-xl text-lg font-semibold text-content-primary tabular-nums placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
                                                 min="1"
                                                 max={selectedTotal}
                                             />
@@ -220,30 +220,30 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                         <div className="mx-2 p-5 rounded-2xl bg-slate-50 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-500">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                                <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-900">Payment Summary</h3>
+                                <h3 className="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-900">Payment Summary</h3>
                             </div>
                             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                                 <div className="space-y-1">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Due Today</p>
-                                    <p className="text-sm font-black text-slate-900">
+                                    <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Due Today</p>
+                                    <p className="text-sm font-semibold text-slate-900">
                                         {paymentType === 'DEPOSIT' 
                                             ? formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))
                                             : formatPrice(customAmount || 0)}
                                     </p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Pay Later</p>
-                                    <p className="text-sm font-black text-emerald-600">
+                                    <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Pay Later</p>
+                                    <p className="text-sm font-semibold text-emerald-600">
                                         {paymentType === 'DEPOSIT'
                                             ? formatPrice(currentOrderData.delivery_fee || 0)
                                             : formatPrice(selectedTotal - Number(customAmount || 0))}
                                     </p>
                                 </div>
                                 <div className="col-span-2 pt-3 border-t border-slate-200 flex justify-between items-center">
-                                    <p className="text-[8px] font-black text-slate-900 uppercase tracking-widest">
+                                    <p className="text-[8px] font-semibold text-slate-900 uppercase tracking-widest">
                                         {(orderNumberParam || (currentOrderData as any).order_number) ? 'Remaining Balance' : 'Total Value'}
                                     </p>
-                                    <p className="text-sm font-black text-slate-900">{formatPrice(selectedTotal)}</p>
+                                    <p className="text-sm font-semibold text-slate-900">{formatPrice(selectedTotal)}</p>
                                 </div>
                             </div>
                             <div className="mt-4 p-3 bg-white/60 rounded-lg border border-slate-100">
@@ -258,7 +258,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                         <button 
                             type="button"
                             onClick={() => setActiveStep(3)}
-                            className="w-full py-4 bg-content-primary text-surface text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.01] active:scale-[0.99] transition-all shadow-lg"
+                            className="w-full py-4 bg-content-primary text-surface text-[11px] uppercase tracking-[0.2em] font-semibold rounded-xl hover:scale-[1.01] active:scale-[0.99] transition-all shadow-lg"
                         >
                             Use this payment method
                         </button>

@@ -89,7 +89,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                                 className="object-cover"
                                             />
                                             {productCount > 1 && (
-                                                <div className="absolute bottom-4 right-4 bg-slate-950/90 text-white text-[9px] font-black px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 uppercase tracking-widest">
+                                                <div className="absolute bottom-4 right-4 bg-slate-950/90 text-white text-[9px] font-semibold px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 uppercase tracking-widest">
                                                     +{productCount - 1} More
                                                 </div>
                                             )}
@@ -108,11 +108,11 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 className="flex justify-between items-end border-t border-white/30 pt-4"
                             >
                                 <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Your Order</span>
+                                    <span className="text-[8px] font-semibold text-white uppercase tracking-[0.3em]">Your Order</span>
                                     <p className="text-[10px] font-mono text-white/90">#{orderNumber}</p>
                                 </div>
                                 <div className="text-right space-y-1">
-                                    <span className="text-[8px] font-black text-white uppercase tracking-[0.3em]">Confirmation Date</span>
+                                    <span className="text-[8px] font-semibold text-white uppercase tracking-[0.3em]">Confirmation Date</span>
                                     <p className="text-[10px] font-mono text-white/90">{new Date().toLocaleDateString('en-GB')}</p>
                                 </div>
                             </motion.div>
@@ -131,11 +131,11 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
                                         <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                     </div>
-                                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">
+                                    <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">
                                         Congratulations!
                                     </span>
                                 </div>
-                                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 dark:text-white leading-[1.1]">
+                                <h1 className="text-4xl md:text-5xl font-semibold tracking-tighter text-slate-950 dark:text-white leading-[1.1]">
                                     {method === 'whatsapp' ? 'Order reserved.' : 'Your order is confirmed.'}
                                 </h1>
                             </motion.div>
@@ -153,7 +153,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="bg-brand-emerald/5 border border-brand-emerald/20 rounded-2xl p-6 space-y-3"
                                     >
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-emerald">Mobile Money Payment</p>
+                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-emerald">Mobile Money Payment</p>
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs">
                                                 <span className="text-slate-500">Momo Number:</span>
@@ -174,12 +174,12 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 {orderData && (
                                     <div className="flex gap-8 py-4 border-y border-slate-100 dark:border-slate-800">
                                         <div className="space-y-1">
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Amount Paid</p>
-                                            <p className="text-sm font-black text-slate-900 dark:text-white">GHS {orderData.amount_paid}</p>
+                                            <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Amount Paid</p>
+                                            <p className="text-sm font-semibold text-slate-900 dark:text-white">GHS {orderData.amount_paid}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Balance Due</p>
-                                            <p className="text-sm font-black text-brand-emerald">GHS {orderData.balance_due}</p>
+                                            <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Balance Due</p>
+                                            <p className="text-sm font-semibold text-brand-emerald">GHS {orderData.balance_due}</p>
                                         </div>
                                     </div>
                                 )}
@@ -217,7 +217,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                             <step.icon className="w-5 h-5" strokeWidth={1.5} />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
+                                            <h3 className="text-[13px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white group-hover:translate-x-1 transition-transform">
                                                 {step.title}
                                             </h3>
                                             <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-2">
@@ -231,7 +231,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                             <div className="pt-10 flex flex-col sm:flex-row gap-4">
                                 <Link 
                                     href="/orders"
-                                    className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-16 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
+                                    className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 h-16 rounded-2xl font-semibold text-[10px] uppercase tracking-widest text-center hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
                                 >
                                     View My Orders
                                     <ArrowRight className="w-3 h-3" />
@@ -240,7 +240,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     href={`https://wa.me/${siteConfig.concierge}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 bg-white dark:bg-slate-800 text-slate-950 dark:text-white h-16 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3"
+                                    className="flex-1 bg-white dark:bg-slate-800 text-slate-950 dark:text-white h-16 rounded-2xl font-semibold text-[10px] uppercase tracking-widest text-center border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3"
                                 >
                                     WhatsApp Support
                                     <MessageSquare className="w-3 h-3" />
@@ -262,9 +262,9 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                 className="mt-20 flex flex-col items-center gap-6 opacity-30 px-4 text-center"
             >
                 <div className="flex items-center gap-6 grayscale">
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Thank You</span>
+                    <span className="text-[8px] font-semibold uppercase tracking-[0.4em]">Thank You</span>
                     <div className="w-1 h-1 bg-slate-500 rounded-full" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">Success</span>
+                    <span className="text-[8px] font-semibold uppercase tracking-[0.4em]">Success</span>
                 </div>
             </motion.div>
         </div>

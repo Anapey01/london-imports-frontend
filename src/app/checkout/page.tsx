@@ -571,7 +571,7 @@ function CheckoutPage() {
             <div className="min-h-screen flex items-center justify-center bg-surface">
                 <div className="flex flex-col items-center gap-4">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-950"></div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary">Loading...</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-content-secondary">Loading...</p>
                 </div>
             </div>
         );
@@ -589,13 +589,13 @@ function CheckoutPage() {
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                     <button 
                         onClick={() => router.push('/products')}
-                        className="w-full py-4 bg-slate-950 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all"
+                        className="w-full py-4 bg-slate-950 text-white rounded-xl font-semibold text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all"
                     >
                         Back to Shop
                     </button>
                     <button 
                         onClick={() => fetchCart()}
-                        className="w-full py-4 bg-white text-slate-950 border border-slate-200 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all"
+                        className="w-full py-4 bg-white text-slate-950 border border-slate-200 rounded-xl font-semibold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all"
                     >
                         Retry Sync
                     </button>

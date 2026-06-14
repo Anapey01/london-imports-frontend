@@ -48,7 +48,7 @@ const OrderSummary = ({
 
     return (
         <div className="bg-surface-card p-6 sm:p-7 rounded-2xl border border-border-standard shadow-diffusion-lg sticky top-32">
-            <h2 className="text-base font-black text-content-primary mb-6">Order Summary</h2>
+            <h2 className="text-base font-semibold text-content-primary mb-6">Order Summary</h2>
             
             <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-[11px] font-medium text-content-secondary">
@@ -60,13 +60,13 @@ const OrderSummary = ({
                     <span className="tabular-nums font-bold text-content-primary italic">{deliveryValue > 0 ? formatPrice(deliveryValue) : 'GHS 0.00'}</span>
                 </div>
                 <div className="pt-3 border-t border-border-standard">
-                    <div className="flex justify-between text-base font-black text-content-primary">
+                    <div className="flex justify-between text-base font-semibold text-content-primary">
                         <span>Order Total:</span>
                         <span className="tabular-nums text-brand-emerald">{formatPrice(totalValue)}</span>
                     </div>
                 </div>
                 {paymentAmount < totalValue && (
-                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-content-primary pt-2">
+                    <div className="flex justify-between text-[11px] font-semibold uppercase tracking-widest text-content-primary pt-2">
                         <span>Payment Due Now:</span>
                         <span className="tabular-nums">{formatPrice(paymentAmount)}</span>
                     </div>
@@ -77,7 +77,7 @@ const OrderSummary = ({
                 <button
                     onClick={onSubmit}
                     disabled={isSubmitting || isMerging || (activeStep < 3 && !orderNumberParam)}
-                    className={`w-full py-4 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all relative overflow-hidden ${
+                    className={`w-full py-4 rounded-xl text-[11px] font-semibold uppercase tracking-[0.2em] transition-all relative overflow-hidden ${
                         isSubmitting || isMerging || (activeStep < 3 && !orderNumberParam)
                         ? 'bg-surface text-content-secondary cursor-not-allowed border border-border-standard'
                         : 'bg-content-primary text-surface hover:scale-[1.02] active:scale-[0.98] shadow-xl'
@@ -121,12 +121,12 @@ const OrderSummary = ({
             <div className="mt-8 pt-6 border-t border-border-standard flex items-center justify-center gap-6">
                 <div className="flex items-center gap-2">
                     <ShieldCheck className="w-3.5 h-3.5 text-brand-emerald" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-content-secondary">Secure</span>
+                    <span className="text-[8px] font-semibold uppercase tracking-widest text-content-secondary">Secure</span>
                 </div>
                 <div className="w-px h-3 bg-border-standard" />
                 <div className="flex items-center gap-2">
                     <Truck className="w-3.5 h-3.5 text-content-secondary" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-content-secondary">Insured</span>
+                    <span className="text-[8px] font-semibold uppercase tracking-widest text-content-secondary">Insured</span>
                 </div>
             </div>
         </div>

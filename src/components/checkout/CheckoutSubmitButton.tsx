@@ -40,7 +40,7 @@ const CheckoutSubmitButton = ({
                 type="submit"
                 disabled={isLoading || (!isHubtel && paymentType !== 'WHATSAPP' && !isPaystackLoaded) || !canPay}
                 id="checkout-pay-button"
-                className={`w-full py-6 px-10 rounded-2xl font-black transition-all active:scale-[0.98] duration-700 uppercase tracking-[0.4em] text-[10px] flex items-center justify-center gap-4 shadow-diffusion-2xl border-2 border-transparent ${paymentType === 'WHATSAPP' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-black dark:hover:bg-slate-100 hover:shadow-glow-emerald/20'}`}
+                className={`w-full py-6 px-10 rounded-2xl font-semibold transition-all active:scale-[0.98] duration-700 uppercase tracking-[0.4em] text-[10px] flex items-center justify-center gap-4 shadow-diffusion-2xl border-2 border-transparent ${paymentType === 'WHATSAPP' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-black dark:hover:bg-slate-100 hover:shadow-glow-emerald/20'}`}
             >
                 {!canPay ? (
                     <span className="flex items-center gap-3 opacity-20">
@@ -81,14 +81,14 @@ const CheckoutSubmitButton = ({
                                                 <button
                                                     type="button"
                                                     onClick={() => window.location.reload()}
-                                                    className="text-[7px] font-black underline opacity-40 hover:opacity-100 transition-opacity"
+                                                    className="text-[7px] font-semibold underline opacity-40 hover:opacity-100 transition-opacity"
                                                 >
                                                     Refresh Page
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setPaymentType('WHATSAPP')}
-                                                    className="text-[7px] font-black underline text-emerald-500"
+                                                    className="text-[7px] font-semibold underline text-emerald-500"
                                                 >
                                                     Pay via WhatsApp
                                                 </button>
@@ -107,11 +107,11 @@ const CheckoutSubmitButton = ({
             </button>
 
             <div className="mt-8 flex items-center justify-center gap-6 opacity-10 hover:opacity-30 transition-opacity duration-700 grayscale">
-                <span className="text-[7px] font-black uppercase tracking-[0.4em] nuclear-text">
+                <span className="text-[7px] font-semibold uppercase tracking-[0.4em] nuclear-text">
                     {isHubtel ? 'Hubtel Secure' : 'Paystack Encrypted'}
                 </span>
                 <div className="w-1 h-1 bg-slate-900 dark:bg-white rounded-full" />
-                <span className="text-[7px] font-black uppercase tracking-[0.4em] nuclear-text">Zero Data Retention</span>
+                <span className="text-[7px] font-semibold uppercase tracking-[0.4em] nuclear-text">Zero Data Retention</span>
             </div>
         </div>
     );

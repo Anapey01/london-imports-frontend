@@ -42,11 +42,11 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
             {/* Header Section */}
             <div className="flex items-center justify-between p-6 sm:p-7 border-b border-border-standard/50">
                 <div className="flex items-center gap-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all duration-500 ${isExpanded ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface text-content-secondary'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-500 ${isExpanded ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface text-content-secondary'}`}>
                         1
                     </div>
                     <div>
-                        <h2 className={`font-black uppercase tracking-widest text-[11px] transition-colors ${isExpanded ? 'text-content-primary' : 'text-content-secondary'}`}>
+                        <h2 className={`font-semibold uppercase tracking-widest text-[11px] transition-colors ${isExpanded ? 'text-content-primary' : 'text-content-secondary'}`}>
                             Shipping Address
                         </h2>
                         {!isExpanded && hasAddress && (
@@ -60,7 +60,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                 {!isExpanded && hasAddress && !orderNumberParam && (
                     <button 
                         onClick={() => setActiveStep(1)}
-                        className="text-[10px] font-black uppercase tracking-widest text-brand-emerald hover:opacity-80 transition-all px-4 py-2 bg-brand-emerald/10 rounded-lg institutional-focus"
+                        className="text-[10px] font-semibold uppercase tracking-widest text-brand-emerald hover:opacity-80 transition-all px-4 py-2 bg-brand-emerald/10 rounded-lg institutional-focus"
                     >
                         Change Address
                     </button>
@@ -72,7 +72,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                 <div className="p-6 sm:p-7 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                         <div>
-                            <label htmlFor="ship-address" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Full Street Address</label>
+                            <label htmlFor="ship-address" className="block text-[8px] font-semibold text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Full Street Address</label>
                             <input
                                 id="ship-address"
                                 type="text"
@@ -88,7 +88,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                         </div>
 
                         <div>
-                            <label htmlFor="ship-city" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">City / Town</label>
+                            <label htmlFor="ship-city" className="block text-[8px] font-semibold text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">City / Town</label>
                             <input
                                 id="ship-city"
                                 type="text"
@@ -104,7 +104,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                         </div>
 
                         <div>
-                            <label htmlFor="ship-region" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Region</label>
+                            <label htmlFor="ship-region" className="block text-[8px] font-semibold text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Region</label>
                             <div className="relative">
                                 <select
                                     id="ship-region"
@@ -138,7 +138,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                         </div>
 
                         <div>
-                            <label htmlFor="ship-gps" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Ghana Post GPS (Optional)</label>
+                            <label htmlFor="ship-gps" className="block text-[8px] font-semibold text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Ghana Post GPS (Optional)</label>
                             <input
                                 id="ship-gps"
                                 type="text"
@@ -152,7 +152,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                         </div>
 
                         <div className="md:col-span-2">
-                            <label htmlFor="ship-notes" className="block text-[8px] font-black text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Delivery Notes</label>
+                            <label htmlFor="ship-notes" className="block text-[8px] font-semibold text-content-secondary uppercase tracking-[0.4em] mb-2 px-1">Delivery Notes</label>
                             <div className="flex flex-col gap-4">
                                 <textarea
                                     id="ship-notes"
@@ -171,7 +171,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                             setDelivery(localDelivery);
                                             setActiveStep(2);
                                         }}
-                                        className="px-8 py-3 bg-content-primary text-surface text-[10px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all h-fit shadow-lg institutional-focus"
+                                        className="px-8 py-3 bg-content-primary text-surface text-[10px] uppercase tracking-[0.2em] font-semibold rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all h-fit shadow-lg institutional-focus"
                                     >
                                         Use address
                                     </button>
@@ -195,7 +195,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                         {saveAddress && <CheckCircle2 className="w-2.5 h-2.5 text-surface" />}
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-black text-content-secondary uppercase tracking-widest transition-opacity">Save as default address</span>
+                                <span className="text-[9px] font-semibold text-content-secondary uppercase tracking-widest transition-opacity">Save as default address</span>
                             </label>
                         </div>
                     )}

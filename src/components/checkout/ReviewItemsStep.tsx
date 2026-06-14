@@ -38,10 +38,10 @@ export default function ReviewItemsStep({
     return (
         <div className={`bg-surface rounded-2xl border transition-all duration-500 overflow-hidden ${activeStep === 3 ? 'border-emerald-500/30 shadow-diffusion-lg ring-1 ring-emerald-500/10' : 'border-border-standard opacity-90'}`}>
             <div className="flex items-center gap-4 p-6 sm:p-7 border-b border-border-standard">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all duration-500 ${activeStep === 3 ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface border border-border-standard text-content-secondary'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-500 ${activeStep === 3 ? 'bg-content-primary text-surface scale-110 shadow-lg' : 'bg-surface border border-border-standard text-content-secondary'}`}>
                     3
                 </div>
-                <h2 className={`font-black uppercase tracking-widest text-[11px] transition-colors ${activeStep === 3 ? 'text-content-primary' : 'text-content-secondary'}`}>
+                <h2 className={`font-semibold uppercase tracking-widest text-[11px] transition-colors ${activeStep === 3 ? 'text-content-primary' : 'text-content-secondary'}`}>
                     Review items and shipping
                 </h2>
             </div>
@@ -68,7 +68,7 @@ export default function ReviewItemsStep({
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-black text-content-primary truncate">{cleanProductName(item.product)}</p>
+                                        <p className="text-[11px] font-semibold text-content-primary truncate">{cleanProductName(item.product)}</p>
                                         <div className="flex flex-wrap gap-2 mt-0.5">
                                             {item.selected_size && (
                                                 <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
@@ -84,7 +84,7 @@ export default function ReviewItemsStep({
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[11px] font-black text-content-primary">{formatPrice(item.total_price)}</p>
+                                        <p className="text-[11px] font-semibold text-content-primary">{formatPrice(item.total_price)}</p>
                                     </div>
                                 </div>
                             ))}
@@ -93,14 +93,14 @@ export default function ReviewItemsStep({
                     <div className="pt-6 border-t border-border-standard flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Ready for shipping</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-600">Ready for shipping</span>
                         </div>
                         <div className="flex flex-col items-center sm:items-end gap-2.5 w-full sm:w-auto max-w-md">
                             <button 
                                 type="button"
                                 onClick={() => onSubmit()}
                                 disabled={isLoading}
-                                className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100 w-full sm:w-auto text-center"
+                                className="px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[11px] uppercase tracking-[0.2em] font-semibold rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:scale-100 w-full sm:w-auto text-center"
                             >
                                 {isLoading ? 'Processing...' : 'Place your order'}
                             </button>
