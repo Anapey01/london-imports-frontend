@@ -59,8 +59,31 @@ export default function CountdownTimer({
         return () => clearInterval(timer);
     }, [cutoffDate]);
 
+    const sizeClasses = {
+        sm: 'text-xs gap-1',
+        md: 'text-sm gap-2',
+        lg: 'text-base gap-3'
+    };
+
+    const unitClasses = {
+        sm: 'w-8 h-8 text-xs',
+        md: 'w-10 h-10 text-sm',
+        lg: 'w-12 h-12 text-base'
+    };
+
     if (!mounted) {
-        return null; // Prevent hydration mismatch
+        // Prevent hydration mismatch but maintain layout dimensions
+        return (
+            <div className={`flex items-center invisible ${sizeClasses[size]} ${className}`} aria-hidden="true">
+                <span className="font-medium mr-1">Pre-order closes in:</span>
+                <div className="flex gap-1">
+                    <div className={unitClasses[size]} />
+                    <div className={unitClasses[size]} />
+                    <div className={unitClasses[size]} />
+                    <div className={unitClasses[size]} />
+                </div>
+            </div>
+        );
     }
 
     if (timeLeft.expired) {

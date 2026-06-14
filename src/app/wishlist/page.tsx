@@ -24,8 +24,32 @@ export default function WishlistPage() {
 
     if (!mounted) {
         return (
-            <div className="min-h-screen bg-surface pt-32 pb-20 flex justify-center selection:bg-emerald-100">
-                <div className="w-8 h-8 border-4 border-content-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen bg-surface pt-24 pb-32 transition-all duration-500 selection:bg-emerald-100 relative backdrop-blur-sm">
+                <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('/noise.svg')] z-0" />
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <header className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <span className="h-px w-8 bg-brand-emerald/30" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-emerald">
+                                    Curated Collection
+                                </span>
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-black tracking-[0.05em] uppercase text-content-primary leading-none">
+                                Saved <span className="text-content-secondary font-light italic font-serif">Portfolio</span>
+                            </h1>
+                        </div>
+                        <div className="text-right border-l md:border-l-0 md:border-r border-border-standard pl-6 md:pl-0 md:pr-6 py-1 opacity-0">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary block mb-1">Total Assets</span>
+                            <span className="text-2xl font-black text-content-primary tracking-widest uppercase italic">
+                                0 units
+                            </span>
+                        </div>
+                    </header>
+                    <div className="flex justify-center py-24">
+                        <div className="w-8 h-8 border-4 border-content-primary border-t-transparent rounded-full animate-spin opacity-20"></div>
+                    </div>
+                </div>
             </div>
         );
     }
