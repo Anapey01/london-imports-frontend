@@ -91,7 +91,7 @@ const SHOP_ITEMS = [
     { name: 'Customer Reviews', href: '/reviews', icon: Star },
     { name: 'How it Works', href: '/how-it-works', icon: Info },
     { name: 'FAQ', href: '/faq', icon: HelpCircle },
-    { name: 'Our Blog', href: '/story', icon: BookOpen },
+    { name: 'Our Blog', href: '/blog', icon: BookOpen },
     { name: 'Track My Items', href: '/track', icon: Truck },
 ];
 
