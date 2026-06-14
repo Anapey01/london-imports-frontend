@@ -184,7 +184,7 @@ export default function SettingsView({ user }: { user: User }) {
                     <section className="space-y-4">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 px-1">Security</h4>
                         <Link
-                            href="/reset-password"
+                            href="/password-reset"
                             className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-900 transition-all group"
                         >
                             <div className="flex items-center gap-3">
