@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import { formatPrice, cleanProductName } from '@/lib/format';
 import { Search, X, TrendingUp, Package, ArrowRight } from 'lucide-react';
-import { trackSearch, trackViewSearchResults, trackSelectPromotion } from '@/lib/analytics';
+import { trackSearch, trackViewSearchResults } from '@/lib/analytics';
 import { useUIStore } from '@/stores/uiStore';
 
 interface SearchModalProps {
@@ -22,7 +22,10 @@ interface SearchModalProps {
 export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }: SearchModalProps) {
     const { isSearchModalOpen, setSearchModalOpen } = useUIStore();
     const isOpen = propIsOpen !== undefined ? propIsOpen : isSearchModalOpen;
-    const onClose = propOnClose !== undefined ? propOnClose : () => setSearchModalOpen(false);
+    const onClose = useCallback(() => {
+        if (propOnClose) propOnClose();
+        else setSearchModalOpen(false);
+    }, [propOnClose, setSearchModalOpen]);
 
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -59,7 +62,7 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
             trackSearch(debouncedQuery);
             trackViewSearchResults(debouncedQuery, results.length, results);
         }
-    }, [debouncedQuery, isSearching, results.length]);
+    }, [debouncedQuery, isSearching, results, results.length]);
 
     const handleRecordSearch = (searchTerm: string) => {
         if (searchTerm.trim().length >= 2) {
@@ -157,8 +160,8 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary mb-8">Results</h3>
                                 {results.map((product: any) => (
                                     <button
-                                        key={product.id}
-                                        onClick={() => handleProductClick(product.slug)}
+                                        key={product.id as string}
+                                        onClick={() => handleProductClick(product.slug as string)}
                                         className="w-full flex items-center gap-6 p-4 rounded-2xl hover:bg-surface-card border border-transparent hover:border-border-standard transition-all text-left group"
                                     >
                                         <div className="w-20 h-20 bg-surface-card rounded-xl overflow-hidden border border-border-standard flex-shrink-0">
@@ -185,7 +188,7 @@ export default function SearchModal({ isOpen: propIsOpen, onClose: propOnClose }
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary">Market Pulse</h3>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
-                                    {(trendingSearches.length > 0 ? trendingSearches.map((s:any) => s.query) : ['Solar Panels', 'Electronics', 'Fashion', 'Kitchenware']).map((term: string) => (
+                                    {(trendingSearches.length > 0 ? trendingSearches.map((s: Record<string, unknown>) => s.query as string) : ['Solar Panels', 'Electronics', 'Fashion', 'Kitchenware']).map((term: string) => (
                                         <button
                                             key={term}
                                             onClick={() => setQuery(term)}

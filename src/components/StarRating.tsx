@@ -104,7 +104,8 @@ export default function StarRating({
                                 if (el) fillRefs.current.set(index, el);
                                 else fillRefs.current.delete(index);
                             }}
-                            className="absolute inset-0 overflow-hidden" 
+                            className="absolute inset-0 overflow-hidden"
+                            style={{ width: `${fillPercent}%` }}
                         >
                             <svg
                                 className={`${sizeClasses[size]} text-emerald-500 fill-emerald-500`}

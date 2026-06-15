@@ -11,8 +11,9 @@ interface ScrollDepthTrackerProps {
  * ScrollDepthTracker - London's Imports
  * Tracks content resonance (how far they read)
  */
+const THRESHOLDS = [25, 50, 75, 100];
+
 export default function ScrollDepthTracker({ pageName }: ScrollDepthTrackerProps) {
-    const thresholds = [25, 50, 75, 100];
     const trackedThresholds = useRef<Set<number>>(new Set());
 
     useEffect(() => {
@@ -22,7 +23,7 @@ export default function ScrollDepthTracker({ pageName }: ScrollDepthTrackerProps
 
             const scrollPercent = (window.scrollY / scrollHeight) * 100;
 
-            thresholds.forEach(threshold => {
+            THRESHOLDS.forEach(threshold => {
                 if (scrollPercent >= threshold && !trackedThresholds.current.has(threshold)) {
                     trackEvent('scroll_depth', {
                         page_name: pageName,

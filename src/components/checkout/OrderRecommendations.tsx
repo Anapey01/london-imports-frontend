@@ -6,7 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import { Product } from '@/stores/cartStore';
 import { motion } from 'framer-motion';
 
-export default function OrderRecommendations({ orderItems }: { orderItems?: any[] }) {
+export default function OrderRecommendations({ orderItems }: { orderItems?: Array<Record<string, any>> }) {
     const [recommendations, setRecommendations] = useState<Product[]>([]);
     const [trending, setTrending] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -77,6 +77,7 @@ export default function OrderRecommendations({ orderItems }: { orderItems?: any[
         };
 
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (!isLoading && recommendations.length === 0 && trending.length === 0) return null;

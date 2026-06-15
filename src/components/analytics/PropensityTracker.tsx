@@ -35,9 +35,10 @@ export default function PropensityTracker({ productId, productName, category }: 
             }
         }, 5000); // Check every 5 seconds
 
+        const start = startTime.current;
         return () => {
             clearInterval(timer);
-            const totalDuration = Math.floor((Date.now() - startTime.current) / 1000);
+            const totalDuration = Math.floor((Date.now() - start) / 1000);
             
             // Always track view duration on unmount if it's significant
             if (totalDuration > 5) {

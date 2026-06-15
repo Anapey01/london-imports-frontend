@@ -29,6 +29,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
     // Sync from parent if parent changes (e.g., loaded from session/API)
     React.useEffect(() => {
         setLocalDelivery(delivery);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [delivery.address, delivery.city, delivery.region, delivery.delivery_gps, delivery.notes]);
 
     const handleBlur = () => {

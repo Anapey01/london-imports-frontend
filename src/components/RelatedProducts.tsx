@@ -61,7 +61,7 @@ export default function RelatedProducts({ currentSlug, categorySlug, isDiscreet,
         };
 
         fetchRelated();
-    }, [categorySlug, currentSlug]);
+    }, [categorySlug, currentSlug, isDiscreet]);
 
     if (!isLoading && products.length === 0) return null;
 

@@ -212,10 +212,12 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                                         position: `hero_slot_${index + 1}`
                                                     });
                                                 }}
-                                                className="group inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.2em] text-content-primary border-b border-current pb-2 hover:opacity-60 transition-all focus-visible:ring-2 focus-visible:ring-brand-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-sm"
+                                                className="group inline-flex items-center min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-brand-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-sm"
                                             >
-                                                {slide.ctaText}
-                                                <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                                <span className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.2em] text-content-primary border-b border-current pb-2 group-hover:opacity-60 transition-all">
+                                                    {slide.ctaText}
+                                                    <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                                </span>
                                             </Link>
                                         </div>
                                     </div>
@@ -253,16 +255,18 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                     <button
                                         key={index}
                                         onClick={() => goToSlide(index)}
-                                        className={`relative before:absolute before:-inset-4 h-0.5 transition-all duration-700 standard-focus rounded-full outline-none ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 hover:bg-content-secondary'}`}
+                                        className="relative flex items-center justify-center min-h-[48px] min-w-[48px] standard-focus rounded-full outline-none group"
                                         aria-label={`Slide ${index + 1}`}
-                                    />
+                                    >
+                                        <span className={`h-0.5 transition-all duration-700 rounded-full ${index === currentSlide ? 'w-12 bg-content-primary' : 'w-6 bg-content-secondary/20 group-hover:bg-content-secondary'}`} />
+                                    </button>
                                 ))}
                             </div>
 
                             {/* Industrial Pause/Play Protocol */}
                             <button
                                 onClick={() => setIsPaused(!isPaused)}
-                                className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary hover:text-content-primary transition-colors standard-focus flex items-center gap-3 px-2"
+                                className="text-[10px] font-black uppercase tracking-[0.4em] text-content-secondary hover:text-content-primary transition-colors standard-focus flex items-center justify-center min-h-[48px] min-w-[48px] gap-3 px-2"
                                 aria-label={isPaused ? "Play Carousel" : "Pause Carousel"}
                             >
                                 <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
