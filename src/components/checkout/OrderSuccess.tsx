@@ -8,6 +8,7 @@ import { ArrowRight, MessageSquare, Sparkles } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { ordersAPI } from '@/lib/api';
 import dynamic from 'next/dynamic';
+import { useQueryClient } from '@tanstack/react-query';
 
 const OrderRecommendations = dynamic(() => import('./OrderRecommendations'), {
     ssr: false, // Wait until client-side so we don't block the initial success render
@@ -36,8 +37,13 @@ interface Order {
 
 const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
     const [orderData, setOrderData] = useState<Order | null>(null);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
+        // Invalidate caches so that returning to the orders list fetches fresh state
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
+
         const fetchOrder = async () => {
             try {
                 const response = await ordersAPI.detail(orderNumber);

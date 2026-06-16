@@ -45,6 +45,8 @@ const OrderSummary = ({
 
     const deliveryValue = Number(currentOrderData.delivery_fee || 0);
     const totalValue = Number(subtotalValue) + Number(deliveryValue);
+    const amountPaid = Number(currentOrderData.amount_paid || 0);
+    const balanceDue = Math.max(0, totalValue - amountPaid);
 
     return (
         <div className="bg-surface-card p-6 sm:p-7 rounded-2xl border border-border-standard shadow-diffusion-lg sticky top-32">
@@ -65,7 +67,19 @@ const OrderSummary = ({
                         <span className="tabular-nums text-brand-emerald">{formatPrice(totalValue)}</span>
                     </div>
                 </div>
-                {paymentAmount < totalValue && (
+                {amountPaid > 0 && (
+                    <>
+                        <div className="flex justify-between text-[11px] font-medium text-content-secondary pt-1">
+                            <span>Already Paid:</span>
+                            <span className="tabular-nums font-semibold text-emerald-600">-{formatPrice(amountPaid)}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-medium text-content-secondary">
+                            <span>Remaining Balance:</span>
+                            <span className="tabular-nums font-bold text-content-primary">{formatPrice(balanceDue)}</span>
+                        </div>
+                    </>
+                )}
+                {paymentAmount < (amountPaid > 0 ? balanceDue : totalValue) && (
                     <div className="flex justify-between text-[11px] font-semibold uppercase tracking-widest text-content-primary pt-2">
                         <span>Payment Due Now:</span>
                         <span className="tabular-nums">{formatPrice(paymentAmount)}</span>

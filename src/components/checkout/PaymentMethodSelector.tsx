@@ -45,6 +45,9 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
     };
 
     const selectedTotal = calculateSelectedTotal();
+    const amountPaid = Number(currentOrderData.amount_paid || 0);
+    const balanceDue = Math.max(0, selectedTotal - amountPaid);
+    const depositDueToday = Math.max(0, selectedTotal - Number(currentOrderData.delivery_fee || 0) - amountPaid);
 
     const getPaymentLabel = () => {
         if (paymentType === 'FULL') return 'Full Payment (Plus Shipping Fee)';
@@ -114,7 +117,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
                                         <span className={`block font-semibold tracking-tight text-base transition-colors ${paymentType === 'FULL' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Plus Shipping Fee)</span>
-                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal)} today (Full Settlement)</p>
+                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">Pay {formatPrice(balanceDue)} today (Full Settlement)</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'FULL' ? 'border-content-primary scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'FULL' && <div className="w-1.5 h-1.5 bg-content-primary rounded-full" />}
@@ -134,7 +137,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
                                         <span className={`block font-semibold tracking-tight text-base transition-colors ${paymentType === 'DEPOSIT' ? 'text-content-primary' : 'text-content-secondary'}`}>Full Payment (Minus Shipping Fee)</span>
-                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">Pay {formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))} today • Pay Shipping Later</p>
+                                        <p className="text-[8px] text-content-secondary font-semibold uppercase tracking-[0.2em]">Pay {formatPrice(depositDueToday)} today • Pay Shipping Later</p>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${paymentType === 'DEPOSIT' ? 'border-content-primary scale-110' : 'border-border-standard'}`}>
                                         {paymentType === 'DEPOSIT' && <div className="w-1.5 h-1.5 bg-content-primary rounded-full" />}
@@ -200,13 +203,13 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                                 value={customAmount}
                                                 onChange={(e) => {
                                                     const val = parseFloat(e.target.value);
-                                                    if (val > selectedTotal) return;
+                                                    if (val > balanceDue) return;
                                                     setCustomAmount(e.target.value);
                                                 }}
                                                 placeholder="0.00"
                                                 className="w-full pl-16 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-xl text-lg font-semibold text-content-primary tabular-nums placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
                                                 min="1"
-                                                max={selectedTotal}
+                                                max={balanceDue}
                                             />
                                         </div>
                                     </div>
@@ -227,7 +230,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                     <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Due Today</p>
                                     <p className="text-sm font-semibold text-slate-900">
                                         {paymentType === 'DEPOSIT' 
-                                            ? formatPrice(selectedTotal - Number(currentOrderData.delivery_fee || 0))
+                                            ? formatPrice(depositDueToday)
                                             : formatPrice(customAmount || 0)}
                                     </p>
                                 </div>
@@ -235,15 +238,17 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                     <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Pay Later</p>
                                     <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-500">
                                         {paymentType === 'DEPOSIT'
-                                            ? formatPrice(currentOrderData.delivery_fee || 0)
-                                            : formatPrice(selectedTotal - Number(customAmount || 0))}
+                                            ? formatPrice(balanceDue - depositDueToday)
+                                            : formatPrice(balanceDue - Number(customAmount || 0))}
                                     </p>
                                 </div>
                                 <div className="col-span-2 pt-3 border-t border-slate-200 flex justify-between items-center">
                                     <p className="text-[8px] font-semibold text-slate-900 uppercase tracking-widest">
                                         {(orderNumberParam || (currentOrderData as any).order_number) ? 'Remaining Balance' : 'Total Value'}
                                     </p>
-                                    <p className="text-sm font-semibold text-slate-900">{formatPrice(selectedTotal)}</p>
+                                    <p className="text-sm font-semibold text-slate-900">
+                                        {(orderNumberParam || (currentOrderData as any).order_number) ? formatPrice(balanceDue) : formatPrice(selectedTotal)}
+                                    </p>
                                 </div>
                             </div>
                             <div className="mt-4 p-3 bg-white/60 rounded-lg border border-slate-100">
