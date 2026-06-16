@@ -73,16 +73,21 @@ export default async function ProductsPage({ searchParams }: Props) {
     const status = typeof resolvedSearchParams?.status === 'string' ? resolvedSearchParams.status : undefined;
     const isAvailableItems = status === 'READY_TO_SHIP';
 
-    // Fetch initial data on server (SSG/ISR) with filters applied
+    // Skip server-side product fetching for filtered/search pages to prevent blocking the client-side router transition.
+    // This allows the page shell to load instantly and display a loading skeleton while fetching data on the client.
+    const isFiltered = !!(search || category || status);
+
     const [categories, productsData] = await Promise.all([
         getCategories(),
-        getProducts({
-            category: category || '',
-            search: search || '',
-            status: status || '',
-            featured: featured.toString(),
-            limit: '50'
-        })
+        isFiltered 
+            ? Promise.resolve({ results: [] })
+            : getProducts({
+                category: '',
+                search: '',
+                status: '',
+                featured: featured.toString(),
+                limit: '50'
+            })
     ]);
 
     const initialProducts = productsData?.results || [];
