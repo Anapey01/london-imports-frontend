@@ -73,12 +73,12 @@ export default function AdminLoginPage() {
                         <div className="absolute -inset-1 border border-slate-900/5 dark:border-white/5" />
                     </div>
                     <h1 className={`text-3xl font-serif font-bold tracking-tight text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        System Authentication
+                        Admin Login
                     </h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="h-px w-8 bg-rose-500" />
                         <p className={`text-[10px] font-black uppercase tracking-[0.4em] ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
-                            AUTHORIZED PERSONNEL ONLY
+                            ADMIN ACCESS ONLY
                         </p>
                         <div className="h-px w-8 bg-rose-500" />
                     </div>
@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
                         <div className="space-y-6">
                             <div className="relative">
                                 <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-600 bg-white'}`}>
-                                    Access ID
+                                    Username
                                 </label>
                                 <input
                                     type="text"
@@ -117,13 +117,13 @@ export default function AdminLoginPage() {
                                         ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
                                         : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
                                         }`}
-                                    placeholder="Enter your system username"
+                                    placeholder="Enter your username"
                                 />
                             </div>
 
                             <div className="relative">
                                 <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-600 bg-white'}`}>
-                                    Passkey
+                                    Password
                                 </label>
                                 <input
                                     type="password"
@@ -144,7 +144,7 @@ export default function AdminLoginPage() {
                                 href="/admin/forgot-password"
                                 className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                             >
-                                Recover Passkey
+                                Forgot Password?
                             </Link>
                         </div>
 
@@ -158,11 +158,11 @@ export default function AdminLoginPage() {
                             {loading ? (
                                 <>
                                     <div className={`w-3 h-3 border-2 border-t-transparent rounded-full animate-spin ${isDark ? 'border-slate-900' : 'border-white'}`} />
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">VERIFYING...</span>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">LOGGING IN...</span>
                                 </>
                             ) : (
                                 <>
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">INITIALIZE SESSION</span>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">LOG IN</span>
                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                     </svg>
@@ -178,8 +178,8 @@ export default function AdminLoginPage() {
                             </svg>
                         </div>
                         <p className={`text-[9px] font-bold uppercase tracking-widest leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
-                            Secure Node. All authentication <br />
-                            attempts are logged and monitored.
+                            All login attempts are logged and <br />
+                            monitored for security.
                         </p>
                     </div>
                 </div>
@@ -193,14 +193,14 @@ export default function AdminLoginPage() {
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        RETURN TO PUBLIC SITE
+                        Return to Shop
                     </Link>
                     
                     <Link
                         href="/admin/signup"
                         className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isDark ? 'text-rose-500 hover:text-rose-400' : 'text-rose-700 hover:text-rose-600'}`}
                     >
-                        REQUEST CLEARANCE
+                        Request Admin Access
                     </Link>
                 </div>
             </div>
