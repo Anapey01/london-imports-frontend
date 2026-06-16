@@ -42,7 +42,7 @@
         }
 
         return (
-            <div className="min-h-screen bg-secondary-surface pt-20 pb-12">
+            <div className="min-h-screen bg-secondary-surface pt-16 pb-6 md:pt-20 md:pb-12">
                 <OrderSuccess orderNumber={orderNumber} method={method || undefined} />
             </div>
         );

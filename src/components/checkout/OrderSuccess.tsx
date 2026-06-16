@@ -60,16 +60,16 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
     const productCount = orderData?.items?.length || 0;
 
     return (
-        <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto py-4 px-4 sm:py-12 sm:px-6">
             <motion.div 
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800"
+                className="bg-transparent md:bg-white md:dark:bg-slate-900 rounded-none md:rounded-[3rem] overflow-hidden shadow-none md:shadow-2xl border-none md:border md:border-slate-100 md:dark:border-slate-800"
             >
                 <div className="grid lg:grid-cols-2">
                     {/* Visual Section: Dynamic Product Display */}
-                    <div className="relative h-[400px] lg:h-auto bg-transparent overflow-hidden group">
+                    <div className="relative h-[280px] sm:h-[350px] lg:h-auto bg-transparent overflow-hidden group">
                         {/* Simple Background Overlay (if needed for text contrast, or remove) */}
                         <div className="absolute inset-0 bg-transparent" />
                         
@@ -81,7 +81,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     transition={{ duration: 0.4, type: "spring" }}
-                                    className="absolute inset-0 flex items-center justify-center p-12"
+                                    className="absolute inset-0 flex items-center justify-center p-6 sm:p-12 pb-16 sm:pb-20"
                                 >
                                     <div className="relative w-full aspect-square max-w-[280px]">
                                         <div className="absolute inset-0 bg-transparent rounded-2xl overflow-hidden shadow-2xl">
@@ -102,9 +102,9 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                 </motion.div>
                             )}
                         </AnimatePresence>
-
+ 
                         {/* Order Signature Overlay */}
-                        <div className="absolute bottom-8 left-8 right-8">
+                        <div className="absolute bottom-4 left-0 right-0 md:bottom-8 md:left-8 md:right-8 px-4 md:px-0">
                             <motion.div 
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -122,10 +122,10 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                             </motion.div>
                         </div>
                     </div>
-
+ 
                     {/* Content Section: Warm & Premium */}
-                    <div className="p-8 md:p-16 flex flex-col justify-center">
-                        <div className="space-y-8">
+                    <div className="px-0 py-4 sm:py-8 md:p-16 flex flex-col justify-center">
+                        <div className="space-y-6 sm:space-y-8">
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -143,10 +143,10 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     {method === 'whatsapp' ? 'Order reserved.' : 'Your order is confirmed.'}
                                 </h1>
                             </motion.div>
-
+ 
                             <div className="space-y-4">
                                 {orderData && (
-                                    <div className="flex gap-8 py-4 border-y border-slate-100 dark:border-slate-800">
+                                    <div className="flex gap-6 sm:gap-8 py-4 border-y border-slate-100 dark:border-slate-800">
                                         <div className="space-y-1">
                                             <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-widest">Amount Paid</p>
                                             <p className="text-sm font-semibold text-slate-900 dark:text-white">GHS {orderData.amount_paid}</p>
@@ -158,11 +158,11 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     </div>
                                 )}
                             </div>
-
-                            <div className="flex flex-wrap items-center gap-8 pt-4">
+ 
+                            <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 pt-4">
                                 <Link 
                                     href="/orders"
-                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2"
+                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2 whitespace-nowrap"
                                 >
                                     View My Orders
                                     <ArrowRight className="w-3 h-3" />
@@ -171,7 +171,7 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
                                     href={`https://wa.me/${siteConfig.concierge}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2"
+                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2 whitespace-nowrap"
                                 >
                                     Contact Support
                                     <MessageSquare className="w-3 h-3" />

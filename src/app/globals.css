@@ -9,6 +9,7 @@
      This allows components to use 'bg-surface' instead of hardcoded 'bg-white dark:bg-slate-900'. */
   --color-surface: var(--bg-primary);
   --color-surface-card: var(--bg-card);
+  --color-secondary-surface: var(--bg-secondary);
   --color-content-primary: var(--text-primary);
   --color-content-secondary: var(--text-secondary);
   --color-border-standard: var(--border-color);
