@@ -463,6 +463,34 @@ export default function AboutPageContent() {
                 </div>
             </section>
 
+            {/* 6.5 DIGITAL ACCESSIBILITY & INCLUSION STATEMENT */}
+            <section className="py-24 border-b border-slate-50 dark:border-slate-900 bg-slate-50/20 dark:bg-slate-900/10">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid lg:grid-cols-12 gap-16 items-center">
+                        <div className="lg:col-span-6 space-y-6">
+                            <div className="flex items-center gap-4">
+                                 <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Inclusion & Standards</span>
+                            </div>
+                            <h3 className="text-4xl font-serif font-bold text-slate-900 dark:text-white italic tracking-tighter">Digital Accessibility Policy</h3>
+                            <p className="text-base text-slate-500 dark:text-slate-400 font-medium leading-[1.8] max-w-xl">
+                                London’s Imports is committed to ensuring digital accessibility for all users in Ghana. We continuously optimize our ecommerce platform to comply with the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA.
+                            </p>
+                        </div>
+                        <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-12">
+                            <div className="space-y-4">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">Aria Compliance</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Full support for screen readers, structured alt text descriptions, and semantic HTML elements.</p>
+                            </div>
+                            <div className="space-y-4">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">Keyboard Navigation</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Accessible focus rings and complete layout control for touch, keyboard tab-flows, and mouse.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* 7. REGIONAL DIRECTORY (Vertical Minimalist Index) */}
             <section className="py-32 bg-slate-900 text-white">
                 <div className="max-w-7xl mx-auto px-6">

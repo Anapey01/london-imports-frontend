@@ -35,7 +35,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "Ghana's #1 Global Sourcing & International Shipping Service | London's Imports",
-  description: "London's Imports is Ghana's premier global sourcing and international shipping service. We bridge the gap between global manufacturing markets and your doorstep in Accra, Kumasi, and Tema. Secure, transparent, and trusted by thousands of Ghanaian importers.",
+  description: "London's Imports is Ghana's premier global sourcing and international shipping service. We bridge the gap between global manufacturing markets and your doorstep in Accra, Kumasi, and Tema. Our ecommerce platform is fully digitally accessible (WCAG 2.1 AA compliant) and hosts an instant WAEC results checker center.",
   keywords: [
     // Primary - Ghana Geographic Focus
     "Mini Importation Ghana", "Buy from China to Ghana", "Shipping from China to Accra",
@@ -55,6 +55,10 @@ export const metadata: Metadata = {
     // Transactional
     "How to pay 1688 with Momo", "Buy from Alibaba ship to Ghana", "Pre-order from China Ghana",
     "Order from Taobao to Ghana", "1688 agent Ghana", "Alibaba shipping Ghana",
+    // Results Checker
+    "WAEC Results Checker Ghana", "Buy WASSCE Checker online", "BECE Results Checker Momo", "WAEC serial and pin instant delivery",
+    // Accessibility
+    "Accessible shopping site Ghana", "WCAG accessible imports website", "Screen reader optimized ecommerce",
     // Long-tail
     "How to import phones from China to Ghana", "Best mini importation company Ghana",
     "Cheap shipping from China to Accra", "Importation service near me Ghana",
