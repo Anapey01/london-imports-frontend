@@ -142,34 +142,34 @@ export default function SuccessClient() {
             </div>
 
             {/* Vouchers Container */}
-            <div className="space-y-4 print:space-y-4">
-              <div className="flex justify-between items-center text-[10px] font-black text-content-secondary uppercase tracking-widest border-b border-border-standard pb-2">
-                <span>Vouchers Info</span>
-                <span className="font-mono text-[9px]">REF: {clientRef}</span>
+            <div className="space-y-3 print:space-y-3">
+              <div className="flex justify-between items-center text-[9px] font-black text-content-secondary uppercase tracking-widest border-b border-border-standard pb-1.5">
+                <span>Voucher details</span>
+                <span className="font-mono text-[8px]">REF: {clientRef}</span>
               </div>
 
-              <div className="space-y-3">
+              <div className="border border-content-primary bg-surface divide-y divide-border-standard">
                 {vouchers.map((voucher, idx) => (
                   <div
                     key={idx}
-                    className="border border-content-primary rounded-none p-4 bg-surface flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 font-mono text-sm print:border-slate-300 print:bg-white"
+                    className="p-3 flex items-center justify-between gap-3 font-mono text-[11px] sm:text-xs print:border-slate-300 print:bg-white"
                   >
-                    <div className="space-y-1">
-                      <div className="text-[9px] text-content-secondary font-sans font-black uppercase tracking-wider">
-                        Voucher #{idx + 1}
-                      </div>
-                      <div>
-                        <span className="text-content-secondary text-[11px] font-sans font-black uppercase tracking-wider">SERIAL:</span>{' '}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <span className="text-content-secondary font-sans text-[9px] font-black uppercase whitespace-nowrap">
+                        #{idx + 1}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-content-secondary text-[9px] font-sans font-bold">S/N:</span>
                         <span className="font-bold select-all">{voucher.serial}</span>
                       </div>
-                      <div>
-                        <span className="text-content-secondary text-[11px] font-sans font-black uppercase tracking-wider">PIN:</span>{' '}
-                        <span className="font-bold text-brand-emerald select-all print:text-slate-900">{voucher.pin}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-content-secondary text-[9px] font-sans font-bold">PIN:</span>
+                        <span className="font-black text-brand-emerald select-all print:text-slate-900">{voucher.pin}</span>
                       </div>
                     </div>
                     <button
                       onClick={() => copySingleVoucher(voucher.serial, voucher.pin, idx)}
-                      className="text-[9px] bg-surface border border-content-primary hover:bg-brand-emerald hover:text-white px-3 py-2 rounded-none font-sans font-black uppercase tracking-widest transition-all shrink-0 sm:self-center print:hidden"
+                      className="text-[9px] text-content-secondary hover:text-brand-emerald font-sans font-black uppercase tracking-widest transition-all shrink-0 print:hidden"
                     >
                       {copiedIdx === idx ? 'Copied ✓' : 'Copy'}
                     </button>
