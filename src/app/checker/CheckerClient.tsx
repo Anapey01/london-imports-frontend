@@ -252,8 +252,8 @@ export default function CheckerClient() {
 
       {/* ==================== BUY MODAL ==================== */}
       {activeModal === 'buy' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-surface border border-border-standard rounded-none w-full max-w-lg shadow-diffusion-lg relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-surface border border-slate-200 rounded-none w-full max-w-lg shadow-2xl relative">
             <button
               onClick={() => setActiveModal(null)}
               className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
@@ -270,11 +270,11 @@ export default function CheckerClient() {
               </h3>
 
               {/* Collapsible Pricing ledger block */}
-              <div className="border border-border-standard mb-5">
+              <div className="border border-slate-200 mb-5">
                 <button
                   type="button"
                   onClick={() => setShowPricingTiers(!showPricingTiers)}
-                  className="w-full flex items-center justify-between bg-secondary-surface p-3 text-[9px] font-black uppercase tracking-[0.3em] text-content-primary focus:outline-none"
+                  className="w-full flex items-center justify-between bg-slate-50 p-3 text-[9px] font-black uppercase tracking-[0.3em] text-content-primary focus:outline-none"
                 >
                   <span>Volume Pricing Tiers</span>
                   <span className="font-mono text-[10px] text-brand-emerald font-black">
@@ -282,20 +282,20 @@ export default function CheckerClient() {
                   </span>
                 </button>
                 {showPricingTiers && (
-                  <div className="divide-y divide-border-standard text-xs font-bold text-content-primary">
-                    <div className="grid grid-cols-2 p-2.5 hover:bg-secondary-surface">
+                  <div className="divide-y divide-slate-200 text-xs font-bold text-content-primary">
+                    <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>1 to 9 Checkers</span>
                       <span className="text-right font-mono">GH₵ 17.00 each</span>
                     </div>
-                    <div className="grid grid-cols-2 p-2.5 hover:bg-secondary-surface">
+                    <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>10 to 29 Checkers</span>
                       <span className="text-right font-mono">GH₵ 16.50 each</span>
                     </div>
-                    <div className="grid grid-cols-2 p-2.5 hover:bg-secondary-surface">
+                    <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>30 to 99 Checkers</span>
                       <span className="text-right font-mono">GH₵ 16.00 each</span>
                     </div>
-                    <div className="grid grid-cols-2 p-2.5 hover:bg-secondary-surface">
+                    <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>100 or more Checkers</span>
                       <span className="text-right font-mono">GH₵ 15.50 each</span>
                     </div>
@@ -312,25 +312,25 @@ export default function CheckerClient() {
                   <select
                     value={checkerType}
                     onChange={(e) => setCheckerType(e.target.value as 'BECE' | 'WASSCE')}
-                    className="w-full bg-surface border border-border-standard rounded-none px-4 py-2.5 text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-brand-emerald focus:border-brand-emerald transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   >
                     <option value="BECE">BECE (School & Private) [eresults]</option>
                     <option value="WASSCE">WASSCE, SSCE, ABCE [eresults]</option>
                   </select>
                 </div>
 
-                {/* Quantity & Total Price (Grid column is forced side-by-side even on mobile to save vertical space) */}
+                {/* Quantity & Total Price */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
                       Quantity <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex items-center border border-border-standard rounded-none bg-surface h-[42px]">
+                    <div className="flex items-center border border-slate-200 rounded-none bg-slate-50 h-[42px]">
                       <button
                         type="button"
                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
                         disabled={quantity <= 1}
-                        className="w-9 h-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-secondary-surface disabled:opacity-40 border-r border-border-standard transition-colors"
+                        className="w-9 h-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-slate-100 disabled:opacity-40 border-r border-slate-200 transition-colors"
                       >
                         <span className="text-md font-bold">−</span>
                       </button>
@@ -349,7 +349,7 @@ export default function CheckerClient() {
                         type="button"
                         onClick={() => setQuantity(q => Math.min(200, q + 1))}
                         disabled={quantity >= 200}
-                        className="w-9 h-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-secondary-surface disabled:opacity-40 border-l border-border-standard transition-colors"
+                        className="w-9 h-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-slate-100 disabled:opacity-40 border-l border-slate-200 transition-colors"
                       >
                         <span className="text-md font-bold">+</span>
                       </button>
@@ -360,7 +360,7 @@ export default function CheckerClient() {
                     <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
                       Total Cost
                     </label>
-                    <div className="h-[42px] flex items-center justify-between px-3 border border-border-standard rounded-none bg-secondary-surface font-black text-brand-emerald text-[11px] tracking-wider">
+                    <div className="h-[42px] flex items-center justify-between px-3 border border-slate-200 rounded-none bg-slate-50 font-black text-brand-emerald text-[11px] tracking-wider">
                       <span className="text-[8px] text-content-secondary font-black uppercase hidden sm:inline">TOTAL:</span>
                       <span className="font-mono text-sm ml-auto">GH₵ {totalPrice.toFixed(2)}</span>
                     </div>
@@ -378,7 +378,7 @@ export default function CheckerClient() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter email to receive vouchers"
-                    className="w-full bg-surface border border-border-standard rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-emerald focus:border-brand-emerald transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   />
                   <p className="mt-1.5 text-[9px] text-content-secondary uppercase tracking-widest font-semibold">
                     Vouchers are displayed on screen and sent to this email.
@@ -390,18 +390,18 @@ export default function CheckerClient() {
                   <div className="text-[9px] font-black uppercase tracking-widest text-content-secondary">
                     Stock status:{' '}
                     {stock[checkerType] > 20 ? (
-                      <span className="text-brand-emerald">In Stock</span>
+                      <span className="text-brand-emerald font-bold">In Stock</span>
                     ) : stock[checkerType] > 0 ? (
-                      <span className="text-orange-500">Low Stock ({stock[checkerType]} left)</span>
+                      <span className="text-orange-500 font-bold">Low Stock ({stock[checkerType]} left)</span>
                     ) : (
-                      <span className="text-red-500">Out of Stock</span>
+                      <span className="text-red-600 font-bold">Out of Stock</span>
                     )}
                   </div>
                 )}
 
                 {/* Error Banner */}
                 {error && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-none text-xs font-bold uppercase tracking-wide">
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
                     {error}
                   </div>
                 )}
@@ -410,11 +410,11 @@ export default function CheckerClient() {
                 <button
                   type="submit"
                   disabled={loading || stock[checkerType] === 0}
-                  className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald transition-colors duration-200 disabled:opacity-50 flex items-center justify-center cursor-pointer"
+                  className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
                       <span>Processing...</span>
                     </div>
                   ) : (
@@ -429,8 +429,8 @@ export default function CheckerClient() {
 
       {/* ==================== RETRIEVE MODAL ==================== */}
       {activeModal === 'retrieve' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-surface border border-border-standard rounded-none w-full max-w-xl shadow-diffusion-lg relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-surface border border-slate-200 rounded-none w-full max-w-xl shadow-2xl relative">
             <button
               onClick={() => setActiveModal(null)}
               className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
@@ -458,12 +458,12 @@ export default function CheckerClient() {
                       value={retrieveEmail}
                       onChange={(e) => setRetrieveEmail(e.target.value)}
                       placeholder="e.g. misslondon@londonsimports.com"
-                      className="flex-grow bg-surface border border-border-standard rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-emerald focus:border-brand-emerald transition-all"
+                      className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                     />
                     <button
                       type="submit"
                       disabled={retrieveLoading}
-                      className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald transition-colors duration-200 disabled:opacity-50 flex items-center justify-center shrink-0"
+                      className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
                     >
                       {retrieveLoading ? 'Searching...' : 'Retrieve'}
                     </button>
@@ -471,7 +471,7 @@ export default function CheckerClient() {
                 </div>
 
                 {retrieveError && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-none text-xs font-bold uppercase tracking-wide">
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
                     {retrieveError}
                   </div>
                 )}
@@ -480,7 +480,7 @@ export default function CheckerClient() {
               {/* Search History Results */}
               {searched && (
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] border-b border-border-standard pb-2">
+                  <h4 className="text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] border-b border-slate-200 pb-2">
                     Purchase History ({history.length} records found)
                   </h4>
                   
@@ -491,8 +491,8 @@ export default function CheckerClient() {
                   ) : (
                     <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-1">
                       {history.map((order, oIdx) => (
-                        <div key={oIdx} className="border border-border-standard rounded-none p-4 bg-surface">
-                          <div className="flex justify-between items-center text-[9px] text-content-secondary mb-3 pb-2 border-b border-border-standard/50 font-black uppercase tracking-[0.15em]">
+                        <div key={oIdx} className="border border-slate-200 rounded-none p-4 bg-surface">
+                          <div className="flex justify-between items-center text-[9px] text-content-secondary mb-3 pb-2 border-b border-slate-100 font-black uppercase tracking-[0.15em]">
                             <span>{new Date(order.completed_at).toLocaleDateString()}</span>
                             <span>Ref: {order.client_reference}</span>
                           </div>
@@ -514,14 +514,14 @@ export default function CheckerClient() {
 
                           <div className="space-y-2">
                             {order.vouchers.map((v, vIdx) => (
-                              <div key={vIdx} className="bg-surface border border-border-standard rounded-none p-2.5 flex justify-between items-center font-mono text-xs">
+                              <div key={vIdx} className="bg-slate-50 border border-slate-200 rounded-none p-2.5 flex justify-between items-center font-mono text-xs">
                                 <div className="space-y-1">
                                   <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">SERIAL:</span> <span className="font-bold">{v.serial}</span></div>
                                   <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">PIN:</span> <span className="font-bold text-brand-emerald">{v.pin}</span></div>
                                 </div>
                                 <button
                                   onClick={() => copyToClipboard(`Serial: ${v.serial}, PIN: ${v.pin}`, `v-${oIdx}-${vIdx}`)}
-                                  className="text-[9px] bg-secondary-surface border border-border-standard hover:border-content-primary hover:text-content-primary font-sans font-black uppercase tracking-widest px-2.5 py-1.5 rounded-none transition-all shrink-0"
+                                  className="text-[9px] bg-surface border border-slate-200 hover:border-content-primary hover:text-content-primary font-sans font-black uppercase tracking-widest px-2.5 py-1.5 rounded-none transition-all shrink-0"
                                 >
                                   {copiedText === `v-${oIdx}-${vIdx}` ? 'Copied ✓' : 'Copy'}
                                 </button>
