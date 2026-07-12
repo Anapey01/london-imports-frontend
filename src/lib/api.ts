@@ -261,4 +261,13 @@ export const blogAPI = {
   detail: (slug: string) => api.get(`/blog/${slug}/`),
 };
 
+// Checkers API
+export const checkersAPI = {
+  getPricing: () => api.get('/checkers/pricing/'),
+  initiate: (email: string, checker_type: string, quantity: number) =>
+    api.post('/checkers/initiate/', { email, checker_type, quantity }),
+  verify: (clientRef: string) => api.get(`/checkers/verify/${clientRef}/`),
+  retrieve: (email: string) => api.get('/checkers/retrieve/', { params: { email } }),
+};
+
 export default api;

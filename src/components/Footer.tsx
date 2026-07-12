@@ -76,6 +76,7 @@ const Footer = () => {
                             <li><Link href="/reviews" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Customer Reviews</Link></li>
                             <li><Link href="/how-it-works" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">How it Works</Link></li>
                             <li><Link href="/faq" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">FAQ</Link></li>
+                            <li><Link href="/checker" className="text-sm font-black text-brand-emerald dark:text-emerald-500 hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-2">WAEC Checker</Link></li>
                             <li><Link href="/blog" className="text-sm font-black text-content-primary hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-4">Our Blog</Link></li>
                         </ul>
                     </div>
