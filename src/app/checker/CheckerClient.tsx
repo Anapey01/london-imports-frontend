@@ -62,18 +62,27 @@ export default function CheckerClient() {
     ]
   });
   const [stock, setStock] = useState<{ [key: string]: number }>({ BECE: 0, WASSCE: 0 });
+  const [stockLoading, setStockLoading] = useState<boolean>(true);
 
-  // Fetch Pricing & Stock levels on mount
+  // Fetch Pricing & Stock levels on mount — with one retry on failure
   useEffect(() => {
-    async function fetchPricingAndStock() {
+    async function fetchPricingAndStock(attempt = 1) {
       try {
         const response = await checkersAPI.getPricing();
         if (response.data) {
           if (response.data.pricing) setPricing(response.data.pricing);
-          if (response.data.stock) setStock(response.data.stock);
+          if (response.data.stock != null) setStock(response.data.stock);
         }
+        setStockLoading(false);
       } catch (err) {
-        console.error("Failed to load checkers pricing from server:", err);
+        console.error(`Failed to load checkers pricing (attempt ${attempt}):`, err);
+        if (attempt < 2) {
+          // Retry once after 2 seconds — keep showing "Checking..." during retry
+          setTimeout(() => fetchPricingAndStock(2), 2000);
+        } else {
+          // Give up — unblock UI so user can still try to buy (backend will validate)
+          setStockLoading(false);
+        }
       }
     }
     fetchPricingAndStock();
@@ -386,18 +395,18 @@ export default function CheckerClient() {
                 </div>
 
                 {/* Stock Level Warning */}
-                {stock[checkerType] !== undefined && (
-                  <div className="text-[9px] font-black uppercase tracking-widest text-content-secondary">
-                    Stock status:{' '}
-                    {stock[checkerType] > 20 ? (
-                      <span className="text-brand-emerald font-bold">In Stock</span>
-                    ) : stock[checkerType] > 0 ? (
-                      <span className="text-orange-500 font-bold">Low Stock ({stock[checkerType]} left)</span>
-                    ) : (
-                      <span className="text-red-600 font-bold">Out of Stock</span>
-                    )}
-                  </div>
-                )}
+                <div className="text-[9px] font-black uppercase tracking-widest text-content-secondary">
+                  Stock status:{' '}
+                  {stockLoading ? (
+                    <span className="text-content-secondary font-bold">Checking...</span>
+                  ) : stock[checkerType] > 20 ? (
+                    <span className="text-brand-emerald font-bold">In Stock</span>
+                  ) : stock[checkerType] > 0 ? (
+                    <span className="text-orange-500 font-bold">Low Stock ({stock[checkerType]} left)</span>
+                  ) : (
+                    <span className="text-red-600 font-bold">Out of Stock</span>
+                  )}
+                </div>
 
                 {/* Error Banner */}
                 {error && (
@@ -409,13 +418,18 @@ export default function CheckerClient() {
                 {/* Submit Row */}
                 <button
                   type="submit"
-                  disabled={loading || stock[checkerType] === 0}
+                  disabled={loading || (!stockLoading && stock[checkerType] === 0)}
                   className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
                       <span>Processing...</span>
+                    </div>
+                  ) : stockLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
+                      <span>Loading...</span>
                     </div>
                   ) : (
                     <span>Make Payment (GH₵ {totalPrice.toFixed(2)})</span>

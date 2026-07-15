@@ -263,11 +263,24 @@ export const blogAPI = {
 
 // Checkers API
 export const checkersAPI = {
-  getPricing: () => api.get('/checkers/pricing/'),
+  getPricing: () => api.get('/checkers/pricing/', {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  }),
   initiate: (email: string, checker_type: string, quantity: number) =>
     api.post('/checkers/initiate/', { email, checker_type, quantity }),
   verify: (clientRef: string) => api.get(`/checkers/verify/${clientRef}/`),
-  retrieve: (email: string) => api.get('/checkers/retrieve/', { params: { email } }),
+  retrieve: (email: string) => api.get('/checkers/retrieve/', {
+    params: { email },
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  }),
 };
 
 export default api;
