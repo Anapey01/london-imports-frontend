@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { checkersAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
 
@@ -33,7 +33,8 @@ export default function CheckerClient() {
   // Buy Form State
   const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('BECE');
   const [quantity, setQuantity] = useState<number>(1);
-  const [email, setEmail] = useState<string>('');
+  // Use ref for email to avoid re-rendering on every keystroke (INP fix)
+  const emailRef = useRef<HTMLInputElement>(null);
   const [totalPrice, setTotalPrice] = useState<number>(17.00);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -118,14 +119,15 @@ export default function CheckerClient() {
     setError(null);
     setLoading(true);
 
-    if (!email || !email.includes('@')) {
+    const emailValue = emailRef.current?.value?.trim() || '';
+    if (!emailValue || !emailValue.includes('@')) {
       setError('Please enter a valid email address.');
       setLoading(false);
       return;
     }
 
     try {
-      const response = await checkersAPI.initiate(email, checkerType, quantity);
+      const response = await checkersAPI.initiate(emailValue, checkerType, quantity);
       if (response.data && response.data.checkout_url) {
         // Redirect to Hubtel hosted checkout page
         window.location.href = response.data.checkout_url;
@@ -271,21 +273,21 @@ export default function CheckerClient() {
               </svg>
             </button>
 
-            <div className="p-5 sm:p-7 max-h-[90vh] overflow-y-auto">
-              <h3 className="font-serif text-xl sm:text-2xl font-black text-content-primary mb-5 pr-8 uppercase tracking-tight">
+            <div className="p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+              <h3 className="font-serif text-lg sm:text-xl font-black text-content-primary mb-4 pr-8 uppercase tracking-tight">
                 WAEC Results Checker
               </h3>
 
               {/* Collapsible Pricing ledger block */}
-              <div className="border border-slate-200 mb-5">
+              <div className="border border-slate-200 mb-4">
                 <button
                   type="button"
                   onClick={() => setShowPricingTiers(!showPricingTiers)}
-                  className="w-full flex items-center justify-between bg-slate-50 p-3 text-[9px] font-black uppercase tracking-[0.3em] text-content-primary focus:outline-none"
+                  className="w-full flex items-center justify-between bg-slate-50 px-3 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] text-content-primary focus:outline-none"
                 >
                   <span>Volume Pricing Tiers</span>
-                  <span className="font-mono text-[10px] text-brand-emerald font-black">
-                    {showPricingTiers ? 'Collapse [-]' : 'Expand [+]'}
+                  <span className="font-mono text-[10px] text-brand-emerald font-black whitespace-nowrap ml-2">
+                    {showPricingTiers ? 'Collapse [−]' : 'Expand [+]'}
                   </span>
                 </button>
                 {showPricingTiers && (
@@ -310,7 +312,7 @@ export default function CheckerClient() {
                 )}
               </div>
 
-              <form onSubmit={handleBuySubmit} className="space-y-4">
+              <form onSubmit={handleBuySubmit} className="space-y-3">
                 {/* Select Type */}
                 <div>
                   <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
@@ -379,13 +381,14 @@ export default function CheckerClient() {
                   <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
                     Delivery Email Address <span className="text-red-500">*</span>
                   </label>
+                  {/* Uncontrolled input — no setState on keystroke, eliminates INP jank */}
                   <input
+                    ref={emailRef}
                     type="email"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    defaultValue=""
                     placeholder="Enter email to receive vouchers"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   />
                   <p className="mt-1.5 text-[9px] text-content-secondary uppercase tracking-widest font-semibold">
                     Vouchers are displayed on screen and sent to this email.
