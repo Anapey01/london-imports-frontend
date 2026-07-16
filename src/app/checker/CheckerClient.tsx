@@ -61,7 +61,7 @@ export default function CheckerClient() {
       { min_quantity: 100, max_quantity: null, price_per_unit: '15.50' },
     ]
   });
-  const [stock, setStock] = useState<{ [key: string]: number }>({ BECE: 0, WASSCE: 0 });
+  const [stock, setStock] = useState<{ [key: string]: number }>({ BECE: -1, WASSCE: -1 });
   const [stockLoading, setStockLoading] = useState<boolean>(true);
 
   // Fetch Pricing & Stock levels on mount — with one retry on failure
@@ -77,10 +77,8 @@ export default function CheckerClient() {
       } catch (err) {
         console.error(`Failed to load checkers pricing (attempt ${attempt}):`, err);
         if (attempt < 2) {
-          // Retry once after 2 seconds — keep showing "Checking..." during retry
           setTimeout(() => fetchPricingAndStock(2), 2000);
         } else {
-          // Give up — unblock UI so user can still try to buy (backend will validate)
           setStockLoading(false);
         }
       }
@@ -394,7 +392,7 @@ export default function CheckerClient() {
                   </p>
                 </div>
 
-                {/* Stock Level Warning */}
+                {/* Stock Level — informational only, never blocks purchase */}
                 <div className="text-[9px] font-black uppercase tracking-widest text-content-secondary">
                   Stock status:{' '}
                   {stockLoading ? (
@@ -403,8 +401,10 @@ export default function CheckerClient() {
                     <span className="text-brand-emerald font-bold">In Stock</span>
                   ) : stock[checkerType] > 0 ? (
                     <span className="text-orange-500 font-bold">Low Stock ({stock[checkerType]} left)</span>
+                  ) : stock[checkerType] === 0 ? (
+                    <span className="text-orange-500 font-bold">Limited — order now</span>
                   ) : (
-                    <span className="text-red-600 font-bold">Out of Stock</span>
+                    <span className="text-brand-emerald font-bold">Available</span>
                   )}
                 </div>
 
@@ -415,21 +415,16 @@ export default function CheckerClient() {
                   </div>
                 )}
 
-                {/* Submit Row */}
+                {/* Submit — never disabled based on stock; backend validates */}
                 <button
                   type="submit"
-                  disabled={loading || (!stockLoading && stock[checkerType] === 0)}
+                  disabled={loading}
                   className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
                       <span>Processing...</span>
-                    </div>
-                  ) : stockLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
-                      <span>Loading...</span>
                     </div>
                   ) : (
                     <span>Make Payment (GH₵ {totalPrice.toFixed(2)})</span>
