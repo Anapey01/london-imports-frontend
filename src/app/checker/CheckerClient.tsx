@@ -274,7 +274,7 @@ export default function CheckerClient() {
             </button>
 
             <div className="p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-              <h3 className="font-serif text-lg sm:text-xl font-black text-content-primary mb-4 pr-8 uppercase tracking-tight">
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-content-primary mb-4 pr-8">
                 WAEC Results Checker
               </h3>
 
@@ -283,30 +283,30 @@ export default function CheckerClient() {
                 <button
                   type="button"
                   onClick={() => setShowPricingTiers(!showPricingTiers)}
-                  className="w-full flex items-center justify-between bg-slate-50 px-3 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] text-content-primary focus:outline-none"
+                  className="w-full flex items-center justify-between bg-slate-50 px-3 py-2.5 text-[10px] font-bold text-content-primary focus:outline-none"
                 >
                   <span>Volume Pricing Tiers</span>
-                  <span className="font-mono text-[10px] text-brand-emerald font-black whitespace-nowrap ml-2">
+                  <span className="font-mono text-[10px] text-brand-emerald font-bold whitespace-nowrap ml-2">
                     {showPricingTiers ? 'Collapse [−]' : 'Expand [+]'}
                   </span>
                 </button>
                 {showPricingTiers && (
-                  <div className="divide-y divide-slate-200 text-xs font-bold text-content-primary">
+                  <div className="divide-y divide-slate-200 text-xs font-medium text-content-secondary">
                     <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>1 to 9 Checkers</span>
-                      <span className="text-right font-mono">GH₵ 17.00 each</span>
+                      <span className="text-right font-mono font-bold text-content-primary">GH₵ 17.00 each</span>
                     </div>
                     <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>10 to 29 Checkers</span>
-                      <span className="text-right font-mono">GH₵ 16.50 each</span>
+                      <span className="text-right font-mono font-bold text-content-primary">GH₵ 16.50 each</span>
                     </div>
                     <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>30 to 99 Checkers</span>
-                      <span className="text-right font-mono">GH₵ 16.00 each</span>
+                      <span className="text-right font-mono font-bold text-content-primary">GH₵ 16.00 each</span>
                     </div>
                     <div className="grid grid-cols-2 p-2.5 hover:bg-slate-50/50">
                       <span>100 or more Checkers</span>
-                      <span className="text-right font-mono">GH₵ 15.50 each</span>
+                      <span className="text-right font-mono font-bold text-content-primary">GH₵ 15.50 each</span>
                     </div>
                   </div>
                 )}
@@ -315,23 +315,23 @@ export default function CheckerClient() {
               <form onSubmit={handleBuySubmit} className="space-y-3">
                 {/* Select Type */}
                 <div>
-                  <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
+                  <label className="block text-xs font-bold text-content-primary mb-1.5">
                     Select Checker Type <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={checkerType}
                     onChange={(e) => setCheckerType(e.target.value as 'BECE' | 'WASSCE')}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   >
-                    <option value="BECE">BECE (School & Private) [eresults]</option>
-                    <option value="WASSCE">WASSCE, SSCE, ABCE [eresults]</option>
+                    <option value="BECE">BECE (School & Private)</option>
+                    <option value="WASSCE">WASSCE, SSCE, ABCE</option>
                   </select>
                 </div>
 
                 {/* Quantity & Total Price */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
+                    <label className="block text-xs font-bold text-content-primary mb-1.5">
                       Quantity <span className="text-red-500">*</span>
                     </label>
                     <div className="flex items-center border border-slate-200 rounded-none bg-slate-50 h-[42px]">
@@ -352,7 +352,7 @@ export default function CheckerClient() {
                           const val = parseInt(e.target.value);
                           if (!isNaN(val)) setQuantity(Math.min(200, Math.max(1, val)));
                         }}
-                        className="w-full text-center bg-transparent border-0 text-xs font-black tracking-widest focus:ring-0 focus:outline-none"
+                        className="w-full text-center bg-transparent border-0 text-sm font-bold focus:ring-0 focus:outline-none"
                       />
                       <button
                         type="button"
@@ -366,11 +366,10 @@ export default function CheckerClient() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
+                    <label className="block text-xs font-bold text-content-primary mb-1.5">
                       Total Cost
                     </label>
-                    <div className="h-[42px] flex items-center justify-between px-3 border border-slate-200 rounded-none bg-slate-50 font-black text-brand-emerald text-[11px] tracking-wider">
-                      <span className="text-[8px] text-content-secondary font-black uppercase hidden sm:inline">TOTAL:</span>
+                    <div className="h-[42px] flex items-center justify-between px-3 border border-slate-200 rounded-none bg-slate-50 font-bold text-brand-emerald text-sm">
                       <span className="font-mono text-sm ml-auto">GH₵ {totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
@@ -378,7 +377,7 @@ export default function CheckerClient() {
 
                 {/* Email Delivery */}
                 <div>
-                  <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
+                  <label className="block text-xs font-bold text-content-primary mb-1.5">
                     Delivery Email Address <span className="text-red-500">*</span>
                   </label>
                   {/* Uncontrolled input — no setState on keystroke, eliminates INP jank */}
@@ -390,24 +389,24 @@ export default function CheckerClient() {
                     placeholder="Enter email to receive vouchers"
                     className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   />
-                  <p className="mt-1.5 text-[9px] text-content-secondary uppercase tracking-widest font-semibold">
+                  <p className="mt-1.5 text-xs text-content-secondary font-normal">
                     Vouchers are displayed on screen and sent to this email.
                   </p>
                 </div>
 
                 {/* Stock Level — informational only, never blocks purchase */}
-                <div className="text-[9px] font-black uppercase tracking-widest text-content-secondary">
+                <div className="text-xs font-medium text-content-secondary">
                   Stock status:{' '}
                   {stockLoading ? (
-                    <span className="text-content-secondary font-bold">Checking...</span>
+                    <span className="text-content-secondary font-semibold">Checking...</span>
                   ) : stock[checkerType] > 20 ? (
-                    <span className="text-brand-emerald font-bold">In Stock</span>
+                    <span className="text-brand-emerald font-semibold">In stock</span>
                   ) : stock[checkerType] > 0 ? (
-                    <span className="text-orange-500 font-bold">Low Stock ({stock[checkerType]} left)</span>
+                    <span className="text-orange-500 font-semibold">Low stock ({stock[checkerType]} left)</span>
                   ) : stock[checkerType] === 0 ? (
-                    <span className="text-orange-500 font-bold">Limited — order now</span>
+                    <span className="text-orange-500 font-semibold">Limited — order now</span>
                   ) : (
-                    <span className="text-brand-emerald font-bold">Available</span>
+                    <span className="text-brand-emerald font-semibold">Available</span>
                   )}
                 </div>
 
@@ -422,7 +421,7 @@ export default function CheckerClient() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
+                  className="w-full bg-content-primary text-surface py-3 px-6 rounded-none font-bold text-sm tracking-wide hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
