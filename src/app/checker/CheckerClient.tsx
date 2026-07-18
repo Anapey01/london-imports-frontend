@@ -181,11 +181,11 @@ export default function CheckerClient() {
     <div className="min-h-screen bg-transparent py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center relative font-sans">
       <div className="max-w-4xl mx-auto w-full">
         {/* Header Block */}
-        <div className="text-center mb-16">
-          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-content-primary mb-4 tracking-tight uppercase">
+        <div className="text-center mb-12">
+          <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-content-primary mb-3 tracking-tight">
             WAEC Results Checker Center
           </h1>
-          <p className="max-w-xl mx-auto text-content-secondary font-medium text-xs sm:text-sm uppercase tracking-widest leading-relaxed">
+          <p className="max-w-md mx-auto text-content-secondary font-normal text-xs sm:text-sm leading-relaxed">
             Instant online purchase of WASSCE and BECE results checkers. Pay securely via Mobile Money & get your codes immediately.
           </p>
         </div>
