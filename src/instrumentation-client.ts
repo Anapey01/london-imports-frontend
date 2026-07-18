@@ -49,6 +49,16 @@ Sentry.init({
             return null;
         }
 
+        // 6. Snapchat In-App Browser injected bridge errors (non-actionable external code)
+        if (message.includes('SCDynimacBridge') || message.includes('SCDynamicBridge')) {
+            return null;
+        }
+
+        // 7. General client-side network offline/disconnect errors (network dropouts are not app bugs)
+        if (message === 'Network Error' || message.includes('NetworkError') || message.includes('Failed to fetch')) {
+            return null;
+        }
+
         return event;
     },
 });
