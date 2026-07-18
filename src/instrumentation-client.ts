@@ -59,6 +59,16 @@ Sentry.init({
             return null;
         }
 
+        // 8. Service Worker registration "Rejected" errors (incognito mode/blocked by browser)
+        if (message.includes('Rejected') && (stackStr.toLowerCase().includes('serviceworker') || stackStr.includes('register') || stackStr.includes('sw.js'))) {
+            return null;
+        }
+
+        // 9. Service Worker script load failures (network disconnects/interruptions)
+        if (message.includes('sw.js') && (message.includes('load failed') || message.includes('failed to load') || message.includes('Load failed'))) {
+            return null;
+        }
+
         return event;
     },
 });
