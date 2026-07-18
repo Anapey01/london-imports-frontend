@@ -51,7 +51,6 @@ export async function generateMetadata(
         return {
             title: 'View Product | London\'s Imports',
             description: 'Check out this product on London\'s Imports.',
-            robots: { index: false, follow: true },
         };
     }
 
