@@ -298,6 +298,16 @@ const nextConfig: NextConfig = {
         destination: '/products/category/:slug',
         permanent: true,
       },
+      {
+        source: '/signup',
+        destination: '/register',
+        permanent: true,
+      },
+      {
+        source: '/sourcing',
+        destination: '/how-it-works',
+        permanent: true,
+      },
     ];
   },
 };

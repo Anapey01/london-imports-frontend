@@ -137,6 +137,41 @@ export default async function ProductDetailPage({ params }: Props) {
                         : 'https://schema.org/OutOfStock',
                     'seller': {
                         '@id': `${siteConfig.baseUrl}/#organization`
+                    },
+                    'shippingDetails': {
+                        '@type': 'OfferShippingDetails',
+                        'shippingRate': {
+                            '@type': 'MonetaryAmount',
+                            'value': '25.00',
+                            'currency': 'GHS'
+                        },
+                        'shippingDestination': {
+                            '@type': 'DefinedRegion',
+                            'addressCountry': 'GH'
+                        },
+                        'deliveryTime': {
+                            '@type': 'ShippingDeliveryTime',
+                            'handlingTime': {
+                                '@type': 'QuantitativeValue',
+                                'minValue': 1,
+                                'maxValue': 2,
+                                'unitCode': 'DAY'
+                            },
+                            'transitTime': {
+                                '@type': 'QuantitativeValue',
+                                'minValue': 2,
+                                'maxValue': 5,
+                                'unitCode': 'DAY'
+                            }
+                        }
+                    },
+                    'hasMerchantReturnPolicy': {
+                        '@type': 'MerchantReturnPolicy',
+                        'applicableCountry': 'GH',
+                        'returnPolicyCategory': 'https://schema.org/MerchantReturnFiniteReturnPeriod',
+                        'merchantReturnDays': 7,
+                        'returnMethod': 'https://schema.org/ReturnByMail',
+                        'returnFees': 'https://schema.org/FreeReturn'
                     }
                 },
                 'aggregateRating': {
