@@ -126,7 +126,7 @@ export default function SuccessClient() {
       <div className="max-w-md mx-auto w-full">
         {status === 'COMPLETED' ? (
           /* ================= SUCCESS STATE ================= */
-          <div className="bg-surface border border-border-standard rounded-none p-5 sm:p-6 shadow-diffusion-lg space-y-5 animate-elite-entrance">
+          <div className="print-card bg-surface border border-border-standard rounded-none p-5 sm:p-6 shadow-diffusion-lg space-y-5 animate-elite-entrance">
             <div className="text-center space-y-2">
               <div className="w-10 h-10 border border-brand-emerald text-brand-emerald flex items-center justify-center mx-auto mb-2">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -207,6 +207,35 @@ export default function SuccessClient() {
                 Print Vouchers ↗
               </button>
             </div>
+            
+            {/* Custom Print Style to hide everything else */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media print {
+                /* Hide everything */
+                body * {
+                  visibility: hidden;
+                }
+                /* Show print-card and its contents only */
+                .print-card, .print-card * {
+                  visibility: visible;
+                }
+                /* Fit card cleanly onto A4/paper bounds */
+                .print-card {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  max-width: 100% !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                }
+                .print\\:hidden {
+                  display: none !important;
+                }
+              }
+            `}} />
           </div>
         ) : (
           /* ================= FAILURE/WARNING STATE ================= */
