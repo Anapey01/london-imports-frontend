@@ -22,6 +22,7 @@ export default function SuccessClient() {
   // Clipboard copied feedback state
   const [copied, setCopied] = useState<boolean>(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState<boolean>(false);
   
   const retryCountRef = useRef<number>(0);
   const maxRetries = 8; // Retry for 20 seconds total (8 * 2.5s)
@@ -152,7 +153,9 @@ export default function SuccessClient() {
                 {vouchers.map((voucher, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 flex items-center justify-between gap-3 font-mono text-[11px] sm:text-xs print:border-slate-300 print:bg-white"
+                    className={`p-2.5 items-center justify-between gap-3 font-mono text-[11px] sm:text-xs print:border-slate-300 print:bg-white ${
+                      idx >= 5 && !showAll ? 'hidden print:flex' : 'flex'
+                    }`}
                   >
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <span className="text-content-secondary font-sans text-[9px] font-black uppercase">
@@ -176,6 +179,16 @@ export default function SuccessClient() {
                   </div>
                 ))}
               </div>
+
+              {vouchers.length > 5 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAll(!showAll)}
+                  className="w-full text-center py-2 text-xs font-bold text-[#006B5A] hover:opacity-85 transition-all print:hidden"
+                >
+                  {showAll ? 'Collapse list' : `Show all checkers (+${vouchers.length - 5} more)`}
+                </button>
+              )}
             </div>
 
             {/* Action buttons */}
