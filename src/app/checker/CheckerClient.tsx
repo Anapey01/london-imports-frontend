@@ -252,8 +252,12 @@ export default function CheckerClient() {
           <p>© {new Date().getFullYear()} London's Imports Ghana. All rights reserved.</p>
           <p>
             For support, contact us at{' '}
-            <a href={`mailto:${siteConfig.supportEmail}`} className="underline font-black hover:text-brand-emerald transition-colors">
-              {siteConfig.supportEmail}
+            <a href="mailto:gabriel.anapey@raredevs.tech" className="underline font-black hover:text-brand-emerald transition-colors">
+              gabriel.anapey@raredevs.tech
+            </a>
+            {' '}&bull;{' '}
+            <a href="tel:0545142658" className="underline font-black hover:text-brand-emerald transition-colors">
+              0545142658
             </a>
           </p>
         </div>
