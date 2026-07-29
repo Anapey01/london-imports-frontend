@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useTransition } from 'react';
 import { checkersAPI } from '@/lib/api';
-import { siteConfig } from '@/config/site';
 
 interface PricingTier {
   min_quantity: number;
@@ -29,6 +28,7 @@ interface HistoryItem {
 
 export default function CheckerClient() {
   const [activeModal, setActiveModal] = useState<'buy' | 'retrieve' | null>(null);
+  const [, startTransition] = useTransition();
   
   // Buy Form State
   const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('BECE');
@@ -40,8 +40,8 @@ export default function CheckerClient() {
   const [error, setError] = useState<string | null>(null);
   const [showPricingTiers, setShowPricingTiers] = useState<boolean>(false);
 
-  // Retrieve Form State
-  const [retrieveEmail, setRetrieveEmail] = useState<string>('');
+  // Retrieve Form State (INP fix: use ref to prevent keystroke re-renders)
+  const retrieveEmailRef = useRef<HTMLInputElement>(null);
   const [retrieveLoading, setRetrieveLoading] = useState<boolean>(false);
   const [retrieveError, setRetrieveError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -64,6 +64,19 @@ export default function CheckerClient() {
   });
   const [stock, setStock] = useState<{ [key: string]: number }>({ BECE: -1, WASSCE: -1 });
   const [stockLoading, setStockLoading] = useState<boolean>(true);
+
+  // Helper for non-blocking modal toggles (INP fix)
+  const openModal = (modal: 'buy' | 'retrieve' | null) => {
+    startTransition(() => {
+      if (modal === 'buy') setError(null);
+      if (modal === 'retrieve') {
+        setRetrieveError(null);
+        setHistory([]);
+        setSearched(false);
+      }
+      setActiveModal(modal);
+    });
+  };
 
   // Fetch Pricing & Stock levels on mount — with one retry on failure
   useEffect(() => {
@@ -150,14 +163,15 @@ export default function CheckerClient() {
     setHistory([]);
     setSearched(false);
 
-    if (!retrieveEmail || !retrieveEmail.includes('@')) {
+    const emailValue = retrieveEmailRef.current?.value?.trim() || '';
+    if (!emailValue || !emailValue.includes('@')) {
       setRetrieveError('Please enter a valid email address.');
       setRetrieveLoading(false);
       return;
     }
 
     try {
-      const response = await checkersAPI.retrieve(retrieveEmail);
+      const response = await checkersAPI.retrieve(emailValue);
       if (response.data && response.data.history) {
         setHistory(response.data.history);
       }
@@ -208,10 +222,7 @@ export default function CheckerClient() {
               </p>
             </div>
             <button
-              onClick={() => {
-                setError(null);
-                setActiveModal('buy');
-              }}
+              onClick={() => openModal('buy')}
               className="w-full bg-content-primary text-surface py-4 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald hover:text-white transition-all duration-200"
             >
               Click Here to Buy
@@ -234,12 +245,7 @@ export default function CheckerClient() {
               </p>
             </div>
             <button
-              onClick={() => {
-                setRetrieveError(null);
-                setHistory([]);
-                setSearched(false);
-                setActiveModal('retrieve');
-              }}
+              onClick={() => openModal('retrieve')}
               className="w-full bg-content-primary text-surface py-4 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald hover:text-white transition-all duration-200"
             >
               Click Here to Retrieve
@@ -265,10 +271,10 @@ export default function CheckerClient() {
 
       {/* ==================== BUY MODAL ==================== */}
       {activeModal === 'buy' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
           <div className="bg-surface border border-slate-200 rounded-none w-full max-w-lg shadow-2xl relative">
             <button
-              onClick={() => setActiveModal(null)}
+              onClick={() => openModal(null)}
               className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
               aria-label="Close modal"
             >
@@ -444,10 +450,10 @@ export default function CheckerClient() {
 
       {/* ==================== RETRIEVE MODAL ==================== */}
       {activeModal === 'retrieve' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
           <div className="bg-surface border border-slate-200 rounded-none w-full max-w-xl shadow-2xl relative">
             <button
-              onClick={() => setActiveModal(null)}
+              onClick={() => openModal(null)}
               className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
               aria-label="Close modal"
             >
@@ -468,10 +474,10 @@ export default function CheckerClient() {
                   </label>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <input
+                      ref={retrieveEmailRef}
                       type="email"
                       required
-                      value={retrieveEmail}
-                      onChange={(e) => setRetrieveEmail(e.target.value)}
+                      defaultValue=""
                       placeholder="e.g. misslondon@londonsimports.com"
                       className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                     />
