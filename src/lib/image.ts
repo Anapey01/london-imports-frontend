@@ -120,9 +120,9 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     // Handle <p>* ...</p> blocks (with or without <br> inside)
     html = html.replace(
         /<p>\s*(?:\*|-|&#42;)\s*(.*?)<\/p>/gi,
-        (match, content) => {
+        (match: string, content: string) => {
             const rawItems = content.split(/<br\s*\/?>\s*(?:\*|-|&#42;)\s*/i);
-            const lis = rawItems.map(item => {
+            const lis = rawItems.map((item: string) => {
                 const cleanItem = item.replace(/^\s*(?:\*|-|&#42;)\s*/, '').trim();
                 if (!cleanItem) return '';
                 return `<li class="flex items-start gap-3 my-2.5 text-slate-700 font-sans text-base md:text-lg"><span class="h-1.5 w-1.5 bg-slate-900 shrink-0 mt-2.5"></span><span class="leading-relaxed">${cleanItem}</span></li>`;
@@ -134,9 +134,9 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     // Also convert any multiline text starting with *
     html = html.replace(
         /(?:^\s*[*|-]\s+(.+)$)+/gm,
-        (match) => {
+        (match: string) => {
             const lines = match.trim().split('\n');
-            const items = lines.map(line => {
+            const items = lines.map((line: string) => {
                 const text = line.replace(/^\s*[*|-]\s+/, '').trim();
                 return `<li class="flex items-start gap-3 my-2.5 text-slate-700 font-sans text-base md:text-lg">
                     <span class="h-1.5 w-1.5 bg-slate-900 shrink-0 mt-2.5"></span>
@@ -155,9 +155,9 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     // 6. Convert numbered step lists (1. Step..., 2. Step...) into soft professional step guide
     html = html.replace(
         /(?:^\s*\d+\.\s+(.+)$)+/gm,
-        (match) => {
+        (match: string) => {
             let index = 1;
-            const steps = match.trim().split('\n').map(line => {
+            const steps = match.trim().split('\n').map((line: string) => {
                 const text = line.replace(/^\s*\d+\.\s+/, '').trim();
                 const numStr = index < 10 ? `0${index}` : `${index}`;
                 index++;
@@ -173,7 +173,7 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     // 7. Soft Professional CTA Link Conversion (👉 https://londonsimports.com/checker)
     html = html.replace(
         /(?:<p>)?\s*(?:👉)?\s*(https?:\/\/[^\s<]+)\s*(?:<\/p>)?/gi,
-        (match, url) => {
+        (match: string, url: string) => {
             return `<div class="my-10 p-6 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Official Result Checker Desk</span>
