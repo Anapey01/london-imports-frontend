@@ -164,26 +164,26 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                     </div>
                 )}
 
-                {/* Minimalist BECE / WASSCE Result Checker CTA Box */}
+                {/* Soft Professional BECE / WASSCE Result Checker CTA Box */}
                 {isCheckerArticle && (
-                    <div className="mb-16 p-8 md:p-12 bg-slate-950 text-white border border-slate-900 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                    <div className="mb-12 p-6 md:p-8 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-400 block mb-3">
-                                Official Digital Portal
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">
+                                Official Result Checker Portal
                             </span>
-                            <h3 className="text-2xl md:text-3xl font-serif font-bold text-white mb-2 tracking-tighter">
-                                Buy Genuine BECE Result Checker Online
+                            <h3 className="text-xl md:text-2xl font-serif font-bold text-slate-900 mb-1 tracking-tight">
+                                Buy Authentic WAEC BECE Result Checker
                             </h3>
-                            <p className="text-slate-400 text-sm max-w-md leading-relaxed">
-                                Get authentic WAEC result checker serial &amp; PIN delivered instantly via SMS and on-screen display.
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                Instant delivery of serial &amp; PIN via SMS and immediate screen view.
                             </p>
                         </div>
                         <Link 
                             href="/checker"
-                            className="inline-flex items-center gap-3 bg-white text-slate-950 hover:bg-slate-100 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-colors shrink-0 border border-white"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold uppercase tracking-wider transition-colors shrink-0 border border-slate-900"
                         >
                             Buy Checker GHS 17.00
-                            <ArrowUpRight className="w-4 h-4 text-slate-950" />
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                         </Link>
                     </div>
                 )}

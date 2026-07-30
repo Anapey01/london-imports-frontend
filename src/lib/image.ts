@@ -1,8 +1,8 @@
 import { siteConfig } from '@/config/site';
 
 /**
- * London's Imports - Image Utilities
- * Robust handling for product images to prevent broken UI
+ * London's Imports - Image Utilities & Editorial Content Engine
+ * Robust handling for product images and rich editorial text formatting
  */
 
 const PLACEHOLDER_IMAGE = '/assets/placeholder-product.png';
@@ -69,8 +69,8 @@ export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
 };
 
 /**
- * Fixes relative image paths and enhances plain text markdown in HTML content
- * Strictly aligns with Architectural Editorial Design System
+ * Smart Editorial Content Engine
+ * Transforms raw pasted text into a soft, professional, editorial publication.
  */
 export const fixHtmlContent = (content: string | null | undefined): string => {
     if (!content) return '';
@@ -88,35 +88,99 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
         (match) => match.replace('http:', 'https:')
     );
 
-    // 2. Replace plain horizontal lines (______ or ----) with sharp architectural divider
-    html = html.replace(/(?:_{3,}|-{3,})/g, '<hr class="my-12 border-t border-slate-200" />');
+    // 2. Replace plain horizontal lines (⸻, ____, ----) with subtle architectural divider
+    html = html.replace(/(?:⸻|_{3,}|-{3,})/g, '<hr class="my-12 border-t border-slate-200" />');
 
-    // 3. Convert raw asterisk bullet points (* Item or - Item) into sharp editorial ledger list
+    // 3. Format published date lines
+    html = html.replace(/(?:<p>)?Published:\s*([^<]+)(?:<\/p>)?/gi, (match, date) => {
+        return `<div class="flex items-center gap-3 mb-10 pb-4 border-b border-slate-100">
+            <span class="h-px w-6 bg-slate-900"></span>
+            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Published ${date.trim()}</span>
+        </div>`;
+    });
+
+    // 4. Convert standalone title lines / subheadings into clean serif <h2> tags
+    const knownHeadings = [
+        "2026 BECE Results Have Been Released",
+        "2026 BECE Examination Statistics",
+        "Examination Malpractice Cases",
+        "How to Check Your 2026 BECE Results",
+        "Need a BECE Results Checker?",
+        "Frequently Asked Questions",
+        "Final Thoughts"
+    ];
+
+    knownHeadings.forEach(heading => {
+        const regex = new RegExp(`(?:<p>)?(?:<b>|<strong>)?\\s*${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*(?:<\\/b>|<\\/strong>)?(?:<\\/p>)?`, 'gi');
+        html = html.replace(regex, `<h2 class="text-2xl md:text-3xl font-serif font-bold text-slate-900 mt-12 mb-6 tracking-tight border-b border-slate-100 pb-3">${heading}</h2>`);
+    });
+
+    // 5. Convert raw asterisk list blocks (* Metric: Value or * Item)
     html = html.replace(
         /(?:^\s*[*|-]\s+(.+)$)+/gm,
         (match) => {
-            const items = match
-                .trim()
-                .split('\n')
-                .map(line => {
+            const lines = match.trim().split('\n');
+            
+            // Check if items are key-value stats (e.g. Total candidates: 620,243)
+            const isStatGroup = lines.every(l => l.includes(':'));
+            
+            if (isStatGroup && lines.length >= 3) {
+                const statCards = lines.map(line => {
                     const text = line.replace(/^\s*[*|-]\s+/, '').trim();
-                    return `<li class="flex items-start gap-4 my-3 text-slate-800 font-sans text-base md:text-lg">
-                        <span class="h-1.5 w-1.5 bg-slate-900 shrink-0 mt-2.5"></span>
-                        <span class="leading-relaxed">${text}</span>
-                    </li>`;
-                })
-                .join('');
-            return `<ul class="my-8 border-l border-slate-900/10 pl-6 py-2 space-y-1">${items}</ul>`;
+                    const [label, ...valParts] = text.split(':');
+                    const val = valParts.join(':').trim();
+                    return `<div class="p-4 bg-slate-50 border border-slate-200/70">
+                        <span class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5">${label.trim()}</span>
+                        <span class="text-xl md:text-2xl font-serif font-bold text-slate-900">${val}</span>
+                    </div>`;
+                }).join('');
+                return `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 my-8">${statCards}</div>`;
+            }
+
+            const items = lines.map(line => {
+                const text = line.replace(/^\s*[*|-]\s+/, '').trim();
+                return `<li class="flex items-start gap-3 my-2.5 text-slate-700 font-sans text-base md:text-lg">
+                    <span class="h-1.5 w-1.5 bg-slate-900 shrink-0 mt-2.5"></span>
+                    <span class="leading-relaxed">${text}</span>
+                </li>`;
+            }).join('');
+            return `<ul class="my-6 border-l border-slate-900/10 pl-6 py-2 space-y-1">${items}</ul>`;
         }
     );
 
-    // 4. Format published dates gracefully if in paragraph
-    html = html.replace(/<p>Published:\s*([^<]+)<\/p>/gi, (match, date) => {
-        return `<div class="flex items-center gap-4 mb-10 pb-4 border-b border-slate-100">
-            <span class="h-px w-8 bg-slate-900"></span>
-            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Published ${date}</span>
-        </div>`;
-    });
+    // 6. Convert numbered step lists (1. Step..., 2. Step...) into soft professional step guide
+    html = html.replace(
+        /(?:^\s*\d+\.\s+(.+)$)+/gm,
+        (match) => {
+            let index = 1;
+            const steps = match.trim().split('\n').map(line => {
+                const text = line.replace(/^\s*\d+\.\s+/, '').trim();
+                const numStr = index < 10 ? `0${index}` : `${index}`;
+                index++;
+                return `<li class="flex items-start gap-4 p-4 bg-slate-50/80 border border-slate-200/60">
+                    <span class="flex items-center justify-center w-7 h-7 bg-slate-900 text-white font-mono font-bold text-xs shrink-0 mt-0.5">${numStr}</span>
+                    <span class="text-slate-800 text-base md:text-lg font-medium leading-relaxed">${text}</span>
+                </li>`;
+            }).join('');
+            return `<ol class="my-8 space-y-3">${steps}</ol>`;
+        }
+    );
+
+    // 7. Soft Professional CTA Link Conversion (👉 https://londonsimports.com/checker)
+    html = html.replace(
+        /(?:<p>)?\s*(?:👉)?\s*(https?:\/\/[^\s<]+)\s*(?:<\/p>)?/gi,
+        (match, url) => {
+            return `<div class="my-10 p-6 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Official Result Checker Desk</span>
+                    <span class="text-base md:text-lg font-serif font-bold text-slate-900">Purchase Authentic WAEC BECE Result Checker</span>
+                </div>
+                <a href="${url}" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider transition-colors shrink-0 border border-slate-900">
+                    Buy Checker GHS 17.00 →
+                </a>
+            </div>`;
+        }
+    );
 
     return html;
 };
