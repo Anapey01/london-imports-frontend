@@ -71,7 +71,7 @@ export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
 /**
  * Smart Editorial Content Engine
  * Transforms raw pasted text into a soft, professional, editorial publication.
- * Completely strips all asterisks (*) and converts them to rich editorial components.
+ * Completely strips all asterisks (*), formats FAQ Q&A blocks, and converts steps into process guides.
  */
 export const fixHtmlContent = (content: string | null | undefined): string => {
     if (!content) return '';
@@ -93,7 +93,7 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     html = html.replace(/(?:⸻|_{3,}|-{3,})/g, '<hr class="my-12 border-t border-slate-200" />');
 
     // 3. Format published date lines
-    html = html.replace(/(?:<p>)?Published:\s*([^<]+)(?:<\/p>)?/gi, (match, date) => {
+    html = html.replace(/(?:<p>)?Published:\s*([^<]+)(?:<\/p>)?/gi, (match: string, date: string) => {
         return `<div class="flex items-center gap-3 mb-10 pb-4 border-b border-slate-100">
             <span class="h-px w-6 bg-slate-900"></span>
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Published ${date.trim()}</span>
@@ -120,8 +120,8 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     // Handle <p>* ...</p> blocks (with or without <br> inside)
     html = html.replace(
         /<p>\s*(?:\*|-|&#42;)\s*(.*?)<\/p>/gi,
-        (match: string, content: string) => {
-            const rawItems = content.split(/<br\s*\/?>\s*(?:\*|-|&#42;)\s*/i);
+        (match: string, contentStr: string) => {
+            const rawItems = contentStr.split(/<br\s*\/?>\s*(?:\*|-|&#42;)\s*/i);
             const lis = rawItems.map((item: string) => {
                 const cleanItem = item.replace(/^\s*(?:\*|-|&#42;)\s*/, '').trim();
                 if (!cleanItem) return '';
@@ -182,6 +182,20 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
                 <a href="${url}" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider transition-colors shrink-0 border border-slate-900">
                     Buy Checker GHS 17.00 →
                 </a>
+            </div>`;
+        }
+    );
+
+    // 8. Convert FAQ Question/Answer paragraphs into soft editorial Q&A cards
+    html = html.replace(
+        /<p>\s*([^<]+\?)\s*<\/p>\s*<p>\s*([^<]+)\s*<\/p>/gi,
+        (match: string, question: string, answer: string) => {
+            return `<div class="my-6 p-6 bg-slate-50/80 border border-slate-200/70">
+                <h3 class="text-lg md:text-xl font-serif font-bold text-slate-900 mb-2 flex items-start gap-3">
+                    <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 border border-slate-200/80 px-2 py-0.5 bg-white shrink-0 mt-1">Q</span>
+                    <span class="leading-tight">${question.trim()}</span>
+                </h3>
+                <p class="text-slate-600 font-sans text-base leading-relaxed pl-8 mb-0">${answer.trim()}</p>
             </div>`;
         }
     );
