@@ -11,8 +11,9 @@ import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
 import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
 
-// ISR: Revalidate blog articles every 60 seconds
-export const revalidate = 60;
+// Force dynamic rendering — live blog post detail from backend API without static cache delay
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface BlogPost {
     id: number;
@@ -35,7 +36,7 @@ interface BlogPost {
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/${slug}/`, {
-            next: { revalidate: 60 }
+            cache: 'no-store'
         });
         if (!res.ok) return null;
         return res.json();

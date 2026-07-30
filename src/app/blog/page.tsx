@@ -9,8 +9,9 @@ import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getImageUrl } from '@/lib/image';
 
-// ISR: Revalidate blog listing every 60 seconds
-export const revalidate = 60;
+// Force dynamic rendering — live blog posts from backend API without static cache delay
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export const metadata: Metadata = {
     title: 'Shopping & Scaling | Business Journal',
@@ -35,7 +36,7 @@ interface BlogPost {
 async function getBlogPosts(): Promise<BlogPost[]> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/`, {
-            next: { revalidate: 60 }
+            cache: 'no-store'
         });
         if (!res.ok) return [];
         const data = await res.json();
