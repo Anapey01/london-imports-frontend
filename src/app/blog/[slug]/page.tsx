@@ -83,6 +83,7 @@ We purchase, consolidate in Guangzhou, manage the air/sea corridor, and finalize
         updated_at: '2024-01-05T00:00:00Z',
     },
 };
+import BlogImage from '@/components/BlogImage';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -105,150 +106,122 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     if (!article) article = fallbackArticles[slug];
     if (!article) notFound();
 
+    const isCheckerArticle = article.title.toLowerCase().includes('bece') || 
+                             article.title.toLowerCase().includes('wassce') || 
+                             article.title.toLowerCase().includes('waec');
+
     return (
-        <article className="min-h-screen bg-white relative pb-32 selection:bg-emerald-100 font-sans">
-            {/* Reading Progress Indicator (Architectural) */}
-            <div className="fixed top-0 left-0 w-full h-[1.5px] z-60 bg-slate-50">
-                <div id="reading-progress" className="h-full bg-slate-900 transition-all duration-300 w-0"></div>
+        <article className="min-h-screen bg-slate-50/30 relative pb-32 selection:bg-emerald-100 font-sans">
+            {/* Reading Progress Indicator */}
+            <div className="fixed top-0 left-0 w-full h-[2px] z-50 bg-slate-100">
+                <div id="reading-progress" className="h-full bg-emerald-600 transition-all duration-150 w-0"></div>
             </div>
 
-            {/* 1. ARCHITECTURAL DOCUMENT HEADER */}
-            <header className="max-w-4xl mx-auto pt-48 pb-20 px-6 text-center border-b border-slate-50">
-                <Link
-                    href="/blog"
-                    className="group inline-flex items-center gap-4 text-[9px] font-black mb-16 text-slate-300 hover:text-slate-900 transition-colors uppercase tracking-[0.5em]"
-                >
-                    <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-                    Back to Blog
-                </Link>
+            {/* 1. ELEGANT EDITORIAL HEADER */}
+            <header className="max-w-4xl mx-auto pt-32 md:pt-40 pb-16 px-6 text-center">
+                <div className="flex items-center justify-center gap-3 mb-8">
+                    <Link
+                        href="/blog"
+                        className="group inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm"
+                    >
+                        <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+                        Back to Journal
+                    </Link>
+                    {article.category_display && (
+                        <span className="inline-block px-3 py-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-full border border-emerald-200">
+                            {article.category_display}
+                        </span>
+                    )}
+                </div>
 
-                <h1 className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold text-slate-900 mb-16 tracking-tighter leading-[0.85]">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 mb-8 tracking-tight leading-[1.15]">
                     {article.title}
                 </h1>
 
-                <div className="flex flex-col items-center gap-8 pt-12 border-t border-slate-50">
-                    <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.4em] font-sans">
-                            Author: {article.author_name || 'Atelier Team'}
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">
-                        <span>{new Date(article.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                        <div className="flex items-center gap-2">
-                            <Clock className="w-3 h-3" />
-                            <span>{article.read_time_minutes} MIN READ</span>
-                        </div>
-                    </div>
+                <p className="text-lg md:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto mb-10 italic">
+                    &quot;{article.excerpt}&quot;
+                </p>
 
-                    <div className="pt-6">
-                        <ShareButton 
-                            title={article.title} 
-                            url={`${siteConfig.baseUrl}/blog/${slug}`} 
-                        />
+                <div className="flex flex-wrap items-center justify-center gap-6 pt-8 border-t border-slate-200/80 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <span>Author: <strong className="text-slate-900">{article.author_name || 'Editorial Team'}</strong></span>
+                    <span>•</span>
+                    <span>{new Date(article.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    <span>•</span>
+                    <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>{article.read_time_minutes || 5} MIN READ</span>
                     </div>
+                </div>
+
+                <div className="pt-6 flex justify-center">
+                    <ShareButton 
+                        title={article.title} 
+                        url={`${siteConfig.baseUrl}/blog/${slug}`} 
+                    />
                 </div>
             </header>
 
-            {/* Structured Data: Article & Breadcrumb */}
-            <script
-                id="blog-schema"
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@graph": [
-                            {
-                                "@type": "BlogPosting",
-                                "@id": `${siteConfig.baseUrl}/blog/${slug}/#article`,
-                                "isPartOf": { "@id": `${siteConfig.baseUrl}/blog/${slug}/` },
-                                "author": {
-                                    "@type": "Person",
-                                    "name": article.author_name || "London's Imports Hub",
-                                    "url": `${siteConfig.baseUrl}/blog`
-                                },
-                                "headline": article.title,
-                                "datePublished": article.published_at,
-                                "dateModified": article.updated_at || article.published_at,
-                                "mainEntityOfPage": { "@id": `${siteConfig.baseUrl}/blog/${slug}/` },
-                                "wordCount": article.content?.split(/\s+/).length,
-                                "publisher": { "@id": `${siteConfig.baseUrl}/#organization` },
-                                "image": article.featured_image ? getImageUrl(article.featured_image) : `${siteConfig.baseUrl}/og-image.jpg`,
-                                "description": article.excerpt,
-                                "articleSection": article.category_display
-                            },
-                            {
-                                "@type": "BreadcrumbList",
-                                "@id": `${siteConfig.baseUrl}/blog/${slug}/#breadcrumb`,
-                                "itemListElement": [
-                                    { "@type": "ListItem", "position": 1, "name": "Home", "item": siteConfig.baseUrl },
-                                    { "@type": "ListItem", "position": 2, "name": "Journal", "item": `${siteConfig.baseUrl}/blog` },
-                                    { "@type": "ListItem", "position": 3, "name": article.title, "item": `${siteConfig.baseUrl}/blog/${slug}` }
-                                ]
-                            }
-                        ]
-                    })
-                }}
-            />
+            {/* 2. DOCUMENT PAYLOAD */}
+            <main className="max-w-3xl mx-auto px-6">
+                {/* Featured Image Header Component */}
+                <div className="mb-16">
+                    <BlogImage 
+                        src={getImageUrl(article.featured_image)} 
+                        alt={article.title} 
+                        priority 
+                    />
+                </div>
 
-            {/* 2. DOCUMENT PAYLOAD (Single Column Architecture) */}
-            <main className="max-w-3xl mx-auto px-6 py-24">
-                {/* Visual Anchor (Sharp Edge) */}
-                {article.featured_image && (
-                    <div className="relative w-full aspect-2/1 overflow-hidden mb-24 border border-slate-100 grayscale hover:grayscale-0 transition-all duration-1000">
-                        <Image
-                            src={getImageUrl(article.featured_image)}
-                            alt={article.title}
-                            fill
-                            className="object-cover"
-                            priority
-                        />
+                {/* BECE / WASSCE Checker Action Box */}
+                {isCheckerArticle && (
+                    <div className="mb-12 p-6 md:p-8 bg-gradient-to-r from-emerald-900 to-slate-900 rounded-2xl text-white shadow-xl border border-emerald-800/60 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div>
+                            <span className="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-widest rounded-full mb-3 border border-emerald-500/30">
+                                Instant Digital Delivery
+                            </span>
+                            <h3 className="text-xl md:text-2xl font-serif font-bold tracking-tight text-white mb-2">
+                                Check Your BECE Result Online Now
+                            </h3>
+                            <p className="text-slate-300 text-sm leading-relaxed">
+                                Get authentic WAEC BECE Result Checker serial &amp; PIN instantly via SMS and instant screen view.
+                            </p>
+                        </div>
+                        <Link 
+                            href="/checker"
+                            className="shrink-0 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg hover:scale-105"
+                        >
+                            Buy Checker GHS 17.00 →
+                        </Link>
                     </div>
                 )}
 
-                <div className="relative">
+                {/* Main Article Body */}
+                <div className="bg-white p-8 md:p-14 rounded-2xl border border-slate-200/80 shadow-sm relative">
                     <div 
-                        className="blog-content prose prose-stone lg:prose-xl max-w-none 
-                        prose-p:text-slate-500 prose-p:leading-[1.9] prose-p:mb-12 prose-p:font-medium
-                        prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tighter 
-                        prose-h2:text-4xl md:prose-h2:text-5xl prose-h2:text-slate-900 prose-h2:mb-10
+                        className="blog-content prose prose-slate max-w-none 
+                        prose-p:text-slate-700 prose-p:text-base md:prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
+                        prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight 
+                        prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:text-slate-900 prose-h2:mt-10 prose-h2:mb-5 prose-h2:border-b prose-h2:border-slate-100 prose-h2:pb-3
+                        prose-h3:text-xl md:prose-h3:text-2xl prose-h3:text-slate-900 prose-h3:mt-8 prose-h3:mb-4
                         prose-strong:text-slate-900 prose-strong:font-black
-                        prose-blockquote:border-slate-900 prose-blockquote:bg-slate-50/50 prose-blockquote:font-serif prose-blockquote:italic prose-blockquote:py-8 prose-blockquote:px-10
-                        prose-img:rounded-none prose-img:border prose-img:border-slate-100"
+                        prose-blockquote:border-l-4 prose-blockquote:border-emerald-500 prose-blockquote:bg-emerald-50/40 prose-blockquote:font-serif prose-blockquote:italic prose-blockquote:py-6 prose-blockquote:px-8 prose-blockquote:rounded-r-xl
+                        prose-img:rounded-xl prose-img:shadow-md prose-img:my-8"
                         dangerouslySetInnerHTML={{ __html: fixHtmlContent(article.content) }}
                     />
                 </div>
 
-                {/* 3. END OF PROTOCOL (Architectural Navigation) */}
-                <div className="mt-48 pt-24 grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100">
-                    <div className="bg-white p-12 md:p-16 flex flex-col justify-between group">
-                        <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8 block">Document Footer</span>
-                            <h3 className="text-3xl font-serif font-bold text-slate-900 mb-6 tracking-tighter leading-none">
-                                End of <br /> 
-                                <span className="italic font-light text-slate-200">the Article.</span>
-                            </h3>
-                        </div>
-                        <Link
-                            href="/blog"
-                            className="group/link inline-flex items-center gap-4 text-[11px] font-black text-slate-900 border-b border-black pb-2 self-start hover:opacity-60 transition-all uppercase tracking-widest"
-                        >
-                            Back to Archive
-                            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
-                        </Link>
-                    </div>
-
-                    <div className="bg-slate-50 p-12 md:p-16 flex flex-col justify-center border-l border-slate-100">
-                         <div className="space-y-8 opacity-40">
-                             <div className="flex items-center justify-between border-b border-slate-900/5 pb-4">
-                                <span className="text-[9px] font-black uppercase tracking-widest">Entry Ref</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest tabular-nums">#JOURNAL-{article.id}</span>
-                             </div>
-                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black uppercase tracking-widest">Digital Sign</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest italic">Verified Strategy</span>
-                             </div>
-                         </div>
-                    </div>
+                {/* Bottom Article Navigation */}
+                <div className="mt-16 pt-12 border-t border-slate-200 flex items-center justify-between">
+                    <Link
+                        href="/blog"
+                        className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-widest"
+                    >
+                        ← Back to all articles
+                    </Link>
+                    <ShareButton 
+                        title={article.title} 
+                        url={`${siteConfig.baseUrl}/blog/${slug}`} 
+                    />
                 </div>
             </main>
 

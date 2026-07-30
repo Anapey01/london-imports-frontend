@@ -6,7 +6,7 @@ import { siteConfig } from '@/config/site';
  */
 
 // Default placeholder if image is missing or invalid
-const PLACEHOLDER_IMAGE = '/assets/placeholder-product.png'; // Make sure this exists or use a data URI
+const PLACEHOLDER_IMAGE = '/assets/placeholder-product.png';
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
 
@@ -20,7 +20,6 @@ export const getImageUrl = (path: string | null | undefined): string => {
 
     // If it's already a full URL (Http/Https), process it
     if (path.startsWith('http')) {
-        // Rewrite production URL to local backend for development testing
         const backendUrl = siteConfig.apiUrl.replace('/api/v1', '');
         
         // Handle production API re-routing
@@ -43,13 +42,9 @@ export const getImageUrl = (path: string | null | undefined): string => {
     }
 
     // If it looks like a Cloudinary Public ID (e.g. products/shoe1)
-    // We return a CLEAN Cloudinary URL so the loader can inject params correctly
     if (path.includes('/') && !path.startsWith('/')) {
         const isVideo = path.includes('video') || path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.avi');
         if (isVideo) {
-            // Automatically optimize the video on Cloudinary:
-            // f_auto: select best format (e.g. webm/mp4)
-            // q_auto: select best quality compression to reduce size while keeping HD
             return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/f_auto,q_auto/${path}`;
         }
         return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${path}`;
@@ -60,28 +55,22 @@ export const getImageUrl = (path: string | null | undefined): string => {
 
 /**
  * Ensures an image URL is absolute.
- * Required for Satori/next/og rendering on Vercel Edge.
  */
 export const getAbsoluteImageUrl = (path: string | null | undefined): string => {
     const url = getImageUrl(path);
     if (url.startsWith('http')) return url;
-    
-    // Prepend baseUrl for relative paths (e.g. placeholders)
     return `${siteConfig.baseUrl}${url}`;
 };
 
 import { ImageLoaderProps } from 'next/image';
 
 export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
-    // If it's not a Cloudinary URL, return as is (Next.js will optimize if configured, or just serve)
     if (!src.includes('cloudinary.com')) {
         return src;
     }
 
-    // Default params: f_auto (auto-format), c_limit (responsive crop), w (width), q (quality)
     const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`];
 
-    // If src already has transformations (e.g. /image/upload/v123/...), inject new ones after /upload/
     if (src.includes('/image/upload/')) {
         const [base, rest] = src.split('/image/upload/');
         return `${base}/image/upload/${params.join(',')}/${rest}`;
@@ -89,25 +78,54 @@ export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
 
     return src;
 };
+
 /**
- * Fixes relative image paths in HTML content (e.g. from CKEditor)
- * Replaces /media/ with the absolute backend URL.
+ * Fixes relative image paths and enhances plain text markdown in HTML content
  */
 export const fixHtmlContent = (content: string | null | undefined): string => {
     if (!content) return '';
     
     const rootUrl = siteConfig.apiUrl.replace('/api/v1', '');
-    
-    // Replace src="/media/" with src="https://backend.com/media/"
-    // Also handles single quotes and escaped quotes
-    const fixedContent = content.replace(
+    let html = content;
+
+    // 1. Replace relative media URLs with absolute URLs
+    html = html.replace(
         /src=["']\/media\//g, 
         (match) => match.replace('/media/', `${rootUrl}/media/`)
     );
-
-    // FORCE HTTPS on any http links to the backend to prevent mixed content blocking on Vercel
-    return fixedContent.replace(
+    html = html.replace(
         /src=["']http:\/\/london-imports-api\.onrender\.com/g,
         (match) => match.replace('http:', 'https:')
     );
+
+    // 2. Replace plain horizontal lines (______ or ----) with styled divider
+    html = html.replace(/(?:_{3,}|-{3,})/g, '<hr class="my-10 border-t border-slate-200" />');
+
+    // 3. Convert raw asterisk bullet points (* Item or - Item) into styled HTML list cards
+    html = html.replace(
+        /(?:^\s*[*|-]\s+(.+)$)+/gm,
+        (match) => {
+            const items = match
+                .trim()
+                .split('\n')
+                .map(line => {
+                    const text = line.replace(/^\s*[*|-]\s+/, '').trim();
+                    return `<li class="flex items-start gap-3 my-2 text-slate-800 font-medium text-base md:text-lg">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                        <span>${text}</span>
+                    </li>`;
+                })
+                .join('');
+            return `<ul class="my-6 space-y-1 bg-slate-50 p-6 rounded-2xl border border-slate-200/80 shadow-sm">${items}</ul>`;
+        }
+    );
+
+    // 4. Format published dates gracefully if in paragraph
+    html = html.replace(/<p>Published:\s*([^<]+)<\/p>/gi, (match, date) => {
+        return `<div class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-slate-600 text-xs font-semibold uppercase tracking-wider mb-8 border border-slate-200/60">
+            <span>Published: ${date}</span>
+        </div>`;
+    });
+
+    return html;
 };
