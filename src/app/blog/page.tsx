@@ -9,8 +9,8 @@ import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getImageUrl } from '@/lib/image';
 
-// ISR: Revalidate blog listing every 24 hours
-export const revalidate = 86400;
+// ISR: Revalidate blog listing every 60 seconds
+export const revalidate = 60;
 
 export const metadata: Metadata = {
     title: 'Shopping & Scaling | Business Journal',
@@ -35,7 +35,7 @@ interface BlogPost {
 async function getBlogPosts(): Promise<BlogPost[]> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 60 }
         });
         if (!res.ok) return [];
         const data = await res.json();

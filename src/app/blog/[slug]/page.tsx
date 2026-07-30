@@ -11,8 +11,8 @@ import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
 import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
 
-// ISR: Revalidate blog articles every 24 hours
-export const revalidate = 86400;
+// ISR: Revalidate blog articles every 60 seconds
+export const revalidate = 60;
 
 interface BlogPost {
     id: number;
@@ -35,7 +35,7 @@ interface BlogPost {
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/${slug}/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 60 }
         });
         if (!res.ok) return null;
         return res.json();
