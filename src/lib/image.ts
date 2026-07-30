@@ -71,6 +71,7 @@ export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
 /**
  * Smart Editorial Content Engine
  * Transforms raw pasted text into a soft, professional, editorial publication.
+ * Completely strips all asterisks (*) and converts them to rich editorial components.
  */
 export const fixHtmlContent = (content: string | null | undefined): string => {
     if (!content) return '';
@@ -115,28 +116,26 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
         html = html.replace(regex, `<h2 class="text-2xl md:text-3xl font-serif font-bold text-slate-900 mt-12 mb-6 tracking-tight border-b border-slate-100 pb-3">${heading}</h2>`);
     });
 
-    // 5. Convert raw asterisk list blocks (* Metric: Value or * Item)
+    // 5. COMPREHENSIVE ASTERISK STRIPPER & LIST CONVERTER
+    // Handle <p>* ...</p> blocks (with or without <br> inside)
+    html = html.replace(
+        /<p>\s*(?:\*|-|&#42;)\s*(.*?)<\/p>/gi,
+        (match, content) => {
+            const rawItems = content.split(/<br\s*\/?>\s*(?:\*|-|&#42;)\s*/i);
+            const lis = rawItems.map(item => {
+                const cleanItem = item.replace(/^\s*(?:\*|-|&#42;)\s*/, '').trim();
+                if (!cleanItem) return '';
+                return `<li class="flex items-start gap-3 my-2.5 text-slate-700 font-sans text-base md:text-lg"><span class="h-1.5 w-1.5 bg-slate-900 shrink-0 mt-2.5"></span><span class="leading-relaxed">${cleanItem}</span></li>`;
+            }).filter(Boolean).join('');
+            return `<ul class="my-6 border-l border-slate-900/10 pl-6 py-2 space-y-1">${lis}</ul>`;
+        }
+    );
+
+    // Also convert any multiline text starting with *
     html = html.replace(
         /(?:^\s*[*|-]\s+(.+)$)+/gm,
         (match) => {
             const lines = match.trim().split('\n');
-            
-            // Check if items are key-value stats (e.g. Total candidates: 620,243)
-            const isStatGroup = lines.every(l => l.includes(':'));
-            
-            if (isStatGroup && lines.length >= 3) {
-                const statCards = lines.map(line => {
-                    const text = line.replace(/^\s*[*|-]\s+/, '').trim();
-                    const [label, ...valParts] = text.split(':');
-                    const val = valParts.join(':').trim();
-                    return `<div class="p-4 bg-slate-50 border border-slate-200/70">
-                        <span class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5">${label.trim()}</span>
-                        <span class="text-xl md:text-2xl font-serif font-bold text-slate-900">${val}</span>
-                    </div>`;
-                }).join('');
-                return `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 my-8">${statCards}</div>`;
-            }
-
             const items = lines.map(line => {
                 const text = line.replace(/^\s*[*|-]\s+/, '').trim();
                 return `<li class="flex items-start gap-3 my-2.5 text-slate-700 font-sans text-base md:text-lg">
@@ -147,6 +146,11 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
             return `<ul class="my-6 border-l border-slate-900/10 pl-6 py-2 space-y-1">${items}</ul>`;
         }
     );
+
+    // FAILSAFE: Strip ANY remaining raw asterisks at the beginning of words or after tags
+    html = html.replace(/(<br\s*\/?>)\s*\*\s*/gi, '$1 ');
+    html = html.replace(/(<p>)\s*\*\s*/gi, '$1 ');
+    html = html.replace(/(^|\s)\*\s+/g, '$1 ');
 
     // 6. Convert numbered step lists (1. Step..., 2. Step...) into soft professional step guide
     html = html.replace(
