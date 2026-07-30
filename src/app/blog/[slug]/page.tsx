@@ -11,9 +11,8 @@ import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
 import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
 
-// Force dynamic rendering — live blog post detail from backend API without static cache delay
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Safe 5-minute ISR revalidate — stays 100% within Vercel Free Tier 10k limit while auto-refreshing articles
+export const revalidate = 300;
 
 interface BlogPost {
     id: number;
@@ -36,7 +35,7 @@ interface BlogPost {
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/${slug}/`, {
-            cache: 'no-store'
+            next: { revalidate: 300 }
         });
         if (!res.ok) return null;
         return res.json();

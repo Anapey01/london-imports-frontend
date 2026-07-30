@@ -9,9 +9,8 @@ import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getImageUrl } from '@/lib/image';
 
-// Force dynamic rendering — live blog posts from backend API without static cache delay
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Safe 5-minute ISR revalidate — stays 100% within Vercel Free Tier 10k limit while auto-refreshing posts
+export const revalidate = 300;
 
 export const metadata: Metadata = {
     title: 'Shopping & Scaling | Business Journal',
@@ -36,7 +35,7 @@ interface BlogPost {
 async function getBlogPosts(): Promise<BlogPost[]> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/`, {
-            cache: 'no-store'
+            next: { revalidate: 300 }
         });
         if (!res.ok) return [];
         const data = await res.json();
