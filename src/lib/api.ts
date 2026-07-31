@@ -263,15 +263,16 @@ export const blogAPI = {
 
 // Checkers API
 export const checkersAPI = {
-  getPricing: () => api.get('/checkers/pricing/', {
+  getPricing: (agentSlug?: string) => api.get('/checkers/pricing/', {
+    params: agentSlug ? { agent_slug: agentSlug } : undefined,
     headers: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0'
     }
   }),
-  initiate: (email: string, checker_type: string, quantity: number) =>
-    api.post('/checkers/initiate/', { email, checker_type, quantity }),
+  initiate: (email: string, checker_type: string, quantity: number, agentSlug?: string) =>
+    api.post('/checkers/initiate/', { email, checker_type, quantity, agent_slug: agentSlug }),
   verify: (clientRef: string) => api.get(`/checkers/verify/${clientRef}/`),
   retrieve: (email: string) => api.get('/checkers/retrieve/', {
     params: { email },
@@ -281,6 +282,21 @@ export const checkersAPI = {
       'Expires': '0'
     }
   }),
+  
+  // Reseller Agent Portal Endpoints
+  agentRegister: (data: any) => api.post('/checkers/agent/register/', data),
+  agentLogin: (data: any) => api.post('/checkers/agent/login/', data),
+  agentLogout: () => api.post('/checkers/agent/logout/', {}),
+  agentProfile: () => api.get('/checkers/agent/profile/'),
+  agentUpdateProfile: (data: any) => api.put('/checkers/agent/profile/', data),
+  agentPricing: () => api.get('/checkers/agent/pricing/'),
+  agentUpdatePricing: (pricings: any) => api.put('/checkers/agent/pricing/', { pricings }),
+  agentLedger: (page = 1) => api.get('/checkers/agent/ledger/', { params: { page } }),
+  agentPayouts: () => api.get('/checkers/agent/payouts/'),
+  agentRequestPayout: (data: { amount: number; momo_network?: string; momo_number?: string }) =>
+    api.post('/checkers/agent/payouts/', data),
+  agentDashboard: () => api.get('/checkers/agent/dashboard/'),
+  agentPublicStore: (slug: string) => api.get(`/checkers/store/${slug}/`),
 };
 
 export default api;
