@@ -38,7 +38,7 @@
     "@playwright/test": "^1.60.0",
     "@storybook/addon-a11y": "^10.2.9",
     "@storybook/addon-docs": "^10.2.9",
-    "@storybook/addon-onboarding": "^10.2.9",
+    "@storybook/addon-onboarding": "^10.4.4",
     "@storybook/addon-vitest": "^10.2.9",
     "@storybook/nextjs-vite": "^10.2.9",
     "@storybook/test": "^8.6.15",
