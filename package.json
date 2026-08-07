@@ -54,7 +54,7 @@
     "@vitest/coverage-v8": "^4.0.18",
     "cross-env": "^10.1.0",
     "eslint": "^9",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "^16.2.9",
     "eslint-plugin-storybook": "^10.2.9",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
