@@ -62,31 +62,62 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      try {
-        // Attempt refresh (the refresh token cookie is sent automatically by the browser)
-        await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
-        
-        onRefreshed();
-        isRefreshing = false;
+      const isAgentRequest = originalRequest.url?.includes('/checkers/agent/');
 
-        return api(originalRequest);
-      } catch (refreshError: unknown) {
-        isRefreshing = false;
-        refreshSubscribers = [];
-        
-        // Refresh failed - User session is fully expired
-        const err = refreshError as { response?: { status?: number } };
-        const status = err.response?.status;
-        
-        if (err.response && (status === 400 || status === 401)) {
-          const { useAuthStore } = await import('@/stores/authStore');
-          useAuthStore.getState().logout();
+      if (isAgentRequest) {
+        try {
+          // Attempt agent token refresh
+          await axios.post(`${API_BASE_URL}/checkers/agent/token/refresh/`, {}, { withCredentials: true });
           
-          if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-            window.location.href = '/login?expired=true';
+          onRefreshed();
+          isRefreshing = false;
+
+          return api(originalRequest);
+        } catch (refreshError: unknown) {
+          isRefreshing = false;
+          refreshSubscribers = [];
+          
+          // Agent refresh failed - Agent session is fully expired
+          const err = refreshError as { response?: { status?: number } };
+          const status = err.response?.status;
+          
+          if (err.response && (status === 400 || status === 401)) {
+            const { useAgentAuthStore } = await import('@/stores/agentAuthStore');
+            useAgentAuthStore.getState().logout();
+            
+            if (typeof window !== 'undefined' && !window.location.pathname.includes('/checker/agent/login')) {
+              window.location.href = '/checker/agent/login?expired=true';
+            }
           }
+          return Promise.reject(refreshError);
         }
-        return Promise.reject(refreshError);
+      } else {
+        try {
+          // Attempt customer token refresh
+          await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
+          
+          onRefreshed();
+          isRefreshing = false;
+
+          return api(originalRequest);
+        } catch (refreshError: unknown) {
+          isRefreshing = false;
+          refreshSubscribers = [];
+          
+          // Customer refresh failed - Customer session is fully expired
+          const err = refreshError as { response?: { status?: number } };
+          const status = err.response?.status;
+          
+          if (err.response && (status === 400 || status === 401)) {
+            const { useAuthStore } = await import('@/stores/authStore');
+            useAuthStore.getState().logout();
+            
+            if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/checker/agent')) {
+              window.location.href = '/login?expired=true';
+            }
+          }
+          return Promise.reject(refreshError);
+        }
       }
     }
 
