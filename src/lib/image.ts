@@ -177,8 +177,17 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
         (match: string, tag: string, url: string) => {
             if (tag) return tag;
             
-            const isCheckerUrl = url.toLowerCase().includes('checker');
-            if (isCheckerUrl) {
+            let isCheckerBuyUrl = false;
+            try {
+                const parsedUrl = new URL(url);
+                const path = parsedUrl.pathname.toLowerCase().replace(/\/+$/, '');
+                isCheckerBuyUrl = (path === '/checker');
+            } catch {
+                const cleanPath = url.toLowerCase().split('?')[0].replace(/\/+$/, '');
+                isCheckerBuyUrl = cleanPath.endsWith('/checker') || cleanPath === 'checker';
+            }
+
+            if (isCheckerBuyUrl) {
                 return `<div class="my-10 p-6 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 blog-checker-cta">
                     <div>
                         <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Official Result Checker Desk</span>
