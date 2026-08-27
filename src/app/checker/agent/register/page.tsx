@@ -90,7 +90,7 @@ export default function AgentRegisterPage() {
                 type="text"
                 required
                 placeholder="e.g. John's Fast Checker Hub"
-                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-all"
               />
             </div>
 
@@ -104,7 +104,7 @@ export default function AgentRegisterPage() {
                 type="email"
                 required
                 placeholder="e.g. agent@email.com"
-                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-all"
               />
             </div>
 
@@ -118,7 +118,7 @@ export default function AgentRegisterPage() {
                 type="password"
                 required
                 placeholder="Minimum 6 characters"
-                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-all"
               />
             </div>
 
@@ -131,7 +131,7 @@ export default function AgentRegisterPage() {
                 <select
                   value={momoNetwork}
                   onChange={(e) => setMomoNetwork(e.target.value as 'MTN' | 'TELECEL' | 'AT')}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-all"
                 >
                   <option value="MTN">MTN</option>
                   <option value="TELECEL">Telecel</option>
@@ -148,7 +148,7 @@ export default function AgentRegisterPage() {
                   type="text"
                   required
                   placeholder="e.g. 0545142658"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-all"
                 />
               </div>
             </div>
@@ -164,7 +164,7 @@ export default function AgentRegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-bold text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald hover:text-white transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
+              className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-bold text-xs uppercase tracking-[0.2em] hover:bg-neutral-800 hover:text-white transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
             >
               {isLoading ? 'Registering Agent...' : 'Register'}
             </button>
@@ -173,7 +173,7 @@ export default function AgentRegisterPage() {
           <div className="pt-4 border-t border-slate-200 text-center">
             <span className="text-xs text-content-secondary">
               Already have an agent account?{' '}
-              <Link href="/checker/agent/login" className="font-bold text-brand-emerald hover:underline">
+              <Link href="/checker/agent/login" className="font-bold text-content-primary underline hover:text-neutral-600">
                 Sign in here
               </Link>
             </span>
@@ -182,7 +182,7 @@ export default function AgentRegisterPage() {
 
         {/* Back Link */}
         <div className="text-center mt-6">
-          <Link href="/checker" className="text-xs font-bold text-content-secondary uppercase tracking-widest hover:text-brand-emerald transition-colors">
+          <Link href="/checker" className="text-xs font-bold text-content-secondary uppercase tracking-widest hover:text-black transition-colors">
             ← Back to Checker Portal
           </Link>
         </div>

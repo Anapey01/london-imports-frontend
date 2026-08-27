@@ -96,7 +96,7 @@ export default function AgentLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-bold text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald hover:text-white transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
+              className="w-full bg-content-primary text-surface py-3.5 px-6 rounded-none font-bold text-xs uppercase tracking-[0.2em] hover:bg-neutral-800 hover:text-white transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
             >
               {isLoading ? 'Authenticating...' : 'Sign In'}
             </button>
@@ -105,7 +105,7 @@ export default function AgentLoginPage() {
           <div className="pt-4 border-t border-slate-200 text-center">
             <span className="text-xs text-content-secondary">
               Don't have an agent account yet?{' '}
-              <Link href="/checker/agent/register" className="font-bold text-brand-emerald hover:underline">
+              <Link href="/checker/agent/register" className="font-bold text-content-primary underline hover:text-neutral-600">
                 Register here
               </Link>
             </span>
@@ -114,7 +114,7 @@ export default function AgentLoginPage() {
 
         {/* Back Link */}
         <div className="text-center mt-6">
-          <Link href="/checker" className="text-xs font-bold text-content-secondary uppercase tracking-widest hover:text-brand-emerald transition-colors">
+          <Link href="/checker" className="text-xs font-bold text-content-secondary uppercase tracking-widest hover:text-black transition-colors">
             ← Back to Checker Portal
           </Link>
         </div>
