@@ -56,8 +56,10 @@ export default function AgentDashboardPage() {
   const [payouts, setPayouts] = useState<Payout[]>([]);
   
   // Pricing manager state
-  const [becePrice, setBecePrice] = useState<number>(17.00);
-  const [wasscePrice, setWasscePrice] = useState<number>(17.00);
+  const [becePrice, setBecePrice] = useState<number>(16.50);
+  const [wasscePrice, setWasscePrice] = useState<number>(16.50);
+  const [becePriceInput, setBecePriceInput] = useState<string>('16.50');
+  const [wasscePriceInput, setWasscePriceInput] = useState<string>('16.50');
   const [pricingLoading, setPricingLoading] = useState<boolean>(false);
   const [pricingSuccess, setPricingSuccess] = useState<boolean>(false);
   const [pricingError, setPricingError] = useState<string | null>(null);
@@ -119,8 +121,16 @@ export default function AgentDashboardPage() {
       if (response.data && Array.isArray(response.data)) {
         const bece = response.data.find(p => p.checker_type === 'BECE');
         const wassce = response.data.find(p => p.checker_type === 'WASSCE');
-        if (bece) setBecePrice(parseFloat(bece.selling_price));
-        if (wassce) setWasscePrice(parseFloat(wassce.selling_price));
+        if (bece) {
+          const val = parseFloat(bece.selling_price);
+          setBecePrice(val);
+          setBecePriceInput(bece.selling_price);
+        }
+        if (wassce) {
+          const val = parseFloat(wassce.selling_price);
+          setWasscePrice(val);
+          setWasscePriceInput(wassce.selling_price);
+        }
       }
     } catch (err) {
       console.error('Failed to load pricing configurations:', err);
@@ -156,15 +166,29 @@ export default function AgentDashboardPage() {
     setPricingError(null);
     setPricingSuccess(false);
 
+    const parsedBece = parseFloat(becePriceInput);
+    const parsedWassce = parseFloat(wasscePriceInput);
+
+    if (isNaN(parsedBece) || parsedBece < 16.50) {
+      setPricingError('BECE price must be at least GH₵ 16.50');
+      setPricingLoading(false);
+      return;
+    }
+    if (isNaN(parsedWassce) || parsedWassce < 16.50) {
+      setPricingError('WASSCE price must be at least GH₵ 16.50');
+      setPricingLoading(false);
+      return;
+    }
+
     try {
       await checkersAPI.agentUpdatePricing([
-        { checker_type: 'BECE', selling_price: becePrice },
-        { checker_type: 'WASSCE', selling_price: wasscePrice }
+        { checker_type: 'BECE', selling_price: parsedBece },
+        { checker_type: 'WASSCE', selling_price: parsedWassce }
       ]);
       setPricingSuccess(true);
       fetchDashboardData();
     } catch (err: any) {
-      setPricingError(err.response?.data?.error || 'Failed to update selling prices. Verify selling price is above GHS 17.00.');
+      setPricingError(err.response?.data?.error || 'Failed to update selling prices. Verify selling price is above GHS 16.50.');
     } finally {
       setPricingLoading(false);
     }
@@ -402,7 +426,7 @@ export default function AgentDashboardPage() {
                   <div className="border border-border-standard p-4 space-y-3 bg-slate-50">
                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-content-secondary">
                       <span>BECE Checker Pricing</span>
-                      <span className="text-brand-emerald font-black">Base price: GH₵ 17.00</span>
+                      <span className="text-brand-emerald font-black">Base price: GH₵ 16.50</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4 items-center">
                       <div>
@@ -412,9 +436,16 @@ export default function AgentDashboardPage() {
                         <input
                           type="number"
                           step="0.01"
-                          min="17.00"
-                          value={becePrice}
-                          onChange={(e) => setBecePrice(Math.max(17.00, parseFloat(e.target.value) || 0))}
+                          min="16.50"
+                          value={becePriceInput}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setBecePriceInput(val);
+                            const parsed = parseFloat(val);
+                            if (!isNaN(parsed)) {
+                              setBecePrice(parsed);
+                            }
+                          }}
                           className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
                         />
                       </div>
@@ -423,7 +454,7 @@ export default function AgentDashboardPage() {
                           Your Profit Margin
                         </span>
                         <div className="font-mono text-sm font-bold text-brand-emerald h-[38px] flex items-center">
-                          + GH₵ {(becePrice - 17.00).toFixed(2)} / sale
+                          + GH₵ {(becePrice - 16.50).toFixed(2)} / sale
                         </div>
                       </div>
                     </div>
@@ -433,7 +464,7 @@ export default function AgentDashboardPage() {
                   <div className="border border-border-standard p-4 space-y-3 bg-slate-50">
                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-content-secondary">
                       <span>WASSCE / SSCE Pricing</span>
-                      <span className="text-brand-emerald font-black">Base price: GH₵ 17.00</span>
+                      <span className="text-brand-emerald font-black">Base price: GH₵ 16.50</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4 items-center">
                       <div>
@@ -443,9 +474,16 @@ export default function AgentDashboardPage() {
                         <input
                           type="number"
                           step="0.01"
-                          min="17.00"
-                          value={wasscePrice}
-                          onChange={(e) => setWasscePrice(Math.max(17.00, parseFloat(e.target.value) || 0))}
+                          min="16.50"
+                          value={wasscePriceInput}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setWasscePriceInput(val);
+                            const parsed = parseFloat(val);
+                            if (!isNaN(parsed)) {
+                              setWasscePrice(parsed);
+                            }
+                          }}
                           className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
                         />
                       </div>
@@ -454,7 +492,7 @@ export default function AgentDashboardPage() {
                           Your Profit Margin
                         </span>
                         <div className="font-mono text-sm font-bold text-brand-emerald h-[38px] flex items-center">
-                          + GH₵ {(wasscePrice - 17.00).toFixed(2)} / sale
+                          + GH₵ {(wasscePrice - 16.50).toFixed(2)} / sale
                         </div>
                       </div>
                     </div>
