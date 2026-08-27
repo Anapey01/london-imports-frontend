@@ -7,6 +7,7 @@ import { siteConfig } from "@/config/site";
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Suspense } from "react";
 import SkipToContent from "@/components/SkipToContent";
 import { 
@@ -163,6 +164,7 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <GoogleAnalytics />
           <WebVitalsReporter />
+          <SpeedInsights />
         </Suspense>
 
         <Providers>
