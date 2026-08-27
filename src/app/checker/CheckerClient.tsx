@@ -27,7 +27,7 @@ interface HistoryItem {
   vouchers: VoucherDetail[];
 }
 
-export default function CheckerClient() {
+export default function CheckerClient({ initialPricingData }: { initialPricingData?: any }) {
   const [activeModal, setActiveModal] = useState<'buy' | 'retrieve' | null>(null);
   const [, startTransition] = useTransition();
   
@@ -49,7 +49,7 @@ export default function CheckerClient() {
   const [searched, setSearched] = useState<boolean>(false);
 
   // Dynamic Pricing State
-  const [pricing, setPricing] = useState<PricingData>({
+  const [pricing, setPricing] = useState<PricingData>(initialPricingData?.pricing || {
     BECE: [
       { min_quantity: 1, max_quantity: 9, price_per_unit: '17.00' },
       { min_quantity: 10, max_quantity: 29, price_per_unit: '16.50' },
@@ -63,8 +63,8 @@ export default function CheckerClient() {
       { min_quantity: 100, max_quantity: null, price_per_unit: '15.50' },
     ]
   });
-  const [stock, setStock] = useState<{ [key: string]: number }>({ BECE: -1, WASSCE: -1 });
-  const [stockLoading, setStockLoading] = useState<boolean>(true);
+  const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { BECE: -1, WASSCE: -1 });
+  const [stockLoading, setStockLoading] = useState<boolean>(!initialPricingData);
 
   // Helper for non-blocking modal toggles (INP fix)
   const openModal = (modal: 'buy' | 'retrieve' | null) => {
@@ -82,6 +82,7 @@ export default function CheckerClient() {
   // Fetch Pricing & Stock levels on mount — with one retry on failure
   useEffect(() => {
     async function fetchPricingAndStock(attempt = 1) {
+      if (initialPricingData) return;
       try {
         const response = await checkersAPI.getPricing();
         if (response.data) {
@@ -99,7 +100,7 @@ export default function CheckerClient() {
       }
     }
     fetchPricingAndStock();
-  }, []);
+  }, [initialPricingData]);
 
   // Update total price when checkerType, quantity or pricing changes
   useEffect(() => {

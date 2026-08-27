@@ -27,7 +27,7 @@ interface HistoryItem {
   vouchers: VoucherDetail[];
 }
 
-export default function AgentStoreClient({ slug }: { slug: string }) {
+export default function AgentStoreClient({ slug, initialPricingData }: { slug: string; initialPricingData?: any }) {
   const [activeModal, setActiveModal] = useState<'buy' | 'retrieve' | null>(null);
   const [, startTransition] = useTransition();
   
@@ -48,14 +48,16 @@ export default function AgentStoreClient({ slug }: { slug: string }) {
   const [searched, setSearched] = useState<boolean>(false);
 
   // Store Brand State
-  const [storeName, setStoreName] = useState<string>('');
-  const [pricing, setPricing] = useState<PricingData>({
+  const [storeName, setStoreName] = useState<string>(initialPricingData?.store_name || '');
+  const [pricing, setPricing] = useState<PricingData>(initialPricingData?.pricing || {
     BECE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }],
     WASSCE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }]
   });
-  const [stock, setStock] = useState<{ [key: string]: number }>({ BECE: -1, WASSCE: -1 });
-  const [storeLoading, setStoreLoading] = useState<boolean>(true);
-  const [storeError, setStoreError] = useState<string | null>(null);
+  const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { BECE: -1, WASSCE: -1 });
+  const [storeLoading, setStoreLoading] = useState<boolean>(!initialPricingData);
+  const [storeError, setStoreError] = useState<string | null>(
+    initialPricingData ? null : null
+  );
 
   // Modal handlers
   const openModal = (modal: 'buy' | 'retrieve' | null) => {
@@ -73,6 +75,7 @@ export default function AgentStoreClient({ slug }: { slug: string }) {
   // Fetch Pricing & Stock levels from agent profile
   useEffect(() => {
     async function fetchStoreDetails() {
+      if (initialPricingData) return;
       try {
         const response = await checkersAPI.getPricing(slug);
         if (response.data) {
@@ -88,7 +91,7 @@ export default function AgentStoreClient({ slug }: { slug: string }) {
       }
     }
     fetchStoreDetails();
-  }, [slug]);
+  }, [slug, initialPricingData]);
 
   // Calculate dynamic totalPrice
   useEffect(() => {

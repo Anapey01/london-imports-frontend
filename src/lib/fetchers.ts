@@ -1,4 +1,5 @@
 import { siteConfig } from '@/config/site';
+import { cache } from 'react';
 
 const API_BASE_URL = siteConfig.apiUrl;
 
@@ -197,7 +198,7 @@ export async function getCategory(slug: string) {
     }
 }
 
-export async function getProduct(slug: string) {
+export const getProduct = cache(async (slug: string) => {
     const url = `${API_BASE_URL}/products/${slug}/`;
     try {
         const res = await fetchWithRetry(url, {
@@ -220,7 +221,7 @@ export async function getProduct(slug: string) {
         }
         throw e;
     }
-}
+});
 
 export async function getProductMetadata(slug: string) {
     try {
@@ -369,5 +370,27 @@ export async function getLatestReviews() {
             return [];
         }
         return [];
+    }
+}
+
+export async function getAgentPricing(agentSlug?: string) {
+    let url = `${API_BASE_URL}/checkers/pricing/`;
+    if (agentSlug) {
+        url += `?agent_slug=${agentSlug}`;
+    }
+    try {
+        const res = await fetchWithRetry(url, {
+            cache: 'no-store' // Always fetch fresh stock and prices
+        });
+        if (!res.ok) {
+            throw new Error(`Failed to fetch agent pricing: ${res.status}`);
+        }
+        return await res.json();
+    } catch (e) {
+        console.error(`[SSR] Exception fetching agent pricing for ${agentSlug}:`, e);
+        if (process.env.NEXT_IS_BUILDING === 'true') {
+            return null;
+        }
+        throw e;
     }
 }

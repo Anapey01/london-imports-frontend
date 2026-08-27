@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import CheckerClient from './CheckerClient';
+import { getAgentPricing } from '@/lib/fetchers';
 
 export const metadata: Metadata = {
   title: "WAEC Results Checker Center | London's Imports",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CheckerPage() {
-  return <CheckerClient />;
+export default async function CheckerPage() {
+  const initialPricingData = await getAgentPricing();
+  return <CheckerClient initialPricingData={initialPricingData} />;
 }

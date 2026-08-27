@@ -126,7 +126,7 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
         <div className="w-full">
             <Script
                 src="https://accounts.google.com/gsi/client"
-                strategy="afterInteractive"
+                strategy="lazyOnload"
                 onLoad={initializeGoogle}
             />
             

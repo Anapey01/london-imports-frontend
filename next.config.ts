@@ -287,6 +287,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/checker/agent',
+        destination: '/checker/agent/about',
+        permanent: true,
+      },
+      {
         source: '/products',
         has: [
           {
