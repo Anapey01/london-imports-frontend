@@ -171,19 +171,33 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
     );
 
     // 7. Soft Professional CTA Link Conversion (👉 https://londonsimports.com/checker)
+    // Matches standalone URLs while avoiding matching attributes inside tags (like href/src)
     html = html.replace(
-        /(?:<p>)?\s*(?:👉)?\s*(https?:\/\/[^\s<]+)\s*(?:<\/p>)?/gi,
-        (match: string, url: string) => {
-            return `<div class="my-10 p-6 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Official Result Checker Desk</span>
-                    <span class="text-base md:text-lg font-serif font-bold text-slate-900">Purchase Authentic WAEC BECE Result Checker</span>
-                </div>
-                <a href="${url}" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider transition-colors shrink-0 border border-slate-900">
-                    Buy Checker GHS 17.00 →
-                </a>
-            </div>`;
+        /(<[^>]+>)|(?:👉)?\s*(https?:\/\/[^\s<]+)/gi,
+        (match: string, tag: string, url: string) => {
+            if (tag) return tag;
+            
+            const isCheckerUrl = url.toLowerCase().includes('checker');
+            if (isCheckerUrl) {
+                return `<div class="my-10 p-6 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 blog-checker-cta">
+                    <div>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Official Result Checker Desk</span>
+                        <span class="text-base md:text-lg font-serif font-bold text-slate-900">Purchase Authentic WAEC Result Checker</span>
+                    </div>
+                    <a href="${url}" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider transition-colors shrink-0 border border-slate-900">
+                        Buy Checker →
+                    </a>
+                </div>`;
+            } else {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-slate-900 underline hover:opacity-60 break-all font-mono text-sm">${url}</a>`;
+            }
         }
+    );
+
+    // Clean up redundant wrapping paragraphs around checker CTA divs
+    html = html.replace(
+        /<p>\s*(<div class="my-10 p-6 bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 blog-checker-cta">[\s\S]*?<\/div>)\s*<\/p>/gi,
+        '$1'
     );
 
     // 8. Convert FAQ Question/Answer paragraphs into soft editorial Q&A cards
