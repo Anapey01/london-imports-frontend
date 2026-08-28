@@ -288,6 +288,9 @@ export const adminAPI = {
   createDeliveryPhoto: (data: unknown) => api.post('/products/admin/delivery-photos/', data),
   updateDeliveryPhoto: (id: string, data: unknown) => api.patch(`/products/admin/delivery-photos/${id}/`, data),
   deleteDeliveryPhoto: (id: string) => api.delete(`/products/admin/delivery-photos/${id}/`),
+
+  // Voucher Sales & Inventory Analytics
+  checkerAnalytics: (params?: Record<string, unknown>) => api.get('/checkers/admin/analytics/', { params }),
 };
 
 // Public Blog API
