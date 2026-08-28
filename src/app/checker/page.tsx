@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import CheckerClient from './CheckerClient';
 import { getAgentPricing } from '@/lib/fetchers';
 
@@ -15,7 +16,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function CheckerPage() {
+async function CheckerContent() {
   const initialPricingData = await getAgentPricing();
   return <CheckerClient initialPricingData={initialPricingData} />;
+}
+
+export default function CheckerPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+          <p className="text-xs text-content-secondary font-bold uppercase tracking-widest">Loading Checker Center...</p>
+        </div>
+      </div>
+    }>
+      <CheckerContent />
+    </Suspense>
+  );
 }
