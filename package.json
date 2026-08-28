@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest",
     "analyze": "cross-env ANALYZE=true next build",
-    "prepare": "husky",
+    "prepare": "node -e \"if (require('fs').existsSync('.git')) require('child_process').execSync('husky', {stdio: 'inherit'})\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
