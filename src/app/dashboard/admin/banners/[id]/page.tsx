@@ -45,11 +45,8 @@ export default function EditBannerPage() {
     useEffect(() => {
         const fetchBanner = async () => {
             try {
-                const token = localStorage.getItem('access_token');
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/${bannerId}/`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    credentials: 'include',
                 });
 
                 if (!response.ok) throw new Error('Failed to fetch banner data');
@@ -91,7 +88,6 @@ export default function EditBannerPage() {
         setError(null);
 
         try {
-            const token = localStorage.getItem('access_token');
             let imageUrl = formData.image;
 
             // 1. Upload new image if selected
@@ -119,9 +115,9 @@ export default function EditBannerPage() {
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/${bannerId}/`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(bannerData)
             });

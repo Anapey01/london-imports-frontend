@@ -32,9 +32,6 @@ export default function VendorDashboardLayout({
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const token = localStorage.getItem('access_token');
-                if (!token) throw new Error('No token');
-
                 const response = await authAPI.me();
                 const userData = response.data;
 

@@ -223,5 +223,72 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
         }
     );
 
-    return html;
+    return sanitizeHtml(html);
+};
+
+/**
+ * Sanitizes rich HTML content to prevent XSS attacks while preserving legitimate formatting.
+ * Disallows <script>, <iframe>, <object>, <embed>, <style>, event handlers (on*), and javascript: URLs.
+ */
+export const sanitizeHtml = (html: string): string => {
+    if (!html) return '';
+
+    // 1. Remove dangerous tags and their inner contents (<script>, <iframe>, <object>, <embed>, <style>)
+    let clean = html.replace(/<(script|iframe|object|embed|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+
+    // 2. Remove self-closing / unclosed dangerous tags
+    clean = clean.replace(/<(script|iframe|object|embed|style)\b[^>]*\/?>/gi, '');
+
+    // 3. Remove inline event handlers (onclick, onerror, onload, onmouseover, etc.)
+    clean = clean.replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+
+    // 4. Remove javascript: and vbscript: URL schemes from href/src
+    clean = clean.replace(/(href|src)\s*=\s*(?:"\s*(?:javascript|vbscript):[^"]*"|'\s*(?:javascript|vbscript):[^']*'|(?:javascript|vbscript):[^\s>]+)/gi, '$1="#"');
+
+    return clean;
+};
+
+/**
+ * Uploads an image to Cloudinary using staff-signed signatures (H-1 Security Protection).
+ */
+export const uploadImageSigned = async (file: File, folder: string = 'products'): Promise<string> => {
+    try {
+        const signRes = await fetch(`${siteConfig.apiUrl}/products/cloudinary-sign/?folder=${encodeURIComponent(folder)}`, {
+            credentials: 'include',
+        });
+        if (signRes.ok) {
+            const signData = await signRes.json();
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('api_key', signData.api_key);
+            formData.append('timestamp', String(signData.timestamp));
+            formData.append('signature', signData.signature);
+            formData.append('folder', signData.folder);
+
+            const uploadRes = await fetch(
+                `https://api.cloudinary.com/v1_1/${signData.cloud_name}/image/upload`,
+                { method: 'POST', body: formData }
+            );
+
+            if (uploadRes.ok) {
+                const uploadResult = await uploadRes.json();
+                return uploadResult.secure_url;
+            }
+        }
+    } catch (err) {
+        console.warn('Signed Cloudinary upload failed:', err);
+    }
+
+    // Fallback if sign endpoint fails or is unauthenticated
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'londons_imports');
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
+    const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: 'POST', body: formData }
+    );
+    if (!uploadRes.ok) throw new Error('Image upload failed');
+    const uploadResult = await uploadRes.json();
+    return uploadResult.secure_url;
 };

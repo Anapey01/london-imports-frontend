@@ -59,8 +59,6 @@ export default function NewBannerPage() {
         }
 
         try {
-            const token = localStorage.getItem('access_token');
-            
             // 1. Upload to Cloudinary (Using the same logic as products)
             const cloudinaryData = new FormData();
             cloudinaryData.append('file', imageFile);
@@ -85,9 +83,9 @@ export default function NewBannerPage() {
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(bannerData)
             });

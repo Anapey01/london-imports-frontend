@@ -4,11 +4,27 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 export async function POST(req: Request) {
     try {
+        const authHeader = req.headers.get('authorization') || '';
+        const internalSecret = process.env.CRON_SECRET || process.env.INTERNAL_API_SECRET;
+        
+        // Security check: restrict endpoint to internal/authorized invocation if secret is set
+        if (internalSecret && authHeader !== `Bearer ${internalSecret}`) {
+            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+        }
+
         const { orderNumber, customerEmail } = await req.json();
 
         if (!RESEND_API_KEY) {
             console.warn('RESEND_API_KEY is not configured in environment variables.');
             return NextResponse.json({ success: false, message: 'Notification service not configured' }, { status: 200 });
+        }
+
+        // Validate and sanitize inputs (C-4 protection)
+        const cleanOrderNumber = String(orderNumber || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 50);
+        const cleanEmail = String(customerEmail || '').trim().toLowerCase();
+        
+        if (!cleanOrderNumber || !cleanEmail || !cleanEmail.includes('@')) {
+            return NextResponse.json({ success: false, message: 'Invalid order number or customer email.' }, { status: 400 });
         }
 
         // DESIGN: Editorial Manifest Email Template (Institutional Dark Mode)
@@ -66,10 +82,10 @@ export async function POST(req: Request) {
                     <h1 class="title">Logistics<br/>Protocol<br/>Initiated.</h1>
 
                     <p class="description">
-                        Your transaction has been verified. Order <span style="color: #ffffff; font-weight: 800;">#${orderNumber}</span> is now entered into the global logistics manifest. Your allocation is being secured across our network.
+                        Your transaction has been verified. Order <span style="color: #ffffff; font-weight: 800;">#${cleanOrderNumber}</span> is now entered into the global logistics manifest. Your allocation is being secured across our network.
                     </p>
 
-                    <div class="manifest-id">LTRX-MANIFEST-${orderNumber}</div>
+                    <div class="manifest-id">LTRX-MANIFEST-${cleanOrderNumber}</div>
 
                     <div class="timeline">
                         <div class="step step-active">
@@ -134,9 +150,9 @@ export async function POST(req: Request) {
             },
             body: JSON.stringify({
                 from: "London's Import <manifest@londonsimports.com>", // Verify this domain in Resend
-                to: [customerEmail || 'info@londonsimports.com'],
+                to: [cleanEmail],
                 cc: ['orders@londonsimports.com'],
-                subject: `MANIFEST AUTHORIZED: ${orderNumber}`,
+                subject: `MANIFEST AUTHORIZED: ${cleanOrderNumber}`,
                 html: emailHtml
             })
         });

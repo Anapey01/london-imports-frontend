@@ -67,11 +67,8 @@ export default function AdminBannersPage() {
     const fetchBanners = async () => {
         try {
             setIsLoading(true);
-            const token = localStorage.getItem('access_token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include',
             });
 
             if (!response.ok) throw new Error('Failed to fetch banners');
@@ -96,12 +93,9 @@ export default function AdminBannersPage() {
             variant: 'danger',
             onConfirm: async () => {
                 try {
-                    const token = localStorage.getItem('access_token');
                     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/${id}/`, {
                         method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        credentials: 'include',
                     });
 
                     if (!response.ok) throw new Error('Failed to delete banner');
@@ -116,12 +110,11 @@ export default function AdminBannersPage() {
 
     const handleToggleActive = async (banner: Banner) => {
         try {
-            const token = localStorage.getItem('access_token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/admin/banners/${banner.id}/`, {
                 method: 'PATCH',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ is_active: !banner.is_active })
             });

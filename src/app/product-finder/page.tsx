@@ -85,12 +85,6 @@ export default function ProductFinderPage() {
         setError(null);
 
         try {
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                router.push('/login?redirect=/product-finder');
-                return;
-            }
-
             // Robust URL construction
             let baseUrl = API_BASE.replace(/\/$/, ""); // Strip trailing slash
             if (baseUrl.endsWith('/api/v1')) {
@@ -106,7 +100,7 @@ export default function ProductFinderPage() {
 
             const res = await fetch(fetchUrl, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
+                credentials: 'include',
                 body: formData,
             });
 

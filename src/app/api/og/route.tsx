@@ -25,18 +25,69 @@ function xmlEscape(str: string | null | undefined): string {
 async function getBase64Image(url: string | null): Promise<string | null> {
     if (!url) return null;
     try {
-        const response = await fetch(url, { signal: AbortSignal.timeout(10000) }); // 10s timeout
+        const parsedUrl = new URL(url);
+
+        // Security (C-5): Enforce HTTP/HTTPS scheme only
+        if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+            return null;
+        }
+
+        const hostname = parsedUrl.hostname.toLowerCase();
+
+        // Block private IP ranges, localhost, and cloud metadata addresses
+        const isPrivate = (
+            hostname === 'localhost' ||
+            hostname === '127.0.0.1' ||
+            hostname === '169.254.169.254' ||
+            hostname === '::1' ||
+            hostname.startsWith('10.') ||
+            hostname.startsWith('192.168.') ||
+            hostname.startsWith('169.254.') ||
+            /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
+        );
+
+        if (isPrivate) {
+            return null;
+        }
+
+        // Allow trusted image sources (Cloudinary, Unsplash, own domain/API)
+        const isAllowedDomain = (
+            hostname.endsWith('cloudinary.com') ||
+            hostname.endsWith('unsplash.com') ||
+            hostname.endsWith('londonsimports.com') ||
+            hostname.endsWith('vercel.app') ||
+            hostname.endsWith('onrender.com')
+        );
+
+        if (!isAllowedDomain) {
+            return null;
+        }
+
+        const response = await fetch(url, { signal: AbortSignal.timeout(5000) }); // 5s timeout
         if (!response.ok) return null;
         
-        const arrayBuffer = await response.arrayBuffer();
-        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const contentType = (response.headers.get('content-type') || '').toLowerCase();
         
+        // Security check: Must be an image
+        if (!contentType.startsWith('image/')) {
+            return null;
+        }
+
+        const contentLength = parseInt(response.headers.get('content-length') || '0', 10);
+        if (contentLength > 5 * 1024 * 1024) { // 5MB limit
+            return null;
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        if (arrayBuffer.byteLength > 5 * 1024 * 1024) {
+            return null;
+        }
+
         // --- MEMORY-SAFE BASE64 ENCODING ---
-        // Prevents "Maximum call stack size exceeded" on large images
         const bytes = new Uint8Array(arrayBuffer);
         let binary = '';
         const len = bytes.byteLength;
-        const CHUNK_SIZE = 8192; // Process in chunks to be efficient
+        const CHUNK_SIZE = 8192;
         
         for (let i = 0; i < len; i += CHUNK_SIZE) {
             const chunk = bytes.subarray(i, i + CHUNK_SIZE);

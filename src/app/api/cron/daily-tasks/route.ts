@@ -18,12 +18,6 @@ const CRON_SECRET = process.env.CRON_SECRET;
 export async function GET(request: Request) {
     // Verify the request is from Vercel Cron
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${CRON_SECRET}`) {
-        return NextResponse.json(
-            { error: 'Unauthorized' },
-            { status: 401 }
-        );
-    }
 
     if (!CRON_SECRET) {
         console.error('[Cron] CRON_SECRET is not configured');
@@ -33,10 +27,17 @@ export async function GET(request: Request) {
         );
     }
 
+    if (authHeader !== `Bearer ${CRON_SECRET}`) {
+        return NextResponse.json(
+            { error: 'Unauthorized' },
+            { status: 401 }
+        );
+    }
+
     try {
         // Strip /api/v1 suffix if present to build the base URL
         const baseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-        const cronUrl = `${baseUrl}/api/v1/orders/cron/daily/?secret=${encodeURIComponent(CRON_SECRET)}`;
+        const cronUrl = `${baseUrl}/api/v1/orders/cron/daily/`;
 
         console.log(`[Cron] Triggering daily tasks at ${new Date().toISOString()}`);
 
@@ -44,6 +45,7 @@ export async function GET(request: Request) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${CRON_SECRET}`,
             },
             // Vercel serverless functions have a 10s default timeout on Hobby
             // The backend has a 120s Gunicorn timeout

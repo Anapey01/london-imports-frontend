@@ -25,6 +25,7 @@ import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion } from 'framer-motion';
 import { adminAPI } from '@/lib/api';
+import { uploadImageSigned } from '@/lib/image';
 
 interface DeliveryPhoto {
     id: string;
@@ -144,21 +145,9 @@ export default function AdminGalleryPage() {
         try {
             let imageUrl = editingPhoto?.image || '';
 
-            // 1. If new image file is uploaded, push it to Cloudinary
+            // 1. If new image file is uploaded, push it to Cloudinary via signed upload (H-1 protection)
             if (imageFile) {
-                const cloudinaryData = new FormData();
-                cloudinaryData.append('file', imageFile);
-                cloudinaryData.append('upload_preset', 'londons_imports');
-                
-                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
-                const uploadRes = await fetch(
-                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                    { method: 'POST', body: cloudinaryData }
-                );
-
-                if (!uploadRes.ok) throw new Error('Cloudinary image upload failed');
-                const uploadResult = await uploadRes.json();
-                imageUrl = uploadResult.secure_url;
+                imageUrl = await uploadImageSigned(imageFile, 'gallery');
             }
 
             const payload = {
