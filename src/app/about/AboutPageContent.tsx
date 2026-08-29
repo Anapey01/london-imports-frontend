@@ -408,7 +408,7 @@ export default function AboutPageContent() {
                     <header className="mb-24">
                         <div className="flex items-center gap-4 mb-8">
                              <div className="h-px w-10 bg-slate-900 dark:bg-white" />
-                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Corporate Registry</span>
+                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">Company Registration</span>
                         </div>
                         <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Business Transparency</h2>
                     </header>
@@ -423,9 +423,9 @@ export default function AboutPageContent() {
                             </p>
                         </div>
                         
-                        {/* Column 2: Registry Ledger */}
+                        {/* Column 2: Registry Details */}
                         <div className="space-y-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Registry details</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">Registration Details</span>
                             <div className="space-y-2">
                                 <p className="text-xs font-black text-slate-900 dark:text-white tracking-widest uppercase">
                                     REG. NO: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">BN516170426</span>

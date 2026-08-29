@@ -246,7 +246,7 @@ export default function VerifyEmailPage() {
         <Suspense fallback={
             <div className="min-h-screen bg-surface flex items-center justify-center">
                 <div className="animate-pulse text-[10px] font-black uppercase tracking-widest text-content-secondary">
-                    Loading Protocol...
+                    Verifying Email...
                 </div>
             </div>
         }>

@@ -4,8 +4,8 @@
  */
 'use client';
 
-import { useState } from 'react';
-import { Terminal, Shield } from 'lucide-react';
+import React, { useState } from 'react';
+import { BookOpen, Shield } from 'lucide-react';
 
 export default function TutorialsPage() {
     const [activeTab, setActiveTab] = useState('products');
@@ -97,12 +97,12 @@ export default function TutorialsPage() {
                 ))}
             </div>
 
-            {/* 3. DIRECTIVE NODES */}
+            {/* 3. GUIDES */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-slate-100 border border-slate-100">
                 {tutorials[activeTab as keyof typeof tutorials].map((guide, idx) => (
                     <div key={idx} className="bg-white p-12 space-y-8">
                         <div className="flex items-center gap-4">
-                            <Terminal className="w-4 h-4 text-slate-300" />
+                            <BookOpen className="w-4 h-4 text-slate-400" />
                             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-900">
                                 {guide.title}
                             </h3>
@@ -123,7 +123,7 @@ export default function TutorialsPage() {
                 ))}
             </div>
 
-            {/* Support Terminal */}
+            {/* Support Help */}
             <div className="p-12 bg-slate-50 border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="flex items-center gap-6">
                     <div className="w-12 h-12 border border-slate-200 flex items-center justify-center bg-white text-slate-300">

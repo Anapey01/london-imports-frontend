@@ -92,7 +92,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                         <div className="space-y-8">
                             <div className="flex items-center justify-between border-b border-slate-50 pb-4">
                                 <label className={`block text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                    Atelier Canvas
+                                    Article Content
                                 </label>
                                 <div className="flex gap-4">
                                     <button 

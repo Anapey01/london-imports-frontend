@@ -53,7 +53,7 @@ export default function BirthdayClubPage() {
         return (
             <div className="min-h-screen bg-surface flex items-center justify-center">
                 <div className="animate-pulse text-[10px] font-black uppercase tracking-[0.5em] text-content-secondary">
-                    Accessing Atelier...
+                    Loading London&apos;s Imports...
                 </div>
             </div>
         );

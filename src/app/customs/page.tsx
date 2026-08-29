@@ -19,18 +19,18 @@ export default function CustomsPage() {
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-12 bg-slate-900" />
                     <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">
-                        Customs protocol / London&apos;s
+                        Customs & Clearance / London&apos;s
                     </span>
                 </div>
                 
                 <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 mb-16">
                     Customs <br />
-                    <span className="italic font-light text-slate-200">Neutralized</span>.
+                    <span className="italic font-light text-slate-400">Simplified</span>.
                 </h1>
 
                 <p className="max-w-2xl text-xl md:text-2xl text-slate-500 font-medium leading-relaxed">
-                    Tema Port is a logistical puzzle. We solve it with architectural precision. 
-                    From GRA duty sheets to the final gate clearance, our agents manage the complexity so you don’t have to.
+                    Tema Port logistics can be complicated. We make it seamless. 
+                    From GRA duty documentation to final gate clearance, our team manages the entire process so you don’t have to.
                 </p>
             </header>
 
@@ -42,18 +42,18 @@ export default function CustomsPage() {
                         <div className="grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100 mb-20">
                             <div className="bg-white p-12 flex flex-col gap-6">
                                 <AlertTriangle className="w-8 h-8 text-slate-200" strokeWidth={1} />
-                                <h3 className="text-xl font-serif font-bold text-slate-900 tracking-tight">The Complexity</h3>
+                                <h3 className="text-xl font-serif font-bold text-slate-900 tracking-tight">The Challenge</h3>
                                 <p className="text-sm text-slate-400 leading-relaxed font-medium">
-                                    Import Duty, VAT, NHIL, GetFund, and the COVID Levy. Calculating your total liability in Ghana is a nightmare for individuals.
+                                    Import Duty, VAT, NHIL, GetFund, and other statutory levies. Calculating total clearance fees in Ghana can be confusing.
                                 </p>
                             </div>
                             <div className="bg-white p-12 flex flex-col gap-6 border-l border-slate-100">
                                 <div className="w-8 h-8 rounded-full border border-emerald-500 flex items-center justify-center">
                                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                                 </div>
-                                <h3 className="text-xl font-serif font-bold text-slate-900 tracking-tight">The Protocol</h3>
+                                <h3 className="text-xl font-serif font-bold text-slate-900 tracking-tight">Our Solution</h3>
                                 <p className="text-sm text-slate-400 leading-relaxed font-medium">
-                                    By grouping your items into our &apos;Groupage&apos; containers, we handle the bulk clearance at commercial rates. You pay ONE flat fee.
+                                    By consolidating shipments in groupage containers, we clear cargo efficiently at commercial bulk rates. You pay one simple flat rate.
                                 </p>
                             </div>
                         </div>
@@ -82,7 +82,7 @@ export default function CustomsPage() {
                                         <item.icon className="w-full h-full" strokeWidth={1} />
                                     </div>
                                     <div className="pt-2">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 mb-4 italic">Protocol CP-0{i+1}</h4>
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">Step 0{i+1}</h4>
                                         <h5 className="text-2xl font-serif font-bold text-slate-900 mb-4 tracking-tighter">{item.title}</h5>
                                         <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-lg">{item.text}</p>
                                     </div>

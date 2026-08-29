@@ -200,15 +200,14 @@ export default function PaymentTransferPage() {
                     <div className="max-w-2xl space-y-6">
                         <div className="flex items-center gap-4">
                             <span className="px-3 py-1 bg-pink-500 text-white text-[9px] font-black uppercase tracking-widest">Administrative</span>
-                            <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">Ledger Protocol v2.0</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">Payment Transfer</span>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tighter leading-tight">
                             Payment <br />
                             <span className="italic text-pink-500">Transfer</span> Hub.
                         </h1>
                         <p className="text-lg opacity-60 leading-relaxed font-medium">
-                            Execute atomic transfers between orders within the same customer ecosystem. 
-                            Strictly enforced for internal balance corrections and credit migrations.
+                            Transfer payments and balances between orders for the same customer to handle balance adjustments and credit transfers.
                         </p>
                     </div>
                     

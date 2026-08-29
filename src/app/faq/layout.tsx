@@ -1,18 +1,18 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'FAQ Repository | London\'s Imports Ghana',
-    description: 'Find answers to common questions about global product sourcing, international logistics and shipping to Ghana, payments with Momo, and customs clearance.',
+    title: "Frequently Asked Questions | London's Imports Ghana",
+    description: 'Find answers to common questions about global product sourcing, international shipping to Ghana, payments with Mobile Money, and customs clearance.',
     openGraph: {
-        title: 'FAQ Repository | London\'s Imports Ghana',
-        description: 'Transparent, architectural answers to your logistics and sourcing queries.',
+        title: "Frequently Asked Questions | London's Imports Ghana",
+        description: 'Clear answers to your shipping and product sourcing questions.',
         url: 'https://londonsimports.com/faq',
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'FAQ Repository | London\'s Imports Support',
-        description: 'Our logistics protocol explained in detail for the sophisticated importer.',
+        title: "Frequently Asked Questions | London's Imports",
+        description: "Everything you need to know about ordering and shipping with London's Imports.",
     }
 };
 

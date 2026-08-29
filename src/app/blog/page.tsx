@@ -214,14 +214,14 @@ export default async function BlogPage() {
                 <div className="mt-48 pt-32 border-t border-slate-100 grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100">
                     <div className="bg-white p-12 md:p-20 flex flex-col justify-between group">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-10 block font-sans">Atelier Journal</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-10 block font-sans">London&apos;s Imports Journal</span>
                             <h3 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-10 tracking-tighter leading-[0.85]">
-                                Stay Refined. <br /> 
-                                <span className="italic font-light text-slate-200">Stay Ahead.</span>
+                                Stay Informed. <br /> 
+                                <span className="italic font-light text-slate-400">Stay Ahead.</span>
                             </h3>
                         </div>
-                        <p className="text-sm text-slate-400 font-medium leading-relaxed mb-12 max-w-xs group-hover:text-slate-500 transition-colors">
-                            Monthly logistics briefings for Ghanaian business leaders. No filler, only verified strategy.
+                        <p className="text-sm text-slate-500 font-medium leading-relaxed mb-12 max-w-xs">
+                            Monthly shipping guides and product updates for businesses and shoppers in Ghana.
                         </p>
                         
                         <div className="flex flex-col gap-6 max-w-sm">

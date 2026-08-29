@@ -77,7 +77,7 @@ export function DeliveryAddressManager({
                     <div className="bg-slate-500/5 p-8 border-l-2 border-pink-500">
                         <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-4">Shipping Notes</span>
                         <p className="text-sm font-medium italic opacity-60 leading-relaxed">
-                            &quot;{order.customer_notes || 'No special directives logged for this shipment.'}&quot;
+                            &quot;{order.customer_notes || 'No special delivery notes for this shipment.'}&quot;
                         </p>
                     </div>
                 </div>

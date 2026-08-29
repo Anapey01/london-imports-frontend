@@ -73,7 +73,7 @@ export function AdminActionsPanel({
                 </div>
 
                 <div className="pt-4 space-y-2">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Protocol Transitions</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-40 block ml-2 mb-2">Change Order Status</span>
                     <div className="grid grid-cols-1 gap-2">
                         <button onClick={() => handleUpdateStatus('IN_TRANSIT')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
                             Mark as Shipped

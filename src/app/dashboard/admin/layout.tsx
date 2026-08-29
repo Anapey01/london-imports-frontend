@@ -60,7 +60,7 @@ export default function AdminDashboardLayout({
                 <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 flex items-center justify-center">
                     <div className="flex flex-col items-center gap-3">
                         <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
-                        <p className={`text-[10px] font-black tracking-widest uppercase ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>INITIALIZING SYSTEM...</p>
+                        <p className={`text-[10px] font-black tracking-widest uppercase ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>LOADING DASHBOARD...</p>
                     </div>
                 </main>
             </div>
@@ -78,16 +78,16 @@ export default function AdminDashboardLayout({
                 />
             </div>
 
-            {/* Main Content Area (Architectural Grid) */}
+            {/* Main Content Area */}
             <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 print:ml-0 print:border-none">
-                {/* 1. OPERATIONAL COMMAND HEADER */}
+                {/* 1. Header */}
                 <div className={`sticky top-0 z-[30] backdrop-blur-md border-b ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-50'} print:hidden`}>
                     <div className="max-w-[1600px] mx-auto px-8 py-8 flex items-center justify-between">
                         <div className="flex items-center gap-6">
-                            {/* Mobile Terminal Toggle */}
+                            {/* Mobile Navigation Toggle */}
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                aria-label="Open Terminal"
+                                aria-label="Open Navigation Menu"
                                 className={`md:hidden p-2 border border-slate-100 rounded-none hover:bg-slate-50 transition-colors`}
                             >
                                 <svg className="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">

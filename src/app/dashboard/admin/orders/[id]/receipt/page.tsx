@@ -108,7 +108,7 @@ export default function OrderReceiptPage() {
                         </div>
                         <div>
                             <h1 className="text-4xl font-serif font-bold tracking-tighter text-slate-950 mb-1">London&apos;s Imports</h1>
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Atelier Operations Hub</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Official Order Receipt</p>
                         </div>
                     </div>
                     <div className="text-right">

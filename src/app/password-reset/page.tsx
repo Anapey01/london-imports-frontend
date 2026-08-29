@@ -54,10 +54,10 @@ export default function PasswordResetPage() {
                 <header className="text-center mb-12">
                     <div className="inline-flex items-center gap-3 mb-6 opacity-40 justify-center">
                          <div className="h-px w-6 bg-content-primary" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Security Protocol</span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-content-primary">Account Security</span>
                          <div className="h-px w-6 bg-content-primary" />
                     </div>
-                    <h1 className="text-4xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">Reset Access</h1>
+                    <h1 className="text-4xl font-serif font-bold text-content-primary mb-4 tracking-tighter leading-none">Reset Password</h1>
                     <p className="text-content-secondary font-medium text-sm italic">Enter your verified email to receive a secure reset link.</p>
                 </header>
 

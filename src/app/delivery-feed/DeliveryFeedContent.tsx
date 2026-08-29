@@ -44,13 +44,13 @@ export default function DeliveryFeedContent() {
                     <div className="max-w-3xl space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-content-primary">Logistics Verification Protocol</h2>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-content-primary">Verified Shipments & Arrivals</h2>
                         </div>
                         <h1 className="text-3xl md:text-5xl font-bold font-sans tracking-tight text-content-primary">
                             Logistics & <span className="font-serif italic font-normal text-brand-emerald">Delivery Feed</span>
                         </h1>
                         <p className="text-sm md:text-base text-content-secondary font-medium leading-relaxed">
-                            Real-world verification photos. We capture and catalog our weekly consolidated air and sea cargo shipments as they arrive and clear through our Accra & Kumasi fulfillment hubs.
+                            Real photos of our weekly air and sea cargo shipments arriving and clearing through our hubs in Accra and Kumasi.
                         </p>
                     </div>
                 </div>

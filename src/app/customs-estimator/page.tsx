@@ -20,18 +20,18 @@ export default function CustomsEstimatorPage() {
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-12 bg-slate-900" />
                     <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">
-                        Fiscal Protocol / London&apos;s
+                        Duty Calculator / London&apos;s
                     </span>
                 </div>
                 
                 <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 mb-16">
                     Duty <br />
-                    Forecasting <span className="italic font-light text-slate-200">&amp;</span> <br />
-                    Assessment.
+                    Estimates <span className="italic font-light text-slate-400">&amp;</span> <br />
+                    Calculations.
                 </h1>
 
                 <p className="max-w-2xl text-xl md:text-2xl text-slate-500 font-medium leading-relaxed">
-                    A precision-based tax liability estimation engine. Calculated using the current GH Common External Tariff framework with architectural accuracy.
+                    An easy-to-use customs duty and tax estimator based on the official Ghana Common External Tariff schedule.
                 </p>
             </header>
 
@@ -45,21 +45,21 @@ export default function CustomsEstimatorPage() {
                         <div className="mt-12 flex items-start gap-6 p-8 bg-slate-50/50 border-l border-slate-200">
                             <AlertCircle className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" strokeWidth={1.5} />
                             <p className="text-[11px] text-slate-400 font-medium leading-relaxed max-w-4xl italic">
-                                This tool provides projections based on official GRA valuation principles. 
-                                Final assessment at the port of entry remains subject to terminal exchange rates and customs officer physical inspection.
+                                This tool provides estimates based on official GRA valuation guidelines. 
+                                Final port assessments depend on current official exchange rates and physical customs inspection.
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* 3. EXPERT NOTES (Asymmetrical Split Grid) */}
+                {/* 3. EXPERT NOTES */}
                 <section className="pt-24 border-t border-slate-100">
                     <div className="grid md:grid-cols-2 gap-px bg-slate-100 border border-slate-100 mb-24">
                         
                         <div className="bg-white p-12 md:p-20 group">
                             <div className="flex items-center gap-3 mb-10">
                                 <Zap className="w-5 h-5 text-emerald-500 fill-emerald-500" strokeWidth={1} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-700 dark:text-emerald-500 italic">Audit Protocol AT-01 / Savings</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-700 dark:text-emerald-500">Cost Savings / Consolidation</span>
                             </div>
                             <h3 className="text-4xl font-serif font-bold text-slate-900 mb-8 tracking-tighter leading-[0.9]">
                                 Individual taxes & <br />

@@ -48,7 +48,7 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
             try {
                 await googleLogin(response.credential);
                 const successMsg = mode === 'signup' 
-                    ? 'Welcome to Atelier! Your account is ready.' 
+                    ? "Welcome to London's Imports! Your account is ready." 
                     : 'Success! Signed in with Google';
                 
                 showToast(successMsg, 'success');
@@ -152,7 +152,7 @@ function GoogleButtonContent({ mode = 'signin' }: { mode?: 'signin' | 'signup' }
             )}
 
             <p className="mt-4 text-center text-[8px] font-black uppercase tracking-[0.2em] text-content-secondary/50 dark:text-content-secondary/40">
-                Official Google Security Protocol
+                Secure Google Sign-In
             </p>
         </div>
     );

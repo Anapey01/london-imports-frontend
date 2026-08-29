@@ -75,17 +75,17 @@ export async function POST(req: Request) {
             <body>
                 <div class="container">
                     <div class="header">
-                        <div class="logo">LONDON'S IMPORT</div>
-                        <div class="stamp">ALLOCATION AUTHORIZED</div>
+                        <div class="logo">LONDON'S IMPORTS</div>
+                        <div class="stamp">PAYMENT CONFIRMED</div>
                     </div>
 
-                    <h1 class="title">Logistics<br/>Protocol<br/>Initiated.</h1>
+                    <h1 class="title">Order<br/>Confirmed<br/>&amp; Processing.</h1>
 
                     <p class="description">
-                        Your transaction has been verified. Order <span style="color: #ffffff; font-weight: 800;">#${cleanOrderNumber}</span> is now entered into the global logistics manifest. Your allocation is being secured across our network.
+                        Your payment has been verified. Order <span style="color: #ffffff; font-weight: 800;">#${cleanOrderNumber}</span> is now being processed and prepared for shipping from China to Ghana.
                     </p>
 
-                    <div class="manifest-id">LTRX-MANIFEST-${cleanOrderNumber}</div>
+                    <div class="manifest-id">ORDER #${cleanOrderNumber}</div>
 
                     <div class="timeline">
                         <div class="step step-active">
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                             </div>
                             <div class="step-id">STAGE 01 / PLACED</div>
-                            <div class="step-title">Order Request Recorded</div>
+                            <div class="step-title">Order Request Received</div>
                         </div>
 
                         <div class="step step-active">
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                             </div>
                             <div class="step-id">STAGE 02 / PAID</div>
-                            <div class="step-title">Payment Transaction Authorized</div>
+                            <div class="step-title">Payment Confirmed</div>
                         </div>
 
                         <div class="step">
@@ -109,15 +109,15 @@ export async function POST(req: Request) {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                             </div>
                             <div class="step-id">STAGE 03 / BATCH</div>
-                            <div class="step-title">Allocated to Global Shipment</div>
+                            <div class="step-title">Packed in Cargo Batch</div>
                         </div>
 
                         <div class="step">
                             <div class="icon-box">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                             </div>
-                            <div class="step-id">STAGE 04 / CHINA</div>
-                            <div class="step-title">Sourcing from Asia Hub</div>
+                            <div class="step-id">STAGE 04 / SHIPPED</div>
+                            <div class="step-title">In Transit from China</div>
                         </div>
 
                         <div class="step step-last">
@@ -125,16 +125,16 @@ export async function POST(req: Request) {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v10Z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
                             </div>
                             <div class="step-id">STAGE 05 / GHANA</div>
-                            <div class="step-title">Accra Terminal Processing</div>
+                            <div class="step-title">Arrived in Accra / Delivery</div>
                         </div>
                     </div>
 
                     <div style="text-align: center;">
-                        <a href="https://naa-import.vercel.app/orders" class="cta">Track Manifest Status</a>
+                        <a href="https://londonsimports.com/orders" class="cta">Track Your Order</a>
                     </div>
 
                     <div class="footer">
-                        LOGISTICS PROTOCOL ALPHA v4 / INSTITUTIONAL TRANSMISSION
+                        London's Imports &bull; China to Ghana Sourcing &amp; Shipping
                     </div>
                 </div>
             </body>

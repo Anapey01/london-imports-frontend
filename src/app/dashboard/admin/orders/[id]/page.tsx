@@ -211,7 +211,7 @@ export default function AdminOrderDetailPage() {
         setUpdating(true);
         try {
             await adminAPI.updateOrder(orderId, editForm);
-            addAlert('Dispatch protocols updated');
+            addAlert('Delivery details updated successfully');
             await loadOrder();
             setIsEditingDelivery(false);
         } catch (error: any) {

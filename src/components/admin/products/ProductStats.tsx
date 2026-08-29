@@ -9,10 +9,10 @@ interface ProductStatsProps {
 
 const ProductStats = ({ products }: ProductStatsProps) => {
     const stats = [
-        { label: 'TOTAL_ENTRIES', value: products.length },
-        { label: 'PRE_ORDER_PROTOCOL', value: products.filter((p) => p.preOrder).length },
-        { label: 'ACTIVE_MANIFESTS', value: products.filter((p) => p.status === 'ACTIVE').length },
-        { label: 'PENDING_AUTHORITY', value: products.filter((p) => p.status === 'PENDING').length },
+        { label: 'TOTAL PRODUCTS', value: products.length },
+        { label: 'PRE-ORDERS', value: products.filter((p) => p.preOrder).length },
+        { label: 'ACTIVE PRODUCTS', value: products.filter((p) => p.status === 'ACTIVE').length },
+        { label: 'PENDING APPROVAL', value: products.filter((p) => p.status === 'PENDING').length },
     ];
 
     return (
