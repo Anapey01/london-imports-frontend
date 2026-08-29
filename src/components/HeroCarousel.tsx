@@ -233,6 +233,7 @@ export default function HeroCarousel({ initialProducts = [], initialBanners = []
                                             fill
                                             className="object-cover object-center"
                                             priority={index === 0}
+                                            fetchPriority={index === 0 ? "high" : "auto"}
                                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 50vw"
                                             quality={80}
                                         />
