@@ -40,12 +40,24 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   const [error, setError] = useState<string | null>(null);
   const [showPricingTiers, setShowPricingTiers] = useState<boolean>(false);
 
-  // Retrieve Form State
+  // Retrieve Form State (2-step Email -> OTP -> Results)
+  const [retrieveStep, setRetrieveStep] = useState<'email' | 'otp' | 'results'>('email');
+  const [retrieveEmail, setRetrieveEmail] = useState<string>('');
+  const [retrieveOtp, setRetrieveOtp] = useState<string>('');
+  const [resendCooldown, setResendCooldown] = useState<number>(0);
   const retrieveEmailRef = useRef<HTMLInputElement>(null);
   const [retrieveLoading, setRetrieveLoading] = useState<boolean>(false);
   const [retrieveError, setRetrieveError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [searched, setSearched] = useState<boolean>(false);
+
+  // Resend OTP countdown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   // Store Brand State
   const [storeName, setStoreName] = useState<string>(initialPricingData?.store_name || '');
@@ -55,9 +67,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   });
   const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { BECE: -1, WASSCE: -1 });
   const [storeLoading, setStoreLoading] = useState<boolean>(!initialPricingData);
-  const [storeError, setStoreError] = useState<string | null>(
-    initialPricingData ? null : null
-  );
+  const [storeError, setStoreError] = useState<string | null>(null);
 
   // Modal handlers
   const openModal = (modal: 'buy' | 'retrieve' | null) => {
@@ -66,7 +76,9 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
       if (modal === 'retrieve') {
         setRetrieveError(null);
         setHistory([]);
-        setSearched(false);
+        setRetrieveStep('email');
+        setRetrieveEmail('');
+        setRetrieveOtp('');
       }
       setActiveModal(modal);
     });
@@ -147,15 +159,13 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     }
   };
 
-  // Handle Retrieve submit
-  const handleRetrieveSubmit = async (e: React.FormEvent) => {
+  // Step 1: Send OTP to customer's email
+  const handleSendOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRetrieveError(null);
     setRetrieveLoading(true);
-    setHistory([]);
-    setSearched(false);
 
-    const emailValue = retrieveEmailRef.current?.value?.trim() || '';
+    const emailValue = (retrieveEmailRef.current?.value?.trim() || retrieveEmail).toLowerCase();
     if (!emailValue || !emailValue.includes('@')) {
       setRetrieveError('Please enter a valid email address.');
       setRetrieveLoading(false);
@@ -163,13 +173,62 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     }
 
     try {
-      const response = await checkersAPI.retrieve(emailValue);
+      const response = await checkersAPI.sendRetrieveOtp(emailValue);
+      if (response.data && response.data.success) {
+        setRetrieveEmail(emailValue);
+        setRetrieveStep('otp');
+        setResendCooldown(60);
+      } else {
+        setRetrieveError(response.data?.message || 'Failed to send verification code.');
+      }
+    } catch (err: any) {
+      const backendError = err.response?.data?.error || 'Could not send verification code. Please check your email and try again.';
+      setRetrieveError(backendError);
+    } finally {
+      setRetrieveLoading(false);
+    }
+  };
+
+  // Step 2: Verify OTP and retrieve vouchers
+  const handleVerifyOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRetrieveError(null);
+    setRetrieveLoading(true);
+
+    const otpCode = retrieveOtp.trim();
+    if (!otpCode || otpCode.length < 6) {
+      setRetrieveError('Please enter the complete 6-digit verification code.');
+      setRetrieveLoading(false);
+      return;
+    }
+
+    try {
+      const response = await checkersAPI.verifyRetrieveOtp(retrieveEmail, otpCode);
       if (response.data && response.data.history) {
         setHistory(response.data.history);
+        setRetrieveStep('results');
+      } else {
+        setRetrieveError('Could not verify code. Please try again.');
       }
-      setSearched(true);
     } catch (err: any) {
-      setRetrieveError('Could not retrieve vouchers. Please try again.');
+      const backendError = err.response?.data?.error || 'Invalid or expired verification code. Please check your email or request a new code.';
+      setRetrieveError(backendError);
+    } finally {
+      setRetrieveLoading(false);
+    }
+  };
+
+  // Resend OTP handler
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || !retrieveEmail) return;
+    setRetrieveError(null);
+    setRetrieveLoading(true);
+    try {
+      await checkersAPI.sendRetrieveOtp(retrieveEmail);
+      setResendCooldown(60);
+    } catch (err: any) {
+      const backendError = err.response?.data?.error || 'Failed to resend verification code.';
+      setRetrieveError(backendError);
     } finally {
       setRetrieveLoading(false);
     }
@@ -461,69 +520,168 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
             </button>
 
             <div className="p-5 sm:p-7 max-h-[85vh] overflow-y-auto">
-              <h3 className="font-serif text-xl sm:text-2xl font-black text-content-primary mb-5 pr-8 uppercase tracking-tight">
-                Retrieve Checkers
+              <h3 className="font-serif text-xl sm:text-2xl font-black text-content-primary mb-2 pr-8 uppercase tracking-tight">
+                {retrieveStep === 'results' ? 'Your Results Checkers' : 'Retrieve Checkers'}
               </h3>
-
-              <form onSubmit={handleRetrieveSubmit} className="space-y-4 mb-5">
-                <div>
-                  <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
-                    Enter Purchased Email Address <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      ref={retrieveEmailRef}
-                      type="email"
-                      required
-                      placeholder="e.g. customer@email.com"
-                      className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
-                    />
+              <p className="text-content-secondary text-xs leading-relaxed mb-5">
+                {retrieveStep === 'email' && 'Enter your email address. We will send a 6-digit verification code to retrieve your vouchers securely.'}
+                {retrieveStep === 'otp' && (
+                  <span>
+                    We sent a 6-digit code to <strong className="text-content-primary">{retrieveEmail}</strong>.{' '}
                     <button
-                      type="submit"
-                      disabled={retrieveLoading}
-                      className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+                      type="button"
+                      onClick={() => {
+                        setRetrieveStep('email');
+                        setRetrieveError(null);
+                      }}
+                      className="text-brand-emerald underline font-bold hover:opacity-80 ml-1 cursor-pointer"
                     >
-                      {retrieveLoading ? 'Searching...' : 'Retrieve'}
+                      Change email
+                    </button>
+                  </span>
+                )}
+                {retrieveStep === 'results' && 'Here are your purchased results checkers. Keep your Serial & PIN numbers secure.'}
+              </p>
+
+              {/* STEP 1: EMAIL INPUT */}
+              {retrieveStep === 'email' && (
+                <form onSubmit={handleSendOtpSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
+                      Purchased Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        ref={retrieveEmailRef}
+                        type="email"
+                        required
+                        defaultValue={retrieveEmail}
+                        placeholder="e.g. customer@email.com"
+                        className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                      />
+                      <button
+                        type="submit"
+                        disabled={retrieveLoading}
+                        className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald hover:text-white transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center shrink-0 cursor-pointer"
+                      >
+                        {retrieveLoading ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
+                            Sending...
+                          </span>
+                        ) : 'Send Code'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {retrieveError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
+                      {retrieveError}
+                    </div>
+                  )}
+                </form>
+              )}
+
+              {/* STEP 2: OTP VERIFICATION */}
+              {retrieveStep === 'otp' && (
+                <form onSubmit={handleVerifyOtpSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
+                      Enter 6-Digit Verification Code <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="text"
+                        required
+                        maxLength={6}
+                        value={retrieveOtp}
+                        onChange={(e) => setRetrieveOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder="123456"
+                        autoFocus
+                        className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-lg font-mono font-bold tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                      />
+                      <button
+                        type="submit"
+                        disabled={retrieveLoading || retrieveOtp.length < 6}
+                        className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald hover:text-white transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center shrink-0 cursor-pointer"
+                      >
+                        {retrieveLoading ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
+                            Verifying...
+                          </span>
+                        ) : 'Verify & View Checkers'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {retrieveError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
+                      {retrieveError}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <span className="text-content-secondary">
+                      {resendCooldown > 0 ? (
+                        <span>Resend code in <strong className="font-mono text-content-primary">{resendCooldown}s</strong></span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleResendOtp}
+                          disabled={retrieveLoading}
+                          className="text-brand-emerald underline font-bold hover:opacity-80 cursor-pointer"
+                        >
+                          Didn't receive code? Resend Code
+                        </button>
+                      )}
+                    </span>
+                  </div>
+                </form>
+              )}
+
+              {/* STEP 3: VOUCHERS RESULTS */}
+              {retrieveStep === 'results' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <h4 className="text-[10px] font-black text-content-secondary uppercase tracking-[0.2em]">
+                      Purchase History ({history.length} records found)
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRetrieveStep('email');
+                        setRetrieveOtp('');
+                        setHistory([]);
+                      }}
+                      className="text-[10px] text-brand-emerald underline font-black uppercase tracking-wider hover:opacity-80 cursor-pointer"
+                    >
+                      Look Up Another Email
                     </button>
                   </div>
-                </div>
-
-                {retrieveError && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
-                    {retrieveError}
-                  </div>
-                )}
-              </form>
-
-              {/* Retrieve results */}
-              {searched && (
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] border-b border-slate-200 pb-2">
-                    Purchase History ({history.length} records found)
-                  </h4>
                   
                   {history.length === 0 ? (
                     <p className="text-center py-6 text-xs text-content-secondary font-bold uppercase tracking-wider">
                       No checkers found for this email.
                     </p>
                   ) : (
-                    <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-1">
+                    <div className="space-y-4 max-h-[45vh] overflow-y-auto pr-1">
                       {history.map((order, oIdx) => (
-                        <div key={oIdx} className="border border-slate-200 rounded-none p-4 bg-surface">
+                        <div key={oIdx} className="border border-slate-200 rounded-none p-4 bg-surface shadow-sm">
                           <div className="flex justify-between items-center text-[9px] text-content-secondary mb-3 pb-2 border-b border-slate-100 font-black uppercase tracking-[0.15em]">
-                            <span>{new Date(order.completed_at).toLocaleDateString()}</span>
+                            <span>{new Date(order.completed_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                             <span>Ref: {order.client_reference}</span>
                           </div>
                           
                           <div className="flex justify-between items-center text-xs font-black text-content-primary mb-3 uppercase tracking-wider">
                             <span>{order.quantity}x {order.checker_type} results checker</span>
                             <a
-                              href="https://ghana.waecdirect.org"
+                              href={order.checker_type === 'BECE' ? 'https://eresults.waecgh.org' : 'https://ghana.waecdirect.org'}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-[9px] text-brand-emerald hover:underline font-black uppercase tracking-widest flex items-center gap-1"
                             >
-                              Check Results
+                              Check Results Portal
                               <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                               </svg>
@@ -534,12 +692,13 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                             {order.vouchers.map((v, vIdx) => (
                               <div key={vIdx} className="bg-slate-50 border border-slate-200 rounded-none p-2.5 flex justify-between items-center font-mono text-xs">
                                 <div className="space-y-1">
-                                  <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">SERIAL:</span> <span className="font-bold">{v.serial}</span></div>
+                                  <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">SERIAL:</span> <span className="font-bold text-slate-800">{v.serial}</span></div>
                                   <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">PIN:</span> <span className="font-bold text-brand-emerald">{v.pin}</span></div>
                                 </div>
                                 <button
+                                  type="button"
                                   onClick={() => copyToClipboard(`Serial: ${v.serial}, PIN: ${v.pin}`, `v-${oIdx}-${vIdx}`)}
-                                  className="text-[9px] bg-surface border border-slate-200 hover:border-content-primary hover:text-content-primary font-sans font-black uppercase tracking-widest px-2.5 py-1.5 rounded-none transition-all shrink-0"
+                                  className="text-[9px] bg-surface border border-slate-200 hover:border-content-primary hover:text-content-primary font-sans font-black uppercase tracking-widest px-2.5 py-1.5 rounded-none transition-all shrink-0 cursor-pointer"
                                 >
                                   {copiedText === `v-${oIdx}-${vIdx}` ? 'Copied ✓' : 'Copy'}
                                 </button>
