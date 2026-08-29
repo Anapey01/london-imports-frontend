@@ -163,12 +163,12 @@ const bundleAnalyzer = withBundleAnalyzer({
 const isDev = process.env.NODE_ENV === "development";
 
 const CSP = [
-  "default-src 'self'",
+  "default-src 'none'",
   `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.google.com.gh https://*.gstatic.com https://accounts.google.com`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com https://accounts.google.com",
   `img-src 'self' data: https: blob: https://res.cloudinary.com ${apiOrigin} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
-  "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self' https://res.cloudinary.com ${apiOrigin} http://127.0.0.1:8000 http://localhost:8000 https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://vercel.live https://*.wikimedia.org`,
+  "font-src 'self' https://fonts.gstatic.com data:",
+  `connect-src 'self' https://res.cloudinary.com ${apiOrigin} ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''} https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://vercel.live https://*.wikimedia.org`,
   "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live https://accounts.google.com",
   "worker-src 'self' blob:",
   "child-src 'self' blob:",
