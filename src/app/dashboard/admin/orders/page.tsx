@@ -482,6 +482,73 @@ export default function AdminOrdersPage() {
                 onClearSelection={() => setSelectedIds(new Set())}
             />
 
+            {/* Top Selection Toolbar (Immediate line of sight) */}
+            {selectedIds.size > 0 && (
+                <div className="bg-slate-900 text-white p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4 shadow-lg transition-all animate-fade-in">
+                    <div className="flex items-center gap-3">
+                        <span className="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center">
+                            {selectedIds.size}
+                        </span>
+                        <span className="text-xs font-black uppercase tracking-wider text-white">
+                            {selectedIds.size} of {filteredOrders.length} orders selected
+                        </span>
+                        <button
+                            onClick={toggleSelectAll}
+                            className="text-[10px] font-bold underline text-slate-300 hover:text-white ml-2 cursor-pointer"
+                        >
+                            {selectedIds.size === filteredOrders.length ? 'Deselect All' : 'Select All'}
+                        </button>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mr-1 hidden sm:inline">
+                            Move To:
+                        </span>
+                        <button
+                            onClick={() => handleBulkStatus('OPEN_FOR_BATCH')}
+                            disabled={bulkUpdating}
+                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-wider rounded transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            → Processing
+                        </button>
+                        <button
+                            onClick={() => handleBulkStatus('IN_TRANSIT')}
+                            disabled={bulkUpdating}
+                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-wider rounded transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            → Ship
+                        </button>
+                        <button
+                            onClick={() => handleBulkStatus('ARRIVED')}
+                            disabled={bulkUpdating}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            → Arrive
+                        </button>
+                        <button
+                            onClick={() => handleBulkStatus('OUT_FOR_DELIVERY')}
+                            disabled={bulkUpdating}
+                            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            → Delivery
+                        </button>
+                        <button
+                            onClick={() => handleBulkStatus('DELIVERED')}
+                            disabled={bulkUpdating}
+                            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-black uppercase tracking-wider rounded transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            → Delivered
+                        </button>
+                        <button
+                            onClick={() => setSelectedIds(new Set())}
+                            disabled={bulkUpdating}
+                            className="px-2.5 py-1.5 text-slate-400 hover:text-white text-[10px] font-bold uppercase transition-colors cursor-pointer"
+                        >
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* 4. MASTER REGISTRY TABLE */}
             <div className="bg-white border border-slate-100 overflow-hidden transition-opacity duration-300 opacity-100">
                 <div className="overflow-x-auto">

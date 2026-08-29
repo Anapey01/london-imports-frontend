@@ -1,18 +1,8 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-
-const statusLabel = (s: string) => {
-    switch (s) {
-        case 'PENDING': return 'Pending';
-        case 'NEW_ORDERS': return 'New Orders';
-        case 'WAREHOUSE': return 'Processing';
-        case 'SHIPPING': return 'Shipping';
-        case 'COMPLETED': return 'Completed';
-        case 'CANCELLED': return 'Cancelled';
-        default: return s;
-    }
-};
 
 interface BulkActionBarProps {
     selectedCount: number;
@@ -33,97 +23,100 @@ export default function BulkActionBar({
     onBulkStatus,
     onClearSelection,
 }: BulkActionBarProps) {
-    return (
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             {selectedCount > 0 && (
-                <motion.div
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 100, opacity: 0 }}
-                    className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-4xl"
-                >
-                    {bulkUpdating && (
-                        <div className="absolute top-0 left-0 w-full h-1 bg-white/10 overflow-hidden">
-                            <motion.div 
-                                className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                                initial={{ width: "0%" }}
-                                animate={{ width: `${(bulkProgress / bulkTotal) * 100}%` }}
-                                transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                            />
-                        </div>
-                    )}
-                    <div className="bg-slate-950 shadow-2xl px-12 py-8 flex flex-wrap items-center justify-between gap-8 border border-white/10 backdrop-blur-xl">
-                        <div className="flex items-center gap-6">
-                            <div className="w-10 h-10 bg-white/10 flex items-center justify-center text-white text-[12px] font-black">
-                                {selectedCount}
+                <div className="fixed bottom-6 inset-x-0 md:left-64 z-[9000] flex justify-center px-4 pointer-events-none">
+                    <motion.div
+                        initial={{ y: 80, opacity: 0, scale: 0.95 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        exit={{ y: 80, opacity: 0, scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        className="pointer-events-auto w-full max-w-4xl bg-slate-950 text-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-xl"
+                    >
+                        {bulkUpdating && (
+                            <div className="w-full h-1 bg-white/10 overflow-hidden">
+                                <motion.div 
+                                    className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: `${(bulkProgress / bulkTotal) * 100}%` }}
+                                    transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+                                />
                             </div>
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white">
-                                    {bulkUpdating ? `Processing ${bulkProgress}/${bulkTotal}` : 'Orders Selected'}
-                                </p>
-                                <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40">
-                                    {bulkUpdating ? 'Updating system...' : 'Actions ready'}
-                                </p>
+                        )}
+                        <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-emerald-500 text-slate-950 rounded-lg flex items-center justify-center text-[12px] font-black">
+                                    {selectedCount}
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-wider text-white">
+                                        {bulkUpdating ? `Processing ${bulkProgress}/${bulkTotal}...` : `${selectedCount} Orders Selected`}
+                                    </p>
+                                    <p className="text-[9px] font-medium text-slate-400">
+                                        {bulkUpdating ? 'Applying changes to database...' : 'Move selected orders to:'}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex flex-wrap gap-4">
-                            {statusFilter === 'NEW_ORDERS' && (
+                            <div className="flex flex-wrap items-center gap-2">
                                 <button
                                     onClick={() => onBulkStatus('OPEN_FOR_BATCH')}
                                     disabled={bulkUpdating}
-                                    className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
+                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    title="Move to Processing / Warehouse"
                                 >
-                                    MARK AS PROCESSING
+                                    → Processing
                                 </button>
-                            )}
-
-                            {(statusFilter === 'WAREHOUSE' || statusFilter === 'All') && (
                                 <button
                                     onClick={() => onBulkStatus('IN_TRANSIT')}
                                     disabled={bulkUpdating}
-                                    className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
+                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    title="Move to Shipped / In Transit"
                                 >
-                                    MARK AS SHIPPED
+                                    → Ship
                                 </button>
-                            )}
-
-                            {(statusFilter === 'SHIPPING' || statusFilter === 'All') && (
-                                <>
-                                    <button
-                                        onClick={() => onBulkStatus('ARRIVED')}
-                                        disabled={bulkUpdating}
-                                        className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                    >
-                                        MARK AS ARRIVED
-                                    </button>
-                                    <button
-                                        onClick={() => onBulkStatus('OUT_FOR_DELIVERY')}
-                                        disabled={bulkUpdating}
-                                        className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                                    >
-                                        READY FOR DELIVERY
-                                    </button>
-                                </>
-                            )}
-
-                            <button
-                                onClick={() => onBulkStatus('DELIVERED')}
-                                disabled={bulkUpdating}
-                                className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-950 hover:bg-emerald-500 hover:text-white"
-                            >
-                                MARK AS DELIVERED
-                            </button>
-
-                            <button
-                                onClick={onClearSelection}
-                                className="px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-white"
-                            >
-                                CANCEL
-                            </button>
+                                <button
+                                    onClick={() => onBulkStatus('ARRIVED')}
+                                    disabled={bulkUpdating}
+                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    title="Move to Arrived in Ghana"
+                                >
+                                    → Arrive
+                                </button>
+                                <button
+                                    onClick={() => onBulkStatus('OUT_FOR_DELIVERY')}
+                                    disabled={bulkUpdating}
+                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-amber-600 hover:bg-amber-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    title="Move to Out for Delivery"
+                                >
+                                    → Delivery
+                                </button>
+                                <button
+                                    onClick={() => onBulkStatus('DELIVERED')}
+                                    disabled={bulkUpdating}
+                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-slate-700 hover:bg-slate-600 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    title="Move to Completed / Delivered"
+                                >
+                                    → Delivered
+                                </button>
+                                <button
+                                    onClick={onClearSelection}
+                                    disabled={bulkUpdating}
+                                    className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
+                </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }
