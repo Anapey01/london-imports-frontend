@@ -320,6 +320,8 @@ export const checkersAPI = {
       'Expires': '0'
     }
   }),
+  sendRetrieveOtp: (email: string) => api.post('/checkers/retrieve/send-otp/', { email }),
+  verifyRetrieveOtp: (email: string, otp: string) => api.post('/checkers/retrieve/verify-otp/', { email, otp }),
   
   // Reseller Agent Portal Endpoints
   agentRegister: (data: any) => api.post('/checkers/agent/register/', data),
