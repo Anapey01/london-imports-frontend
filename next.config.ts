@@ -164,7 +164,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.google.com.gh https://*.gstatic.com https://accounts.google.com",
+  `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.google.com.gh https://*.gstatic.com https://accounts.google.com`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com https://accounts.google.com",
   `img-src 'self' data: https: blob: https://res.cloudinary.com ${apiOrigin} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
   "font-src 'self' https://fonts.gstatic.com",
