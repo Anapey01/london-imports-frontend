@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import CheckerClient from './CheckerClient';
 import { getAgentPricing } from '@/lib/fetchers';
 
+export const revalidate = 300; // Cache at Vercel Edge for 5 minutes (stale-while-revalidate)
+
 export const metadata: Metadata = {
   title: "WAEC Results Checker Center | London's Imports",
   description: "Buy WASSCE & BECE results checkers instantly in Ghana. Fast, secure payment via mobile money (MTN, Telecel, AT) or card. Retrieve your pins anytime.",

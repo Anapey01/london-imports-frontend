@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
+export const revalidate = 86400; // 24 hours static edge caching
+
 export const metadata: Metadata = {
   title: "Reseller Agent Program | London's Imports",
   description: "Become a WAEC results checker reseller agent. Share your link and earn commissions on every purchase.",

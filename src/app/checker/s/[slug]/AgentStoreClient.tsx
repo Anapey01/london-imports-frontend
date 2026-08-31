@@ -241,18 +241,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  if (storeLoading) {
-    return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-        <div className="max-w-md w-full text-center space-y-6 border border-border-standard bg-surface p-8">
-          <div className="w-10 h-10 border-4 border-brand-emerald/30 border-t-brand-emerald rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-content-secondary font-bold uppercase tracking-widest">Loading storefront details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (storeError) {
+  if (storeError && !initialPricingData) {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
         <div className="max-w-md w-full text-center space-y-6 border-2 border-content-primary bg-surface p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.15)]">

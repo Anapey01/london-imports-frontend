@@ -3,6 +3,9 @@ import { Suspense } from 'react';
 import AgentStoreClient from './AgentStoreClient';
 import { getAgentPricing } from '@/lib/fetchers';
 
+export const revalidate = 300; // Cache at Vercel Edge for 5 minutes (stale-while-revalidate)
+export const dynamicParams = true;
+
 type Props = {
   params: Promise<{ slug: string }>
 }
