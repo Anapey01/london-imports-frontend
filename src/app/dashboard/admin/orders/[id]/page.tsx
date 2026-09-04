@@ -161,7 +161,7 @@ export default function AdminOrderDetailPage() {
         try {
             const { paymentsAPI } = await import('@/lib/api');
             await paymentsAPI.syncManual(order.order_number, manualReference);
-            addAlert('Paystack verification successful');
+            addAlert('Payment verification and sync successful');
             setManualReference('');
             await loadOrder();
         } catch (error: unknown) {

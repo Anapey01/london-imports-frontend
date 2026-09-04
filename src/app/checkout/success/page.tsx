@@ -4,13 +4,31 @@
     import { useSearchParams } from 'next/navigation';
     import OrderSuccess from '@/components/checkout/OrderSuccess';
     import { useAuthStore } from '@/stores/authStore';
+    import { ordersAPI, paymentsAPI } from '@/lib/api';
 
     function SuccessPageContent() {
         const searchParams = useSearchParams();
         const orderNumber = searchParams.get('order_number');
         const method = searchParams.get('method');
+        const clientReference = searchParams.get('client_reference');
         const { user } = useAuthStore();
         const hasNotified = useRef(false);
+        const hasVerified = useRef(false);
+
+        useEffect(() => {
+            // Trigger automatic backend confirmation/verification upon return
+            if (orderNumber && !hasVerified.current) {
+                hasVerified.current = true;
+                if (clientReference) {
+                    paymentsAPI.hubtelVerify(clientReference).catch(() => {
+                        // Fallback to order-level verification if client reference call errors
+                        ordersAPI.verifyPayment(orderNumber).catch(() => {});
+                    });
+                } else {
+                    ordersAPI.verifyPayment(orderNumber).catch(() => {});
+                }
+            }
+        }, [orderNumber, clientReference]);
 
         useEffect(() => {
             // Trigger Email Notification only once

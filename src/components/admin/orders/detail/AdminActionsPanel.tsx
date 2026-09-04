@@ -53,21 +53,21 @@ export function AdminActionsPanel({
                 </div>
 
                 <div className="pt-4 space-y-4">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Paystack Re-Sync</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Hubtel Payment Sync</span>
                     <div className="space-y-3">
                         <input 
                             value={manualReference}
                             onChange={(e) => setManualReference(e.target.value)}
-                            placeholder="PASTE PAYSTACK REFERENCE"
-                            className="w-full p-4 bg-slate-500/5 border border-inherit text-[10px] font-mono tracking-widest outline-none focus:border-pink-500 transition-all uppercase"
+                            placeholder="PASTE HUBTEL REFERENCE (CLIENT REF OR TXN ID)"
+                            className="w-full p-4 bg-slate-500/5 border border-inherit text-[10px] font-mono tracking-widest outline-none focus:border-amber-500 transition-all uppercase"
                         />
                         <button 
                             onClick={handleManualSync}
                             disabled={updating || !manualReference}
-                            className="w-full p-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-pink-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
+                            className="w-full p-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-amber-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
                         >
                             {updating ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
-                            Verify With Paystack
+                            Verify & Sync Hubtel
                         </button>
                     </div>
                 </div>

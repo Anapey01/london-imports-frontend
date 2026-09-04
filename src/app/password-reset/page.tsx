@@ -8,7 +8,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+import { authAPI } from '@/lib/api';
 
 export default function PasswordResetPage() {
     const [email, setEmail] = useState('');
@@ -23,21 +23,16 @@ export default function PasswordResetPage() {
         setMessage('');
 
         try {
-            const response = await fetch(`${API_URL}/auth/password/reset/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setMessage(data.message || 'If an account exists with this email, a reset link has been sent.');
-            } else {
-                setError(data.error || 'Something went wrong. Please try again.');
-            }
-        } catch {
-            setError('Failed to connect. Please check your internet connection.');
+            const response = await authAPI.requestPasswordReset({ email });
+            const data = response.data as { message?: string };
+            setMessage(data.message || 'If an account exists with this email, a reset link has been sent.');
+        } catch (err: unknown) {
+            const errorRes = err as { response?: { data?: { error?: string; message?: string } } };
+            setError(
+                errorRes.response?.data?.error || 
+                errorRes.response?.data?.message || 
+                'Failed to connect. Please check your internet connection.'
+            );
         } finally {
             setIsLoading(false);
         }

@@ -39,7 +39,7 @@ export default function OrderDetailPage() {
         if (!orderNumber) return;
         
         setIsVerifying(true);
-        showToast('Verifying with Paystack...', 'processing');
+        showToast('Verifying payment...', 'processing');
         
         try {
             const response = await ordersAPI.verifyPayment(orderNumber);
