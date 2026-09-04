@@ -2,107 +2,232 @@ import React from 'react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowDown, ArrowUpRight, ShieldCheck, Bell, Zap, Smartphone, Check } from 'lucide-react';
+
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
-    title: "Download Android App | London's Imports",
-    description: "Download the official London's Imports Android App for seamless order tracking and exclusive shopping.",
+    title: "Download Android Application | London's Imports",
+    description: "Install the official London's Imports Android Application for real-time order tracking, push notifications, and seamless international shopping in Ghana.",
 };
 
 export default function DownloadPage() {
     return (
-        <div className="min-h-screen bg-slate-950 text-white relative flex flex-col justify-between selection:bg-amber-500 selection:text-black">
-            {/* Ambient background glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-amber-500/10 to-transparent blur-3xl pointer-events-none" />
-
-            <div className="max-w-2xl mx-auto px-6 pt-24 pb-16 w-full text-center relative z-10">
-                {/* App Icon */}
-                <div className="inline-block relative mb-6">
-                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl mx-auto flex items-center justify-center p-3">
-                        <Image
-                            src="/icon-512.png"
-                            alt="London's Imports App Icon"
-                            width={112}
-                            height={112}
-                            priority
-                            className="rounded-2xl object-cover"
-                        />
-                    </div>
-                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow">
-                        Community Beta
+        <div className="min-h-screen bg-white dark:bg-slate-950 relative pb-32 selection:bg-emerald-100 dark:selection:bg-slate-800">
+            {/* 1. ARCHITECTURAL HEADER */}
+            <header className="relative z-10 pt-24 pb-16 px-6 max-w-7xl mx-auto border-b border-slate-100 dark:border-slate-900">
+                <div className="flex items-center gap-4 mb-12">
+                    <span className="h-px w-12 bg-slate-900 dark:bg-white" />
+                    <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400 dark:text-slate-500">
+                        Android Application / Community Release
                     </span>
                 </div>
 
-                {/* Title & Subtitle */}
-                <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight mb-2">
-                    London&apos;s Imports
+                <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white mb-16">
+                    Pocket <br />
+                    <span className="italic font-light text-slate-200 dark:text-slate-800">Concierge</span>.
                 </h1>
-                <p className="text-slate-400 text-sm sm:text-base max-w-md mx-auto mb-8">
-                    Shop authentic UK & global goods, get real-time flight notifications, and track deliveries right from your home screen.
-                </p>
 
-                {/* Primary Download Button */}
-                <div className="max-w-sm mx-auto mb-10">
-                    <a
-                        href="/londons-imports.apk"
-                        download="londons-imports.apk"
-                        className="group flex items-center justify-center gap-3 w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold py-4 px-6 rounded-2xl shadow-xl shadow-amber-500/10 hover:shadow-amber-500/25 transition-all transform active:scale-95"
-                    >
-                        <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        <div className="text-left">
-                            <div className="text-sm font-black uppercase tracking-wider leading-none">Download for Android</div>
-                            <div className="text-[11px] font-semibold opacity-80 mt-1">Version 1.0.0 • APK (2.4 MB)</div>
-                        </div>
-                    </a>
-                    <p className="text-[11px] text-slate-500 mt-2">
-                        Registered & Verified with Android Certified Developer Console
+                <div className="max-w-2xl">
+                    <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                        The full London&apos;s Imports logistics experience on your Android device. Instant flight milestone alerts, package inspection updates, and frictionless checkout.
                     </p>
                 </div>
+            </header>
 
-                {/* How to Install Card */}
-                <div className="bg-slate-900/80 backdrop-blur border border-slate-800/80 rounded-2xl p-6 text-left max-w-md mx-auto mb-8 shadow-lg">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-4 text-center">
-                        Quick Installation Guide
-                    </h3>
+            {/* 2. THE DISTRIBUTION LEDGER (Split Grid Architecture) */}
+            <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+                <div className="grid lg:grid-cols-12 gap-px bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-900">
+                    
+                    {/* Left Column: Download CTA & Technical Specs */}
+                    <div className="lg:col-span-7 bg-white dark:bg-slate-950 p-8 md:p-16 flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-8">
+                                <span className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-700 dark:text-emerald-500 italic">
+                                    Distribution / Verified Package
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 text-[9px] font-black tracking-[0.2em] uppercase bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 px-3 py-1">
+                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                    Android Certified
+                                </span>
+                            </div>
 
-                    <ol className="space-y-4 text-xs sm:text-sm text-slate-300">
-                        <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center text-xs">1</span>
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white tracking-tight leading-none mb-6">
+                                London&apos;s Imports for Android
+                            </h2>
+
+                            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base leading-relaxed mb-10">
+                                Built as a high-performance Trusted Web Activity with native Android notifications, offline resilience, and secure Mobile Money payment handling via Hubtel.
+                            </p>
+
+                            {/* Download Action */}
+                            <a
+                                href="/londons-imports.apk"
+                                download="londons-imports.apk"
+                                className="group flex items-center justify-between w-full p-6 sm:p-8 bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-emerald-700 dark:hover:bg-emerald-500 dark:hover:text-slate-950 transition-all duration-300 shadow-xl mb-10"
+                            >
+                                <div>
+                                    <span className="text-[10px] font-black tracking-[0.3em] uppercase block opacity-70 mb-1">
+                                        Release 1.0.0 • 2.4 MB
+                                    </span>
+                                    <span className="text-xl sm:text-2xl font-serif font-bold tracking-tight">
+                                        Download Android APK
+                                    </span>
+                                </div>
+                                <div className="w-12 h-12 rounded-full border border-white/20 dark:border-slate-900/20 flex items-center justify-center group-hover:translate-y-1 transition-transform">
+                                    <ArrowDown className="w-5 h-5" />
+                                </div>
+                            </a>
+                        </div>
+
+                        {/* Technical Spec Ledger */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-8 border-t border-slate-100 dark:border-slate-900">
                             <div>
-                                <span className="font-semibold text-white">Download APK:</span> Tap the button above to download the file directly to your phone.
+                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-600 tracking-[0.2em] uppercase block mb-1">
+                                    Package ID
+                                </span>
+                                <span className="text-xs font-mono font-bold text-slate-800 dark:text-slate-200">
+                                    com.londonsimports.app
+                                </span>
                             </div>
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center text-xs">2</span>
                             <div>
-                                <span className="font-semibold text-white">Allow Installation:</span> If your phone shows <em>&quot;Install unknown apps&quot;</em>, tap <strong>Settings</strong> &rarr; enable <strong>Allow from this source</strong> &rarr; tap <strong>Install</strong>.
+                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-600 tracking-[0.2em] uppercase block mb-1">
+                                    Compatibility
+                                </span>
+                                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                                    Android 5.0 and above
+                                </span>
                             </div>
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center text-xs">3</span>
                             <div>
-                                <span className="font-semibold text-white">Open &amp; Explore:</span> Launch London&apos;s Imports and allow notifications for flight and delivery updates!
+                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-600 tracking-[0.2em] uppercase block mb-1">
+                                    Notification Feed
+                                </span>
+                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                    FCM Real-Time
+                                </span>
                             </div>
-                        </li>
-                    </ol>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Setup Protocol */}
+                    <div className="lg:col-span-5 bg-slate-50 dark:bg-slate-900/40 p-8 md:p-16 flex flex-col justify-between">
+                        <div>
+                            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400 dark:text-slate-500 mb-8 block">
+                                Setup Protocol / 3 Steps
+                            </span>
+
+                            <div className="space-y-8">
+                                <div className="flex items-start gap-4">
+                                    <span className="text-xs font-mono font-black text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800 w-7 h-7 flex items-center justify-center flex-shrink-0">
+                                        01
+                                    </span>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-1">
+                                            Download the Package
+                                        </h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                            Tap the download button to save <code className="text-[11px] font-mono bg-white dark:bg-slate-800 px-1 py-0.5 border border-slate-200 dark:border-slate-700">londons-imports.apk</code> to your device.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-4">
+                                    <span className="text-xs font-mono font-black text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800 w-7 h-7 flex items-center justify-center flex-shrink-0">
+                                        02
+                                    </span>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-1">
+                                            Authorize Installation
+                                        </h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                            If Android prompts <em>&quot;Install unknown apps&quot;</em>, select <strong>Settings</strong> &rarr; toggle <strong>Allow from this source</strong> &rarr; tap <strong>Install</strong>.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-4">
+                                    <span className="text-xs font-mono font-black text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800 w-7 h-7 flex items-center justify-center flex-shrink-0">
+                                        03
+                                    </span>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-1">
+                                            Activate Push Updates
+                                        </h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                            Launch the app from your home screen and allow notifications to receive flight and arrival milestones automatically.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-10 mt-10 border-t border-slate-200 dark:border-slate-800">
+                            <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                                <span>Signed with official SHA-256 certificate registered on Google Android Developer Console.</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                {/* Return Home Link */}
-                <div>
+            {/* 3. APP CAPABILITY SHOWCASE */}
+            <section className="relative z-10 max-w-7xl mx-auto px-6 py-16 border-t border-slate-100 dark:border-slate-900">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+                    <div>
+                        <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400 dark:text-slate-500 block mb-4">
+                            Platform Features / Native Experience
+                        </span>
+                        <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 dark:text-white tracking-tight">
+                            Engineered for Speed &amp; Clarity
+                        </h2>
+                    </div>
                     <Link
-                        href="/"
-                        className="text-xs font-semibold text-slate-400 hover:text-white transition-colors underline underline-offset-4"
+                        href="/track"
+                        className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white hover:text-emerald-600 transition-colors"
                     >
-                        &larr; Or continue to londonsimports.com website
+                        Try Live Web Tracker <ArrowUpRight className="w-4 h-4" />
                     </Link>
                 </div>
-            </div>
 
-            {/* Simple Footer */}
-            <footer className="py-6 border-t border-slate-900 text-center text-slate-600 text-xs">
-                &copy; {new Date().getFullYear()} London&apos;s Imports. All rights reserved.
-            </footer>
+                <div className="grid md:grid-cols-3 gap-8">
+                    <div className="p-8 border border-slate-100 dark:border-slate-900 bg-white dark:bg-slate-950">
+                        <div className="w-10 h-10 mb-8 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+                            <Bell className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
+                        </div>
+                        <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
+                            Flight &amp; Vessel Alerts
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Never wonder where your parcel is. Receive instantaneous push notifications the moment your batch boards a flight or clears customs in Accra.
+                        </p>
+                    </div>
+
+                    <div className="p-8 border border-slate-100 dark:border-slate-900 bg-white dark:bg-slate-950">
+                        <div className="w-10 h-10 mb-8 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+                            <Zap className="w-5 h-5 text-emerald-600" strokeWidth={1.5} />
+                        </div>
+                        <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
+                            One-Tap Mobile Checkout
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Pay securely with MTN MoMo, Telecel Cash, or Card via Hubtel with zero redirection lag and instant receipt confirmation.
+                        </p>
+                    </div>
+
+                    <div className="p-8 border border-slate-100 dark:border-slate-900 bg-white dark:bg-slate-950">
+                        <div className="w-10 h-10 mb-8 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+                            <Smartphone className="w-5 h-5 text-slate-900 dark:text-white" strokeWidth={1.5} />
+                        </div>
+                        <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
+                            Full-Screen Immersion
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Clean interface without browser address bars, native gesture navigation integration, and buttery-smooth page transitions.
+                        </p>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }
