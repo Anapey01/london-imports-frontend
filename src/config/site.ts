@@ -5,7 +5,11 @@
 export const siteConfig = {
     name: "London's Imports | Global Sourcing & Logistics",
     baseUrl: 'https://londonsimports.com',
-    apiUrl: (typeof window !== 'undefined' && window.location.hostname.includes('londonsimports.com'))
+    apiUrl: (typeof window !== 'undefined' && (
+        window.location.hostname.includes('londonimports.com') ||
+        window.location.hostname.includes('londonsimports.com') ||
+        (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'))
+    ))
         ? 'https://api.londonsimports.com/api/v1'
         : (process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1' : 'https://api.londonsimports.com/api/v1')),
     whatsapp: '233545247009', // Main Shop Line
