@@ -278,12 +278,15 @@ export default function AdminOrdersPage() {
         const ids = Array.from(selectedIds);
         if (ids.length === 0) return;
         const label = statusLabel(newStatus);
+        const isReverting = newStatus === 'PENDING_PAYMENT';
 
         setConfirmModal({
             isOpen: true,
-            title: 'Bulk Status Update',
-            message: `Are you sure you want to mark ${ids.length} order(s) as "${label}"?`,
-            variant: 'warning',
+            title: isReverting ? 'Bulk Mark as Unpaid' : 'Bulk Status Update',
+            message: isReverting 
+                ? `Are you sure you want to reset ${ids.length} order(s) to UNPAID? This will reset all paid amounts back to ₵0.00 and return orders to Pending Payment.`
+                : `Are you sure you want to mark ${ids.length} order(s) as "${label}"?`,
+            variant: isReverting ? 'danger' : 'warning',
             onConfirm: async () => {
                 setBulkUpdating(true);
                 setBulkProgress(0);
@@ -292,21 +295,26 @@ export default function AdminOrdersPage() {
                     const chunkSize = 5;
                     for (let i = 0; i < ids.length; i += chunkSize) {
                         const chunk = ids.slice(i, i + chunkSize);
-                        await Promise.all(chunk.map(id => adminAPI.updateOrder(id, { state: newStatus })));
+                        if (isReverting) {
+                            await Promise.all(chunk.map(id => adminAPI.revertPayment(id, { reason: 'Bulk reset to unpaid' })));
+                        } else {
+                            await Promise.all(chunk.map(id => adminAPI.updateOrder(id, { state: newStatus })));
+                        }
                         setBulkProgress(prev => prev + chunk.length);
                     }
 
                     setOrders(prev => prev.map(o => {
                         if (selectedIds.has(o.id)) {
                             const isPaid = newStatus === 'PAID' || newStatus === 'OPEN_FOR_BATCH';
+                            const isUnpaid = newStatus === 'PENDING_PAYMENT' || newStatus === 'DRAFT';
                             const mappedStatus = STATE_MAP_FRONTEND[newStatus] || newStatus;
                             return { 
                                 ...o, 
                                 status: mappedStatus,
                                 state: newStatus,
-                                payment_status: isPaid ? 'PAID' : o.payment_status,
-                                amount_paid: isPaid ? o.total_amount : o.amount_paid,
-                                balance_due: isPaid ? 0 : o.balance_due
+                                payment_status: isPaid ? 'PAID' : (isUnpaid ? 'PENDING' : o.payment_status),
+                                amount_paid: isPaid ? o.total_amount : (isUnpaid ? 0 : o.amount_paid),
+                                balance_due: isPaid ? 0 : (isUnpaid ? o.total_amount : o.balance_due)
                             };
                         }
                         return o;
@@ -353,19 +361,33 @@ export default function AdminOrdersPage() {
     }, [isDark]);
 
     const handleQuickUpdate = useCallback((orderId: string, newState: string, label: string) => {
+        const isReverting = newState === 'PENDING_PAYMENT' || newState === 'DRAFT';
         setConfirmModal({
             isOpen: true,
-            title: `Confirm ${label}`,
-            message: `Transition order to ${label}? This will trigger automated logistics notifications.`,
-            variant: 'warning',
+            title: isReverting ? 'Confirm Mark as Unpaid' : `Confirm ${label}`,
+            message: isReverting 
+                ? 'Are you sure you want to mark this order as UNPAID? This will reset the amount paid back to ₵0.00 and restore the balance due.'
+                : `Transition order to ${label}? This will trigger automated logistics notifications.`,
+            variant: isReverting ? 'danger' : 'warning',
             onConfirm: async () => {
                 // OPTIMISTIC UI: Update the order row immediately, don't blank the page
                 const newMappedStatus = STATE_MAP_FRONTEND[newState] || newState;
                 setOrders(prev => prev.map(o => 
-                    o.id === orderId ? { ...o, status: newMappedStatus, state: newState } : o
+                    o.id === orderId ? { 
+                        ...o, 
+                        status: newMappedStatus, 
+                        state: newState,
+                        payment_status: isReverting ? 'PENDING' : o.payment_status,
+                        amount_paid: isReverting ? 0 : o.amount_paid,
+                        balance_due: isReverting ? o.total_amount : o.balance_due
+                    } : o
                 ));
                 try {
-                    await adminAPI.updateOrder(orderId, { state: newState });
+                    if (isReverting) {
+                        await adminAPI.revertPayment(orderId, { reason: 'Reset to unpaid from orders list' });
+                    } else {
+                        await adminAPI.updateOrder(orderId, { state: newState });
+                    }
                     addAlert(`Status updated to ${label}`);
                     // Background refresh — don't await, don't block
                     loadOrdersRef.current().catch(() => {});

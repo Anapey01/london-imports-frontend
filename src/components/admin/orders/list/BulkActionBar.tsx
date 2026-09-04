@@ -65,6 +65,14 @@ export default function BulkActionBar({
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                                 <button
+                                    onClick={() => onBulkStatus('PENDING_PAYMENT')}
+                                    disabled={bulkUpdating}
+                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-rose-700 hover:bg-rose-600 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    title="Reset selected orders to Unpaid (Pending Payment)"
+                                >
+                                    → Mark as Unpaid
+                                </button>
+                                <button
                                     onClick={() => onBulkStatus('OPEN_FOR_BATCH')}
                                     disabled={bulkUpdating}
                                     className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"

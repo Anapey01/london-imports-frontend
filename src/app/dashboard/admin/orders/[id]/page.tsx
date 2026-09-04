@@ -91,23 +91,33 @@ export default function AdminOrderDetailPage() {
     }, [orderId, loadOrder]);
 
     const handleUpdateStatus = (newStatus: string) => {
+        const isReverting = newStatus === 'PENDING_PAYMENT' || newStatus === 'DRAFT';
         setConfirmModal({
             isOpen: true,
-            title: 'Update Order Status',
-            message: `Are you sure you want to change the status to ${newStatus.replace(/_/g, ' ')}?`,
-            variant: newStatus === 'CANCELLED' ? 'danger' : 'warning',
+            title: isReverting ? 'Reset Order to Unpaid' : 'Update Order Status',
+            message: isReverting 
+                ? 'Are you sure you want to reset this order to Unpaid (Pending Payment)? This will reset the amount paid back to ₵0.00 and restore the balance due.'
+                : `Are you sure you want to change the status to ${newStatus.replace(/_/g, ' ')}?`,
+            variant: newStatus === 'CANCELLED' || isReverting ? 'danger' : 'warning',
             onConfirm: async () => {
                 // OPTIMISTIC UI: Update the status immediately before the server responds
                 if (order) {
                     setOrder({
                         ...order,
-                        status: newStatus
+                        status: newStatus,
+                        payment_status: isReverting ? 'PENDING' : order.payment_status,
+                        amount_paid: isReverting ? '0.00' : order.amount_paid,
+                        balance_due: isReverting ? order.total : order.balance_due
                     });
                 }
                 
                 setUpdating(true);
                 try {
-                    await adminAPI.updateOrder(orderId, { status: newStatus });
+                    if (isReverting) {
+                        await adminAPI.revertPayment(orderId, { reason: 'Status reset to Pending Payment by admin' });
+                    } else {
+                        await adminAPI.updateOrder(orderId, { status: newStatus });
+                    }
                     addAlert(`Status updated: ${newStatus.replace(/_/g, ' ')}`);
                     // Load actual order in background without blocking
                     loadOrder().catch(() => {});
@@ -116,6 +126,32 @@ export default function AdminOrderDetailPage() {
                     addAlert(message, 'error');
                     // Revert UI if it fails
                     loadOrder().catch(() => {});
+                } finally {
+                    setUpdating(false);
+                }
+            }
+        });
+    };
+
+    const handleMarkAsUnpaid = () => {
+        const amountPaid = parseFloat(String(order?.amount_paid || '0'));
+        
+        setConfirmModal({
+            isOpen: true,
+            title: 'Revert Order to Unpaid',
+            message: `Are you sure you want to mark this order as UNPAID? This will reset the paid amount of ₵${amountPaid.toLocaleString()} back to ₵0.00 and restore the order status to Pending Payment.`,
+            variant: 'danger',
+            onConfirm: async () => {
+                setUpdating(true);
+                try {
+                    await adminAPI.revertPayment(orderId, { 
+                        reason: 'Payment status reverted to unpaid by admin' 
+                    });
+                    addAlert('Order successfully reset to Unpaid (Pending Payment)');
+                    await loadOrder();
+                } catch (error: any) {
+                    const message = error.response?.data?.error || error.response?.data?.detail || 'Failed to revert payment status';
+                    addAlert(message, 'error');
                 } finally {
                     setUpdating(false);
                 }
@@ -314,9 +350,11 @@ export default function AdminOrderDetailPage() {
                             manualReference={manualReference}
                             setManualReference={setManualReference}
                             handleMarkAsPaid={handleMarkAsPaid}
+                            handleMarkAsUnpaid={handleMarkAsUnpaid}
                             openTransferModal={openTransferModal}
                             handleManualSync={handleManualSync}
                             handleUpdateStatus={handleUpdateStatus}
+                            order={order}
                             isDark={isDark}
                         />
 

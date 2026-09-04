@@ -1,13 +1,21 @@
-import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2, RotateCcw } from 'lucide-react';
 
 interface AdminActionsPanelProps {
     updating: boolean;
     manualReference: string;
     setManualReference: (ref: string) => void;
     handleMarkAsPaid: () => void;
+    handleMarkAsUnpaid: () => void;
     openTransferModal: () => void;
     handleManualSync: () => void;
     handleUpdateStatus: (status: string) => void;
+    order?: {
+        payment_status?: string;
+        amount_paid?: number | string;
+        balance_due?: number | string;
+        status?: string;
+        state?: string;
+    } | null;
     isDark: boolean;
 }
 
@@ -16,11 +24,17 @@ export function AdminActionsPanel({
     manualReference,
     setManualReference,
     handleMarkAsPaid,
+    handleMarkAsUnpaid,
     openTransferModal,
     handleManualSync,
     handleUpdateStatus,
+    order,
     isDark
 }: AdminActionsPanelProps) {
+    const isPaid = order?.payment_status === 'PAID';
+    const hasPaidAmount = Number(order?.amount_paid || 0) > 0;
+    const hasBalanceDue = Number(order?.balance_due || 0) > 0;
+
     return (
         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
             <div className="p-8 border-b border-inherit flex items-center gap-4">
@@ -31,19 +45,35 @@ export function AdminActionsPanel({
             <div className="p-8 space-y-4">
                 
                 
-                <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
-                    <button 
-                        onClick={handleMarkAsPaid}
-                        className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all"
-                    >
-                        <CreditCard className="w-5 h-5 text-purple-500" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                            Mark as <br /> Paid
-                        </span>
-                    </button>
+                <div className={`grid ${hasPaidAmount && hasBalanceDue ? 'grid-cols-3' : 'grid-cols-2'} gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit`}>
+                    {(!isPaid || hasBalanceDue) && (
+                        <button 
+                            onClick={handleMarkAsPaid}
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all"
+                            title="Record manual payment"
+                        >
+                            <CreditCard className="w-5 h-5 text-purple-500" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
+                                Mark as <br /> Paid
+                            </span>
+                        </button>
+                    )}
+                    {(isPaid || hasPaidAmount) && (
+                        <button 
+                            onClick={handleMarkAsUnpaid}
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-3 group transition-all border-l border-inherit"
+                            title="Undo payment and mark order as unpaid"
+                        >
+                            <RotateCcw className="w-5 h-5 text-rose-500 group-hover:-rotate-45 transition-transform" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
+                                Mark as <br /> Unpaid
+                            </span>
+                        </button>
+                    )}
                     <button 
                         onClick={openTransferModal}
                         className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all border-l border-inherit"
+                        title="Transfer payment to another order"
                     >
                         <ArrowRightLeft className="w-5 h-5 text-blue-500" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
@@ -90,6 +120,13 @@ export function AdminActionsPanel({
                         <button onClick={() => handleUpdateStatus('DELIVERED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
                             Mark as Delivered
                             <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
+                        </button>
+                        <button 
+                            onClick={() => handleUpdateStatus('PENDING_PAYMENT')} 
+                            className="w-full p-4 border border-amber-200 dark:border-amber-900/60 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all text-left flex justify-between items-center group"
+                        >
+                            Reset to Unpaid (Pending Payment)
+                            <RotateCcw className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-amber-500" />
                         </button>
                         <button onClick={() => handleUpdateStatus('CANCELLED')} className="w-full p-4 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-left">
                             Cancel Order

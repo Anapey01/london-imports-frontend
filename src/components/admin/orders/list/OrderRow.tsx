@@ -132,13 +132,22 @@ const OrderRow = React.memo(({
             <td className="px-8 py-8 text-right">
                 <div className="flex justify-end items-center gap-6">
                     <div className="flex items-center gap-2 sm:gap-4 transition-all">
-                        {(order.status === 'PROCESSING' || order.status === 'PAID' || order.status === 'OPEN_FOR_BATCH') && (
-                            <button 
-                                onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
-                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
-                            >
-                                SHIP
-                            </button>
+                        {(order.status === 'PROCESSING' || order.status === 'PAID' || order.status === 'OPEN_FOR_BATCH' || order.payment_status === 'PAID') && (
+                            <>
+                                <button 
+                                    onClick={() => handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana')}
+                                    className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                                >
+                                    SHIP
+                                </button>
+                                <button 
+                                    onClick={() => handleQuickUpdate(order.id, 'PENDING_PAYMENT', 'Mark as Unpaid')}
+                                    className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-3 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-900/60 dark:text-rose-400 dark:hover:bg-rose-950/30 transition-all"
+                                    title="Undo payment: reset to Unpaid (Pending Payment)"
+                                >
+                                    UNPAID
+                                </button>
+                            </>
                         )}
                         {order.status === 'IN_TRANSIT' && (
                             <button 
