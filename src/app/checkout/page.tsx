@@ -109,7 +109,17 @@ function CheckoutPage() {
             const timer = setTimeout(() => setError(''), 4000);
             return () => clearTimeout(timer);
         }
-    }, [error]);    
+    }, [error]);
+
+    // Failsafe: Never allow cartLoading to block checkout for more than 3 seconds
+    useEffect(() => {
+        if (cartLoading) {
+            const timer = setTimeout(() => {
+                useCartStore.setState({ isLoading: false, isFetching: false });
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [cartLoading]);    
     // 4. Conversion Velocity: Step Timers
     const stepStartTime = useRef(Date.now());
     const prevStep = useRef(activeStep);
@@ -565,8 +575,9 @@ function CheckoutPage() {
         }
     };
     
-    // 1. Loading State
-    if (authLoading || (cartLoading && !cart && !orderNumberParam)) {
+    // 1. Loading State: Only block if we truly don't have items to display and are waiting for data
+    const hasItemsToDisplay = Boolean(buyNowSlug || (currentOrderData.items?.length || 0) > 0);
+    if ((authLoading && !hasItemsToDisplay) || (cartLoading && !cart && !orderNumberParam && !hasItemsToDisplay)) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-surface">
                 <div className="flex flex-col items-center gap-4">

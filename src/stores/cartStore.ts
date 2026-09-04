@@ -116,16 +116,20 @@ export const useCartStore = create<CartState>()(
                         set({ 
                             cart: response.data, 
                             itemCount: serverItems.reduce((s: number, i: CartItem) => s + i.quantity, 0),
-                            isLoading: false,
-                            isFetching: false 
                         });
-                    } catch {
+                    } catch (e) {
+                        console.error("[CartStore] Failed to fetch cart:", e);
+                    } finally {
                         set({ isLoading: false, isFetching: false });
                     }
                 } else {
                     // Guest mode: use persisted guestItems
                     const { guestItems } = get();
-                    set({ itemCount: guestItems.reduce((s, i) => s + i.quantity, 0), isFetching: false });
+                    set({ 
+                        itemCount: guestItems.reduce((s, i) => s + i.quantity, 0), 
+                        isFetching: false, 
+                        isLoading: false 
+                    });
                 }
             },
 

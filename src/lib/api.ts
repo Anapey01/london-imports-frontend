@@ -34,14 +34,19 @@ api.interceptors.request.use((config) => {
 
 // Handle token refresh on 401
 let isRefreshing = false;
-let refreshSubscribers: (() => void)[] = [];
+let refreshSubscribers: ((err?: unknown) => void)[] = [];
 
-function subscribeTokenRefresh(cb: () => void) {
+function subscribeTokenRefresh(cb: (err?: unknown) => void) {
   refreshSubscribers.push(cb);
 }
 
 function onRefreshed() {
-  refreshSubscribers.map((cb) => cb());
+  refreshSubscribers.forEach((cb) => cb());
+  refreshSubscribers = [];
+}
+
+function onRefreshFailed(err: unknown) {
+  refreshSubscribers.forEach((cb) => cb(err));
   refreshSubscribers = [];
 }
 
@@ -56,9 +61,13 @@ api.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
       if (isRefreshing) {
-        return new Promise((resolve) => {
-          subscribeTokenRefresh(() => {
-            resolve(api(originalRequest));
+        return new Promise((resolve, reject) => {
+          subscribeTokenRefresh((err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(api(originalRequest));
+            }
           });
         });
       }
@@ -70,8 +79,8 @@ api.interceptors.response.use(
 
       if (isAgentRequest) {
         try {
-          // Attempt agent token refresh
-          await axios.post(`${API_BASE_URL}/checkers/agent/token/refresh/`, {}, { withCredentials: true });
+          // Attempt agent token refresh with 10s timeout
+          await axios.post(`${API_BASE_URL}/checkers/agent/token/refresh/`, {}, { withCredentials: true, timeout: 10000 });
           
           onRefreshed();
           isRefreshing = false;
@@ -79,7 +88,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (refreshError: unknown) {
           isRefreshing = false;
-          refreshSubscribers = [];
+          onRefreshFailed(refreshError);
           
           // Agent refresh failed - Agent session is fully expired
           const err = refreshError as { response?: { status?: number } };
@@ -97,8 +106,8 @@ api.interceptors.response.use(
         }
       } else {
         try {
-          // Attempt customer token refresh
-          await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
+          // Attempt customer token refresh with 10s timeout
+          await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true, timeout: 10000 });
           
           onRefreshed();
           isRefreshing = false;
@@ -106,7 +115,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (refreshError: unknown) {
           isRefreshing = false;
-          refreshSubscribers = [];
+          onRefreshFailed(refreshError);
           
           // Customer refresh failed - Customer session is fully expired
           const err = refreshError as { response?: { status?: number } };
