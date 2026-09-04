@@ -36,13 +36,13 @@ export default function WishlistPage() {
                                 </span>
                             </div>
                             <h1 className="text-4xl md:text-5xl font-black tracking-[0.05em] uppercase text-content-primary leading-none">
-                                Saved <span className="text-content-secondary font-light italic font-serif">Portfolio</span>
+                                Saved <span className="text-content-secondary font-light italic font-serif">Items</span>
                             </h1>
                         </div>
                         <div className="text-right border-l md:border-l-0 md:border-r border-border-standard pl-6 md:pl-0 md:pr-6 py-1 opacity-0">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary block mb-1">Total Assets</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary block mb-1">Saved Items</span>
                             <span className="text-2xl font-black text-content-primary tracking-widest uppercase italic">
-                                0 units
+                                0 items
                             </span>
                         </div>
                     </header>
@@ -71,13 +71,13 @@ export default function WishlistPage() {
                             </span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black tracking-[0.05em] uppercase text-content-primary leading-none">
-                            Saved <span className="text-content-secondary font-light italic font-serif">Portfolio</span>
+                            Saved <span className="text-content-secondary font-light italic font-serif">Items</span>
                         </h1>
                     </div>
                     <div className="text-right border-l md:border-l-0 md:border-r border-border-standard pl-6 md:pl-0 md:pr-6 py-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary block mb-1">Total Assets</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary block mb-1">Saved Items</span>
                         <span className="text-2xl font-black text-content-primary tracking-widest uppercase italic">
-                            {items.length} units
+                            {items.length} items
                         </span>
                     </div>
                 </header>
@@ -87,9 +87,9 @@ export default function WishlistPage() {
                         <div className="w-24 h-24 bg-surface-card rounded-full flex items-center justify-center mb-8 border border-border-standard">
                             <Heart className="w-10 h-10 text-content-secondary opacity-30" strokeWidth={1} />
                         </div>
-                        <h2 className="text-3xl font-black uppercase tracking-tight text-content-primary mb-4">Collection Empty.</h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tight text-content-primary mb-4">Your Wishlist is Empty.</h2>
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-content-secondary max-w-xs mb-12">
-                            Save the styles you love to your wishlist and find them here later.
+                            Save the items you love to your wishlist and find them here anytime.
                         </p>
                         <Link
                             href="/products"
@@ -113,7 +113,7 @@ export default function WishlistPage() {
 
                 <div className="mt-24 pt-12 border-t border-border-standard">
                     <p className="text-xs font-black text-content-primary leading-relaxed uppercase tracking-[0.2em] italic">
-                        Personal procurement portfolio. London's Imports Global 2026. Data encrypted via SSL-SHA256.
+                        Your saved items. London's Imports 2026. Safe and secure.
                     </p>
                 </div>
             </div>

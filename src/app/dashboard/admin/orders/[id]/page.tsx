@@ -181,12 +181,12 @@ export default function AdminOrderDetailPage() {
         setUpdating(true);
         try {
             await adminAPI.transferPayment(orderId, transferData);
-            addAlert('Ledger adjustment complete');
+            addAlert('Payment moved to new order successfully');
             setIsTransferModalOpen(false);
             await loadOrder();
         } catch (error: unknown) {
             const err = error as { response?: { data?: { error?: string } } };
-            addAlert(err.response?.data?.error || 'Adjustment failed', 'error');
+            addAlert(err.response?.data?.error || 'Failed to move payment', 'error');
         } finally {
             setUpdating(false);
         }

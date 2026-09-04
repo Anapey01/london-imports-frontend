@@ -57,7 +57,7 @@ export default function RefundsPage() {
                                     </div>
                                     <div className="pb-6 border-b border-slate-50 dark:border-slate-900">
                                         <strong className="text-slate-900 dark:text-white block mb-1">Payment Made, Order Not Placed</strong>
-                                        <p>If your procurement order is not successfully processed or submitted to the supplier within the batch cycle after payment.</p>
+                                        <p>If your order could not be placed with the supplier after you made payment.</p>
                                     </div>
                                     <div>
                                         <strong className="text-slate-900 dark:text-white block mb-1">Item Unavailable After Payment</strong>
@@ -77,8 +77,8 @@ export default function RefundsPage() {
                                 <h3 className="text-3xl font-serif font-bold text-slate-900 dark:text-white mb-8 italic">Non-Refundable Situations</h3>
                                 <div className="space-y-6 text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">
                                     <div className="pb-6 border-b border-slate-50 dark:border-slate-900">
-                                        <strong className="text-slate-900 dark:text-white block mb-1">Sourcing Started</strong>
-                                        <p>Once payment is finalized and the procurement cycle initiates, order cancellations due to change of mind are strictly excluded.</p>
+                                        <strong className="text-slate-900 dark:text-white block mb-1">Purchasing Started</strong>
+                                        <p>Once payment is completed and we have started buying your items in China, orders cannot be cancelled simply because you changed your mind.</p>
                                     </div>
                                     <div className="pb-6 border-b border-slate-50 dark:border-slate-900">
                                         <strong className="text-slate-900 dark:text-white block mb-1">Shipment Dispatched</strong>
@@ -111,7 +111,7 @@ export default function RefundsPage() {
                         <div>
                             <h4 className="text-xl font-serif font-bold text-slate-900 dark:text-white mb-2 italic">Partial Refunds Clause</h4>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                In specific cases where partial order cancellation is approved, only the direct <strong>product procurement cost</strong> will be refunded. Sourcing fees, transaction processing rates, handling costs, or shipping fees already incurred during the procurement phase are strictly non-refundable.
+                                In special cases where a partial order cancellation is approved, only the <strong>item cost</strong> will be refunded. Any transport, handling, or payment processing fees already spent are non-refundable.
                             </p>
                         </div>
                     </div>
@@ -122,7 +122,7 @@ export default function RefundsPage() {
             <section className="py-24 border-b border-slate-50 dark:border-slate-900">
                 <div className="max-w-7xl mx-auto px-6">
                     <header className="mb-16">
-                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-4 block">Settlement Ledger</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-4 block">How Refunds Are Paid</span>
                         <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Refund Processing Timelines</h2>
                     </header>
 
@@ -131,7 +131,7 @@ export default function RefundsPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block">General Cycle</span>
                             <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-white italic">5 – 10 Business Days</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                Once a refund request is officially approved by our procurement audit team, the reversed funds are released to the original funding account.
+                                Once a refund is approved by our customer support team, your money will be sent back to your mobile money number or bank account.
                             </p>
                         </div>
                         <div className="space-y-4">
@@ -193,7 +193,7 @@ export default function RefundsPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 block">Step 04: Resolution</span>
                             <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white italic">Outcome & Settlement</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                Approved claims will result in either a refund (processed within MoMo/Bank timelines) or a replacement item dispatched in the next cargo batch. Rejected claims will be detailed in writing.
+                                Approved claims will result in either a full refund (sent to your MoMo or bank) or a replacement item sent in the next shipment to Ghana.
                             </p>
                         </div>
                     </div>

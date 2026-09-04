@@ -169,7 +169,7 @@ export default function PaymentTransferPage() {
                 <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${type === 'source' ? 'bg-pink-500' : 'bg-blue-500'}`} />
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
-                        {type === 'source' ? 'Source Ledger' : 'Destination Ledger'}
+                        {type === 'source' ? 'Account Sending Money' : 'Account Receiving Money'}
                     </span>
                 </div>
                 <div>
@@ -214,7 +214,7 @@ export default function PaymentTransferPage() {
                     <div className="hidden lg:block space-y-4">
                         <div className="flex items-center gap-3 justify-end">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Ledger Active</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Account Ready</span>
                         </div>
                         <div className="w-64 h-[1px] bg-border-standard opacity-20" />
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40 text-right">
@@ -324,8 +324,8 @@ export default function PaymentTransferPage() {
                             }`}
                         >
                             <div className="text-left">
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em] block mb-1 opacity-60">Authorize Ledger</span>
-                                <span className="text-xl font-bold uppercase tracking-widest">Execute.</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em] block mb-1 opacity-60">Confirm Transfer</span>
+                                <span className="text-xl font-bold uppercase tracking-widest">Send Money Now</span>
                             </div>
                             {loading ? <Loader2 className="w-8 h-8 animate-spin" /> : <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />}
                         </button>

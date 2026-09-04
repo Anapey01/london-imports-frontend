@@ -6,11 +6,12 @@ const STATUS_TABS = ['All', 'PENDING', 'NEW_ORDERS', 'WAREHOUSE', 'SHIPPING', 'C
 
 const statusLabel = (s: string) => {
     switch (s) {
-        case 'PENDING': return 'Pending';
+        case 'All': return 'All Orders';
+        case 'PENDING': return 'Unpaid Orders';
         case 'NEW_ORDERS': return 'New Orders';
-        case 'WAREHOUSE': return 'Processing';
-        case 'SHIPPING': return 'Shipping';
-        case 'COMPLETED': return 'Completed';
+        case 'WAREHOUSE': return 'Packing in China';
+        case 'SHIPPING': return 'On the Way to Ghana';
+        case 'COMPLETED': return 'Delivered';
         case 'CANCELLED': return 'Cancelled';
         default: return s;
     }

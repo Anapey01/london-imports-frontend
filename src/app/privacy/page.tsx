@@ -46,7 +46,7 @@ export default function PrivacyPage() {
                     <section className="space-y-6">
                         <h2 className="text-2xl font-serif font-bold tracking-tight">1. Data We Collect</h2>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                            To facilitate factory procurement, package consolidation, and final distribution inside Ghana, we collect the following information:
+                            To help buy your items from factories, pack them safely, and deliver them to you in Ghana, we collect the following information:
                         </p>
                         <ul className="list-disc pl-6 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
                             <li><strong>Identity & Verification:</strong> Your full name, email address, and phone number. Phone numbers are strictly used for account verification, delivery updates, and logistics/rider coordination.</li>
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
                         </p>
                         <ul className="list-disc pl-6 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
                             <li><strong>Device Information:</strong> We collect and store your device model (e.g. Samsung Galaxy, Google Pixel, Tecno, Infinix), platform (Android), and operating system version in our secure <code>UserDevice</code> record to ensure layout compatibility, troubleshoot application crashes, and deliver optimized app performance.</li>
-                            <li><strong>Firebase Cloud Messaging (FCM) Tokens:</strong> When you grant notification permissions, a unique FCM registration token is securely generated and linked to your user account. These tokens are stored strictly to send real-time transactional order updates — including procurement confirmations in China, flight/shipping departures, customs clearance milestones at Tema Harbor or Kotoka Airport, delivery dispatch alerts, and upcoming delivery reminders.</li>
+                            <li><strong>Firebase Cloud Messaging (FCM) Tokens:</strong> When you grant notification permissions, a unique FCM registration token is securely generated and linked to your user account. These tokens are stored strictly to send real-time transactional order updates — including order confirmations in China, flight/shipping departures, customs clearance milestones at Tema Harbor or Kotoka Airport, delivery dispatch alerts, and upcoming delivery reminders.</li>
                         </ul>
                         <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                             <p className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">

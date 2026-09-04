@@ -8,7 +8,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import {
-    ChevronRight, ChevronLeft, Package, X, CheckSquare, Square
+    ChevronRight, ChevronLeft, Package, X, CheckSquare, Square, ShieldCheck
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -20,17 +20,19 @@ import type { Order } from '@/components/admin/orders/list/OrderRow';
 import FilterTabs from '@/components/admin/orders/list/FilterTabs';
 import SearchField from '@/components/admin/orders/list/SearchField';
 import BulkActionBar from '@/components/admin/orders/list/BulkActionBar';
+import ReconcileHubtelModal from '@/components/admin/orders/list/ReconcileHubtelModal';
 
 const statusLabel = (s: string) => {
     switch (s) {
-        case 'PENDING': return 'Pending';
+        case 'All': return 'All Orders';
+        case 'PENDING': return 'Unpaid Orders';
         case 'NEW_ORDERS': return 'New Orders';
-        case 'WAREHOUSE': return 'Processing';
-        case 'SHIPPING': return 'Shipping';
-        case 'IN_TRANSIT': return 'Shipping';
-        case 'ARRIVED': return 'Arrived';
+        case 'WAREHOUSE': return 'Packing in China';
+        case 'SHIPPING': return 'On the Way to Ghana';
+        case 'IN_TRANSIT': return 'On the Way to Ghana';
+        case 'ARRIVED': return 'Arrived in Ghana';
         case 'OUT_FOR_DELIVERY': return 'Out for Delivery';
-        case 'COMPLETED': return 'Completed';
+        case 'COMPLETED': return 'Delivered';
         case 'CANCELLED': return 'Cancelled';
         default: return s;
     }
@@ -112,6 +114,7 @@ export default function AdminOrdersPage() {
     const [totalCount, setTotalCount] = useState(0);
     const [apiCounts, setApiCounts] = useState<Record<string, number> | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [showReconcileModal, setShowReconcileModal] = useState(false);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -430,10 +433,10 @@ export default function AdminOrdersPage() {
 
     return (
         <div className="space-y-12 pb-32">
-            {/* 1. COMMAND HEADER */}
+            {/* 1. ORDERS HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Order Management</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Customer Orders</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
@@ -453,11 +456,19 @@ export default function AdminOrdersPage() {
                         }} 
                     />
                     <button
+                        onClick={() => setShowReconcileModal(true)}
+                        className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-950 text-white hover:bg-emerald-600 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto shadow-sm"
+                        title="Scan orders from August to September to credit missing payments"
+                    >
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        RECONCILE HUBTEL PAYMENTS
+                    </button>
+                    <button
                         onClick={handleClearPending}
-                        className="flex items-center justify-center gap-3 px-8 py-4 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto"
+                        className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto"
                     >
                         <X className="w-3.5 h-3.5" />
-                        CLEAR PENDING ({statusCounts.PENDING})
+                        DELETE UNPAID ({statusCounts.PENDING})
                     </button>
                 </div>
             </div>
@@ -660,6 +671,15 @@ export default function AdminOrdersPage() {
                 title={confirmModal.title}
                 message={confirmModal.message}
                 variant={confirmModal.variant}
+            />
+
+            <ReconcileHubtelModal
+                isOpen={showReconcileModal}
+                onClose={() => setShowReconcileModal(false)}
+                onSuccess={() => {
+                    loadOrders();
+                    addAlert('Hubtel payments reconciled and credited successfully!');
+                }}
             />
 
             <div className="fixed bottom-12 left-0 right-0 z-[110] pointer-events-none flex flex-col items-center">

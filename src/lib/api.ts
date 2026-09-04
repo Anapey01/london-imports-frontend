@@ -212,6 +212,8 @@ export const paymentsAPI = {
   syncManual: (orderNumber: string, reference: string) =>
     api.post('/payments/sync-manual/', { order_number: orderNumber, reference }),
   orderPayments: (orderNumber: string) => api.get(`/payments/order/${orderNumber}/`),
+  reconcileHubtelScan: (data: { start_date?: string; end_date?: string; references?: string; dry_run?: boolean }) =>
+    api.post('/payments/admin/reconcile-scan/', data),
 };
 
 export const vendorsAPI = {

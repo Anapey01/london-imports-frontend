@@ -23,37 +23,35 @@ export default function ShippingPolicyPage() {
                         </div>
                         <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white mb-8">
                             Shipping <br />
-                            <span className="italic font-light text-slate-200 dark:text-slate-800 uppercase tracking-widest text-[0.4em] block mt-4">Policy Ledger.</span>
+                            <span className="italic font-light text-slate-200 dark:text-slate-800 uppercase tracking-widest text-[0.4em] block mt-4">Shipping Guidelines.</span>
                         </h1>
                     </div>
                     <div className="max-w-3xl">
-                        <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-[1.8]">
-                            We establish clear operational guidelines for transit, customs, and delivery. Below is our official shipping framework from Guangzhou to destinations across Ghana.
+                        <p className="text-xl md:text-2xl font-serif text-slate-600 dark:text-slate-300 leading-relaxed italic">
+                            London&apos;s Imports connects Ghanaian shoppers directly to premier global manufacturers. Read our clear shipping terms below.
                         </p>
                     </div>
                 </div>
             </section>
 
-            {/* 2. Transit Timelines Grid */}
-            <section className="py-24 border-b border-slate-50 dark:border-slate-900 bg-slate-50/20 dark:bg-slate-900/10">
+            {/* 2. Shipping Methods Split */}
+            <section className="py-24 border-b border-slate-50 dark:border-slate-900">
                 <div className="max-w-7xl mx-auto px-6">
-                    <header className="mb-16">
-                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-slate-500 mb-4 block">Transit Windows</span>
-                        <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white leading-none tracking-tighter italic">Freight Timelines</h2>
-                    </header>
-
                     <div className="grid md:grid-cols-2 gap-px bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-800">
                         {/* Air Freight */}
                         <div className="bg-white dark:bg-slate-950 p-12 md:p-16 flex flex-col justify-between">
                             <div>
-                                <div className="flex justify-between items-start mb-8">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-emerald-500">Method 01</span>
-                                    <Plane className="w-6 h-6 text-slate-400" strokeWidth={1} />
+                                <div className="flex justify-between items-start mb-12">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-emerald-500">Fast Express</span>
+                                    <Plane className="w-8 h-8 text-slate-900 dark:text-white" strokeWidth={1} />
                                 </div>
-                                <h3 className="text-3xl font-serif font-bold text-slate-900 dark:text-white mb-6 italic">Air Cargo Freight</h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-8 font-medium">
-                                    Ideal for high-priority shipments, electronics, clothing, and lightweight procurement items.
-                                </p>
+                                <h3 className="text-4xl font-serif font-bold text-slate-900 dark:text-white mb-4 italic">Air Cargo Express</h3>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-8">7 – 14 Business Days Arrival</p>
+                                <div className="space-y-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                    <p>
+                                        Ideal for urgent orders, electronics, clothing, and everyday shopping items.
+                                    </p>
+                                </div>
                             </div>
                             <div className="border-t border-slate-100 dark:border-slate-900 pt-8">
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Estimated Window</span>

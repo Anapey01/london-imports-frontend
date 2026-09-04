@@ -586,7 +586,7 @@ export default function AgentDashboardPage() {
 
                 {ledger.length === 0 ? (
                   <p className="text-center py-8 text-xs text-content-secondary font-bold uppercase tracking-wider">
-                    No transactions recorded on your ledger yet.
+                    No payments or transactions yet.
                   </p>
                 ) : (
                   <div className="overflow-x-auto">

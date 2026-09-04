@@ -53,12 +53,12 @@ export function AdminActionsPanel({
                 </div>
 
                 <div className="pt-4 space-y-4">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Hubtel Payment Sync</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Check & Credit Hubtel Payment</span>
                     <div className="space-y-3">
                         <input 
                             value={manualReference}
                             onChange={(e) => setManualReference(e.target.value)}
-                            placeholder="PASTE HUBTEL REFERENCE (CLIENT REF OR TXN ID)"
+                            placeholder="PASTE HUBTEL PAYMENT ID OR REFERENCE"
                             className="w-full p-4 bg-slate-500/5 border border-inherit text-[10px] font-mono tracking-widest outline-none focus:border-amber-500 transition-all uppercase"
                         />
                         <button 
@@ -67,7 +67,7 @@ export function AdminActionsPanel({
                             className="w-full p-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-amber-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
                         >
                             {updating ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
-                            Verify & Sync Hubtel
+                            Check & Mark as Paid with Hubtel
                         </button>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ export function AdminActionsPanel({
 
             <div className="p-6 bg-slate-500/5 border-t border-inherit flex items-center gap-3">
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Security Verified</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Safe & Confirmed</span>
             </div>
         </section>
     );

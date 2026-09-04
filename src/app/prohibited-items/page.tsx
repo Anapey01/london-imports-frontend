@@ -46,7 +46,7 @@ export default function ProhibitedItemsPage() {
                     <section className="space-y-6">
                         <h2 className="text-2xl font-serif font-bold tracking-tight">1. Weapons, Ammunition & Tactical Gear</h2>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                            We operate under a zero-tolerance policy for weapons and military-grade equipment. The procurement or shipping of the following items is strictly prohibited:
+                            We operate under a zero-tolerance policy for weapons and military-grade equipment. Buying or shipping the following items is strictly prohibited:
                         </p>
                         <ul className="list-disc pl-6 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
                             <li>Firearms, ammunition, and weapon parts.</li>

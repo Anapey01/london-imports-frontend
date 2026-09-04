@@ -88,7 +88,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                 : 'text-slate-400 hover:text-slate-600'
                                 }`}
                         >
-                            {status === 'ALL' ? 'All Orders' : status}
+                            {status === 'ALL' ? 'All Orders' : status === 'PENDING' ? 'Unpaid' : 'Delivered'}
                             {filter === status && (
                                 <div className="absolute -bottom-1.5 left-0 right-0 h-px bg-slate-900 dark:bg-white rounded-full animate-fade-in" />
                             )}

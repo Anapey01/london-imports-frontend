@@ -26,31 +26,31 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
         {
             label: 'Total Customers',
             value: stats.totalUsers.toLocaleString(),
-            subtitle: `+${stats.newUsersToday} Today`,
+            subtitle: `+${stats.newUsersToday} New Today`,
             icon: Users,
             trend: stats.newUsersToday >= 0 ? 12 : -5,
             prefix: ''
         },
         {
-            label: 'Total Revenue',
+            label: 'Money Received',
             value: stats.totalRevenue.toLocaleString(),
-            subtitle: `Paid in Full`,
+            subtitle: 'Paid in Full',
             icon: BadgeDollarSign,
             trend: 8.2,
             prefix: '₵'
         },
         {
-            label: 'Future Sales',
+            label: 'Unpaid Orders Value',
             value: stats.potentialRevenue.toLocaleString(),
-            subtitle: `${stats.pendingOrders} Pending`,
+            subtitle: `${stats.pendingOrders} Waiting for Payment`,
             icon: Zap,
             trend: 14.5,
             prefix: '₵'
         },
         {
-            label: 'Product List',
+            label: 'Shop Items',
             value: stats.totalProducts.toLocaleString(),
-            subtitle: 'Total Items',
+            subtitle: 'Total Products in Store',
             icon: Package,
             trend: 0,
             prefix: ''
@@ -76,8 +76,8 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
 
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 group-hover:text-slate-900 transition-colors">
-                                STAT_{idx + 1}
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 transition-colors">
+                                {idx === 0 ? 'CUSTOMERS' : idx === 1 ? 'SALES' : idx === 2 ? 'UNPAID' : 'STORE'}
                             </span>
                             <div className="flex-1 h-px bg-slate-50 group-hover:bg-slate-200 transition-colors" />
                             {card.trend !== 0 && (

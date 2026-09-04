@@ -250,8 +250,8 @@ export default function AdminDashboardPage() {
                 <div className="lg:col-span-8 bg-white px-4 py-10 sm:p-12">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-12 sm:mb-16">
                         <div>
-                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">SALES OVERVIEW</h2>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Revenue over time</p>
+                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">SALES OVER TIME</h2>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Daily earnings overview</p>
                         </div>
                         <div className="flex bg-slate-50 p-1 w-fit">
                             {['7d', '30d', '90d'].map(range => (
@@ -277,7 +277,7 @@ export default function AdminDashboardPage() {
                     </div>
                 </div>
 
-                {/* Active Batch Control (Manifest Integration) */}
+                {/* Active Batch Control */}
                 <div className="lg:col-span-4 bg-slate-50/50 px-4 py-10 sm:p-12 border-t lg:border-t-0 lg:border-l border-slate-100">
                     <ActiveBatchWidget 
                         isDark={isDark} 
@@ -286,11 +286,11 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            {/* 3. LOGISTICS PIPELINE STATUS */}
+            {/* 3. ORDER FLOW */}
             <div className="bg-white border border-slate-100 px-4 py-10 sm:p-12">
                 <div className="flex items-center gap-4 mb-12">
                     <span className="h-px w-8 bg-slate-900" />
-                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">ORDER FLOW</h2>
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">WHERE ORDERS ARE RIGHT NOW</h2>
                 </div>
                 <OperationsFunnel 
                     isDark={isDark} 
@@ -298,12 +298,12 @@ export default function AdminDashboardPage() {
                 />
             </div>
 
-            {/* 4. TRANSACTION ARCHIVE (THE LEDGER) */}
+            {/* 4. RECENT ORDERS */}
             <div className="bg-white border border-slate-100 overflow-hidden">
                 <div className="p-12 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
                     <div>
-                        <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tighter">Recent Orders</h2>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-4">Latest activity across the platform</p>
+                        <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tighter">Recent Customer Orders</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-4">Latest purchases made by customers</p>
                     </div>
                     
                     <div className="flex flex-col md:flex-row items-center gap-4">
@@ -311,10 +311,10 @@ export default function AdminDashboardPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
                             <input 
                                 type="text" 
-                                placeholder="FIND AN ORDER..."
+                                placeholder="SEARCH BY ORDER #, NAME, OR PHONE..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all w-full md:w-64"
+                                className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all w-full md:w-80"
                             />
                         </div>
                         <button 

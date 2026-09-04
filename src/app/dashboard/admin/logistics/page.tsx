@@ -147,14 +147,14 @@ export default function AdminLogisticsPage() {
 
     return (
         <div className="space-y-12 pb-32">
-            {/* 1. COMMAND HEADER */}
+            {/* 1. DELIVERIES HEADER */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Delivery Logistics</h1>
+                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Deliveries & Shipping</h1>
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} SHIPMENTS</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} PACKAGES</span>
                         </div>
                     </div>
                 </div>
@@ -164,7 +164,7 @@ export default function AdminLogisticsPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="SEARCH ORDERS..."
+                            placeholder="SEARCH BY ORDER #, NAME, OR PHONE..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                             className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
@@ -173,10 +173,11 @@ export default function AdminLogisticsPage() {
                 </div>
             </div>
 
-            {/* 2. PROTOCOL FILTERS */}
+            {/* 2. STATUS TABS */}
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {STATUS_TABS.map(s => {
                     const count = apiCounts ? (s === 'PROCESSING' ? apiCounts['WAREHOUSE'] : (s === 'All' ? apiCounts['LOGISTICS'] + apiCounts['WAREHOUSE'] + apiCounts['COMPLETED'] : apiCounts[s === 'DELIVERED' ? 'COMPLETED' : s])) : undefined;
+                    const label = s === 'All' ? 'All Deliveries' : s === 'PROCESSING' ? 'Packing in China' : s === 'IN_TRANSIT' ? 'On the Way to Ghana' : s === 'OUT_FOR_DELIVERY' ? 'Out for Delivery' : s === 'DELIVERED' ? 'Delivered' : s;
                     return (
                     <button
                         key={s}
@@ -186,7 +187,7 @@ export default function AdminLogisticsPage() {
                             : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                             }`}
                     >
-                        <span>{s === 'All' ? 'All Shipments' : s.replace(/_/g, ' ')}</span>
+                        <span>{label}</span>
                         {count !== undefined && (
                             <span className={`px-1.5 py-0.5 rounded-sm text-[9px] ${statusFilter === s ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
                                 {count}

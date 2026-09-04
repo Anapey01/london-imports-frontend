@@ -63,13 +63,13 @@ export function TransferPaymentModal({
                 
                 <div className="space-y-6 sm:space-y-8">
                     <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Target Reference</label>
+                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Move Money To This Order</label>
                         <select
                             value={transferData.target_order_id}
                             onChange={(e) => setTransferData({ ...transferData, target_order_id: e.target.value })}
                             className="w-full p-3.5 bg-slate-500/5 border border-inherit text-sm font-bold outline-none focus:border-pink-500 transition-all rounded-lg"
                         >
-                            <option value="">SELECT DESTINATION ORDER</option>
+                            <option value="">CHOOSE AN ORDER...</option>
                             {customerOrders.map(o => (
                                 <option key={o.id} value={o.id}>
                                     #{o.order_number} - ₵{parseFloat(o.balance_due).toLocaleString()} Due
@@ -79,7 +79,7 @@ export function TransferPaymentModal({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Transfer Amount</label>
+                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Amount to Transfer (GHS)</label>
                         <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-serif italic opacity-40">₵</span>
                             <input
@@ -92,11 +92,11 @@ export function TransferPaymentModal({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Reason / Notes</label>
+                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Reason or Note (Optional)</label>
                         <textarea
                             value={transferData.reason}
                             onChange={(e) => setTransferData({ ...transferData, reason: e.target.value })}
-                            placeholder="ADMIN OVERRIDE DIRECTIVE..."
+                            placeholder="Why are you moving this payment?..."
                             rows={3}
                             className="w-full p-3.5 bg-slate-500/5 border border-inherit text-[10px] font-mono uppercase tracking-widest outline-none focus:border-pink-500 transition-all rounded-lg"
                         />
@@ -108,7 +108,7 @@ export function TransferPaymentModal({
                         onClick={() => setIsTransferModalOpen(false)}
                         className="px-6 py-3 text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-all cursor-pointer"
                     >
-                        Abort
+                        Cancel
                     </button>
                     <button 
                         onClick={handleTransferPayment}
@@ -116,7 +116,7 @@ export function TransferPaymentModal({
                         className="px-8 py-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 disabled:opacity-30 transition-all flex items-center gap-2 rounded-lg cursor-pointer"
                     >
                         {updating ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                        Execute Transfer
+                        Move Payment Now
                     </button>
                 </div>
             </motion.div>

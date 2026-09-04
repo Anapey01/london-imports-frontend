@@ -28,8 +28,8 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
         }`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-8 sm:mb-12">
                 <div>
-                    <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Revenue Velocity</h2>
-                    <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Daily transactional volume</p>
+                    <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Daily Sales</h2>
+                    <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Money received per day</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {['7D', '30D', 'ALL'].map((p) => {

@@ -452,10 +452,10 @@ export default function AdminCheckersAnalyticsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-sm font-extrabold uppercase tracking-wider text-white">
-                                Revenue & Profit Momentum Trajectory
+                                Daily Sales and Earnings
                             </h3>
                             <p className="text-xs text-slate-400 font-medium mt-0.5">
-                                Daily performance metrics across selected timeframe
+                                Money made each day across selected days
                             </p>
                         </div>
                         <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">

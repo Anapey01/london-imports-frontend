@@ -31,7 +31,7 @@ export default function ShippingPage() {
 
                 <div className="max-w-2xl">
                     <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                        Motion creates value. We bridge the 12,000km divide between Guangzhou’s markets and the streets of Accra with careful planning.
+                        Fast and reliable shipping from factories in China straight to your doorstep in Ghana.
                     </p>
                 </div>
             </header>
@@ -114,7 +114,7 @@ export default function ShippingPage() {
             <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:mt-24 bg-slate-50/50 dark:bg-slate-900/10">
                 <div className="flex items-center gap-4 mb-24 justify-center">
                     <span className="text-[10px] font-black tracking-[0.5em] text-slate-300 dark:text-slate-600 uppercase">
-                        The London&apos;s Infrastructure
+                        How We Deliver Your Goods
                     </span>
                 </div>
 
@@ -122,13 +122,13 @@ export default function ShippingPage() {
                     {[
                         { 
                             icon: Package, 
-                            title: "Advanced Consolidation", 
-                            text: "We combine your orders from global platforms and suppliers into one shipment at our logistics hubs to slash your shipping fees." 
+                            title: "Combined Packages", 
+                            text: "We combine all your items from different suppliers into one box to save you money on shipping fees." 
                         },
                         { 
                             icon: ShieldCheck, 
-                            title: "Tracked Movement", 
-                            text: "Every Kg is logged. Track your goods from our China warehouse directly to the final clearing port in Accra." 
+                            title: "Live Order Tracking", 
+                            text: "Track your package every step of the way, from our China warehouse straight to Accra." 
                         },
                         { 
                             icon: MapPin, 
@@ -137,8 +137,8 @@ export default function ShippingPage() {
                         },
                         { 
                             icon: Truck, 
-                            title: "Customs Clearance", 
-                            text: "We handle all the paperwork. Real clearing agents in Tema ensuring smooth gate exits." 
+                            title: "Customs Handled for You", 
+                            text: "We handle all the airport and port clearance and paperwork so you don't have to worry." 
                         }
                     ].map((item, i) => (
                         <div key={i} className="bg-white dark:bg-slate-950 p-12 transition-all hover:bg-slate-50 dark:hover:bg-slate-900 group">

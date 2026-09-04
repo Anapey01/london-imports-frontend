@@ -24,7 +24,7 @@ export default function PricingPage() {
                         </div>
                         <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[0.85] tracking-tighter text-slate-900 dark:text-white mb-8">
                             Pricing <br />
-                            <span className="italic font-light text-slate-200 dark:text-slate-800 uppercase tracking-widest text-[0.4em] block mt-4">Transparency Ledger.</span>
+                            <span className="italic font-light text-slate-200 dark:text-slate-800 uppercase tracking-widest text-[0.4em] block mt-4">Clear & Honest Prices.</span>
                         </h1>
                     </div>
                     <div className="max-w-3xl">
@@ -149,7 +149,7 @@ export default function PricingPage() {
                     <HelpCircle className="w-12 h-12 text-emerald-500 mx-auto mb-8" strokeWidth={1} />
                     <h2 className="text-4xl md:text-5xl font-serif font-bold italic text-white tracking-tighter mb-6">Have Pricing Questions?</h2>
                     <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-md mx-auto mb-8">
-                        Our procurement desk is ready to provide custom bulk shipping quotes, item cost conversions, or tariff estimates.
+                        Our customer support team is ready to help you with bulk orders, shipping estimates, and product costs.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/customs-estimator" className="inline-block px-8 py-3 border border-white text-white uppercase tracking-widest text-[10px] font-black hover:bg-white hover:text-slate-900 transition-colors">

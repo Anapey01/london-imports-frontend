@@ -142,7 +142,7 @@ export default function DeliveryReturnsPage() {
                                 <h3 className="text-2xl font-serif font-bold italic text-slate-900 dark:text-white">Evidence Requirements</h3>
                             </div>
                             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                Customers are required to provide photographs, videos, packaging materials, waybills, or other supporting evidence when submitting a claim. Photographic evidence must clearly capture the issue alongside the shipping barcode/label on the package.
+                                Please provide clear photos, videos, or pictures of the box label and receipt when submitting a claim. The photos should clearly show the damaged or missing item alongside the shipping label on the package.
                             </p>
                         </div>
 
@@ -200,7 +200,7 @@ export default function DeliveryReturnsPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 block">Step 04: Resolution</span>
                             <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-white italic">Outcome & Settlement</h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                Approved claims will result in either a refund (processed within MoMo/Bank timelines) or a replacement item dispatched in the next cargo batch. Rejected claims will be detailed in writing.
+                                Approved claims will result in either a full refund (sent to your MoMo or bank) or a replacement item sent in the next shipment to Ghana.
                             </p>
                         </div>
                     </div>

@@ -63,18 +63,18 @@ export default function CustomsPage() {
                             {[
                                 { 
                                     icon: ShieldCheck, 
-                                    title: "Tax Compliant Classification", 
-                                    text: "Every SKU is correctly classified under the GH ECOWAS Common External Tariff (CET) to ensure zero penalties." 
+                                    title: "Proper Product Categorization", 
+                                    text: "Every item is correctly declared so there are no unexpected customs fines or delays." 
                                 },
                                 { 
                                     icon: FileText, 
-                                    title: "Digital Paperwork Brokerage", 
-                                    text: "Our team generates and submits all digital declarations on your behalf at the Port of Tema and KIA." 
+                                    title: "We Handle All Paperwork", 
+                                    text: "Our team submits all customs forms for you at Tema Port and Kotoka Airport." 
                                 },
                                 { 
                                     icon: Scale, 
-                                    title: "Professional Representation", 
-                                    text: "In case of any discrepancies at the port, our lead clearing agents represent your interests directly with GRA officials." 
+                                    title: "Port Representation", 
+                                    text: "If any questions arise at the port, our licensed agents resolve them directly with customs officers." 
                                 }
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-10 items-start group">
@@ -94,7 +94,7 @@ export default function CustomsPage() {
                     {/* 3. THE ANALYTICAL SUMMARY (Right Column) */}
                     <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-12">
                         <div className="bg-slate-50 px-10 py-16 flex flex-col">
-                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-12">Financial Audit / GH Duties</span>
+                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-12">Estimated Customs Charges</span>
                             
                             <div className="space-y-8 flex-1">
                                 <div className="flex justify-between items-baseline border-b border-slate-100 pb-6">
@@ -122,7 +122,7 @@ export default function CustomsPage() {
                                 href="/customs-estimator" 
                                 className="group/link flex items-center justify-between w-full h-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 border-b border-slate-900 transition-all hover:opacity-60"
                             >
-                                <span>Duty Estimator Access</span>
+                                <span>Calculate Customs Duty</span>
                                 <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
                             </Link>
                             
@@ -138,7 +138,7 @@ export default function CustomsPage() {
                                 href="/contact" 
                                 className="w-full h-16 bg-slate-900 text-white flex items-center justify-center text-[11px] font-black uppercase tracking-[0.3em] hover:bg-slate-800 transition-colors"
                             >
-                                Request Policy Quote
+                                Ask a Customs Question
                             </Link>
                         </div>
                     </div>

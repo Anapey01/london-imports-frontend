@@ -34,7 +34,7 @@ export async function POST(req: Request) {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>London's Import - Manifest Authorized</title>
+                <title>London's Import - Order Confirmed</title>
                 <style>
                     body { margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #0c0f16; color: #ffffff; }
                     .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
@@ -152,7 +152,7 @@ export async function POST(req: Request) {
                 from: "London's Import <manifest@londonsimports.com>", // Verify this domain in Resend
                 to: [cleanEmail],
                 cc: ['orders@londonsimports.com'],
-                subject: `MANIFEST AUTHORIZED: ${cleanOrderNumber}`,
+                subject: `Payment Received - Order #${cleanOrderNumber}`,
                 html: emailHtml
             })
         });

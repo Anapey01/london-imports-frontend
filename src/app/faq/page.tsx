@@ -22,7 +22,7 @@ const faqs = [
     {
         id: "PAY-01",
         question: "Is my payment secure?",
-        answer: "Yes! All payments are processed securely through our transaction gateway partners (including Hubtel, Paystack, and other licensed providers). Your funds are held securely until your order is processed."
+        answer: "Yes! All payments are processed securely through our licensed payment partner, Hubtel. You can pay safely using Mobile Money or bank card, and your money is protected until your order is confirmed."
     },
     {
         id: "REF-01",
@@ -139,11 +139,11 @@ export default function FAQPage() {
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 mb-8 block font-sans">Contact Support</span>
                             <h3 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-white mb-8 tracking-tighter leading-tight">
                                 Still have <br /> 
-                                <span className="italic font-normal">Unresolved Queries?</span>
+                                <span className="italic font-normal">Questions?</span>
                             </h3>
                         </div>
                         <p className="text-sm text-slate-400 dark:text-slate-500 font-medium leading-relaxed mb-12 max-w-xs">
-                            Our support team manages complex shipping questions that fall outside the standard FAQ.
+                            Our support team is always available to help you with your order and delivery.
                         </p>
                         <Link 
                             href="/contact" 

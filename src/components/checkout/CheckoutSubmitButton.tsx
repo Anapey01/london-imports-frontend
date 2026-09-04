@@ -67,7 +67,7 @@ const CheckoutSubmitButton = ({
                                         <div className="flex items-center gap-3">
                                             <div className="w-3 h-3 border border-white/20 border-t-white dark:border-slate-950/20 dark:border-t-slate-950 rounded-full animate-spin" />
                                             <span className="text-[8px] tracking-[0.3em]">
-                                                {connectionTimeout ? 'Connecting to Bank...' : (isHubtel ? 'Redirecting to Secure Checkout...' : 'Starting Secure Payment...')}
+                                                {connectionTimeout ? 'Connecting...' : (isHubtel ? 'Opening Payment Page...' : 'Starting Payment...')}
                                             </span>
                                         </div>
                                         <div className="w-full h-[1px] bg-white/5 dark:bg-slate-950/5 relative overflow-hidden">
@@ -97,7 +97,7 @@ const CheckoutSubmitButton = ({
                                     </div>
                                 ) : (
                                     <>
-                                        {isHubtel ? 'Proceed to Hubtel' : 'Complete Payment'} — {formatPrice(paymentAmount)}
+                                        {isHubtel ? 'Pay with Mobile Money or Card' : 'Complete Payment'} — {formatPrice(paymentAmount)}
                                     </>
                                 )}
                             </>
@@ -106,12 +106,12 @@ const CheckoutSubmitButton = ({
                 )}
             </button>
 
-            <div className="mt-8 flex items-center justify-center gap-6 opacity-10 hover:opacity-30 transition-opacity duration-700 grayscale">
+            <div className="mt-8 flex items-center justify-center gap-6 opacity-20 hover:opacity-40 transition-opacity duration-700">
                 <span className="text-[7px] font-semibold uppercase tracking-[0.4em] nuclear-text">
-                    {isHubtel ? 'Hubtel Secure' : 'Paystack Encrypted'}
+                    Safe Mobile Money & Card Payment
                 </span>
                 <div className="w-1 h-1 bg-slate-900 dark:bg-white rounded-full" />
-                <span className="text-[7px] font-semibold uppercase tracking-[0.4em] nuclear-text">Zero Data Retention</span>
+                <span className="text-[7px] font-semibold uppercase tracking-[0.4em] nuclear-text">Bank-Grade Protection</span>
             </div>
         </div>
     );

@@ -43,20 +43,20 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
     const isDark = theme === 'dark';
 
     const links = [
-        { name: 'OVERVIEW', href: '/dashboard/admin', icon: LayoutDashboard },
-        { name: 'USERS', href: '/dashboard/admin/users', icon: Users },
-        { name: 'VENDORS', href: '/dashboard/admin/vendors', icon: Store },
+        { name: 'DASHBOARD', href: '/dashboard/admin', icon: LayoutDashboard },
+        { name: 'CUSTOMERS', href: '/dashboard/admin/users', icon: Users },
+        { name: 'SELLERS', href: '/dashboard/admin/vendors', icon: Store },
         { name: 'ORDERS', href: '/dashboard/admin/orders', icon: ShoppingBag },
-        { name: 'TRANSFERS', href: '/dashboard/admin/payments/transfer', icon: ArrowRightLeft },
-        { name: 'LOGISTICS', href: '/dashboard/admin/logistics', icon: Truck },
+        { name: 'MONEY TRANSFERS', href: '/dashboard/admin/payments/transfer', icon: ArrowRightLeft },
+        { name: 'DELIVERIES', href: '/dashboard/admin/logistics', icon: Truck },
         { name: 'PRODUCTS', href: '/dashboard/admin/products', icon: Package },
-        { name: 'JOURNAL', href: '/dashboard/admin/blog', icon: FileText },
-        { name: 'BROADCAST', href: '/dashboard/admin/broadcast', icon: Mail },
-        { name: 'ANALYTICS', href: '/dashboard/admin/analytics', icon: BarChart3 },
+        { name: 'BLOG POSTS', href: '/dashboard/admin/blog', icon: FileText },
+        { name: 'SEND MESSAGES', href: '/dashboard/admin/broadcast', icon: Mail },
+        { name: 'SALES REPORTS', href: '/dashboard/admin/analytics', icon: BarChart3 },
         { name: 'BANNERS', href: '/dashboard/admin/banners', icon: LayoutPanelTop },
-        { name: 'GALLERY', href: '/dashboard/admin/gallery', icon: Image },
-        { name: 'CONFIG', href: '/dashboard/admin/settings', icon: Settings },
-        { name: 'ACADEMY', href: '/dashboard/admin/tutorials', icon: PlayCircle },
+        { name: 'DELIVERY PHOTOS', href: '/dashboard/admin/gallery', icon: Image },
+        { name: 'SETTINGS', href: '/dashboard/admin/settings', icon: Settings },
+        { name: 'HELP & GUIDES', href: '/dashboard/admin/tutorials', icon: PlayCircle },
     ];
 
     const handleLogout = async () => {

@@ -68,17 +68,17 @@ export default function BulkActionBar({
                                     onClick={() => onBulkStatus('OPEN_FOR_BATCH')}
                                     disabled={bulkUpdating}
                                     className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
-                                    title="Move to Processing / Warehouse"
+                                    title="Move to Packing in China"
                                 >
-                                    → Processing
+                                    → Packing in China
                                 </button>
                                 <button
                                     onClick={() => onBulkStatus('IN_TRANSIT')}
                                     disabled={bulkUpdating}
                                     className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
-                                    title="Move to Shipped / In Transit"
+                                    title="Move to On the Way to Ghana"
                                 >
-                                    → Ship
+                                    → On the Way to Ghana
                                 </button>
                                 <button
                                     onClick={() => onBulkStatus('ARRIVED')}
@@ -86,7 +86,7 @@ export default function BulkActionBar({
                                     className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
                                     title="Move to Arrived in Ghana"
                                 >
-                                    → Arrive
+                                    → Arrived in Ghana
                                 </button>
                                 <button
                                     onClick={() => onBulkStatus('OUT_FOR_DELIVERY')}
@@ -94,13 +94,13 @@ export default function BulkActionBar({
                                     className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-amber-600 hover:bg-amber-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
                                     title="Move to Out for Delivery"
                                 >
-                                    → Delivery
+                                    → Out for Delivery
                                 </button>
                                 <button
                                     onClick={() => onBulkStatus('DELIVERED')}
                                     disabled={bulkUpdating}
                                     className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-slate-700 hover:bg-slate-600 text-white disabled:opacity-50 cursor-pointer shadow-sm"
-                                    title="Move to Completed / Delivered"
+                                    title="Move to Delivered"
                                 >
                                     → Delivered
                                 </button>

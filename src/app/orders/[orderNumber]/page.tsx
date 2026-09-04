@@ -86,8 +86,8 @@ export default function OrderDetailPage() {
     if (error || !order) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-                <h1 className="text-3xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Order Record Not Found.</h1>
-                <p className="text-slate-500 mb-8 max-w-xs uppercase text-[10px] tracking-widest font-bold">We couldn't locate this specific logistics record.</p>
+                <h1 className="text-3xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Order Not Found.</h1>
+                <p className="text-slate-500 mb-8 max-w-xs uppercase text-[10px] tracking-widest font-bold">We couldn't find this order in your account.</p>
                 <Link href="/orders" className="text-[11px] font-black uppercase tracking-widest text-emerald-700 border-b border-emerald-700 pb-1">Return to Orders</Link>
             </div>
         );
@@ -228,9 +228,9 @@ export default function OrderDetailPage() {
                                 </div>
                             </div>
                             <div>
-                                <h4 className="text-[9px] font-black uppercase tracking-widest text-content-secondary opacity-50 mb-4">Logistics Support</h4>
+                                <h4 className="text-[9px] font-black uppercase tracking-widest text-content-secondary opacity-50 mb-4">Customer Support</h4>
                                 <p className="text-[10px] text-content-secondary font-medium leading-relaxed mb-4">
-                                    Need assistance? Contact our dispatch hub directly for real-time shipment updates.
+                                    Need help? Chat with our customer support team anytime for order and shipping updates.
                                 </p>
                                 <a 
                                     href={`https://wa.me/${siteConfig.concierge}?text=${encodeURIComponent(`Hi London's Imports! Order Help: #${order.order_number}`)}`} 
@@ -249,7 +249,7 @@ export default function OrderDetailPage() {
                         <section className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-border-standard shadow-sm">
                             <h3 className="text-[10px] font-semibold uppercase tracking-widest text-content-primary mb-8 flex items-center gap-2">
                                 <Receipt size={14} className="text-slate-500" />
-                                Financial Summary
+                                Payment Summary
                             </h3>
 
                             <div className="space-y-4">
@@ -264,7 +264,7 @@ export default function OrderDetailPage() {
                                 
                                 <div className="pt-6 border-t border-border-standard">
                                     <div className="flex justify-between items-end mb-6">
-                                        <span className="text-[9px] font-semibold uppercase text-content-secondary tracking-widest">Total Order Value</span>
+                                        <span className="text-[9px] font-semibold uppercase text-content-secondary tracking-widest">Total Order Amount</span>
                                         <span className="text-2xl font-semibold text-content-primary tracking-tight tabular-nums leading-none">
                                             GHS {Number(order.total).toLocaleString()}
                                         </span>
@@ -272,13 +272,13 @@ export default function OrderDetailPage() {
 
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center px-4 py-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
-                                            <span className="text-[8px] font-semibold uppercase text-emerald-700 dark:text-emerald-400 tracking-widest">Settled</span>
+                                            <span className="text-[8px] font-semibold uppercase text-emerald-700 dark:text-emerald-400 tracking-widest">Amount Paid</span>
                                             <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-100 uppercase">GHS {Number(order.amount_paid).toLocaleString()}</span>
                                         </div>
 
                                         {balanceDue > 0 && (
                                             <div className="flex justify-between items-center px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-border-standard">
-                                                <span className="text-[8px] font-semibold uppercase text-amber-600 tracking-widest">Balance Due</span>
+                                                <span className="text-[8px] font-semibold uppercase text-amber-600 tracking-widest">Amount Left to Pay</span>
                                                 <span className="text-sm font-semibold text-amber-700 uppercase">GHS {Number(balanceDue).toLocaleString()}</span>
                                             </div>
                                         )}
@@ -298,7 +298,7 @@ export default function OrderDetailPage() {
                                                 className="w-full text-[8px] font-black uppercase tracking-widest text-content-secondary hover:text-brand-emerald transition-colors py-2 flex items-center justify-center gap-2 opacity-60"
                                             >
                                                 <ShieldCheck size={12} />
-                                                {isVerifying ? 'Verifying...' : 'Re-verify Payment'}
+                                                {isVerifying ? 'Verifying...' : 'Check Payment Again'}
                                             </button>
                                         </div>
                                     )}
@@ -307,7 +307,7 @@ export default function OrderDetailPage() {
                         </section>
 
                         <p className="text-[8px] text-content-secondary leading-relaxed uppercase tracking-[0.2em] opacity-40 px-2">
-                            Institutional record. London's Imports Logistics 2026. SSL Encrypted Data.
+                            London's Imports 2026. Safe and secure.
                         </p>
                     </aside>
                 </div>

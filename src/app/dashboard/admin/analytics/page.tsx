@@ -283,7 +283,7 @@ export default function AdminAnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className={`lg:col-span-2 p-6 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                     <div className="flex justify-between items-center mb-8">
-                        <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Revenue Trajectory</h3>
+                        <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Sales Growth Over Time</h3>
                         {data?.revenue?.total === 0 && (
                             <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded tracking-tight">
                                 NO PAID ACTIVITY IN {period.toUpperCase()}

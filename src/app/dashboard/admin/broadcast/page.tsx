@@ -409,7 +409,7 @@ export default function AdminBroadcastPage() {
                                                 }`}
                                             >
                                                 <Send className="w-5 h-5 text-emerald-400" />
-                                                {sending ? 'COMMENCING DISPATCH...' : 'EXECUTE BROADCAST'}
+                                                {sending ? 'SENDING MESSAGES...' : 'SEND MESSAGE TO ALL USERS'}
                                             </button>
                                             
                                             <button
