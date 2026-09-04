@@ -86,7 +86,7 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
         total_amount: Number(order.total || 0),
         status: (order.status as string) || (order.state as string) || 'PENDING',
         state: (order.state as string) || (order.status as string) || 'PENDING',
-        payment_status: Number(order.balance_due || 0) <= 0 ? 'PAID' : (Number(order.amount_paid || 0) > 0 ? 'PARTIAL' : 'PENDING'),
+        payment_status: (order.payment_status as string) || (Number(order.amount_paid || 0) >= Number(order.total || 0) && Number(order.total || 0) > 0 ? 'PAID' : (Number(order.amount_paid || 0) > 0 ? 'PARTIAL' : 'PENDING')),
         amount_paid: Number(order.amount_paid || 0),
         balance_due: Number(order.balance_due || 0),
         is_installment: !!order.is_installment,
@@ -385,10 +385,11 @@ export default function AdminOrdersPage() {
                 try {
                     if (isReverting) {
                         await adminAPI.revertPayment(orderId, { reason: 'Reset to unpaid from orders list' });
+                        addAlert(`Order marked as Unpaid (Pending Payment). You can find it under the Unpaid Orders tab.`);
                     } else {
                         await adminAPI.updateOrder(orderId, { state: newState });
+                        addAlert(`Status updated to ${label}`);
                     }
-                    addAlert(`Status updated to ${label}`);
                     // Background refresh — don't await, don't block
                     loadOrdersRef.current().catch(() => {});
                 } catch (err) {
@@ -536,6 +537,14 @@ export default function AdminOrdersPage() {
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mr-1 hidden sm:inline">
                             Move To:
                         </span>
+                        <button
+                            onClick={() => handleBulkStatus('PENDING_PAYMENT')}
+                            disabled={bulkUpdating}
+                            className="px-3 py-1.5 bg-rose-700 hover:bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider rounded transition-all cursor-pointer disabled:opacity-50"
+                            title="Reset selected orders to Unpaid (Pending Payment)"
+                        >
+                            → Mark as Unpaid
+                        </button>
                         <button
                             onClick={() => handleBulkStatus('OPEN_FOR_BATCH')}
                             disabled={bulkUpdating}

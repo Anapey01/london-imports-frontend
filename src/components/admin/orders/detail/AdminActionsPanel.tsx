@@ -34,6 +34,7 @@ export function AdminActionsPanel({
     const isPaid = order?.payment_status === 'PAID';
     const hasPaidAmount = Number(order?.amount_paid || 0) > 0;
     const hasBalanceDue = Number(order?.balance_due || 0) > 0;
+    const canMarkUnpaid = isPaid || hasPaidAmount || order?.state === 'PAID' || order?.state === 'OPEN_FOR_BATCH' || order?.status === 'PAID' || order?.status === 'PROCESSING';
 
     return (
         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
@@ -45,11 +46,12 @@ export function AdminActionsPanel({
             <div className="p-8 space-y-4">
                 
                 
-                <div className={`grid ${hasPaidAmount && hasBalanceDue ? 'grid-cols-3' : 'grid-cols-2'} gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit`}>
+                <div className={`grid ${(hasPaidAmount || canMarkUnpaid) && hasBalanceDue ? 'grid-cols-3' : 'grid-cols-2'} gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit`}>
                     {(!isPaid || hasBalanceDue) && (
                         <button 
                             onClick={handleMarkAsPaid}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all"
+                            disabled={updating}
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer"
                             title="Record manual payment"
                         >
                             <CreditCard className="w-5 h-5 text-purple-500" />
@@ -58,13 +60,18 @@ export function AdminActionsPanel({
                             </span>
                         </button>
                     )}
-                    {(isPaid || hasPaidAmount) && (
+                    {canMarkUnpaid && (
                         <button 
                             onClick={handleMarkAsUnpaid}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-3 group transition-all border-l border-inherit"
+                            disabled={updating}
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-3 group transition-all border-l border-inherit disabled:opacity-50 cursor-pointer"
                             title="Undo payment and mark order as unpaid"
                         >
-                            <RotateCcw className="w-5 h-5 text-rose-500 group-hover:-rotate-45 transition-transform" />
+                            {updating ? (
+                                <Loader2 className="w-5 h-5 text-rose-500 animate-spin" />
+                            ) : (
+                                <RotateCcw className="w-5 h-5 text-rose-500 group-hover:-rotate-45 transition-transform" />
+                            )}
                             <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
                                 Mark as <br /> Unpaid
                             </span>
