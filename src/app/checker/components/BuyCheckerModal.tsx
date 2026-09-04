@@ -88,8 +88,8 @@ export default function BuyCheckerModal({ hook }: BuyCheckerModalProps) {
                 onChange={(e) => setCheckerType(e.target.value as 'BECE' | 'WASSCE')}
                 className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
               >
-                <option value="BECE">BECE (School & Private)</option>
                 <option value="WASSCE">WASSCE, SSCE, ABCE</option>
+                <option value="BECE">BECE (School & Private)</option>
               </select>
             </div>
 

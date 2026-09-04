@@ -31,7 +31,7 @@ export function useCheckerPurchase(initialPricingData?: any) {
   const [, startTransition] = useTransition();
 
   // Buy Form State
-  const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('BECE');
+  const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('WASSCE');
   const [quantity, setQuantity] = useState<number>(1);
   const emailRef = useRef<HTMLInputElement>(null);
   const [totalPrice, setTotalPrice] = useState<number>(17.00);
@@ -60,20 +60,20 @@ export function useCheckerPurchase(initialPricingData?: any) {
 
   // Dynamic Pricing State
   const [pricing, setPricing] = useState<PricingData>(initialPricingData?.pricing || {
-    BECE: [
+    WASSCE: [
       { min_quantity: 1, max_quantity: 9, price_per_unit: '17.00' },
       { min_quantity: 10, max_quantity: 29, price_per_unit: '16.50' },
       { min_quantity: 30, max_quantity: 99, price_per_unit: '16.00' },
       { min_quantity: 100, max_quantity: null, price_per_unit: '15.50' },
     ],
-    WASSCE: [
+    BECE: [
       { min_quantity: 1, max_quantity: 9, price_per_unit: '17.00' },
       { min_quantity: 10, max_quantity: 29, price_per_unit: '16.50' },
       { min_quantity: 30, max_quantity: 99, price_per_unit: '16.00' },
       { min_quantity: 100, max_quantity: null, price_per_unit: '15.50' },
     ]
   });
-  const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { BECE: -1, WASSCE: -1 });
+  const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { WASSCE: -1, BECE: -1 });
   const [stockLoading, setStockLoading] = useState<boolean>(!initialPricingData);
 
   // Helper for non-blocking modal toggles (INP fix)

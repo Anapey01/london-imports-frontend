@@ -32,7 +32,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   const [, startTransition] = useTransition();
   
   // Buy Form State
-  const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('BECE');
+  const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('WASSCE');
   const [quantity, setQuantity] = useState<number>(1);
   const emailRef = useRef<HTMLInputElement>(null);
   const [totalPrice, setTotalPrice] = useState<number>(17.00);
@@ -62,10 +62,10 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   // Store Brand State
   const [storeName, setStoreName] = useState<string>(initialPricingData?.store_name || '');
   const [pricing, setPricing] = useState<PricingData>(initialPricingData?.pricing || {
-    BECE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }],
-    WASSCE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }]
+    WASSCE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }],
+    BECE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }]
   });
-  const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { BECE: -1, WASSCE: -1 });
+  const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { WASSCE: -1, BECE: -1 });
   const [storeLoading, setStoreLoading] = useState<boolean>(!initialPricingData);
   const [storeError, setStoreError] = useState<string | null>(null);
 
@@ -383,8 +383,8 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                     onChange={(e) => setCheckerType(e.target.value as 'BECE' | 'WASSCE')}
                     className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   >
-                    <option value="BECE">BECE (School & Private)</option>
                     <option value="WASSCE">WASSCE, SSCE, ABCE</option>
+                    <option value="BECE">BECE (School & Private)</option>
                   </select>
                 </div>
 
