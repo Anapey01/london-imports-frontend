@@ -1,28 +1,26 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowDown, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { ArrowDown, ShieldCheck } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-    title: "Android Application | London's Imports",
-    description: "Community preview and installation portal for the London's Imports Android Application.",
+    title: "Download Android App | London's Imports",
+    description: "Download the official London's Imports Android Application for real-time order tracking and global shopping.",
 };
-
-const GOOGLE_DEVICE_INVITE_URL = "https://android.google.com/developerconsole/device-invite/CroBChDv3LDvZkNL76MQyG9qGE0-EngIuPy3vQ0ScApkCjR0eXBlLmdvb2dsZWFwaXMuY29tL2dvb2dsZS5jcnlwdG8udGluay5IcGtlUHVibGljS2V5EioSBggBEAEYAhogLN5rWZWiz9vfy1ktAJf0T9cGPHVs7zxZZ3eM2DtmfzwYAxABGLj8t70NIAEaDAiTxI7VBhColNX8AiIeCN6MsrS5xpCqHxISTG9uZG9u4oCZcyBJbXBvcnRzEkcwRQIhAK2uU0KRna3nv6GOZ5-KkBlktg61JBNSVHvs4tu6X1YIAiBXjt8Ve6vxN2tx46xWms7vj908-5j_6iUn0WO01cjsvQ==";
 
 export default function DownloadPage() {
     return (
         <div className="min-h-[85vh] bg-surface flex items-center justify-center py-20 px-6 selection:bg-emerald-100/30">
             <div className="w-full max-w-md">
                 {/* Minimal Header */}
-                <header className="mb-12">
+                <header className="mb-10">
                     <div className="flex items-center gap-3 mb-6 opacity-60">
                         <div className="h-px w-8 bg-content-primary" />
                         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-content-primary">
-                            Android Release / Preview
+                            Official Mobile Application
                         </span>
                     </div>
 
@@ -31,61 +29,52 @@ export default function DownloadPage() {
                     </h1>
 
                     <p className="text-xs sm:text-sm font-medium text-content-secondary leading-relaxed">
-                        To install the application on your Android phone, complete device authorization with Google, then download the release package.
+                        Download the official Android application for real-time flight milestone alerts, instant package tracking, and seamless checkout in Ghana.
                     </p>
                 </header>
 
-                {/* Actions */}
-                <div className="space-y-4 mb-12">
-                    {/* Step 1: Device Authorization */}
-                    <a
-                        href={GOOGLE_DEVICE_INVITE_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between w-full p-4 bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:opacity-90 transition-opacity rounded-none"
-                    >
-                        <div className="text-left">
-                            <span className="text-[9px] font-black uppercase tracking-widest block opacity-70 mb-0.5">
-                                Step 01
-                            </span>
-                            <span className="text-sm font-semibold tracking-wide">
-                                Authorize Device with Google
-                            </span>
-                        </div>
-                        <ArrowUpRight className="w-4 h-4" />
-                    </a>
-
-                    {/* Step 2: Download APK */}
+                {/* Primary Download Action */}
+                <div className="mb-10">
                     <a
                         href="/londons-imports.apk"
                         download="londons-imports.apk"
-                        className="flex items-center justify-between w-full p-4 border border-border-standard bg-surface-card text-content-primary hover:bg-surface transition-colors rounded-none"
+                        className="flex items-center justify-between w-full p-5 bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:opacity-90 transition-opacity rounded-none shadow-sm"
                     >
                         <div className="text-left">
                             <span className="text-[9px] font-black uppercase tracking-widest block opacity-70 mb-0.5">
-                                Step 02
+                                Android Package (APK)
                             </span>
-                            <span className="text-sm font-semibold tracking-wide">
-                                Download APK (2.4 MB)
+                            <span className="text-base font-semibold tracking-wide">
+                                Download Application (2.4 MB)
                             </span>
                         </div>
-                        <ArrowDown className="w-4 h-4" />
+                        <ArrowDown className="w-5 h-5" />
                     </a>
+
+                    <p className="text-[11px] text-content-secondary mt-3">
+                        After downloading, tap the file in your notifications or Downloads folder to install.
+                    </p>
                 </div>
 
                 {/* Minimalist Specs */}
-                <div className="border-t border-border-standard pt-6 space-y-2 text-[11px] text-content-secondary font-mono">
+                <div className="border-t border-border-standard pt-6 space-y-2.5 text-[11px] text-content-secondary font-mono">
                     <div className="flex justify-between">
                         <span>Package:</span>
                         <span className="text-content-primary font-bold">com.londonsimports.app</span>
                     </div>
                     <div className="flex justify-between">
-                        <span>Target SDK:</span>
-                        <span className="text-content-primary">Android 14 (API 34)</span>
+                        <span>Version:</span>
+                        <span className="text-content-primary">1.0.0 (Release 2)</span>
                     </div>
                     <div className="flex justify-between">
-                        <span>Security:</span>
-                        <span className="text-brand-emerald font-semibold">v1 + v2 Signed</span>
+                        <span>Compatibility:</span>
+                        <span className="text-content-primary">Android 5.0 to 15+</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Verification:</span>
+                        <span className="text-brand-emerald font-semibold inline-flex items-center gap-1">
+                            <ShieldCheck className="w-3.5 h-3.5 inline" /> Verified Release
+                        </span>
                     </div>
                 </div>
 
