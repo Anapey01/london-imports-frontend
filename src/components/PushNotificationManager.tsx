@@ -81,7 +81,7 @@ export async function dispatchTestNotification(): Promise<{ success: boolean; me
     if ("serviceWorker" in navigator) {
       const registration = await navigator.serviceWorker.ready;
       if (registration && registration.showNotification) {
-        const options: NotificationOptions & { vibrate?: number[] } = {
+        const options: NotificationOptions & { vibrate?: number[]; renotify?: boolean } = {
           body: "Notification channel active! Real-time flight departures, customs clearance, and delivery updates are ready.",
           icon: "/icon-192.png",
           badge: "/icon-192.png",
