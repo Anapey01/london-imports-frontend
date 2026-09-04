@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { User } from '@/types';
-import ToggleSwitch from './ToggleSwitch';
+import NotificationCenter from './NotificationCenter';
 import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { motion } from 'framer-motion';
@@ -153,33 +153,14 @@ export default function SettingsView({ user }: { user: User }) {
 
                 {/* Sidebar Controls */}
                 <div className="lg:col-span-4 space-y-10">
-                    <section className="bg-slate-50 border border-slate-100 rounded-2xl p-6 space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                            Notifications
-                        </h4>
-                        <div className="space-y-4">
-                            {[
-                                { id: 'email_notifications', label: 'Email Alerts', desc: 'Detailed order receipts' },
-                                { id: 'sms_notifications', label: 'SMS Alerts', desc: 'Real-time transit updates' },
-                                { id: 'whatsapp_notifications', label: 'WhatsApp Alerts', desc: 'Direct updates via WhatsApp' },
-                            ].map(item => (
-                                <div key={item.id} className="flex items-center justify-between group">
-                                    <div className="max-w-[140px]">
-                                        <p className="text-xs font-black uppercase tracking-widest text-slate-900">{item.label}</p>
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">{item.desc}</p>
-                                    </div>
-                                    <ToggleSwitch
-                                        enabled={profileData[item.id as keyof typeof profileData] as boolean}
-                                        onChange={() => {
-                                            const key = item.id as keyof typeof profileData;
-                                            setProfileData({ ...profileData, [key]: !profileData[key] });
-                                        }}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </section>
+                    <NotificationCenter
+                        emailNotifications={profileData.email_notifications}
+                        smsNotifications={profileData.sms_notifications}
+                        whatsappNotifications={profileData.whatsapp_notifications}
+                        onPreferenceChange={(key, value) => {
+                            setProfileData(prev => ({ ...prev, [key]: value }));
+                        }}
+                    />
 
                     <section className="space-y-4">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 px-1">Security</h4>

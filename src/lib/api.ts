@@ -342,9 +342,11 @@ export const checkersAPI = {
 // FCM Push Notifications & Device Management (Android TWA / PWA)
 export const deviceAPI = {
   register: (data: { fcm_token: string; platform?: 'android' | 'ios' | 'web'; device_name?: string }) =>
-    api.post('/api/v1/users/devices/register/', data),
+    api.post('/users/devices/register/', data),
   unregister: (fcm_token: string) =>
-    api.delete('/api/v1/users/devices/unregister/', { data: { fcm_token } }),
+    api.delete('/users/devices/unregister/', { data: { fcm_token } }),
+  testPush: () =>
+    api.post('/users/devices/test-push/', {}),
 };
 
 export default api;
