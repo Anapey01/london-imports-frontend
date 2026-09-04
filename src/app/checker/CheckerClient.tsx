@@ -18,9 +18,27 @@ export default function CheckerClient({ initialPricingData }: { initialPricingDa
           <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-content-primary mb-3 tracking-tight">
             WAEC Results Checker Center
           </h1>
-          <p className="max-w-md mx-auto text-content-secondary font-normal text-xs sm:text-sm leading-relaxed">
+          <p className="max-w-md mx-auto text-content-secondary font-normal text-xs sm:text-sm leading-relaxed mb-6">
             Instant online purchase of WASSCE and BECE results checkers. Pay securely via Mobile Money & get your codes immediately.
           </p>
+
+          {/* Official WAEC Non-Affiliation Disclaimer & Source Disclosure */}
+          <div className="max-w-2xl mx-auto bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-4 text-left text-[11px] text-content-secondary leading-relaxed">
+            <p className="font-black text-content-primary mb-1 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <span>ℹ️</span> Disclaimer & Source of Information
+            </p>
+            <p>
+              London&apos;s Imports is an independent third-party distributor of authentic examination voucher PINs. We are <strong>not affiliated with, endorsed by, or an official representative of the West African Examinations Council (WAEC)</strong>. Official examination results are hosted and verified directly by WAEC at{' '}
+              <a
+                href="https://ghana.waecdirect.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold underline text-brand-emerald hover:text-brand-emerald-dark"
+              >
+                ghana.waecdirect.org
+              </a>.
+            </p>
+          </div>
         </div>
 
         {/* Options Grid */}

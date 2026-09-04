@@ -1,11 +1,53 @@
 {
-    "name": "London's Imports Ghana",
-    "short_name": "London's Imports",
-    "description": "Ghana's trusted platform for mini-importation and shipping from China.",
+    "name": "London's Imports",
+    "short_name": "Lon's Imports",
+    "description": "Ghana's trusted platform for global sourcing, mini-importation, and shipping from China to your doorstep.",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#0f172a",
-    "theme_color": "#0f172a",
+    "theme_color": "#020617",
+    "lang": "en-GH",
+    "dir": "ltr",
+    "categories": ["shopping", "lifestyle"],
+    "screenshots": [
+        {
+            "src": "/screenshots/home-mobile.png",
+            "sizes": "780x1688",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Home — Featured products and promotions"
+        },
+        {
+            "src": "/screenshots/products-mobile.png",
+            "sizes": "780x1688",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Shop — Browse the product catalog"
+        },
+        {
+            "src": "/screenshots/track-mobile.png",
+            "sizes": "780x1688",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Track — Live order tracking"
+        },
+        {
+            "src": "/screenshots/checkout-mobile.png",
+            "sizes": "780x1688",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Checkout — Secure payment via Mobile Money or card"
+        },
+        {
+            "src": "/screenshots/home-desktop.png",
+            "sizes": "2560x1600",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Home — Desktop catalog view"
+        }
+    ],
     "icons": [
         {
             "src": "/icon-192.png",
@@ -16,6 +58,35 @@
             "src": "/icon-512.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "/icon-512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Shop Products",
+            "short_name": "Shop",
+            "description": "Browse the full product catalog",
+            "url": "/products",
+            "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Track My Order",
+            "short_name": "Track",
+            "description": "Check the live status of your shipment",
+            "url": "/track",
+            "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "My Cart",
+            "short_name": "Cart",
+            "description": "View your shopping basket",
+            "url": "/cart",
+            "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
         }
     ]
 }

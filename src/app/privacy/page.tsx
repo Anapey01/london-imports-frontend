@@ -56,12 +56,12 @@ export default function PrivacyPage() {
                     </section>
 
                     <section className="space-y-6">
-                        <h2 className="text-2xl font-serif font-bold tracking-tight">2. Payment Sourcing & Security</h2>
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">2. Payment Processing & Security</h2>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                            All payment transactions on our platform are processed securely via our licensed payment gateway partners (including Hubtel, Paystack, and other licensed providers). 
+                            All payment transactions on our platform are processed securely via our licensed payment gateway partner, <strong>Hubtel</strong> (supporting MTN Mobile Money, Telecel Cash, AirtelTigo Money, Visa, and Mastercard).
                         </p>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                            <strong>London&apos;s Imports does not store, access, or transmit your sensitive payment credentials</strong>. We do not have access to your Mobile Money PINs, credit card numbers, bank credentials, or CVVs. All sensitive billing data is encrypted and handled exclusively by our payment processors.
+                            <strong>London&apos;s Imports does not store, access, or transmit your sensitive payment credentials</strong>. We do not have access to your Mobile Money PINs, credit card numbers, bank credentials, or CVVs. All billing transactions are encrypted and processed exclusively on Hubtel&apos;s PCI-DSS certified payment infrastructure.
                         </p>
                     </section>
 
@@ -73,7 +73,32 @@ export default function PrivacyPage() {
                     </section>
 
                     <section className="space-y-6">
-                        <h2 className="text-2xl font-serif font-bold tracking-tight">4. Data Retention Policy</h2>
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">4. Mobile Application & Push Notifications (Android & FCM)</h2>
+                        <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                            When you install and access London&apos;s Imports through our Android application or Progressive Web App (PWA), we collect and store the following device-level details in your registered device profile (<code>UserDevice</code>):
+                        </p>
+                        <ul className="list-disc pl-6 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
+                            <li><strong>Device Information:</strong> We collect and store your device model (e.g. Samsung Galaxy, Google Pixel, Tecno, Infinix), platform (Android), and operating system version in our secure <code>UserDevice</code> record to ensure layout compatibility, troubleshoot application crashes, and deliver optimized app performance.</li>
+                            <li><strong>Firebase Cloud Messaging (FCM) Tokens:</strong> When you grant notification permissions, a unique FCM registration token is securely generated and linked to your user account. These tokens are stored strictly to send real-time transactional order updates — including procurement confirmations in China, flight/shipping departures, customs clearance milestones at Tema Harbor or Kotoka Airport, delivery dispatch alerts, and upcoming delivery reminders.</li>
+                        </ul>
+                        <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <p className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                                🔕 How to Opt Out of Push Notifications:
+                            </p>
+                            <p>
+                                You can withdraw notification permissions or opt out at any time directly through your Android device settings:
+                            </p>
+                            <p className="mt-1 font-mono font-semibold text-slate-800 dark:text-slate-200">
+                                Android Settings &rarr; Apps &rarr; London&apos;s Imports &rarr; Notifications &rarr; Toggle Off
+                            </p>
+                            <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                                Alternatively, signing out of your London&apos;s Imports account in the app immediately deactivates your device token in our database, terminating all push notifications to that device.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section className="space-y-6">
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">5. Data Retention Policy</h2>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                             We retain customer personal data and order histories for as long as necessary to fulfill the purposes described in this policy, including:
                         </p>
@@ -88,7 +113,7 @@ export default function PrivacyPage() {
                     </section>
 
                     <section className="space-y-6">
-                        <h2 className="text-2xl font-serif font-bold tracking-tight">5. Contact Sourcing Support</h2>
+                        <h2 className="text-2xl font-serif font-bold tracking-tight">6. Contact Sourcing Support</h2>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                             To inspect your data, request corrections, or ask for the deletion of your account, you can contact our privacy support via:
                         </p>

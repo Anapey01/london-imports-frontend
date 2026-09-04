@@ -3,6 +3,7 @@ import { Source_Serif_4, Montserrat } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/Providers";
 import PWAUpdater from "@/components/PWAUpdater";
+import PushNotificationManager from "@/components/PushNotificationManager";
 import { siteConfig } from "@/config/site";
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
@@ -170,6 +171,7 @@ export default async function RootLayout({
         <Providers>
           <div className="w-full overflow-x-hidden relative flex flex-col min-h-screen">
             <PWAUpdater />
+            <PushNotificationManager />
             <NavbarWrapper />
             <main id="main-content" className="flex-grow pb-20 md:pb-0 outline-none w-full overflow-x-hidden">{children}</main>
             <FooterWrapper />

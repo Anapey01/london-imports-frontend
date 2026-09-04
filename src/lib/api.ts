@@ -339,4 +339,13 @@ export const checkersAPI = {
   agentPublicStore: (slug: string) => api.get(`/checkers/store/${slug}/`),
 };
 
+// FCM Push Notifications & Device Management (Android TWA / PWA)
+export const deviceAPI = {
+  register: (data: { fcm_token: string; platform?: 'android' | 'ios' | 'web'; device_name?: string }) =>
+    api.post('/api/v1/users/devices/register/', data),
+  unregister: (fcm_token: string) =>
+    api.delete('/api/v1/users/devices/unregister/', { data: { fcm_token } }),
+};
+
 export default api;
+

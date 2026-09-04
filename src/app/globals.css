@@ -462,3 +462,24 @@ input:-webkit-autofill:active {
   animation: toastProgress 4s linear forwards;
   transform-origin: left;
 }
+
+/* ===== ANDROID TWA / PWA SHELL FIXES ===== */
+
+/* 1. Disable browser pull-to-refresh gesture inside TWA shell.
+      Without this, users can accidentally trigger the browser's own
+      refresh animation which feels broken in a full-screen app. */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* 2. Android gesture navigation safe area.
+      Prevents the bottom nav bar from sitting behind Android's
+      swipe-home gesture handle. Applied via env(safe-area-inset-bottom). */
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 8px);
+}
+
+/* 3. Remove grey tap highlight on interactive elements (Android default). */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}

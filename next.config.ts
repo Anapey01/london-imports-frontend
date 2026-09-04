@@ -28,6 +28,7 @@ const withPWA = withPWAInit({
       skipWaiting: true,
       clientsClaim: true,
       cleanupOutdatedCaches: true,
+      importScripts: ['/push-worker.js'],
     runtimeCaching: [
       {
         // 1. Admin & Dashboard - NetworkOnly (Never cache or intercept admin portal)
@@ -241,6 +242,15 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        // Digital Asset Links — required for Android TWA full-screen mode
+        source: '/.well-known/:path*',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=86400' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
       {
         source: '/:path*',
         headers: [

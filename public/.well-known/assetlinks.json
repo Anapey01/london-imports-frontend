@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.londonsimports.app",
+    "sha256_cert_fingerprints": [
+      "29:2E:08:DC:1F:87:10:5D:54:88:EA:C2:9E:A9:22:EA:AE:53:E5:07:D7:44:A0:3B:11:34:D1:3F:45:63:4A:F1"
+    ]
+  }
+}]

@@ -188,6 +188,12 @@ export default function BuyCheckerModal({ hook }: BuyCheckerModalProps) {
               >
                 {loading ? 'Processing...' : 'Proceed to Pay with Momo'}
               </button>
+              <p className="text-[9px] text-content-secondary text-center leading-tight pt-2">
+                Independent voucher retailer. Not affiliated with WAEC. Check results at{' '}
+                <a href="https://ghana.waecdirect.org" target="_blank" rel="noopener noreferrer" className="underline font-bold text-brand-emerald">
+                  ghana.waecdirect.org
+                </a>.
+              </p>
             </div>
           </form>
         </div>
