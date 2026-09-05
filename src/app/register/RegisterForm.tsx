@@ -81,7 +81,7 @@ export default function RegisterForm() {
         }
     };
 
-    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-all placeholder:text-content-secondary/60 dark:text-content-secondary/50 text-content-primary uppercase tracking-widest";
+    const inputClass = "block w-full text-sm font-normal bg-surface-card border border-border-standard rounded-xl py-3.5 px-4 institutional-focus transition-colors placeholder:text-content-secondary/40 text-content-primary tracking-normal";
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
@@ -183,13 +183,17 @@ export default function RegisterForm() {
                                 <input
                                     id="reg-email"
                                     type="email"
+                                    inputMode="email"
                                     name="email"
                                     autoComplete="email"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    spellCheck={false}
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
                                     className={inputClass}
-                                    placeholder="Enter your email..."
+                                    placeholder="you@example.com"
                                 />
                             </div>
 
@@ -226,6 +230,7 @@ export default function RegisterForm() {
                                         type="password"
                                         name="password"
                                         autoComplete="new-password"
+                                        autoCapitalize="none"
                                         value={formData.password}
                                         onChange={handleChange}
                                         required
@@ -251,11 +256,12 @@ export default function RegisterForm() {
                                         type="password"
                                         name="password_confirm"
                                         autoComplete="new-password"
+                                        autoCapitalize="none"
                                         value={formData.password_confirm}
                                         onChange={handleChange}
                                         required
                                         className={inputClass}
-                                        placeholder="Confirm password..."
+                                        placeholder="••••••••"
                                     />
                                 </div>
                             </div>
@@ -264,7 +270,7 @@ export default function RegisterForm() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group/btn relative w-full h-16 bg-content-primary rounded-none transition-all hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-4 overflow-hidden shadow-2xl shadow-content-primary/10 mt-6"
+                            className="group/btn relative w-full h-16 bg-content-primary rounded-xl transition-all hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-4 overflow-hidden shadow-2xl shadow-content-primary/10 mt-6"
                         >
                             <span className="relative z-10 text-[11px] font-black text-surface uppercase tracking-[0.5em]">
                                 {isLoading ? 'Building Account...' : 'Continue'}

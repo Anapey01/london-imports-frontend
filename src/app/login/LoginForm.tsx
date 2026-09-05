@@ -76,7 +76,7 @@ function LoginFormContent() {
         }
     };
 
-    const inputClass = "block w-full text-[12px] font-black bg-surface-card border border-border-standard rounded-none py-3.5 px-4 institutional-focus transition-colors placeholder:text-content-secondary/60 dark:text-content-secondary/50 text-content-primary uppercase tracking-widest";
+    const inputClass = "block w-full text-sm font-normal bg-surface-card border border-border-standard rounded-xl py-3.5 px-4 institutional-focus transition-colors placeholder:text-content-secondary/40 text-content-primary tracking-normal";
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
@@ -142,14 +142,18 @@ function LoginFormContent() {
                                 </label>
                                 <input
                                     id="login-username"
-                                    type="text"
+                                    type="email"
+                                    inputMode="email"
                                     name="username"
                                     autoComplete="username"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    spellCheck={false}
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
                                     className={inputClass}
-                                    placeholder="Enter your email..."
+                                    placeholder="you@example.com"
                                 />
                             </div>
 
@@ -170,6 +174,7 @@ function LoginFormContent() {
                                     type="password"
                                     name="password"
                                     autoComplete="current-password"
+                                    autoCapitalize="none"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required

@@ -38,7 +38,7 @@ export default function PasswordResetPage() {
         }
     };
 
-    const inputClass = "block w-full pl-12 pr-4 py-4 bg-surface-card border border-border-standard rounded-2xl focus:border-brand-emerald focus:ring-0 focus:outline-none transition-all placeholder:text-content-secondary/60 dark:text-content-secondary/50 text-content-primary uppercase tracking-widest text-[12px] font-black";
+    const inputClass = "block w-full pl-12 pr-4 py-4 bg-surface-card border border-border-standard rounded-xl focus:border-brand-emerald focus:ring-0 focus:outline-none transition-colors placeholder:text-content-secondary/40 text-content-primary text-sm font-normal tracking-normal";
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-surface py-12 px-4 md:px-6 selection:bg-emerald-100/30">
@@ -88,11 +88,15 @@ export default function PasswordResetPage() {
                             </div>
                             <input
                                 type="email"
+                                inputMode="email"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                spellCheck={false}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className={inputClass}
-                                placeholder="Verified Email Address"
+                                placeholder="you@example.com"
                             />
                         </div>
 

@@ -207,7 +207,7 @@ const PaymentMethodSelector = ({ paymentType, setPaymentType, currentOrderData, 
                                                     setCustomAmount(e.target.value);
                                                 }}
                                                 placeholder="0.00"
-                                                className="w-full pl-16 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-xl text-lg font-semibold text-content-primary tabular-nums placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
+                                                className="w-full pl-16 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-xl text-base font-normal text-content-primary tabular-nums placeholder:text-slate-400 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
                                                 min="1"
                                                 max={balanceDue}
                                             />

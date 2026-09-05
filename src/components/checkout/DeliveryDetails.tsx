@@ -82,9 +82,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 value={localDelivery.address}
                                 onChange={(e) => setLocalDelivery({ ...localDelivery, address: e.target.value })}
                                 onBlur={handleBlur}
-                                placeholder="E.G. HOUSE NUMBER / STREET NAME"
+                                placeholder="House number, street name, area..."
                                 required
-                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight"
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-normal text-content-primary placeholder:text-slate-400 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
                             />
                         </div>
 
@@ -98,9 +98,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 value={localDelivery.city}
                                 onChange={(e) => setLocalDelivery({ ...localDelivery, city: e.target.value })}
                                 onBlur={handleBlur}
-                                placeholder="ACCRA"
+                                placeholder="e.g. Accra"
                                 required
-                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight"
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-normal text-content-primary placeholder:text-slate-400 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none"
                             />
                         </div>
 
@@ -118,9 +118,9 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                         setDelivery(newLocal); // Select changes should propagate immediately
                                     }}
                                     required
-                                    className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight appearance-none cursor-pointer"
+                                    className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-normal text-content-primary focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none appearance-none cursor-pointer"
                                 >
-                                    <option value="">SELECT REGION</option>
+                                    <option value="">Select Region</option>
                                     <option value="Greater Accra">Greater Accra</option>
                                     <option value="Ashanti">Ashanti</option>
                                     <option value="Western">Western</option>
@@ -148,7 +148,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                 onChange={(e) => setLocalDelivery({ ...localDelivery, delivery_gps: e.target.value })}
                                 onBlur={handleBlur}
                                 placeholder="GA-183-9023"
-                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-[0.2em] font-mono uppercase"
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-normal text-content-primary placeholder:text-slate-400 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-[0.1em] font-mono uppercase"
                             />
                         </div>
 
@@ -162,7 +162,7 @@ const DeliveryDetails = ({ orderNumberParam, delivery, setDelivery, saveAddress,
                                     onChange={(e) => setLocalDelivery({ ...localDelivery, notes: e.target.value })}
                                     onBlur={handleBlur}
                                     rows={3}
-                                    className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-bold text-content-primary placeholder:text-slate-300 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none tracking-tight resize-none italic"
+                                    className="w-full bg-slate-50/50 border border-slate-100 rounded-xl px-4 py-4 text-sm font-normal text-content-primary placeholder:text-slate-400 focus:bg-white focus:border-brand-emerald/30 focus:ring-4 focus:ring-brand-emerald/5 transition-all outline-none resize-none"
                                     placeholder="Leave with security / Call on arrival..."
                                 />
                                 {hasAddress && (

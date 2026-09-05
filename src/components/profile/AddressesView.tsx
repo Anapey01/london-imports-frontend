@@ -141,7 +141,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                         placeholder={field.placeholder} 
                                         value={field.value} 
                                         onChange={e => setFormData({ ...formData, [field.key]: e.target.value })} 
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-normal text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/30" 
                                         required={field.key !== 'landmark'} 
                                     />
                                 </div>
@@ -153,7 +153,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                     placeholder="+233..." 
                                     value={formData.phone} 
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })} 
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/20" 
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-normal text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/30" 
                                     required 
                                 />
                             </div>
