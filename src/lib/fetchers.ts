@@ -4,6 +4,12 @@ import { cache } from 'react';
 const API_BASE_URL = siteConfig.apiUrl;
 
 /**
+ * Checks if Next.js is currently in the build / static-generation phase.
+ * Supports package.json cross-env NEXT_IS_BUILDING and Next.js internal NEXT_PHASE.
+ */
+const isBuilding = () => process.env.NEXT_IS_BUILDING === 'true' || process.env.NEXT_PHASE === 'phase-production-build';
+
+/**
  * Robust fetch with timeout and retry logic for Render's Cold Starts
  */
 async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 1) {
@@ -118,7 +124,7 @@ export async function getProductPreviews(params: Record<string, string> = {}, re
         return data;
     } catch (error) {
         console.error("Error fetching product previews:", error);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return { count: 0, results: [] };
         }
         throw error;
@@ -168,7 +174,7 @@ export async function getCategories(revalidate = 86400) {
         return data.results || data;
     } catch (error) {
         console.error("Error fetching categories:", error);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return [];
         }
         throw error;
@@ -188,7 +194,7 @@ export async function getCategory(slug: string) {
         return categories.find((cat: { slug: string }) => cat.slug === slug) || null;
     } catch (error) {
         console.error(`Error fetching category ${slug}:`, error);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return null;
         }
         throw error;
@@ -237,7 +243,7 @@ export async function getProductMetadata(slug: string) {
         if (fullProduct) return fullProduct;
     } catch (e) {
         console.error(`[SSR] Error during primary metadata fetch for ${slug}:`, e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             // continue
         } else {
             throw e;
@@ -268,7 +274,7 @@ export async function getProductMetadata(slug: string) {
         }
     } catch (e) {
         console.error(`[SSR] Exception fetching preview fallback for ${slug}:`, e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return null;
         }
         throw e;
@@ -288,7 +294,7 @@ export async function getVendor(slug: string) {
         return await res.json();
     } catch (e) {
         console.error(`[SSR] Exception fetching vendor ${slug}:`, e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return null;
         }
         throw e;
@@ -306,7 +312,7 @@ export async function getAllVendors() {
         return data.results || data;
     } catch (e) {
         console.error("[SSR] Exception fetching all vendors:", e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return [];
         }
         throw e;
@@ -328,7 +334,7 @@ export async function getHeroBanners() {
         return data.results || data || [];
     } catch (e) {
         console.error("[SSR] Exception fetching banners:", e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return [];
         }
         throw e;
@@ -353,7 +359,7 @@ export async function getDeliveryPhotos(category?: string) {
         return data.results || data || [];
     } catch (e) {
         console.error(`[SSR] Exception fetching delivery photos for category ${category}:`, e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return [];
         }
         return [];
@@ -375,7 +381,7 @@ export async function getLatestReviews() {
         return data.results || data || [];
     } catch (e) {
         console.error("[SSR] Exception fetching latest reviews:", e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return [];
         }
         return [];
@@ -397,7 +403,7 @@ export const getAgentPricing = cache(async (agentSlug?: string) => {
         return await res.json();
     } catch (e) {
         console.error(`[SSR] Exception fetching agent pricing for ${agentSlug}:`, e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
+        if (isBuilding()) {
             return null;
         }
         return null;
