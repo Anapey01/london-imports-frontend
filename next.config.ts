@@ -3,11 +3,11 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import withPWAInit from "@ducanh2912/next-pwa";
 
-const DEFAULT_API_ROOT = 'https://london-imports-api.onrender.com';
+const DEFAULT_API_ROOT = 'https://api.londonsimports.com';
 const apiRoot = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_ROOT;
 
 let apiOrigin = DEFAULT_API_ROOT;
-let apiHost = 'london-imports-api.onrender.com';
+let apiHost = 'api.londonsimports.com';
 
 try {
   const parsed = new URL(apiRoot);
@@ -54,7 +54,10 @@ const withPWA = withPWAInit({
       {
         // 2. Public API GETs (Products, Blogs, Public Vendors) - SWR with Server Cache-Control Enforcement
         urlPattern: ({ url, request }) => {
-          if (url.origin !== apiOrigin || request.method !== 'GET') {
+          const isApiOrigin = url.origin === apiOrigin ||
+            url.origin === 'https://api.londonsimports.com' ||
+            url.origin === 'https://london-imports-api.onrender.com';
+          if (!isApiOrigin || request.method !== 'GET') {
             return false;
           }
 
@@ -167,9 +170,9 @@ const CSP = [
   "default-src 'none'",
   `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://js.paystack.co https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://*.sentry.io https://www.googletagmanager.com https://*.googletagmanager.com https://vercel.live https://*.google.com https://*.google.com.gh https://*.gstatic.com https://accounts.google.com`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com https://accounts.google.com",
-  `img-src 'self' data: https: blob: https://res.cloudinary.com ${apiOrigin} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
+  `img-src 'self' data: https: blob: https://res.cloudinary.com https://api.londonsimports.com https://*.londonsimports.com https://london-imports-api.onrender.com https://*.onrender.com ${apiOrigin} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://upload.wikimedia.org https://*.google.com https://*.google.com.gh https://*.gstatic.com ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''}`,
   "font-src 'self' https://fonts.gstatic.com data:",
-  `connect-src 'self' https://res.cloudinary.com ${apiOrigin} ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''} https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://payproxyapi.hubtel.com https://api-txnstatus.hubtel.com https://pay.hubtel.com https://*.hubtel.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://vercel.live https://*.wikimedia.org`,
+  `connect-src 'self' https://res.cloudinary.com https://api.londonsimports.com https://*.londonsimports.com https://london-imports-api.onrender.com https://*.onrender.com ${apiOrigin} ${isDev ? 'http://127.0.0.1:8000 http://localhost:8000' : ''} https://api.paystack.co https://js.paystack.co https://checkout.paystack.com https://paystack.com https://payproxyapi.hubtel.com https://api-txnstatus.hubtel.com https://pay.hubtel.com https://*.hubtel.com https://*.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://*.google.com.gh https://*.google.com https://*.gstatic.com https://accounts.google.com https://identitytoolkit.googleapis.com https://oauth2.googleapis.com https://*.googleapis.com https://www.googleapis.com https://vercel.live https://*.wikimedia.org`,
   "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://vercel.live https://accounts.google.com https://*.google.com https://*.google.com.gh https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com https://pay.hubtel.com https://*.hubtel.com",
   "worker-src 'self' blob:",
   "child-src 'self' blob: https://*.google.com https://*.google.com.gh https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com https://pay.hubtel.com https://*.hubtel.com",
@@ -210,6 +213,16 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.londonsimports.com',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'london-imports-api.onrender.com',
+        pathname: '/media/**',
       },
       {
         protocol: 'https',
@@ -265,7 +278,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Link',
-            value: `<${apiOrigin}>; rel=preconnect`
+            value: `<${apiOrigin}>; rel=preconnect, <https://api.londonsimports.com>; rel=preconnect, <https://london-imports-api.onrender.com>; rel=preconnect`
           },
           {
             key: 'Strict-Transport-Security',

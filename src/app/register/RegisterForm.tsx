@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { trackSignUp, trackEvent } from '@/lib/analytics';
-import { ArrowUpRight, ArrowRight, AlertCircle, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 export default function RegisterForm() {
@@ -31,6 +31,8 @@ export default function RegisterForm() {
         last_name: '',
         phone: '',
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState('');
 
     // Auto-dismiss error messages
@@ -225,20 +227,35 @@ export default function RegisterForm() {
                                     >
                                         Create Password
                                     </label>
-                                    <input
-                                        id="reg-password"
-                                        type="password"
-                                        name="password"
-                                        autoComplete="new-password"
-                                        autoCapitalize="none"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                        minLength={8}
-                                        className={inputClass}
-                                        placeholder="••••••••"
-                                        aria-describedby="password-hint"
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            id="reg-password"
+                                            type={showPassword ? "text" : "password"}
+                                            name="password"
+                                            autoComplete="new-password"
+                                            autoCapitalize="none"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                            minLength={8}
+                                            className={`${inputClass} pr-12`}
+                                            placeholder="••••••••"
+                                            aria-describedby="password-hint"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-content-secondary/60 hover:text-content-primary transition-colors focus:outline-none cursor-pointer"
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                            tabIndex={-1}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="w-4 h-4" />
+                                            ) : (
+                                                <Eye className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                     <p id="password-hint" className="mt-2 text-[9px] font-bold text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 uppercase tracking-widest italic">
                                         Must be at least 8 characters.
                                     </p>
@@ -251,18 +268,33 @@ export default function RegisterForm() {
                                     >
                                         Confirm Password
                                     </label>
-                                    <input
-                                        id="reg-password-confirm"
-                                        type="password"
-                                        name="password_confirm"
-                                        autoComplete="new-password"
-                                        autoCapitalize="none"
-                                        value={formData.password_confirm}
-                                        onChange={handleChange}
-                                        required
-                                        className={inputClass}
-                                        placeholder="••••••••"
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            id="reg-password-confirm"
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            name="password_confirm"
+                                            autoComplete="new-password"
+                                            autoCapitalize="none"
+                                            value={formData.password_confirm}
+                                            onChange={handleChange}
+                                            required
+                                            className={`${inputClass} pr-12`}
+                                            placeholder="••••••••"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-content-secondary/60 hover:text-content-primary transition-colors focus:outline-none cursor-pointer"
+                                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                                            tabIndex={-1}
+                                        >
+                                            {showConfirmPassword ? (
+                                                <EyeOff className="w-4 h-4" />
+                                            ) : (
+                                                <Eye className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

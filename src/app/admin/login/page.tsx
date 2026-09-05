@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
     const { theme } = useTheme();
@@ -17,6 +18,7 @@ export default function AdminLoginPage() {
 
     const { login } = useAuthStore();
     const [formData, setFormData] = useState({ username: '', password: '' });
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -47,8 +49,14 @@ export default function AdminLoginPage() {
             // Success - redirect to admin dashboard
             router.push('/dashboard/admin');
         } catch (err: unknown) {
-            const errorObj = err as { response?: { data?: { detail?: string } } };
-            setError(errorObj.response?.data?.detail || 'Invalid credentials or network error');
+            const errorObj = err as { response?: { data?: unknown }; message?: string };
+            const data = errorObj.response?.data as Record<string, unknown> | undefined;
+            const errorMsg = (typeof data?.detail === 'string' ? data?.detail : null) ||
+                             (typeof data?.error === 'string' ? data?.error : null) ||
+                             (typeof data?.message === 'string' ? data?.message : null) ||
+                             errorObj.message ||
+                             'Invalid credentials or network error';
+            setError(errorMsg);
             setLoading(false);
         }
     };
@@ -125,17 +133,32 @@ export default function AdminLoginPage() {
                                 <label className={`absolute -top-2.5 left-4 px-1 text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-500 bg-slate-950' : 'text-slate-600 bg-white'}`}>
                                     Password
                                 </label>
-                                <input
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    required
-                                    className={`w-full px-5 py-4 bg-transparent border text-sm transition-all outline-none tracking-[0.2em] ${isDark
-                                        ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
-                                        : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
-                                        }`}
-                                    placeholder="••••••••••••"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        required
+                                        className={`w-full px-5 py-4 pr-12 bg-transparent border text-sm transition-all outline-none ${showPassword ? 'tracking-normal' : 'tracking-[0.2em]'} ${isDark
+                                            ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
+                                            : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
+                                            }`}
+                                        placeholder={showPassword ? "Enter password" : "••••••••••••"}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className={`absolute right-4 top-1/2 -translate-y-1/2 p-1 transition-colors focus:outline-none cursor-pointer ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-700'}`}
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="w-4 h-4" />
+                                        ) : (
+                                            <Eye className="w-4 h-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

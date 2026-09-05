@@ -4,11 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAgentAuthStore } from '@/stores/agentAuthStore';
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AgentLoginPage() {
   const router = useRouter();
   const { login, isAuthenticated, isLoading } = useAgentAuthStore();
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -36,7 +38,8 @@ export default function AgentLoginPage() {
       await login({ email, password });
       router.push('/checker/agent/dashboard');
     } catch (err: any) {
-      const backendError = err.response?.data?.error || 'Invalid email or password.';
+      const data = err.response?.data;
+      const backendError = data?.detail || data?.error || data?.message || 'Invalid email or password.';
       setError(backendError);
     }
   };
@@ -84,13 +87,28 @@ export default function AgentLoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                ref={passwordRef}
-                type="password"
-                required
-                placeholder="Enter password"
-                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
-              />
+              <div className="relative">
+                <input
+                  ref={passwordRef}
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="Enter password"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none cursor-pointer"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Error message */}

@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { setAnalyticsUser, trackLogin, trackEvent } from '@/lib/analytics';
-import { ArrowUpRight, ArrowRight, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, AlertCircle, CheckCircle2, Lock, Eye, EyeOff } from 'lucide-react';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 function LoginFormContent() {
@@ -23,6 +23,7 @@ function LoginFormContent() {
     const { login, isLoading } = useAuthStore();
     const [username, setUsername] = useState(emailParam || '');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(isRegistered ? "Account created! Please sign in to start." : "");
 
@@ -71,13 +72,29 @@ function LoginFormContent() {
             }
             router.push(redirect);
         } catch (error: unknown) {
-            const err = error as { response?: { data?: { detail?: string; message?: string; error?: string; code?: string } }; message?: string };
-            const data = err.response?.data;
-            if (data?.code === 'no_active_account') {
-                setError('Invalid email or password. If you signed up with Google, please use "Continue with Google" or reset your password.');
-            } else {
-                setError(data?.detail || data?.message || data?.error || err.message || 'Login failed. Please check your email and password.');
+            const err = error as { response?: { data?: unknown }; message?: string };
+            const data = err.response?.data as Record<string, unknown> | undefined;
+            let msg = '';
+            if (data) {
+                if (typeof data.detail === 'string') {
+                    msg = data.detail;
+                } else if (data.detail && typeof (data.detail as { message?: string }).message === 'string') {
+                    msg = (data.detail as { message: string }).message;
+                } else if (typeof data.error === 'string') {
+                    msg = data.error;
+                } else if (typeof data.message === 'string') {
+                    msg = data.message;
+                } else if (Array.isArray(data.non_field_errors) && data.non_field_errors.length > 0) {
+                    msg = String(data.non_field_errors[0]);
+                }
             }
+            if (!msg && err.message) {
+                msg = err.message;
+            }
+            if (data?.code === 'no_active_account' || !msg) {
+                msg = 'Invalid email or password. If you signed up with Google, please use "Continue with Google" or reset your password.';
+            }
+            setError(msg);
         }
     };
 
@@ -174,18 +191,33 @@ function LoginFormContent() {
                                         Forgot password?
                                     </Link>
                                 </div>
-                                <input
-                                    id="login-password"
-                                    type="password"
-                                    name="password"
-                                    autoComplete="current-password"
-                                    autoCapitalize="none"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    className={inputClass}
-                                    placeholder="••••••••"
-                                />
+                                <div className="relative">
+                                    <input
+                                        id="login-password"
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        autoComplete="current-password"
+                                        autoCapitalize="none"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        className={`${inputClass} pr-12`}
+                                        placeholder="••••••••"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-content-secondary/60 hover:text-content-primary transition-colors focus:outline-none cursor-pointer"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="w-4 h-4" />
+                                        ) : (
+                                            <Eye className="w-4 h-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
