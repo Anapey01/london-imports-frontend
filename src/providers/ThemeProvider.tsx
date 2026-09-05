@@ -28,9 +28,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setThemeState] = useState<Theme>('light');
     const [mounted, setMounted] = useState(false);
 
-    // Initialize theme from localStorage only (Ignore system preference)
+    // Initialize theme safely with fallback
     useEffect(() => {
-        const stored = localStorage.getItem('theme') as Theme | null;
+        let stored: Theme | null = null;
+        try {
+            if (typeof window !== 'undefined') {
+                stored = localStorage.getItem('theme') as Theme | null;
+            }
+        } catch (e) {
+            console.debug('[ThemeProvider] Storage access restricted');
+        }
 
         const timer = setTimeout(() => {
             setMounted(true);
@@ -68,7 +75,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             root.style.colorScheme = 'light';
             bodyWithThemeClass.classList.remove('dark');
         }
-        localStorage.setItem('theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch (e) {
+            console.debug('[ThemeProvider] Unable to persist theme');
+        }
     }, [theme, mounted]);
 
     const toggleTheme = () => {

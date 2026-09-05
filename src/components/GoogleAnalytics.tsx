@@ -20,9 +20,9 @@ export default function GoogleAnalytics() {
             // Ensure gtag is available
             const gtag = (window as any).gtag || function() { (window as any).dataLayer.push(arguments); };
             
-            const stored = localStorage.getItem('london_imports_cookie_consent_v2');
-            if (stored) {
-                try {
+            try {
+                const stored = localStorage.getItem('london_imports_cookie_consent_v2');
+                if (stored) {
                     const consent = JSON.parse(stored);
                     
                     // Update Google Consent Mode effectively
@@ -34,9 +34,9 @@ export default function GoogleAnalytics() {
 
                     // Consent mode is now updated. 
                     // Page views are handled automatically by the tag in layout.tsx.
-                } catch (e) { 
-                    console.error('Consent Sync Error:', e); 
                 }
+            } catch (e) { 
+                console.debug('Consent Sync Error/Storage Restricted:', e); 
             }
         };
 

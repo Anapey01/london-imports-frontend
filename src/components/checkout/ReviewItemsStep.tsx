@@ -56,8 +56,8 @@ export default function ReviewItemsStep({
                                 return selectedItemIds.includes(item.id);
                             })
                             .map((item: CartItem | OrderItem) => (
-                                <div key={item.id} className="flex gap-4 items-center p-4 bg-surface border border-border-standard rounded-xl">
-                                    <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center border border-border-standard p-1 relative">
+                                <div key={item.id} className="flex gap-3.5 sm:gap-4 items-center p-3.5 sm:p-4 bg-surface border border-border-standard rounded-xl">
+                                    <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 bg-surface rounded-lg flex items-center justify-center border border-border-standard p-1 relative">
                                         {(item.product.image) && (
                                             <Image 
                                                 src={item.product.image} 
@@ -68,23 +68,25 @@ export default function ReviewItemsStep({
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-semibold text-content-primary truncate">{cleanProductName(item.product)}</p>
-                                        <div className="flex flex-wrap gap-2 mt-0.5">
+                                        <p className="text-sm sm:text-base font-semibold text-content-primary line-clamp-2 leading-snug">
+                                            {cleanProductName(item.product)}
+                                        </p>
+                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1">
                                             {item.selected_size && (
-                                                <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
+                                                <span className="text-[10px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
                                                     Size: {item.selected_size}
                                                 </span>
                                             )}
                                             {item.selected_color && (
-                                                <span className="text-[9px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
+                                                <span className="text-[10px] font-bold text-content-secondary bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
                                                     Color: {item.selected_color}
                                                 </span>
                                             )}
-                                            <span className="text-[9px] text-content-secondary font-bold">Qty: {item.quantity}</span>
+                                            <span className="text-[10px] text-content-secondary font-bold">Qty: {item.quantity}</span>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-[11px] font-semibold text-content-primary">{formatPrice(item.total_price)}</p>
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="text-sm sm:text-base font-bold text-content-primary">{formatPrice(item.total_price)}</p>
                                     </div>
                                 </div>
                             ))}

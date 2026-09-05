@@ -15,10 +15,14 @@ export default function CookieBanner() {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('london_imports_cookie_consent_v2');
-            if (stored) {
-                setIsVisible(false);
-                return;
+            try {
+                const stored = localStorage.getItem('london_imports_cookie_consent_v2');
+                if (stored) {
+                    setIsVisible(false);
+                    return;
+                }
+            } catch (e) {
+                console.debug('[CookieBanner] Storage access restricted');
             }
 
             let timer: NodeJS.Timeout;
@@ -51,10 +55,16 @@ export default function CookieBanner() {
     }, []);
 
     const handleSave = (finalConsent = consent) => {
-        localStorage.setItem('london_imports_cookie_consent_v2', JSON.stringify(finalConsent));
+        try {
+            localStorage.setItem('london_imports_cookie_consent_v2', JSON.stringify(finalConsent));
+        } catch (e) {
+            console.debug('[CookieBanner] Unable to persist cookie consent');
+        }
         setIsVisible(false);
         // Dispatch event for GA4 to pick up
-        window.dispatchEvent(new Event('cookieConsentUpdate'));
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('cookieConsentUpdate'));
+        }
     };
 
     const toggle = (key: keyof typeof consent) => {

@@ -17,7 +17,7 @@ export default function MobileBottomNav() {
     const pathname = usePathname();
     const { itemCount } = useCartStore();
     const { isAuthenticated } = useAuthStore();
-    const wishlistItems = useWishlistStore(state => state.items);
+    const wishlistItems = useWishlistStore(state => state.items) || [];
     const { setSearchModalOpen, isSearchModalOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
 
@@ -28,7 +28,7 @@ export default function MobileBottomNav() {
     const navItems = [
         { name: 'Home', href: '/', icon: Home },
         { name: 'Shop', href: '/products', icon: LayoutGrid },
-        { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: mounted ? wishlistItems.length : 0 },
+        { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: mounted ? (wishlistItems?.length || 0) : 0 },
         { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: mounted ? itemCount : 0 },
         { name: 'Profile', href: (mounted && isAuthenticated) ? '/profile' : '/login', icon: User },
     ];

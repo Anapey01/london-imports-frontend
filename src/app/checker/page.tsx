@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import CheckerClient from './CheckerClient';
 import { getAgentPricing } from '@/lib/fetchers';
 
-export const revalidate = 300; // Cache at Vercel Edge for 5 minutes (stale-while-revalidate)
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "WAEC Results Checker Center | London's Imports",
@@ -19,7 +19,12 @@ export const metadata: Metadata = {
 };
 
 async function CheckerContent() {
-  const initialPricingData = await getAgentPricing();
+  let initialPricingData = null;
+  try {
+    initialPricingData = await getAgentPricing();
+  } catch (e) {
+    console.error('[CheckerPage] Error fetching initial pricing data:', e);
+  }
   return <CheckerClient initialPricingData={initialPricingData} />;
 }
 

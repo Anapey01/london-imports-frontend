@@ -14,16 +14,15 @@ export default function AuthRehydration() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        const authStorage = localStorage.getItem('auth-storage');
         let hasToken = false;
-        
-        if (authStorage) {
-            try {
+        try {
+            const authStorage = localStorage.getItem('auth-storage');
+            if (authStorage) {
                 const parsed = JSON.parse(authStorage);
                 hasToken = !!parsed.state?.accessToken;
-            } catch (e) {
-                console.debug('[AuthRehydration] No valid auth storage found');
             }
+        } catch (e) {
+            console.debug('[AuthRehydration] Storage access restricted or invalid');
         }
 
         if (hasToken) {
