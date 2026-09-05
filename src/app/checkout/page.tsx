@@ -444,7 +444,6 @@ function CheckoutPage() {
                         trackPaymentLifecycle('authorization', { reference: paymentRes.data.checkout_id, provider: 'hubtel' });
                         
                         if (saveAddress) await fetchUser();
-                        clearCart();
                         sessionStorage.removeItem('londons_checkout_delivery');
                         
                         window.location.href = paymentRes.data.checkout_url;

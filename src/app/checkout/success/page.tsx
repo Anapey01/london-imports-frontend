@@ -4,6 +4,7 @@
     import { useSearchParams } from 'next/navigation';
     import OrderSuccess from '@/components/checkout/OrderSuccess';
     import { useAuthStore } from '@/stores/authStore';
+    import { useCartStore } from '@/stores/cartStore';
     import { ordersAPI, paymentsAPI } from '@/lib/api';
 
     function SuccessPageContent() {
@@ -12,6 +13,7 @@
         const method = searchParams.get('method');
         const clientReference = searchParams.get('client_reference');
         const { user } = useAuthStore();
+        const { clearCart } = useCartStore();
         const hasNotified = useRef(false);
         const hasVerified = useRef(false);
 
@@ -19,6 +21,8 @@
             // Trigger automatic backend confirmation/verification upon return
             if (orderNumber && !hasVerified.current) {
                 hasVerified.current = true;
+                clearCart();
+                sessionStorage.removeItem('londons_checkout_delivery');
                 if (clientReference) {
                     paymentsAPI.hubtelVerify(clientReference).catch(() => {
                         // Fallback to order-level verification if client reference call errors
