@@ -13,7 +13,9 @@ import {
     Phone,
     CheckCircle,
     Copy,
-    Check
+    Check,
+    MapPin,
+    ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
@@ -209,19 +211,31 @@ export default function ContactPageContent() {
                             </div>
                         </div>
     
-                        <div className="relative border border-slate-100 dark:border-slate-800 p-1 rounded-xl overflow-hidden">
-                            <div className="aspect-[4/5] relative overflow-hidden grayscale contrast-125">
+                        <div className="relative border border-slate-200 dark:border-slate-800 p-1.5 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900 shadow-sm">
+                            <div className="aspect-[4/5] relative overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-900">
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.7148124396617!2d-0.1687550240594233!3d5.754127994228258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf77138b11ed4b%3A0xaae48c1875009a9d!2sLondon&#39;s%20Imports%20Ghana!5e0!3m2!1sen!2sgh!4v1775137181616!5m2!1sen!2sgh"
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.7148124396617!2d-0.1687550240594233!3d5.754127994228258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf77138b11ed4b%3A0xaae48c1875009a9d!2sLondon%27s%20Imports%20Ghana!5e0!3m2!1sen!2sgh!4v1775137181616!5m2!1sen!2sgh"
                                     width="100%"
                                     height="100%"
                                     title="London's Imports HQ"
-                                    className="border-0"
+                                    className="border-0 w-full h-full"
                                     allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
                                 />
-                                <div className="absolute top-4 sm:top-8 right-4 sm:right-8 bg-white dark:bg-slate-950 border border-slate-950 dark:border-white px-4 sm:px-6 py-2.5 sm:py-4 shadow-xl">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Verified Location</span>
+                                <div className="absolute top-4 sm:top-6 right-4 sm:right-6 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border border-slate-900 dark:border-white px-3.5 sm:px-5 py-2 sm:py-3 shadow-lg pointer-events-none rounded-sm">
+                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-white">Verified Location</span>
                                 </div>
+                                <a
+                                    href={siteConfig.addressMapLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-auto bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 px-4 py-2.5 rounded-lg shadow-lg flex items-center justify-center sm:justify-start gap-2 text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-900 transition-all group"
+                                >
+                                    <MapPin className="w-3.5 h-3.5 text-brand-emerald shrink-0" />
+                                    <span>Open in Google Maps</span>
+                                    <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
+                                </a>
                             </div>
                         </div>
                     </div>
