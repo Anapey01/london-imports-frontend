@@ -4,12 +4,13 @@ import { checkersAPI } from '@/lib/api';
 
 interface Agent {
   id: string;
+  email?: string;
   store_name: string;
   slug: string;
   momo_network: string;
   momo_number: string;
   is_approved: boolean;
-  user: {
+  user?: {
     email: string;
     phone: string;
   };
