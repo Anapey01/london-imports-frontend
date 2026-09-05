@@ -4,7 +4,7 @@ import "./globals.css";
 import Providers from "@/providers/Providers";
 import PWAUpdater from "@/components/PWAUpdater";
 import PushNotificationManager from "@/components/PushNotificationManager";
-import { siteConfig } from "@/config/site";
+
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
@@ -135,7 +135,7 @@ export default async function RootLayout({
       <head>
         {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
-        <link rel="dns-prefetch" href={new URL(siteConfig.apiUrl).origin} />
+        <link rel="dns-prefetch" href="https://api.londonsimports.com" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
