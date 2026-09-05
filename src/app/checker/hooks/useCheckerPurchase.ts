@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useTransition } from 'react';
+import { useState, useEffect, useRef, useTransition, useMemo } from 'react';
 import { checkersAPI } from '@/lib/api';
 
 export interface PricingTier {
@@ -34,7 +34,6 @@ export function useCheckerPurchase(initialPricingData?: any) {
   const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('WASSCE');
   const [quantity, setQuantity] = useState<number>(1);
   const emailRef = useRef<HTMLInputElement>(null);
-  const [totalPrice, setTotalPrice] = useState<number>(17.00);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showPricingTiers, setShowPricingTiers] = useState<boolean>(false);
@@ -114,8 +113,8 @@ export function useCheckerPurchase(initialPricingData?: any) {
     fetchPricingAndStock();
   }, [initialPricingData]);
 
-  // Update total price when checkerType, quantity or pricing changes
-  useEffect(() => {
+  // Derived total price via useMemo (eliminates secondary re-renders and reduces INP)
+  const totalPrice = useMemo(() => {
     const typeTiers = pricing[checkerType] || [];
     let pricePerUnit = 17.00;
     
@@ -137,14 +136,27 @@ export function useCheckerPurchase(initialPricingData?: any) {
       }
     }
     
-    setTotalPrice(pricePerUnit * quantity);
+    return pricePerUnit * quantity;
   }, [checkerType, quantity, pricing]);
+
+  // Responsive quantity setter wrapped in startTransition for low INP
+  const updateQuantity = (updater: number | ((prev: number) => number)) => {
+    startTransition(() => {
+      setQuantity(prev => {
+        const nextVal = typeof updater === 'function' ? updater(prev) : updater;
+        return Math.min(200, Math.max(1, nextVal));
+      });
+    });
+  };
 
   // Handle Buy submit
   const handleBuySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    // Yield to browser to paint loading spinner (fixes INP)
+    await new Promise(resolve => setTimeout(resolve, 10));
 
     const emailValue = emailRef.current?.value?.trim() || '';
     if (!emailValue || !emailValue.includes('@')) {
@@ -257,6 +269,7 @@ export function useCheckerPurchase(initialPricingData?: any) {
     setCheckerType,
     quantity,
     setQuantity,
+    updateQuantity,
     emailRef,
     totalPrice,
     loading,

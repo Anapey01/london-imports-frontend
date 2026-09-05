@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import { Suspense } from 'react';
 import CheckerClient from './CheckerClient';
 import { getAgentPricing } from '@/lib/fetchers';
 
-export const dynamic = 'force-dynamic';
+// ISR: Revalidate every 24 hours to maximize edge cache and preserve Vercel free tier
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "WAEC Results Checker Center | London's Imports",
@@ -18,27 +18,13 @@ export const metadata: Metadata = {
   },
 };
 
-async function CheckerContent() {
+export default async function CheckerPage() {
   let initialPricingData = null;
   try {
     initialPricingData = await getAgentPricing();
   } catch (e) {
     console.error('[CheckerPage] Error fetching initial pricing data:', e);
   }
-  return <CheckerClient initialPricingData={initialPricingData} />;
-}
 
-export default function CheckerPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-          <p className="text-xs text-content-secondary font-bold uppercase tracking-widest">Loading Checker Center...</p>
-        </div>
-      </div>
-    }>
-      <CheckerContent />
-    </Suspense>
-  );
+  return <CheckerClient initialPricingData={initialPricingData} />;
 }

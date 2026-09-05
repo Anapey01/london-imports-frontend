@@ -14,6 +14,7 @@ export default function BuyCheckerModal({ hook }: BuyCheckerModalProps) {
     setCheckerType,
     quantity,
     setQuantity,
+    updateQuantity,
     emailRef,
     totalPrice,
     loading,
@@ -102,9 +103,9 @@ export default function BuyCheckerModal({ hook }: BuyCheckerModalProps) {
                 <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-none bg-slate-50 dark:bg-slate-900 h-[42px]">
                   <button
                     type="button"
-                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    onClick={() => updateQuantity(q => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
-                    className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-r border-slate-200 dark:border-slate-700 transition-colors"
+                    className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-r border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                   >
                     <span className="text-md font-bold">−</span>
                   </button>
@@ -115,15 +116,15 @@ export default function BuyCheckerModal({ hook }: BuyCheckerModalProps) {
                     value={quantity}
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
-                      if (!isNaN(val)) setQuantity(Math.min(200, Math.max(1, val)));
+                      if (!isNaN(val)) updateQuantity(val);
                     }}
                     className="w-full text-center bg-transparent border-0 font-mono font-bold text-sm text-slate-900 dark:text-white focus:outline-none"
                   />
                   <button
                     type="button"
-                    onClick={() => setQuantity(q => Math.min(200, q + 1))}
+                    onClick={() => updateQuantity(q => Math.min(200, q + 1))}
                     disabled={quantity >= 200}
-                    className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-l border-slate-200 dark:border-slate-700 transition-colors"
+                    className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-l border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                   >
                     <span className="text-md font-bold">+</span>
                   </button>

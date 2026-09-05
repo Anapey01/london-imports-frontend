@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import AgentStoreClient from './AgentStoreClient';
 import { getAgentPricing } from '@/lib/fetchers';
 
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
+// ISR: Revalidate agent storefronts every 24 hours to preserve Vercel free tier and enable edge caching
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 type Props = {

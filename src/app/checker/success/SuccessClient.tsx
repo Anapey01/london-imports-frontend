@@ -101,13 +101,13 @@ export default function SuccessClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-        <div className="max-w-md w-full text-center space-y-6 border border-content-primary bg-surface p-8">
-          <div className="w-16 h-16 border border-brand-emerald text-brand-emerald flex items-center justify-center mx-auto">
-            <div className="w-8 h-8 border-2 border-brand-emerald/20 border-t-brand-emerald rounded-none animate-spin" />
+      <div className="min-h-screen bg-transparent py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center font-sans">
+        <div className="max-w-md mx-auto w-full bg-surface border border-border-standard rounded-none p-6 sm:p-8 shadow-diffusion-lg text-center space-y-6">
+          <div className="w-12 h-12 border border-brand-emerald text-brand-emerald flex items-center justify-center mx-auto">
+            <div className="w-6 h-6 border-2 border-brand-emerald/20 border-t-brand-emerald rounded-none animate-spin" />
           </div>
           <div className="space-y-2">
-            <h2 className="font-serif text-2xl font-black text-content-primary uppercase">
+            <h2 className="font-serif text-xl sm:text-2xl font-black text-content-primary uppercase">
               Verifying Payment
             </h2>
             <p className="text-content-secondary text-xs uppercase tracking-widest font-semibold">
