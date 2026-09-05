@@ -141,7 +141,7 @@ export default async function HomePage() {
   const newArrivals = dedupeAndLimit(newArrivalsRes?.results, 12);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-surface dark:bg-slate-950 pb-20 transition-colors">
       {/* WhatsApp Floating Button - Homepage Only */}
       <WhatsAppButton />
 

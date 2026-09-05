@@ -30,7 +30,7 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                     return (
                         <div 
                             key={cardIndex} 
-                            className="bg-white dark:bg-slate-900 border border-slate-100/60 dark:border-slate-800/50 p-5 rounded-none shadow-[0_1px_4px_rgba(0,0,0,0.015)] transition-all duration-300 flex flex-col justify-between h-auto lg:h-[420px]"
+                            className="bg-surface dark:bg-slate-900 border border-border-standard dark:border-slate-800 p-5 rounded-none shadow-sm transition-all duration-300 flex flex-col justify-between h-auto lg:h-[420px]"
                         >
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">

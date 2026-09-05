@@ -111,10 +111,10 @@ export default function CategoryCards() {
                 {isLoading ? (
                     // Skeleton Loading State
                     [...Array(4)].map((_, i) => (
-                        <div key={i} className="bg-white p-4 lg:p-5 shadow-md rounded-lg h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 flex flex-col animate-pulse border border-gray-100 lg:border-none snap-center">
-                            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                            <div className="flex-1 bg-gray-200 rounded-md mb-4 w-full"></div>
-                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        <div key={i} className="bg-surface dark:bg-slate-900 p-4 lg:p-5 shadow-md rounded-lg h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 flex flex-col animate-pulse border border-border-standard dark:border-slate-800 lg:border-none snap-center">
+                            <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-3/4 mb-4"></div>
+                            <div className="flex-1 bg-slate-200 dark:bg-slate-800 rounded-md mb-4 w-full"></div>
+                            <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2"></div>
                         </div>
                     ))
                 ) : (
@@ -136,12 +136,12 @@ export default function CategoryCards() {
                             : card.items;
 
                         return (
-                            <div key={idx} className="bg-white p-4 lg:p-5 shadow-md rounded-lg flex flex-col h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 snap-center border border-gray-100 lg:border-none">
-                                <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2">{card.title}</h3>
+                            <div key={idx} className="bg-surface dark:bg-slate-900 p-4 lg:p-5 shadow-md rounded-lg flex flex-col h-[380px] lg:h-[420px] min-w-[280px] lg:min-w-0 snap-center border border-border-standard dark:border-slate-800 lg:border-none transition-colors">
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 line-clamp-2">{card.title}</h3>
 
                                 <div className="flex-1">
                                     {card.type === 'single' ? (
-                                        <Link href={card.ctaLink} className="block relative w-full h-full max-h-[260px] lg:max-h-[300px] overflow-hidden rounded-md">
+                                        <Link href={card.ctaLink} className="block relative w-full h-full max-h-[260px] lg:max-h-[300px] overflow-hidden rounded-md bg-slate-50 dark:bg-slate-800/50">
                                             <Image
                                                 src={displayItems[0].image}
                                                 alt={card.title}
@@ -155,7 +155,7 @@ export default function CategoryCards() {
                                         <div className="grid grid-cols-2 gap-3 lg:gap-4 h-full max-h-[260px] lg:max-h-[300px]">
                                             {displayItems.slice(0, 4).map((item: GridItem, i: number) => (
                                                 <Link key={i} href={item.link} className="block group">
-                                                    <div className="relative aspect-square mb-1 bg-gray-50 overflow-hidden rounded-md border border-gray-100">
+                                                    <div className="relative aspect-square mb-1 bg-slate-50 dark:bg-slate-800/60 overflow-hidden rounded-md border border-slate-100 dark:border-slate-800">
                                                         <Image
                                                             src={item.image}
                                                             alt={item.name}
@@ -165,7 +165,7 @@ export default function CategoryCards() {
                                                             className="object-cover p-0 hover:scale-110 transition-transform"
                                                         />
                                                     </div>
-                                                    <span className="text-xs text-gray-700 block truncate font-medium">{item.name}</span>
+                                                    <span className="text-xs text-slate-700 dark:text-slate-300 block truncate font-medium">{item.name}</span>
                                                 </Link>
                                             ))}
                                         </div>
@@ -173,7 +173,7 @@ export default function CategoryCards() {
                                 </div>
 
                                 <div className="mt-4 flex justify-between items-center">
-                                    <Link href={card.ctaLink} className="text-sm font-medium text-brand-emerald hover:text-slate-950 hover:underline transition-colors">
+                                    <Link href={card.ctaLink} className="text-sm font-medium text-brand-emerald hover:underline transition-colors">
                                         {card.ctaText}
                                     </Link>
                                     {/* Conversion Trigger */}

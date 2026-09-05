@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
 @theme {
   /* AUTHORITATIVE THEME BIND: Configures Tailwind v4 to follow either the .dark class or data-theme attribute. */
   --variant-dark: :is(.dark, [data-theme="dark"]) &;

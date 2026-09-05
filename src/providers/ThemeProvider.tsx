@@ -35,9 +35,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const timer = setTimeout(() => {
             setMounted(true);
             // If the user has explicitly chosen a theme before, respect it.
-            // Otherwise, ALWAYS default to 'light', even if their phone is in dark mode.
+            // Otherwise, default to the system/phone preference (e.g. Android dark mode).
             if (stored) {
                 setThemeState(stored);
+            } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                setThemeState('dark');
             } else {
                 setThemeState('light');
             }
