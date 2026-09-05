@@ -21,6 +21,7 @@ import DeliveryDetails from '@/components/checkout/DeliveryDetails';
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import ReviewItemsStep from '@/components/checkout/ReviewItemsStep';
+import HubtelOnsiteModal from '@/components/checkout/HubtelOnsiteModal';
 
 // Paystack types for global window
 interface PaystackResponse {
@@ -110,6 +111,21 @@ function CheckoutPage() {
             return () => clearTimeout(timer);
         }
     }, [error]);
+
+    // Break out of iframe if checkout is loaded inside a frame (e.g. from cancelUrl redirect)
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.top && window.top !== window) {
+            window.top.location.href = window.location.href;
+        }
+    }, []);
+
+    const [hubtelSession, setHubtelSession] = useState<{
+        isOpen: boolean;
+        checkoutUrl: string;
+        orderNumber: string;
+        clientReference: string;
+        amount: number;
+    } | null>(null);
 
     // Failsafe: Never allow cartLoading to block checkout for more than 3 seconds
     useEffect(() => {
@@ -440,13 +456,25 @@ function CheckoutPage() {
 
                 try {
                     const paymentRes = await paymentsAPI.initiateHubtel(orderToPay?.order_number || '', paymentType, paymentAmount);
-                    if (paymentRes.data && paymentRes.data.checkout_url) {
+                    if (paymentRes.data && (paymentRes.data.checkout_direct_url || paymentRes.data.checkout_url)) {
+                        const directUrl = paymentRes.data.checkout_direct_url || paymentRes.data.checkout_url;
+                        const clientRef = paymentRes.data.client_reference;
+                        const orderNum = orderToPay?.order_number || '';
+
                         trackPaymentLifecycle('authorization', { reference: paymentRes.data.checkout_id, provider: 'hubtel' });
                         
                         if (saveAddress) await fetchUser();
                         sessionStorage.removeItem('londons_checkout_delivery');
                         
-                        window.location.href = paymentRes.data.checkout_url;
+                        // ONSITE CHECKOUT: Display Hubtel in modal iframe without leaving Android app
+                        setHubtelSession({
+                            isOpen: true,
+                            checkoutUrl: directUrl,
+                            orderNumber: orderNum,
+                            clientReference: clientRef,
+                            amount: paymentAmount,
+                        });
+                        setIsLoading(false);
                     } else {
                         throw new Error("Invalid response from payment gateway");
                     }
@@ -707,6 +735,27 @@ function CheckoutPage() {
                     </div>
                 </form>
             </div>
+
+            {hubtelSession && (
+                <HubtelOnsiteModal
+                    isOpen={hubtelSession.isOpen}
+                    checkoutUrl={hubtelSession.checkoutUrl}
+                    orderNumber={hubtelSession.orderNumber}
+                    clientReference={hubtelSession.clientReference}
+                    amount={hubtelSession.amount}
+                    onClose={() => {
+                        setHubtelSession(null);
+                        setError('Payment session closed. Your items are still saved in your bag.');
+                    }}
+                    onSuccess={() => {
+                        clearCart();
+                        const orderNum = hubtelSession.orderNumber;
+                        const clientRef = hubtelSession.clientReference;
+                        setHubtelSession(null);
+                        router.push(`/checkout/success?order_number=${orderNum}&method=hubtel&client_reference=${clientRef}`);
+                    }}
+                />
+            )}
         </div>
     );
 }

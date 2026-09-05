@@ -18,6 +18,13 @@
         const hasVerified = useRef(false);
 
         useEffect(() => {
+            // Break out of iframe if success page is rendered inside an iframe
+            if (typeof window !== 'undefined' && window.top && window.top !== window) {
+                window.top.location.href = window.location.href;
+            }
+        }, []);
+
+        useEffect(() => {
             // Trigger automatic backend confirmation/verification upon return
             if (orderNumber && !hasVerified.current) {
                 hasVerified.current = true;
