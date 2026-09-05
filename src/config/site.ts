@@ -11,7 +11,14 @@ export const siteConfig = {
         (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'))
     ))
         ? 'https://api.londonsimports.com/api/v1'
-        : (process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1' : 'https://api.londonsimports.com/api/v1')),
+        : (typeof window === 'undefined'
+            // Server-side: use env var if it points to production, otherwise hardcode production URL
+            ? (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost') && !process.env.NEXT_PUBLIC_API_URL.includes('127.0.0.1')
+                ? process.env.NEXT_PUBLIC_API_URL
+                : 'https://api.londonsimports.com/api/v1')
+            // Client-side non-production: use env var or localhost dev fallback
+            : (process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v1' : 'https://api.londonsimports.com/api/v1'))),
+
     whatsapp: '233545247009', // Main Shop Line
     concierge: '233541096372', // Specialized Sourcing/Support
     momoNumber: '055 812 3456', // Direct Mobile Money line

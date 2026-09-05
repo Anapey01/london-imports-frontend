@@ -1,59 +1,73 @@
 /**
- * London's Imports - React Query Provider with Safe Persistence Fallback
+ * London's Imports - React Query Provider with Safe Persistence
+ *
+ * IMPORTANT: We always render PersistQueryClientProvider from the very first render.
+ * The persister uses a safe wrapper that catches all storage errors so it never
+ * crashes in TWA/WebView environments where localStorage may be restricted.
+ * This avoids the tree-swap bug where switching QueryClientProvider →
+ * PersistQueryClientProvider unmounts the entire React tree and destroys all
+ * in-flight queries (causing products to vanish on mobile).
  */
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+const CACHE_KEY = 'LONDON_IMPORTS_QUERY_CACHE';
+
+/** Persister that silently no-ops when localStorage is unavailable (TWA, private browsing, etc.) */
+function createSafePersister() {
+    return {
+        persistClient: async (client: unknown) => {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(client));
+            } catch {
+                // Storage unavailable or quota exceeded — safe to ignore
+            }
+        },
+        restoreClient: async () => {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                return raw ? JSON.parse(raw) : undefined;
+            } catch {
+                return undefined;
+            }
+        },
+        removeClient: async () => {
+            try {
+                localStorage.removeItem(CACHE_KEY);
+            } catch {
+                // Safe to ignore
+            }
+        },
+    };
+}
+
+// Stable singleton — created once at module level, never changes between renders
+const safePersister = createSafePersister();
 
 export default function QueryProvider({ children }: { children: React.ReactNode }) {
-    const [queryClient] = useState(() => new QueryClient({
-        defaultOptions: {
-            queries: {
-                staleTime: 1000 * 60 * 60 * 2, // 2 hours (better for offline)
-                gcTime: 1000 * 60 * 60 * 24, // 24 hours
-                refetchOnWindowFocus: false,
-                retry: 1, // Minimize network noise when flaky
-            },
-        },
-    }));
-
-    const [persister, setPersister] = useState<any>(null);
-
-    useEffect(() => {
-        try {
-            if (typeof window !== 'undefined' && window.localStorage) {
-                const testKey = '__storage_test__';
-                window.localStorage.setItem(testKey, testKey);
-                window.localStorage.removeItem(testKey);
-
-                const syncPersister = createSyncStoragePersister({
-                    storage: window.localStorage,
-                    key: 'LONDON_IMPORTS_QUERY_CACHE',
-                });
-                setPersister(syncPersister);
-            }
-        } catch (e) {
-            console.warn('[QueryProvider] Storage persistence unavailable, running in-memory:', e);
-        }
-    }, []);
-
-    if (persister) {
-        return (
-            <PersistQueryClientProvider
-                client={queryClient}
-                persistOptions={{ persister }}
-            >
-                {children}
-            </PersistQueryClientProvider>
-        );
-    }
+    const [queryClient] = useState(
+        () =>
+            new QueryClient({
+                defaultOptions: {
+                    queries: {
+                        staleTime: 1000 * 60 * 60 * 2, // 2 hours
+                        gcTime: 1000 * 60 * 60 * 24,   // 24 hours
+                        refetchOnWindowFocus: false,
+                        retry: 1,
+                    },
+                },
+            })
+    );
 
     return (
-        <QueryClientProvider client={queryClient}>
+        <PersistQueryClientProvider
+            client={queryClient}
+            persistOptions={{ persister: safePersister }}
+        >
             {children}
-        </QueryClientProvider>
+        </PersistQueryClientProvider>
     );
 }
