@@ -345,7 +345,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
       {/* ==================== BUY MODAL ==================== */}
       {activeModal === 'buy' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
-          <div className="bg-surface border border-slate-200 rounded-none w-full max-w-lg shadow-2xl relative animate-elite-entrance">
+          <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-none w-full max-w-lg shadow-2xl relative animate-elite-entrance">
             <button
               onClick={() => openModal(null)}
               className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
@@ -362,7 +362,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
               </h3>
 
               {/* Pricing breakdown info */}
-              <div className="border border-slate-200 mb-4 p-3 bg-slate-50 text-xs font-semibold text-content-primary uppercase tracking-wider space-y-1.5">
+              <div className="border border-slate-200 dark:border-slate-800 mb-4 p-3 bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider space-y-1.5">
                 <div className="flex justify-between">
                   <span>BECE Checker price:</span>
                   <span className="font-mono text-brand-emerald">GH₵ {becePrice.toFixed(2)}</span>
@@ -382,10 +382,10 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                   <select
                     value={checkerType}
                     onChange={(e) => setCheckerType(e.target.value as 'BECE' | 'WASSCE')}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   >
-                    <option value="WASSCE">WASSCE, SSCE, ABCE</option>
-                    <option value="BECE">BECE (School & Private)</option>
+                    <option value="WASSCE" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">WASSCE, SSCE, ABCE</option>
+                    <option value="BECE" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">BECE (School & Private)</option>
                   </select>
                 </div>
 
@@ -395,12 +395,12 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                     <label className="block text-xs font-bold text-content-primary mb-1.5">
                       Quantity <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex items-center border border-slate-200 rounded-none bg-slate-50 h-[42px]">
+                    <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-none bg-slate-50 dark:bg-slate-900 h-[42px]">
                       <button
                         type="button"
                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
                         disabled={quantity <= 1}
-                        className="w-9 h-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-slate-100 disabled:opacity-40 border-r border-slate-200 transition-colors"
+                        className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-r border-slate-200 dark:border-slate-700 transition-colors"
                       >
                         <span className="text-md font-bold">−</span>
                       </button>
@@ -413,13 +413,13 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                           const val = parseInt(e.target.value);
                           if (!isNaN(val)) setQuantity(Math.min(200, Math.max(1, val)));
                         }}
-                        className="w-full text-center bg-transparent border-0 text-sm font-bold focus:ring-0 focus:outline-none"
+                        className="w-full text-center bg-transparent border-0 text-sm font-bold text-slate-900 dark:text-white focus:ring-0 focus:outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => setQuantity(q => Math.min(200, q + 1))}
                         disabled={quantity >= 200}
-                        className="w-9 h-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-slate-100 disabled:opacity-40 border-l border-slate-200 transition-colors"
+                        className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-l border-slate-200 dark:border-slate-700 transition-colors"
                       >
                         <span className="text-md font-bold">+</span>
                       </button>
@@ -430,7 +430,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                     <label className="block text-xs font-bold text-content-primary mb-1.5">
                       Total Cost
                     </label>
-                    <div className="h-[42px] flex items-center justify-between px-3 border border-slate-200 rounded-none bg-slate-50 font-bold text-brand-emerald text-sm">
+                    <div className="h-[42px] flex items-center justify-between px-3 border border-slate-200 dark:border-slate-700 rounded-none bg-slate-50 dark:bg-slate-900 font-bold text-brand-emerald text-sm">
                       <span className="font-mono text-sm ml-auto">GH₵ {totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
@@ -446,7 +446,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                     type="email"
                     required
                     placeholder="Enter email to receive vouchers"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                   />
                   <p className="mt-1.5 text-xs text-content-secondary font-normal">
                     Vouchers are displayed on screen and sent to this email.
@@ -547,7 +547,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                         required
                         defaultValue={retrieveEmail}
                         placeholder="e.g. customer@email.com"
-                        className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                        className="flex-grow bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                       />
                       <button
                         type="submit"
@@ -588,7 +588,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
                         onChange={(e) => setRetrieveOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         placeholder="123456"
                         autoFocus
-                        className="flex-grow bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-lg font-mono font-bold tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                        className="flex-grow bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-4 py-2.5 text-lg font-mono font-bold tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                       />
                       <button
                         type="submit"

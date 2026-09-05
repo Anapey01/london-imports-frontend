@@ -28,7 +28,7 @@ export default function RetrieveVouchersModal({ hook }: RetrieveVouchersModalPro
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
-      <div className="bg-surface border border-slate-200 rounded-none w-full max-w-lg shadow-2xl relative">
+      <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-none w-full max-w-lg shadow-2xl relative">
         <button
           onClick={() => openModal(null)}
           className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
@@ -64,7 +64,7 @@ export default function RetrieveVouchersModal({ hook }: RetrieveVouchersModalPro
                   type="email"
                   required
                   placeholder="your.email@example.com"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                 />
               </div>
 
@@ -99,7 +99,7 @@ export default function RetrieveVouchersModal({ hook }: RetrieveVouchersModalPro
                   placeholder="123456"
                   autoFocus
                   required
-                  className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-center text-xl font-mono font-bold tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-4 py-3 text-center text-xl font-mono font-bold tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
                 />
               </div>
 
@@ -146,8 +146,8 @@ export default function RetrieveVouchersModal({ hook }: RetrieveVouchersModalPro
                 </p>
               ) : (
                 history.map((order, idx) => (
-                  <div key={idx} className="border border-slate-200 p-4 space-y-3 bg-slate-50/50">
-                    <div className="flex items-center justify-between text-xs border-b border-slate-200 pb-2">
+                  <div key={idx} className="border border-slate-200 dark:border-slate-800 p-4 space-y-3 bg-slate-50/50 dark:bg-slate-900/50">
+                    <div className="flex items-center justify-between text-xs border-b border-slate-200 dark:border-slate-800 pb-2">
                       <div>
                         <span className="font-bold text-content-primary uppercase">{order.checker_type}</span>
                         <span className="text-content-secondary ml-2 font-mono text-[10px]">
@@ -161,15 +161,15 @@ export default function RetrieveVouchersModal({ hook }: RetrieveVouchersModalPro
 
                     <div className="space-y-2">
                       {order.vouchers.map((v, vIdx) => (
-                        <div key={vIdx} className="bg-white border border-slate-200 p-2.5 text-xs font-mono flex items-center justify-between">
+                        <div key={vIdx} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 text-xs font-mono flex items-center justify-between">
                           <div>
-                            <div><span className="text-content-secondary text-[10px]">SERIAL:</span> <span className="font-bold">{v.serial}</span></div>
+                            <div><span className="text-content-secondary text-[10px]">SERIAL:</span> <span className="font-bold text-slate-900 dark:text-white">{v.serial}</span></div>
                             <div><span className="text-content-secondary text-[10px]">PIN:</span> <span className="font-bold text-brand-emerald">{v.pin}</span></div>
                           </div>
                           <button
                             type="button"
                             onClick={() => copyToClipboard(`Serial: ${v.serial}\nPIN: ${v.pin}`, `${idx}-${vIdx}`)}
-                            className="text-[10px] uppercase font-bold text-content-secondary hover:text-content-primary px-2 py-1 border border-slate-200 bg-slate-50"
+                            className="text-[10px] uppercase font-bold text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white px-2 py-1 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
                           >
                             {copiedText === `${idx}-${vIdx}` ? 'Copied!' : 'Copy'}
                           </button>
