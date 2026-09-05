@@ -278,6 +278,8 @@ export const adminAPI = {
   updateSettings: (data: unknown) => api.patch('/admin/settings/', data),
   sendBroadcastEmail: (data: { subject: string; message: string; target?: string; emails?: string[] }) => 
     api.post('/admin/broadcast/', data),
+  sendBroadcastSMS: (data: { message: string; target?: string; phones?: string[] }) => 
+    api.post('/admin/broadcast/sms/', data),
   getAudienceContacts: (target: string) => api.get('/admin/broadcast/contacts/', { params: { target } }),
 
   // Maintenance
