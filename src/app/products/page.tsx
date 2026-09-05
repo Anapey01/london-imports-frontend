@@ -43,7 +43,7 @@ export async function generateMetadata(
             : defaultMetaDescription,
     };
 
-    if (!category && !search) return defaultMeta;
+    if (!category) return defaultMeta;
 
     // Fetch category specific products for imagery
     const productsData = category ? await getProducts({ category, limit: '1' }) : null;

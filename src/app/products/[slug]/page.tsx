@@ -1,4 +1,4 @@
-import { getProduct, getProductMetadata, getProducts } from '@/lib/fetchers';
+import { getProduct, getProductMetadata, getProducts, getProductWithStatus } from '@/lib/fetchers';
 import ProductDetailClient from './ProductDetailClient';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/image';
@@ -7,12 +7,12 @@ import { notFound } from 'next/navigation';
 import { cleanProductName } from '@/lib/format';
 
 // ISR: Revalidate product pages every 24 hours
-export const revalidate = 604800; // 7 days — reduce ISR CPU usage
+export const revalidate = 86400; // 24 hours
 
 // Pre-render top 20 products at build time
 export async function generateStaticParams() {
     try {
-        const products = await getProducts({ limit: '200' });
+        const products = await getProducts({ limit: '20' });
         return Array.isArray(products?.results) ? products.results.map((product: { slug: string }) => ({
             slug: product.slug,
         })) : [];
@@ -107,12 +107,12 @@ export async function generateMetadata(
 
 export default async function ProductDetailPage({ params }: Props) {
     const { slug } = await params;
-    const product = await getProduct(slug);
+    const { product, notFound: isNotFound } = await getProductWithStatus(slug);
 
-    if (!product) notFound();
+    if (isNotFound) notFound();
 
     // Consolidated Product & Breadcrumb Schema for Rich Results
-    const productJsonLd = {
+    const productJsonLd = product ? {
         '@context': 'https://schema.org',
         '@graph': [
             {
@@ -227,15 +227,17 @@ export default async function ProductDetailPage({ params }: Props) {
                 ]
             }
         ]
-    };
+    } : null;
 
     return (
         <>
-            <script
-                id="product-schema"
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-            />
+            {productJsonLd && (
+                <script
+                    id="product-schema"
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+                />
+            )}
             <ProductDetailClient initialProduct={product} slug={slug} />
         </>
     );

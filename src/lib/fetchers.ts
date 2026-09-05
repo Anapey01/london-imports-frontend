@@ -195,7 +195,12 @@ export async function getCategory(slug: string) {
     }
 }
 
-export const getProduct = cache(async (slug: string) => {
+export type ProductFetchResult = {
+    product: any | null;
+    notFound: boolean;
+};
+
+export const getProductWithStatus = cache(async (slug: string): Promise<ProductFetchResult> => {
     const url = `${API_BASE_URL}/products/${slug}/`;
     try {
         const res = await fetchWithRetry(url, {
@@ -203,21 +208,27 @@ export const getProduct = cache(async (slug: string) => {
         });
 
         if (res.status === 404) {
-            return null;
+            return { product: null, notFound: true };
         }
 
         if (!res.ok) {
-            throw new Error(`Failed to fetch product ${slug}: ${res.status} ${res.statusText}`);
+            console.error(`[SSR] Non-OK status fetching product ${slug}: ${res.status}`);
+            return { product: null, notFound: false };
         }
 
-        return await res.json();
+        const data = await res.json();
+        return { product: data, notFound: false };
     } catch (e) {
         console.error(`[SSR] Exception fetching product ${slug}:`, e);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
-            return null;
-        }
-        throw e;
+        // On network failure / timeout / build time, this is NOT a 404.
+        // Returning notFound: false allows client-side hydration to fetch without baking in a permanent 404.
+        return { product: null, notFound: false };
     }
+});
+
+export const getProduct = cache(async (slug: string) => {
+    const { product } = await getProductWithStatus(slug);
+    return product;
 });
 
 export async function getProductMetadata(slug: string) {
@@ -249,8 +260,9 @@ export async function getProductMetadata(slug: string) {
                 id: previewItem.id,
                 name: previewItem.name,
                 slug: previewItem.slug,
+                price: previewItem.price,
                 image: previewItem.image,
-                description: "Log in to see full product details, pricing, and availability.",
+                description: previewItem.description || "Log in to see full product details, pricing, and availability.",
                 is_preview: true
             };
         }
