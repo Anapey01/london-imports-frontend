@@ -30,6 +30,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // Initialize theme safely with fallback
     useEffect(() => {
+        setMounted(true);
         let stored: Theme | null = null;
         try {
             if (typeof window !== 'undefined') {
@@ -39,20 +40,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             console.debug('[ThemeProvider] Storage access restricted');
         }
 
-        const timer = setTimeout(() => {
-            setMounted(true);
-            // If the user has explicitly chosen a theme before, respect it.
-            // Otherwise, default to the system/phone preference (e.g. Android dark mode).
-            if (stored) {
-                setThemeState(stored);
-            } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                setThemeState('dark');
-            } else {
-                setThemeState('light');
-            }
-        }, 0);
-
-        return () => clearTimeout(timer);
+        // If the user has explicitly chosen a theme before, respect it.
+        // Otherwise, default to the system/phone preference (e.g. dark mode).
+        if (stored) {
+            setThemeState(stored);
+        } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setThemeState('dark');
+        } else {
+            setThemeState('light');
+        }
     }, []);
 
     // Apply theme to document
@@ -67,7 +63,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             root.classList.add('dark');
             root.setAttribute('data-theme', 'dark');
             root.style.colorScheme = 'dark';
-            // Also ensure the body has it for nested selectors
             bodyWithThemeClass.classList.add('dark');
         } else {
             root.classList.remove('dark');
@@ -92,9 +87,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-            <div style={{ visibility: !mounted ? 'hidden' : 'visible' }} className="transition-all duration-300">
-                {children}
-            </div>
+            {children}
         </ThemeContext.Provider>
     );
 }

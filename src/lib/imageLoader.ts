@@ -27,8 +27,8 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     }
 
     // 2. PERFORMANCE POWER-UP: Use Cloudinary Fetch for backend media
-    // This resizes and optimizes raw images from Render.com on the fly.
-    const isBackendImage = src.includes('london-imports-api.onrender.com') || src.includes('/media/');
+    // This resizes and optimizes raw backend media images on the fly.
+    const isBackendImage = src.includes('api.londonsimports.com') || src.includes('london-imports-api.onrender.com') || src.includes('/media/');
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (isBackendImage && isProduction) {

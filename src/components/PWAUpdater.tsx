@@ -37,12 +37,11 @@ export default function PWAUpdater() {
             }
         }).catch(() => {});
 
-        // Also clear caches that don't match the current deployment
+        // Purge only stale HTML navigation cache so users get fresh HTML while preserving static assets and images
         if ('caches' in window) {
             caches.keys().then((keys) => {
                 keys.forEach((key) => {
-                    // Keep only the current precache; purge old ones
-                    if (!key.includes('workbox-precache') && !key.includes('next-data')) {
+                    if (key === 'pages-cache') {
                         caches.delete(key);
                     }
                 });

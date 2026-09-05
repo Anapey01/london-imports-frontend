@@ -28,9 +28,5 @@ export function MobileBottomNavWrapper() {
     const pathname = usePathname();
     const isAdminPath = pathname?.startsWith('/dashboard/admin');
     if (isAdminPath) return null;
-    return (
-        <Suspense fallback={null}>
-            <MobileBottomNav />
-        </Suspense>
-    );
+    return <MobileBottomNav />;
 }

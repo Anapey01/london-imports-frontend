@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { GA_MEASUREMENT_ID, trackException } from '@/lib/analytics';
+import { usePathname } from 'next/navigation';
+import { trackException } from '@/lib/analytics';
 
 /**
  * London's Imports - Consent & Error Tracker
@@ -11,7 +11,6 @@ import { GA_MEASUREMENT_ID, trackException } from '@/lib/analytics';
  */
 export default function GoogleAnalytics() {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     useEffect(() => {
         const handleConsent = () => {
@@ -52,7 +51,7 @@ export default function GoogleAnalytics() {
             window.removeEventListener('cookieConsentUpdate', handleConsent);
             window.removeEventListener('error', handleError);
         };
-    }, [pathname, searchParams]);
+    }, [pathname]);
 
     return null;
 }

@@ -9,7 +9,6 @@ import PushNotificationManager from "@/components/PushNotificationManager";
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import WebVitalsReporter from '@/components/analytics/WebVitalsReporter';
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Suspense } from "react";
 import SkipToContent from "@/components/SkipToContent";
 import { 
   OrganizationSchema, 
@@ -144,6 +143,30 @@ export default async function RootLayout({
         <WebsiteSchema />
         <BreadcrumbSchema />
 
+        {/* Prevent Theme Flash: Initialize theme before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('theme');
+                  var isDark = stored ? stored === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                  var root = document.documentElement;
+                  if (isDark) {
+                    root.classList.add('dark');
+                    root.setAttribute('data-theme', 'dark');
+                    root.style.colorScheme = 'dark';
+                  } else {
+                    root.classList.remove('dark');
+                    root.setAttribute('data-theme', 'light');
+                    root.style.colorScheme = 'light';
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+
         {/* Initialize Google Consent Mode - Default State */}
         <script
           dangerouslySetInnerHTML={{
@@ -162,11 +185,9 @@ export default async function RootLayout({
       </head>
       <body className={`${sourceSerif.variable} ${montserrat.variable} font-sans bg-stationery min-h-screen shadow-inner overflow-x-hidden w-full`} suppressHydrationWarning>
         <SkipToContent />
-        <Suspense fallback={null}>
-          <GoogleAnalytics />
-          <WebVitalsReporter />
-          <SpeedInsights />
-        </Suspense>
+        <GoogleAnalytics />
+        <WebVitalsReporter />
+        <SpeedInsights />
 
         <Providers>
           <div className="w-full overflow-x-hidden relative flex flex-col min-h-screen">

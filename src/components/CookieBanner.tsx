@@ -34,21 +34,13 @@ export default function CookieBanner() {
             const cleanup = () => {
                 clearTimeout(timer);
                 window.removeEventListener('scroll', showBanner);
-                window.removeEventListener('touchstart', showBanner);
                 window.removeEventListener('pointerdown', showBanner);
-                window.removeEventListener('mousemove', showBanner);
-                window.removeEventListener('keydown', showBanner);
             };
 
-            // Setup interaction listeners
-            window.addEventListener('scroll', showBanner, { passive: true });
-            window.addEventListener('touchstart', showBanner, { passive: true });
-            window.addEventListener('pointerdown', showBanner, { passive: true });
-            window.addEventListener('mousemove', showBanner, { passive: true });
-            window.addEventListener('keydown', showBanner, { passive: true });
-
-            // Fallback timer of 5 seconds (safely after primary LCP measurements)
-            timer = setTimeout(showBanner, 5000);
+            // Show on first user interaction or after 4s fallback
+            window.addEventListener('scroll', showBanner, { passive: true, once: true });
+            window.addEventListener('pointerdown', showBanner, { passive: true, once: true });
+            timer = setTimeout(showBanner, 4000);
 
             return cleanup;
         }

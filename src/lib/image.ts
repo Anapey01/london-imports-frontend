@@ -85,8 +85,8 @@ export const fixHtmlContent = (content: string | null | undefined): string => {
         (match) => match.replace('/media/', `${rootUrl}/media/`)
     );
     html = html.replace(
-        /src=["']http:\/\/london-imports-api\.onrender\.com/g,
-        (match) => match.replace('http:', 'https:')
+        /src=["']https?:\/\/london-imports-api\.onrender\.com/g,
+        `src="${rootUrl}`
     );
 
     // 2. Replace plain horizontal lines (⸻, ____, ----) with subtle architectural divider

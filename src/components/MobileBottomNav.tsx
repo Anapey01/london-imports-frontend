@@ -11,14 +11,12 @@ import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
 import { Home, LayoutGrid, ShoppingBag, User, Heart } from 'lucide-react';
-import { useUIStore } from '@/stores/uiStore';
 
 export default function MobileBottomNav() {
     const pathname = usePathname();
     const { itemCount } = useCartStore();
     const { isAuthenticated } = useAuthStore();
     const wishlistItems = useWishlistStore(state => state.items) || [];
-    const { setSearchModalOpen, isSearchModalOpen } = useUIStore();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -28,8 +26,8 @@ export default function MobileBottomNav() {
     const navItems = [
         { name: 'Home', href: '/', icon: Home },
         { name: 'Shop', href: '/products', icon: LayoutGrid },
-        { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: mounted ? (wishlistItems?.length || 0) : 0 },
-        { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: mounted ? itemCount : 0 },
+        { name: 'Wishlist', href: '/wishlist', icon: Heart, badge: wishlistItems?.length || 0 },
+        { name: 'Basket', href: '/cart', icon: ShoppingBag, badge: itemCount || 0 },
         { name: 'Profile', href: (mounted && isAuthenticated) ? '/profile' : '/login', icon: User },
     ];
 
@@ -52,7 +50,7 @@ export default function MobileBottomNav() {
 
                                 {/* Badge for cart/wishlist */}
                                 {item.badge !== undefined && item.badge > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-brand-emerald text-white text-[8px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1 border-2 border-surface transition-colors shadow-sm">
+                                    <span suppressHydrationWarning className="absolute -top-2 -right-2 bg-brand-emerald text-white text-[8px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1 border-2 border-surface transition-colors shadow-sm">
                                         {item.badge}
                                     </span>
                                 )}

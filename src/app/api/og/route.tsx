@@ -55,8 +55,7 @@ async function getBase64Image(url: string | null): Promise<string | null> {
             hostname.endsWith('cloudinary.com') ||
             hostname.endsWith('unsplash.com') ||
             hostname.endsWith('londonsimports.com') ||
-            hostname.endsWith('vercel.app') ||
-            hostname.endsWith('onrender.com')
+            hostname.endsWith('vercel.app')
         );
 
         if (!isAllowedDomain) {

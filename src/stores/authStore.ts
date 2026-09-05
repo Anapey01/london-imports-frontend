@@ -4,7 +4,7 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authAPI, setTokens } from '@/lib/api';
+import { authAPI } from '@/lib/api';
 
 interface User {
     id: string;

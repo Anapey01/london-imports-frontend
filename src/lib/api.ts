@@ -10,16 +10,11 @@ const API_BASE_URL = siteConfig.apiUrl;
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Send cookies with requests
-  timeout: 30000, // 30 seconds to accommodate Render spin-up times
+  timeout: 15000, // 15 seconds standard client timeout
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-/// Deprecated - Kept as dummy function for compatibility with imports
-export const setTokens = (access: string | null) => {
-    // No-op. Authentication handled entirely by backend HttpOnly cookies.
-};
 
 // Request interceptor: No need to attach Authorization header. Cookies are sent automatically with withCredentials: true.
 api.interceptors.request.use((config) => {

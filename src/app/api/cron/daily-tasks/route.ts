@@ -12,7 +12,7 @@ import { NextResponse } from 'next/server';
  * Security: Validated by CRON_SECRET on both Vercel and Render.
  */
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://london-imports-api.onrender.com/api/v1';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.londonsimports.com/api/v1';
 const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function GET(request: Request) {

@@ -7,7 +7,7 @@ const API_BASE_URL = siteConfig.apiUrl;
  * Robust fetch with timeout and retry logic for Render's Cold Starts
  */
 async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 1) {
-    const timeout = 60000; // 60 seconds timeout (to handle Render.com cold starts)
+    const timeout = 12000; // 12 seconds timeout (avoids Vercel SSR 15-30s gateway timeout)
     
     for (let i = 0; i <= retries; i++) {
         const controller = new AbortController();
@@ -86,10 +86,7 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
         return data;
     } catch (error) {
         console.error("Error fetching products:", error);
-        if (process.env.NEXT_IS_BUILDING === 'true') {
-            return { count: 0, results: [] };
-        }
-        throw error;
+        return { count: 0, results: [] };
     }
 }
 

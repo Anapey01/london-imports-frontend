@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { fn } from '@storybook/test';
-import VariantDropdown from './VariantDropdown';
+import VariantDropdown from '@/components/VariantDropdown';
 
 const meta = {
     title: 'Components/VariantDropdown',
