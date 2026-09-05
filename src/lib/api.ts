@@ -350,6 +350,10 @@ export const checkersAPI = {
     api.post('/checkers/agent/payouts/', data),
   agentDashboard: () => api.get('/checkers/agent/dashboard/'),
   agentPublicStore: (slug: string) => api.get(`/checkers/store/${slug}/`),
+  agentRequestPasswordReset: (data: { email: string }) =>
+    api.post('/checkers/agent/password/reset/', data),
+  agentConfirmPasswordReset: (data: { uid: string; token: string; password: string }) =>
+    api.post('/checkers/agent/password/reset/confirm/', data),
 };
 
 // FCM Push Notifications & Device Management (Android TWA / PWA)

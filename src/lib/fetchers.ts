@@ -380,7 +380,7 @@ export const getAgentPricing = cache(async (agentSlug?: string) => {
     }
     try {
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 3600 } // Cache at Edge for 1 hour for sub-50ms TTFB & maximum Vercel free tier efficiency
+            cache: 'no-store'
         }, 1);
         if (!res.ok) {
             throw new Error(`Failed to fetch agent pricing: ${res.status}`);

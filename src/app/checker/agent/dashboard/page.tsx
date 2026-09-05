@@ -186,7 +186,7 @@ export default function AgentDashboardPage() {
         { checker_type: 'WASSCE', selling_price: parsedWassce }
       ]);
       setPricingSuccess(true);
-      fetchDashboardData();
+      await Promise.all([fetchDashboardData(), fetchPricing()]);
     } catch (err: any) {
       setPricingError(err.response?.data?.error || 'Failed to update selling prices. Verify selling price is above GHS 16.50.');
     } finally {

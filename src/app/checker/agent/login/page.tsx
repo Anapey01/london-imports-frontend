@@ -73,9 +73,17 @@ export default function AgentLoginPage() {
 
             {/* Password Input */}
             <div>
-              <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em]">
+                  Password
+                </label>
+                <Link
+                  href="/checker/agent/forgot-password"
+                  className="text-[10px] font-bold text-content-secondary hover:text-brand-emerald transition-colors uppercase tracking-wider"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 ref={passwordRef}
                 type="password"

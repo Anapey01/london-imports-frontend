@@ -84,10 +84,9 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     });
   };
 
-  // Fetch Pricing & Stock levels from agent profile
+  // Fetch Pricing & Stock levels from agent profile (SWR pattern for live sync)
   useEffect(() => {
     async function fetchStoreDetails() {
-      if (initialPricingData) return;
       try {
         const response = await checkersAPI.getPricing(slug);
         if (response.data) {
@@ -97,13 +96,15 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
         }
         setStoreLoading(false);
       } catch (err: any) {
-        console.error('Failed to load reseller store details:', err);
-        setStoreError(err.response?.data?.error || 'Reseller store profile not found or inactive.');
+        if (!initialPricingData) {
+          console.error('Failed to load reseller store details:', err);
+          setStoreError(err.response?.data?.error || 'Reseller store profile not found or inactive.');
+        }
         setStoreLoading(false);
       }
     }
     fetchStoreDetails();
-  }, [slug, initialPricingData]);
+  }, [slug]);
 
   // Calculate dynamic totalPrice
   useEffect(() => {
