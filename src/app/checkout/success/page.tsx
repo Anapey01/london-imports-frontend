@@ -19,8 +19,12 @@
 
         useEffect(() => {
             // Break out of iframe if success page is rendered inside an iframe
-            if (typeof window !== 'undefined' && window.top && window.top !== window) {
-                window.top.location.href = window.location.href;
+            try {
+                if (typeof window !== 'undefined' && window.top && window.top !== window) {
+                    window.top.location.href = window.location.href;
+                }
+            } catch {
+                // Cross-origin iframe security prevents accessing window.top, ignore safely
             }
         }, []);
 

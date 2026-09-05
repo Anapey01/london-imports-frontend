@@ -112,13 +112,6 @@ function CheckoutPage() {
         }
     }, [error]);
 
-    // Break out of iframe if checkout is loaded inside a frame (e.g. from cancelUrl redirect)
-    useEffect(() => {
-        if (typeof window !== 'undefined' && window.top && window.top !== window) {
-            window.top.location.href = window.location.href;
-        }
-    }, []);
-
     const [hubtelSession, setHubtelSession] = useState<{
         isOpen: boolean;
         checkoutUrl: string;

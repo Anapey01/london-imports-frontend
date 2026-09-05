@@ -71,8 +71,13 @@ function LoginFormContent() {
             }
             router.push(redirect);
         } catch (error: unknown) {
-            const err = error as { response?: { data?: { detail?: string } }, message?: string };
-            setError(err.response?.data?.detail || 'Login failed. Please check your email and password.');
+            const err = error as { response?: { data?: { detail?: string; message?: string; error?: string; code?: string } }; message?: string };
+            const data = err.response?.data;
+            if (data?.code === 'no_active_account') {
+                setError('Invalid email or password. If you signed up with Google, please use "Continue with Google" or reset your password.');
+            } else {
+                setError(data?.detail || data?.message || data?.error || err.message || 'Login failed. Please check your email and password.');
+            }
         }
     };
 
