@@ -83,38 +83,38 @@ const LOGISTICS_TEMPLATES = [
 const SMS_TEMPLATES = [
     {
         id: 'sms-payment-reminder',
-        title: 'Payment Reminder (1-Time)',
+        title: 'Payment Reminder',
         message: 'London\'s Imports: Hi {{FIRST_NAME}}, friendly reminder that order #{{ORDER_ID}} has an unpaid balance. Complete payment with Momo here: https://londonsimports.com/orders/{{ORDER_ID}}',
         icon: CreditCard,
-        badge: 'Anti-Spam Protected'
+        badge: 'Anti-Spam 1-Time'
     },
     {
         id: 'sms-ghana-arrived',
         title: 'Arrived at Accra Hub',
         message: 'London\'s Imports: Good news! Your order #{{ORDER_ID}} has arrived at our Accra Hub and passed sorting. Call/WhatsApp +233545247009 for pickup or delivery.',
         icon: MapPin,
-        badge: 'Logistics Alert'
+        badge: 'Logistics'
     },
     {
         id: 'sms-out-for-delivery',
         title: 'Out for Delivery',
         message: 'London\'s Imports: Your order #{{ORDER_ID}} is out for delivery today with our dispatch courier! Please be on standby to receive your package.',
         icon: Package,
-        badge: 'Courier Alert'
+        badge: 'Courier'
     },
     {
         id: 'sms-flash-deal',
         title: 'Arrival Drop / Promo',
         message: 'London\'s Imports: New weekly China arrival drop is live! Browse discounted electronics & fashion items: https://londonsimports.com/products',
         icon: CheckCircle,
-        badge: 'Announcement'
+        badge: 'Promo'
     }
 ];
 
 const JOURNEY_FILTERS = [
     { key: 'customers', label: 'All Active Customers', icon: Users },
     { key: 'state:OPEN_FOR_BATCH', label: 'At GZ Warehouse', icon: Package },
-    { key: 'state:IN_FULFILLMENT', label: 'Loaded/Packed', icon: FileText },
+    { key: 'state:IN_FULFILLMENT', label: 'Loaded / Packed', icon: FileText },
     { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
     { key: 'state:ARRIVED', label: 'Arrived in Ghana', icon: MapPin },
     { key: 'state:OUT_FOR_DELIVERY', label: 'Out for Local Delivery', icon: Anchor },
@@ -135,8 +135,8 @@ export default function AdminBroadcastPage() {
     const isDark = theme === 'dark';
     const router = useRouter();
     
-    // Channel switch: 'email' | 'sms'
-    const [channel, setChannel] = useState<'email' | 'sms'>('email');
+    // Channel switch: 'sms' | 'email'
+    const [channel, setChannel] = useState<'sms' | 'email'>('sms');
 
     // Email state
     const [subject, setSubject] = useState('');
@@ -185,6 +185,20 @@ export default function AdminBroadcastPage() {
         setSmsMessage(template.message);
     };
 
+    const insertPlaceholder = (token: string) => {
+        if (channel === 'sms') {
+            setSmsMessage(prev => {
+                const space = prev.length > 0 && !prev.endsWith(' ') ? ' ' : '';
+                return prev + space + token + ' ';
+            });
+        } else {
+            setEmailMessage(prev => {
+                const space = prev.length > 0 && !prev.endsWith(' ') ? ' ' : '';
+                return prev + space + token + ' ';
+            });
+        }
+    };
+
     // SMS Segment Calculator
     const smsCharCount = smsMessage.length;
     const smsSegments = Math.max(1, Math.ceil(smsCharCount / 160));
@@ -222,7 +236,7 @@ export default function AdminBroadcastPage() {
         setConfirmModal({
             isOpen: true,
             title: 'Confirm Email Broadcast',
-            message: `Are you sure you want to send this email broadcast to [${audienceLabel}] via Resend? This runs as a background process.`,
+            message: `Send email broadcast to [${audienceLabel}] via Resend? This processes in the background.`,
             variant: 'warning',
             onConfirm: async () => {
                 setSending(true);
@@ -279,7 +293,7 @@ export default function AdminBroadcastPage() {
         setConfirmModal({
             isOpen: true,
             title: 'Confirm SMS Broadcast (Hubtel Gateway)',
-            message: `Send SMS to [${audienceLabel}]? Message length: ${smsCharCount} chars (${smsSegments} segment${smsSegments > 1 ? 's' : ''} per user). Sender ID: LondonsImp.`,
+            message: `Send SMS to [${audienceLabel}]? Message length: ${smsCharCount} chars (${smsSegments} segment${smsSegments > 1 ? 's' : ''} per user). Registered Sender ID: LondonsImp.`,
             variant: 'warning',
             onConfirm: async () => {
                 setSending(true);
@@ -321,420 +335,526 @@ export default function AdminBroadcastPage() {
     };
 
     return (
-        <div className={`min-h-screen pb-24 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            {/* Top Bar */}
-            <div className={`sticky top-0 z-20 px-4 py-4 border-b backdrop-blur-md ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-gray-100'}`}>
-                <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => router.back()} className={`p-2 rounded-xl transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`} title="Go back">
-                            <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <div>
-                            <h1 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                Broadcast Command Center
-                            </h1>
-                            <p className="text-[10px] uppercase tracking-widest font-bold text-emerald-500">Multi-Channel Customer Comms</p>
+        <div className="space-y-8 pb-16">
+            {/* Top Minimalist Header & Channel Navigation */}
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b ${
+                isDark ? 'border-slate-800' : 'border-slate-200/80'
+            }`}>
+                <div className="flex items-center gap-3">
+                    <button 
+                        onClick={() => router.back()} 
+                        className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+                            isDark 
+                                ? 'border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white' 
+                                : 'border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900'
+                        }`} 
+                        title="Go back"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] tracking-wider text-slate-400 uppercase">HUBTEL / RESEND</span>
+                            <span className="text-slate-300 dark:text-slate-700">·</span>
+                            <span className="text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 uppercase">Live Gateway</span>
                         </div>
+                        <h1 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            Customer Communications
+                        </h1>
                     </div>
+                </div>
 
-                    {/* Channel Selector */}
-                    <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
-                        <button
-                            type="button"
-                            onClick={() => { setChannel('email'); setShowPreview(false); }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                                channel === 'email'
-                                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
-                            }`}
-                        >
-                            <Mail className="w-4 h-4 text-pink-500" />
-                            Email (Resend)
-                        </button>
+                {/* Minimalist Channel Selector Tabs */}
+                <div className="flex items-center gap-3 flex-wrap">
+                    <div className={`inline-flex items-center p-1 rounded-lg border ${
+                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200/80'
+                    }`}>
                         <button
                             type="button"
                             onClick={() => { setChannel('sms'); setShowPreview(false); }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all cursor-pointer ${
                                 channel === 'sms'
-                                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                                    ? `${isDark ? 'bg-slate-800 text-white shadow-xs' : 'bg-white text-slate-900 shadow-xs'}`
+                                    : `${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'}`
                             }`}
                         >
-                            <MessageSquare className="w-4 h-4 text-emerald-500" />
-                            SMS (Hubtel Gateway)
+                            <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
+                            SMS Gateway
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setChannel('email'); setShowPreview(false); }}
+                            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+                                channel === 'email'
+                                    ? `${isDark ? 'bg-slate-800 text-white shadow-xs' : 'bg-white text-slate-900 shadow-xs'}`
+                                    : `${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'}`
+                            }`}
+                        >
+                            <Mail className="w-3.5 h-3.5 text-pink-500" />
+                            Email (Resend)
                         </button>
                     </div>
 
                     {status && (
                         <motion.div 
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 ${
-                                status.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:text-emerald-500' : 'bg-red-50 text-red-600'
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 border ${
+                                status.type === 'success' 
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40' 
+                                    : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40'
                             }`}
                         >
-                            {status.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                            {status.msg}
+                            {status.type === 'success' ? <CheckCircle className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                            <span>{status.msg}</span>
                         </motion.div>
                     )}
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <div className="grid lg:grid-cols-12 gap-8">
-                    {/* Left: Templates & Filters */}
-                    <div className="lg:col-span-4 space-y-6">
-                        {/* Target Section */}
-                        <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
-                            <h3 className={`text-xs font-black uppercase tracking-tighter mb-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                01. Target Audience
-                            </h3>
-                            <div className="grid grid-cols-1 gap-2">
-                                {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).map((filter) => {
-                                    const Icon = filter.icon;
-                                    const activeTarget = channel === 'email' ? emailTarget : smsTarget;
-                                    const isActive = activeTarget === filter.key;
-                                    return (
-                                        <button
-                                            key={filter.key}
-                                            type="button"
-                                            onClick={() => {
-                                                if (channel === 'email') setEmailTarget(filter.key);
-                                                else setSmsTarget(filter.key);
-                                            }}
-                                            className={`flex items-center gap-3 p-3 rounded-2xl border text-left transition-all ${
-                                                isActive
-                                                ? 'border-gray-900 bg-gray-900 text-white shadow-lg dark:bg-slate-950 dark:border-emerald-500'
-                                                : `${isDark ? 'border-slate-700 text-slate-400 hover:border-slate-500' : 'border-gray-200 text-gray-600 hover:border-gray-400'}`
-                                            }`}
-                                        >
-                                            <Icon className={`w-4 h-4 ${isActive ? (channel === 'email' ? 'text-pink-400' : 'text-emerald-400') : ''}`} />
-                                            <span className="text-sm font-semibold">{filter.label}</span>
-                                            {isActive && <div className={`ml-auto w-1.5 h-1.5 rounded-full ${channel === 'email' ? 'bg-pink-500 shadow-[0_0_8px_#ec4899]' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`} />}
-                                        </button>
-                                    );
-                                })}
-                            </div>
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                {/* Left Column: Target Audience & Quick Templates */}
+                <div className="lg:col-span-4 space-y-6">
+                    {/* Audience Selector Card */}
+                    <div className={`p-5 rounded-xl border ${
+                        isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200/80 shadow-xs'
+                    }`}>
+                        <div className="flex items-center justify-between mb-3.5">
+                            <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                                Target Audience
+                            </h2>
+                            <span className="font-mono text-[10px] text-slate-400">
+                                {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).length} cohorts
+                            </span>
                         </div>
 
-                        {/* Templates Section */}
-                        <div className={`p-6 rounded-[2rem] border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className={`text-xs font-black uppercase tracking-tighter ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                    02. Preset Templates
-                                </h3>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                    {channel.toUpperCase()}
-                                </span>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-2">
-                                {channel === 'email' ? (
-                                    LOGISTICS_TEMPLATES.map((tpl) => {
-                                        const Icon = tpl.icon;
-                                        return (
-                                            <button
-                                                key={tpl.id}
-                                                type="button"
-                                                onClick={() => applyEmailTemplate(tpl)}
-                                                className={`group flex items-center gap-3 p-3 rounded-2xl border text-left transition-all ${
-                                                    isDark ? 'border-slate-700 hover:bg-slate-700/50' : 'border-gray-50 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                <div className="p-2 bg-gray-50 dark:bg-slate-900 rounded-xl group-hover:bg-white dark:group-hover:bg-slate-800 transition-colors">
-                                                    <Icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-pink-500" />
-                                                </div>
-                                                <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{tpl.title}</span>
-                                                <ArrowRight className="ml-auto w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                                            </button>
-                                        );
-                                    })
-                                ) : (
-                                    SMS_TEMPLATES.map((tpl) => {
-                                        const Icon = tpl.icon;
-                                        return (
-                                            <button
-                                                key={tpl.id}
-                                                type="button"
-                                                onClick={() => applySmsTemplate(tpl)}
-                                                className={`group flex flex-col gap-1.5 p-3 rounded-2xl border text-left transition-all ${
-                                                    isDark ? 'border-slate-700 hover:bg-slate-700/50' : 'border-gray-50 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                <div className="flex items-center gap-3 w-full">
-                                                    <div className="p-2 bg-gray-50 dark:bg-slate-900 rounded-xl group-hover:bg-white dark:group-hover:bg-slate-800 transition-colors">
-                                                        <Icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-500" />
-                                                    </div>
-                                                    <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{tpl.title}</span>
-                                                    <ArrowRight className="ml-auto w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 text-emerald-500" />
-                                                </div>
-                                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium ml-1">
-                                                    {tpl.badge}
-                                                </span>
-                                            </button>
-                                        );
-                                    })
-                                )}
-                            </div>
+                        <div className="space-y-1.5">
+                            {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).map((filter) => {
+                                const Icon = filter.icon;
+                                const activeTarget = channel === 'email' ? emailTarget : smsTarget;
+                                const isActive = activeTarget === filter.key;
+                                return (
+                                    <button
+                                        key={filter.key}
+                                        type="button"
+                                        onClick={() => {
+                                            if (channel === 'email') setEmailTarget(filter.key);
+                                            else setSmsTarget(filter.key);
+                                        }}
+                                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-left text-xs font-medium transition-all cursor-pointer ${
+                                            isActive
+                                                ? `${isDark ? 'bg-white text-slate-900 border-white font-semibold shadow-xs' : 'bg-slate-900 text-white border-slate-900 font-semibold shadow-xs'}`
+                                                : `${isDark ? 'border-slate-800/80 hover:border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' : 'border-slate-100 hover:border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50/80'}`
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                            <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? (isDark ? 'text-slate-900' : 'text-white') : 'text-slate-400'}`} />
+                                            <span className="truncate">{filter.label}</span>
+                                        </div>
+                                        {isActive && (
+                                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`} />
+                                        )}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    {/* Right: Message Editor & Preview */}
-                    <div className="lg:col-span-8">
-                        <div className={`p-8 rounded-[3rem] border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100 shadow-sm'}`}>
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-3">
-                                    <h3 className={`text-xs font-black uppercase tracking-tighter ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                        03. {channel === 'email' ? 'Email Dispatch' : 'SMS Dispatch (Hubtel)'}
-                                    </h3>
-                                    {channel === 'sms' && (
-                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-500/20">
-                                            Sender: LondonsImp
-                                        </span>
-                                    )}
-                                </div>
-                                <button 
-                                    onClick={() => setShowPreview(!showPreview)}
-                                    className="px-4 py-1.5 rounded-full bg-gray-50 dark:bg-slate-700 text-[10px] font-bold text-gray-500 flex items-center gap-2 hover:bg-gray-100 transition-colors"
-                                >
-                                    <Eye className="w-3.5 h-3.5" />
-                                    {showPreview ? 'EDIT MODE' : 'DEVICE PREVIEW'}
-                                </button>
-                            </div>
-
-                            <AnimatePresence mode="wait">
-                                {showPreview ? (
-                                    <motion.div 
-                                        key="preview"
-                                        initial={{ opacity: 0, scale: 0.98 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.98 }}
-                                        className={`rounded-3xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-gray-50 border-gray-100 shadow-inner'} p-8 min-h-[350px]`}
-                                    >
-                                        {channel === 'email' ? (
-                                            <div>
-                                                <div className="mb-8 flex items-center gap-4 text-xs">
-                                                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold">L</div>
-                                                    <div>
-                                                        <p className="font-bold">London&apos;s Imports Command</p>
-                                                        <p className="text-gray-400 lowercase">To: {emailTarget}@users</p>
-                                                    </div>
-                                                </div>
-                                                <h2 className="text-xl font-bold mb-4">{subject || '(No Subject)'}</h2>
-                                                <div className="whitespace-pre-wrap text-sm leading-relaxed font-light text-gray-600 dark:text-slate-300">
-                                                    {emailMessage || '(Enter your message in Edit Mode...)'}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            /* Phone SMS Mockup */
-                                            <div className="max-w-sm mx-auto bg-slate-950 text-white rounded-[2.5rem] p-6 shadow-2xl border-4 border-slate-800">
-                                                <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
-                                                    <div className="flex items-center gap-2">
-                                                        <Smartphone className="w-4 h-4 text-emerald-400" />
-                                                        <span className="text-xs font-black uppercase tracking-wider">LondonsImp</span>
-                                                    </div>
-                                                    <span className="text-[10px] text-slate-500">SMS Gateway</span>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    <div className="bg-slate-800/90 text-slate-100 p-4 rounded-2xl rounded-tl-sm text-xs leading-relaxed font-medium shadow-sm">
-                                                        {smsMessage
-                                                            .replace('{{FIRST_NAME}}', 'Kofi')
-                                                            .replace('{{ORDER_ID}}', 'LI-2026-0042') || 'Type your message in edit mode to see the live SMS preview...'}
-                                                    </div>
-                                                    <div className="text-[9px] text-slate-500 text-right pr-2">
-                                                        {smsCharCount} chars · {smsSegments} segment{smsSegments > 1 ? 's' : ''}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                ) : (
-                                    channel === 'email' ? (
-                                        /* Email Form */
-                                        <motion.form 
-                                            key="email-form"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            onSubmit={handleSendEmail} 
-                                            className="space-y-6"
-                                        >
-                                            {emailTarget === 'manual' && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: 'auto' }}
-                                                    className="space-y-2"
-                                                >
-                                                    <label className={`text-[10px] font-black uppercase tracking-widest ml-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                                        Paste Recipient Emails (Comma separated or new lines)
-                                                    </label>
-                                                    <textarea
-                                                        value={manualEmails}
-                                                        onChange={(e) => setManualEmails(e.target.value)}
-                                                        className={`w-full h-32 p-6 rounded-2xl border outline-none transition-all resize-none text-sm font-medium ${
-                                                            isDark 
-                                                            ? 'bg-slate-900 border-slate-700 text-emerald-400 focus:border-emerald-500' 
-                                                            : 'bg-white border-gray-100 text-emerald-700 dark:text-emerald-500 focus:border-emerald-500 shadow-sm'
-                                                        }`}
-                                                        placeholder="customer1@example.com, customer2@example.com..."
-                                                        required={emailTarget === 'manual'}
-                                                    />
-                                                </motion.div>
-                                            )}
-
-                                            <div>
-                                                <input
-                                                    id="subject"
-                                                    type="text"
-                                                    value={subject}
-                                                    onChange={(e) => setSubject(e.target.value)}
-                                                    className={`w-full p-6 text-xl font-bold rounded-2xl border outline-none transition-all ${
-                                                        isDark 
-                                                        ? 'bg-slate-900 border-slate-700 text-white focus:border-pink-500' 
-                                                        : 'bg-white border-gray-100 text-gray-900 focus:border-pink-500 shadow-sm'
-                                                    }`}
-                                                    placeholder="Enter Email Subject Line"
-                                                    required
-                                                />
-                                            </div>
-
-                                            <div className="relative">
-                                                <textarea
-                                                    id="message"
-                                                    value={emailMessage}
-                                                    onChange={(e) => setEmailMessage(e.target.value)}
-                                                    className={`w-full h-80 p-8 rounded-[2rem] border outline-none transition-all resize-none text-base font-light leading-relaxed ${
-                                                        isDark 
-                                                        ? 'bg-slate-900 border-slate-700 text-white focus:border-pink-500' 
-                                                        : 'bg-white border-gray-100 text-gray-900 focus:border-pink-500 shadow-sm'
-                                                    }`}
-                                                    placeholder="Message body. HTML supported... Use {{ORDER_ID}} as placeholder."
-                                                    required
-                                                />
-                                                <div className="absolute right-4 bottom-4 p-2 bg-gray-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold text-gray-400 pointer-events-none">
-                                                    Markdown & HTML Ready
-                                                </div>
-                                            </div>
-
-                                            <div className="flex flex-col sm:flex-row items-center gap-4">
-                                                <button
-                                                    type="submit"
-                                                    disabled={sending}
-                                                    className={`flex-1 w-full py-5 rounded-[2rem] flex items-center justify-center gap-3 text-white font-black uppercase tracking-widest transition-all ${
-                                                        sending ? 'opacity-70 cursor-not-allowed bg-gray-400' : 'bg-gray-900 hover:bg-black shadow-xl shadow-gray-900/10'
-                                                    }`}
-                                                >
-                                                    <Send className="w-5 h-5 text-pink-400" />
-                                                    {sending ? 'SENDING EMAILS...' : 'SEND BROADCAST EMAIL'}
-                                                </button>
-                                                
-                                                <button
-                                                    type="button"
-                                                    onClick={handleWhatsAppExport}
-                                                    disabled={sending || emailTarget === 'manual'}
-                                                    className={`px-8 py-5 rounded-[2rem] border font-bold text-xs uppercase tracking-widest transition-all ${
-                                                        isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                    } ${emailTarget === 'manual' ? 'opacity-30 cursor-not-allowed' : ''}`}
-                                                >
-                                                    {sending ? 'FETCHING...' : 'WhatsApp Contact List'}
-                                                </button>
-                                            </div>
-                                        </motion.form>
-                                    ) : (
-                                        /* SMS Form */
-                                        <motion.form 
-                                            key="sms-form"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            onSubmit={handleSendSMS} 
-                                            className="space-y-6"
-                                        >
-                                            {smsTarget === 'manual' && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: 'auto' }}
-                                                    className="space-y-2"
-                                                >
-                                                    <label className={`text-[10px] font-black uppercase tracking-widest ml-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                                        Paste Recipient Ghanaian Phone Numbers (024..., 055..., +233...)
-                                                    </label>
-                                                    <textarea
-                                                        value={manualPhones}
-                                                        onChange={(e) => setManualPhones(e.target.value)}
-                                                        className={`w-full h-28 p-6 rounded-2xl border outline-none transition-all resize-none text-sm font-medium ${
-                                                            isDark 
-                                                            ? 'bg-slate-900 border-slate-700 text-emerald-400 focus:border-emerald-500' 
-                                                            : 'bg-white border-gray-100 text-emerald-700 dark:text-emerald-500 focus:border-emerald-500 shadow-sm'
-                                                        }`}
-                                                        placeholder="0244123456, 0559988776, 0501112233..."
-                                                        required={smsTarget === 'manual'}
-                                                    />
-                                                </motion.div>
-                                            )}
-
-                                            <div className="relative">
-                                                <textarea
-                                                    id="sms-message"
-                                                    value={smsMessage}
-                                                    onChange={(e) => setSmsMessage(e.target.value)}
-                                                    className={`w-full h-64 p-8 rounded-[2rem] border outline-none transition-all resize-none text-base font-medium leading-relaxed ${
-                                                        isDark 
-                                                        ? 'bg-slate-900 border-slate-700 text-white focus:border-emerald-500' 
-                                                        : 'bg-white border-gray-100 text-gray-900 focus:border-emerald-500 shadow-sm'
-                                                    }`}
-                                                    placeholder="Type SMS message. Available placeholders: {{FIRST_NAME}}, {{ORDER_ID}}..."
-                                                    required
-                                                />
-                                                
-                                                {/* Segment Counter */}
-                                                <div className="absolute right-4 bottom-4 flex items-center gap-3">
-                                                    <div className={`px-3 py-1.5 rounded-xl text-xs font-bold border ${
-                                                        smsCharCount <= 160
-                                                            ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
-                                                            : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border-amber-500/20'
-                                                    }`}>
-                                                        {smsCharCount} / 160 chars · {smsSegments} segment{smsSegments > 1 ? 's' : ''}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex flex-col sm:flex-row items-center gap-4">
-                                                <button
-                                                    type="submit"
-                                                    disabled={sending}
-                                                    className={`flex-1 w-full py-5 rounded-[2rem] flex items-center justify-center gap-3 text-white font-black uppercase tracking-widest transition-all ${
-                                                        sending ? 'opacity-70 cursor-not-allowed bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-600/20'
-                                                    }`}
-                                                >
-                                                    <Send className="w-5 h-5 text-white" />
-                                                    {sending ? 'DISPATCHING SMS...' : `DISPATCH SMS VIA HUBTEL (${smsSegments} SEGMENT${smsSegments > 1 ? 'S' : ''})`}
-                                                </button>
-                                                
-                                                <button
-                                                    type="button"
-                                                    onClick={handleWhatsAppExport}
-                                                    disabled={sending || smsTarget === 'manual'}
-                                                    className={`px-8 py-5 rounded-[2rem] border font-bold text-xs uppercase tracking-widest transition-all ${
-                                                        isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                    } ${smsTarget === 'manual' ? 'opacity-30 cursor-not-allowed' : ''}`}
-                                                >
-                                                    {sending ? 'FETCHING...' : 'WhatsApp Contact List'}
-                                                </button>
-                                            </div>
-                                        </motion.form>
-                                    )
-                                )}
-                            </AnimatePresence>
+                    {/* Quick Templates Card */}
+                    <div className={`p-5 rounded-xl border ${
+                        isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200/80 shadow-xs'
+                    }`}>
+                        <div className="flex items-center justify-between mb-3.5">
+                            <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                                Quick Templates
+                            </h2>
+                            <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider">
+                                {channel}
+                            </span>
                         </div>
 
-                        {/* Anti-Spam & Operational Notice */}
-                        <div className={`mt-8 p-6 rounded-[2.5rem] bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/30 flex gap-4`}>
-                            <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                            <div className="text-xs text-emerald-800/90 dark:text-emerald-300/90 leading-relaxed font-medium space-y-1">
-                                <p><strong>Anti-Spam Safeguards Active:</strong> Automated payment reminders are strictly rate-limited to <strong>only once per order</strong> so customers are never spammed.</p>
-                                <p><strong>Hubtel Gateway Specifications:</strong> Sender ID is registered as <code>LondonsImp</code>. Ghana telcos bill per 160-character segment.</p>
+                        <div className="space-y-1.5">
+                            {channel === 'email' ? (
+                                LOGISTICS_TEMPLATES.map((tpl) => {
+                                    const Icon = tpl.icon;
+                                    return (
+                                        <button
+                                            key={tpl.id}
+                                            type="button"
+                                            onClick={() => applyEmailTemplate(tpl)}
+                                            className={`group w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                                                isDark 
+                                                    ? 'border-slate-800/80 hover:border-slate-700 text-slate-300 hover:bg-slate-800/40' 
+                                                    : 'border-slate-100 hover:border-slate-200 text-slate-700 hover:bg-slate-50/80'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                    <Icon className="w-3.5 h-3.5" />
+                                                </div>
+                                                <span className="text-xs font-medium truncate">{tpl.title}</span>
+                                            </div>
+                                            <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
+                                        </button>
+                                    );
+                                })
+                            ) : (
+                                SMS_TEMPLATES.map((tpl) => {
+                                    const Icon = tpl.icon;
+                                    return (
+                                        <button
+                                            key={tpl.id}
+                                            type="button"
+                                            onClick={() => applySmsTemplate(tpl)}
+                                            className={`group w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                                                isDark 
+                                                    ? 'border-slate-800/80 hover:border-slate-700 text-slate-300 hover:bg-slate-800/40' 
+                                                    : 'border-slate-100 hover:border-slate-200 text-slate-700 hover:bg-slate-50/80'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                    <Icon className="w-3.5 h-3.5" />
+                                                </div>
+                                                <div className="truncate">
+                                                    <p className="text-xs font-medium truncate">{tpl.title}</p>
+                                                    <p className="text-[10px] font-mono text-slate-400 truncate">{tpl.badge}</p>
+                                                </div>
+                                            </div>
+                                            <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column: Sleek Message Composer & Device Preview */}
+                <div className="lg:col-span-8 space-y-6">
+                    <div className={`p-6 sm:p-8 rounded-xl border ${
+                        isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200/80 shadow-xs'
+                    }`}>
+                        {/* Composer Header */}
+                        <div className={`flex items-center justify-between pb-4 mb-6 border-b ${
+                            isDark ? 'border-slate-800' : 'border-slate-100'
+                        }`}>
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                                    {channel === 'sms' ? 'SMS Message Composer' : 'Email Dispatcher'}
+                                </h2>
+                                {channel === 'sms' && (
+                                    <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300">
+                                        Sender: LondonsImp
+                                    </span>
+                                )}
                             </div>
+
+                            <button 
+                                type="button"
+                                onClick={() => setShowPreview(!showPreview)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${
+                                    showPreview 
+                                        ? `${isDark ? 'bg-white text-slate-900 border-white' : 'bg-slate-900 text-white border-slate-900'}` 
+                                        : `${isDark ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`
+                                }`}
+                            >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>{showPreview ? 'Edit Message' : 'Preview'}</span>
+                            </button>
+                        </div>
+
+                        {/* Interactive Mode: Preview vs Editor */}
+                        <AnimatePresence mode="wait">
+                            {showPreview ? (
+                                <motion.div 
+                                    key="preview-pane"
+                                    initial={{ opacity: 0, y: 4 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 4 }}
+                                    className="py-4"
+                                >
+                                    {channel === 'email' ? (
+                                        <div className={`rounded-xl border p-6 sm:p-8 space-y-4 ${
+                                            isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200/80'
+                                        }`}>
+                                            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                                                <div className="space-y-0.5">
+                                                    <p className="text-xs font-bold text-slate-900 dark:text-white">London&apos;s Imports</p>
+                                                    <p className="text-[11px] text-slate-400 font-mono">To: {emailTarget}@cohort</p>
+                                                </div>
+                                                <span className="text-[10px] font-mono text-slate-400">Via Resend API</span>
+                                            </div>
+                                            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                                                {subject || '(No subject provided)'}
+                                            </h3>
+                                            <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-normal">
+                                                {emailMessage || '(Enter your email message body in edit mode...)'}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        /* Minimalist Realistic SMS Mockup */
+                                        <div className="max-w-sm mx-auto bg-slate-950 text-slate-100 rounded-2xl p-5 border border-slate-800 shadow-lg space-y-4">
+                                            <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
+                                                <div className="flex items-center gap-2">
+                                                    <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
+                                                    <span className="text-xs font-bold tracking-tight text-slate-200">LondonsImp</span>
+                                                </div>
+                                                <span className="text-[10px] font-mono text-slate-400">SMS Gateway</span>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <div className="bg-slate-800 text-slate-100 p-3.5 rounded-2xl rounded-tl-xs text-xs leading-relaxed font-normal shadow-xs">
+                                                    {smsMessage
+                                                        .replace('{{FIRST_NAME}}', 'Kofi')
+                                                        .replace('{{ORDER_ID}}', 'LI-2026-0042') || 'Type your message in edit mode to see the live SMS delivery preview...'}
+                                                </div>
+                                                <div className="flex items-center justify-between px-1 text-[10px] text-slate-400 font-mono">
+                                                    <span>Delivered · Just now</span>
+                                                    <span>{smsCharCount} chars · {smsSegments} segment{smsSegments > 1 ? 's' : ''}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            ) : (
+                                channel === 'email' ? (
+                                    /* Email Composer Form */
+                                    <motion.form 
+                                        key="email-form"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        onSubmit={handleSendEmail} 
+                                        className="space-y-5"
+                                    >
+                                        {emailTarget === 'manual' && (
+                                            <div className="space-y-1.5">
+                                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                    Manual Recipient Emails
+                                                </label>
+                                                <textarea
+                                                    value={manualEmails}
+                                                    onChange={(e) => setManualEmails(e.target.value)}
+                                                    rows={3}
+                                                    className={`w-full p-3 rounded-lg border text-xs font-mono outline-none transition-colors resize-none ${
+                                                        isDark 
+                                                            ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
+                                                            : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
+                                                    }`}
+                                                    placeholder="customer1@example.com, customer2@example.com..."
+                                                    required={emailTarget === 'manual'}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-1.5">
+                                            <label htmlFor="subject" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                Subject Line
+                                            </label>
+                                            <input
+                                                id="subject"
+                                                type="text"
+                                                value={subject}
+                                                onChange={(e) => setSubject(e.target.value)}
+                                                className={`w-full px-4 py-2.5 rounded-lg border text-sm font-medium outline-none transition-colors ${
+                                                    isDark 
+                                                        ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
+                                                        : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
+                                                }`}
+                                                placeholder="e.g. Shipment Update: Goods arrived at Guangzhou Warehouse"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center justify-between">
+                                                <label htmlFor="message" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                    Message Body
+                                                </label>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-[10px] text-slate-400 font-mono">Insert:</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{ORDER_ID}}')}
+                                                        className="px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{ORDER_ID}}'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <textarea
+                                                id="message"
+                                                rows={9}
+                                                value={emailMessage}
+                                                onChange={(e) => setEmailMessage(e.target.value)}
+                                                className={`w-full p-4 rounded-lg border text-sm leading-relaxed outline-none transition-colors resize-y font-normal ${
+                                                    isDark 
+                                                        ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
+                                                        : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
+                                                }`}
+                                                placeholder="Type your broadcast email message here. HTML and Markdown formatting supported."
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                                            <button
+                                                type="submit"
+                                                disabled={sending}
+                                                className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-semibold text-xs tracking-wider uppercase transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                            >
+                                                <Send className="w-3.5 h-3.5" />
+                                                <span>{sending ? 'Sending...' : 'Send Broadcast Email'}</span>
+                                            </button>
+                                            
+                                            <button
+                                                type="button"
+                                                onClick={handleWhatsAppExport}
+                                                disabled={sending || emailTarget === 'manual'}
+                                                className={`w-full sm:w-auto px-5 py-2.5 rounded-lg border text-xs font-semibold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                                    isDark 
+                                                        ? 'border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800' 
+                                                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                                } ${emailTarget === 'manual' ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                            >
+                                                <MessageSquare className="w-3.5 h-3.5" />
+                                                <span>{sending ? 'Exporting...' : 'Export WhatsApp Numbers'}</span>
+                                            </button>
+                                        </div>
+                                    </motion.form>
+                                ) : (
+                                    /* SMS Composer Form */
+                                    <motion.form 
+                                        key="sms-form"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        onSubmit={handleSendSMS} 
+                                        className="space-y-5"
+                                    >
+                                        {smsTarget === 'manual' && (
+                                            <div className="space-y-1.5">
+                                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                    Manual Ghanaian Phone Numbers (Comma separated or new line)
+                                                </label>
+                                                <textarea
+                                                    value={manualPhones}
+                                                    onChange={(e) => setManualPhones(e.target.value)}
+                                                    rows={3}
+                                                    className={`w-full p-3 rounded-lg border text-xs font-mono outline-none transition-colors resize-none ${
+                                                        isDark 
+                                                            ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
+                                                            : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
+                                                    }`}
+                                                    placeholder="0244123456, 0559988776, 0501112233..."
+                                                    required={smsTarget === 'manual'}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between flex-wrap gap-2">
+                                                <label htmlFor="sms-message" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                    SMS Message Content
+                                                </label>
+                                                
+                                                {/* Clickable Quick Tokens */}
+                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                    <span className="text-[10px] text-slate-400 font-mono">Insert Token:</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{FIRST_NAME}}')}
+                                                        className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{FIRST_NAME}}'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{ORDER_ID}}')}
+                                                        className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{ORDER_ID}}'}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <textarea
+                                                id="sms-message"
+                                                rows={7}
+                                                value={smsMessage}
+                                                onChange={(e) => setSmsMessage(e.target.value)}
+                                                className={`w-full p-4 rounded-lg border text-sm leading-relaxed outline-none transition-colors resize-y font-normal ${
+                                                    isDark 
+                                                        ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
+                                                        : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
+                                                }`}
+                                                placeholder="Type SMS broadcast message here. Available placeholders: {{FIRST_NAME}}, {{ORDER_ID}}..."
+                                                required
+                                            />
+                                            
+                                            {/* Minimalist Segment & Character Counter */}
+                                            <div className="flex items-center justify-between pt-1 px-1">
+                                                <span className="text-[11px] text-slate-400">
+                                                    Standard billing: 160 characters per SMS segment
+                                                </span>
+                                                <span className={`font-mono text-xs font-semibold ${
+                                                    smsCharCount > 160 
+                                                        ? 'text-amber-600 dark:text-amber-400' 
+                                                        : 'text-slate-600 dark:text-slate-400'
+                                                }`}>
+                                                    {smsCharCount} / 160 chars · {smsSegments} segment{smsSegments > 1 ? 's' : ''}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                                            <button
+                                                type="submit"
+                                                disabled={sending}
+                                                className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-semibold text-xs tracking-wider uppercase transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                            >
+                                                <Send className="w-3.5 h-3.5" />
+                                                <span>{sending ? 'Dispatching...' : `Dispatch SMS (${smsSegments} Segment${smsSegments > 1 ? 's' : ''})`}</span>
+                                            </button>
+                                            
+                                            <button
+                                                type="button"
+                                                onClick={handleWhatsAppExport}
+                                                disabled={sending || smsTarget === 'manual'}
+                                                className={`w-full sm:w-auto px-5 py-2.5 rounded-lg border text-xs font-semibold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                                    isDark 
+                                                        ? 'border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800' 
+                                                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                                } ${smsTarget === 'manual' ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                            >
+                                                <MessageSquare className="w-3.5 h-3.5" />
+                                                <span>{sending ? 'Exporting...' : 'Export WhatsApp Numbers'}</span>
+                                            </button>
+                                        </div>
+                                    </motion.form>
+                                )
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Anti-Spam & Delivery Notice Card */}
+                    <div className={`p-4 rounded-xl border flex items-start gap-3.5 ${
+                        isDark 
+                            ? 'bg-slate-900/30 border-slate-800 text-slate-400' 
+                            : 'bg-slate-50/70 border-slate-200/70 text-slate-600'
+                    }`}>
+                        <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                        <div className="space-y-1 text-xs">
+                            <p className="font-semibold text-slate-700 dark:text-slate-300">
+                                Anti-Spam & Delivery Safeguards
+                            </p>
+                            <p className="text-[11px] leading-relaxed text-slate-500">
+                                Automated payment reminders are strictly rate-limited to <strong>at most once per order</strong> to protect customer trust. Outbound SMS is dispatched through the Hubtel API using the registered alphanumeric Sender ID <code className="font-mono text-[10px] px-1 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300">LondonsImp</code>.
+                            </p>
                         </div>
                     </div>
                 </div>
