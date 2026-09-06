@@ -9,6 +9,20 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import { TrendingUp } from 'lucide-react';
 
+interface CategoryMetric {
+    name: string;
+    value: number;
+    percentage?: number;
+    units_sold?: number;
+    orders_count?: number;
+}
+
+interface RegionalMetric {
+    region: string;
+    revenue: number;
+    percentage?: number;
+}
+
 interface AnalyticsData {
     revenue: { total: number; change: number; yoy_change: number }; // Added YoY
     orders: { total: number; change: number };
@@ -17,8 +31,10 @@ interface AnalyticsData {
     revenueChart: Array<{ day: string; value: number }>;
     logisticsFunnel: Array<{ label: string; count: number }>; // Added funnel
     inventoryHealth: Array<{ name: string; rate: number; sold: number; stock: number }>; // Added inventory
-    categoryBreakdown: Array<{ name: string; value: number }>;
-    geographicBreakdown: Array<{ region: string; revenue: number }>;
+    categoryBreakdown: Array<CategoryMetric>;
+    categoryBreakdownIsAllTime?: boolean;
+    geographicBreakdown: Array<RegionalMetric>;
+    geographicBreakdownIsAllTime?: boolean;
     quickStats: {
         conversionRate: number;
         yoyGrowth: number;
@@ -355,31 +371,90 @@ export default function AdminAnalyticsPage() {
 
                 {/* Geography */}
                 <div className={`rounded-xl border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                    <div className={`px-6 py-4 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                    <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Regional Growth</h3>
+                        {data?.geographicBreakdownIsAllTime && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                                All-Time
+                            </span>
+                        )}
                     </div>
                     <div className="p-6 space-y-4">
-                        {data?.geographicBreakdown?.map((r, i) => (
-                            <div key={i} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-800/30' : 'bg-slate-50'}`}>
-                                <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{r.region || 'Other'}</span>
-                                <span className={`text-sm font-mono font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>₵{r.revenue.toLocaleString()}</span>
-                            </div>
-                        ))}
+                        {data?.geographicBreakdown && data.geographicBreakdown.length > 0 && data.geographicBreakdown.some(r => r.revenue > 0) ? (
+                            data.geographicBreakdown.map((r, i) => (
+                                <div key={i} className="space-y-1.5">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{r.region || 'Other'}</span>
+                                        <span className={`font-mono font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                                            ₵{r.revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                        <div 
+                                            className="bg-indigo-500/80 h-full rounded-full transition-all" 
+                                            style={{ width: `${Math.min(100, Math.max(r.percentage || 0, 4))}%` }} 
+                                        />
+                                    </div>
+                                    {r.percentage !== undefined && (
+                                        <div className="flex justify-end text-[10px] text-slate-400 font-mono">
+                                            <span>{r.percentage}% of sales</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-6 text-xs text-slate-400 opacity-60">No regional data recorded yet.</div>
+                        )}
                     </div>
                 </div>
 
                 {/* Categories */}
                 <div className={`rounded-xl border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                    <div className={`px-6 py-4 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                    <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Category Revenue</h3>
+                        {data?.categoryBreakdownIsAllTime ? (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20" title="No sales in selected period; showing all-time performance">
+                                All-Time
+                            </span>
+                        ) : (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                                Share of Sales
+                            </span>
+                        )}
                     </div>
                     <div className="p-6 space-y-4">
-                        {data?.categoryBreakdown?.map((c, i) => (
-                            <div key={i} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-indigo-900/10' : 'bg-indigo-50/50'}`}>
-                                <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{c.name}</span>
-                                <span className={`text-sm font-mono font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>₵{c.value.toLocaleString()}</span>
+                        {data?.categoryBreakdown && data.categoryBreakdown.length > 0 && data.categoryBreakdown.some(c => c.value > 0 || (c.units_sold && c.units_sold > 0)) ? (
+                            data.categoryBreakdown.map((c, i) => (
+                                <div key={i} className="space-y-1.5 p-3 rounded-xl border border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-800/20">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{c.name}</span>
+                                        <span className={`font-mono font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                                            ₵{c.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                        <div 
+                                            className="bg-indigo-600 dark:bg-indigo-500 h-full rounded-full transition-all" 
+                                            style={{ width: `${Math.min(100, Math.max(c.percentage || 0, 4))}%` }} 
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
+                                        <span>{c.units_sold ?? 0} units sold{c.orders_count ? ` · ${c.orders_count} orders` : ''}</span>
+                                        <span className="font-mono font-medium">{c.percentage ?? 0}%</span>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 px-4 space-y-2">
+                                <div className="w-9 h-9 mx-auto rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 opacity-70" />
+                                </div>
+                                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No category sales in this period</p>
+                                <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+                                    Top categories, revenue share, and unit volumes will populate once customer orders are placed.
+                                </p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
             </div>
