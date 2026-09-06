@@ -121,38 +121,43 @@ export function OrderItemsList({
                             return (
                                 <div 
                                     key={p.id}
-                                    className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+                                    className={`p-3.5 sm:p-4 rounded-xl border flex items-start justify-between gap-3 text-xs ${
                                         isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-white border-slate-100 shadow-xs'
                                     }`}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                                        <div>
-                                            <div className="flex items-center gap-2">
+                                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+                                        <div className="space-y-1.5 min-w-0 flex-1">
+                                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                                                 <span className="font-bold text-slate-900 dark:text-white">
                                                     {methodLabel}
                                                 </span>
-                                                <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+                                                <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold shrink-0">
                                                     {p.state}
                                                 </span>
                                                 {p.payment_type && (
-                                                    <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                                    <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 shrink-0">
                                                         {p.payment_type}
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-2 text-[10px] opacity-40 font-mono mt-0.5">
-                                                <span>{dateStr}</span>
-                                                {p.reference && <span>• Ref: {p.reference}</span>}
+                                            <div className="text-[10px] text-slate-400 font-mono">
+                                                {dateStr}
                                             </div>
+                                            {p.reference && (
+                                                <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 break-all bg-slate-100 dark:bg-slate-800/60 px-2 py-1 rounded inline-block max-w-full">
+                                                    <span className="opacity-60">Ref: </span>
+                                                    <span className="font-medium select-all">{p.reference}</span>
+                                                </div>
+                                            )}
                                             {p.notes && (
-                                                <p className="text-[10px] text-slate-500 dark:text-slate-400 italic mt-1">
+                                                <p className="text-[11px] text-slate-600 dark:text-slate-300 italic bg-amber-500/5 border border-amber-500/15 rounded-lg p-2 mt-1">
                                                     "{p.notes}"
                                                 </p>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="text-left sm:text-right font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400">
+                                    <div className="text-right shrink-0 whitespace-nowrap font-mono font-bold text-sm sm:text-base text-emerald-600 dark:text-emerald-400 pt-0.5">
                                         +₵{Number(p.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
                                 </div>
