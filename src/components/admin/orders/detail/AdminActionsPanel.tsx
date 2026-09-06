@@ -1,9 +1,10 @@
-import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2, RotateCcw } from 'lucide-react';
+import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2, RotateCcw, Banknote } from 'lucide-react';
 
 interface AdminActionsPanelProps {
     updating: boolean;
     manualReference: string;
     setManualReference: (ref: string) => void;
+    openRecordPaymentModal: () => void;
     handleMarkAsPaid: () => void;
     handleMarkAsUnpaid: () => void;
     openTransferModal: () => void;
@@ -23,6 +24,7 @@ export function AdminActionsPanel({
     updating,
     manualReference,
     setManualReference,
+    openRecordPaymentModal,
     handleMarkAsPaid,
     handleMarkAsUnpaid,
     openTransferModal,
@@ -44,27 +46,48 @@ export function AdminActionsPanel({
             </div>
             
             <div className="p-8 space-y-4">
-                
-                
-                <div className={`grid ${(hasPaidAmount || canMarkUnpaid) && hasBalanceDue ? 'grid-cols-3' : 'grid-cols-2'} gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit`}>
+                <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
+                    {(!isPaid || hasBalanceDue) && (
+                        <button 
+                            onClick={openRecordPaymentModal}
+                            disabled={updating}
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-purple-950/20 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            title="Record custom or partial payment amount"
+                        >
+                            <Banknote className="w-5 h-5 text-purple-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-[9px] font-black uppercase tracking-widest leading-tight text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform">
+                                Record <br /> Payment
+                            </span>
+                        </button>
+                    )}
                     {(!isPaid || hasBalanceDue) && (
                         <button 
                             onClick={handleMarkAsPaid}
                             disabled={updating}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer"
-                            title="Record manual payment"
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            title="Mark entire remaining balance as paid"
                         >
-                            <CreditCard className="w-5 h-5 text-purple-500" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                                Mark as <br /> Paid
+                            <CreditCard className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-[9px] font-black uppercase tracking-widest leading-tight text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform">
+                                Mark Full <br /> Paid
                             </span>
                         </button>
                     )}
+                    <button 
+                        onClick={openTransferModal}
+                        className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all text-left"
+                        title="Transfer payment to another order"
+                    >
+                        <ArrowRightLeft className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-[9px] font-black uppercase tracking-widest leading-tight group-hover:translate-x-1 transition-transform">
+                            Transfer <br /> Payment
+                        </span>
+                    </button>
                     {canMarkUnpaid && (
                         <button 
                             onClick={handleMarkAsUnpaid}
                             disabled={updating}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-3 group transition-all border-l border-inherit disabled:opacity-50 cursor-pointer"
+                            className="p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Undo payment and mark order as unpaid"
                         >
                             {updating ? (
@@ -72,21 +95,11 @@ export function AdminActionsPanel({
                             ) : (
                                 <RotateCcw className="w-5 h-5 text-rose-500 group-hover:-rotate-45 transition-transform" />
                             )}
-                            <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
+                            <span className="text-[9px] font-black uppercase tracking-widest leading-tight text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
                                 Mark as <br /> Unpaid
                             </span>
                         </button>
                     )}
-                    <button 
-                        onClick={openTransferModal}
-                        className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all border-l border-inherit"
-                        title="Transfer payment to another order"
-                    >
-                        <ArrowRightLeft className="w-5 h-5 text-blue-500" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-left leading-tight group-hover:translate-x-1 transition-transform">
-                            Transfer <br /> Payment
-                        </span>
-                    </button>
                 </div>
 
                 <div className="pt-4 space-y-4">

@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { FileText } from 'lucide-react';
+import { FileText, CreditCard } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
-import { OrderItem } from '@/types/order';
+import { OrderItem, OrderPayment } from '@/types/order';
 
 interface OrderItemsListProps {
     items: OrderItem[];
@@ -10,6 +10,7 @@ interface OrderItemsListProps {
     total: string;
     amountPaid: string;
     balanceDue: string;
+    payments?: OrderPayment[];
     isDark: boolean;
 }
 
@@ -20,6 +21,7 @@ export function OrderItemsList({
     total,
     amountPaid,
     balanceDue,
+    payments,
     isDark
 }: OrderItemsListProps) {
     return (
@@ -93,6 +95,72 @@ export function OrderItemsList({
                     </div>
                 </div>
             </div>
+
+            {payments && payments.length > 0 && (
+                <div className="p-8 sm:p-10 border-t border-inherit bg-slate-500/[0.02]">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 flex items-center gap-2">
+                            <CreditCard className="w-3.5 h-3.5" />
+                            Payment Records & Deposits ({payments.length})
+                        </span>
+                    </div>
+                    <div className="space-y-2">
+                        {payments.map((p) => {
+                            const methodLabel = p.payment_method === 'CASH' ? 'Cash' 
+                                : p.payment_method === 'BANK_TRANSFER' ? 'Bank Transfer'
+                                : p.payment_method === 'CARD' ? 'Card'
+                                : 'Mobile Money';
+                            const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) : 'Recorded';
+
+                            return (
+                                <div 
+                                    key={p.id}
+                                    className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+                                        isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-white border-slate-100 shadow-xs'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-slate-900 dark:text-white">
+                                                    {methodLabel}
+                                                </span>
+                                                <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+                                                    {p.state}
+                                                </span>
+                                                {p.payment_type && (
+                                                    <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                                        {p.payment_type}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-[10px] opacity-40 font-mono mt-0.5">
+                                                <span>{dateStr}</span>
+                                                {p.reference && <span>• Ref: {p.reference}</span>}
+                                            </div>
+                                            {p.notes && (
+                                                <p className="text-[10px] text-slate-500 dark:text-slate-400 italic mt-1">
+                                                    "{p.notes}"
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="text-left sm:text-right font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400">
+                                        +₵{Number(p.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </section>
     );
 }

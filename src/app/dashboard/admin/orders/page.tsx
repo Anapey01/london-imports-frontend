@@ -230,9 +230,13 @@ export default function AdminOrdersPage() {
     }, []);
 
     const handleClearPending = async () => {
-        const pendingOrders = orders.filter(o => o.status === 'PENDING' || o.status === 'Pending' || o.status === 'PENDING_PAYMENT' || o.payment_status === 'PARTIAL');
+        const pendingOrders = orders.filter(o => 
+            (o.status === 'PENDING' || o.status === 'Pending' || o.status === 'PENDING_PAYMENT') && 
+            (!o.amount_paid || o.amount_paid <= 0) && 
+            o.payment_status !== 'PARTIAL'
+        );
         if (pendingOrders.length === 0) {
-            addAlert('No pending orders to clear', 'info');
+            addAlert('No unpaid orders to clear (partially-paid orders are protected)', 'info');
             return;
         }
         

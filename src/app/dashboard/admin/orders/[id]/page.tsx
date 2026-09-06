@@ -19,6 +19,7 @@ import { AdminActionsPanel } from '@/components/admin/orders/detail/AdminActions
 import { WhatsAppConcierge } from '@/components/admin/orders/detail/WhatsAppConcierge';
 import { ActivityLog } from '@/components/admin/orders/detail/ActivityLog';
 import { TransferPaymentModal } from '@/components/admin/orders/detail/TransferPaymentModal';
+import { RecordPaymentModal } from '@/components/admin/orders/detail/RecordPaymentModal';
 
 export default function AdminOrderDetailPage() {
     const params = useParams();
@@ -37,6 +38,7 @@ export default function AdminOrderDetailPage() {
         customer_notes: ''
     });
 
+    const [isRecordPaymentModalOpen, setIsRecordPaymentModalOpen] = useState(false);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
     const [customerOrders, setCustomerOrders] = useState<OrderDetail[]>([]);
     const [transferData, setTransferData] = useState({
@@ -228,6 +230,27 @@ export default function AdminOrderDetailPage() {
         }
     };
 
+    const handleRecordPayment = async (data: {
+        amount: number;
+        payment_method: string;
+        reference?: string;
+        notes?: string;
+        notify_customer: boolean;
+    }) => {
+        setUpdating(true);
+        try {
+            const response = await adminAPI.recordOrderPayment(orderId, data);
+            addAlert(response.data?.message || `Payment of ₵${data.amount.toLocaleString()} recorded successfully`);
+            await loadOrder();
+        } catch (error: any) {
+            const message = error.response?.data?.error || error.response?.data?.detail || 'Failed to record payment';
+            addAlert(message, 'error');
+            throw error;
+        } finally {
+            setUpdating(false);
+        }
+    };
+
     const openTransferModal = async () => {
         setIsTransferModalOpen(true);
         setTransferData({
@@ -330,6 +353,7 @@ export default function AdminOrderDetailPage() {
                             total={order.total}
                             amountPaid={order.amount_paid}
                             balanceDue={order.balance_due}
+                            payments={order.payments}
                             isDark={isDark}
                         />
 
@@ -349,6 +373,7 @@ export default function AdminOrderDetailPage() {
                             updating={updating}
                             manualReference={manualReference}
                             setManualReference={setManualReference}
+                            openRecordPaymentModal={() => setIsRecordPaymentModalOpen(true)}
                             handleMarkAsPaid={handleMarkAsPaid}
                             handleMarkAsUnpaid={handleMarkAsUnpaid}
                             openTransferModal={openTransferModal}
@@ -376,6 +401,15 @@ export default function AdminOrderDetailPage() {
             </main>
 
             <AnimatePresence>
+                {isRecordPaymentModalOpen && order && (
+                    <RecordPaymentModal
+                        order={order}
+                        updating={updating}
+                        onRecordPayment={handleRecordPayment}
+                        onClose={() => setIsRecordPaymentModalOpen(false)}
+                        isDark={isDark}
+                    />
+                )}
                 {isTransferModalOpen && (
                     <TransferPaymentModal
                         customerOrders={customerOrders}

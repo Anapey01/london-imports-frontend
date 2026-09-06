@@ -22,6 +22,17 @@ export interface Customer {
     stats: CustomerStats;
 }
 
+export interface OrderPayment {
+    id: string;
+    amount: number;
+    state: string;
+    payment_type: string;
+    payment_method: string;
+    reference?: string;
+    notes?: string;
+    created_at?: string;
+}
+
 export interface OrderDetail {
     id: string;
     order_number: string;
@@ -44,4 +55,5 @@ export interface OrderDetail {
     customer_notes?: string;
     items: OrderItem[];
     customer_stats: CustomerStats;
+    payments?: OrderPayment[];
 }

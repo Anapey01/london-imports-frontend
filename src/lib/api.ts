@@ -249,6 +249,13 @@ export const adminAPI = {
   deleteOrder: (id: string) => api.delete(`/admin/orders/${id}/`),
   transferPayment: (id: string, data: { target_order_id: string; amount: number; reason?: string }) => 
     api.post(`/admin/orders/${id}/transfer-payment/`, data),
+  recordOrderPayment: (id: string, data: { 
+    amount: number; 
+    payment_method?: string; 
+    reference?: string; 
+    notes?: string;
+    notify_customer?: boolean;
+  }) => api.post(`/admin/orders/${id}/record-payment/`, data),
   revertPayment: (id: string, data?: { reason?: string }) => 
     api.post(`/admin/orders/${id}/revert-payment/`, data || {}),
 
