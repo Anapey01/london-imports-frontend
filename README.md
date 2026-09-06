@@ -1,4 +1,5 @@
 # London's Imports (Frontend)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This is the e-commerce frontend for **London's Imports**, built with [Next.js 16](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/).
 
@@ -46,3 +47,7 @@ This project is deployed on **Vercel**.
 
 - Pushes to `main` auto-deploy to production.
 - **Image Optimization**: Handled via custom loader (`imageLoader.ts`) to specific Cloudinary, ensuring Vercel limits are not exceeded.
+
+## 📄 License
+
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) and [NOTICE](NOTICE) files for details.
