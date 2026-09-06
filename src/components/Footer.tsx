@@ -104,6 +104,7 @@ const Footer = () => {
                             <li><Link href="/customs" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">Customs Help</Link></li>
                             <li><Link href="/guide" className="text-sm font-semibold text-content-secondary hover:text-content-primary transition-colors block">How to Start Business</Link></li>
                             <li><Link href="/track" className="text-sm font-black text-brand-emerald dark:text-emerald-500 hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-4">Track My Items</Link></li>
+                            <li><Link href="/download" className="text-sm font-bold text-content-primary hover:italic hover:translate-x-1 transition-all inline-block uppercase tracking-widest mt-2">Download Android App</Link></li>
                         </ul>
                     </div>
 

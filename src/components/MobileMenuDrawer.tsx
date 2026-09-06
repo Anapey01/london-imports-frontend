@@ -94,6 +94,7 @@ const SHOP_ITEMS = [
     { name: 'FAQ', href: '/faq', icon: HelpCircle },
     { name: 'Our Blog', href: '/blog', icon: BookOpen },
     { name: 'Track My Items', href: '/track', icon: Truck },
+    { name: 'Download App', href: '/download', icon: Smartphone },
 ];
 
 const SUPPORT_ITEMS = [

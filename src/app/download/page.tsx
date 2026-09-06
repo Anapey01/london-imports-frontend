@@ -45,7 +45,7 @@ export default function DownloadPage() {
                                 Android Package (APK)
                             </span>
                             <span className="text-base font-semibold tracking-wide">
-                                Download Application (2.4 MB)
+                                Download Application (5.7 MB)
                             </span>
                         </div>
                         <ArrowDown className="w-5 h-5" />
@@ -64,11 +64,15 @@ export default function DownloadPage() {
                     </div>
                     <div className="flex justify-between">
                         <span>Version:</span>
-                        <span className="text-content-primary">1.0.0 (Release 2)</span>
+                        <span className="text-content-primary">1.0.1 (Release 3)</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Compatibility:</span>
                         <span className="text-content-primary">Android 5.0 to 15+</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Architecture:</span>
+                        <span className="text-content-primary">Self-Contained Native</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Verification:</span>
