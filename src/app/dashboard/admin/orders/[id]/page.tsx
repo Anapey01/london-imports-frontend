@@ -295,48 +295,60 @@ export default function AdminOrderDetailPage() {
 
     return (
         <div className={`min-h-screen pb-32 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FAFAFA] text-slate-900'}`}>
-            <div className={`sticky top-0 z-[60] px-4 sm:px-8 py-5 border-b backdrop-blur-xl ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-100'}`}>
-                <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0">
-                    <button 
-                        onClick={() => router.back()} 
-                        className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all w-fit"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                        Back to Orders
-                    </button>
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
-                        <div className="flex items-center gap-4">
-                            <span className="font-mono text-[10px] tracking-[0.2em] opacity-30">ORDER NO:</span>
-                            <h1 className="font-mono text-sm sm:text-lg font-bold tracking-tighter truncate max-w-[150px] sm:max-w-none">#{order.order_number}</h1>
+            <div className={`sticky top-0 z-[60] px-4 sm:px-8 py-3 sm:py-4 border-b backdrop-blur-xl ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-100'}`}>
+                <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
+                    {/* Top Row / Left Column: Navigation and Order Number */}
+                    <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-6 min-w-0">
+                        <button 
+                            onClick={() => router.back()} 
+                            className="flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider opacity-60 hover:opacity-100 transition-all whitespace-nowrap shrink-0 py-1.5 px-2.5 -ml-2 rounded-lg hover:bg-slate-500/10 cursor-pointer"
+                        >
+                            <ChevronLeft className="w-4 h-4 shrink-0" />
+                            Back to Orders
+                        </button>
+                        
+                        <div className="hidden sm:block w-px h-4 bg-slate-300 dark:bg-slate-700 shrink-0" />
+                        
+                        <div className="flex items-center gap-2 min-w-0">
+                            <span className="font-mono text-[10px] tracking-wider opacity-30 uppercase shrink-0 hidden xs:inline">ORDER:</span>
+                            <h1 className="font-mono text-xs sm:text-base md:text-lg font-bold tracking-tight truncate">
+                                #{order.order_number}
+                            </h1>
                         </div>
+                    </div>
 
-                        <div className="flex items-center gap-4">
-                            <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${
-                                order.payment_status === 'PAID' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-rose-500/10 border-rose-500/20 text-rose-500'
+                    {/* Bottom Row / Right Column: Badges and Receipt Button */}
+                    <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-4 flex-wrap sm:flex-nowrap">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <div className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border text-[9px] font-black uppercase tracking-wider whitespace-nowrap ${
+                                order.payment_status === 'PAID' 
+                                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' 
+                                    : order.payment_status === 'PARTIAL'
+                                        ? 'bg-purple-500/10 border-purple-500/20 text-purple-500'
+                                        : 'bg-rose-500/10 border-rose-500/20 text-rose-500'
                             }`}>
                                 {order.payment_status}
                             </div>
-                            <div className={`px-4 py-1.5 rounded-full border border-slate-800 text-[9px] font-black uppercase tracking-widest ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
+                            <div className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border border-slate-200 dark:border-slate-800 text-[9px] font-black uppercase tracking-wider whitespace-nowrap ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
                                 {order.status.replace(/_/g, ' ')}
                             </div>
-                            
-                            <Link 
-                                href={`/dashboard/admin/orders/${order.id}/receipt`}
-                                className="flex items-center gap-3 px-6 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-pink-600 transition-all rounded-sm shadow-lg"
-                            >
-                                <Printer className="w-3.5 h-3.5" />
-                                Receipt
-                            </Link>
                         </div>
+
+                        <Link 
+                            href={`/dashboard/admin/orders/${order.id}/receipt`}
+                            className="flex items-center gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2 bg-slate-900 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider hover:bg-pink-600 transition-all rounded-lg shadow-sm whitespace-nowrap shrink-0 ml-auto md:ml-0 cursor-pointer"
+                        >
+                            <Printer className="w-3.5 h-3.5 shrink-0" />
+                            Receipt
+                        </Link>
                     </div>
                 </div>
             </div>
 
-            <main className="max-w-[1600px] mx-auto px-8 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    <div className="lg:col-span-8 space-y-12">
-                        <section className={`p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
+            <main className="max-w-[1600px] mx-auto px-4 sm:px-8 py-6 sm:py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                    <div className="lg:col-span-8 space-y-8 sm:space-y-12">
+                        <section className={`p-6 sm:p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
                             <div className="flex items-center justify-between mb-12">
                                 <div className="flex items-center gap-4">
                                     <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Shipping Status</h2>

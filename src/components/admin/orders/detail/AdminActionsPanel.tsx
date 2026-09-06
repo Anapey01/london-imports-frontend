@@ -40,18 +40,18 @@ export function AdminActionsPanel({
 
     return (
         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-            <div className="p-8 border-b border-inherit flex items-center gap-4">
+            <div className="p-5 sm:p-8 border-b border-inherit flex items-center gap-4">
                 <Terminal className="w-5 h-5 opacity-20" />
                 <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Admin Actions</h2>
             </div>
             
-            <div className="p-8 space-y-4">
+            <div className="p-5 sm:p-8 space-y-4">
                 <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
                     {(!isPaid || hasBalanceDue) && (
                         <button 
                             onClick={openRecordPaymentModal}
                             disabled={updating}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-purple-950/20 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-purple-950/20 flex flex-col gap-2.5 sm:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Record custom or partial payment amount"
                         >
                             <Banknote className="w-5 h-5 text-purple-500 group-hover:scale-110 transition-transform" />
@@ -64,7 +64,7 @@ export function AdminActionsPanel({
                         <button 
                             onClick={handleMarkAsPaid}
                             disabled={updating}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex flex-col gap-2.5 sm:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Mark entire remaining balance as paid"
                         >
                             <CreditCard className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
@@ -75,7 +75,7 @@ export function AdminActionsPanel({
                     )}
                     <button 
                         onClick={openTransferModal}
-                        className="p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-3 group transition-all text-left"
+                        className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-2.5 sm:gap-3 group transition-all text-left"
                         title="Transfer payment to another order"
                     >
                         <ArrowRightLeft className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" />
@@ -87,7 +87,7 @@ export function AdminActionsPanel({
                         <button 
                             onClick={handleMarkAsUnpaid}
                             disabled={updating}
-                            className="p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-2.5 sm:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Undo payment and mark order as unpaid"
                         >
                             {updating ? (
