@@ -42,13 +42,14 @@ export function TransferPaymentModal({
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 overflow-hidden">
             <div 
                 onClick={() => setIsTransferModalOpen(false)}
-                className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+                className="fixed inset-0 bg-slate-950/75 backdrop-blur-[2px] transition-opacity"
             />
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                className={`relative z-10 w-full max-w-xl border p-5 sm:p-8 rounded-2xl shadow-2xl my-auto max-h-[92dvh] overflow-y-auto ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}
+                transition={{ duration: 0.15 }}
+                className={`relative z-10 w-full max-w-xl border p-5 sm:p-8 rounded-2xl shadow-2xl my-auto max-h-[92dvh] overflow-y-auto transform-gpu will-change-transform ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}
             >
                 <button 
                     onClick={() => setIsTransferModalOpen(false)}
@@ -67,7 +68,7 @@ export function TransferPaymentModal({
                         <select
                             value={transferData.target_order_id}
                             onChange={(e) => setTransferData({ ...transferData, target_order_id: e.target.value })}
-                            className="w-full p-3.5 bg-slate-500/5 border border-inherit text-xs sm:text-sm font-bold outline-none focus:border-pink-500 transition-all rounded-lg"
+                            className="w-full p-3.5 bg-slate-500/5 border border-inherit text-xs sm:text-sm font-bold outline-none focus:border-pink-500 transition-colors duration-150 rounded-lg"
                         >
                             <option value="">CHOOSE AN ORDER...</option>
                             {customerOrders.map(o => (
@@ -86,7 +87,7 @@ export function TransferPaymentModal({
                                 type="number"
                                 value={transferData.amount}
                                 onChange={(e) => setTransferData({ ...transferData, amount: parseFloat(e.target.value) || 0 })}
-                                className="w-full p-3.5 pl-10 bg-slate-500/5 border border-inherit text-xl sm:text-2xl font-mono tracking-tight outline-none focus:border-pink-500 transition-all rounded-lg"
+                                className="w-full p-3.5 pl-10 bg-slate-500/5 border border-inherit text-xl sm:text-2xl font-mono tracking-tight outline-none focus:border-pink-500 transition-colors duration-150 rounded-lg"
                             />
                         </div>
                     </div>
@@ -98,7 +99,7 @@ export function TransferPaymentModal({
                             onChange={(e) => setTransferData({ ...transferData, reason: e.target.value })}
                             placeholder="Why are you moving this payment?..."
                             rows={3}
-                            className="w-full p-3 bg-slate-500/5 border border-inherit text-xs font-mono outline-none focus:border-pink-500 transition-all rounded-lg resize-none"
+                            className="w-full p-3 bg-slate-500/5 border border-inherit text-xs font-mono outline-none focus:border-pink-500 transition-colors duration-150 rounded-lg resize-none"
                         />
                     </div>
                 </div>

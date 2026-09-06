@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { Loader2, X, CreditCard, Banknote, Smartphone, Building2, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -36,8 +36,8 @@ export function RecordPaymentModal({
 
     const [amount, setAmount] = useState<string>('');
     const [paymentMethod, setPaymentMethod] = useState<string>('MOBILE_MONEY');
-    const [reference, setReference] = useState<string>('');
-    const [notes, setNotes] = useState<string>('');
+    const referenceRef = useRef<HTMLInputElement>(null);
+    const notesRef = useRef<HTMLTextAreaElement>(null);
     const [notifyCustomer, setNotifyCustomer] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -77,12 +77,15 @@ export function RecordPaymentModal({
             return;
         }
 
+        const referenceVal = referenceRef.current?.value?.trim() || undefined;
+        const notesVal = notesRef.current?.value?.trim() || undefined;
+
         try {
             await onRecordPayment({
                 amount: numAmount,
                 payment_method: paymentMethod,
-                reference: reference.trim() || undefined,
-                notes: notes.trim() || undefined,
+                reference: referenceVal,
+                notes: notesVal,
                 notify_customer: notifyCustomer
             });
             onClose();
@@ -95,13 +98,14 @@ export function RecordPaymentModal({
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 overflow-hidden">
             <div 
                 onClick={onClose}
-                className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+                className="fixed inset-0 bg-slate-950/75 backdrop-blur-[2px] transition-opacity"
             />
             <motion.div 
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                className={`relative z-10 w-full max-w-lg border rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden ${
+                transition={{ duration: 0.15 }}
+                className={`relative z-10 w-full max-w-lg border rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden transform-gpu will-change-transform ${
                     isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-100 text-slate-900'
                 }`}
             >
@@ -192,11 +196,11 @@ export function RecordPaymentModal({
                                     placeholder="0.00"
                                     autoFocus
                                     required
-                                    className={`w-full p-3.5 sm:p-4 pl-11 sm:pl-12 border text-xl sm:text-2xl font-mono font-bold tracking-tight outline-none rounded-xl transition-all ${
-                                        isOverpaying 
-                                            ? 'border-rose-500 focus:border-rose-500 bg-rose-500/5' 
-                                            : 'focus:border-purple-500'
-                                    } ${isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-white border-slate-200'}`}
+                                    className={`w-full p-3.5 sm:p-4 pl-11 sm:pl-12 border text-xl sm:text-2xl font-mono font-bold tracking-tight outline-none rounded-xl transition-colors duration-150 ${
+                                    isOverpaying 
+                                        ? 'border-rose-500 focus:border-rose-500 bg-rose-500/5' 
+                                        : 'focus:border-purple-500'
+                                } ${isDark ? 'bg-slate-950/40 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}
                                 />
                             </div>
 
@@ -305,12 +309,11 @@ export function RecordPaymentModal({
                                 Transaction Reference / Momo ID (Optional)
                             </label>
                             <input
+                                ref={referenceRef}
                                 type="text"
-                                value={reference}
-                                onChange={(e) => setReference(e.target.value)}
                                 placeholder="e.g. 8291471029 or CASH-REC-01"
-                                className={`w-full p-3 border text-xs font-mono tracking-wider outline-none rounded-xl transition-all focus:border-purple-500 ${
-                                    isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-white border-slate-200'
+                                className={`w-full p-3 border text-xs font-mono tracking-wider outline-none rounded-xl transition-colors duration-150 focus:border-purple-500 ${
+                                    isDark ? 'bg-slate-950/40 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
                                 }`}
                             />
                         </div>
@@ -321,12 +324,11 @@ export function RecordPaymentModal({
                                 Internal Note (Optional)
                             </label>
                             <textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
+                                ref={notesRef}
                                 placeholder="e.g. Customer deposited cash at Accra shop; balance to be paid on delivery."
                                 rows={2}
-                                className={`w-full p-3 border text-xs outline-none rounded-xl transition-all focus:border-purple-500 resize-none ${
-                                    isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-white border-slate-200'
+                                className={`w-full p-3 border text-xs outline-none rounded-xl transition-colors duration-150 focus:border-purple-500 resize-none ${
+                                    isDark ? 'bg-slate-950/40 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
                                 }`}
                             />
                         </div>
