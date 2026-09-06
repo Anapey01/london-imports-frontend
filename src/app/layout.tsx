@@ -167,6 +167,37 @@ export default async function RootLayout({
           }}
         />
 
+        {/* Auto-recover from ChunkLoadErrors across deployments */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window === 'undefined') return;
+                function handleChunkError(event) {
+                  var error = event.error || (event.reason && (event.reason.error || event.reason)) || {};
+                  var message = (event.message || error.message || (typeof event.reason === 'string' ? event.reason : '')) + '';
+                  if (/loading chunk .* failed/i.test(message) || /failed to fetch dynamically imported module/i.test(message)) {
+                    var key = 'chunk_reload_lock';
+                    var now = Date.now();
+                    var last = sessionStorage.getItem(key);
+                    if (!last || now - parseInt(last, 10) > 10000) {
+                      sessionStorage.setItem(key, now.toString());
+                      if ('caches' in window) {
+                        caches.keys().then(function(keys) {
+                          keys.forEach(function(k) { caches.delete(k); });
+                        });
+                      }
+                      window.location.reload();
+                    }
+                  }
+                }
+                window.addEventListener('error', handleChunkError, true);
+                window.addEventListener('unhandledrejection', handleChunkError, true);
+              })();
+            `,
+          }}
+        />
+
         {/* Initialize Google Consent Mode - Default State */}
         <script
           dangerouslySetInnerHTML={{
