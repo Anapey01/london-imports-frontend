@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const maxDuration = 60; // Allow 60s execution timeout on Vercel for backend processing
+export const dynamic = 'force-dynamic';
+
 /**
  * Vercel Cron → Django Webhook
  * 
