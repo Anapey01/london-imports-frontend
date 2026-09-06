@@ -159,7 +159,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[8px] font-mono font-bold text-brand-emerald uppercase tracking-[0.3em] mb-1">Order Items</p>
                                                 <div className="space-y-1.5">
-                                                    {order.items?.map((item, idx) => (
+                                                    {order.items?.slice(0, 2).map((item, idx) => (
                                                         <div key={idx} className="flex items-baseline justify-between gap-4">
                                                             <p className="text-[11px] font-bold text-slate-900 uppercase tracking-tight truncate max-w-[200px]">
                                                                 {cleanProductName(item.product)}
