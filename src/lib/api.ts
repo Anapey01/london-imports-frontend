@@ -101,8 +101,8 @@ api.interceptors.response.use(
         }
       } else {
         try {
-          // Attempt customer token refresh with 10s timeout
-          await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true, timeout: 10000 });
+          // Attempt customer token refresh with 15s timeout
+          await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true, timeout: 15000 });
           
           onRefreshed();
           isRefreshing = false;

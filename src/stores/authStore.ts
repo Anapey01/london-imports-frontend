@@ -107,13 +107,14 @@ export const useAuthStore = create<AuthState>()(
                     set({ user: response.data, isAuthenticated: true });
                 } catch (error: unknown) {
                     const err = error as { response?: { status: number } };
-                    // SILENT CLEANUP: If 401/403, just logout and don't throw a scary error
-                    if (err.response && (err.response.status === 401 || err.response.status === 403 || err.response.status === 400)) {
-                        console.debug('[AuthStore] Session invalid or expired. Cleaning up.');
+                    // SILENT CLEANUP: Only log out on definitive 401 Unauthorized (session expired or invalid)
+                    if (err.response && err.response.status === 401) {
+                        console.debug('[AuthStore] Session invalid or expired (401). Cleaning up.');
                         get().logout();
                         return; // Don't re-throw for expected auth failures
                     }
-                    throw error;
+                    // For network errors, timeouts, or transient 400/500 errors, preserve current persisted state
+                    console.warn('[AuthStore] fetchUser failed non-fatally:', error);
                 }
             },
 
