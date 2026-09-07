@@ -340,7 +340,7 @@ export default function AdminCheckersAnalyticsPage() {
                         {pendingPayoutsCount > 0 && (
                             <>
                                 <span className="h-4 w-px bg-slate-200" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600 animate-pulse">
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#8B5E3C] animate-pulse">
                                     {pendingPayoutsCount} WITHDRAWALS PENDING
                                 </span>
                             </>
@@ -428,12 +428,12 @@ export default function AdminCheckersAnalyticsPage() {
                             <div className="flex items-center justify-between">
                                 <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Pending Withdrawals</p>
                                 {pendingPayoutsCount > 0 && (
-                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-100 text-amber-800">
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-[#8B5E3C]/10 text-[#8B5E3C]">
                                         ACTION NEEDED
                                     </span>
                                 )}
                             </div>
-                            <p className="text-3xl font-serif font-bold text-amber-600 tracking-tight">
+                            <p className="text-3xl font-serif font-bold text-[#8B5E3C] tracking-tight">
                                 GH₵ {pendingPayoutsTotalSum.toFixed(2)}
                             </p>
                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
