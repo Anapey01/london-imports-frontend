@@ -8,7 +8,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 
 export function NavbarWrapper() {
     const pathname = usePathname();
-    const isAdminPath = pathname?.startsWith('/dashboard/admin');
+    const isAdminPath = pathname?.startsWith('/dashboard/admin') || pathname?.startsWith('/admin');
     if (isAdminPath) return null;
 
     const isHomePage = pathname === '/';
@@ -24,14 +24,14 @@ export function NavbarWrapper() {
 
 export function FooterWrapper() {
     const pathname = usePathname();
-    const isAdminPath = pathname?.startsWith('/dashboard/admin');
+    const isAdminPath = pathname?.startsWith('/dashboard/admin') || pathname?.startsWith('/admin');
     if (isAdminPath) return null;
     return <Footer />;
 }
 
 export function MobileBottomNavWrapper() {
     const pathname = usePathname();
-    const isAdminPath = pathname?.startsWith('/dashboard/admin');
+    const isAdminPath = pathname?.startsWith('/dashboard/admin') || pathname?.startsWith('/admin');
     if (isAdminPath) return null;
     return <MobileBottomNav />;
 }

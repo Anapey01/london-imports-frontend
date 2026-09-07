@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useAuthStore } from '@/stores/authStore';
@@ -17,7 +17,8 @@ export default function AdminLoginPage() {
     const isDark = theme === 'dark';
 
     const { login } = useAuthStore();
-    const [formData, setFormData] = useState({ username: '', password: '' });
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -25,14 +26,28 @@ export default function AdminLoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        const username = usernameRef.current?.value?.trim() || '';
+        const password = passwordRef.current?.value || '';
+
+        if (!username || !password) {
+            setError('Please enter both username and password.');
+            return;
+        }
+
         setLoading(true);
 
-        // Yield to browser to paint loading spinner (fixes INP)
-        await new Promise(resolve => setTimeout(resolve, 10));
+        // Yield to browser immediately via rAF & macro-task so the loading spinner paints without delay
+        // This keeps INP well under 50ms during form submission
+        await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+                setTimeout(resolve, 0);
+            });
+        });
 
         try {
             // Use unified authStore to handle login and persistence
-            await login(formData.username, formData.password);
+            await login(username, password);
             
             // The store's login method calls fetchUser automatically, 
             // so we can now check the user from the store
@@ -69,7 +84,7 @@ export default function AdminLoginPage() {
             />
 
             {/* Glowing Accent Orb */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-rose-500/20 rounded-full blur-[120px] pointer-events-none opacity-50" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-rose-500/20 rounded-full blur-[120px] pointer-events-none opacity-50 will-change-transform transform-gpu" />
 
             <div className="w-full max-w-lg relative z-10">
                 <div className="flex flex-col items-center mb-12 relative">
@@ -93,7 +108,7 @@ export default function AdminLoginPage() {
                 </div>
 
                 {/* Login Form Card */}
-                <div className={`bg-white dark:bg-slate-950 border ${isDark ? 'border-slate-800' : 'border-slate-200'} p-8 sm:p-12 relative group`}>
+                <div className={`bg-white dark:bg-slate-950 border ${isDark ? 'border-slate-800' : 'border-slate-200'} p-8 sm:p-12 relative group isolate`}>
                     {/* Decorative Corner Accents */}
                     <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-slate-900 dark:border-white opacity-20 -translate-x-px -translate-y-px" />
                     <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-slate-900 dark:border-white opacity-20 translate-x-px -translate-y-px" />
@@ -116,12 +131,13 @@ export default function AdminLoginPage() {
                                     Username
                                 </label>
                                 <input
+                                    ref={usernameRef}
                                     type="text"
-                                    value={formData.username}
-                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                    name="username"
+                                    autoComplete="username"
                                     required
                                     spellCheck={false}
-                                    className={`w-full px-5 py-4 bg-transparent border text-sm transition-all outline-none ${isDark
+                                    className={`w-full px-5 py-4 bg-transparent border text-sm transition-colors duration-150 outline-none ${isDark
                                         ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
                                         : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
                                         }`}
@@ -135,11 +151,12 @@ export default function AdminLoginPage() {
                                 </label>
                                 <div className="relative">
                                     <input
+                                        ref={passwordRef}
                                         type={showPassword ? "text" : "password"}
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        name="password"
+                                        autoComplete="current-password"
                                         required
-                                        className={`w-full px-5 py-4 pr-12 bg-transparent border text-sm transition-all outline-none ${showPassword ? 'tracking-normal' : 'tracking-[0.2em]'} ${isDark
+                                        className={`w-full px-5 py-4 pr-12 bg-transparent border text-sm transition-colors duration-150 outline-none ${showPassword ? 'tracking-normal' : 'tracking-[0.2em]'} ${isDark
                                             ? 'border-slate-800 text-white placeholder:text-slate-700 focus:border-rose-500'
                                             : 'border-slate-200 text-slate-900 placeholder:text-slate-500 focus:border-rose-500'
                                             }`}
@@ -153,7 +170,7 @@ export default function AdminLoginPage() {
                                         tabIndex={-1}
                                     >
                                         {showPassword ? (
-                                            <EyeOff className="w-4 h-4" />
+                                             <EyeOff className="w-4 h-4" />
                                         ) : (
                                             <Eye className="w-4 h-4" />
                                         )}
@@ -174,7 +191,7 @@ export default function AdminLoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full py-5 flex items-center justify-center gap-3 transition-all ${
+                            className={`w-full py-5 flex items-center justify-center gap-3 transition-colors duration-150 ${
                                 isDark ? 'bg-white hover:bg-slate-200 text-slate-950' : 'bg-slate-950 hover:bg-slate-800 text-white'
                             } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
