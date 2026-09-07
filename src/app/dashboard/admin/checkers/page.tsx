@@ -5,6 +5,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { adminAPI } from '@/lib/api';
 import { 
     TrendingUp, 
@@ -138,6 +139,22 @@ export default function AdminCheckersAnalyticsPage() {
 
     // Notifications
     const [notificationMessage, setNotificationMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    // Portal Mount State & Body Scroll Lock
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (selectedAgentForDirectPay || selectedPayoutToPay) {
+            const originalOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            return () => {
+                document.body.style.overflow = originalOverflow;
+            };
+        }
+    }, [selectedAgentForDirectPay, selectedPayoutToPay]);
 
     // === Voucher Analytics State ===
     const [category, setCategory] = useState<'ALL' | 'WASSCE' | 'BECE'>('ALL');
@@ -862,15 +879,15 @@ export default function AdminCheckersAnalyticsPage() {
 
             {/* ========================================================= */}
             {/* MODAL 1: DIRECT PAYMENT MADE TO AGENT                    */}
-            {/* (Triggered even if agent has NOT requested payment)      */}
+            {/* (Rendered directly into document.body via Portal)        */}
             {/* ========================================================= */}
-            {selectedAgentForDirectPay && (
+            {mounted && typeof document !== 'undefined' && selectedAgentForDirectPay && createPortal(
                 <div 
-                    className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in"
+                    className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[99999] p-4"
                     onClick={() => setSelectedAgentForDirectPay(null)}
                 >
                     <div 
-                        className="w-full max-w-lg bg-white p-10 space-y-6 border border-slate-100 shadow-2xl"
+                        className="w-full max-w-lg bg-white p-8 md:p-10 space-y-6 border border-slate-100 shadow-2xl max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
@@ -989,19 +1006,21 @@ export default function AdminCheckersAnalyticsPage() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* ========================================================= */}
             {/* MODAL 2: CONFIRM PENDING WITHDRAWAL PAYOUT               */}
+            {/* (Rendered directly into document.body via Portal)        */}
             {/* ========================================================= */}
-            {selectedPayoutToPay && (
+            {mounted && typeof document !== 'undefined' && selectedPayoutToPay && createPortal(
                 <div 
-                    className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in"
+                    className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[99999] p-4"
                     onClick={() => setSelectedPayoutToPay(null)}
                 >
                     <div 
-                        className="w-full max-w-lg bg-white p-10 space-y-6 border border-slate-100 shadow-2xl"
+                        className="w-full max-w-lg bg-white p-8 md:p-10 space-y-6 border border-slate-100 shadow-2xl max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-start justify-between border-b border-slate-100 pb-6">
@@ -1081,7 +1100,8 @@ export default function AdminCheckersAnalyticsPage() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
