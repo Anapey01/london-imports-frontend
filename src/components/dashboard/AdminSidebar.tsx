@@ -27,7 +27,8 @@ import {
     LayoutPanelTop,
     Mail,
     ArrowRightLeft,
-    Image
+    Image,
+    Ticket
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -47,6 +48,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         { name: 'CUSTOMERS', href: '/dashboard/admin/users', icon: Users },
         { name: 'SELLERS', href: '/dashboard/admin/vendors', icon: Store },
         { name: 'ORDERS', href: '/dashboard/admin/orders', icon: ShoppingBag },
+        { name: 'CHECKERS & AGENTS', href: '/dashboard/admin/checkers', icon: Ticket },
         { name: 'MONEY TRANSFERS', href: '/dashboard/admin/payments/transfer', icon: ArrowRightLeft },
         { name: 'DELIVERIES', href: '/dashboard/admin/logistics', icon: Truck },
         { name: 'PRODUCTS', href: '/dashboard/admin/products', icon: Package },
