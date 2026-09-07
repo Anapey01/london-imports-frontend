@@ -311,6 +311,8 @@ export const adminAPI = {
   checkerAgentPayouts: (params?: { status?: string }) => api.get('/checkers/admin/payouts/', { params }),
   checkerMarkPayoutPaid: (payoutId: string) => api.post(`/checkers/admin/payouts/${payoutId}/mark-paid/`),
   checkerAgentsList: () => api.get('/checkers/admin/agents/'),
+  checkerDirectPayout: (data: { agent_id: string; amount: number; notes?: string }) =>
+    api.post('/checkers/admin/direct-payout/', data),
 };
 
 // Public Blog API
