@@ -83,19 +83,19 @@ export default function AgentAboutPage() {
                 Withdrawal Threshold
               </span>
               <span className="text-3xl font-black block text-content-primary">
-                GH₵ 100.00
+                GH₵ 1.00
               </span>
               <p className="text-[11px] text-content-secondary leading-relaxed mt-3 uppercase tracking-wide">
-                Earnings of GH₵ 100.00 or more can be requested to Mobile Money (MTN, Telecel, AT) at any time.
+                Earnings of GH₵ 1.00 or more can be requested to Mobile Money (MTN, Telecel, AT) at any time.
               </p>
             </div>
           </div>
 
           <div className="border-l-2 border-black pl-4 py-1 text-xs text-content-secondary leading-relaxed">
             <span className="font-bold text-content-primary uppercase tracking-wider block mb-1">
-              Note on smaller balances:
+              End-of-Season Payout Policy:
             </span>
-            If your accumulated commission is under GH₵ 100.00, your funds are fully accessible. You can request a payout of any smaller balance starting exactly 1 week after the checker sales cycle ends.
+            Now that the active checker sales season has ended, the withdrawal threshold is reduced to just GH₵ 1.00 so all agents can withdraw their remaining balances easily.
           </div>
         </div>
 

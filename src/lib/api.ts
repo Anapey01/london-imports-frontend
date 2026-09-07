@@ -308,6 +308,9 @@ export const adminAPI = {
 
   // Voucher Sales & Inventory Analytics
   checkerAnalytics: (params?: Record<string, unknown>) => api.get('/checkers/admin/analytics/', { params }),
+  checkerAgentPayouts: (params?: { status?: string }) => api.get('/checkers/admin/payouts/', { params }),
+  checkerMarkPayoutPaid: (payoutId: string) => api.post(`/checkers/admin/payouts/${payoutId}/mark-paid/`),
+  checkerAgentsList: () => api.get('/checkers/admin/agents/'),
 };
 
 // Public Blog API

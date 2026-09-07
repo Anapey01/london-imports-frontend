@@ -859,16 +859,16 @@ export default function AgentDashboardPage() {
                   <input
                     type="number"
                     step="0.01"
-                    min="50.00"
+                    min="1.00"
                     max={walletBalance}
                     required
                     value={payoutAmount}
                     onChange={(e) => setPayoutAmount(e.target.value)}
-                    placeholder="Minimum GH₵ 50.00"
+                    placeholder="Minimum GH₵ 1.00"
                     className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-emerald/20"
                   />
                   <p className="mt-1 text-[10px] text-content-secondary uppercase font-semibold">
-                    Must be at least GH₵ 50.00
+                    Must be at least GH₵ 1.00
                   </p>
                 </div>
 
@@ -918,7 +918,7 @@ export default function AgentDashboardPage() {
 
                 <button
                   type="submit"
-                  disabled={payoutLoading || walletBalance < 50}
+                  disabled={payoutLoading || walletBalance < 1}
                   className="w-full bg-content-primary text-surface py-3 px-6 rounded-none font-bold text-xs uppercase tracking-widest hover:bg-brand-emerald disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
                 >
                   {payoutLoading ? 'Submitting request...' : 'Confirm Withdrawal'}
