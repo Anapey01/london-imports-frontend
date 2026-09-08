@@ -43,40 +43,63 @@ const LOGISTICS_TEMPLATES = [
         title: 'Guangzhou Arrival',
         target: 'state:OPEN_FOR_BATCH',
         subject: 'Shipment Update: Goods Arrived at Guangzhou Warehouse',
-        message: 'Hello {{FIRST_NAME}},\n\nWe are pleased to inform you that your items ({{ITEMS}}) have been successfully received and sorted at our Guangzhou Sorting Facility. They are now being prepared for the next available shipment batch.\n\nThank you for choosing London\'s Imports.',
-        icon: Package
+        message: 'Hello {{FIRST_NAME}},\n\nWe are pleased to inform you that your items ({{ITEMS}}) for order #{{ORDER_ID}} have been successfully received and sorted at our Guangzhou Sorting Facility. They are now being prepared for the next available shipment batch.\n\nThank you for choosing London\'s Imports.',
+        icon: Package,
+        badge: 'GZ Warehouse Only'
     },
     {
         id: 'container-loaded',
         title: 'Container Loaded',
         target: 'state:IN_FULFILLMENT',
         subject: 'Logistics Update: Your Shipment is Now Loaded',
-        message: 'Hello {{FIRST_NAME}},\n\nGood news! Your items ({{ITEMS}}) have been securely packed and loaded into our current container batch. The shipment is now finalizing documentation and will be on the water/air shortly.\n\nStay tuned for further updates.',
-        icon: FileText
+        message: 'Hello {{FIRST_NAME}},\n\nGood news! Your items ({{ITEMS}}) for order #{{ORDER_ID}} have been securely packed and loaded into our current container batch. The shipment is now finalizing documentation and will depart shortly.\n\nStay tuned for further updates.',
+        icon: FileText,
+        badge: 'Loaded Batch Only'
     },
     {
         id: 'transit-start',
-        title: 'Transit (On Water)',
+        title: 'International Transit',
         target: 'state:IN_TRANSIT',
         subject: 'Transit Update: Goods are on the way to Ghana',
         message: 'Hello {{FIRST_NAME}},\n\nYour shipment for order #{{ORDER_ID}} ({{ITEMS}}) has officially departed and is currently in international transit toward Tema Port. Approximate transit times: Air (7-14 days), Sea (30-45 days).\n\nWe will notify you the moment it docks in Ghana.',
-        icon: Anchor
+        icon: Anchor,
+        badge: 'In Transit Only'
     },
     {
         id: 'ghana-arrived',
-        title: 'Arrived in Ghana',
+        title: 'Arrived at Accra Hub',
         target: 'state:ARRIVED',
-        subject: 'Shipment Arrival: Your items are now at London\'s Imports!',
-        message: 'Hello {{FIRST_NAME}},\n\nGreat news! Your shipment for order #{{ORDER_ID}} ({{ITEMS}}) has successfully arrived at London\'s Imports in Ghana and has been sorted.\n\nYou can now come for collection at our center or wait for our last-mile delivery team to contact you.\n\nLocation: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for your patience.',
-        icon: Map
+        subject: 'Shipment Arrival: Your items are now at London\'s Imports Accra Hub!',
+        message: 'Hello {{FIRST_NAME}},\n\nGreat news! Your shipment for order #{{ORDER_ID}} ({{ITEMS}}) has successfully arrived at London\'s Imports in Ghana and has passed sorting.\n\nYou can now come for collection at our center or wait for our last-mile delivery team to contact you.\n\nLocation: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for choosing London\'s Imports.',
+        icon: MapPin,
+        badge: 'Arrived Hub Only'
     },
     {
-        id: 'ready-delivery',
-        title: 'Ready for Collection',
-        target: 'state:ARRIVED',
-        subject: 'Order Ready: Come pick up your items!',
-        message: 'Hello {{FIRST_NAME}},\n\nGreat news! Your order #{{ORDER_ID}} ({{ITEMS}}) is now cleared and ready for collection at London\'s Imports. If you requested doorstep delivery, our courier will be in touch with you shortly.\n\nPlease remember to bring your Order ID.',
-        icon: CheckCircle
+        id: 'out-for-delivery',
+        title: 'Out for Delivery',
+        target: 'state:OUT_FOR_DELIVERY',
+        subject: 'Delivery Alert: Your package is out for delivery today',
+        message: 'Hello {{FIRST_NAME}},\n\nYour order #{{ORDER_ID}} ({{ITEMS}}) has been dispatched and is out for delivery with our courier today.\n\nPlease ensure you or someone designated is available at your delivery location with your phone reachable.\n\nThank you for shopping with London\'s Imports.',
+        icon: Package,
+        badge: 'Out for Delivery Only'
+    },
+    {
+        id: 'delivered',
+        title: 'Delivered / Completed',
+        target: 'state:DELIVERED',
+        subject: 'Package Delivered: Order #{{ORDER_ID}} Complete',
+        message: 'Hello {{FIRST_NAME}},\n\nYour order #{{ORDER_ID}} ({{ITEMS}}) has been marked as delivered. We hope you love your items!\n\nIf you have any feedback or need assistance, please feel free to reach out to us at +233545247009.\n\nThank you for choosing London\'s Imports.',
+        icon: CheckCircle,
+        badge: 'Delivered Orders Only'
+    },
+    {
+        id: 'weekly-drop',
+        title: 'Weekly China Arrivals Drop',
+        target: 'customers',
+        subject: 'New Arrivals: Weekly China Shipment Just Dropped!',
+        message: 'Hello {{FIRST_NAME}},\n\nOur latest weekly shipment of trending electronics, fashion, and home essentials has arrived from China!\n\nExplore all fresh arrivals and exclusive limited-quantity deals before they sell out:\nhttps://londonsimports.com/products\n\nHappy shopping,\nLondon\'s Imports Team',
+        icon: Users,
+        badge: 'All Customers'
     }
 ];
 
@@ -90,12 +113,36 @@ const SMS_TEMPLATES = [
         badge: 'Unpaid Orders Only'
     },
     {
+        id: 'sms-gz-arrived',
+        title: 'Guangzhou Arrival',
+        target: 'state:OPEN_FOR_BATCH',
+        message: "London's Imports: Hi {{FIRST_NAME}}, your items ({{ITEMS}}) for order #{{ORDER_ID}} have arrived at our Guangzhou warehouse and are sorting for packing.",
+        icon: Package,
+        badge: 'GZ Warehouse Only'
+    },
+    {
+        id: 'sms-container-loaded',
+        title: 'Container Loaded',
+        target: 'state:IN_FULFILLMENT',
+        message: "London's Imports: Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) is packed and loaded into the container batch. Preparing for customs & departure.",
+        icon: FileText,
+        badge: 'Loaded Batch Only'
+    },
+    {
+        id: 'sms-in-transit',
+        title: 'International Transit',
+        target: 'state:IN_TRANSIT',
+        message: "London's Imports: Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) is now in international transit toward Ghana. We will alert you upon port arrival.",
+        icon: Anchor,
+        badge: 'In Transit Only'
+    },
+    {
         id: 'sms-ghana-arrived',
         title: 'Arrived at Accra Hub',
         target: 'state:ARRIVED',
-        message: "London's Imports: Good news {{FIRST_NAME}}! Order #{{ORDER_ID}} ({{ITEMS}}) has arrived at our Accra Hub and passed sorting. Call/WhatsApp +233545247009 for pickup or delivery.",
+        message: "London's Imports: Good news {{FIRST_NAME}}! Order #{{ORDER_ID}} ({{ITEMS}}) has arrived at our Accra Hub and passed sorting. Ready for pickup or delivery: https://maps.app.goo.gl/F32KNuagHcczTtsFA",
         icon: MapPin,
-        badge: 'Logistics'
+        badge: 'Arrived Hub Only'
     },
     {
         id: 'sms-out-for-delivery',
@@ -103,15 +150,23 @@ const SMS_TEMPLATES = [
         target: 'state:OUT_FOR_DELIVERY',
         message: "London's Imports: Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) is out for delivery today with our dispatch courier! Please be on standby to receive your package.",
         icon: Package,
-        badge: 'Courier'
+        badge: 'Out for Delivery Only'
+    },
+    {
+        id: 'sms-delivered',
+        title: 'Delivered / Completed',
+        target: 'state:DELIVERED',
+        message: "London's Imports: Order #{{ORDER_ID}} ({{ITEMS}}) has been delivered! Thank you for choosing London's Imports. For help, contact +233545247009.",
+        icon: CheckCircle,
+        badge: 'Delivered Orders Only'
     },
     {
         id: 'sms-flash-deal',
-        title: 'Arrival Drop / Promo',
+        title: 'Weekly China Arrivals Drop',
         target: 'customers',
         message: "London's Imports: New weekly China arrival drop is live! Browse discounted electronics & fashion items: https://londonsimports.com/products",
-        icon: CheckCircle,
-        badge: 'Promo'
+        icon: Users,
+        badge: 'All Customers'
     }
 ];
 
@@ -121,17 +176,21 @@ const JOURNEY_FILTERS = [
     { key: 'state:OPEN_FOR_BATCH', label: 'At GZ Warehouse', icon: Package },
     { key: 'state:IN_FULFILLMENT', label: 'Loaded / Packed', icon: FileText },
     { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
-    { key: 'state:ARRIVED', label: 'Arrived in Ghana', icon: MapPin },
-    { key: 'state:OUT_FOR_DELIVERY', label: 'Out for Local Delivery', icon: Anchor },
+    { key: 'state:ARRIVED', label: 'Arrived in Ghana Hub', icon: MapPin },
+    { key: 'state:OUT_FOR_DELIVERY', label: 'Out for Local Delivery', icon: Package },
+    { key: 'state:DELIVERED', label: 'Delivered / Completed', icon: CheckCircle },
     { key: 'manual', label: 'Manual Email List', icon: Edit3 },
 ];
 
 const SMS_JOURNEY_FILTERS = [
     { key: 'customers', label: 'All Active Customers', icon: Users },
     { key: 'state:PENDING_PAYMENT', label: 'Unpaid (Pending Payment)', icon: CreditCard },
+    { key: 'state:OPEN_FOR_BATCH', label: 'At GZ Warehouse', icon: Package },
+    { key: 'state:IN_FULFILLMENT', label: 'Loaded / Packed', icon: FileText },
+    { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
     { key: 'state:ARRIVED', label: 'Arrived in Ghana Hub', icon: MapPin },
     { key: 'state:OUT_FOR_DELIVERY', label: 'Out for Local Delivery', icon: Package },
-    { key: 'state:IN_TRANSIT', label: 'In Transit from China', icon: Anchor },
+    { key: 'state:DELIVERED', label: 'Delivered / Completed', icon: CheckCircle },
     { key: 'manual', label: 'Manual Phone Numbers', icon: Edit3 },
 ];
 
@@ -558,7 +617,10 @@ export default function AdminBroadcastPage() {
                                                 <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
                                                     <Icon className="w-3.5 h-3.5" />
                                                 </div>
-                                                <span className="text-xs font-medium truncate">{tpl.title}</span>
+                                                <div className="truncate">
+                                                    <p className="text-xs font-medium truncate">{tpl.title}</p>
+                                                    <p className="text-[10px] font-mono text-slate-400 truncate">{tpl.badge}</p>
+                                                </div>
                                             </div>
                                             <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
                                         </button>
@@ -605,7 +667,7 @@ export default function AdminBroadcastPage() {
                         <div className={`flex items-center justify-between pb-4 mb-6 border-b ${
                             isDark ? 'border-slate-800' : 'border-slate-100'
                         }`}>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 flex-wrap">
                                 <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
                                     {channel === 'sms' ? 'SMS Message Composer' : 'Email Dispatcher'}
                                 </h2>
@@ -614,6 +676,20 @@ export default function AdminBroadcastPage() {
                                         Sender: LondonsImp
                                     </span>
                                 )}
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-medium text-slate-700 dark:text-slate-300">
+                                    <span className="text-slate-400 uppercase font-mono tracking-wider text-[9px]">Targeting:</span>
+                                    <span className="font-semibold">
+                                        {channel === 'email' 
+                                            ? (JOURNEY_FILTERS.find(f => f.key === emailTarget)?.label || emailTarget)
+                                            : (SMS_JOURNEY_FILTERS.find(f => f.key === smsTarget)?.label || smsTarget)
+                                        }
+                                    </span>
+                                    {(channel === 'email' ? emailTarget : smsTarget).startsWith('state:') && (
+                                        <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                            Cohort Isolated
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             <button 

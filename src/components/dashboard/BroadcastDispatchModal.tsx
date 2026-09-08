@@ -32,6 +32,84 @@ interface BroadcastDispatchModalProps {
     sending?: boolean;
 }
 
+function getCohortMeta(targetKey: string, defaultAudienceLabel: string) {
+    switch (targetKey) {
+        case 'state:PENDING_PAYMENT':
+        case 'pending_payment':
+            return {
+                badge: 'Unpaid Orders Only',
+                title: 'Smart Unpaid Order Filter Active',
+                desc: 'This broadcast is strictly restricted to customers who currently have an outstanding unpaid balance. Customers with completed payments will not be messaged.',
+                themeClass: 'border-[#8B5E3C]/30 bg-[#8B5E3C]/5 text-[#8B5E3C]',
+                badgeClass: 'text-[#8B5E3C] dark:text-[#c49a78]'
+            };
+        case 'state:OPEN_FOR_BATCH':
+            return {
+                badge: 'GZ Warehouse Only',
+                title: 'Smart Guangzhou Facility Cohort Active',
+                desc: 'This broadcast is strictly restricted to customers whose orders have been received and are currently sorting at the Guangzhou Facility.',
+                themeClass: 'border-blue-500/30 bg-blue-500/5 text-blue-600 dark:text-blue-400',
+                badgeClass: 'text-blue-600 dark:text-blue-400'
+            };
+        case 'state:IN_FULFILLMENT':
+            return {
+                badge: 'Loaded Batch Only',
+                title: 'Smart Container Loaded Cohort Active',
+                desc: 'This broadcast is strictly restricted to customers whose orders have been packed and loaded into the current container batch.',
+                themeClass: 'border-indigo-500/30 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400',
+                badgeClass: 'text-indigo-600 dark:text-indigo-400'
+            };
+        case 'state:IN_TRANSIT':
+            return {
+                badge: 'In Transit Only',
+                title: 'Smart International Transit Cohort Active',
+                desc: 'This broadcast is strictly restricted to customers whose packages have departed China and are currently in international transit to Ghana.',
+                themeClass: 'border-cyan-500/30 bg-cyan-500/5 text-cyan-600 dark:text-cyan-400',
+                badgeClass: 'text-cyan-600 dark:text-cyan-400'
+            };
+        case 'state:ARRIVED':
+            return {
+                badge: 'Arrived Hub Only',
+                title: 'Smart Arrived in Ghana Cohort Active',
+                desc: 'This broadcast is strictly restricted to customers whose packages have arrived and are available at our Accra Sorting Hub.',
+                themeClass: 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400',
+                badgeClass: 'text-emerald-600 dark:text-emerald-400'
+            };
+        case 'state:OUT_FOR_DELIVERY':
+            return {
+                badge: 'Out for Delivery Only',
+                title: 'Smart Out-For-Delivery Cohort Active',
+                desc: 'This broadcast is strictly restricted to customers whose orders are currently assigned and out with our dispatch courier team.',
+                themeClass: 'border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400',
+                badgeClass: 'text-amber-600 dark:text-amber-400'
+            };
+        case 'state:DELIVERED':
+            return {
+                badge: 'Delivered Orders Only',
+                title: 'Smart Delivered Orders Cohort Active',
+                desc: 'This broadcast is strictly restricted to customers whose orders have been successfully delivered or collected.',
+                themeClass: 'border-purple-500/30 bg-purple-500/5 text-purple-600 dark:text-purple-400',
+                badgeClass: 'text-purple-600 dark:text-purple-400'
+            };
+        case 'customers':
+            return {
+                badge: 'All Registered Customers',
+                title: 'All Active Customers Broadcast',
+                desc: 'This broadcast will reach all active customer accounts, personalized with each user’s name.',
+                themeClass: 'border-slate-300 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900/50 text-slate-700 dark:text-slate-300',
+                badgeClass: 'text-slate-500 dark:text-slate-400'
+            };
+        default:
+            return {
+                badge: 'Targeted List',
+                title: `Targeted Broadcast Active: ${defaultAudienceLabel}`,
+                desc: `This broadcast is strictly restricted to recipients matching [${defaultAudienceLabel}].`,
+                themeClass: 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400',
+                badgeClass: 'text-emerald-600 dark:text-emerald-400'
+            };
+    }
+}
+
 export function BroadcastDispatchModal({
     isOpen,
     onClose,
@@ -67,7 +145,7 @@ export function BroadcastDispatchModal({
 
     if (!mounted) return null;
 
-    const isPendingPaymentTarget = target === 'state:PENDING_PAYMENT' || target === 'pending_payment';
+    const cohortMeta = getCohortMeta(target, audienceLabel);
 
     // Generate personalized sample preview text
     const sampleName = sampleRecipient?.name || 'Kofi Mensah';
@@ -145,11 +223,9 @@ export function BroadcastDispatchModal({
                                 <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                                     {audienceLabel}
                                 </p>
-                                {isPendingPaymentTarget && (
-                                    <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-wider text-[#8B5E3C] dark:text-[#c49a78]">
-                                        Unpaid Orders Only
-                                    </span>
-                                )}
+                                <span className={`inline-block mt-1 text-[8px] font-black uppercase tracking-wider ${cohortMeta.badgeClass}`}>
+                                    {cohortMeta.badge}
+                                </span>
                             </div>
 
                             <div className="p-3.5 border border-slate-100 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-900/30">
@@ -210,24 +286,17 @@ export function BroadcastDispatchModal({
                         </div>
 
                         {/* Smart Targeting Safeguard Banner */}
-                        {isPendingPaymentTarget ? (
-                            <div className="p-3.5 mb-8 border border-[#8B5E3C]/30 bg-[#8B5E3C]/5 flex items-start gap-3">
-                                <ShieldCheck className="w-4 h-4 text-[#8B5E3C] shrink-0 mt-0.5" />
-                                <div className="space-y-0.5">
-                                    <p className="text-[10px] font-black uppercase tracking-wider text-[#8B5E3C]">
-                                        Smart Unpaid Order Filter Active
-                                    </p>
-                                    <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
-                                        This broadcast is strictly restricted to customers who currently have an outstanding unpaid balance. Customers with completed payments will not be messaged.
-                                    </p>
-                                </div>
+                        <div className={`p-3.5 mb-8 border ${cohortMeta.themeClass} flex items-start gap-3`}>
+                            <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+                            <div className="space-y-0.5">
+                                <p className="text-[10px] font-black uppercase tracking-wider">
+                                    {cohortMeta.title}
+                                </p>
+                                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+                                    {cohortMeta.desc}
+                                </p>
                             </div>
-                        ) : (
-                            <div className="p-3 mb-8 border border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900/30 flex items-center gap-2.5 text-slate-500 text-[11px]">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                                <span>Broadcast is throttled with carrier gateway failover (Hubtel & Sailup).</span>
-                            </div>
-                        )}
+                        </div>
 
                         {/* Actions */}
                         <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-900">
