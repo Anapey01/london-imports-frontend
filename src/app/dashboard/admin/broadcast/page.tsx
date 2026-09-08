@@ -108,7 +108,7 @@ const SMS_TEMPLATES = [
         id: 'sms-payment-reminder',
         title: 'Payment Reminder',
         target: 'state:PENDING_PAYMENT',
-        message: "London's Imports: Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) has a pending balance of GHS {{AMOUNT_DUE}}. Pay securely via Momo here: {{PAY_URL}}",
+        message: "Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) has a pending balance of GHS {{AMOUNT_DUE}}. Pay securely via Momo here: {{PAY_URL}}",
         icon: CreditCard,
         badge: 'Unpaid Orders Only'
     },
@@ -116,7 +116,7 @@ const SMS_TEMPLATES = [
         id: 'sms-gz-arrived',
         title: 'Guangzhou Arrival',
         target: 'state:OPEN_FOR_BATCH',
-        message: "London's Imports: Hi {{FIRST_NAME}}, your items ({{ITEMS}}) for order #{{ORDER_ID}} have arrived at our Guangzhou warehouse and are sorting for packing.",
+        message: "Hi {{FIRST_NAME}}, your items ({{ITEMS}}) for order #{{ORDER_ID}} have arrived at our Guangzhou warehouse and are sorting for packing.",
         icon: Package,
         badge: 'GZ Warehouse Only'
     },
@@ -124,7 +124,7 @@ const SMS_TEMPLATES = [
         id: 'sms-container-loaded',
         title: 'Container Loaded',
         target: 'state:IN_FULFILLMENT',
-        message: "London's Imports: Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) is packed and loaded into the container batch. Preparing for customs & departure.",
+        message: "Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) is packed and loaded into the container batch. Preparing for customs & departure.",
         icon: FileText,
         badge: 'Loaded Batch Only'
     },
@@ -132,7 +132,7 @@ const SMS_TEMPLATES = [
         id: 'sms-in-transit',
         title: 'International Transit',
         target: 'state:IN_TRANSIT',
-        message: "London's Imports: Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) is now in international transit toward Ghana. We will alert you upon port arrival.",
+        message: "Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) is now in international transit toward Ghana. We will alert you upon port arrival.",
         icon: Anchor,
         badge: 'In Transit Only'
     },
@@ -140,7 +140,7 @@ const SMS_TEMPLATES = [
         id: 'sms-ghana-arrived',
         title: 'Arrived at Accra Hub',
         target: 'state:ARRIVED',
-        message: "London's Imports: Good news {{FIRST_NAME}}! Order #{{ORDER_ID}} ({{ITEMS}}) has arrived at our Accra Hub and passed sorting. Ready for pickup or delivery: https://maps.app.goo.gl/F32KNuagHcczTtsFA",
+        message: "Hi {{FIRST_NAME}}, good news! Order #{{ORDER_ID}} ({{ITEMS}}) has arrived at our Accra Hub and passed sorting. Ready for pickup or delivery: https://maps.app.goo.gl/F32KNuagHcczTtsFA",
         icon: MapPin,
         badge: 'Arrived Hub Only'
     },
@@ -148,7 +148,7 @@ const SMS_TEMPLATES = [
         id: 'sms-out-for-delivery',
         title: 'Out for Delivery',
         target: 'state:OUT_FOR_DELIVERY',
-        message: "London's Imports: Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) is out for delivery today with our dispatch courier! Please be on standby to receive your package.",
+        message: "Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) is out for delivery today with our dispatch courier! Please be on standby to receive your package.",
         icon: Package,
         badge: 'Out for Delivery Only'
     },
@@ -156,7 +156,7 @@ const SMS_TEMPLATES = [
         id: 'sms-delivered',
         title: 'Delivered / Completed',
         target: 'state:DELIVERED',
-        message: "London's Imports: Order #{{ORDER_ID}} ({{ITEMS}}) has been delivered! Thank you for choosing London's Imports. For help, contact +233545247009.",
+        message: "Hi {{FIRST_NAME}}, order #{{ORDER_ID}} ({{ITEMS}}) has been delivered! Thank you for shopping with us. For help, contact +233545247009.",
         icon: CheckCircle,
         badge: 'Delivered Orders Only'
     },
@@ -164,7 +164,7 @@ const SMS_TEMPLATES = [
         id: 'sms-flash-deal',
         title: 'Weekly China Arrivals Drop',
         target: 'customers',
-        message: "London's Imports: New weekly China arrival drop is live! Browse discounted electronics & fashion items: https://londonsimports.com/products",
+        message: "Hi {{FIRST_NAME}}, new weekly China arrival drop is live! Browse discounted electronics & fashion items: https://londonsimports.com/products",
         icon: Users,
         badge: 'All Customers'
     }
