@@ -25,58 +25,58 @@ import {
     Smartphone,
     ShieldCheck
 } from 'lucide-react';
-import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
+import { BroadcastDispatchModal, SampleRecipient } from '@/components/dashboard/BroadcastDispatchModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 
 const LOGISTICS_TEMPLATES = [
     {
+        id: 'payment-reminder',
+        title: 'Payment Reminder (Unpaid Orders)',
+        target: 'state:PENDING_PAYMENT',
+        subject: 'Action Required: Complete Payment for Order #{{ORDER_ID}}',
+        message: 'Hello {{FIRST_NAME}},\n\nThis is a friendly reminder that a pending balance of GHS {{AMOUNT_DUE}} remains due for your order #{{ORDER_ID}} ({{ITEMS}}).\n\nPlease complete your payment securely via Mobile Money on our portal to avoid any delays in shipping and delivery:\n{{PAY_URL}}\n\nThank you for choosing London\'s Imports.',
+        icon: CreditCard,
+        badge: 'Unpaid Orders Only'
+    },
+    {
         id: 'gz-arrived',
         title: 'Guangzhou Arrival',
+        target: 'state:OPEN_FOR_BATCH',
         subject: 'Shipment Update: Goods Arrived at Guangzhou Warehouse',
-        message: 'Hello,\n\nWe are pleased to inform you that your items have been successfully received and sorted at our Guangzhou Sorting Facility. They are now being prepared for the next available shipment batch.\n\nThank you for choosing London\'s Imports.',
+        message: 'Hello {{FIRST_NAME}},\n\nWe are pleased to inform you that your items ({{ITEMS}}) have been successfully received and sorted at our Guangzhou Sorting Facility. They are now being prepared for the next available shipment batch.\n\nThank you for choosing London\'s Imports.',
         icon: Package
     },
     {
         id: 'container-loaded',
         title: 'Container Loaded',
+        target: 'state:IN_FULFILLMENT',
         subject: 'Logistics Update: Your Shipment is Now Loaded',
-        message: 'Hello,\n\nGood news! Your items have been securely packed and loaded into our current container batch. The shipment is now finalizing documentation and will be on the water/air shortly.\n\nStay tuned for further updates.',
+        message: 'Hello {{FIRST_NAME}},\n\nGood news! Your items ({{ITEMS}}) have been securely packed and loaded into our current container batch. The shipment is now finalizing documentation and will be on the water/air shortly.\n\nStay tuned for further updates.',
         icon: FileText
     },
     {
         id: 'transit-start',
         title: 'Transit (On Water)',
+        target: 'state:IN_TRANSIT',
         subject: 'Transit Update: Goods are on the way to Ghana',
-        message: 'Hello,\n\nYour shipment has officially departed and is currently in international transit toward Tema Port. Approximate transit times: Air (7-14 days), Sea (30-45 days).\n\nWe will notify you the moment it docks in Ghana.',
+        message: 'Hello {{FIRST_NAME}},\n\nYour shipment for order #{{ORDER_ID}} ({{ITEMS}}) has officially departed and is currently in international transit toward Tema Port. Approximate transit times: Air (7-14 days), Sea (30-45 days).\n\nWe will notify you the moment it docks in Ghana.',
         icon: Anchor
     },
     {
         id: 'ghana-arrived',
         title: 'Arrived in Ghana',
+        target: 'state:ARRIVED',
         subject: 'Shipment Arrival: Your items are now at London\'s Imports!',
-        message: 'Hello,\n\nGreat news! Your shipment has successfully arrived at London\'s Imports in Ghana and has been sorted.\n\nYou can now come for collection at our center or wait for our last-mile delivery team to contact you.\n\nLocation: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for your patience.',
+        message: 'Hello {{FIRST_NAME}},\n\nGreat news! Your shipment for order #{{ORDER_ID}} ({{ITEMS}}) has successfully arrived at London\'s Imports in Ghana and has been sorted.\n\nYou can now come for collection at our center or wait for our last-mile delivery team to contact you.\n\nLocation: https://maps.app.goo.gl/F32KNuagHcczTtsFA\n\nThank you for your patience.',
         icon: Map
-    },
-    {
-        id: 'tema-port',
-        title: 'Tema Port / Customs',
-        subject: 'Ghana Update: Shipment Arrived at Tema Port',
-        message: 'Hello,\n\nYour shipment has successfully docked at Tema Port! Customs clearance is now underway. This process typically takes 3-7 business days depending on port congestion.\n\nWe are working hard to get your items released soon.',
-        icon: Anchor
     },
     {
         id: 'ready-delivery',
         title: 'Ready for Collection',
+        target: 'state:ARRIVED',
         subject: 'Order Ready: Come pick up your items!',
-        message: 'Hello,\n\nGreat news! Your order is now cleared and ready for collection at London\'s Imports. If you requested doorstep delivery, our courier will be in touch with you shortly.\n\nPlease remember to bring your Order ID.',
+        message: 'Hello {{FIRST_NAME}},\n\nGreat news! Your order #{{ORDER_ID}} ({{ITEMS}}) is now cleared and ready for collection at London\'s Imports. If you requested doorstep delivery, our courier will be in touch with you shortly.\n\nPlease remember to bring your Order ID.',
         icon: CheckCircle
-    },
-    {
-        id: 'payment-reminder',
-        title: 'Payment Reminder',
-        subject: 'Action Required: Balance Due for Delivery',
-        message: 'Hello,\n\nThis is a friendly reminder that a balance remains due on your order #{{ORDER_ID}}. Please complete your payment via the dashboard to ensure there are no delays in releasing your items for delivery.\n\nYou can pay quickly with Momo on the site.',
-        icon: CreditCard
     }
 ];
 
@@ -84,28 +84,32 @@ const SMS_TEMPLATES = [
     {
         id: 'sms-payment-reminder',
         title: 'Payment Reminder',
-        message: 'London\'s Imports: Hi {{FIRST_NAME}}, friendly reminder that order #{{ORDER_ID}} has an unpaid balance. Complete payment with Momo here: https://londonsimports.com/orders/{{ORDER_ID}}',
+        target: 'state:PENDING_PAYMENT',
+        message: "London's Imports: Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) has a pending balance of GHS {{AMOUNT_DUE}}. Pay securely via Momo here: {{PAY_URL}}",
         icon: CreditCard,
-        badge: 'Anti-Spam 1-Time'
+        badge: 'Unpaid Orders Only'
     },
     {
         id: 'sms-ghana-arrived',
         title: 'Arrived at Accra Hub',
-        message: 'London\'s Imports: Good news! Your order #{{ORDER_ID}} has arrived at our Accra Hub and passed sorting. Call/WhatsApp +233545247009 for pickup or delivery.',
+        target: 'state:ARRIVED',
+        message: "London's Imports: Good news {{FIRST_NAME}}! Order #{{ORDER_ID}} ({{ITEMS}}) has arrived at our Accra Hub and passed sorting. Call/WhatsApp +233545247009 for pickup or delivery.",
         icon: MapPin,
         badge: 'Logistics'
     },
     {
         id: 'sms-out-for-delivery',
         title: 'Out for Delivery',
-        message: 'London\'s Imports: Your order #{{ORDER_ID}} is out for delivery today with our dispatch courier! Please be on standby to receive your package.',
+        target: 'state:OUT_FOR_DELIVERY',
+        message: "London's Imports: Hi {{FIRST_NAME}}, your order #{{ORDER_ID}} ({{ITEMS}}) is out for delivery today with our dispatch courier! Please be on standby to receive your package.",
         icon: Package,
         badge: 'Courier'
     },
     {
         id: 'sms-flash-deal',
         title: 'Arrival Drop / Promo',
-        message: 'London\'s Imports: New weekly China arrival drop is live! Browse discounted electronics & fashion items: https://londonsimports.com/products',
+        target: 'customers',
+        message: "London's Imports: New weekly China arrival drop is live! Browse discounted electronics & fashion items: https://londonsimports.com/products",
         icon: CheckCircle,
         badge: 'Promo'
     }
@@ -113,6 +117,7 @@ const SMS_TEMPLATES = [
 
 const JOURNEY_FILTERS = [
     { key: 'customers', label: 'All Active Customers', icon: Users },
+    { key: 'state:PENDING_PAYMENT', label: 'Unpaid (Pending Payment)', icon: CreditCard },
     { key: 'state:OPEN_FOR_BATCH', label: 'At GZ Warehouse', icon: Package },
     { key: 'state:IN_FULFILLMENT', label: 'Loaded / Packed', icon: FileText },
     { key: 'state:IN_TRANSIT', label: 'International Transit', icon: Anchor },
@@ -152,17 +157,27 @@ export default function AdminBroadcastPage() {
     const [sending, setSending] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
     const [showPreview, setShowPreview] = useState(false);
-    const [confirmModal, setConfirmModal] = useState<{
+    const [dispatchModal, setDispatchModal] = useState<{
         isOpen: boolean;
-        title: string;
-        message: string;
-        onConfirm: () => void;
-        variant?: 'danger' | 'warning';
+        channel: 'sms' | 'email';
+        target: string;
+        audienceLabel: string;
+        rawMessage: string;
+        subject?: string;
+        recipientCount: number | null;
+        sampleRecipient: SampleRecipient | null;
+        loadingCount: boolean;
+        onConfirm: () => Promise<void>;
     }>({
         isOpen: false,
-        title: '',
-        message: '',
-        onConfirm: () => {}
+        channel: 'sms',
+        target: 'customers',
+        audienceLabel: '',
+        rawMessage: '',
+        recipientCount: null,
+        sampleRecipient: null,
+        loadingCount: false,
+        onConfirm: async () => {}
     });
 
     const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
@@ -179,10 +194,16 @@ export default function AdminBroadcastPage() {
     const applyEmailTemplate = (template: typeof LOGISTICS_TEMPLATES[0]) => {
         setSubject(template.subject);
         setEmailMessage(template.message);
+        if (template.target) {
+            setEmailTarget(template.target);
+        }
     };
 
     const applySmsTemplate = (template: typeof SMS_TEMPLATES[0]) => {
         setSmsMessage(template.message);
+        if (template.target) {
+            setSmsTarget(template.target);
+        }
     };
 
     const insertPlaceholder = (token: string) => {
@@ -228,30 +249,40 @@ export default function AdminBroadcastPage() {
         }
     };
 
-    const handleSendEmail = (e: React.FormEvent) => {
+    const handleSendEmail = async (e: React.FormEvent) => {
         e.preventDefault();
         
+        if (!subject.trim() || !emailMessage.trim()) {
+            addAlert('Please enter both subject and message body.', 'error');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emails = emailTarget === 'manual' 
+            ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => emailRegex.test(e))
+            : [];
+
+        if (emailTarget === 'manual' && emails.length === 0) {
+            addAlert('Please enter at least one valid email address.', 'error');
+            return;
+        }
+
         const audienceLabel = JOURNEY_FILTERS.find(f => f.key === emailTarget)?.label || emailTarget;
-        
-        setConfirmModal({
+
+        setDispatchModal({
             isOpen: true,
-            title: 'Confirm Email Broadcast',
-            message: `Send email broadcast to [${audienceLabel}] via Resend? This processes in the background.`,
-            variant: 'warning',
+            channel: 'email',
+            target: emailTarget,
+            audienceLabel,
+            rawMessage: emailMessage,
+            subject,
+            recipientCount: emailTarget === 'manual' ? emails.length : null,
+            sampleRecipient: emailTarget === 'manual' ? { name: 'Recipient', email: emails[0] } : null,
+            loadingCount: emailTarget !== 'manual',
             onConfirm: async () => {
                 setSending(true);
                 setStatus(null);
-                
                 try {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    const emails = emailTarget === 'manual' 
-                        ? manualEmails.split(/[\n,;]/).map(e => e.trim()).filter(e => emailRegex.test(e))
-                        : [];
-
-                    if (emailTarget === 'manual' && emails.length === 0) {
-                        throw new Error('Please enter at least one valid email address.');
-                    }
-
                     const { data } = await adminAPI.sendBroadcastEmail({ 
                         subject, 
                         message: emailMessage, 
@@ -268,6 +299,7 @@ export default function AdminBroadcastPage() {
                     if (emailTarget === 'manual') setManualEmails('');
                     setSubject('');
                     setEmailMessage('');
+                    setDispatchModal(prev => ({ ...prev, isOpen: false }));
                 } catch (err: unknown) {
                     const error = err as { response?: { data?: { error?: string } }, message?: string };
                     const msg = error.response?.data?.error || error.message || 'Failed to initiate email broadcast';
@@ -278,9 +310,23 @@ export default function AdminBroadcastPage() {
                 }
             }
         });
+
+        if (emailTarget !== 'manual') {
+            try {
+                const { data } = await adminAPI.getAudienceContacts(emailTarget, 'email');
+                setDispatchModal(prev => ({
+                    ...prev,
+                    recipientCount: data.count ?? (data.contacts ? data.contacts.length : 0),
+                    sampleRecipient: data.sample || (data.samples && data.samples[0]) || null,
+                    loadingCount: false
+                }));
+            } catch {
+                setDispatchModal(prev => ({ ...prev, loadingCount: false }));
+            }
+        }
     };
 
-    const handleSendSMS = (e: React.FormEvent) => {
+    const handleSendSMS = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!smsMessage.trim()) {
@@ -288,26 +334,30 @@ export default function AdminBroadcastPage() {
             return;
         }
 
+        const phones = smsTarget === 'manual'
+            ? manualPhones.split(/[\n,;]/).map(p => p.trim()).filter(p => p.length >= 9)
+            : [];
+
+        if (smsTarget === 'manual' && phones.length === 0) {
+            addAlert('Please enter at least one valid Ghanaian phone number.', 'error');
+            return;
+        }
+
         const audienceLabel = SMS_JOURNEY_FILTERS.find(f => f.key === smsTarget)?.label || smsTarget;
 
-        setConfirmModal({
+        setDispatchModal({
             isOpen: true,
-            title: 'Confirm SMS Broadcast (Hubtel Gateway)',
-            message: `Send SMS to [${audienceLabel}]? Message length: ${smsCharCount} chars (${smsSegments} segment${smsSegments > 1 ? 's' : ''} per user). Registered Sender ID: LondonsImp.`,
-            variant: 'warning',
+            channel: 'sms',
+            target: smsTarget,
+            audienceLabel,
+            rawMessage: smsMessage,
+            recipientCount: smsTarget === 'manual' ? phones.length : null,
+            sampleRecipient: smsTarget === 'manual' ? { name: 'Recipient', phone: phones[0] } : null,
+            loadingCount: smsTarget !== 'manual',
             onConfirm: async () => {
                 setSending(true);
                 setStatus(null);
-
                 try {
-                    const phones = smsTarget === 'manual'
-                        ? manualPhones.split(/[\n,;]/).map(p => p.trim()).filter(p => p.length >= 9)
-                        : [];
-
-                    if (smsTarget === 'manual' && phones.length === 0) {
-                        throw new Error('Please enter at least one valid Ghanaian phone number.');
-                    }
-
                     const { data } = await adminAPI.sendBroadcastSMS({
                         message: smsMessage,
                         target: smsTarget,
@@ -322,6 +372,7 @@ export default function AdminBroadcastPage() {
 
                     if (smsTarget === 'manual') setManualPhones('');
                     setSmsMessage('');
+                    setDispatchModal(prev => ({ ...prev, isOpen: false }));
                 } catch (err: unknown) {
                     const error = err as { response?: { data?: { error?: string } }, message?: string };
                     const msg = error.response?.data?.error || error.message || 'Failed to initiate SMS broadcast';
@@ -332,6 +383,20 @@ export default function AdminBroadcastPage() {
                 }
             }
         });
+
+        if (smsTarget !== 'manual') {
+            try {
+                const { data } = await adminAPI.getAudienceContacts(smsTarget, 'sms');
+                setDispatchModal(prev => ({
+                    ...prev,
+                    recipientCount: data.count ?? (data.contacts ? data.contacts.length : 0),
+                    sampleRecipient: data.sample || (data.samples && data.samples[0]) || null,
+                    loadingCount: false
+                }));
+            } catch {
+                setDispatchModal(prev => ({ ...prev, loadingCount: false }));
+            }
+        }
     };
 
     return (
@@ -587,10 +652,20 @@ export default function AdminBroadcastPage() {
                                                 <span className="text-[10px] font-mono text-slate-400">Via Resend API</span>
                                             </div>
                                             <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                                                {subject || '(No subject provided)'}
+                                                {subject
+                                                    .replace(/\{\{FIRST_NAME\}\}/g, 'Kofi')
+                                                    .replace(/\{\{ORDER_ID\}\}/g, 'LI-2026-0042')
+                                                    .replace(/\{\{ITEMS\}\}/g, '1x Pleated Skirt, 2x Chunky Loafers')
+                                                    .replace(/\{\{AMOUNT_DUE\}\}/g, '145.00')
+                                                    .replace(/\{\{PAY_URL\}\}/g, 'https://londonsimports.com/orders/LI-2026-0042') || '(No subject provided)'}
                                             </h3>
                                             <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-normal">
-                                                {emailMessage || '(Enter your email message body in edit mode...)'}
+                                                {emailMessage
+                                                    .replace(/\{\{FIRST_NAME\}\}/g, 'Kofi')
+                                                    .replace(/\{\{ORDER_ID\}\}/g, 'LI-2026-0042')
+                                                    .replace(/\{\{ITEMS\}\}/g, '1x Pleated Skirt, 2x Chunky Loafers')
+                                                    .replace(/\{\{AMOUNT_DUE\}\}/g, '145.00')
+                                                    .replace(/\{\{PAY_URL\}\}/g, 'https://londonsimports.com/orders/LI-2026-0042') || '(Enter your email message body in edit mode...)'}
                                             </div>
                                         </div>
                                     ) : (
@@ -607,8 +682,12 @@ export default function AdminBroadcastPage() {
                                             <div className="space-y-2">
                                                 <div className="bg-slate-800 text-slate-100 p-3.5 rounded-2xl rounded-tl-xs text-xs leading-relaxed font-normal shadow-xs">
                                                     {smsMessage
-                                                        .replace('{{FIRST_NAME}}', 'Kofi')
-                                                        .replace('{{ORDER_ID}}', 'LI-2026-0042') || 'Type your message in edit mode to see the live SMS delivery preview...'}
+                                                        .replace(/\{\{FIRST_NAME\}\}/g, 'Kofi')
+                                                        .replace(/\{\{ORDER_ID\}\}/g, 'LI-2026-0042')
+                                                        .replace(/\{\{ITEMS\}\}/g, '1x Pleated Skirt, 2x Chunky Loafers')
+                                                        .replace(/\{\{AMOUNT_DUE\}\}/g, '145.00')
+                                                        .replace(/\{\{PENDING_AMOUNT\}\}/g, '145.00')
+                                                        .replace(/\{\{PAY_URL\}\}/g, 'https://londonsimports.com/orders/LI-2026-0042') || 'Type your message in edit mode to see the live SMS delivery preview...'}
                                                 </div>
                                                 <div className="flex items-center justify-between px-1 text-[10px] text-slate-400 font-mono">
                                                     <span>Delivered · Just now</span>
@@ -628,7 +707,7 @@ export default function AdminBroadcastPage() {
                                         exit={{ opacity: 0 }}
                                         onSubmit={handleSendEmail} 
                                         className="space-y-5"
-                                    >
+                                     >
                                         {emailTarget === 'manual' && (
                                             <div className="space-y-1.5">
                                                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -663,24 +742,52 @@ export default function AdminBroadcastPage() {
                                                         ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
                                                         : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
                                                 }`}
-                                                placeholder="e.g. Shipment Update: Goods arrived at Guangzhou Warehouse"
+                                                placeholder="e.g. Action Required: Complete Payment for Order #{{ORDER_ID}}"
                                                 required
                                             />
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex items-center justify-between flex-wrap gap-2">
                                                 <label htmlFor="message" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                                                     Message Body
                                                 </label>
-                                                <div className="flex items-center gap-1.5">
+                                                <div className="flex items-center gap-1.5 flex-wrap">
                                                     <span className="text-[10px] text-slate-400 font-mono">Insert:</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{FIRST_NAME}}')}
+                                                        className="px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{FIRST_NAME}}'}
+                                                    </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => insertPlaceholder('{{ORDER_ID}}')}
                                                         className="px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
                                                     >
                                                         + {'{{ORDER_ID}}'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{ITEMS}}')}
+                                                        className="px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{ITEMS}}'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{AMOUNT_DUE}}')}
+                                                        className="px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{AMOUNT_DUE}}'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{PAY_URL}}')}
+                                                        className="px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{PAY_URL}}'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -778,6 +885,27 @@ export default function AdminBroadcastPage() {
                                                     >
                                                         + {'{{ORDER_ID}}'}
                                                     </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{ITEMS}}')}
+                                                        className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{ITEMS}}'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{AMOUNT_DUE}}')}
+                                                        className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{AMOUNT_DUE}}'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => insertPlaceholder('{{PAY_URL}}')}
+                                                        className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 font-mono text-[10px] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                                                    >
+                                                        + {'{{PAY_URL}}'}
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -791,7 +919,7 @@ export default function AdminBroadcastPage() {
                                                         ? 'bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 focus:border-slate-500' 
                                                         : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900'
                                                 }`}
-                                                placeholder="Type SMS broadcast message here. Available placeholders: {{FIRST_NAME}}, {{ORDER_ID}}..."
+                                                placeholder="Type SMS broadcast message here. Available placeholders: {{FIRST_NAME}}, {{ORDER_ID}}, {{ITEMS}}, {{AMOUNT_DUE}}, {{PAY_URL}}..."
                                                 required
                                             />
                                             
@@ -860,14 +988,22 @@ export default function AdminBroadcastPage() {
                 </div>
             </div>
 
-            {/* Confirmation Modal */}
-            <ConfirmModal
-                isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                onConfirm={confirmModal.onConfirm}
-                title={confirmModal.title}
-                message={confirmModal.message}
-                variant={confirmModal.variant}
+            {/* Minimalist Dispatch Verification Modal */}
+            <BroadcastDispatchModal
+                isOpen={dispatchModal.isOpen}
+                onClose={() => setDispatchModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={dispatchModal.onConfirm}
+                channel={dispatchModal.channel}
+                target={dispatchModal.target}
+                audienceLabel={dispatchModal.audienceLabel}
+                rawMessage={dispatchModal.rawMessage}
+                subject={dispatchModal.subject}
+                smsCharCount={smsCharCount}
+                smsSegments={smsSegments}
+                recipientCount={dispatchModal.recipientCount}
+                sampleRecipient={dispatchModal.sampleRecipient}
+                loadingCount={dispatchModal.loadingCount}
+                sending={sending}
             />
 
             {/* Notification Toasts */}

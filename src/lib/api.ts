@@ -287,7 +287,8 @@ export const adminAPI = {
     api.post('/admin/broadcast/', data),
   sendBroadcastSMS: (data: { message: string; target?: string; phones?: string[] }) => 
     api.post('/admin/broadcast/sms/', data),
-  getAudienceContacts: (target: string) => api.get('/admin/broadcast/contacts/', { params: { target } }),
+  getAudienceContacts: (target: string, channel: 'sms' | 'email' = 'sms') => 
+    api.get('/admin/broadcast/contacts/', { params: { target, channel } }),
 
   // Maintenance
   recalculateReservations: () => api.post('/auth/admin/recalculate-reservations/'),

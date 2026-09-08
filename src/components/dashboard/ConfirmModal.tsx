@@ -58,40 +58,39 @@ export function ConfirmModal({
                     />
                     
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                        initial={{ opacity: 0, scale: 0.98, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                        transition={{ type: "spring", duration: 0.25, bounce: 0 }}
-                        className="relative z-10 w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-8 my-auto"
+                        exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                        transition={{ duration: 0.15 }}
+                        className="relative z-10 w-full max-w-md bg-white dark:bg-slate-950 border border-slate-900 dark:border-slate-800 shadow-2xl p-8 sm:p-10 my-auto"
                     >
                         <button 
                             onClick={onClose}
-                            className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                            className="absolute top-6 right-6 p-2 border border-slate-200 dark:border-slate-800 hover:border-slate-900 dark:hover:border-white transition-colors cursor-pointer"
                             aria-label="Close modal"
                         >
-                            <X className="w-4 h-4 text-slate-400" />
+                            <X className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                         </button>
 
-                        <div className="flex flex-col items-center text-center">
-                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
-                                variant === 'danger' 
-                                    ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' 
-                                    : 'bg-amber-50 dark:bg-amber-900/20 text-amber-500'
-                            }`}>
-                                <AlertTriangle className="w-8 h-8" />
+                        <div className="flex flex-col items-start text-left">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className={`w-1.5 h-1.5 rounded-full ${variant === 'danger' ? 'bg-rose-500' : 'bg-[#8B5E3C]'}`} />
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
+                                    {variant === 'danger' ? 'ACTION REQUIRED' : 'CONFIRMATION'}
+                                </span>
                             </div>
 
-                            <h3 className="text-xl font-black text-slate-950 dark:text-white mb-2">
+                            <h3 className="text-xl font-serif font-bold text-slate-950 dark:text-white mb-2">
                                 {title}
                             </h3>
-                            <p className="text-[14px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed mb-8">
+                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
                                 {message}
                             </p>
 
-                            <div className="flex w-full gap-3">
+                            <div className="flex w-full gap-3 pt-2 border-t border-slate-100 dark:border-slate-900">
                                 <button
                                     onClick={onClose}
-                                    className="flex-1 py-3.5 px-6 rounded-2xl font-black text-[11px] uppercase tracking-widest text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                                    className="flex-1 py-3 px-5 font-black text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
                                 >
                                     {cancelText}
                                 </button>
@@ -101,10 +100,10 @@ export function ConfirmModal({
                                         onConfirm();
                                         onClose();
                                     }}
-                                    className={`flex-1 py-3.5 px-6 rounded-2xl font-black text-[11px] uppercase tracking-widest text-white transition-all shadow-lg cursor-pointer ${
+                                    className={`flex-1 py-3 px-5 font-black text-[10px] uppercase tracking-widest text-white transition-all cursor-pointer ${
                                         variant === 'danger'
-                                            ? 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/20'
-                                            : 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20'
+                                            ? 'bg-rose-600 hover:bg-rose-700'
+                                            : 'bg-slate-950 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950'
                                     }`}
                                 >
                                     {confirmText}
