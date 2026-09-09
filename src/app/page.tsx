@@ -136,8 +136,8 @@ export default async function HomePage() {
     }
   ];
 
-  // Curated Picks: Show only the store's genuine featured products
-  const featured = (featuredRes?.results || []);
+  // Curated Picks: Only unique featured products not already displayed above
+  const featured = dedupeAndLimit(featuredRes?.results, 12);
   const trending = dedupeAndLimit(trendingRes?.results, 12);
   const newArrivals = dedupeAndLimit(newArrivalsRes?.results, 12);
 
