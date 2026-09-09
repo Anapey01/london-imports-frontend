@@ -518,12 +518,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                         </div>
 
                         <ProductMeta product={product} />
-
-                        <div className="mt-8 pt-6 border-t border-[#006B5A]/10">
-                            <p className="text-sm text-gray-500">
-                                Sold by <span className="font-semibold text-[#006B5A]">{product.vendor?.business_name}</span>
-                            </p>
-                        </div>
                     </div>
                 </div>
             </main>

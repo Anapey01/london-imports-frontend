@@ -136,8 +136,11 @@ export default async function HomePage() {
     }
   ];
 
-  // Curated Picks: Only unique featured products not already displayed above
-  const featured = dedupeAndLimit(featuredRes?.results, 12);
+  // Curated Picks: Only genuine featured products, excluding Sesa oil
+   
+  const featured = dedupeAndLimit(featuredRes?.results, 12).filter(
+    (p: any) => p.slug !== 'sesa-oil' && !p.name?.toLowerCase().includes('sesa')
+  );
   const trending = dedupeAndLimit(trendingRes?.results, 12);
   const newArrivals = dedupeAndLimit(newArrivalsRes?.results, 12);
 

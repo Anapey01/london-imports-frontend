@@ -2,7 +2,7 @@ import { Product } from '@/types/product';
 
 export function ProductMeta({ product }: { product: Product }) {
     return (
-        <div className="grid grid-cols-2 border-y border-slate-200 dark:border-slate-800 divide-x divide-slate-200 dark:divide-slate-800 my-8">
+        <div className="grid grid-cols-2 border-y border-slate-200 dark:border-slate-800 divide-x divide-slate-200 dark:divide-slate-800 mt-6 mb-2">
             {/* Category */}
             <div className="py-4 pr-3 sm:pr-6 flex flex-col gap-1.5">
                 <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">

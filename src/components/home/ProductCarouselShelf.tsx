@@ -59,12 +59,14 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
 
     if (products.length === 0) return null;
 
+    const isFew = products.length <= 2;
+
     return (
         <section className="w-full bg-white dark:bg-slate-900 border-y border-slate-100/60 dark:border-slate-800/50 py-8 my-4 relative overflow-hidden group/shelf">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6 px-2">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+                <div className={`flex items-center ${isFew ? 'justify-between sm:justify-center' : 'justify-between'} mb-6 px-2`}>
+                    <h2 className={`text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-none ${isFew ? 'sm:text-center' : ''}`}>
                         {title}
                     </h2>
 
@@ -93,7 +95,7 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                 {/* Scroll Container */}
                 <div
                     ref={scrollContainerRef}
-                    className="flex gap-4 overflow-x-auto scrollbar-thin scroll-smooth px-2 pb-2 no-scrollbar"
+                    className={`flex gap-4 sm:gap-8 overflow-x-auto scrollbar-thin scroll-smooth px-2 pb-2 no-scrollbar ${isFew ? 'sm:justify-center' : ''}`}
                     style={{ scrollSnapType: 'x mandatory' }}
                 >
                     {products.map((product) => {
@@ -101,7 +103,7 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                         return (
                             <div
                                 key={product.id}
-                                className="w-[140px] sm:w-[160px] flex-shrink-0 scroll-snap-align-start flex flex-col justify-between"
+                                className={`${isFew ? 'w-[140px] sm:w-[220px] md:w-[250px]' : 'w-[140px] sm:w-[160px]'} flex-shrink-0 scroll-snap-align-start flex flex-col justify-between`}
                             >
                                 <Link
                                     href={`/products/${product.slug}`}
@@ -114,12 +116,12 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                                             alt=""
                                             aria-hidden="true"
                                             fill
-                                            sizes="(max-width: 640px) 140px, 160px"
+                                            sizes={isFew ? "(max-width: 640px) 140px, (max-width: 768px) 220px, 250px" : "(max-width: 640px) 140px, 160px"}
                                             className="object-contain hover:scale-105 transition-transform duration-300 p-2"
                                         />
                                     </div>
                                     {/* Label */}
-                                    <p className="text-xs text-slate-800 dark:text-slate-200 font-normal mt-2 line-clamp-2 leading-snug group-hover:text-slate-950 dark:group-hover:text-white transition-colors min-h-[30px]">
+                                    <p className={`text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-normal mt-2 line-clamp-2 leading-snug group-hover:text-slate-950 dark:group-hover:text-white transition-colors min-h-[30px] ${isFew ? 'sm:text-center' : ''}`}>
                                         {cleanProductName(product)}
                                     </p>
                                 </Link>

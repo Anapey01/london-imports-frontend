@@ -16,10 +16,9 @@ export default function PWAUpdater() {
                 // Force update check
                 registration.update().catch(() => {});
 
-                // If there's already a waiting worker, skip waiting and reload
+                // If there's already a waiting worker, skip waiting silently
                 if (registration.waiting) {
                     registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                    window.location.reload();
                     return;
                 }
 
@@ -30,7 +29,6 @@ export default function PWAUpdater() {
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                             newWorker.postMessage({ type: 'SKIP_WAITING' });
-                            window.location.reload();
                         }
                     });
                 });
