@@ -136,7 +136,35 @@ export default async function HomePage() {
     }
   ];
 
-  const featured = dedupeAndLimit(featuredRes?.results, 12);
+  // Curated Picks: Never starve featured items through prior category deduplication
+  const rawFeatured = (featuredRes?.results || []);
+  const curatedPicksList: any[] = [];
+  const curatedIds = new Set<string>();
+
+  for (const item of rawFeatured) {
+    if (!curatedIds.has(item.id)) {
+      curatedIds.add(item.id);
+      curatedPicksList.push(item);
+    }
+    if (curatedPicksList.length >= 12) break;
+  }
+
+  // If store has fewer than 8 featured products, backfill with top trending & new arrivals
+  if (curatedPicksList.length < 8) {
+    const candidatePool = [
+      ...(trendingRes?.results || []),
+      ...(newArrivalsRes?.results || [])
+    ];
+    for (const item of candidatePool) {
+      if (!curatedIds.has(item.id)) {
+        curatedIds.add(item.id);
+        curatedPicksList.push(item);
+      }
+      if (curatedPicksList.length >= 10) break;
+    }
+  }
+
+  const featured = curatedPicksList;
   const trending = dedupeAndLimit(trendingRes?.results, 12);
   const newArrivals = dedupeAndLimit(newArrivalsRes?.results, 12);
 
