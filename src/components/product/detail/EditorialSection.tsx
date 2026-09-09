@@ -50,47 +50,45 @@ export function EditorialSection({ data }: { data: Product['editorial_data'] }) 
                 </div>
             )}
 
-            {/* 2. Key Highlights (Horizontal 3-Column Minimalist Row) */}
+            {/* 2. Key Highlights (Horizontal with text beneath, responsive for smaller screens) */}
             {highlights.length > 0 && (
-                <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 my-6">
-                    {highlights.slice(0, 3).map((item, idx) => (
-                        <div
-                            key={idx}
-                            className="group/item flex flex-col items-center text-center p-3 sm:p-4 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/60 hover:border-emerald-500/20 transition-all duration-300 h-full"
-                        >
-                            {/* Lucide Icon Badge at Top */}
-                            <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center shadow-2xs mb-2.5 group-hover/item:scale-105 transition-transform">
-                                <LucideIcon name={item.icon} className="w-4 h-4 text-[#006B5A] dark:text-emerald-400" strokeWidth={1.75} />
+                <div className="my-8">
+                    <div className="flex overflow-x-auto gap-4 snap-x no-scrollbar pb-2 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:pb-0">
+                        {highlights.slice(0, 3).map((item, idx) => (
+                            <div
+                                key={idx}
+                                className="min-w-[190px] w-[65%] sm:w-auto flex-shrink-0 snap-start flex flex-col items-center text-center px-2"
+                            >
+                                {/* Lucide Icon Circular Badge at Top */}
+                                <div className="w-12 h-12 rounded-full border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-[#006B5A] dark:text-emerald-400 mb-3 shadow-2xs">
+                                    <LucideIcon name={item.icon} className="w-5 h-5" strokeWidth={1.5} />
+                                </div>
+
+                                {/* Title Beneath Icon */}
+                                <h4 className="text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-1.5 text-center">
+                                    {item.title}
+                                </h4>
+
+                                {/* Descriptive Text Beneath Title */}
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center max-w-[220px]">
+                                    {item.text}
+                                </p>
                             </div>
-
-                            {/* Title Beneath Icon */}
-                            <h4 className="text-[10px] sm:text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-1 line-clamp-1">
-                                {item.title}
-                            </h4>
-
-                            {/* Descriptive Text Beneath Title */}
-                            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">
-                                {item.text}
-                            </p>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
-            {/* 3. Core Specifications Card */}
+
+            {/* 3. Core Specifications Table */}
             {specs.length > 0 && (
-                <div className="border border-slate-200/70 dark:border-slate-800/70 rounded-2xl overflow-hidden bg-slate-50/40 dark:bg-slate-900/30 my-6">
-                    <div className="bg-slate-100/60 dark:bg-slate-800/50 px-5 py-3 border-b border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#006B5A] dark:text-emerald-400">
-                            Key Specifications
-                        </span>
-                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
-                            {specs.length} details
-                        </span>
-                    </div>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-800/50 bg-white/70 dark:bg-slate-950/40">
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-6 my-6">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#006B5A] dark:text-emerald-400 block mb-3">
+                        Product Details
+                    </span>
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                         {specs.map((spec, idx) => (
-                            <div key={idx} className="flex items-center justify-between px-5 py-3 text-xs">
-                                <span className="font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-tight text-[11px]">
+                            <div key={idx} className="flex items-center justify-between py-2.5 text-xs">
+                                <span className="font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[10px]">
                                     {spec.label}
                                 </span>
                                 <span className="text-slate-800 dark:text-slate-200 font-medium text-right">
