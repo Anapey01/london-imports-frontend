@@ -180,6 +180,8 @@ export default async function ProductsPage({ searchParams }: Props) {
                 {/* Client Side Search/Filter Component which takes initial data */}
                 <ProductGrid
                     initialProducts={initialProducts}
+                    initialCount={productsData?.count}
+                    initialHasNext={!!productsData?.next}
                     categories={categories}
                     initialSearch={search}
                     initialCategory={category}

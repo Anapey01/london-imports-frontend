@@ -61,7 +61,7 @@ export default async function CategoryPage({ params }: Props) {
     const { slug } = await params;
     const [category, productsData] = await Promise.all([
         getCategory(slug),
-        getProducts({ category: slug, limit: '100', ordering: 'price' })
+        getProducts({ category: slug, limit: '50', ordering: 'price' })
     ]);
 
     if (!category) return null;
@@ -166,6 +166,8 @@ export default async function CategoryPage({ params }: Props) {
                         <Suspense fallback={<div className="h-96 animate-pulse bg-slate-50/50 rounded-[2.5rem]" />}>
                             <ProductGrid 
                                 initialProducts={products} 
+                                initialCount={productsData?.count}
+                                initialHasNext={!!productsData?.next}
                                 initialCategory={slug}
                                 initialOrdering="price"
                                 hideFilters={true} 

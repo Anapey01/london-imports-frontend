@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "cross-env NEXT_IS_BUILDING=true next build --webpack",
+    "postbuild": "node scripts/postbuild-css.js",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",

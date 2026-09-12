@@ -32,6 +32,8 @@ interface Product {
 
 interface ProductGridProps {
     initialProducts?: Product[];
+    initialCount?: number;
+    initialHasNext?: boolean;
     categories?: Category[];
     initialSearch?: string;
     initialCategory?: string;
@@ -44,6 +46,8 @@ interface ProductGridProps {
 
 export default function ProductGrid({
     initialProducts = [],
+    initialCount,
+    initialHasNext,
     categories = [],
     initialSearch = '',
     initialCategory = '',
@@ -69,11 +73,14 @@ export default function ProductGrid({
 
     // Advanced Pagination Logic: Infinite Batching
     const PAGE_SIZE = 50;
+
+    const isDefaultFilterState = !search && !minPrice && !maxPrice && !vendorSlug &&
+        (category === initialCategory) && (status === initialStatus) && (ordering === initialOrdering);
     
     const { 
         data: infiniteData, 
         fetchNextPage, 
-        hasNextPage, 
+        hasNextPage: queryHasNextPage, 
         isFetchingNextPage, 
         isLoading 
     } = useInfiniteQuery({
@@ -95,7 +102,19 @@ export default function ProductGrid({
             // Check if there are more results based on the 'next' URL from backend
             return lastPage.next ? allPages.length + 1 : undefined;
         },
+        initialData: isDefaultFilterState && initialProducts.length > 0 ? {
+            pages: [{
+                results: initialProducts,
+                count: initialCount ?? initialProducts.length,
+                next: (initialHasNext ?? (initialProducts.length >= PAGE_SIZE)) ? 'page=2' : null,
+            }],
+            pageParams: [1]
+        } : undefined,
     });
+
+    const hasNextPage = infiniteData 
+        ? queryHasNextPage 
+        : (initialHasNext ?? (initialProducts.length >= PAGE_SIZE));
 
     // Helpers
     const updateSearch = (paramsToUpdate: Record<string, string>) => {
@@ -125,6 +144,8 @@ export default function ProductGrid({
     const products = infiniteData 
         ? infiniteData.pages.flatMap(page => page.results || page) 
         : initialProducts;
+
+    const totalCount = infiniteData?.pages?.[0]?.count ?? initialCount;
 
     // GA4 Tracking
     const lastTrackedParams = useRef('');
@@ -301,7 +322,11 @@ export default function ProductGrid({
                 {/* Minimalist Grid Toolbar: Count & Sort */}
                 <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-border-standard">
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-60">
-                        {products.length > 0 ? `${products.length} Pieces Available` : ''}
+                        {totalCount && totalCount > products.length 
+                            ? `Showing ${products.length} of ${totalCount} Pieces`
+                            : products.length > 0 
+                                ? `${products.length} Pieces Available` 
+                                : ''}
                     </span>
 
                     <div className="flex items-center gap-2">

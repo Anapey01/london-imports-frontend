@@ -109,15 +109,15 @@ const withPWA = withPWAInit({
         handler: 'NetworkOnly',
       },
       {
-        // 4. HTML documents (initial page loads) - NetworkFirst
+        // 4. HTML documents (initial page loads) - NetworkFirst with short fallback
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'NetworkFirst',
         options: {
           cacheName: 'pages-cache',
-          networkTimeoutSeconds: 3,
+          networkTimeoutSeconds: 5,
           expiration: {
-            maxEntries: 50,
-            maxAgeSeconds: 24 * 60 * 60,
+            maxEntries: 15,
+            maxAgeSeconds: 60 * 60, // 1 hour
           },
         },
       },
@@ -312,6 +312,31 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(self), microphone=(self), geolocation=(self), browsing-topics=()'
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'no-store, no-cache, must-revalidate'
+          },
+          {
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'no-store, no-cache, must-revalidate'
+          }
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          },
+          {
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'public, max-age=31536000, immutable'
           }
         ],
       },
