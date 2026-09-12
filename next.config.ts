@@ -343,12 +343,21 @@ const nextConfig: NextConfig = {
     ]
   },
   async rewrites() {
-    return [
-      {
-        source: '/api/feed/google/:path*',
-        destination: `${DEFAULT_API_ROOT}/api/feed/google/:path*`,
-      },
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: '/_next/static/css/22d843d29efef3ed.css',
+          destination: '/_next/static/css/8ef137cc7b45679b.css',
+        },
+      ],
+      afterFiles: [
+        {
+          source: '/api/feed/google/:path*',
+          destination: `${DEFAULT_API_ROOT}/api/feed/google/:path*`,
+        },
+      ],
+      fallback: [],
+    };
   },
   async redirects() {
     return [
