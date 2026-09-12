@@ -120,7 +120,8 @@ export default function ProductCard({
                             fill
                             priority={priority}
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                            className="object-contain group-hover/card:scale-110 transition-transform duration-500 ease-in-out px-4 py-8"
+                            className="object-contain group-hover/card:scale-110 transition-[transform,opacity] duration-500 ease-out px-4 py-8 opacity-0"
+                            onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
                             onError={() => setImageError(true)}
                         />
                     ) : (

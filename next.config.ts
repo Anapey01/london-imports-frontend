@@ -142,17 +142,20 @@ const withPWA = withPWAInit({
         },
       },
       {
-        // 7. External Images (Cloudinary, Wikipedia, etc.) - SWR
+        // 7. External Images (Cloudinary, Wikipedia, etc.) - CacheFirst for instant refresh loads
         urlPattern: ({ url }) =>
           url.origin === 'https://res.cloudinary.com' ||
           url.origin.includes('wikimedia.org') ||
           (url.origin === apiOrigin && url.pathname.startsWith('/media/')),
-        handler: 'StaleWhileRevalidate',
+        handler: 'CacheFirst',
         options: {
           cacheName: 'image-cache',
           expiration: {
             maxEntries: 200,
             maxAgeSeconds: 30 * 24 * 60 * 60,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
           },
         },
       },
@@ -187,10 +190,12 @@ const CSP = [
 
 const nextConfig: NextConfig = {
   images: {
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [64, 128, 256, 384],
     loader: 'custom',
     loaderFile: './src/lib/imageLoader.ts',
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 3600,
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: 'http',

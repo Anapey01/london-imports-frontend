@@ -49,14 +49,15 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                         href={`/products/${product.slug}`} 
                                                         className="group block"
                                                     >
-                                                        <div className="relative aspect-square w-full bg-transparent p-1 flex items-center justify-center overflow-hidden">
+                                                        <div className="relative aspect-square w-full bg-slate-50/60 dark:bg-slate-800/40 rounded-sm p-1 flex items-center justify-center overflow-hidden">
                                                             <Image
                                                                 src={imageUrl}
                                                                 alt=""
                                                                 aria-hidden="true"
                                                                 fill
                                                                 sizes="(max-width: 640px) 25vw, 15vw"
-                                                                className="object-contain hover:scale-105 transition-transform duration-300 p-1"
+                                                                className="object-contain hover:scale-105 transition-[transform,opacity] duration-500 ease-out p-1 opacity-0"
+                                                                onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
                                                             />
                                                         </div>
                                                         <p className="text-[11px] text-slate-800 dark:text-slate-200 font-normal mt-1 line-clamp-1 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
@@ -77,14 +78,15 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                         href={`/products/${product.slug}`} 
                                                         className="group block"
                                                     >
-                                                        <div className="relative aspect-[4/3] w-full bg-transparent p-2 flex items-center justify-center overflow-hidden">
+                                                        <div className="relative aspect-[4/3] w-full bg-slate-50/60 dark:bg-slate-800/40 rounded-sm p-2 flex items-center justify-center overflow-hidden">
                                                             <Image
                                                                 src={imageUrl}
                                                                 alt=""
                                                                 aria-hidden="true"
                                                                 fill
                                                                 sizes="(max-width: 640px) 50vw, 25vw"
-                                                                className="object-contain hover:scale-105 transition-transform duration-300 p-2"
+                                                                className="object-contain hover:scale-105 transition-[transform,opacity] duration-500 ease-out p-2 opacity-0"
+                                                                onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
                                                             />
                                                         </div>
                                                         <p className="text-xs text-slate-800 dark:text-slate-200 font-normal mt-2 line-clamp-1 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">

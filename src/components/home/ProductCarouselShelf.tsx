@@ -110,14 +110,15 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                                     className="group block"
                                 >
                                     {/* Image Wrapper */}
-                                    <div className="relative aspect-square w-full bg-transparent p-2 flex items-center justify-center overflow-hidden">
+                                    <div className="relative aspect-square w-full bg-slate-50/60 dark:bg-slate-800/40 rounded-sm p-2 flex items-center justify-center overflow-hidden">
                                         <Image
                                             src={imageUrl}
                                             alt=""
                                             aria-hidden="true"
                                             fill
                                             sizes={isFew ? "(max-width: 640px) 140px, (max-width: 768px) 220px, 250px" : "(max-width: 640px) 140px, 160px"}
-                                            className="object-contain hover:scale-105 transition-transform duration-300 p-2"
+                                            className="object-contain hover:scale-105 transition-[transform,opacity] duration-500 ease-out p-2 opacity-0"
+                                            onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
                                         />
                                     </div>
                                     {/* Label */}

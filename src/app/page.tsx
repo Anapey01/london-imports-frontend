@@ -67,16 +67,28 @@ export default async function HomePage() {
     getProducts({ category: 'perfumes', limit: '15' }).catch(() => ({ results: [] }))
   ]);
 
+  const fallbackPool = trendingRes?.results?.length ? trendingRes.results : (newArrivalsRes?.results || []);
+
   const seenIds = new Set<string>();
   // Helper to deduplicate items globally and limit the final array
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dedupeAndLimit = (items: any[], limit: number) => {
+  const dedupeAndLimit = (items: any[], limit: number, allowFallback = true) => {
     const unique = [];
     for (const item of items || []) {
       if (!seenIds.has(item.id)) {
         seenIds.add(item.id);
         unique.push(item);
         if (unique.length === limit) break;
+      }
+    }
+    // Fallback: If category returns 0 items, fill from general pool so cards never render empty or "Coming Soon"
+    if (unique.length === 0 && allowFallback) {
+      for (const item of fallbackPool) {
+        if (!seenIds.has(item.id)) {
+          seenIds.add(item.id);
+          unique.push(item);
+          if (unique.length === limit) break;
+        }
       }
     }
     return unique;
