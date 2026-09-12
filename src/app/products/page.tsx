@@ -71,6 +71,7 @@ export default async function ProductsPage({ searchParams }: Props) {
     const category = typeof resolvedSearchParams?.category === 'string' ? resolvedSearchParams.category : undefined;
     const featured = resolvedSearchParams.featured === 'true';
     const status = typeof resolvedSearchParams?.status === 'string' ? resolvedSearchParams.status : undefined;
+    const ordering = typeof resolvedSearchParams?.ordering === 'string' ? resolvedSearchParams.ordering : 'price';
     const isAvailableItems = status === 'READY_TO_SHIP';
 
     // Skip server-side product fetching for filtered/search pages to prevent blocking the client-side router transition.
@@ -86,6 +87,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                 search: '',
                 status: '',
                 featured: featured.toString(),
+                ordering,
                 limit: '50'
             })
     ]);
@@ -183,6 +185,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                     initialCategory={category}
                     initialFeatured={featured}
                     initialStatus={status}
+                    initialOrdering={ordering}
                 />
             </div>
 

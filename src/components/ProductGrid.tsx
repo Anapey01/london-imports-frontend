@@ -37,6 +37,7 @@ interface ProductGridProps {
     initialCategory?: string;
     initialFeatured?: boolean;
     initialStatus?: string;
+    initialOrdering?: string;
     vendorSlug?: string;
     hideFilters?: boolean;
 }
@@ -48,6 +49,7 @@ export default function ProductGrid({
     initialCategory = '',
     initialFeatured = false,
     initialStatus = '',
+    initialOrdering = 'price',
     vendorSlug = '',
     hideFilters = false
 }: ProductGridProps) {
@@ -63,6 +65,7 @@ export default function ProductGrid({
     const featured = searchParams.get('featured') === 'true' || initialFeatured;
     const minPrice = searchParams.get('min_price') ?? '';
     const maxPrice = searchParams.get('max_price') ?? '';
+    const ordering = searchParams.get('ordering') || initialOrdering;
 
     // Advanced Pagination Logic: Infinite Batching
     const PAGE_SIZE = 50;
@@ -74,7 +77,7 @@ export default function ProductGrid({
         isFetchingNextPage, 
         isLoading 
     } = useInfiniteQuery({
-        queryKey: ['products-paginated', category, status, search, featured, minPrice, maxPrice, vendorSlug],
+        queryKey: ['products-paginated', category, status, search, featured, minPrice, maxPrice, vendorSlug, ordering],
         queryFn: ({ pageParam = 1 }) => productsAPI.list({
             category,
             status,
@@ -83,6 +86,7 @@ export default function ProductGrid({
             min_price: minPrice,
             max_price: maxPrice,
             vendor: vendorSlug,
+            ordering,
             limit: PAGE_SIZE,
             page: pageParam
         }).then(res => res.data),
@@ -293,6 +297,30 @@ export default function ProductGrid({
                         <button onClick={clearFilters} className="ml-4 text-brand-emerald hover:text-content-primary transition-colors text-xs institutional-focus">[ × ]</button>
                     </div>
                 )}
+
+                {/* Minimalist Grid Toolbar: Count & Sort */}
+                <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-border-standard">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-60">
+                        {products.length > 0 ? `${products.length} Pieces Available` : ''}
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="grid-sort" className="text-[9px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-50">
+                            Sort:
+                        </label>
+                        <select
+                            id="grid-sort"
+                            value={ordering}
+                            onChange={(e) => updateSearch({ ordering: e.target.value })}
+                            className="bg-transparent border-0 text-[10px] font-black uppercase tracking-wider text-content-primary focus:outline-none cursor-pointer pr-2"
+                        >
+                            <option value="price" className="bg-surface text-content-primary">Price: Low to High</option>
+                            <option value="-price" className="bg-surface text-content-primary">Price: High to Low</option>
+                            <option value="-created_at" className="bg-surface text-content-primary">Newest Arrivals</option>
+                            <option value="-reservations_count" className="bg-surface text-content-primary">Most Popular</option>
+                        </select>
+                    </div>
+                </div>
 
                 {/* The Grid */}
                 {isLoading && !products.length ? (
