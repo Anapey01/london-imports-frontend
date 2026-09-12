@@ -216,9 +216,9 @@ export default function TrustSection() {
                         </div>
 
                         {/* Footer details & Carousel controls */}
-                        <div className="flex items-center justify-between border-t border-border-standard pt-6">
-                            <div>
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-content-primary">
+                        <div className="flex items-center justify-between border-t border-border-standard pt-6 gap-4">
+                            <div className="min-w-0 flex-1">
+                                <h4 className="text-[11px] font-black uppercase tracking-wider text-content-primary truncate">
                                     {displayedReviews[activeReviewIdx]?.user_name}
                                 </h4>
                                 <span className="text-[9px] font-black text-brand-emerald tracking-widest uppercase flex items-center gap-1 mt-0.5">
@@ -228,7 +228,7 @@ export default function TrustSection() {
 
                             {/* Carousel buttons */}
                             {displayedReviews.length > 1 && (
-                                <div className="flex items-center gap-2">
+                                <div className="shrink-0 flex items-center gap-2">
                                     <button 
                                         onClick={prevReview} 
                                         className="p-2 border border-border-standard hover:border-content-primary transition-all rounded-full"
@@ -236,7 +236,7 @@ export default function TrustSection() {
                                     >
                                         <ChevronLeft className="w-3.5 h-3.5 text-content-primary" />
                                     </button>
-                                    <span className="text-[9px] font-mono text-content-secondary">
+                                    <span className="text-[9px] font-mono text-content-secondary whitespace-nowrap tabular-nums select-none px-1">
                                         {activeReviewIdx + 1} / {displayedReviews.length}
                                     </span>
                                     <button 

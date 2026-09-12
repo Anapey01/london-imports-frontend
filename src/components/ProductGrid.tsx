@@ -320,8 +320,8 @@ export default function ProductGrid({
                 )}
 
                 {/* Minimalist Grid Toolbar: Count & Sort */}
-                <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-border-standard">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-60">
+                <div className="flex items-center justify-between gap-2 sm:gap-4 mb-8 pb-4 border-b border-border-standard">
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-[0.25em] text-content-secondary opacity-60 whitespace-nowrap shrink-0">
                         {totalCount && totalCount > products.length 
                             ? `Showing ${products.length} of ${totalCount} Pieces`
                             : products.length > 0 
@@ -329,15 +329,15 @@ export default function ProductGrid({
                                 : ''}
                     </span>
 
-                    <div className="flex items-center gap-2">
-                        <label htmlFor="grid-sort" className="text-[9px] font-black uppercase tracking-[0.3em] text-content-secondary opacity-50">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                        <label htmlFor="grid-sort" className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-content-secondary opacity-50 whitespace-nowrap">
                             Sort:
                         </label>
                         <select
                             id="grid-sort"
                             value={ordering}
                             onChange={(e) => updateSearch({ ordering: e.target.value })}
-                            className="bg-transparent border-0 text-[10px] font-black uppercase tracking-wider text-content-primary focus:outline-none cursor-pointer pr-2"
+                            className="bg-transparent border-0 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-content-primary focus:outline-none cursor-pointer pr-1"
                         >
                             <option value="price" className="bg-surface text-content-primary">Price: Low to High</option>
                             <option value="-price" className="bg-surface text-content-primary">Price: High to Low</option>
