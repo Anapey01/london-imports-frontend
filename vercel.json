@@ -1,8 +1,27 @@
 {
+  "buildCommand": "npm run build && node scripts/postbuild-css.js",
   "crons": [
     {
       "path": "/api/cron/daily-tasks",
       "schedule": "0 6 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/_next/static/css/22d843d29efef3ed.css",
+      "destination": "/legacy-css/22d843d29efef3ed.css"
+    },
+    {
+      "source": "/_next/static/css/8ef137cc7b45679b.css",
+      "destination": "/legacy-css/8ef137cc7b45679b.css"
+    },
+    {
+      "source": "/_next/static/css/2702258296b3bdef.css",
+      "destination": "/legacy-css/2702258296b3bdef.css"
+    },
+    {
+      "source": "/_next/static/css/0b77e07caaecc1ad.css",
+      "destination": "/legacy-css/0b77e07caaecc1ad.css"
     }
   ]
 }

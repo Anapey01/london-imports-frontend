@@ -250,6 +250,53 @@ const nextConfig: NextConfig = {
       preventFullImport: true, // Error if someone imports the whole package
     },
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.plugins.push({
+        apply(compiler: any) {
+          compiler.hooks.thisCompilation?.tap('LegacyCssPlugin', (compilation: any) => {
+            compilation.hooks.processAssets?.tap(
+              {
+                name: 'LegacyCssPlugin',
+                stage: compiler.webpack?.Compilation?.PROCESS_ASSETS_STAGE_ADDITIONS || 500,
+              },
+              (assets: any) => {
+                try {
+                  const cssAssetKeys = Object.keys(assets).filter((k: string) => k.startsWith('static/css/') && k.endsWith('.css'));
+                  let mainCssKey: string | null = null;
+                  let maxSize = 0;
+                  for (const key of cssAssetKeys) {
+                    const size = assets[key]?.size?.() || 0;
+                    if (size > maxSize) {
+                      maxSize = size;
+                      mainCssKey = key;
+                    }
+                  }
+                  if (mainCssKey) {
+                    const mainAsset = assets[mainCssKey];
+                    const legacyHashes = [
+                      'static/css/22d843d29efef3ed.css',
+                      'static/css/8ef137cc7b45679b.css',
+                      'static/css/2702258296b3bdef.css',
+                      'static/css/0b77e07caaecc1ad.css',
+                    ];
+                    for (const legacy of legacyHashes) {
+                      if (!assets[legacy]) {
+                        assets[legacy] = mainAsset;
+                      }
+                    }
+                  }
+                } catch (e) {
+                  console.warn('[LegacyCssPlugin] Warning:', e);
+                }
+              }
+            );
+          });
+        }
+      });
+    }
+    return config;
+  },
   async headers() {
     return [
       {

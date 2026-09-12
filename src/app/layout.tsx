@@ -167,13 +167,34 @@ export default async function RootLayout({
           }}
         />
 
-        {/* Auto-recover from ChunkLoadErrors across deployments */}
+        {/* Critical CSS reset to guarantee layout stability across all networks */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              *, ::before, ::after { box-sizing: border-box; }
+              html, body { margin: 0; padding: 0; }
+              img { max-width: 100%; height: auto; }
+            `,
+          }}
+        />
+
+        {/* Auto-recover from ChunkLoadErrors and Stylesheet 404s across deployments */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 if (typeof window === 'undefined') return;
-                function handleChunkError(event) {
+                function handleResourceError(event) {
+                  var target = event.target || event.srcElement;
+                  if (target && target.tagName === 'LINK' && target.rel === 'stylesheet') {
+                    var href = target.getAttribute('href') || '';
+                    if (href.indexOf('/_next/static/css/') !== -1 && !target.dataset.retried) {
+                      target.dataset.retried = 'true';
+                      var filename = href.split('/').pop().split('?')[0];
+                      target.href = '/legacy-css/' + filename;
+                      return;
+                    }
+                  }
                   var error = event.error || (event.reason && (event.reason.error || event.reason)) || {};
                   var message = (event.message || error.message || (typeof event.reason === 'string' ? event.reason : '')) + '';
                   if (/loading chunk .* failed/i.test(message) || /failed to fetch dynamically imported module/i.test(message)) {
@@ -191,8 +212,8 @@ export default async function RootLayout({
                     }
                   }
                 }
-                window.addEventListener('error', handleChunkError, true);
-                window.addEventListener('unhandledrejection', handleChunkError, true);
+                window.addEventListener('error', handleResourceError, true);
+                window.addEventListener('unhandledrejection', handleResourceError, true);
               })();
             `,
           }}

@@ -116,7 +116,10 @@ export default function Navbar() {
                         {/* Left Group: Brand & Index */}
                         <div className="flex items-center gap-8 md:gap-16 shrink-0">
                             <Link href="/" className="flex items-center gap-4 group">
-                                <div className="relative w-9 h-9 md:w-11 md:h-11 border border-content-primary overflow-hidden bg-slate-50 dark:bg-slate-900">
+                                <div 
+                                    style={{ width: 44, height: 44, minWidth: 44, minHeight: 44, position: 'relative', overflow: 'hidden', flexShrink: 0 }}
+                                    className="relative w-9 h-9 md:w-11 md:h-11 border border-content-primary overflow-hidden bg-slate-50 dark:bg-slate-900"
+                                >
                                     <Image
                                         src="/logo.jpg"
                                         alt="London's Imports"
