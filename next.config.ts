@@ -340,6 +340,19 @@ const nextConfig: NextConfig = {
           }
         ],
       },
+      {
+        source: '/legacy-css/:path*',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/css; charset=utf-8'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ],
+      },
     ]
   },
   async rewrites() {
@@ -347,7 +360,7 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         {
           source: '/_next/static/css/22d843d29efef3ed.css',
-          destination: '/_next/static/css/8ef137cc7b45679b.css',
+          destination: '/legacy-css/22d843d29efef3ed.css',
         },
       ],
       afterFiles: [
