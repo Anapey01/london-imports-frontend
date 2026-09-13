@@ -40,6 +40,9 @@ export interface OrderRowProps {
 const statusLabel = (s: string) => {
     switch (s) {
         case 'PENDING': return 'Pending';
+        case 'PENDING_PAYMENT': return 'Pending Payment';
+        case 'PAID': return 'Paid';
+        case 'PROCESSING': return 'Processing';
         case 'NEW_ORDERS': return 'New Orders';
         case 'WAREHOUSE': return 'Processing';
         case 'SHIPPING': return 'Shipping';
@@ -62,6 +65,11 @@ const OrderRow = React.memo(({
     handleDelete,
     getStatusColor
 }: OrderRowProps) => {
+    const isPaid = order.payment_status === 'PAID' || (Number(order.amount_paid || 0) >= Number(order.total_amount || 0) && Number(order.total_amount || 0) > 0);
+    const displayStatus = (isPaid && (order.status === 'PENDING_PAYMENT' || order.status === 'PENDING' || order.status === 'DRAFT'))
+        ? 'PROCESSING'
+        : order.status;
+
     return (
         <tr className={`group transition-colors duration-200 ${isSelected
                 ? 'bg-slate-50'
@@ -115,8 +123,8 @@ const OrderRow = React.memo(({
             </td>
             <td className="px-8 py-8 hidden lg:table-cell">
                 <div className="flex items-center gap-3">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${getStatusColor(order.status)}`}>
-                        {statusLabel(order.status)}
+                    <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${getStatusColor(displayStatus)}`}>
+                        {statusLabel(displayStatus)}
                     </span>
                     <div className="w-1 h-1 rounded-full bg-slate-200" />
                     <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(order.payment_status)}`}>
@@ -151,7 +159,7 @@ const OrderRow = React.memo(({
                                     className="text-[9px] font-black uppercase tracking-widest px-3 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-900/60 dark:text-rose-400 dark:hover:bg-rose-950/30 transition-all cursor-pointer whitespace-nowrap shadow-sm"
                                     title="Undo payment: reset to Unpaid (Pending Payment)"
                                 >
-                                    UNPAID
+                                    MARK UNPAID
                                 </button>
                             </>
                         )}

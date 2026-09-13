@@ -291,7 +291,10 @@ export default function AdminOrderDetailPage() {
 
     if (!order) return null;
 
-
+    const isFullyPaid = order.payment_status === 'PAID' || (Number(order.amount_paid || 0) >= Number(order.total || 0) && Number(order.total || 0) > 0);
+    const displayStatus = (isFullyPaid && (order.status === 'PENDING_PAYMENT' || order.status === 'PENDING' || order.status === 'DRAFT'))
+        ? 'PROCESSING'
+        : order.status;
 
     return (
         <div className={`min-h-screen pb-32 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FAFAFA] text-slate-900'}`}>
@@ -330,7 +333,7 @@ export default function AdminOrderDetailPage() {
                                 {order.payment_status}
                             </div>
                             <div className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border border-slate-200 dark:border-slate-800 text-[9px] font-black uppercase tracking-wider whitespace-nowrap ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
-                                {order.status.replace(/_/g, ' ')}
+                                {displayStatus.replace(/_/g, ' ')}
                             </div>
                         </div>
 
@@ -355,7 +358,7 @@ export default function AdminOrderDetailPage() {
                                 </div>
                                 <span className="text-[10px] font-mono opacity-30 uppercase">Tracking Update</span>
                             </div>
-                            <LogisticsStepper status={order.status} isDark={isDark} />
+                            <LogisticsStepper status={displayStatus} isDark={isDark} />
                         </section>
 
                         <OrderItemsList 

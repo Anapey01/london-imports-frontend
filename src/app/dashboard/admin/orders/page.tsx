@@ -74,6 +74,23 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
 
     const itemsSummary = (order.items_summary || order.items || []) as Record<string, unknown>[];
 
+    const totalAmount = Number(order.total || 0);
+    const amountPaid = Number(order.amount_paid || 0);
+    const isFullyPaid = (order.payment_status === 'PAID') || (amountPaid >= totalAmount && totalAmount > 0);
+
+    const paymentStatus = (order.payment_status as string) || (isFullyPaid ? 'PAID' : (amountPaid > 0 ? 'PARTIAL' : 'PENDING'));
+    
+    let rawStatus = (order.status as string) || (order.state as string) || 'PENDING';
+    let rawState = (order.state as string) || (order.status as string) || 'PENDING';
+
+    // Defensive guarantee: A fully paid order should NEVER be displayed as PENDING_PAYMENT or DRAFT
+    if (isFullyPaid && (rawStatus === 'PENDING_PAYMENT' || rawStatus === 'PENDING' || rawStatus === 'DRAFT')) {
+        rawStatus = 'PROCESSING';
+    }
+    if (isFullyPaid && (rawState === 'PENDING_PAYMENT' || rawState === 'DRAFT')) {
+        rawState = 'PAID';
+    }
+
     return {
         id: String(order.id || ''),
         order_number: order.order_number as string,
@@ -83,11 +100,11 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
             avatar: customerObj.avatar || ''
         },
         items_count: (order.items_count as number) || itemsSummary.length || 0,
-        total_amount: Number(order.total || 0),
-        status: (order.status as string) || (order.state as string) || 'PENDING',
-        state: (order.state as string) || (order.status as string) || 'PENDING',
-        payment_status: (order.payment_status as string) || (Number(order.amount_paid || 0) >= Number(order.total || 0) && Number(order.total || 0) > 0 ? 'PAID' : (Number(order.amount_paid || 0) > 0 ? 'PARTIAL' : 'PENDING')),
-        amount_paid: Number(order.amount_paid || 0),
+        total_amount: totalAmount,
+        status: rawStatus,
+        state: rawState,
+        payment_status: paymentStatus,
+        amount_paid: amountPaid,
         balance_due: Number(order.balance_due || 0),
         is_installment: !!order.is_installment,
         created_at: (order.created_at as string) || new Date().toISOString(),
@@ -343,6 +360,7 @@ export default function AdminOrdersPage() {
     const getStatusColor = useCallback((status: string) => {
         const colors: Record<string, string> = {
             PENDING: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
+            PENDING_PAYMENT: isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-600',
             PAID: isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700 dark:text-emerald-500',
             PROCESSING: isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600',
             IN_TRANSIT: isDark ? 'bg-indigo-900/30 text-indigo-400' : 'bg-indigo-100 text-indigo-600',
@@ -414,10 +432,12 @@ export default function AdminOrdersPage() {
         return {
             All: orders.length,
             PENDING: orders.filter(o => 
-                ['DRAFT', 'PENDING_PAYMENT', 'FRAUD_REVIEW'].includes(o.state || '') || 
-                (o.payment_status === 'PARTIAL' && ['PAID', 'OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state || ''))
+                o.payment_status !== 'PAID' && (
+                    ['DRAFT', 'PENDING_PAYMENT', 'FRAUD_REVIEW'].includes(o.state || '') || 
+                    (o.payment_status === 'PARTIAL' && ['PAID', 'OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state || ''))
+                )
             ).length,
-            NEW_ORDERS: orders.filter(o => o.state === 'PAID' && o.payment_status === 'PAID').length,
+            NEW_ORDERS: orders.filter(o => o.state === 'PAID' || o.status === 'PROCESSING' || (o.payment_status === 'PAID' && ['DRAFT', 'PENDING_PAYMENT'].includes(o.state || ''))).length,
             WAREHOUSE: orders.filter(o => ['OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state || '') && o.payment_status === 'PAID').length,
             SHIPPING: orders.filter(o => ['IN_TRANSIT', 'ARRIVED', 'OUT_FOR_DELIVERY'].includes(o.state || '')).length,
             COMPLETED: orders.filter(o => o.state === 'DELIVERED').length,
