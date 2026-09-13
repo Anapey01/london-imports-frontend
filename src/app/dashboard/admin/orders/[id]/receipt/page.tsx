@@ -94,9 +94,9 @@ export default function OrderInvoicePage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-100/70 py-10 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0 print:m-0">
+        <div className="min-h-screen bg-slate-100/70 py-10 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0 print:m-0 print:min-h-0 print:h-auto">
             {/* Control Bar - Hidden on print */}
-            <div className="max-w-[820px] mx-auto mb-6 print:hidden space-y-4">
+            <div className="max-w-[760px] mx-auto mb-6 print:hidden space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <button 
                         onClick={() => router.push(`/dashboard/admin/orders/${order.id}`)}

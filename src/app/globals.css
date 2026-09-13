@@ -490,7 +490,7 @@ body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 12mm;
+    margin: 12mm 15mm;
   }
 
   html, body {
@@ -501,6 +501,8 @@ body {
     padding: 0 !important;
     width: 100% !important;
     min-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     overflow: visible !important;
@@ -530,6 +532,8 @@ body {
     border: none !important;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
   }
 
@@ -543,6 +547,10 @@ body {
     width: 100% !important;
     max-width: 100% !important;
     background: #ffffff !important;
+    height: auto !important;
+    min-height: 0 !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   /* Prevent page breaks inside critical sections */
