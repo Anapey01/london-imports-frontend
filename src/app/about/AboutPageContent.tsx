@@ -11,6 +11,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { ordersAPI, productsAPI } from '@/lib/api';
+import { isVideoMedia } from '@/lib/image';
 
 interface AboutStats {
     regions: number;
@@ -341,13 +342,23 @@ export default function AboutPageContent() {
                         {/* Filtered Photos */}
                         {operationalPhotos.filter(p => activeTab === 'ALL' ? true : p.category === activeTab).map((photo) => (
                             <div key={photo.id} className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 flex flex-col justify-between group">
-                                <div className="aspect-[4/3] relative w-full bg-slate-50 dark:bg-slate-900 overflow-hidden">
-                                    <Image
-                                        src={photo.image}
-                                        alt={photo.caption || 'Operational photo'}
-                                        fill
-                                        className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                                    />
+                                <div className="aspect-[4/3] relative w-full bg-slate-950 overflow-hidden">
+                                    {isVideoMedia(photo.image) ? (
+                                        <video
+                                            src={photo.image}
+                                            controls
+                                            playsInline
+                                            preload="metadata"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={photo.image}
+                                            alt={photo.caption || 'Operational photo'}
+                                            fill
+                                            className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                                        />
+                                    )}
                                     <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 text-[8px] font-mono text-white tracking-widest uppercase">
                                         {photo.category === 'TEAM' ? 'OUR TEAM' :
                                          photo.category === 'OFFICE' ? 'OUR OFFICE' :

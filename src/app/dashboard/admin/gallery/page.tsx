@@ -25,7 +25,7 @@ import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence, motion } from 'framer-motion';
 import { adminAPI } from '@/lib/api';
-import { uploadImageSigned } from '@/lib/image';
+import { uploadImageSigned, isVideoMedia } from '@/lib/image';
 
 interface DeliveryPhoto {
     id: string;
@@ -137,7 +137,7 @@ export default function AdminGalleryPage() {
         setError(null);
 
         if (!imagePreview && !editingPhoto) {
-            setError('Please upload a delivery photo.');
+            setError('Please upload a delivery photo or video.');
             setIsSaving(false);
             return;
         }
@@ -145,7 +145,7 @@ export default function AdminGalleryPage() {
         try {
             let imageUrl = editingPhoto?.image || '';
 
-            // 1. If new image file is uploaded, push it to Cloudinary via signed upload (H-1 protection)
+            // 1. If new media file is uploaded, push it to Cloudinary via signed auto-upload
             if (imageFile) {
                 imageUrl = await uploadImageSigned(imageFile, 'gallery');
             }
@@ -162,12 +162,12 @@ export default function AdminGalleryPage() {
                 // Update
                 const response = await adminAPI.updateDeliveryPhoto(editingPhoto.id, payload);
                 setPhotos(photos.map(p => p.id === editingPhoto.id ? response.data : p));
-                addAlert('Gallery photo updated successfully');
+                addAlert('Gallery asset updated successfully');
             } else {
                 // Create
                 const response = await adminAPI.createDeliveryPhoto(payload);
                 setPhotos([response.data, ...photos]);
-                addAlert('Gallery photo added successfully');
+                addAlert('Gallery asset added successfully');
             }
 
             setIsFormOpen(false);
@@ -228,7 +228,7 @@ export default function AdminGalleryPage() {
                     <div className="flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{photos.length} PHOTOS</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{photos.length} ASSETS</span>
                         </div>
                     </div>
                 </div>
@@ -238,7 +238,7 @@ export default function AdminGalleryPage() {
                     className="px-8 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center gap-3"
                 >
                     <Plus className="w-4 h-4" />
-                    ADD PHOTO
+                    ADD PHOTO / VIDEO
                 </button>
             </div>
 
@@ -258,16 +258,28 @@ export default function AdminGalleryPage() {
                             photo.is_active ? 'border-slate-100' : 'border-slate-100 opacity-60'
                         } hover:border-slate-900`}
                     >
-                        {/* Image block */}
-                        <div className="aspect-[4/3] relative w-full bg-slate-50 border-b border-slate-50 overflow-hidden">
-                            <Image
-                                src={photo.image}
-                                alt={photo.caption || 'Delivery Photo'}
-                                fill
-                                className={`object-cover transition-transform duration-700 group-hover:scale-105 ${
-                                    !photo.is_active ? 'grayscale opacity-40' : 'grayscale group-hover:grayscale-0'
-                                }`}
-                            />
+                        {/* Media block */}
+                        <div className="aspect-[4/3] relative w-full bg-slate-950 border-b border-slate-50 overflow-hidden">
+                            {isVideoMedia(photo.image) ? (
+                                <video
+                                    src={photo.image}
+                                    controls
+                                    playsInline
+                                    preload="metadata"
+                                    className={`w-full h-full object-cover ${
+                                        !photo.is_active ? 'opacity-40' : ''
+                                    }`}
+                                />
+                            ) : (
+                                <Image
+                                    src={photo.image}
+                                    alt={photo.caption || 'Delivery Photo'}
+                                    fill
+                                    className={`object-cover transition-transform duration-700 group-hover:scale-105 ${
+                                        !photo.is_active ? 'grayscale opacity-40' : 'grayscale group-hover:grayscale-0'
+                                    }`}
+                                />
+                            )}
                             
                             {/* Sort order tag */}
                             <div className="absolute top-4 left-4 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 text-[8px] font-mono text-white tracking-widest flex items-center gap-2">
@@ -357,7 +369,7 @@ export default function AdminGalleryPage() {
                         >
                             <div className="flex items-center justify-between border-b border-slate-50 pb-6 mb-8">
                                 <h2 className="text-xl font-serif font-bold text-slate-950 tracking-tighter">
-                                    {editingPhoto ? 'Edit Photo Details' : 'Add Gallery Photo'}
+                                    {editingPhoto ? 'Edit Media Details' : 'Add Gallery Photo / Video'}
                                 </h2>
                                 <button 
                                     onClick={() => !isSaving && setIsFormOpen(false)}
@@ -371,25 +383,34 @@ export default function AdminGalleryPage() {
                                 {/* Uploader */}
                                 <div className="space-y-2">
                                     <label className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
-                                        Photo Image
+                                        Photo / Video Media
                                     </label>
                                     <div 
                                         className={`relative aspect-[4/3] border border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:border-slate-900 bg-slate-50/50`}
                                     >
                                         {imagePreview ? (
                                             <>
-                                                <Image
-                                                    src={imagePreview}
-                                                    alt="Preview"
-                                                    fill
-                                                    className="object-cover"
-                                                />
+                                                {isVideoMedia(imagePreview) || imageFile?.type?.startsWith('video/') ? (
+                                                    <video
+                                                        src={imagePreview}
+                                                        controls
+                                                        playsInline
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <Image
+                                                        src={imagePreview}
+                                                        alt="Preview"
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                )}
                                                 {!isSaving && (
                                                     <button
                                                         type="button"
                                                         onClick={() => { setImageFile(null); setImagePreview(null); }}
                                                         className="absolute top-4 right-4 p-2 bg-slate-900/80 text-white hover:bg-slate-900 transition-all z-10"
-                                                        title="Remove Image"
+                                                        title="Remove Media"
                                                     >
                                                         <X className="w-4 h-4" />
                                                     </button>
@@ -401,7 +422,7 @@ export default function AdminGalleryPage() {
                                                     type="file"
                                                     id="gallery-photo-upload"
                                                     className="hidden"
-                                                    accept="image/*"
+                                                    accept="image/*,video/*"
                                                     onChange={handleImageChange}
                                                 />
                                                 <label
@@ -414,7 +435,7 @@ export default function AdminGalleryPage() {
                                                     <div className="space-y-1">
                                                         <p className="text-[11px] font-black uppercase tracking-wider text-slate-900">Upload Delivery Proof</p>
                                                         <p className="text-[9px] text-slate-400 leading-relaxed font-bold uppercase tracking-tight">
-                                                            JPG, PNG, or WEBP. Max 20MB.
+                                                            Photos or Videos (MP4, MOV, WEBP, PNG, JPG). Max 50MB.
                                                         </p>
                                                     </div>
                                                 </label>

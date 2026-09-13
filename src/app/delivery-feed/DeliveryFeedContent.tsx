@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
-import { X, ExternalLink, Package, ArrowLeft } from 'lucide-react';
+import { isVideoMedia } from '@/lib/image';
+import { X, ExternalLink, Package, ArrowLeft, Play } from 'lucide-react';
 
 interface DeliveryPhoto {
     id: string;
@@ -70,17 +71,32 @@ export default function DeliveryFeedContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
                         {photos.map((photo) => (
                             <div 
-                                key={photo.id}
+                                key={photo.id} 
                                 onClick={() => setLightboxImage({ url: photo.image, caption: photo.caption })}
-                                className="aspect-[4/3] relative border border-border-standard bg-slate-50 cursor-pointer overflow-hidden group snap-start rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                                className="aspect-[4/3] relative border border-border-standard bg-slate-950 cursor-pointer overflow-hidden group snap-start rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                             >
-                                <Image
-                                    src={photo.image}
-                                    alt={photo.caption || 'Delivery photo'}
-                                    fill
-                                    className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                                />
+                                {isVideoMedia(photo.image) ? (
+                                    <>
+                                        <video
+                                            src={photo.image}
+                                            muted
+                                            playsInline
+                                            preload="metadata"
+                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                                        />
+                                        <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm p-1.5 rounded-full text-white">
+                                            <Play className="w-3 h-3 fill-white" />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <Image
+                                        src={photo.image}
+                                        alt={photo.caption || 'Delivery photo'}
+                                        fill
+                                        className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                                    />
+                                )}
                                 
                                 {/* Hover overlay for caption */}
                                 <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
@@ -127,14 +143,24 @@ export default function DeliveryFeedContent() {
                             <X className="w-4 h-4" />
                         </button>
 
-                        <div className="relative w-full aspect-[4/3] md:aspect-[16/10] bg-black border border-white/10 overflow-hidden shadow-2xl rounded-2xl">
-                            <Image
-                                src={lightboxImage.url}
-                                alt={lightboxImage.caption || 'Delivery Proof'}
-                                fill
-                                className="object-contain"
-                                priority
-                            />
+                        <div className="relative w-full aspect-[4/3] md:aspect-[16/10] bg-black border border-white/10 overflow-hidden shadow-2xl rounded-2xl flex items-center justify-center">
+                            {isVideoMedia(lightboxImage.url) ? (
+                                <video
+                                    src={lightboxImage.url}
+                                    controls
+                                    autoPlay
+                                    playsInline
+                                    className="max-w-full max-h-full"
+                                />
+                            ) : (
+                                <Image
+                                    src={lightboxImage.url}
+                                    alt={lightboxImage.caption || 'Delivery Proof'}
+                                    fill
+                                    className="object-contain"
+                                    priority
+                                />
+                            )}
                         </div>
 
                         {lightboxImage.caption && (

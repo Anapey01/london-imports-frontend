@@ -249,30 +249,57 @@ export const sanitizeHtml = (html: string): string => {
 };
 
 /**
- * Uploads an image to Cloudinary using staff-signed signatures (H-1 Security Protection).
+ * Detects if a media URL, path, or data URI represents a video.
+ */
+export const isVideoMedia = (urlOrPath?: string | null): boolean => {
+    if (!urlOrPath) return false;
+    const lower = urlOrPath.toLowerCase();
+    return (
+        lower.includes('/video/upload/') ||
+        lower.includes('/video/') ||
+        lower.startsWith('data:video/') ||
+        lower.endsWith('.mp4') ||
+        lower.endsWith('.mov') ||
+        lower.endsWith('.webm') ||
+        lower.endsWith('.mkv') ||
+        lower.endsWith('.avi') ||
+        lower.includes('.mp4?') ||
+        lower.includes('.mov?') ||
+        lower.includes('.webm?')
+    );
+};
+
+/**
+ * Uploads an image or video to Cloudinary using staff-signed signatures (H-1 Security Protection).
+ * Automatically supports photos and videos through Cloudinary's /auto/upload endpoint.
  */
 export const uploadImageSigned = async (file: File, folder: string = 'products'): Promise<string> => {
     try {
-        const signRes = await fetch(`${siteConfig.apiUrl}/products/cloudinary-sign/?folder=${encodeURIComponent(folder)}`, {
+        const signRes = await fetch(`${siteConfig.apiUrl}/products/admin/cloudinary-sign/?folder=${encodeURIComponent(folder)}`, {
             credentials: 'include',
         });
-        if (signRes.ok) {
+        if (signRes?.ok) {
             const signData = await signRes.json();
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('api_key', signData.api_key);
-            formData.append('timestamp', String(signData.timestamp));
-            formData.append('signature', signData.signature);
-            formData.append('folder', signData.folder);
+            if (signData && signData.signature && signData.cloud_name) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('api_key', signData.api_key);
+                formData.append('timestamp', String(signData.timestamp));
+                formData.append('signature', signData.signature);
+                formData.append('folder', signData.folder);
 
-            const uploadRes = await fetch(
-                `https://api.cloudinary.com/v1_1/${signData.cloud_name}/image/upload`,
-                { method: 'POST', body: formData }
-            );
+                // Use auto/upload so Cloudinary transparently handles both photos and videos
+                const uploadRes = await fetch(
+                    `https://api.cloudinary.com/v1_1/${signData.cloud_name}/auto/upload`,
+                    { method: 'POST', body: formData }
+                );
 
-            if (uploadRes.ok) {
-                const uploadResult = await uploadRes.json();
-                return uploadResult.secure_url;
+                if (uploadRes?.ok) {
+                    const uploadResult = await uploadRes.json();
+                    if (uploadResult?.secure_url) {
+                        return uploadResult.secure_url;
+                    }
+                }
             }
         }
     } catch (err) {
@@ -285,10 +312,19 @@ export const uploadImageSigned = async (file: File, folder: string = 'products')
     formData.append('upload_preset', 'londons_imports');
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dg67twduw';
     const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
         { method: 'POST', body: formData }
     );
-    if (!uploadRes.ok) throw new Error('Image upload failed');
+    if (!uploadRes?.ok) {
+        let errDetail = 'Media upload failed';
+        try {
+            const errData = await uploadRes?.json();
+            if (errData?.error?.message) errDetail = errData.error.message;
+        } catch {
+            // fallback to default
+        }
+        throw new Error(errDetail);
+    }
     const uploadResult = await uploadRes.json();
     return uploadResult.secure_url;
 };
