@@ -258,6 +258,8 @@ export const adminAPI = {
   }) => api.post(`/admin/orders/${id}/record-payment/`, data),
   revertPayment: (id: string, data?: { reason?: string }) => 
     api.post(`/admin/orders/${id}/revert-payment/`, data || {}),
+  sendInvoice: (id: string) => 
+    api.post(`/admin/orders/${id}/send-invoice/`),
 
   // Products management
   products: (params?: unknown) => api.get('/admin/products/', { params }),

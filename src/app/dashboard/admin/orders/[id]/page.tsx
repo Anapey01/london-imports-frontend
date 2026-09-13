@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { adminAPI } from '@/lib/api';
 import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
-import { ChevronLeft, Printer, Loader2 } from 'lucide-react';
+import { ChevronLeft, Printer, Loader2, FileText } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
@@ -341,8 +341,8 @@ export default function AdminOrderDetailPage() {
                             href={`/dashboard/admin/orders/${order.id}/receipt`}
                             className="flex items-center gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2 bg-slate-900 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider hover:bg-pink-600 transition-all rounded-lg shadow-sm whitespace-nowrap shrink-0 ml-auto md:ml-0 cursor-pointer"
                         >
-                            <Printer className="w-3.5 h-3.5 shrink-0" />
-                            Receipt
+                            <FileText className="w-3.5 h-3.5 shrink-0" />
+                            Invoice
                         </Link>
                     </div>
                 </div>

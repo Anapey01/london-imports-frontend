@@ -16,7 +16,7 @@ import { getImageUrl } from '@/lib/image';
 import { Order, OrderItem } from '@/types';
 import ShipmentTracker from '@/components/order/ShipmentTracker';
 import { siteConfig } from '@/config/site';
-import { ArrowLeft, Package, Receipt, Truck, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Package, Receipt, Truck, ShieldCheck, FileText } from 'lucide-react';
 
 export default function OrderDetailPage() {
     const { showToast } = useToast();
@@ -127,13 +127,13 @@ export default function OrderDetailPage() {
                     </div>
                     
                     <div className="flex flex-col xs:flex-row gap-3 print:hidden w-full sm:w-auto">
-                        <button 
-                            onClick={() => window.print()}
+                        <Link 
+                            href={`/orders/${order.order_number}/invoice`}
                             className="flex-1 sm:flex-initial px-6 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2"
                         >
-                            <Receipt size={14} />
-                            Download Receipt
-                        </button>
+                            <FileText size={14} />
+                            {isPendingPayment ? 'Provisional Invoice' : 'Official Invoice'}
+                        </Link>
                         <Link 
                             href={`/track?order=${order.order_number}`}
                             className="flex-1 sm:flex-initial px-6 py-2.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm flex items-center justify-center gap-2"
