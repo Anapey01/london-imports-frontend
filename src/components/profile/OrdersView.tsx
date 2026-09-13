@@ -65,16 +65,16 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
     };
 
     return (
-        <div className="space-y-12 pb-20">
+        <div className="space-y-6 sm:space-y-8 pb-12">
             {/* Manifest Header Archive */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-slate-100 pb-8">
-                <div className="space-y-1">
-                    <p className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-slate-400">Past Orders & History</p>
-                    <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tighter text-slate-900 dark:text-white leading-none">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 pb-4 sm:pb-6">
+                <div className="space-y-0.5">
+                    <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-slate-400">Past Orders & History</p>
+                    <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-slate-900 dark:text-white leading-none">
                         Order <span className="italic text-brand-emerald">History.</span>
                     </h2>
                 </div>
-                <div className="flex items-center gap-5 border border-slate-100 rounded-sm px-6 py-3 bg-slate-50/30">
+                <div className="flex items-center gap-3 border border-slate-100 rounded-sm px-4 py-2 bg-slate-50/30">
                     {['ALL', 'PENDING', 'COMPLETED'].map(status => (
                         <button
                             key={status}
