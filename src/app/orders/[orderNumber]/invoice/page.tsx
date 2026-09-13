@@ -28,7 +28,7 @@ export default function CustomerOrderInvoicePage() {
                 <div className="bg-white p-8 rounded-2xl border border-slate-200 max-w-sm w-full shadow-sm space-y-4">
                     <h2 className="text-xl font-bold text-slate-900">Sign in Required</h2>
                     <p className="text-xs text-slate-500 leading-relaxed">
-                        Please log in to your London&apos;s Imports account to access your official KYC tax invoice.
+                        Please log in to your account to view your invoice.
                     </p>
                     <Link 
                         href={`/login?redirect=/orders/${orderNumber}/invoice`}
@@ -45,7 +45,7 @@ export default function CustomerOrderInvoicePage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
                 <Loader2 className="w-8 h-8 animate-spin text-slate-950 mb-3" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading Official Invoice...</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Loading Invoice...</p>
             </div>
         );
     }
@@ -55,7 +55,7 @@ export default function CustomerOrderInvoicePage() {
             <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-slate-50">
                 <div className="bg-white p-8 rounded-2xl border border-slate-200 max-w-sm w-full shadow-sm space-y-4">
                     <h2 className="text-xl font-bold text-slate-900">Invoice Not Found</h2>
-                    <p className="text-xs text-slate-500">We couldn&apos;t locate the order invoice requested.</p>
+                    <p className="text-xs text-slate-500">We couldn&apos;t find the invoice for this order.</p>
                     <button 
                         onClick={() => router.push('/orders')}
                         className="w-full py-2.5 bg-slate-950 text-white text-xs font-bold uppercase tracking-wider rounded-xl"
@@ -76,7 +76,7 @@ export default function CustomerOrderInvoicePage() {
     const invoiceOrder: InvoiceData = {
         id: String(rawOrder.id),
         order_number: rawOrder.order_number,
-        customer: rawOrder.customer_name || rawOrder.customer || 'Valued Customer',
+        customer: rawOrder.customer_name || rawOrder.customer || 'Customer',
         email: rawOrder.customer_email || rawOrder.email || '',
         phone: rawOrder.customer_phone || rawOrder.phone || '',
         created_at: rawOrder.created_at,
@@ -107,11 +107,11 @@ export default function CustomerOrderInvoicePage() {
     return (
         <div className="min-h-screen bg-slate-100/70 py-10 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0 print:m-0">
             {/* Control Bar - Hidden on print */}
-            <div className="max-w-[850px] mx-auto mb-6 print:hidden space-y-4">
-                <div className="flex justify-between items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="max-w-[820px] mx-auto mb-6 print:hidden space-y-4">
+                <div className="flex justify-between items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <button 
                         onClick={() => router.push(`/orders/${orderNumber}`)}
-                        className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-950 transition-colors py-1.5 px-2 rounded-lg hover:bg-slate-50"
+                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-950 transition-colors py-1.5 px-2 rounded-lg hover:bg-slate-50"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back to Order
@@ -119,7 +119,7 @@ export default function CustomerOrderInvoicePage() {
 
                     <button 
                         onClick={() => window.print()}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-950 text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-md cursor-pointer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-950 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-all shadow-md cursor-pointer"
                     >
                         <Printer className="w-3.5 h-3.5" />
                         <span>Print / Save PDF</span>
@@ -131,9 +131,9 @@ export default function CustomerOrderInvoicePage() {
                     <div className="p-4 rounded-xl text-xs bg-amber-50 border border-amber-200 text-amber-800 flex items-start gap-3">
                         <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
                         <div>
-                            <p className="font-bold">Provisional Invoice Notice</p>
-                            <p className="text-[11px] text-amber-700 mt-0.5 leading-relaxed">
-                                This order has an unpaid balance of <strong>₵{balanceDueNum.toFixed(2)}</strong>. The final KYC-certified <strong>Paid in Full</strong> tax invoice will be generated upon final payment settlement.
+                            <p className="font-bold">Balance Remaining</p>
+                            <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+                                This order has an unpaid balance of <strong>GH₵ {balanceDueNum.toFixed(2)}</strong>. Your <strong>Paid in Full</strong> invoice will be available once total payment is completed.
                             </p>
                         </div>
                     </div>

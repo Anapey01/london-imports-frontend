@@ -16,9 +16,11 @@ export function NavbarWrapper() {
     const hasMobileSearch = isHomePage || isShopPage;
 
     return (
-        <Suspense fallback={<div className={`${hasMobileSearch ? 'h-[120px] md:h-24' : 'h-16 md:h-24'} bg-surface border-b border-transparent transition-none`} />}>
-            <Navbar />
-        </Suspense>
+        <div className="print:hidden">
+            <Suspense fallback={<div className={`${hasMobileSearch ? 'h-[120px] md:h-24' : 'h-16 md:h-24'} bg-surface border-b border-transparent transition-none`} />}>
+                <Navbar />
+            </Suspense>
+        </div>
     );
 }
 
@@ -26,12 +28,20 @@ export function FooterWrapper() {
     const pathname = usePathname();
     const isAdminPath = pathname?.startsWith('/dashboard/admin') || pathname?.startsWith('/admin');
     if (isAdminPath) return null;
-    return <Footer />;
+    return (
+        <div className="print:hidden">
+            <Footer />
+        </div>
+    );
 }
 
 export function MobileBottomNavWrapper() {
     const pathname = usePathname();
     const isAdminPath = pathname?.startsWith('/dashboard/admin') || pathname?.startsWith('/admin');
     if (isAdminPath) return null;
-    return <MobileBottomNav />;
+    return (
+        <div className="print:hidden">
+            <MobileBottomNav />
+        </div>
+    );
 }

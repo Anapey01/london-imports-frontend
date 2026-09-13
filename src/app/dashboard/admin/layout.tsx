@@ -70,7 +70,7 @@ export default function AdminDashboardLayout({
     if (!user) return null;
 
     return (
-        <div className={`min-h-screen transition-colors duration-700 ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'} selection:bg-emerald-100`}>
+        <div className={`min-h-screen transition-colors duration-700 ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'} selection:bg-emerald-100 print:bg-white print:text-slate-900 print:min-h-0`}>
             <div className="print:hidden">
                 <AdminSidebar
                     isOpen={isSidebarOpen}
@@ -79,7 +79,7 @@ export default function AdminDashboardLayout({
             </div>
 
             {/* Main Content Area */}
-            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 print:ml-0 print:border-none">
+            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 print:!ml-0 print:border-none print:min-h-0 print:p-0">
                 {/* 1. Header */}
                 <div className={`sticky top-0 z-[30] backdrop-blur-md border-b ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-50'} print:hidden`}>
                     <div className="max-w-[1600px] mx-auto px-8 py-8 flex items-center justify-between">
@@ -131,7 +131,7 @@ export default function AdminDashboardLayout({
                 </div>
 
                 {/* 2. DASHBOARD CONTENT */}
-                <div className="max-w-[1600px] mx-auto p-8 md:p-12 print:p-0">
+                <div className="max-w-[1600px] mx-auto p-8 md:p-12 print:p-0 print:max-w-none print:m-0">
                     {children}
                 </div>
             </main>

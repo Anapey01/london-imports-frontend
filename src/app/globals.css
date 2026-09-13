@@ -484,4 +484,78 @@ body {
 /* 3. Remove grey tap highlight on interactive elements (Android default). */
 .tap-highlight-none {
   -webkit-tap-highlight-color: transparent;
-}
+}
+
+/* ===== GLOBAL PRINT STYLES ===== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    overflow: visible !important;
+  }
+
+  /* Hide background textures and overlays */
+  .bg-stationery::before,
+  body::before {
+    display: none !important;
+  }
+
+  /* Force hide all UI navigation, sidebars, headers, footers, and control bars */
+  .print\:hidden,
+  .no-print,
+  nav,
+  footer,
+  aside,
+  [role="navigation"] {
+    display: none !important;
+  }
+
+  /* Reset main content container so admin sidebar / layout margins never push content off-page */
+  main {
+    margin: 0 !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure invoice container expands cleanly to full printable width without web styling artifacts */
+  .invoice-paper {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+  }
+
+  /* Prevent page breaks inside critical sections */
+  .invoice-avoid-break,
+  tr,
+  .bill-to-card,
+  .totals-section {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+}
+
