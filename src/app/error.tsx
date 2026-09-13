@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
-import { RotateCw, Home, AlertTriangle } from 'lucide-react';
+import { RotateCw, Home } from 'lucide-react';
 
 export default function Error({
     error,
@@ -11,8 +11,6 @@ export default function Error({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
-    const [showDetails, setShowDetails] = useState(false);
-
     const isChunkError =
         error?.name === 'ChunkLoadError' ||
         /loading chunk .* failed/i.test(error?.message || '') ||
@@ -59,58 +57,62 @@ export default function Error({
     }, [error, isChunkError]);
 
     return (
-        <div className="min-h-[75vh] flex items-center justify-center p-6 bg-slate-50 text-slate-900 font-sans">
-            <div className="bg-white border border-slate-200 p-8 sm:p-10 rounded-2xl shadow-sm max-w-md w-full text-center space-y-6">
-                
-                {/* Icon */}
-                <div className="w-14 h-14 bg-amber-50 border border-amber-200 text-amber-600 rounded-2xl flex items-center justify-center mx-auto">
-                    <AlertTriangle className="w-7 h-7" />
+        <div className="min-h-screen bg-primary-surface flex items-center justify-center px-4 py-12 transition-all duration-500 font-sans">
+            <div className="max-w-xl w-full text-center">
+                {/* Institutional Graphic */}
+                <div className="mb-12 relative flex justify-center">
+                    <div className="text-[140px] font-black text-slate-100 dark:text-slate-900 select-none tracking-tighter opacity-50">
+                        500
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-24 h-24 border border-slate-950 dark:border-white bg-white dark:bg-slate-950 flex items-center justify-center text-slate-950 dark:text-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)]">
+                            <RotateCw className="w-10 h-10" strokeWidth={1} />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Heading & Message */}
-                <div className="space-y-2">
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                        Something went wrong
+                {/* Branding & Message */}
+                <div className="space-y-6">
+                    <h1 className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-950 dark:text-white inline-block border-b border-slate-200 dark:border-slate-800 pb-2">
+                        Temporary Interruption
                     </h1>
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                        We ran into a temporary issue loading this page. Please try refreshing or return to the homepage.
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-950 dark:text-white uppercase transition-colors">
+                        Something went wrong
+                    </h2>
+                    <p className="text-[11px] font-medium uppercase tracking-widest leading-relaxed text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                        A temporary issue occurred while loading this page. Please try reloading or return to the homepage.
                     </p>
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                {/* Action Buttons */}
+                <div className="mt-12 flex flex-col md:flex-row gap-4 justify-center">
                     <button
                         onClick={handleReload}
-                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer w-full sm:w-auto"
+                        className="flex items-center justify-center gap-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 px-10 py-5 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-95 shadow-sm cursor-pointer"
                     >
                         <RotateCw className="w-4 h-4" />
                         Try Again
                     </button>
-
                     <Link
                         href="/"
-                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold uppercase tracking-wider transition-all w-full sm:w-auto"
+                        className="flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-950 dark:text-white px-10 py-5 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-50 dark:hover:bg-slate-900 transition-all active:scale-95"
                     >
                         <Home className="w-4 h-4" />
                         Homepage
                     </Link>
                 </div>
 
-                {/* Diagnostics Toggle */}
-                <div className="pt-4 border-t border-slate-100">
-                    <button
-                        onClick={() => setShowDetails(!showDetails)}
-                        className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                        {showDetails ? 'Hide details' : 'Show details'}
-                    </button>
-
-                    {showDetails && (
-                        <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-lg text-left text-xs font-mono text-slate-600 overflow-x-auto max-h-40">
-                            {error?.digest && <p className="font-semibold text-slate-800">Digest: {error.digest}</p>}
-                            <p className="mt-1">{error?.message || 'Unknown error'}</p>
-                        </div>
-                    )}
+                {/* Quick Contact */}
+                <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-900">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
+                        Need Help?{' '}
+                        <Link
+                            href="/contact"
+                            className="text-slate-950 dark:text-white underline underline-offset-8 decoration-slate-200 dark:decoration-slate-800 hover:text-emerald-500 transition-colors ml-2"
+                        >
+                            Contact Support
+                        </Link>
+                    </p>
                 </div>
             </div>
         </div>
