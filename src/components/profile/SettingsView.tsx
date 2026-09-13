@@ -52,12 +52,12 @@ export default function SettingsView({ user }: { user: User }) {
     };
 
     return (
-        <div className="space-y-6 sm:space-y-8 animate-fade-in-up pb-12">
+        <div className="space-y-12 animate-fade-in-up pb-24">
             {/* Profile Settings Header */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4 sm:pb-6">
-                <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-slate-100 dark:border-slate-800 pb-8">
+                <div className="space-y-1.5">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">Account Settings</p>
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-slate-900 dark:text-white uppercase leading-none">
+                    <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-none">
                         My Profile
                     </h2>
                 </div>

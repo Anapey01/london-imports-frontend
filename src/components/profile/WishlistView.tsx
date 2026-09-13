@@ -10,17 +10,17 @@ const WishlistView = () => {
     const { items } = useWishlistStore();
 
     return (
-        <div className="space-y-6 sm:space-y-8 animate-fade-in-up">
+        <div className="space-y-12 animate-fade-in-up">
             {/* Architectural Header Archive */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 pb-4 sm:pb-6">
-                <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Wishlist</p>
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-slate-900 uppercase leading-none">
-                        My Wishlist <sup className="text-sm font-black text-slate-400 tabular-nums">{items.length}</sup>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 border-b border-slate-100 pb-10">
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Wishlist</p>
+                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                        My Wishlist <sup className="text-lg font-black text-slate-200 tabular-nums">{items.length}</sup>
                     </h2>
                 </div>
                 {items.length > 0 && (
-                    <Link href="/wishlist" className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-600 hover:text-slate-900 transition-colors border-b border-slate-200 hover:border-slate-900 pb-1">
+                    <Link href="/wishlist" className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-slate-900 transition-colors border-b border-slate-100 hover:border-slate-900 pb-1">
                         View All
                     </Link>
                 )}
