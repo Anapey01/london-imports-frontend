@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RefreshCw, MessageSquare, HelpCircle, MapPin, Ship, Anchor, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { RotateCw, Home, AlertTriangle } from 'lucide-react';
 
 export default function Error({
     error,
@@ -12,98 +13,106 @@ export default function Error({
 }) {
     const [showDetails, setShowDetails] = useState(false);
 
+    const isChunkError =
+        error?.name === 'ChunkLoadError' ||
+        /loading chunk .* failed/i.test(error?.message || '') ||
+        /failed to fetch dynamically imported module/i.test(error?.message || '');
+
+    const handleReload = async () => {
+        try {
+            if (typeof window !== 'undefined') {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const registration of registrations) {
+                        await registration.unregister();
+                    }
+                }
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    for (const key of keys) {
+                        await caches.delete(key);
+                    }
+                }
+                sessionStorage.clear();
+                window.location.reload();
+                return;
+            }
+        } catch {
+            // Fallback to reset
+        }
+        reset();
+    };
+
     useEffect(() => {
-        // Log the error to console for debugging
-        console.error('Database/API Interruption:', error);
-    }, [error]);
+        console.error('[Application Error]:', error);
+
+        // If this is a chunk load error from a new deployment, auto-reload cleanly
+        if (isChunkError && typeof window !== 'undefined') {
+            const reloadKey = 'chunk_reload_lock';
+            const lastReload = sessionStorage.getItem(reloadKey);
+            const now = Date.now();
+            if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+                sessionStorage.setItem(reloadKey, now.toString());
+                handleReload();
+            }
+        }
+    }, [error, isChunkError]);
 
     return (
-        <div className="min-h-screen bg-[#020617] text-slate-100 flex flex-col justify-between p-6 md:p-12 relative overflow-hidden font-sans select-none">
-            {/* Stationery Texture Overlay */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/p6.png')] invert" />
-
-            {/* Custom Grid Mesh */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
-
-            {/* Ambient Backlights */}
-            <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
-            <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[120px] pointer-events-none" />
-
-            {/* Header Branding */}
-            <header className="relative z-10 w-full flex items-center justify-between gap-4 border-b border-slate-900 pb-5">
-                <div className="flex flex-col items-start gap-0.5">
-                    <span className="font-sans font-bold text-base md:text-lg tracking-[0.3em] text-white uppercase">
-                        LONDON&apos;S <span className="text-emerald-400 italic font-serif font-semibold tracking-normal">IMPORTS</span>
-                    </span>
-                    <span className="text-[8px] uppercase tracking-[0.4em] text-slate-400 font-bold">Sourcing &amp; Logistics</span>
-                </div>
+        <div className="min-h-[75vh] flex items-center justify-center p-6 bg-slate-50 text-slate-900 font-sans">
+            <div className="bg-white border border-slate-200 p-8 sm:p-10 rounded-2xl shadow-sm max-w-md w-full text-center space-y-6">
                 
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-widest bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 uppercase">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Sourcing Desk: Active
+                {/* Icon */}
+                <div className="w-14 h-14 bg-amber-50 border border-amber-200 text-amber-600 rounded-2xl flex items-center justify-center mx-auto">
+                    <AlertTriangle className="w-7 h-7" />
                 </div>
-            </header>
 
-            {/* Main Bespoke Simplified Layout */}
-            <main className="relative z-10 w-full max-w-xl mx-auto my-auto text-center space-y-8 py-12">
-                <div className="space-y-4">
-                    <span className="text-emerald-400 text-xs font-bold uppercase tracking-[0.25em] block">
-                        System Maintenance
-                    </span>
-                    <h1 className="text-3xl md:text-5xl font-bold font-serif text-white leading-tight tracking-tight">
-                        Catalog offline.<br />
-                        Sourcing is <span className="italic text-emerald-400">active</span>.
+                {/* Heading & Message */}
+                <div className="space-y-2">
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                        Something went wrong
                     </h1>
-                    <p className="text-sm md:text-base text-slate-300 leading-relaxed max-w-md mx-auto">
-                        We are completing database maintenance. Send your product sourcing links or inquiries to our team on WhatsApp for manual quotes and instant processing.
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                        We ran into a temporary issue loading this page. Please try refreshing or return to the homepage.
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
-                    <a
-                        href="https://wa.me/233541096372?text=Hello%20London's%20Imports%2C%20I'm%20visiting%20the%20website%20and%20would%20like%20to%20place%20an%20order%2Fmake%20an%20inquiry."
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 active:brightness-95 text-white font-bold text-xs uppercase tracking-[0.12em] py-4 px-6 rounded-xl shadow-[0_4px_25px_rgba(16,185,129,0.2)] transition-all duration-300 transform hover:-translate-y-0.5"
-                    >
-                        <MessageSquare className="w-4 h-4 fill-white" />
-                        Order via WhatsApp
-                        <ArrowRight className="w-3.5 h-3.5 text-white/80 group-hover:translate-x-0.5 transition-transform" />
-                    </a>
-                    
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                     <button
-                        onClick={() => reset()}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900/60 hover:bg-slate-900 active:bg-slate-800 text-slate-100 font-bold text-xs uppercase tracking-[0.12em] py-4 px-6 rounded-xl border border-slate-800 hover:border-slate-700 transition-all duration-300"
+                        onClick={handleReload}
+                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer w-full sm:w-auto"
                     >
-                        <RefreshCw className="w-4 h-4" />
-                        Reload Catalog
+                        <RotateCw className="w-4 h-4" />
+                        Try Again
                     </button>
-                </div>
-            </main>
 
-            {/* Footer and Diagnostics */}
-            <footer className="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-4 border-t border-slate-900 pt-5 mt-4">
-                <p className="text-[10px] text-slate-400 tracking-wide">
-                    London&apos;s Imports Ghana &copy; 2026 &bull; Sourcing, Shipping & Logistics Excellence
-                </p>
-                
-                <div className="flex items-center gap-4">
-                    <button 
+                    <Link
+                        href="/"
+                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold uppercase tracking-wider transition-all w-full sm:w-auto"
+                    >
+                        <Home className="w-4 h-4" />
+                        Homepage
+                    </Link>
+                </div>
+
+                {/* Diagnostics Toggle */}
+                <div className="pt-4 border-t border-slate-100">
+                    <button
                         onClick={() => setShowDetails(!showDetails)}
-                        className="text-[10px] text-slate-400 hover:text-slate-200 underline transition-colors"
+                        className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
                     >
-                        {showDetails ? 'Hide Diagnostics' : 'Show Diagnostics'}
+                        {showDetails ? 'Hide details' : 'Show details'}
                     </button>
-                </div>
 
-                {showDetails && (
-                    <div className="absolute bottom-16 right-0 left-0 md:left-auto md:w-96 p-4 bg-slate-950 border border-slate-900 rounded-xl text-left overflow-x-auto text-[11px] text-red-300 font-mono space-y-1.5 shadow-2xl max-h-48 z-50">
-                        <div><strong>Digest:</strong> {error.digest || 'N/A'}</div>
-                        <div><strong>Error Message:</strong> {error.message}</div>
-                        {error.stack && <div className="text-slate-400 text-[10px] mt-1 whitespace-pre">{error.stack}</div>}
-                    </div>
-                )}
-            </footer>
+                    {showDetails && (
+                        <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-lg text-left text-xs font-mono text-slate-600 overflow-x-auto max-h-40">
+                            {error?.digest && <p className="font-semibold text-slate-800">Digest: {error.digest}</p>}
+                            <p className="mt-1">{error?.message || 'Unknown error'}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
