@@ -47,7 +47,7 @@ const SidebarNav = ({ handleLogout }: { handleLogout: () => void }) => {
                 })}
             </nav>
  
-            <div className="my-8 border-t border-slate-100"></div>
+            <div className="my-4 md:my-8 border-t border-slate-100"></div>
  
             <button
                 onClick={handleLogout}

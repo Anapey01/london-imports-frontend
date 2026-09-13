@@ -61,7 +61,7 @@ export default function ProfileLayout({
     }
 
     return (
-        <div className="min-h-screen pb-20 bg-white font-sans text-slate-900 overflow-x-hidden">
+        <div className="bg-white font-sans text-slate-900 overflow-x-hidden md:min-h-screen pb-2 md:pb-20">
             <div className="max-w-6xl mx-auto px-6 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                     {/* Sidebar Anchor */}
@@ -72,7 +72,7 @@ export default function ProfileLayout({
                     </div>
 
                     {/* Operational Viewport */}
-                    <div className={`flex-1 py-4 md:py-8 min-h-[600px] ${pathname === '/profile' ? 'hidden lg:block' : 'block'}`}>
+                    <div className={`flex-1 py-4 md:py-8 min-h-0 md:min-h-[600px] ${pathname === '/profile' ? 'hidden lg:block' : 'block'}`}>
                         {/* Navigation Node */}
                         {pathname !== '/profile' && (
                             <Link 
