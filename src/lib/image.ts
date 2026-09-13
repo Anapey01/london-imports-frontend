@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { siteConfig } from '@/config/site';
 import { api } from '@/lib/api';
 
@@ -291,7 +292,7 @@ export const uploadImageSigned = async (file: File, folder: string = 'products')
         throw new Error(serverMsg || 'Failed to authenticate upload. Please ensure you are logged in as admin.');
     }
 
-    // 2. Direct-to-Cloudinary upload using verified staff signature
+    // 2. Direct-to-Cloudinary upload using verified staff signature via axios
     const formData = new FormData();
     formData.append('file', file);
     formData.append('api_key', signData.api_key);
@@ -300,24 +301,19 @@ export const uploadImageSigned = async (file: File, folder: string = 'products')
     formData.append('folder', signData.folder);
 
     // Use auto/upload so Cloudinary transparently processes both photos and videos
-    const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${signData.cloud_name}/auto/upload`,
-        { method: 'POST', body: formData }
-    );
+    try {
+        const uploadRes = await axios.post(
+            `https://api.cloudinary.com/v1_1/${signData.cloud_name}/auto/upload`,
+            formData
+        );
 
-    if (!uploadRes.ok) {
-        let errDetail = 'Media upload to Cloudinary failed';
-        try {
-            const errData = await uploadRes.json();
-            if (errData?.error?.message) {
-                errDetail = errData.error.message;
-            }
-        } catch {
-            // fallback
+        if (uploadRes?.data?.secure_url) {
+            return uploadRes.data.secure_url;
         }
-        throw new Error(errDetail);
+        throw new Error('Upload succeeded but no media URL was returned by Cloudinary');
+    } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { error?: { message?: string } } }; message?: string };
+        const errMsg = axiosErr?.response?.data?.error?.message || axiosErr?.message || 'Media upload to Cloudinary failed';
+        throw new Error(errMsg);
     }
-
-    const uploadResult = await uploadRes.json();
-    return uploadResult.secure_url;
 };
