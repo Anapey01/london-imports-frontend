@@ -48,13 +48,6 @@ export default function AdminGalleryPage() {
     // Modal state for Add/Edit
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingPhoto, setEditingPhoto] = useState<DeliveryPhoto | null>(null);
-    const [caption, setCaption] = useState('');
-    const [category, setCategory] = useState('DELIVERY');
-    const [order, setOrder] = useState(0);
-    const [isActive, setIsActive] = useState(true);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [isSaving, setIsSaving] = useState(false);
 
     // Confirmation Modal
     const [confirmModal, setConfirmModal] = useState<{
@@ -99,82 +92,21 @@ export default function AdminGalleryPage() {
 
     const handleOpenAdd = () => {
         setEditingPhoto(null);
-        setCaption('');
-        setCategory('DELIVERY');
-        setOrder(photos.length ? Math.max(...photos.map(p => p.order)) + 10 : 10);
-        setIsActive(true);
-        setImageFile(null);
-        setImagePreview(null);
         setIsFormOpen(true);
     };
 
     const handleOpenEdit = (photo: DeliveryPhoto) => {
         setEditingPhoto(photo);
-        setCaption(photo.caption || '');
-        setCategory(photo.category || 'DELIVERY');
-        setOrder(photo.order);
-        setIsActive(photo.is_active);
-        setImageFile(null);
-        setImagePreview(photo.image);
         setIsFormOpen(true);
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImageFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSaving(true);
-        setError(null);
-
-        if (!imagePreview && !editingPhoto) {
-            setError('Please upload a delivery photo or video.');
-            setIsSaving(false);
-            return;
-        }
-
-        try {
-            let imageUrl = editingPhoto?.image || '';
-
-            // 1. If new media file is uploaded, push it to Cloudinary via signed auto-upload
-            if (imageFile) {
-                imageUrl = await uploadImageSigned(imageFile, 'gallery');
-            }
-
-            const payload = {
-                caption,
-                category,
-                order,
-                is_active: isActive,
-                image: imageUrl
-            };
-
-            if (editingPhoto) {
-                // Update
-                const response = await adminAPI.updateDeliveryPhoto(editingPhoto.id, payload);
-                setPhotos(photos.map(p => p.id === editingPhoto.id ? response.data : p));
-                addAlert('Gallery asset updated successfully');
-            } else {
-                // Create
-                const response = await adminAPI.createDeliveryPhoto(payload);
-                setPhotos([response.data, ...photos]);
-                addAlert('Gallery asset added successfully');
-            }
-
-            setIsFormOpen(false);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Save operation failed');
-        } finally {
-            setIsSaving(false);
+    const handleSaveSuccess = (savedPhoto: DeliveryPhoto, isNew: boolean) => {
+        if (isNew) {
+            setPhotos(prev => [savedPhoto, ...prev]);
+            addAlert('Gallery asset added successfully');
+        } else {
+            setPhotos(prev => prev.map(p => p.id === savedPhoto.id ? savedPhoto : p));
+            addAlert('Gallery asset updated successfully');
         }
     };
 
@@ -349,195 +281,13 @@ export default function AdminGalleryPage() {
             {/* 3. ADD / EDIT DIALOG (MODAL) */}
             <AnimatePresence>
                 {isFormOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-                        {/* Backdrop */}
-                        <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-slate-950/30 backdrop-blur-sm"
-                            onClick={() => !isSaving && setIsFormOpen(false)}
-                        />
-
-                        {/* Modal Container */}
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            transition={{ type: "spring", duration: 0.5 }}
-                            className={`w-full max-w-lg bg-white border border-slate-100 overflow-hidden relative z-10 p-8 shadow-diffusion-lg`}
-                        >
-                            <div className="flex items-center justify-between border-b border-slate-50 pb-6 mb-8">
-                                <h2 className="text-xl font-serif font-bold text-slate-950 tracking-tighter">
-                                    {editingPhoto ? 'Edit Media Details' : 'Add Gallery Photo / Video'}
-                                </h2>
-                                <button 
-                                    onClick={() => !isSaving && setIsFormOpen(false)}
-                                    className="p-1 hover:bg-slate-50 transition-colors text-slate-400 hover:text-slate-900"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleSave} className="space-y-6">
-                                {/* Uploader */}
-                                <div className="space-y-2">
-                                    <label className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
-                                        Photo / Video Media
-                                    </label>
-                                    <div 
-                                        className={`relative aspect-[4/3] border border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:border-slate-900 bg-slate-50/50`}
-                                    >
-                                        {imagePreview ? (
-                                            <>
-                                                {isVideoMedia(imagePreview) || imageFile?.type?.startsWith('video/') ? (
-                                                    <video
-                                                        src={imagePreview}
-                                                        controls
-                                                        playsInline
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <Image
-                                                        src={imagePreview}
-                                                        alt="Preview"
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                )}
-                                                {!isSaving && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => { setImageFile(null); setImagePreview(null); }}
-                                                        className="absolute top-4 right-4 p-2 bg-slate-900/80 text-white hover:bg-slate-900 transition-all z-10"
-                                                        title="Remove Media"
-                                                    >
-                                                        <X className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <input
-                                                    type="file"
-                                                    id="gallery-photo-upload"
-                                                    className="hidden"
-                                                    accept="image/*,video/*"
-                                                    onChange={handleImageChange}
-                                                />
-                                                <label
-                                                    htmlFor="gallery-photo-upload"
-                                                    className="cursor-pointer flex flex-col items-center gap-3 px-6 text-center py-12"
-                                                >
-                                                    <div className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100">
-                                                        <Upload className="w-5 h-5 text-slate-400" />
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <p className="text-[11px] font-black uppercase tracking-wider text-slate-900">Upload Delivery Proof</p>
-                                                        <p className="text-[9px] text-slate-400 leading-relaxed font-bold uppercase tracking-tight">
-                                                            Photos or Videos (MP4, MOV, WEBP, PNG, JPG). Max 50MB.
-                                                        </p>
-                                                    </div>
-                                                </label>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Category */}
-                                <div className="space-y-2">
-                                    <label htmlFor="category" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
-                                        Asset Category
-                                    </label>
-                                    <select
-                                        id="category"
-                                        value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 uppercase tracking-wider bg-white transition-colors"
-                                    >
-                                        <option value="DELIVERY">Delivery Proof (Homepage)</option>
-                                        <option value="TEAM">Our Team (About Page)</option>
-                                        <option value="OFFICE">Our Office (About Page)</option>
-                                        <option value="WAREHOUSE">Our Warehouse (About Page)</option>
-                                        <option value="PACKAGING">Packaging Operations (About Page)</option>
-                                        <option value="PICKUP">Customer Pickup (About Page)</option>
-                                    </select>
-                                </div>
-
-                                {/* Caption */}
-                                <div className="space-y-2">
-                                    <label htmlFor="caption" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
-                                        Caption / Location
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="caption"
-                                        value={caption}
-                                        onChange={(e) => setCaption(e.target.value)}
-                                        placeholder="e.g. Accra Warehouse Sourcing Batch 10"
-                                        className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 placeholder:text-slate-300 uppercase tracking-wider transition-colors"
-                                    />
-                                </div>
-
-                                {/* Order & Active */}
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label htmlFor="order" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
-                                            Sort Order
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="order"
-                                            value={order}
-                                            onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
-                                            className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 transition-colors"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center h-full pt-6">
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={isActive}
-                                                onChange={(e) => setIsActive(e.target.checked)}
-                                                className="w-4 h-4 border-slate-200 accent-emerald-500 rounded-none focus:ring-0 focus:ring-offset-0"
-                                            />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">PUBLISH LIVE</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Buttons */}
-                                <div className="flex justify-end gap-4 border-t border-slate-50 pt-6 mt-8">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsFormOpen(false)}
-                                        disabled={isSaving}
-                                        className="px-6 py-3 border border-slate-100 hover:border-slate-900 text-[10px] font-black uppercase tracking-widest text-slate-900 transition-all disabled:opacity-40"
-                                    >
-                                        CANCEL
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isSaving}
-                                        className="px-8 py-3 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-3 disabled:opacity-50"
-                                    >
-                                        {isSaving ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                SAVING...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Save className="w-4 h-4" />
-                                                SAVE ASSET
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </div>
+                    <GalleryMediaModal
+                        isOpen={isFormOpen}
+                        photo={editingPhoto}
+                        defaultOrder={photos.length ? Math.max(...photos.map(p => p.order)) + 10 : 10}
+                        onClose={() => setIsFormOpen(false)}
+                        onSaveSuccess={handleSaveSuccess}
+                    />
                 )}
             </AnimatePresence>
 
@@ -565,6 +315,309 @@ export default function AdminGalleryPage() {
                     ))}
                 </AnimatePresence>
             </div>
+        </div>
+    );
+}
+
+interface GalleryMediaModalProps {
+    isOpen: boolean;
+    photo: DeliveryPhoto | null;
+    defaultOrder: number;
+    onClose: () => void;
+    onSaveSuccess: (savedPhoto: DeliveryPhoto, isNew: boolean) => void;
+}
+
+function GalleryMediaModal({ isOpen, photo, defaultOrder, onClose, onSaveSuccess }: GalleryMediaModalProps) {
+    const [caption, setCaption] = useState(photo?.caption || '');
+    const [category, setCategory] = useState(photo?.category || 'DELIVERY');
+    const [order, setOrder] = useState(photo ? photo.order : defaultOrder);
+    const [isActive, setIsActive] = useState(photo ? photo.is_active : true);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(photo?.image || null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        setCaption(photo?.caption || '');
+        setCategory(photo?.category || 'DELIVERY');
+        setOrder(photo ? photo.order : defaultOrder);
+        setIsActive(photo ? photo.is_active : true);
+        setImageFile(null);
+        setImagePreview(photo?.image || null);
+        setError(null);
+    }, [photo, defaultOrder, isOpen]);
+
+    useEffect(() => {
+        return () => {
+            if (imagePreview && imagePreview.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            if (imagePreview && imagePreview.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+            const blobUrl = URL.createObjectURL(file);
+            setImagePreview(blobUrl);
+            setError(null);
+        }
+    };
+
+    const handleRemoveMedia = () => {
+        if (imagePreview && imagePreview.startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreview);
+        }
+        setImageFile(null);
+        setImagePreview(null);
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        setError(null);
+
+        if (!imagePreview && !photo) {
+            setError('Please upload a delivery photo or video.');
+            setIsSaving(false);
+            return;
+        }
+
+        try {
+            let imageUrl = photo?.image || '';
+
+            if (imageFile) {
+                imageUrl = await uploadImageSigned(imageFile, 'gallery');
+            }
+
+            const payload = {
+                caption,
+                category,
+                order,
+                is_active: isActive,
+                image: imageUrl
+            };
+
+            if (photo) {
+                const response = await adminAPI.updateDeliveryPhoto(photo.id, payload);
+                onSaveSuccess(response.data, false);
+            } else {
+                const response = await adminAPI.createDeliveryPhoto(payload);
+                onSaveSuccess(response.data, true);
+            }
+            onClose();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Save operation failed');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            {/* Backdrop */}
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm"
+                onClick={() => !isSaving && onClose()}
+            />
+
+            {/* Modal Container with max-height and flex-col */}
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", duration: 0.4 }}
+                className="w-full max-w-lg bg-white border border-slate-100 relative z-10 shadow-diffusion-lg flex flex-col max-h-[90vh] overflow-hidden my-auto"
+            >
+                {/* Fixed Header */}
+                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 shrink-0 bg-white">
+                    <h2 className="text-xl font-serif font-bold text-slate-950 tracking-tighter">
+                        {photo ? 'Edit Media Details' : 'Add Gallery Photo / Video'}
+                    </h2>
+                    <button 
+                        type="button"
+                        onClick={() => !isSaving && onClose()}
+                        className="p-1 hover:bg-slate-50 transition-colors text-slate-400 hover:text-slate-900"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Error Banner */}
+                {error && (
+                    <div className="px-6 py-3 bg-red-50 border-b border-red-100 text-red-600 text-[10px] font-black uppercase tracking-wider flex items-center gap-2 shrink-0">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span>ERROR: {error}</span>
+                    </div>
+                )}
+
+                {/* Scrollable Form Body */}
+                <form id="gallery-form" onSubmit={handleSave} className="overflow-y-auto px-6 py-5 space-y-6 flex-1 min-h-0">
+                    {/* Media Uploader */}
+                    <div className="space-y-2">
+                        <label className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+                            Photo / Video Media
+                        </label>
+                        <div className="relative aspect-video sm:aspect-[4/3] max-h-64 border border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:border-slate-900 bg-slate-50/50">
+                            {imagePreview ? (
+                                <>
+                                    {isVideoMedia(imagePreview) || imageFile?.type?.startsWith('video/') ? (
+                                        <video
+                                            src={imagePreview}
+                                            controls
+                                            playsInline
+                                            className="w-full h-full object-contain bg-black"
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={imagePreview}
+                                            alt="Preview"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    )}
+                                    {!isSaving && (
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveMedia}
+                                            className="absolute top-3 right-3 p-1.5 bg-slate-900/80 text-white hover:bg-slate-900 transition-all z-10"
+                                            title="Remove Media"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <input
+                                        type="file"
+                                        id="gallery-photo-upload"
+                                        className="hidden"
+                                        accept="image/*,video/*"
+                                        onChange={handleImageChange}
+                                    />
+                                    <label
+                                        htmlFor="gallery-photo-upload"
+                                        className="cursor-pointer flex flex-col items-center gap-3 px-6 text-center py-8"
+                                    >
+                                        <div className="w-10 h-10 flex items-center justify-center bg-white border border-slate-100">
+                                            <Upload className="w-5 h-5 text-slate-400" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[11px] font-black uppercase tracking-wider text-slate-900">Upload Delivery Proof</p>
+                                            <p className="text-[9px] text-slate-400 leading-relaxed font-bold uppercase tracking-tight">
+                                                Photos or Videos (MP4, MOV, WEBP, PNG, JPG). Max 50MB.
+                                            </p>
+                                        </div>
+                                    </label>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Category */}
+                    <div className="space-y-2">
+                        <label htmlFor="category" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+                            Asset Category
+                        </label>
+                        <select
+                            id="category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 uppercase tracking-wider bg-white transition-colors"
+                        >
+                            <option value="DELIVERY">Delivery Proof (Homepage)</option>
+                            <option value="TEAM">Our Team (About Page)</option>
+                            <option value="OFFICE">Our Office (About Page)</option>
+                            <option value="WAREHOUSE">Our Warehouse (About Page)</option>
+                            <option value="PACKAGING">Packaging Operations (About Page)</option>
+                            <option value="PICKUP">Customer Pickup (About Page)</option>
+                        </select>
+                    </div>
+
+                    {/* Caption */}
+                    <div className="space-y-2">
+                        <label htmlFor="caption" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+                            Caption / Location
+                        </label>
+                        <input
+                            type="text"
+                            id="caption"
+                            value={caption}
+                            onChange={(e) => setCaption(e.target.value)}
+                            placeholder="e.g. Accra Warehouse Sourcing Batch 10"
+                            className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 placeholder:text-slate-300 uppercase tracking-wider transition-colors"
+                        />
+                    </div>
+
+                    {/* Order & Active */}
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label htmlFor="order" className="block text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+                                Sort Order
+                            </label>
+                            <input
+                                type="number"
+                                id="order"
+                                value={order}
+                                onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+                                className="w-full px-4 py-3 border border-slate-100 focus:border-slate-900 text-xs font-bold text-slate-900 transition-colors"
+                            />
+                        </div>
+
+                        <div className="flex items-center h-full pt-6">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={isActive}
+                                    onChange={(e) => setIsActive(e.target.checked)}
+                                    className="w-4 h-4 border-slate-200 accent-emerald-500 rounded-none focus:ring-0 focus:ring-offset-0"
+                                />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">PUBLISH LIVE</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+
+                {/* Fixed Sticky Footer - Always Visible Without Zooming Out */}
+                <div className="flex items-center justify-end gap-3 border-t border-slate-100 px-6 py-4 bg-slate-50 shrink-0">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        disabled={isSaving}
+                        className="px-6 py-2.5 border border-slate-200 hover:border-slate-900 text-[10px] font-black uppercase tracking-widest text-slate-900 transition-all disabled:opacity-40"
+                    >
+                        CANCEL
+                    </button>
+                    <button
+                        type="submit"
+                        form="gallery-form"
+                        disabled={isSaving}
+                        className="px-8 py-2.5 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-2 disabled:opacity-50"
+                    >
+                        {isSaving ? (
+                            <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                SAVING...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-3.5 h-3.5" />
+                                SAVE ASSET
+                            </>
+                        )}
+                    </button>
+                </div>
+            </motion.div>
         </div>
     );
 }
