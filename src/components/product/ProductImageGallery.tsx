@@ -77,8 +77,7 @@ export default function ProductImageGallery({
                     src={currentImage}
                     alt={`Buy ${productName} in Ghana - Authentic China Import`}
                     fill
-                    className="object-contain p-4 group-hover:scale-110 transition-[transform,opacity] duration-500 ease-out drop-shadow-2xl opacity-0"
-                    onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
+                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-700 ease-out drop-shadow-2xl"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                     priority
                 />

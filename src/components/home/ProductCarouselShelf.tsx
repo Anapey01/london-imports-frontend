@@ -117,8 +117,7 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
                                             aria-hidden="true"
                                             fill
                                             sizes={isFew ? "(max-width: 640px) 140px, (max-width: 768px) 220px, 250px" : "(max-width: 640px) 140px, 160px"}
-                                            className="object-contain hover:scale-105 transition-[transform,opacity] duration-500 ease-out p-2 opacity-0"
-                                            onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
+                                            className="object-contain hover:scale-105 transition-transform duration-500 ease-out p-2"
                                         />
                                     </div>
                                     {/* Label */}

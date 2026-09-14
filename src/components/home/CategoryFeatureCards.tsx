@@ -56,8 +56,7 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                                 aria-hidden="true"
                                                                 fill
                                                                 sizes="(max-width: 640px) 25vw, 15vw"
-                                                                className="object-contain hover:scale-105 transition-[transform,opacity] duration-500 ease-out p-1 opacity-0"
-                                                                onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
+                                                                className="object-contain hover:scale-105 transition-transform duration-500 ease-out p-1"
                                                             />
                                                         </div>
                                                         <p className="text-[11px] text-slate-800 dark:text-slate-200 font-normal mt-1 line-clamp-1 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
@@ -85,8 +84,7 @@ export default function CategoryFeatureCards({ cards = [], overlap = false }: Ca
                                                                 aria-hidden="true"
                                                                 fill
                                                                 sizes="(max-width: 640px) 50vw, 25vw"
-                                                                className="object-contain hover:scale-105 transition-[transform,opacity] duration-500 ease-out p-2 opacity-0"
-                                                                onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
+                                                                className="object-contain hover:scale-105 transition-transform duration-500 ease-out p-2"
                                                             />
                                                         </div>
                                                         <p className="text-xs text-slate-800 dark:text-slate-200 font-normal mt-2 line-clamp-1 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
