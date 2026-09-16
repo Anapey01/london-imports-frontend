@@ -1,7 +1,7 @@
 import DeliveryFeedContent from './DeliveryFeedContent';
 import { Metadata } from 'next';
 
-export const revalidate = 3600; // Cache for 1 hour
+export const revalidate = 604800; // Cache for 7 days to preserve Vercel Free Tier limits
 
 export const metadata: Metadata = {
     title: 'Logistics & Delivery Feed | London\'s Imports Ghana',

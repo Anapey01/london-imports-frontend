@@ -370,7 +370,7 @@ export async function getLatestReviews() {
     const url = `${API_BASE_URL}/products/reviews/latest/`;
     try {
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 3600 } // Revalidate every hour
+            next: { revalidate: 604800 } // Revalidate every 7 days to preserve Vercel Free Tier
         });
 
         if (!res.ok) {

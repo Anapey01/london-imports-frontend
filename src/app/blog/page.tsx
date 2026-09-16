@@ -9,8 +9,8 @@ import { ArrowUpRight, Clock } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getImageUrl } from '@/lib/image';
 
-// Safe 5-minute ISR revalidate — stays 100% within Vercel Free Tier 10k limit while auto-refreshing posts
-export const revalidate = 300;
+// ISR: Revalidate blog directory every 7 days (604800s) to preserve Vercel Free Tier limits
+export const revalidate = 604800;
 
 export const metadata: Metadata = {
     title: 'Shopping & Scaling | Business Journal',
@@ -35,7 +35,7 @@ interface BlogPost {
 async function getBlogPosts(): Promise<BlogPost[]> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/`, {
-            next: { revalidate: 300 }
+            next: { revalidate: 604800 }
         });
         if (!res.ok) return [];
         const data = await res.json();

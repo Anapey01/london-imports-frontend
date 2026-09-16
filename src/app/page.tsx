@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 
-// ISR: Revalidate homepage every 1 hour
-export const revalidate = 3600;
+// ISR: Revalidate homepage every 24 hours to preserve Vercel Free Tier Data Cache limits
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "London's Imports | Global Sourcing & Shipping Center",

@@ -11,8 +11,8 @@ import { siteConfig } from '@/config/site';
 import ShareButton from '@/components/ShareButton';
 import { ArrowUpRight, ArrowLeft, Clock } from 'lucide-react';
 
-// Safe 5-minute ISR revalidate — stays 100% within Vercel Free Tier limit
-export const revalidate = 300;
+// ISR: Revalidate blog posts every 7 days (604800s) to preserve Vercel Free Tier limits
+export const revalidate = 604800;
 
 interface BlogPost {
     id: number;
@@ -35,7 +35,7 @@ interface BlogPost {
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
     try {
         const res = await fetch(`${siteConfig.apiUrl}/blog/${slug}/`, {
-            next: { revalidate: 300 }
+            next: { revalidate: 604800 }
         });
         if (!res.ok) return null;
         return res.json();
