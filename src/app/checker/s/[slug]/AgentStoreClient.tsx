@@ -1,31 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef, useTransition } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { checkersAPI } from '@/lib/api';
 import Link from 'next/link';
 
-interface PricingTier {
-  min_quantity: number;
-  max_quantity: number | null;
-  price_per_unit: string;
-}
-
-interface PricingData {
-  [key: string]: PricingTier[];
-}
-
-interface VoucherDetail {
-  serial: string;
-  pin: string;
-}
-
-interface HistoryItem {
-  client_reference: string;
-  checker_type: string;
-  quantity: number;
-  completed_at: string;
-  vouchers: VoucherDetail[];
-}
+// Modular Storefront Subcomponents
+import type { PricingData, HistoryItem } from '@/components/checker/storefront/types';
+import BuyVoucherModal from '@/components/checker/storefront/BuyVoucherModal';
+import RetrieveVouchersModal from '@/components/checker/storefront/RetrieveVouchersModal';
 
 export default function AgentStoreClient({ slug, initialPricingData }: { slug: string; initialPricingData?: any }) {
   const [activeModal, setActiveModal] = useState<'buy' | 'retrieve' | null>(null);
@@ -34,18 +16,15 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   // Buy Form State
   const [checkerType, setCheckerType] = useState<'BECE' | 'WASSCE'>('WASSCE');
   const [quantity, setQuantity] = useState<number>(1);
-  const emailRef = useRef<HTMLInputElement>(null);
   const [totalPrice, setTotalPrice] = useState<number>(17.00);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPricingTiers, setShowPricingTiers] = useState<boolean>(false);
 
   // Retrieve Form State (2-step Email -> OTP -> Results)
   const [retrieveStep, setRetrieveStep] = useState<'email' | 'otp' | 'results'>('email');
   const [retrieveEmail, setRetrieveEmail] = useState<string>('');
   const [retrieveOtp, setRetrieveOtp] = useState<string>('');
   const [resendCooldown, setResendCooldown] = useState<number>(0);
-  const retrieveEmailRef = useRef<HTMLInputElement>(null);
   const [retrieveLoading, setRetrieveLoading] = useState<boolean>(false);
   const [retrieveError, setRetrieveError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -66,7 +45,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     BECE: [{ min_quantity: 1, max_quantity: null, price_per_unit: '17.00' }]
   });
   const [stock, setStock] = useState<{ [key: string]: number }>(initialPricingData?.stock || { WASSCE: -1, BECE: -1 });
-  const [storeLoading, setStoreLoading] = useState<boolean>(!initialPricingData);
+  const [, setStoreLoading] = useState<boolean>(!initialPricingData);
   const [storeError, setStoreError] = useState<string | null>(null);
 
   // Modal handlers
@@ -84,7 +63,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     });
   };
 
-  // Fetch Pricing & Stock levels from agent profile (SWR pattern for live sync)
+  // Fetch Pricing & Stock levels from agent profile
   useEffect(() => {
     async function fetchStoreDetails() {
       try {
@@ -104,7 +83,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
       }
     }
     fetchStoreDetails();
-  }, [slug]);
+  }, [slug, initialPricingData]);
 
   // Calculate dynamic totalPrice
   useEffect(() => {
@@ -133,12 +112,10 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   }, [checkerType, quantity, pricing]);
 
   // Handle Buy submit
-  const handleBuySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBuySubmit = async (emailValue: string) => {
     setError(null);
     setLoading(true);
 
-    const emailValue = emailRef.current?.value?.trim() || '';
     if (!emailValue || !emailValue.includes('@')) {
       setError('Please enter a valid email address.');
       setLoading(false);
@@ -161,12 +138,10 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   };
 
   // Step 1: Send OTP to customer's email
-  const handleSendOtpSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendOtpSubmit = async (emailValue: string) => {
     setRetrieveError(null);
     setRetrieveLoading(true);
 
-    const emailValue = (retrieveEmailRef.current?.value?.trim() || retrieveEmail).toLowerCase();
     if (!emailValue || !emailValue.includes('@')) {
       setRetrieveError('Please enter a valid email address.');
       setRetrieveLoading(false);
@@ -191,12 +166,11 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
   };
 
   // Step 2: Verify OTP and retrieve vouchers
-  const handleVerifyOtpSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyOtpSubmit = async (email: string, otp: string) => {
     setRetrieveError(null);
     setRetrieveLoading(true);
 
-    const otpCode = retrieveOtp.trim();
+    const otpCode = otp.trim();
     if (!otpCode || otpCode.length < 6) {
       setRetrieveError('Please enter the complete 6-digit verification code.');
       setRetrieveLoading(false);
@@ -204,7 +178,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     }
 
     try {
-      const response = await checkersAPI.verifyRetrieveOtp(retrieveEmail, otpCode);
+      const response = await checkersAPI.verifyRetrieveOtp(email, otpCode);
       if (response.data && response.data.history) {
         setHistory(response.data.history);
         setRetrieveStep('results');
@@ -233,13 +207,6 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
     } finally {
       setRetrieveLoading(false);
     }
-  };
-
-  const [copiedText, setCopiedText] = useState<string | null>(null);
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedText(label);
-    setTimeout(() => setCopiedText(null), 2000);
   };
 
   if (storeError && !initialPricingData) {
@@ -305,7 +272,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
             </div>
             <button
               onClick={() => openModal('buy')}
-              className="w-full bg-content-primary text-surface py-4 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald hover:text-white transition-all duration-200"
+              className="w-full bg-content-primary text-surface py-4 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald hover:text-white transition-all duration-200 cursor-pointer"
             >
               Click Here to Buy
             </button>
@@ -328,7 +295,7 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
             </div>
             <button
               onClick={() => openModal('retrieve')}
-              className="w-full bg-content-primary text-surface py-4 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald hover:text-white transition-all duration-200"
+              className="w-full bg-content-primary text-surface py-4 px-6 rounded-none font-black text-xs uppercase tracking-[0.25em] hover:bg-brand-emerald hover:text-white transition-all duration-200 cursor-pointer"
             >
               Click Here to Retrieve
             </button>
@@ -342,369 +309,47 @@ export default function AgentStoreClient({ slug, initialPricingData }: { slug: s
         </div>
       </div>
 
-      {/* ==================== BUY MODAL ==================== */}
-      {activeModal === 'buy' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
-          <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-none w-full max-w-lg shadow-2xl relative animate-elite-entrance">
-            <button
-              onClick={() => openModal(null)}
-              className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
-              aria-label="Close modal"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+      {/* Buy Modal */}
+      <BuyVoucherModal
+        isOpen={activeModal === 'buy'}
+        onClose={() => openModal(null)}
+        checkerType={checkerType}
+        setCheckerType={setCheckerType}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        totalPrice={totalPrice}
+        becePrice={becePrice}
+        wasscePrice={wasscePrice}
+        stock={stock}
+        onSubmit={handleBuySubmit}
+        loading={loading}
+        error={error}
+      />
 
-            <div className="p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-              <h3 className="font-serif text-lg sm:text-xl font-bold text-content-primary mb-4 pr-8">
-                Purchase Results Checker
-              </h3>
-
-              {/* Pricing breakdown info */}
-              <div className="border border-slate-200 dark:border-slate-800 mb-4 p-3 bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider space-y-1.5">
-                <div className="flex justify-between">
-                  <span>BECE Checker price:</span>
-                  <span className="font-mono text-brand-emerald">GH₵ {becePrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>WASSCE Checker price:</span>
-                  <span className="font-mono text-brand-emerald">GH₵ {wasscePrice.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <form onSubmit={handleBuySubmit} className="space-y-3">
-                {/* Select Type */}
-                <div>
-                  <label className="block text-xs font-bold text-content-primary mb-1.5">
-                    Select Checker Type <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={checkerType}
-                    onChange={(e) => setCheckerType(e.target.value as 'BECE' | 'WASSCE')}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-none px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
-                  >
-                    <option value="WASSCE" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">WASSCE, SSCE, ABCE</option>
-                    <option value="BECE" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">BECE (School & Private)</option>
-                  </select>
-                </div>
-
-                {/* Quantity & Total Price */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-content-primary mb-1.5">
-                      Quantity <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-none bg-slate-50 dark:bg-slate-900 h-[42px]">
-                      <button
-                        type="button"
-                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                        disabled={quantity <= 1}
-                        className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-r border-slate-200 dark:border-slate-700 transition-colors"
-                      >
-                        <span className="text-md font-bold">−</span>
-                      </button>
-                      <input
-                        type="number"
-                        min="1"
-                        max="200"
-                        value={quantity}
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value);
-                          if (!isNaN(val)) setQuantity(Math.min(200, Math.max(1, val)));
-                        }}
-                        className="w-full text-center bg-transparent border-0 text-sm font-bold text-slate-900 dark:text-white focus:ring-0 focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setQuantity(q => Math.min(200, q + 1))}
-                        disabled={quantity >= 200}
-                        className="w-9 h-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 border-l border-slate-200 dark:border-slate-700 transition-colors"
-                      >
-                        <span className="text-md font-bold">+</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-content-primary mb-1.5">
-                      Total Cost
-                    </label>
-                    <div className="h-[42px] flex items-center justify-between px-3 border border-slate-200 dark:border-slate-700 rounded-none bg-slate-50 dark:bg-slate-900 font-bold text-brand-emerald text-sm">
-                      <span className="font-mono text-sm ml-auto">GH₵ {totalPrice.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Email Delivery */}
-                <div>
-                  <label className="block text-xs font-bold text-content-primary mb-1.5">
-                    Delivery Email Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    ref={emailRef}
-                    type="email"
-                    required
-                    placeholder="Enter email to receive vouchers"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
-                  />
-                  <p className="mt-1.5 text-xs text-content-secondary font-normal">
-                    Vouchers are displayed on screen and sent to this email.
-                  </p>
-                </div>
-
-                {/* Stock status */}
-                <div className="text-xs font-medium text-content-secondary">
-                  Stock status:{' '}
-                  {stock[checkerType] > 20 ? (
-                    <span className="text-brand-emerald font-semibold">In stock</span>
-                  ) : stock[checkerType] > 0 ? (
-                    <span className="text-orange-500 font-semibold">Low stock ({stock[checkerType]} left)</span>
-                  ) : stock[checkerType] === 0 ? (
-                    <span className="text-orange-500 font-semibold">Limited — order now</span>
-                  ) : (
-                    <span className="text-brand-emerald font-semibold">Available</span>
-                  )}
-                </div>
-
-                {/* Error Banner */}
-                {error && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
-                    {error}
-                  </div>
-                )}
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-content-primary text-surface py-3 px-6 rounded-none font-bold text-sm tracking-wide hover:bg-brand-emerald transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
-                >
-                  {loading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
-                      <span>Processing...</span>
-                    </div>
-                  ) : (
-                    <span>Make Payment (GH₵ {totalPrice.toFixed(2)})</span>
-                  )}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ==================== RETRIEVE MODAL ==================== */}
-      {activeModal === 'retrieve' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
-          <div className="bg-surface border border-slate-200 rounded-none w-full max-w-xl shadow-2xl relative animate-elite-entrance">
-            <button
-              onClick={() => openModal(null)}
-              className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
-              aria-label="Close modal"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="p-5 sm:p-7 max-h-[85vh] overflow-y-auto">
-              <h3 className="font-serif text-xl sm:text-2xl font-black text-content-primary mb-2 pr-8 uppercase tracking-tight">
-                {retrieveStep === 'results' ? 'Your Results Checkers' : 'Retrieve Checkers'}
-              </h3>
-              <p className="text-content-secondary text-xs leading-relaxed mb-5">
-                {retrieveStep === 'email' && 'Enter your email address. We will send a 6-digit verification code to retrieve your vouchers securely.'}
-                {retrieveStep === 'otp' && (
-                  <span>
-                    We sent a 6-digit code to <strong className="text-content-primary">{retrieveEmail}</strong>.{' '}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRetrieveStep('email');
-                        setRetrieveError(null);
-                      }}
-                      className="text-brand-emerald underline font-bold hover:opacity-80 ml-1 cursor-pointer"
-                    >
-                      Change email
-                    </button>
-                  </span>
-                )}
-                {retrieveStep === 'results' && 'Here are your purchased results checkers. Keep your Serial & PIN numbers secure.'}
-              </p>
-
-              {/* STEP 1: EMAIL INPUT */}
-              {retrieveStep === 'email' && (
-                <form onSubmit={handleSendOtpSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
-                      Purchased Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input
-                        ref={retrieveEmailRef}
-                        type="email"
-                        required
-                        defaultValue={retrieveEmail}
-                        placeholder="e.g. customer@email.com"
-                        className="flex-grow bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
-                      />
-                      <button
-                        type="submit"
-                        disabled={retrieveLoading}
-                        className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald hover:text-white transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center shrink-0 cursor-pointer"
-                      >
-                        {retrieveLoading ? (
-                          <span className="flex items-center gap-2">
-                            <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
-                            Sending...
-                          </span>
-                        ) : 'Send Code'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {retrieveError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
-                      {retrieveError}
-                    </div>
-                  )}
-                </form>
-              )}
-
-              {/* STEP 2: OTP VERIFICATION */}
-              {retrieveStep === 'otp' && (
-                <form onSubmit={handleVerifyOtpSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-black text-content-secondary uppercase tracking-[0.2em] mb-1.5">
-                      Enter 6-Digit Verification Code <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input
-                        type="text"
-                        required
-                        maxLength={6}
-                        value={retrieveOtp}
-                        onChange={(e) => setRetrieveOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        placeholder="123456"
-                        autoFocus
-                        className="flex-grow bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-none px-4 py-2.5 text-lg font-mono font-bold tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 focus:border-brand-emerald transition-all"
-                      />
-                      <button
-                        type="submit"
-                        disabled={retrieveLoading || retrieveOtp.length < 6}
-                        className="bg-content-primary text-surface px-6 py-2.5 rounded-none font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-emerald hover:text-white transition-colors duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center shrink-0 cursor-pointer"
-                      >
-                        {retrieveLoading ? (
-                          <span className="flex items-center gap-2">
-                            <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-content-primary rounded-full animate-spin" />
-                            Verifying...
-                          </span>
-                        ) : 'Verify & View Checkers'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {retrieveError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
-                      {retrieveError}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-content-secondary">
-                      {resendCooldown > 0 ? (
-                        <span>Resend code in <strong className="font-mono text-content-primary">{resendCooldown}s</strong></span>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleResendOtp}
-                          disabled={retrieveLoading}
-                          className="text-brand-emerald underline font-bold hover:opacity-80 cursor-pointer"
-                        >
-                          Didn't receive code? Resend Code
-                        </button>
-                      )}
-                    </span>
-                  </div>
-                </form>
-              )}
-
-              {/* STEP 3: VOUCHERS RESULTS */}
-              {retrieveStep === 'results' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                    <h4 className="text-[10px] font-black text-content-secondary uppercase tracking-[0.2em]">
-                      Purchase History ({history.length} records found)
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRetrieveStep('email');
-                        setRetrieveOtp('');
-                        setHistory([]);
-                      }}
-                      className="text-[10px] text-brand-emerald underline font-black uppercase tracking-wider hover:opacity-80 cursor-pointer"
-                    >
-                      Look Up Another Email
-                    </button>
-                  </div>
-                  
-                  {history.length === 0 ? (
-                    <p className="text-center py-6 text-xs text-content-secondary font-bold uppercase tracking-wider">
-                      No checkers found for this email.
-                    </p>
-                  ) : (
-                    <div className="space-y-4 max-h-[45vh] overflow-y-auto pr-1">
-                      {history.map((order, oIdx) => (
-                        <div key={oIdx} className="border border-slate-200 rounded-none p-4 bg-surface shadow-sm">
-                          <div className="flex justify-between items-center text-[9px] text-content-secondary mb-3 pb-2 border-b border-slate-100 font-black uppercase tracking-[0.15em]">
-                            <span>{new Date(order.completed_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                            <span>Ref: {order.client_reference}</span>
-                          </div>
-                          
-                          <div className="flex justify-between items-center text-xs font-black text-content-primary mb-3 uppercase tracking-wider">
-                            <span>{order.quantity}x {order.checker_type} results checker</span>
-                            <a
-                              href={order.checker_type === 'BECE' ? 'https://eresults.waecgh.org' : 'https://ghana.waecdirect.org'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[9px] text-brand-emerald hover:underline font-black uppercase tracking-widest flex items-center gap-1"
-                            >
-                              Check Results Portal
-                              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                              </svg>
-                            </a>
-                          </div>
-
-                          <div className="space-y-2">
-                            {order.vouchers.map((v, vIdx) => (
-                              <div key={vIdx} className="bg-slate-50 border border-slate-200 rounded-none p-2.5 flex justify-between items-center font-mono text-xs">
-                                <div className="space-y-1">
-                                  <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">SERIAL:</span> <span className="font-bold text-slate-800">{v.serial}</span></div>
-                                  <div><span className="text-content-secondary text-[9px] font-sans font-black uppercase tracking-wider">PIN:</span> <span className="font-bold text-brand-emerald">{v.pin}</span></div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => copyToClipboard(`Serial: ${v.serial}, PIN: ${v.pin}`, `v-${oIdx}-${vIdx}`)}
-                                  className="text-[9px] bg-surface border border-slate-200 hover:border-content-primary hover:text-content-primary font-sans font-black uppercase tracking-widest px-2.5 py-1.5 rounded-none transition-all shrink-0 cursor-pointer"
-                                >
-                                  {copiedText === `v-${oIdx}-${vIdx}` ? 'Copied ✓' : 'Copy'}
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Retrieve Modal */}
+      <RetrieveVouchersModal
+        isOpen={activeModal === 'retrieve'}
+        onClose={() => openModal(null)}
+        retrieveStep={retrieveStep}
+        setRetrieveStep={setRetrieveStep}
+        retrieveEmail={retrieveEmail}
+        setRetrieveEmail={setRetrieveEmail}
+        retrieveOtp={retrieveOtp}
+        setRetrieveOtp={setRetrieveOtp}
+        history={history}
+        retrieveLoading={retrieveLoading}
+        retrieveError={retrieveError}
+        setRetrieveError={setRetrieveError}
+        resendCooldown={resendCooldown}
+        onSendOtp={handleSendOtpSubmit}
+        onVerifyOtp={handleVerifyOtpSubmit}
+        onResendOtp={handleResendOtp}
+        onReset={() => {
+          setRetrieveStep('email');
+          setRetrieveOtp('');
+          setHistory([]);
+        }}
+      />
     </div>
   );
 }
