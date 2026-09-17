@@ -3,8 +3,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowDown, ShieldCheck } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 604800; // Cache for 7 days
 
 export const metadata: Metadata = {
     title: "Download Android App | London's Imports",

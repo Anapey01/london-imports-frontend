@@ -359,14 +359,6 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(self), microphone=(self), geolocation=(self), browsing-topics=()'
-          },
-          {
-            key: 'CDN-Cache-Control',
-            value: 'no-store, no-cache, must-revalidate'
-          },
-          {
-            key: 'Cloudflare-CDN-Cache-Control',
-            value: 'no-store, no-cache, must-revalidate'
           }
         ],
       },
@@ -408,6 +400,18 @@ const nextConfig: NextConfig = {
         {
           source: '/_next/static/css/22d843d29efef3ed.css',
           destination: '/legacy-css/22d843d29efef3ed.css',
+        },
+        {
+          source: '/_next/static/css/8ef137cc7b45679b.css',
+          destination: '/legacy-css/8ef137cc7b45679b.css',
+        },
+        {
+          source: '/_next/static/css/2702258296b3bdef.css',
+          destination: '/legacy-css/2702258296b3bdef.css',
+        },
+        {
+          source: '/_next/static/css/0b77e07caaecc1ad.css',
+          destination: '/legacy-css/0b77e07caaecc1ad.css',
         },
       ],
       afterFiles: [
@@ -466,8 +470,13 @@ export default withSentryConfig(
     // For all available options, see:
     // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
+    // Avoid uploading wide client bundles to keep bundle lean
+    widenClientFileUpload: false,
+
+    // Delete source maps after upload to Sentry to prevent bloating Vercel Deployment and Functions Storage
+    sourcemaps: {
+      deleteSourcemapsAfterUpload: true,
+    },
 
     // Transpiles SDK to be compatible with IE11 (increases bundle size)
     // transpileClientSDK: true,

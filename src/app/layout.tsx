@@ -239,7 +239,7 @@ export default async function RootLayout({
         <SkipToContent />
         <GoogleAnalytics />
         <WebVitalsReporter />
-        <SpeedInsights />
+        <SpeedInsights sampleRate={0.5} />
 
         <Providers>
           <div className="w-full overflow-x-hidden relative flex flex-col min-h-screen">
