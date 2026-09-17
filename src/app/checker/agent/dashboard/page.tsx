@@ -1,47 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAgentAuthStore } from '@/stores/agentAuthStore';
 import { checkersAPI } from '@/lib/api';
-import Link from 'next/link';
 
-interface Order {
-  client_reference: string;
-  checker_type: string;
-  quantity: number;
-  completed_at: string;
-  total_price: string;
-  commission: string;
-  buyer_email: string;
-}
-
-interface LedgerEntry {
-  id: string;
-  entry_type: string;
-  entry_type_display: string;
-  amount: string;
-  balance_after: string;
-  reference: string;
-  description: string;
-  created_at: string;
-}
-
-interface Payout {
-  id: string;
-  amount: string;
-  momo_network: string;
-  momo_number: string;
-  status: string;
-  status_display: string;
-  reference: string;
-  notes: string;
-  created_at: string;
-}
+import type { Order, LedgerEntry, Payout } from '@/components/checker/agent/types';
+import StorefrontLinkTab from '@/components/checker/agent/StorefrontLinkTab';
+import PricingManagerTab from '@/components/checker/agent/PricingManagerTab';
+import RecentSalesTab from '@/components/checker/agent/RecentSalesTab';
+import WalletLedgerTab from '@/components/checker/agent/WalletLedgerTab';
+import StoreSettingsTab from '@/components/checker/agent/StoreSettingsTab';
+import WithdrawalModal from '@/components/checker/agent/WithdrawalModal';
 
 export default function AgentDashboardPage() {
   const router = useRouter();
-  const { agent, isAuthenticated, logout, isLoading } = useAgentAuthStore();
+  const { agent, isAuthenticated, logout } = useAgentAuthStore();
 
   const [activeTab, setActiveTab] = useState<'link' | 'pricing' | 'sales' | 'wallet' | 'settings'>('link');
   
@@ -53,7 +27,7 @@ export default function AgentDashboardPage() {
   // Lists
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [ledger, setLedger] = useState<LedgerEntry[]>([]);
-  const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [, setPayouts] = useState<Payout[]>([]);
   
   // Pricing manager state
   const [becePrice, setBecePrice] = useState<number>(16.50);
@@ -185,13 +159,14 @@ export default function AgentDashboardPage() {
       }
       setSettingsSuccess(true);
       setTimeout(() => setSettingsSuccess(false), 4000);
-    } catch (err: any) {
-      const errData = err.response?.data;
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: Record<string, string[] | string> } };
+      const errData = errorObj.response?.data;
       const msg = (
-        errData?.store_name?.[0] || 
-        errData?.slug?.[0] || 
-        errData?.momo_number?.[0] || 
-        errData?.error || 
+        (Array.isArray(errData?.store_name) ? errData.store_name[0] : null) || 
+        (Array.isArray(errData?.slug) ? errData.slug[0] : null) || 
+        (Array.isArray(errData?.momo_number) ? errData.momo_number[0] : null) || 
+        (typeof errData?.error === 'string' ? errData.error : null) || 
         'Failed to update store settings.'
       );
       setSettingsError(msg);
@@ -234,8 +209,9 @@ export default function AgentDashboardPage() {
       ]);
       setPricingSuccess(true);
       await Promise.all([fetchDashboardData(), fetchPricing()]);
-    } catch (err: any) {
-      setPricingError(err.response?.data?.error || 'Failed to update selling prices. Verify selling price is above GHS 16.50.');
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { error?: string } } };
+      setPricingError(errorObj.response?.data?.error || 'Failed to update selling prices. Verify selling price is above GHS 16.50.');
     } finally {
       setPricingLoading(false);
     }
@@ -270,8 +246,9 @@ export default function AgentDashboardPage() {
         setIsPayoutModalOpen(false);
         setPayoutSuccess(false);
       }, 2000);
-    } catch (err: any) {
-      setPayoutError(err.response?.data?.error || 'Failed to submit withdrawal request.');
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { error?: string } } };
+      setPayoutError(errorObj.response?.data?.error || 'Failed to submit withdrawal request.');
     } finally {
       setPayoutLoading(false);
     }
@@ -418,516 +395,79 @@ export default function AgentDashboardPage() {
 
           {/* Tab Content Panels */}
           <div className="p-6">
-            
-            {/* === Tab: Share storefront === */}
             {activeTab === 'link' && (
-              <div className="space-y-6 max-w-xl">
-                <div className="space-y-2">
-                  <h3 className="font-serif text-lg font-bold text-content-primary">
-                    Your Shareable Link
-                  </h3>
-                  <p className="text-content-secondary text-xs leading-relaxed font-normal">
-                    Customers who visit this link will buy WASSCE & BECE checkers at your custom prices. Your reseller profile is automatically linked to verify transactions.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="flex-grow bg-slate-50 border border-slate-200 px-4 py-3 font-mono text-xs text-content-primary select-all break-all flex items-center">
-                    {getStoreLink()}
-                  </div>
-                  <button
-                    onClick={copyStoreLink}
-                    className="bg-content-primary text-surface px-6 py-3 rounded-none font-bold text-xs uppercase tracking-widest hover:bg-brand-emerald transition-colors shrink-0"
-                  >
-                    {copiedLink ? 'Copied ✓' : 'Copy Link'}
-                  </button>
-                </div>
-
-                <div className="flex gap-4 pt-2">
-                  <a
-                    href={`https://api.whatsapp.com/send?text=Buy WASSCE & BECE checkers directly from my store: ${encodeURIComponent(getStoreLink())}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-[#25D366] hover:opacity-85 text-white font-bold text-[10px] uppercase tracking-widest px-5 py-3 rounded-none transition-all flex items-center gap-2"
-                  >
-                    Share via WhatsApp
-                  </a>
-                  <a
-                    href={getStoreLink()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="border border-content-primary text-content-primary font-bold text-[10px] uppercase tracking-widest px-5 py-3 rounded-none transition-all hover:bg-slate-50"
-                  >
-                    Visit Storefront ↗
-                  </a>
-                </div>
-              </div>
+              <StorefrontLinkTab
+                storeLink={getStoreLink()}
+                copiedLink={copiedLink}
+                onCopyLink={copyStoreLink}
+              />
             )}
 
-            {/* === Tab: Price overrides === */}
             {activeTab === 'pricing' && (
-              <div className="space-y-6 max-w-xl">
-                <div className="space-y-2">
-                  <h3 className="font-serif text-lg font-bold text-content-primary">
-                    Price Customization
-                  </h3>
-                  <p className="text-content-secondary text-xs leading-relaxed font-normal">
-                    Configure your selling price for each results checker. The margin profit represents your commission per item sold (Selling Price minus locked Base Price).
-                  </p>
-                </div>
-
-                <form onSubmit={handlePricingSave} className="space-y-5">
-                  {/* BECE Override */}
-                  <div className="border border-border-standard p-4 space-y-3 bg-slate-50">
-                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-content-secondary">
-                      <span>BECE Checker Pricing</span>
-                      <span className="text-brand-emerald font-black">Base price: GH₵ 16.50</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 items-center">
-                      <div>
-                        <label className="block text-xs font-bold text-content-primary mb-1">
-                          Selling Price (GH₵)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="16.50"
-                          value={becePriceInput}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setBecePriceInput(val);
-                            const parsed = parseFloat(val);
-                            if (!isNaN(parsed)) {
-                              setBecePrice(parsed);
-                            }
-                          }}
-                          className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <span className="block text-[10px] font-black uppercase text-content-secondary mb-1">
-                          Your Profit Margin
-                        </span>
-                        <div className="font-mono text-sm font-bold text-brand-emerald h-[38px] flex items-center">
-                          + GH₵ {(becePrice - 16.50).toFixed(2)} / sale
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* WASSCE Override */}
-                  <div className="border border-border-standard p-4 space-y-3 bg-slate-50">
-                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-content-secondary">
-                      <span>WASSCE / SSCE Pricing</span>
-                      <span className="text-brand-emerald font-black">Base price: GH₵ 16.50</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 items-center">
-                      <div>
-                        <label className="block text-xs font-bold text-content-primary mb-1">
-                          Selling Price (GH₵)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="16.50"
-                          value={wasscePriceInput}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setWasscePriceInput(val);
-                            const parsed = parseFloat(val);
-                            if (!isNaN(parsed)) {
-                              setWasscePrice(parsed);
-                            }
-                          }}
-                          className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <span className="block text-[10px] font-black uppercase text-content-secondary mb-1">
-                          Your Profit Margin
-                        </span>
-                        <div className="font-mono text-sm font-bold text-brand-emerald h-[38px] flex items-center">
-                          + GH₵ {(wasscePrice - 16.50).toFixed(2)} / sale
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {pricingSuccess && (
-                    <div className="p-3 bg-brand-emerald/10 border border-brand-emerald/20 text-brand-emerald font-bold rounded-none text-xs uppercase tracking-wide">
-                      Selling prices saved successfully!
-                    </div>
-                  )}
-
-                  {pricingError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
-                      {pricingError}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={pricingLoading}
-                    className="bg-content-primary text-surface py-3 px-6 rounded-none font-bold text-xs uppercase tracking-widest hover:bg-brand-emerald transition-colors"
-                  >
-                    {pricingLoading ? 'Saving changes...' : 'Save Selling Prices'}
-                  </button>
-                </form>
-              </div>
+              <PricingManagerTab
+                becePriceInput={becePriceInput}
+                setBecePriceInput={setBecePriceInput}
+                wasscePriceInput={wasscePriceInput}
+                setWasscePriceInput={setWasscePriceInput}
+                becePrice={becePrice}
+                setBecePrice={setBecePrice}
+                wasscePrice={wasscePrice}
+                setWasscePrice={setWasscePrice}
+                handlePricingSave={handlePricingSave}
+                pricingLoading={pricingLoading}
+                pricingSuccess={pricingSuccess}
+                pricingError={pricingError}
+              />
             )}
 
-            {/* === Tab: Sales Logs === */}
             {activeTab === 'sales' && (
-              <div className="space-y-4">
-                <h3 className="font-serif text-lg font-bold text-content-primary pb-2 border-b border-slate-100">
-                  Recent Checker Sales
-                </h3>
-
-                {recentOrders.length === 0 ? (
-                  <p className="text-center py-8 text-xs text-content-secondary font-bold uppercase tracking-wider">
-                    No sales recorded yet. Share your store link to start selling.
-                  </p>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-slate-200 text-left text-xs font-medium">
-                      <thead className="bg-slate-50 text-[9px] font-black uppercase tracking-widest text-content-secondary">
-                        <tr>
-                          <th className="px-4 py-3">Date</th>
-                          <th className="px-4 py-3">Reference</th>
-                          <th className="px-4 py-3">Checker Type</th>
-                          <th className="px-4 py-3">Qty</th>
-                          <th className="px-4 py-3 text-right">Customer Price</th>
-                          <th className="px-4 py-3 text-right text-brand-emerald">Your Earnings</th>
-                          <th className="px-4 py-3">Buyer Email</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 text-content-primary font-mono">
-                        {recentOrders.map((order, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-3 whitespace-nowrap font-sans text-content-secondary text-[11px]">
-                              {new Date(order.completed_at).toLocaleDateString()}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap">{order.client_reference}</td>
-                            <td className="px-4 py-3 whitespace-nowrap font-sans text-[11px] uppercase">{order.checker_type}</td>
-                            <td className="px-4 py-3 whitespace-nowrap font-sans text-[11px]">{order.quantity}</td>
-                            <td className="px-4 py-3 whitespace-nowrap text-right font-sans text-[11px]">GH₵ {parseFloat(order.total_price).toFixed(2)}</td>
-                            <td className="px-4 py-3 whitespace-nowrap text-right text-brand-emerald font-sans font-bold text-[11px]">
-                              + GH₵ {parseFloat(order.commission).toFixed(2)}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap font-sans text-content-secondary">{order.buyer_email}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+              <RecentSalesTab recentOrders={recentOrders} />
             )}
 
-            {/* === Tab: Wallet Logs === */}
             {activeTab === 'wallet' && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between sm:items-center pb-2 border-b border-slate-100 gap-4">
-                  <h3 className="font-serif text-lg font-bold text-content-primary">
-                    Financial Wallet History
-                  </h3>
-                  <button
-                    onClick={() => setIsPayoutModalOpen(true)}
-                    className="bg-content-primary text-surface py-2 px-4 rounded-none font-bold text-[9px] uppercase tracking-widest hover:bg-brand-emerald transition-colors align-self-start sm:align-self-auto"
-                  >
-                    Withdraw Funds
-                  </button>
-                </div>
-
-                {ledger.length === 0 ? (
-                  <p className="text-center py-8 text-xs text-content-secondary font-bold uppercase tracking-wider">
-                    No payments or transactions yet.
-                  </p>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-slate-200 text-left text-xs font-medium">
-                      <thead className="bg-slate-50 text-[9px] font-black uppercase tracking-widest text-content-secondary">
-                        <tr>
-                          <th className="px-4 py-3">Date</th>
-                          <th className="px-4 py-3">Reference</th>
-                          <th className="px-4 py-3">Activity</th>
-                          <th className="px-4 py-3 text-right">Amount</th>
-                          <th className="px-4 py-3 text-right">Wallet Balance</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 text-content-primary font-mono">
-                        {ledger.map((entry, idx) => {
-                          const amountVal = parseFloat(entry.amount);
-                          const isCredit = amountVal > 0;
-                          return (
-                            <tr key={idx} className="hover:bg-slate-50/50">
-                              <td className="px-4 py-3 whitespace-nowrap font-sans text-content-secondary text-[11px]">
-                                {new Date(entry.created_at).toLocaleString()}
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap">{entry.reference}</td>
-                              <td className="px-4 py-3 font-sans text-content-primary text-[11px]">
-                                {entry.description || entry.entry_type_display}
-                              </td>
-                              <td className={`px-4 py-3 whitespace-nowrap text-right font-sans font-bold text-[11px] ${
-                                isCredit ? 'text-brand-emerald' : 'text-red-500'
-                              }`}>
-                                {isCredit ? '+' : ''} GH₵ {amountVal.toFixed(2)}
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-right font-sans text-[11px]">
-                                GH₵ {parseFloat(entry.balance_after).toFixed(2)}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+              <WalletLedgerTab
+                ledger={ledger}
+                onOpenWithdrawal={() => setIsPayoutModalOpen(true)}
+              />
             )}
 
-            {/* === Tab: Store Settings === */}
             {activeTab === 'settings' && (
-              <div className="space-y-6 max-w-xl">
-                <div className="space-y-2">
-                  <h3 className="font-serif text-lg font-bold text-content-primary">
-                    Store & Account Settings
-                  </h3>
-                  <p className="text-content-secondary text-xs leading-relaxed font-normal">
-                    Update your public shop name, custom storefront link URL, and Mobile Money payout account.
-                  </p>
-                </div>
-
-                <form onSubmit={handleSettingsSave} className="space-y-5">
-                  {/* Shop Name */}
-                  <div className="border border-border-standard p-4 space-y-3 bg-slate-50">
-                    <label className="block text-xs font-bold text-content-primary">
-                      Shop / Business Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={storeNameInput}
-                      onChange={(e) => setStoreNameInput(e.target.value)}
-                      placeholder="e.g. ERICHECK GH"
-                      className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
-                    />
-                    <p className="text-[11px] text-content-secondary">
-                      Displayed on your public storefront header, browser title, and customer receipts.
-                    </p>
-                  </div>
-
-                  {/* Storefront Slug */}
-                  <div className="border border-border-standard p-4 space-y-3 bg-slate-50">
-                    <label className="block text-xs font-bold text-content-primary">
-                      Storefront Web Address (Slug) <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex items-center">
-                      <span className="bg-slate-200 border border-r-0 border-slate-200 px-3 py-2 text-xs font-mono text-content-secondary select-none">
-                        /checker/s/
-                      </span>
-                      <input
-                        type="text"
-                        required
-                        value={slugInput}
-                        onChange={(e) => setSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                        placeholder="ericheck-gh"
-                        className="flex-grow bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-mono font-semibold focus:outline-none"
-                      />
-                    </div>
-                    <p className="text-[11px] text-content-secondary">
-                      Lowercase letters, numbers, and hyphens only. Changing this changes your shareable link.
-                    </p>
-                  </div>
-
-                  {/* Mobile Money Details */}
-                  <div className="border border-border-standard p-4 space-y-4 bg-slate-50">
-                    <div>
-                      <h4 className="text-xs font-bold text-content-primary uppercase tracking-wider mb-1">
-                        Mobile Money Payout Account
-                      </h4>
-                      <p className="text-[11px] text-content-secondary">
-                        The MoMo account where your withdrawal earnings will be disbursed.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-content-primary mb-1">
-                          Network Provider <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          value={momoNetworkInput}
-                          onChange={(e) => setMomoNetworkInput(e.target.value)}
-                          className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
-                        >
-                          <option value="MTN">MTN Mobile Money</option>
-                          <option value="Telecel">Telecel Cash (Vodafone)</option>
-                          <option value="AT">AT Money (AirtelTigo)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-content-primary mb-1">
-                          MoMo Number <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          value={momoNumberInput}
-                          onChange={(e) => setMomoNumberInput(e.target.value)}
-                          placeholder="024XXXXXXX"
-                          className="w-full bg-surface border border-slate-200 rounded-none px-3 py-2 text-sm font-semibold focus:outline-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Registered Email (Read-Only) */}
-                  <div className="border border-border-standard p-4 bg-slate-50 flex justify-between items-center">
-                    <div>
-                      <span className="block text-xs font-bold text-content-primary">
-                        Account Email Address
-                      </span>
-                      <span className="text-[11px] text-content-secondary">
-                        Used for account login and withdrawal notifications
-                      </span>
-                    </div>
-                    <span className="font-mono text-xs text-content-secondary font-bold">
-                      {agent?.email || agent?.user?.email || '—'}
-                    </span>
-                  </div>
-
-                  {/* Feedback Messages */}
-                  {settingsSuccess && (
-                    <div className="p-3 bg-brand-emerald/10 border border-brand-emerald/20 text-brand-emerald font-bold rounded-none text-xs uppercase tracking-wide">
-                      Store settings updated successfully!
-                    </div>
-                  )}
-
-                  {settingsError && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 font-bold rounded-none text-xs">
-                      {settingsError}
-                    </div>
-                  )}
-
-                  {/* Save Button */}
-                  <button
-                    type="submit"
-                    disabled={settingsLoading}
-                    className="w-full bg-content-primary text-surface py-3 px-6 rounded-none font-bold text-xs uppercase tracking-widest hover:bg-brand-emerald transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    {settingsLoading ? 'Saving Changes...' : 'Save Settings'}
-                  </button>
-                </form>
-              </div>
+              <StoreSettingsTab
+                storeNameInput={storeNameInput}
+                setStoreNameInput={setStoreNameInput}
+                slugInput={slugInput}
+                setSlugInput={setSlugInput}
+                momoNetworkInput={momoNetworkInput}
+                setMomoNetworkInput={setMomoNetworkInput}
+                momoNumberInput={momoNumberInput}
+                setMomoNumberInput={setMomoNumberInput}
+                handleSettingsSave={handleSettingsSave}
+                settingsLoading={settingsLoading}
+                settingsSuccess={settingsSuccess}
+                settingsError={settingsError}
+                agentEmail={agent?.email || agent?.user?.email}
+              />
             )}
-
           </div>
         </div>
       </div>
 
-      {/* ==================== PAYOUT MODAL ==================== */}
-      {isPayoutModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-fade-in">
-          <div className="bg-surface border border-slate-200 rounded-none w-full max-w-md shadow-2xl relative animate-elite-entrance">
-            <button
-              onClick={() => setIsPayoutModalOpen(false)}
-              className="absolute top-4 right-4 text-content-secondary hover:text-content-primary focus:outline-none p-1 transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="p-6">
-              <h3 className="font-serif text-lg sm:text-xl font-bold text-content-primary mb-4">
-                Withdraw Reseller Earnings
-              </h3>
-
-              <div className="mb-4 bg-slate-50 border border-slate-200 p-3 text-xs font-semibold uppercase tracking-wider text-content-secondary flex justify-between">
-                <span>Available Balance:</span>
-                <span className="font-mono text-brand-emerald font-bold">GH₵ {walletBalance.toFixed(2)}</span>
-              </div>
-
-              <form onSubmit={handlePayoutSubmit} className="space-y-4">
-                {/* Payout amount */}
-                <div>
-                  <label className="block text-xs font-bold text-content-primary mb-1.5">
-                    Amount to Withdraw (GH₵) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="1.00"
-                    max={walletBalance}
-                    required
-                    value={payoutAmount}
-                    onChange={(e) => setPayoutAmount(e.target.value)}
-                    placeholder="Minimum GH₵ 1.00"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-emerald/20"
-                  />
-                  <p className="mt-1 text-[10px] text-content-secondary uppercase font-semibold">
-                    Must be at least GH₵ 1.00
-                  </p>
-                </div>
-
-                {/* Mobile Money Details */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-content-primary mb-1.5">
-                      MoMo Network <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={payoutNetwork}
-                      onChange={(e) => setPayoutNetwork(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2.5 text-sm font-medium focus:outline-none"
-                    >
-                      <option value="MTN">MTN</option>
-                      <option value="TELECEL">Telecel</option>
-                      <option value="AT">AirtelTigo</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-content-primary mb-1.5">
-                      Recipient Number <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={payoutNumber}
-                      onChange={(e) => setPayoutNumber(e.target.value)}
-                      placeholder="e.g. 0545142658"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2.5 text-sm font-semibold focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                {payoutSuccess && (
-                  <div className="p-3 bg-brand-emerald/10 border border-brand-emerald/20 text-brand-emerald font-bold rounded-none text-xs uppercase tracking-wide">
-                    Withdrawal request submitted successfully!
-                  </div>
-                )}
-
-                {payoutError && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-none text-xs font-bold uppercase tracking-wide">
-                    {payoutError}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={payoutLoading || walletBalance < 1}
-                  className="w-full bg-content-primary text-surface py-3 px-6 rounded-none font-bold text-xs uppercase tracking-widest hover:bg-brand-emerald disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
-                >
-                  {payoutLoading ? 'Submitting request...' : 'Confirm Withdrawal'}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Payout Withdrawal Modal */}
+      <WithdrawalModal
+        isOpen={isPayoutModalOpen}
+        onClose={() => setIsPayoutModalOpen(false)}
+        walletBalance={walletBalance}
+        payoutAmount={payoutAmount}
+        setPayoutAmount={setPayoutAmount}
+        payoutNetwork={payoutNetwork}
+        setPayoutNetwork={setPayoutNetwork}
+        payoutNumber={payoutNumber}
+        setPayoutNumber={setPayoutNumber}
+        handlePayoutSubmit={handlePayoutSubmit}
+        payoutLoading={payoutLoading}
+        payoutError={payoutError}
+        payoutSuccess={payoutSuccess}
+      />
     </div>
   );
 }
