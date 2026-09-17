@@ -391,7 +391,7 @@ function GalleryMediaModal({ isOpen, photo, defaultOrder, onClose, onSaveSuccess
             let imageUrl = photo?.image || '';
 
             if (imageFile) {
-                imageUrl = await uploadImageSigned(imageFile, 'gallery');
+                imageUrl = await uploadImageSigned(imageFile, 'delivery_photos');
             }
 
             const payload = {
