@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { adminAPI } from '@/lib/api';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useRouter } from 'next/navigation';
@@ -15,7 +15,8 @@ import {
     Mail,
     MessageSquare,
     Smartphone,
-    ShieldCheck
+    ShieldCheck,
+    ChevronDown
 } from 'lucide-react';
 import { BroadcastDispatchModal, SampleRecipient } from '@/components/dashboard/BroadcastDispatchModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -46,10 +47,20 @@ export default function AdminBroadcastPage() {
     const [smsMessage, setSmsMessage] = useState('');
     const [smsTarget, setSmsTarget] = useState('customers');
     const [manualPhones, setManualPhones] = useState('');
-
     const [sending, setSending] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
     const [showPreview, setShowPreview] = useState(false);
+
+    // Responsive Mobile Accordion States
+    const [isAudienceExpanded, setIsAudienceExpanded] = useState(false);
+    const [isTemplatesExpanded, setIsTemplatesExpanded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsAudienceExpanded(true);
+            setIsTemplatesExpanded(true);
+        }
+    }, []);
     const [dispatchModal, setDispatchModal] = useState<{
         isOpen: boolean;
         channel: 'sms' | 'email';
@@ -375,120 +386,184 @@ export default function AdminBroadcastPage() {
                 {/* Left Column: Target Audience & Quick Templates */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Audience Selector Card */}
-                    <div className={`p-5 rounded-xl border ${
+                    <div className={`p-4 sm:p-5 rounded-xl border transition-all ${
                         isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200/80 shadow-xs'
                     }`}>
-                        <div className="flex items-center justify-between mb-3.5">
-                            <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-                                Target Audience
-                            </h2>
-                            <span className="font-mono text-[10px] text-slate-400">
-                                {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).length} cohorts
-                            </span>
-                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setIsAudienceExpanded(!isAudienceExpanded)}
+                            className="w-full flex items-center justify-between text-left cursor-pointer select-none group/header"
+                        >
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 shrink-0">
+                                    Target Audience
+                                </h2>
+                                {!isAudienceExpanded && (
+                                    <span className="text-[10px] font-medium px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 truncate max-w-[140px] sm:max-w-none">
+                                        • {channel === 'email' 
+                                            ? (JOURNEY_FILTERS.find(f => f.key === emailTarget)?.label || emailTarget)
+                                            : (SMS_JOURNEY_FILTERS.find(f => f.key === smsTarget)?.label || smsTarget)
+                                        }
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <span className="font-mono text-[10px] text-slate-400">
+                                    {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).length} cohorts
+                                </span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden ml-1">
+                                    {isAudienceExpanded ? 'Compress' : 'Expand'}
+                                </span>
+                                <motion.div
+                                    animate={{ rotate: isAudienceExpanded ? 180 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                                </motion.div>
+                            </div>
+                        </button>
 
-                        <div className="space-y-1.5">
-                            {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).map((filter) => {
-                                const Icon = filter.icon;
-                                const activeTarget = channel === 'email' ? emailTarget : smsTarget;
-                                const isActive = activeTarget === filter.key;
-                                return (
-                                    <button
-                                        key={filter.key}
-                                        type="button"
-                                        onClick={() => {
-                                            if (channel === 'email') setEmailTarget(filter.key);
-                                            else setSmsTarget(filter.key);
-                                        }}
-                                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-left text-xs font-medium transition-all cursor-pointer ${
-                                            isActive
-                                                ? `${isDark ? 'bg-white text-slate-900 border-white font-semibold shadow-xs' : 'bg-slate-900 text-white border-slate-900 font-semibold shadow-xs'}`
-                                                : `${isDark ? 'border-slate-800/80 hover:border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' : 'border-slate-100 hover:border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50/80'}`
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2.5 min-w-0">
-                                            <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? (isDark ? 'text-slate-900' : 'text-white') : 'text-slate-400'}`} />
-                                            <span className="truncate">{filter.label}</span>
-                                        </div>
-                                        {isActive && (
-                                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`} />
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        <AnimatePresence initial={false}>
+                            {isAudienceExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="pt-3.5 space-y-1.5">
+                                        {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).map((filter) => {
+                                            const Icon = filter.icon;
+                                            const activeTarget = channel === 'email' ? emailTarget : smsTarget;
+                                            const isActive = activeTarget === filter.key;
+                                            return (
+                                                <button
+                                                    key={filter.key}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (channel === 'email') setEmailTarget(filter.key);
+                                                        else setSmsTarget(filter.key);
+                                                    }}
+                                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-left text-xs font-medium transition-all cursor-pointer ${
+                                                        isActive
+                                                            ? `${isDark ? 'bg-white text-slate-900 border-white font-semibold shadow-xs' : 'bg-slate-900 text-white border-slate-900 font-semibold shadow-xs'}`
+                                                            : `${isDark ? 'border-slate-800/80 hover:border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' : 'border-slate-100 hover:border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50/80'}`
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-2.5 min-w-0">
+                                                        <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? (isDark ? 'text-slate-900' : 'text-white') : 'text-slate-400'}`} />
+                                                        <span className="truncate">{filter.label}</span>
+                                                    </div>
+                                                    {isActive && (
+                                                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`} />
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Quick Templates Card */}
-                    <div className={`p-5 rounded-xl border ${
+                    <div className={`p-4 sm:p-5 rounded-xl border transition-all ${
                         isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200/80 shadow-xs'
                     }`}>
-                        <div className="flex items-center justify-between mb-3.5">
+                        <button
+                            type="button"
+                            onClick={() => setIsTemplatesExpanded(!isTemplatesExpanded)}
+                            className="w-full flex items-center justify-between text-left cursor-pointer select-none group/header"
+                        >
                             <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
                                 Quick Templates
                             </h2>
-                            <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider">
-                                {channel}
-                            </span>
-                        </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider">
+                                    {channel}
+                                </span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden ml-1">
+                                    {isTemplatesExpanded ? 'Compress' : 'Expand'}
+                                </span>
+                                <motion.div
+                                    animate={{ rotate: isTemplatesExpanded ? 180 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                                </motion.div>
+                            </div>
+                        </button>
 
-                        <div className="space-y-1.5">
-                            {channel === 'email' ? (
-                                LOGISTICS_TEMPLATES.map((tpl) => {
-                                    const Icon = tpl.icon;
-                                    return (
-                                        <button
-                                            key={tpl.id}
-                                            type="button"
-                                            onClick={() => applyEmailTemplate(tpl)}
-                                            className={`group w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
-                                                isDark 
-                                                    ? 'border-slate-800/80 hover:border-slate-700 text-slate-300 hover:bg-slate-800/40' 
-                                                    : 'border-slate-100 hover:border-slate-200 text-slate-700 hover:bg-slate-50/80'
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-2.5 min-w-0">
-                                                <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
-                                                    <Icon className="w-3.5 h-3.5" />
-                                                </div>
-                                                <div className="truncate">
-                                                    <p className="text-xs font-medium truncate">{tpl.title}</p>
-                                                    <p className="text-[10px] font-mono text-slate-400 truncate">{tpl.badge}</p>
-                                                </div>
-                                            </div>
-                                            <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
-                                        </button>
-                                    );
-                                })
-                            ) : (
-                                SMS_TEMPLATES.map((tpl) => {
-                                    const Icon = tpl.icon;
-                                    return (
-                                        <button
-                                            key={tpl.id}
-                                            type="button"
-                                            onClick={() => applySmsTemplate(tpl)}
-                                            className={`group w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
-                                                isDark 
-                                                    ? 'border-slate-800/80 hover:border-slate-700 text-slate-300 hover:bg-slate-800/40' 
-                                                    : 'border-slate-100 hover:border-slate-200 text-slate-700 hover:bg-slate-50/80'
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-2.5 min-w-0">
-                                                <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
-                                                    <Icon className="w-3.5 h-3.5" />
-                                                </div>
-                                                <div className="truncate">
-                                                    <p className="text-xs font-medium truncate">{tpl.title}</p>
-                                                    <p className="text-[10px] font-mono text-slate-400 truncate">{tpl.badge}</p>
-                                                </div>
-                                            </div>
-                                            <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
-                                        </button>
-                                    );
-                                })
+                        <AnimatePresence initial={false}>
+                            {isTemplatesExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="pt-3.5 space-y-1.5">
+                                        {channel === 'email' ? (
+                                            LOGISTICS_TEMPLATES.map((tpl) => {
+                                                const Icon = tpl.icon;
+                                                return (
+                                                    <button
+                                                        key={tpl.id}
+                                                        type="button"
+                                                        onClick={() => applyEmailTemplate(tpl)}
+                                                        className={`group w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                                                            isDark 
+                                                                ? 'border-slate-800/80 hover:border-slate-700 text-slate-300 hover:bg-slate-800/40' 
+                                                                : 'border-slate-100 hover:border-slate-200 text-slate-700 hover:bg-slate-50/80'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                                <Icon className="w-3.5 h-3.5" />
+                                                            </div>
+                                                            <div className="truncate">
+                                                                <p className="text-xs font-medium truncate">{tpl.title}</p>
+                                                                <p className="text-[10px] font-mono text-slate-400 truncate">{tpl.badge}</p>
+                                                            </div>
+                                                        </div>
+                                                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
+                                                    </button>
+                                                );
+                                            })
+                                        ) : (
+                                            SMS_TEMPLATES.map((tpl) => {
+                                                const Icon = tpl.icon;
+                                                return (
+                                                    <button
+                                                        key={tpl.id}
+                                                        type="button"
+                                                        onClick={() => applySmsTemplate(tpl)}
+                                                        className={`group w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                                                            isDark 
+                                                                ? 'border-slate-800/80 hover:border-slate-700 text-slate-300 hover:bg-slate-800/40' 
+                                                                : 'border-slate-100 hover:border-slate-200 text-slate-700 hover:bg-slate-50/80'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <div className={`p-1.5 rounded-md ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                                <Icon className="w-3.5 h-3.5" />
+                                                            </div>
+                                                            <div className="truncate">
+                                                                <p className="text-xs font-medium truncate">{tpl.title}</p>
+                                                                <p className="text-[10px] font-mono text-slate-400 truncate">{tpl.badge}</p>
+                                                            </div>
+                                                        </div>
+                                                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 shrink-0" />
+                                                    </button>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                </motion.div>
                             )}
-                        </div>
+                        </AnimatePresence>
                     </div>
                 </div>
 

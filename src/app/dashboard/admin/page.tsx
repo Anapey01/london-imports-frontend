@@ -13,6 +13,7 @@ import {
     ArrowUpRight,
     Search,
     ChevronRight,
+    ChevronDown,
     Trash2,
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
@@ -83,6 +84,19 @@ export default function AdminDashboardPage() {
 
     const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
     const [filterStuck, setFilterStuck] = useState(false);
+
+    // Responsive Mobile Accordion States
+    const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false);
+    const [isFunnelExpanded, setIsFunnelExpanded] = useState(false);
+    const [isRecentOrdersExpanded, setIsRecentOrdersExpanded] = useState(true);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsAnalyticsExpanded(true);
+            setIsFunnelExpanded(true);
+            setIsRecentOrdersExpanded(true);
+        }
+    }, []);
 
     const isRecent = (dateStr: string) => {
         const orderDate = new Date(dateStr).getTime();
@@ -245,65 +259,174 @@ export default function AdminDashboardPage() {
             />
 
             {/* 2. SYSTEM ANALYTICS BRIDGE */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-px bg-slate-50 lg:bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                {/* Main Performance Chart */}
-                <div className="lg:col-span-8 bg-white dark:bg-slate-950 px-4 py-6 sm:p-10 md:p-12 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-8 sm:mb-16">
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                {/* Clickable Mobile Header */}
+                <div
+                    onClick={() => setIsAnalyticsExpanded(!isAnalyticsExpanded)}
+                    className="px-4 py-4 sm:px-8 sm:py-6 border-b border-inherit flex items-center justify-between cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors gap-3"
+                >
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <span className="h-px w-6 sm:w-8 bg-slate-900 dark:bg-slate-200 shrink-0" />
                         <div>
-                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 dark:text-white uppercase">SALES OVER TIME</h2>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Daily earnings overview</p>
-                        </div>
-                        <div className="flex bg-slate-50 dark:bg-slate-900 p-1 w-fit">
-                            {['7d', '30d', '90d'].map(range => (
-                                <button
-                                    key={range}
-                                    onClick={() => handleRangeChange(range)}
-                                    className={`px-3 sm:px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-                                        chartRange === range ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                                    }`}
-                                >
-                                    {range}
-                                </button>
-                            ))}
+                            <h2 className="text-xs font-black tracking-[0.3em] sm:tracking-[0.4em] text-slate-900 dark:text-white uppercase truncate">
+                                SALES & BATCH STATUS
+                            </h2>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                Performance graph and China batch cutoff
+                            </p>
                         </div>
                     </div>
-                    <div className="h-[280px] sm:h-[400px] w-full min-w-0">
-                        <PerformanceChart 
-                            isDark={isDark} 
-                            data={data.analytics.revenueChart} 
-                            currentRange={chartRange}
-                            onRangeChange={handleRangeChange}
-                        />
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                            {isAnalyticsExpanded ? 'Compress' : 'Expand'}
+                        </span>
+                        <motion.div
+                            animate={{ rotate: isAnalyticsExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <ChevronDown className="w-4 h-4 text-slate-400" />
+                        </motion.div>
                     </div>
                 </div>
 
-                {/* Active Batch Control */}
-                <div className="lg:col-span-4 bg-slate-50/50 dark:bg-slate-900/40 px-4 py-6 sm:p-8 md:p-12 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800">
-                    <ActiveBatchWidget 
-                        isDark={isDark} 
-                        batch={data.stats.active_batch} 
-                    />
-                </div>
+                <AnimatePresence initial={false}>
+                    {isAnalyticsExpanded && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                        >
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-px bg-slate-50 lg:bg-slate-100 dark:bg-slate-900">
+                                {/* Main Performance Chart */}
+                                <div className="lg:col-span-8 bg-white dark:bg-slate-950 px-4 py-6 sm:p-10 md:p-12 min-w-0">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-8 sm:mb-16">
+                                        <div>
+                                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 dark:text-white uppercase">SALES OVER TIME</h2>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Daily earnings overview</p>
+                                        </div>
+                                        <div className="flex bg-slate-50 dark:bg-slate-900 p-1 w-fit">
+                                            {['7d', '30d', '90d'].map(range => (
+                                                <button
+                                                    key={range}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleRangeChange(range);
+                                                    }}
+                                                    className={`px-3 sm:px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
+                                                        chartRange === range ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                                    }`}
+                                                >
+                                                    {range}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="h-[280px] sm:h-[400px] w-full min-w-0">
+                                        <PerformanceChart 
+                                            isDark={isDark} 
+                                            data={data.analytics.revenueChart} 
+                                            currentRange={chartRange}
+                                            onRangeChange={handleRangeChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Active Batch Control */}
+                                <div className="lg:col-span-4 bg-slate-50/50 dark:bg-slate-900/40 px-4 py-6 sm:p-8 md:p-12 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800">
+                                    <ActiveBatchWidget 
+                                        isDark={isDark} 
+                                        batch={data.stats.active_batch} 
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* 3. ORDER FLOW */}
-            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-4 py-6 sm:p-10 md:p-12">
-                <div className="flex items-center gap-4 mb-8 sm:mb-12">
-                    <span className="h-px w-8 bg-slate-900 dark:bg-slate-200" />
-                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 dark:text-white uppercase">WHERE ORDERS ARE RIGHT NOW</h2>
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <div
+                    onClick={() => setIsFunnelExpanded(!isFunnelExpanded)}
+                    className="px-4 py-4 sm:px-8 sm:py-6 border-b border-inherit flex items-center justify-between cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors gap-3"
+                >
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <span className="h-px w-6 sm:w-8 bg-slate-900 dark:bg-slate-200 shrink-0" />
+                        <div>
+                            <h2 className="text-xs font-black tracking-[0.3em] sm:tracking-[0.4em] text-slate-900 dark:text-white uppercase truncate">
+                                WHERE ORDERS ARE RIGHT NOW
+                            </h2>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                Realtime pipeline and status breakdown
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                            {isFunnelExpanded ? 'Compress' : 'Expand'}
+                        </span>
+                        <motion.div
+                            animate={{ rotate: isFunnelExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <ChevronDown className="w-4 h-4 text-slate-400" />
+                        </motion.div>
+                    </div>
                 </div>
-                <OperationsFunnel 
-                    isDark={isDark} 
-                    data={data.analytics.logisticsFunnel} 
-                />
+
+                <AnimatePresence initial={false}>
+                    {isFunnelExpanded && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                        >
+                            <div className="px-4 py-6 sm:p-10 md:p-12">
+                                <OperationsFunnel 
+                                    isDark={isDark} 
+                                    data={data.analytics.logisticsFunnel} 
+                                />
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* 4. RECENT ORDERS */}
             <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 overflow-hidden">
                 <div className="p-4 sm:p-8 md:p-12 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter">Recent Customer Orders</h2>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-400 mt-2 sm:mt-4">Latest purchases made by customers</p>
+                    <div 
+                        onClick={() => setIsRecentOrdersExpanded(!isRecentOrdersExpanded)}
+                        className="cursor-pointer select-none flex items-center justify-between md:block group/recent"
+                    >
+                        <div>
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter">
+                                    Recent Customer Orders
+                                </h2>
+                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-inherit opacity-60">
+                                    {filteredOrders.length}
+                                </span>
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-400 mt-1 sm:mt-4">
+                                Latest purchases made by customers
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-2 md:hidden shrink-0">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                {isRecentOrdersExpanded ? 'Compress' : 'Expand'}
+                            </span>
+                            <motion.div
+                                animate={{ rotate: isRecentOrdersExpanded ? 180 : 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <ChevronDown className="w-4 h-4 text-slate-400" />
+                            </motion.div>
+                        </div>
                     </div>
                     
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
@@ -319,7 +442,7 @@ export default function AdminDashboardPage() {
                         </div>
                         <button 
                             onClick={() => setFilterStuck(!filterStuck)}
-                            className={`px-5 sm:px-6 py-3.5 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all border shrink-0 ${
+                            className={`px-5 sm:px-6 py-3.5 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all border shrink-0 cursor-pointer ${
                                 filterStuck ? 'bg-amber-500 text-white border-amber-500' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-900 dark:hover:border-slate-600'
                             }`}
                         >
@@ -328,44 +451,56 @@ export default function AdminDashboardPage() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse min-w-[600px] sm:min-w-full">
-                        <thead>
-                            <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Order ID</th>
-                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Customer</th>
-                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500 hidden md:table-cell">Date</th>
-                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500 hidden md:table-cell">Status</th>
-                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-right text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Total</th>
-                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6"></th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-50">
-                            {filteredOrders.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="px-8 py-32 text-center">
-                                        <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-300">No recent orders found</p>
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredOrders.map((order, idx) => (
-                                    <OrderRow 
-                                        key={order.id}
-                                        order={order}
-                                        isExpanded={expandedOrder === order.id}
-                                        onToggle={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                                        handleDeleteOrder={handleDeleteOrder}
-                                        addAlert={addAlert}
-                                        isRecent={isRecent}
-                                        isStuck={isStuck(order)}
-                                        showDivider={idx > 0 && isToday(filteredOrders[idx-1]?.created_at) && !isToday(order.created_at)}
-                                        isFirstToday={idx === 0 && isToday(order.created_at)}
-                                    />
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                <AnimatePresence initial={false}>
+                    {isRecentOrdersExpanded && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                        >
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse min-w-[600px] sm:min-w-full">
+                                    <thead>
+                                        <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                                            <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Order ID</th>
+                                            <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Customer</th>
+                                            <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500 hidden md:table-cell">Date</th>
+                                            <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500 hidden md:table-cell">Status</th>
+                                            <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-right text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Total</th>
+                                            <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-50">
+                                        {filteredOrders.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={6} className="px-8 py-32 text-center">
+                                                    <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-300">No recent orders found</p>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            filteredOrders.map((order, idx) => (
+                                                <OrderRow 
+                                                    key={order.id}
+                                                    order={order}
+                                                    isExpanded={expandedOrder === order.id}
+                                                    onToggle={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                                                    handleDeleteOrder={handleDeleteOrder}
+                                                    addAlert={addAlert}
+                                                    isRecent={isRecent}
+                                                    isStuck={isStuck(order)}
+                                                    showDivider={idx > 0 && isToday(filteredOrders[idx-1]?.created_at) && !isToday(order.created_at)}
+                                                    isFirstToday={idx === 0 && isToday(order.created_at)}
+                                                />
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Confirmation Modal */}
