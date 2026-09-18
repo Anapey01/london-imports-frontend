@@ -51,7 +51,7 @@ interface ScanResult {
 export default function ReconcileHubtelModal({ isOpen, onClose, onSuccess }: ReconcileHubtelModalProps) {
     const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState<'auto' | 'manual'>('auto');
-    const [startDate, setStartDate] = useState('2026-08-01');
+    const [startDate, setStartDate] = useState('2026-07-01');
     const [endDate, setEndDate] = useState('2026-09-30');
     const [isDryRun, setIsDryRun] = useState(false);
     const [pastedReferences, setPastedReferences] = useState('');
