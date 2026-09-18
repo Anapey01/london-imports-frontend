@@ -65,21 +65,21 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
                     animate={{ opacity: 1 }}
                     transition={{ delay: idx * 0.05 }}
                     key={card.label}
-                    className={`relative p-8 group transition-all duration-700 ${
+                    className={`relative p-4 sm:p-6 md:p-8 group transition-all duration-700 ${
                         isDark ? 'bg-slate-950 hover:bg-slate-900' : 'bg-white hover:bg-slate-50'
                     }`}
                 >
                     {/* Architectural Grid Anchor */}
                     <div className="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <card.icon className="w-12 h-12 text-slate-900" strokeWidth={1} />
+                        <card.icon className={`w-10 h-10 sm:w-12 sm:h-12 ${isDark ? 'text-white' : 'text-slate-900'}`} strokeWidth={1} />
                     </div>
 
                     <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-6">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 transition-colors">
+                        <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                                 {idx === 0 ? 'CUSTOMERS' : idx === 1 ? 'SALES' : idx === 2 ? 'UNPAID' : 'STORE'}
                             </span>
-                            <div className="flex-1 h-px bg-slate-50 group-hover:bg-slate-200 transition-colors" />
+                            <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800 group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors" />
                             {card.trend !== 0 && (
                                 <span className={`text-[11px] font-black tabular-nums ${card.trend > 0 ? 'text-emerald-500' : 'text-slate-500'}`}>
                                     {card.trend > 0 ? '+' : ''}{card.trend}%
@@ -88,20 +88,24 @@ export default function StatsPulse({ stats, isDark }: StatsPulseProps) {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <div className="flex items-baseline gap-1">
+                            <div className="flex items-baseline gap-1 min-w-0">
                                 {card.prefix && (
-                                    <span className="text-sm font-black text-slate-300 uppercase">{card.prefix}</span>
+                                    <span className="text-sm font-black text-slate-400 uppercase">{card.prefix}</span>
                                 )}
-                                <p className="text-4xl font-serif font-bold text-slate-900 tracking-tighter leading-none group-hover:italic transition-all duration-700">
+                                <p className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tighter leading-none group-hover:italic transition-all duration-700 truncate ${
+                                    isDark ? 'text-white' : 'text-slate-900'
+                                }`}>
                                     {card.value}
                                 </p>
                             </div>
-                            <h2 className="text-xs font-black uppercase tracking-[0.4em] text-slate-900 mt-2">
+                            <h2 className={`text-xs font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] mt-2 truncate ${
+                                isDark ? 'text-white' : 'text-slate-900'
+                            }`}>
                                 {card.label}
                             </h2>
-                            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-50">
-                                <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest italic">
+                            <div className="flex items-center gap-2 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <div className="w-1 h-1 rounded-full bg-emerald-500 shrink-0" />
+                                <p className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-widest italic truncate">
                                     {card.subtitle}
                                 </p>
                             </div>

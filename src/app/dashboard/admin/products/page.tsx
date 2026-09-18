@@ -241,30 +241,30 @@ export default function AdminProductsPage() {
     }
 
     return (
-        <div className="space-y-12 pb-32">
+        <div className="space-y-6 sm:space-y-8 md:space-y-12 pb-32">
             {/* 1. COMMAND HEADER */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-8 border-b border-slate-100 dark:border-slate-800 pb-6 sm:pb-8 md:pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Product Catalog</h1>
-                    <div className="flex items-center gap-4 mt-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-slate-950 dark:text-white tracking-tighter">Product Catalog</h1>
+                    <div className="flex items-center gap-4 mt-2 sm:mt-4">
                         <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{products.length} PRODUCTS</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white" />
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-900 dark:text-slate-300">{products.length} PRODUCTS</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-4 w-full sm:w-auto">
                     <button
                         onClick={handleBulkActivate}
-                        className="px-6 py-4 bg-white border border-slate-950 text-slate-950 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center gap-3"
+                        className="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 sm:py-4 bg-white border border-slate-950 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer"
                     >
                         <Zap className="w-3.5 h-3.5" />
                         ACTIVATE ALL
                     </button>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="px-6 py-4 bg-slate-950 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center gap-3"
+                        className="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 sm:py-4 bg-slate-950 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer"
                     >
                         <Plus className="w-4 h-4" />
                         ADD PRODUCT

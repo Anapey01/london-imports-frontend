@@ -80,33 +80,37 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-white/80 backdrop-blur-md z-[50] md:hidden"
+                        className={`fixed inset-0 z-[50] md:hidden backdrop-blur-sm ${isDark ? 'bg-black/80' : 'bg-slate-900/60'}`}
                         onClick={onClose}
                     />
                 )}
             </AnimatePresence>
 
             <aside
-                className={`w-64 h-[100dvh] border-r flex flex-col fixed left-0 top-0 z-[60] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                className={`w-64 max-w-[85vw] h-[100dvh] border-r flex flex-col fixed left-0 top-0 z-[60] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 } md:translate-x-0 ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-50'}`}
             >
                 {/* 1. BRAND TERMINAL HEADER */}
-                <div className={`px-8 py-10 border-b ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
-                    <div className="flex items-center justify-between mb-8">
+                <div className={`px-6 py-6 sm:px-8 sm:py-8 border-b ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
+                    <div className="flex items-center justify-between mb-6 sm:mb-8">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-none border border-slate-900 flex items-center justify-center">
-                                <ShieldCheck className="w-4 h-4 text-slate-900" strokeWidth={1.5} />
+                            <div className={`w-8 h-8 rounded-none border flex items-center justify-center ${isDark ? 'border-slate-700 text-white' : 'border-slate-900 text-slate-900'}`}>
+                                <ShieldCheck className={`w-4 h-4 ${isDark ? 'text-white' : 'text-slate-900'}`} strokeWidth={1.5} />
                             </div>
-                            <span className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">Menu</span>
+                            <span className={`text-[11px] font-black tracking-[0.4em] uppercase ${isDark ? 'text-white' : 'text-slate-900'}`}>Menu</span>
                         </div>
-                        <button onClick={onClose} className="md:hidden">
-                            <X className="w-5 h-5 text-slate-400" />
+                        <button 
+                            onClick={onClose} 
+                            aria-label="Close Navigation Menu"
+                            className="md:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
                         </button>
                     </div>
                     
                     <div className="space-y-1">
-                        <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">Administrator</h2>
+                        <h2 className={`text-xs font-black tracking-widest uppercase ${isDark ? 'text-white' : 'text-slate-900'}`}>Administrator</h2>
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Secure Session</span>

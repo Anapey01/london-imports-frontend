@@ -148,33 +148,33 @@ export default function AdminLogisticsPage() {
     return (
         <div className="space-y-12 pb-32">
             {/* 1. DELIVERIES HEADER */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-8 border-b border-slate-100 pb-6 sm:pb-8 md:pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Deliveries & Shipping</h1>
-                    <div className="flex items-center gap-4 mt-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-slate-950 tracking-tighter">Deliveries & Shipping</h1>
+                    <div className="flex items-center gap-4 mt-2 sm:mt-4">
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} PACKAGES</span>
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-900">{totalCount} PACKAGES</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                    <div className="relative w-full md:w-80 group">
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-72 md:w-80 group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
                         <input
                             type="text"
                             placeholder="SEARCH BY ORDER #, NAME, OR PHONE..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all"
+                            className="w-full pl-11 pr-4 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all rounded-none"
                         />
                     </div>
                 </div>
             </div>
 
             {/* 2. STATUS TABS */}
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+            <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-4 scrollbar-hide">
                 {STATUS_TABS.map(s => {
                     const count = apiCounts ? (s === 'PROCESSING' ? apiCounts['WAREHOUSE'] : (s === 'All' ? apiCounts['LOGISTICS'] + apiCounts['WAREHOUSE'] + apiCounts['COMPLETED'] : apiCounts[s === 'DELIVERED' ? 'COMPLETED' : s])) : undefined;
                     const label = s === 'All' ? 'All Deliveries' : s === 'PROCESSING' ? 'Packing in China' : s === 'IN_TRANSIT' ? 'On the Way to Ghana' : s === 'OUT_FOR_DELIVERY' ? 'Out for Delivery' : s === 'DELIVERED' ? 'Delivered' : s;
@@ -182,14 +182,14 @@ export default function AdminLogisticsPage() {
                     <button
                         key={s}
                         onClick={() => { setStatusFilter(s); setCurrentPage(1); }}
-                        className={`px-8 py-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all border ${statusFilter === s
+                        className={`px-4 sm:px-8 py-2 sm:py-3 flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] transition-all border shrink-0 cursor-pointer ${statusFilter === s
                             ? 'bg-slate-950 text-white border-slate-950 shadow-lg'
                             : 'bg-white text-slate-400 border-slate-100 hover:border-slate-900 hover:text-slate-900'
                             }`}
                     >
                         <span>{label}</span>
                         {count !== undefined && (
-                            <span className={`px-1.5 py-0.5 rounded-sm text-[9px] ${statusFilter === s ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                            <span className={`px-1.5 py-0.5 rounded-sm text-[8px] sm:text-[9px] ${statusFilter === s ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
                                 {count}
                             </span>
                         )}
@@ -203,11 +203,11 @@ export default function AdminLogisticsPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Order ID</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Recipient</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Delivery Address</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">GPS / Notes</th>
-                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Order ID</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Recipient</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Delivery Address</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">GPS / Notes</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-right text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -263,34 +263,34 @@ const LogisticsRow = React.memo(({
 }: any) => {
     return (
         <tr className="group hover:bg-slate-50/50 transition-all duration-500">
-            <td className="px-8 py-8">
-                <div className="flex flex-col gap-2">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-950">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 whitespace-nowrap">
+                <div className="flex flex-col gap-1.5 sm:gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-950">
                         #{order.order_number || order.id.slice(0, 8)}
                     </span>
-                    <div className="flex items-center gap-3">
-                        <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-900 text-white italic">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-900 text-white italic">
                             {order.status.replace(/_/g, ' ')}
                         </span>
                     </div>
-                    <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                        <Package className="w-3 h-3" />
-                        {order.batch_name}
+                    <div className="text-[8px] sm:text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2">
+                        <Package className="w-3 h-3 shrink-0" />
+                        <span className="truncate max-w-[120px]">{order.batch_name}</span>
                     </div>
                 </div>
             </td>
 
-            <td className="px-8 py-8">
-                <div className="flex flex-col gap-2">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-950">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8">
+                <div className="flex flex-col gap-1.5 sm:gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-950 truncate max-w-[140px] sm:max-w-none">
                         {order.customer.name}
                     </span>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                         <a 
                             href={`tel:${order.phone}`}
-                            className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-950 transition-colors flex items-center gap-2"
+                            className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-950 transition-colors flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
                         >
-                            <Phone className="w-3.5 h-3.5" />
+                            <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
                             {order.phone || 'No Phone'}
                         </a>
                         {order.phone && (
@@ -298,63 +298,63 @@ const LogisticsRow = React.memo(({
                                 href={`https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${order.customer.name}, this is London's Imports. I'm reaching out regarding your order #${order.order_number || order.id.slice(0, 8)} which is currently ${order.status.replace(/_/g, ' ')}.`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-2 bg-slate-50 text-slate-400 hover:bg-slate-950 hover:text-white transition-all rounded-sm"
+                                className="p-1.5 sm:p-2 bg-slate-50 text-slate-400 hover:bg-slate-950 hover:text-white transition-all rounded-sm shrink-0"
                                 title="WhatsApp Direct"
                             >
-                                <MessageSquare className="w-3.5 h-3.5" />
+                                <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             </a>
                         )}
                     </div>
                 </div>
             </td>
 
-            <td className="px-8 py-8">
-                <div className="flex flex-col gap-2 max-w-[250px]">
-                    <div className="flex items-start gap-3">
-                        <MapPin className="w-4 h-4 text-slate-300 mt-0.5 shrink-0" />
-                        <span className="text-[10px] font-bold text-slate-500 uppercase leading-relaxed tracking-tight">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8">
+                <div className="flex flex-col gap-1.5 sm:gap-2 max-w-[200px] sm:max-w-[250px]">
+                    <div className="flex items-start gap-2 sm:gap-3">
+                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300 mt-0.5 shrink-0" />
+                        <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase leading-relaxed tracking-tight line-clamp-2">
                             {order.delivery_address || 'Address not found'}
                         </span>
                     </div>
-                    <span className="text-[9px] font-black text-slate-300 ml-7 uppercase tracking-widest">
+                    <span className="text-[8px] sm:text-[9px] font-black text-slate-300 ml-5 sm:ml-7 uppercase tracking-widest truncate">
                         {order.delivery_city}, {order.delivery_region}
                     </span>
                 </div>
             </td>
 
-            <td className="px-8 py-8">
-                <div className="flex flex-col gap-3">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8">
+                <div className="flex flex-col gap-2 sm:gap-3">
                     {order.delivery_gps ? (
                         <button 
                             onClick={() => copyToClipboard(order.delivery_gps, order.id + '-gps')}
-                            className={`flex items-center justify-between gap-4 px-4 py-2 border text-[10px] font-black uppercase tracking-widest transition-all ${
+                            className={`flex items-center justify-between gap-2 sm:gap-4 px-2.5 sm:px-4 py-1.5 sm:py-2 border text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                                 copiedId === order.id + '-gps' 
                                 ? 'bg-emerald-700 border-emerald-600 text-white' 
                                 : 'bg-slate-50 border-slate-50 text-slate-400 hover:border-slate-900 hover:text-slate-900'
                             }`}
                         >
-                            <span className="truncate">{order.delivery_gps}</span>
-                            {copiedId === order.id + '-gps' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Navigation className="w-3.5 h-3.5" />}
+                            <span className="truncate max-w-[90px] sm:max-w-none">{order.delivery_gps}</span>
+                            {copiedId === order.id + '-gps' ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> : <Navigation className="w-3.5 h-3.5 shrink-0" />}
                         </button>
                     ) : (
-                        <span className="text-[9px] font-black text-slate-200 uppercase tracking-widest italic">No GPS</span>
+                        <span className="text-[8px] sm:text-[9px] font-black text-slate-200 uppercase tracking-widest italic">No GPS</span>
                     )}
                     
                     {order.customer_notes && (
-                        <div className="p-3 bg-slate-50/50 border-l border-slate-200 text-[9px] font-bold text-slate-400 italic leading-relaxed uppercase">
+                        <div className="p-2 sm:p-3 bg-slate-50/50 border-l border-slate-200 text-[8px] sm:text-[9px] font-bold text-slate-400 italic leading-relaxed uppercase line-clamp-2 max-w-[180px]">
                             &quot;{order.customer_notes}&quot;
                         </div>
                     )}
                 </div>
             </td>
 
-            <td className="px-8 py-8 text-right">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 text-right whitespace-nowrap">
                 <a 
                     href={`/dashboard/admin/orders/${order.id}`}
-                    className="inline-flex items-center justify-center p-4 border border-slate-100 text-slate-300 hover:text-slate-950 hover:border-slate-950 transition-all"
+                    className="inline-flex items-center justify-center p-2.5 sm:p-4 border border-slate-100 text-slate-300 hover:text-slate-950 hover:border-slate-950 transition-all cursor-pointer"
                     title="View Order"
                 >
-                    <ExternalLink className="w-5 h-5" />
+                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
             </td>
         </tr>

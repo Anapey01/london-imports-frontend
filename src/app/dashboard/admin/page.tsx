@@ -245,21 +245,21 @@ export default function AdminDashboardPage() {
             />
 
             {/* 2. SYSTEM ANALYTICS BRIDGE */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-px bg-slate-50 lg:bg-slate-100 border border-slate-100">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-px bg-slate-50 lg:bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
                 {/* Main Performance Chart */}
-                <div className="lg:col-span-8 bg-white px-4 py-10 sm:p-12">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-12 sm:mb-16">
+                <div className="lg:col-span-8 bg-white dark:bg-slate-950 px-4 py-6 sm:p-10 md:p-12 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-8 sm:mb-16">
                         <div>
-                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">SALES OVER TIME</h2>
+                            <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 dark:text-white uppercase">SALES OVER TIME</h2>
                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Daily earnings overview</p>
                         </div>
-                        <div className="flex bg-slate-50 p-1 w-fit">
+                        <div className="flex bg-slate-50 dark:bg-slate-900 p-1 w-fit">
                             {['7d', '30d', '90d'].map(range => (
                                 <button
                                     key={range}
                                     onClick={() => handleRangeChange(range)}
-                                    className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-                                        chartRange === range ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                    className={`px-3 sm:px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                                        chartRange === range ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                                     }`}
                                 >
                                     {range}
@@ -267,7 +267,7 @@ export default function AdminDashboardPage() {
                             ))}
                         </div>
                     </div>
-                    <div className="h-[400px]">
+                    <div className="h-[280px] sm:h-[400px] w-full min-w-0">
                         <PerformanceChart 
                             isDark={isDark} 
                             data={data.analytics.revenueChart} 
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Active Batch Control */}
-                <div className="lg:col-span-4 bg-slate-50/50 px-4 py-10 sm:p-12 border-t lg:border-t-0 lg:border-l border-slate-100">
+                <div className="lg:col-span-4 bg-slate-50/50 dark:bg-slate-900/40 px-4 py-6 sm:p-8 md:p-12 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800">
                     <ActiveBatchWidget 
                         isDark={isDark} 
                         batch={data.stats.active_batch} 
@@ -287,10 +287,10 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 3. ORDER FLOW */}
-            <div className="bg-white border border-slate-100 px-4 py-10 sm:p-12">
-                <div className="flex items-center gap-4 mb-12">
-                    <span className="h-px w-8 bg-slate-900" />
-                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 uppercase">WHERE ORDERS ARE RIGHT NOW</h2>
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-4 py-6 sm:p-10 md:p-12">
+                <div className="flex items-center gap-4 mb-8 sm:mb-12">
+                    <span className="h-px w-8 bg-slate-900 dark:bg-slate-200" />
+                    <h2 className="text-xs font-black tracking-[0.4em] text-slate-900 dark:text-white uppercase">WHERE ORDERS ARE RIGHT NOW</h2>
                 </div>
                 <OperationsFunnel 
                     isDark={isDark} 
@@ -299,28 +299,28 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 4. RECENT ORDERS */}
-            <div className="bg-white border border-slate-100 overflow-hidden">
-                <div className="p-12 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 overflow-hidden">
+                <div className="p-4 sm:p-8 md:p-12 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tighter">Recent Customer Orders</h2>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-4">Latest purchases made by customers</p>
+                        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter">Recent Customer Orders</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-400 mt-2 sm:mt-4">Latest purchases made by customers</p>
                     </div>
                     
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                        <div className="relative group">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
+                        <div className="relative group w-full md:w-80">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
                             <input 
                                 type="text" 
-                                placeholder="SEARCH BY ORDER #, NAME, OR PHONE..."
+                                placeholder="SEARCH ORDERS..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-50 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white focus:border-slate-900 transition-all w-full md:w-80"
+                                className="pl-12 pr-6 py-3.5 sm:py-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest outline-none focus:bg-white dark:focus:bg-slate-950 focus:border-slate-900 dark:focus:border-slate-600 transition-all w-full"
                             />
                         </div>
                         <button 
                             onClick={() => setFilterStuck(!filterStuck)}
-                            className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border ${
-                                filterStuck ? 'bg-amber-500 text-white border-amber-500' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-900 hover:text-slate-900'
+                            className={`px-5 sm:px-6 py-3.5 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all border shrink-0 ${
+                                filterStuck ? 'bg-amber-500 text-white border-amber-500' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-900 dark:hover:border-slate-600'
                             }`}
                         >
                             {filterStuck ? 'SHOWING DELAYED' : 'SHOW DELAYED'}
@@ -329,15 +329,15 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full border-collapse min-w-[600px] sm:min-w-full">
                         <thead>
-                            <tr className="border-b border-slate-50 bg-slate-50/30">
-                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Order ID</th>
-                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Customer</th>
-                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hidden md:table-cell">Date</th>
-                                <th className="px-8 py-6 text-left text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hidden md:table-cell">Status</th>
-                                <th className="px-8 py-6 text-right text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Total</th>
-                                <th className="px-8 py-6"></th>
+                            <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Order ID</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Customer</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500 hidden md:table-cell">Date</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500 hidden md:table-cell">Status</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-right text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-500">Total</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-4 sm:py-6"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -446,33 +446,33 @@ const OrderRow = React.memo(({
                     : 'bg-white hover:bg-slate-50/50'
                 }`}
             >
-                <td className="px-8 py-8">
-                    <div className="flex items-center gap-4">
-                        <span className={`font-mono text-[12px] font-black tracking-tighter ${fresh ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-900'}`}>
+                <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <span className={`font-mono text-[11px] sm:text-[12px] font-black tracking-tighter ${fresh ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-900 dark:text-white'}`}>
                             #{order?.order_number}
                         </span>
                         {fresh && (
-                            <div className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <div className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                         )}
                     </div>
                 </td>
-                <td className="px-8 py-8">
-                    <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-xs font-black text-slate-500 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
+                <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8">
+                    <div className="flex items-center gap-2.5 sm:gap-4">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-xs font-black text-slate-500 group-hover:border-slate-900 group-hover:text-slate-900 dark:group-hover:text-white transition-all shrink-0">
                             {order?.customer?.name?.[0] || 'U'}
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 max-w-[120px] sm:max-w-none">
                             <p className="text-xs font-black uppercase tracking-widest truncate">{order?.customer?.name || 'GUEST'}</p>
                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter truncate hidden sm:block">{order?.customer?.email || ''}</p>
                         </div>
                     </div>
                 </td>
-                <td className="px-8 py-8 hidden md:table-cell">
+                <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 hidden md:table-cell">
                     <p className="text-[10px] font-black text-slate-400 uppercase tabular-nums">
                         {new Date(order?.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase()}
                     </p>
                 </td>
-                <td className="px-8 py-8 hidden md:table-cell">
+                <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 hidden md:table-cell">
                     <div className="flex items-center gap-3">
                         <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${
                             order?.status === 'COMPLETED' ? 'text-emerald-700 dark:text-emerald-500' : 
@@ -485,25 +485,27 @@ const OrderRow = React.memo(({
                         )}
                     </div>
                 </td>
-                <td className="px-8 py-8 text-right">
-                    <span className="text-[12px] font-black text-slate-950 tabular-nums">₵{Number(order?.total || 0).toLocaleString()}</span>
+                <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 text-right">
+                    <span className="text-[11px] sm:text-[12px] font-black text-slate-950 dark:text-white tabular-nums">₵{Number(order?.total || 0).toLocaleString()}</span>
                 </td>
-                <td className="px-8 py-8 text-right">
-                    <div className="flex justify-end items-center gap-6">
-                        <ChevronRight className={`w-3.5 h-3.5 text-slate-200 group-hover:text-slate-900 transition-all ${isExpanded ? 'rotate-90' : ''}`} />
-                        <div className="hidden group-hover:flex items-center gap-4 transition-all animate-in fade-in slide-in-from-right-2">
+                <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 text-right">
+                    <div className="flex justify-end items-center gap-2 sm:gap-6">
+                        <ChevronRight className={`w-3.5 h-3.5 text-slate-300 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white transition-all shrink-0 ${isExpanded ? 'rotate-90' : ''}`} />
+                        <div className="flex sm:opacity-0 sm:group-hover:opacity-100 items-center gap-1 sm:gap-4 transition-all">
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
-                                className="p-2 text-slate-300 hover:text-red-600 transition-colors"
+                                className="p-1 sm:p-2 text-slate-400 hover:text-red-600 transition-colors"
+                                aria-label="Delete order"
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
                             <Link
                                 href={`/dashboard/admin/orders/${order.id}`}
                                 onClick={(e) => e.stopPropagation()}
-                                className="p-2 text-slate-300 hover:text-slate-900 transition-colors"
+                                className="p-1 sm:p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                aria-label="View order"
                             >
-                                <ArrowUpRight className="w-4 h-4" />
+                                <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </Link>
                         </div>
                     </div>
@@ -515,10 +517,10 @@ const OrderRow = React.memo(({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="bg-slate-50/30"
+                        className="bg-slate-50/30 dark:bg-slate-900/30"
                     >
-                        <td colSpan={6} className="px-12 py-12 border-t border-slate-50">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                        <td colSpan={6} className="px-4 py-6 sm:px-8 sm:py-8 md:px-12 md:py-12 border-t border-slate-100 dark:border-slate-800">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16">
                                 <div className="space-y-8">
                                     <div>
                                         <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 mb-6">CUSTOMER DETAILS</p>

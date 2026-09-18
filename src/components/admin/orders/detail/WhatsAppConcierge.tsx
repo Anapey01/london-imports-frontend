@@ -140,12 +140,12 @@ London's Imports Team`
         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'} relative group`}>
             <div className="absolute top-0 left-0 w-1 h-full bg-[#25D366]" />
             
-            <div className="p-8 border-b border-inherit flex items-center gap-4">
+            <div className="p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center gap-4">
                 <MessageSquare className="w-5 h-5 opacity-20 text-[#25D366]" />
                 <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">WhatsApp Concierge</h2>
             </div>
             
-            <div className="p-8 space-y-5">
+            <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5">
                 {/* Template Selector */}
                 <div className="space-y-2">
                     <label className="text-[8px] font-black uppercase tracking-widest opacity-30 block ml-1">
@@ -155,7 +155,7 @@ London's Imports Team`
                         <select
                             value={selectedTemplateId}
                             onChange={(e) => setSelectedTemplateId(e.target.value)}
-                            className={`w-full p-4 pr-10 border border-inherit text-[10px] font-bold tracking-wider outline-none transition-all uppercase rounded-none appearance-none cursor-pointer ${
+                            className={`w-full p-3 sm:p-4 pr-10 border border-inherit text-[10px] font-bold tracking-wider outline-none transition-all uppercase rounded-none appearance-none cursor-pointer ${
                                 isDark 
                                     ? 'bg-slate-950 text-white focus:border-[#25D366]/40' 
                                     : 'bg-slate-50 text-slate-800 focus:border-[#25D366]/30'
@@ -190,8 +190,8 @@ London's Imports Team`
                     <textarea
                         value={messageContent}
                         onChange={(e) => setMessageContent(e.target.value)}
-                        rows={12}
-                        className={`w-full p-4 border border-inherit text-xs font-medium leading-relaxed outline-none focus:border-[#25D366]/50 transition-all font-sans resize-none ${
+                        rows={10}
+                        className={`w-full p-3 sm:p-4 border border-inherit text-xs font-medium leading-relaxed outline-none focus:border-[#25D366]/50 transition-all font-sans resize-none ${
                             isDark 
                                 ? 'bg-slate-950 text-slate-200' 
                                 : 'bg-slate-50 text-slate-700'
@@ -204,13 +204,13 @@ London's Imports Team`
                 {hasPhone ? (
                     <button
                         onClick={handleSend}
-                        className="w-full flex items-center justify-between p-6 bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.98] text-white font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-[#25D366]/10"
+                        className="w-full flex items-center justify-between p-3.5 sm:p-5 md:p-6 bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.98] text-white font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-[#25D366]/10 cursor-pointer"
                     >
                         WhatsApp Customer
                         <Send className="w-4 h-4" />
                     </button>
                 ) : (
-                    <div className="w-full p-4 border border-rose-500/20 bg-rose-500/5 text-rose-500 text-[9px] font-black uppercase tracking-widest text-center">
+                    <div className="w-full p-3.5 sm:p-4 border border-rose-500/20 bg-rose-500/5 text-rose-500 text-[9px] font-black uppercase tracking-widest text-center">
                         Recipient phone number missing
                     </div>
                 )}

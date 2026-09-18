@@ -23,12 +23,12 @@ interface PerformanceChartProps {
 
 export default function PerformanceChart({ data, currentRange, onRangeChange, isDark }: PerformanceChartProps) {
     return (
-        <div className={`px-4 py-8 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border ${
+        <div className={`px-3.5 py-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border min-w-0 w-full overflow-hidden ${
             isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-primary-surface shadow-sm'
         }`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-8 sm:mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-12">
                 <div>
-                    <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Daily Sales</h2>
+                    <h2 className={`text-lg sm:text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-nuclear-text'}`}>Daily Sales</h2>
                     <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Money received per day</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -40,7 +40,7 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
                             <button 
                                 key={p}
                                 onClick={() => onRangeChange(rangeValue)}
-                                className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
+                                className={`px-3.5 sm:px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
                                     isActive 
                                     ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-200' 
                                     : `border border-primary-surface ${isDark ? 'text-slate-400' : 'text-nuclear-text'} hover:bg-primary-surface/40`
@@ -53,7 +53,7 @@ export default function PerformanceChart({ data, currentRange, onRangeChange, is
                 </div>
             </div>
 
-            <div className="h-[300px] w-full">
+            <div className="h-[240px] sm:h-[300px] w-full min-w-0">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data}>
                         <defs>

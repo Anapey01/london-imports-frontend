@@ -481,20 +481,20 @@ export default function AdminOrdersPage() {
     return (
         <div className="space-y-12 pb-32">
             {/* 1. ORDERS HEADER */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-50 pb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 border-b border-slate-50 dark:border-slate-800 pb-8 sm:pb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-bold text-slate-950 tracking-tighter">Customer Orders</h1>
-                    <div className="flex items-center gap-4 mt-4">
+                    <h1 className="text-3xl sm:text-4xl font-serif font-bold text-slate-950 dark:text-white tracking-tighter">Customer Orders</h1>
+                    <div className="flex items-center gap-4 mt-3 sm:mt-4">
                         <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900">{totalCount} ORDERS</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-slate-200" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-900 dark:text-white">{totalCount} ORDERS</span>
                         </div>
-                        <span className="h-4 w-px bg-slate-200" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Total Sales: ₵{orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}</span>
+                        <span className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-slate-400 italic">Total Sales: ₵{orders.reduce((sum, o) => sum + o.total_amount, 0).toLocaleString()}</span>
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
                     <SearchField 
                         value={searchQuery} 
                         onChange={(val) => {
@@ -504,24 +504,24 @@ export default function AdminOrdersPage() {
                     />
                     <button
                         onClick={() => setShowReconcileModal(true)}
-                        className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-950 text-white hover:bg-emerald-600 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto shadow-sm"
-                        title="Scan orders from August to September to credit missing payments"
+                        className="flex items-center justify-center gap-2 px-5 py-3.5 sm:px-6 sm:py-4 bg-slate-950 text-white hover:bg-emerald-600 transition-all text-[10px] font-black uppercase tracking-widest w-full sm:w-auto shadow-sm shrink-0"
+                        title="Scan orders to credit missing payments"
                     >
-                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                        RECONCILE HUBTEL PAYMENTS
+                        <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>RECONCILE PAYMENTS</span>
                     </button>
                     <button
                         onClick={handleClearPending}
-                        className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all text-[10px] font-black uppercase tracking-widest w-full md:w-auto"
+                        className="flex items-center justify-center gap-2.5 px-5 py-3.5 sm:px-6 sm:py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-red-600 hover:border-red-200 transition-all text-[10px] font-black uppercase tracking-widest w-full sm:w-auto shrink-0"
                     >
-                        <X className="w-3.5 h-3.5" />
-                        DELETE UNPAID ({statusCounts.PENDING})
+                        <X className="w-3.5 h-3.5 shrink-0" />
+                        <span>DELETE UNPAID ({statusCounts.PENDING})</span>
                     </button>
                 </div>
             </div>
 
             {/* 2. PROTOCOL FILTERS */}
-            <div className="overflow-x-auto pb-6 -mx-8 px-8 scrollbar-hide">
+            <div className="overflow-x-auto pb-6 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 scrollbar-hide">
                 <FilterTabs 
                     activeTab={statusFilter}
                     counts={statusCounts}
@@ -616,28 +616,28 @@ export default function AdminOrdersPage() {
             )}
 
             {/* 4. MASTER REGISTRY TABLE */}
-            <div className="bg-white border border-slate-100 overflow-hidden transition-opacity duration-300 opacity-100">
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 overflow-hidden transition-opacity duration-300 opacity-100">
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full border-collapse min-w-[640px] sm:min-w-full">
                         <thead>
-                            <tr className="bg-slate-50/50 border-b border-slate-100">
-                                <th className="px-8 py-6 w-16">
-                                    <button onClick={toggleSelectAll} className="flex items-center justify-center">
+                            <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 w-12 sm:w-16">
+                                    <button onClick={toggleSelectAll} className="flex items-center justify-center min-w-[32px] min-h-[32px]">
                                         {selectedIds.size === filteredOrders.length && filteredOrders.length > 0
-                                            ? <CheckSquare className="w-4 h-4 text-slate-950" />
-                                            : <Square className="w-4 h-4 text-slate-300" />
+                                            ? <CheckSquare className="w-4 h-4 text-slate-950 dark:text-white" />
+                                            : <Square className="w-4 h-4 text-slate-300 dark:text-slate-600" />
                                         }
                                     </button>
                                 </th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Order ID</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Item</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Customer</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Date</th>
-                                <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
-                                <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Order ID</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Item</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Customer</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400 hidden lg:table-cell">Date</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400 hidden lg:table-cell">Status</th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-right text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">
                                     {statusFilter === 'PENDING' ? 'Balance Due' : 'Total'}
                                 </th>
-                                <th className="px-8 py-6"></th>
+                                <th className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">

@@ -78,7 +78,7 @@ export default function InvoiceDocument({ order }: InvoiceDocumentProps) {
         : formattedIssueDate;
 
     return (
-        <div className="invoice-paper bg-white text-slate-900 font-sans antialiased max-w-[760px] mx-auto p-8 sm:p-12 border border-slate-200/80 rounded-2xl shadow-sm print:shadow-none print:border-none print:p-0 print:m-0 print:w-full print:max-w-none">
+        <div className="invoice-paper bg-white text-slate-900 font-sans antialiased max-w-[760px] mx-auto p-4 sm:p-8 md:p-12 border border-slate-200/80 rounded-2xl shadow-sm print:shadow-none print:border-none print:p-0 print:m-0 print:w-full print:max-w-none">
             
             {/* 1. Brand Logo & Company Info (Exact layout from reference) */}
             <div className="space-y-1">
@@ -106,7 +106,7 @@ export default function InvoiceDocument({ order }: InvoiceDocumentProps) {
 
             {/* 2. INVOICE Title & Details (Left-aligned, matching reference) */}
             <div className="mt-6 space-y-1">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                     <h2 className="text-2xl font-serif font-bold tracking-tight text-slate-950 uppercase">
                         Invoice
                     </h2>
@@ -136,7 +136,7 @@ export default function InvoiceDocument({ order }: InvoiceDocumentProps) {
             </div>
 
             {/* 3. BILL TO Box (Soft rounded gray box matching reference) */}
-            <div className="bill-to-card mt-6 bg-[#F8FAFC] border border-slate-100 rounded-xl p-5">
+            <div className="bill-to-card mt-6 bg-[#F8FAFC] border border-slate-100 rounded-xl p-4 sm:p-5">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">
                     BILL TO
                 </p>
@@ -161,7 +161,7 @@ export default function InvoiceDocument({ order }: InvoiceDocumentProps) {
             </div>
 
             {/* 4. Table (Minimalist with generous breathing room, matching reference) */}
-            <div className="mt-6">
+            <div className="mt-6 overflow-x-auto">
                 <table className="w-full border-collapse">
                     <thead>
                         <tr className="border-b border-slate-200 text-[10px] font-bold uppercase tracking-widest text-slate-400">

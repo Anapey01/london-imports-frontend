@@ -33,30 +33,30 @@ export default function OperationsFunnel({ data, isDark }: OperationsFunnelProps
                     <h2 className="text-xs font-black tracking-[0.4em] text-slate-950 uppercase">SHIPPING STATUS</h2>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 italic">Current order distribution</p>
                 </div>
-                <div className="text-left sm:text-right border-l-2 sm:border-l-0 sm:border-r-0 border-slate-900 pl-4 sm:pl-0">
-                    <span className="text-3xl font-serif font-bold text-slate-950 tabular-nums">{totalOrders}</span>
+                <div className={`text-left sm:text-right border-l-2 sm:border-l-0 sm:border-r-0 ${isDark ? 'border-white/20' : 'border-slate-900'} pl-4 sm:pl-0`}>
+                    <span className={`text-2xl sm:text-3xl font-serif font-bold tabular-nums ${isDark ? 'text-white' : 'text-slate-950'}`}>{totalOrders}</span>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">TOTAL SHIPMENTS</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-slate-100 border border-slate-100">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-800">
                 {data.map((step, idx) => {
                     const Icon = icons[step.label as keyof typeof icons] || Package;
                     const percentage = totalOrders > 0 ? (step.count / totalOrders) * 100 : 0;
 
                     return (
-                        <div key={step.label} className={`group p-6 sm:p-8 transition-all duration-700 ${
+                        <div key={step.label} className={`group p-4 sm:p-6 md:p-8 transition-all duration-700 ${
                             isDark ? 'bg-slate-950 hover:bg-slate-900' : 'bg-white hover:bg-slate-50'
                         }`}>
-                            <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center justify-between mb-6 sm:mb-8">
                                 <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">STAGE_{idx + 1}</span>
-                                <Icon className="w-5 h-5 text-slate-400 group-hover:text-slate-900 transition-colors" strokeWidth={1.5} />
+                                <Icon className={`w-5 h-5 text-slate-400 group-hover:${isDark ? 'text-white' : 'text-slate-900'} transition-colors`} strokeWidth={1.5} />
                             </div>
 
-                            <div className="space-y-4">
-                                <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-950 truncate">{step.label}</p>
+                            <div className="space-y-3 sm:space-y-4">
+                                <p className={`text-xs font-black uppercase tracking-[0.2em] truncate ${isDark ? 'text-white' : 'text-slate-950'}`}>{step.label}</p>
                                 <div className="flex items-baseline justify-between">
-                                    <p className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tighter tabular-nums">{step.count}</p>
+                                    <p className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tighter tabular-nums ${isDark ? 'text-white' : 'text-slate-900'}`}>{step.count}</p>
                                     <span className="text-xs font-black text-slate-500 tabular-nums italic">{Math.round(percentage)}%</span>
                                 </div>
                             </div>

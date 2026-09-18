@@ -134,14 +134,14 @@ export default function AdminAnalyticsPage() {
         const areaPath = `${linePath} L ${width} ${height} L 0 ${height} Z`;
 
         return (
-            <div className="relative h-[300px] w-full mt-4">
-                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-right pr-4 pointer-events-none z-10">
-                    <span className={`text-[10px] font-mono opacity-50 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>₵{max.toLocaleString()}</span>
-                    <span className={`text-[10px] font-mono opacity-50 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>₵{Math.round(max / 2).toLocaleString()}</span>
-                    <span className={`text-[10px] font-mono opacity-50 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>₵0</span>
+            <div className="relative h-[220px] sm:h-[300px] w-full mt-4 min-w-0 overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-right pr-2 sm:pr-4 pointer-events-none z-10">
+                    <span className={`text-[8px] sm:text-[10px] font-mono opacity-50 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>₵{max.toLocaleString()}</span>
+                    <span className={`text-[8px] sm:text-[10px] font-mono opacity-50 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>₵{Math.round(max / 2).toLocaleString()}</span>
+                    <span className={`text-[8px] sm:text-[10px] font-mono opacity-50 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>₵0</span>
                 </div>
 
-                <div className="pl-12 h-full w-full">
+                <div className="pl-8 sm:pl-12 h-full w-full">
                     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="none">
                         <defs>
                             <linearGradient id="financeGradient" x1="0" y1="0" x2="0" y2="1">
@@ -156,7 +156,7 @@ export default function AdminAnalyticsPage() {
                         <path d={linePath} fill="none" stroke={isDark ? '#818cf8' : '#6366f1'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </div>
-                <div className="flex justify-between mt-2 pl-12 text-[10px] uppercase tracking-wider font-medium text-slate-400">
+                <div className="flex justify-between mt-2 pl-8 sm:pl-12 text-[9px] sm:text-[10px] uppercase tracking-wider font-medium text-slate-400">
                     {chartData.filter((_, i) => i % Math.ceil(chartData.length / 6) === 0).map((d, i) => (
                         <span key={i}>{d.day}</span>
                     ))}
@@ -222,33 +222,33 @@ export default function AdminAnalyticsPage() {
     ];
 
     return (
-        <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
+        <div className="space-y-6 sm:space-y-8 max-w-[1600px] mx-auto pb-12">
             {/* Header with Segmented Control and Export */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-gray-200 dark:border-slate-800 pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 border-b border-gray-200 dark:border-slate-800 pb-4 sm:pb-6">
                 <div>
-                    <h1 className={`text-3xl font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Business Intelligence</h1>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <h1 className={`text-2xl sm:text-3xl font-bold tracking-tight mb-1 sm:mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Business Intelligence</h1>
+                    <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         Advanced financial data visualization • Last updated: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-4 w-full sm:w-auto">
                     <button
                         onClick={handleExport}
                         disabled={exporting}
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        className={`inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                             isDark ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'
-                        } disabled:opacity-50`}
+                        } disabled:opacity-50 flex-1 sm:flex-initial`}
                     >
                         {exporting ? 'Generating...' : 'Download CSV'}
                     </button>
 
-                    <div className={`inline-flex p-1 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                    <div className={`inline-flex p-1 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-slate-100'} shrink-0`}>
                         {['7d', '30d', '90d', '1y'].map((p) => (
                             <button
                                 key={p}
                                 onClick={() => setPeriod(p)}
-                                className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${period === p
+                                className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-md text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${period === p
                                     ? (isDark ? 'bg-slate-700 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm ring-1 ring-black/5')
                                     : (isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900')
                                     }`}
@@ -261,33 +261,33 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {/* KPI Cards - Clean Style */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {statCards.map((stat, i) => (
-                    <div key={i} className={`p-6 rounded-xl border transition-all ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                        <div className="flex justify-between items-start mb-4">
-                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <div key={i} className={`p-4 sm:p-6 rounded-xl border transition-all ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                        <div className="flex justify-between items-start mb-3 sm:mb-4">
+                            <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                 {stat.label}
                             </span>
                             <div className="flex flex-col items-end gap-1">
-                                <span className={`flex items-center text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded ${stat.change >= 0
+                                <span className={`flex items-center text-[9px] sm:text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded ${stat.change >= 0
                                     ? (isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-50 text-emerald-700')
                                     : (isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-700')
                                     }`}>
                                     {stat.change >= 0 ? '+' : ''}{stat.change}% vs Prev
                                 </span>
                                 {stat.yoy !== undefined && (
-                                    <span className={`text-[10px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                    <span className={`text-[9px] sm:text-[10px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                                         {stat.yoy >= 0 ? '+' : ''}{stat.yoy}% YoY
                                     </span>
                                 )}
                             </div>
                         </div>
 
-                        <div className="flex items-end justify-between">
-                            <div className={`text-3xl font-bold font-mono tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <div className="flex items-end justify-between gap-2">
+                            <div className={`text-2xl sm:text-3xl font-bold font-mono tracking-tight truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 {stat.value}
                             </div>
-                            <div className="mb-1">
+                            <div className="mb-1 shrink-0">
                                 <Sparkline data={stat.sparklineData} />
                             </div>
                         </div>

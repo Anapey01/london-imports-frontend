@@ -79,40 +79,42 @@ export default function AdminDashboardLayout({
             </div>
 
             {/* Main Content Area */}
-            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 print:!ml-0 print:border-none print:min-h-0 print:p-0">
+            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 dark:border-slate-800 w-full max-w-full min-w-0 overflow-x-hidden print:!ml-0 print:border-none print:min-h-0 print:p-0">
                 {/* 1. Header */}
                 <div className={`sticky top-0 z-[30] backdrop-blur-md border-b ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-50'} print:hidden`}>
-                    <div className="max-w-[1600px] mx-auto px-8 py-8 flex items-center justify-between">
-                        <div className="flex items-center gap-6">
+                    <div className="max-w-[1600px] mx-auto px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 sm:gap-6 min-w-0">
                             {/* Mobile Navigation Toggle */}
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
                                 aria-label="Open Navigation Menu"
-                                className={`md:hidden p-2 border border-slate-100 rounded-none hover:bg-slate-50 transition-colors`}
+                                className={`md:hidden p-2.5 min-w-[40px] min-h-[40px] flex items-center justify-center border ${
+                                    isDark ? 'border-slate-800 hover:bg-slate-900 text-white' : 'border-slate-200 hover:bg-slate-50 text-slate-900'
+                                } rounded-none transition-colors shrink-0`}
                             >
-                                <svg className="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
 
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-3">
-                                    <span className="h-px w-8 bg-slate-900" />
-                                    <h1 className="text-[11px] font-black tracking-[0.4em] text-slate-900 uppercase">
+                            <div className="space-y-0.5 min-w-0">
+                                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                                    <span className={`h-px w-4 sm:w-8 shrink-0 ${isDark ? 'bg-slate-200' : 'bg-slate-900'}`} />
+                                    <h1 className={`text-[10px] sm:text-[11px] font-black tracking-[0.2em] sm:tracking-[0.4em] uppercase truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                         ADMIN / {pathname.split('/').pop()?.toUpperCase() || 'DASHBOARD'}
                                     </h1>
                                 </div>
-                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-11">
+                                <p className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-6 sm:pl-11 truncate">
                                     Logged in as {user.username}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8">
-                            <div className="hidden lg:flex items-center gap-8 border-r border-slate-50 pr-8">
+                        <div className="flex items-center gap-4 sm:gap-8 shrink-0">
+                            <div className="hidden lg:flex items-center gap-8 border-r border-slate-50 dark:border-slate-800 pr-8">
                                 <div className="text-right">
                                     <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Environment</p>
-                                    <p className="text-[9px] font-bold text-slate-900 uppercase tracking-tighter">Production</p>
+                                    <p className={`text-[9px] font-bold uppercase tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>Production</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">System Status</p>
@@ -123,7 +125,9 @@ export default function AdminDashboardLayout({
                                 </div>
                             </div>
                             
-                            <div className="w-10 h-10 border border-slate-900 flex items-center justify-center text-[10px] font-black text-slate-900 bg-white">
+                            <div className={`w-8 h-8 sm:w-10 sm:h-10 border flex items-center justify-center text-[10px] font-black shrink-0 ${
+                                isDark ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-900 bg-white text-slate-900'
+                            }`}>
                                 {user.first_name?.[0] || user.username?.[0] || 'A'}
                             </div>
                         </div>
@@ -131,7 +135,7 @@ export default function AdminDashboardLayout({
                 </div>
 
                 {/* 2. DASHBOARD CONTENT */}
-                <div className="max-w-[1600px] mx-auto p-8 md:p-12 print:p-0 print:max-w-none print:m-0">
+                <div className="max-w-[1600px] mx-auto p-4 sm:p-6 md:p-8 lg:p-12 print:p-0 print:max-w-none print:m-0">
                     {children}
                 </div>
             </main>

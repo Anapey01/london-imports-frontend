@@ -31,7 +31,7 @@ export default function BulkActionBar({
     return createPortal(
         <AnimatePresence>
             {selectedCount > 0 && (
-                <div className="fixed bottom-6 inset-x-0 md:left-64 z-[9000] flex justify-center px-4 pointer-events-none">
+                <div className="fixed bottom-3 inset-x-2 sm:bottom-6 sm:inset-x-0 md:left-64 z-[9000] flex justify-center px-2 sm:px-4 pointer-events-none">
                     <motion.div
                         initial={{ y: 80, opacity: 0, scale: 0.95 }}
                         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -49,25 +49,25 @@ export default function BulkActionBar({
                                 />
                             </div>
                         )}
-                        <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+                        <div className="px-3.5 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-emerald-500 text-slate-950 rounded-lg flex items-center justify-center text-[12px] font-black">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500 text-slate-950 rounded-lg flex items-center justify-center text-[11px] sm:text-[12px] font-black shrink-0">
                                     {selectedCount}
                                 </div>
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-wider text-white">
+                                <div className="min-w-0">
+                                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-white truncate">
                                         {bulkUpdating ? `Processing ${bulkProgress}/${bulkTotal}...` : `${selectedCount} Orders Selected`}
                                     </p>
-                                    <p className="text-[9px] font-medium text-slate-400">
+                                    <p className="text-[8px] sm:text-[9px] font-medium text-slate-400 truncate">
                                         {bulkUpdating ? 'Applying changes to database...' : 'Move selected orders to:'}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 sm:flex-wrap">
                                 <button
                                     onClick={() => onBulkStatus('PENDING_PAYMENT')}
                                     disabled={bulkUpdating}
-                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-rose-700 hover:bg-rose-600 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-rose-700 hover:bg-rose-600 text-white disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
                                     title="Reset selected orders to Unpaid (Pending Payment)"
                                 >
                                     → Mark as Unpaid
@@ -75,7 +75,7 @@ export default function BulkActionBar({
                                 <button
                                     onClick={() => onBulkStatus('OPEN_FOR_BATCH')}
                                     disabled={bulkUpdating}
-                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
                                     title="Move to Packing in China"
                                 >
                                     → Packing in China
@@ -83,7 +83,7 @@ export default function BulkActionBar({
                                 <button
                                     onClick={() => onBulkStatus('IN_TRANSIT')}
                                     disabled={bulkUpdating}
-                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
                                     title="Move to On the Way to Ghana"
                                 >
                                     → On the Way to Ghana
@@ -91,7 +91,7 @@ export default function BulkActionBar({
                                 <button
                                     onClick={() => onBulkStatus('ARRIVED')}
                                     disabled={bulkUpdating}
-                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
                                     title="Move to Arrived in Ghana"
                                 >
                                     → Arrived in Ghana
@@ -99,7 +99,7 @@ export default function BulkActionBar({
                                 <button
                                     onClick={() => onBulkStatus('OUT_FOR_DELIVERY')}
                                     disabled={bulkUpdating}
-                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-amber-600 hover:bg-amber-500 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-amber-600 hover:bg-amber-500 text-white disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
                                     title="Move to Out for Delivery"
                                 >
                                     → Out for Delivery
@@ -107,7 +107,7 @@ export default function BulkActionBar({
                                 <button
                                     onClick={() => onBulkStatus('DELIVERED')}
                                     disabled={bulkUpdating}
-                                    className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-slate-700 hover:bg-slate-600 text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-slate-700 hover:bg-slate-600 text-white disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
                                     title="Move to Delivered"
                                 >
                                     → Delivered
@@ -115,7 +115,7 @@ export default function BulkActionBar({
                                 <button
                                     onClick={onClearSelection}
                                     disabled={bulkUpdating}
-                                    className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                    className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
                                 >
                                     Cancel
                                 </button>

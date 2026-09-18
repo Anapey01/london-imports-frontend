@@ -63,7 +63,7 @@ const Toggle = ({ label, description, checked, onChange, isDark }: ToggleProps) 
 );
 
 const Section = ({ title, children, isDark }: { title: string; children: React.ReactNode; isDark: boolean }) => (
-    <div className={`rounded-xl border p-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
+    <div className={`rounded-xl border p-4 sm:p-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-100'}`}>
         <h3 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
         <div className="space-y-4">{children}</div>
     </div>
@@ -148,12 +148,12 @@ export default function AdminSettingsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Settings</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-2">
+                <h2 className={`text-xl sm:text-2xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Settings</h2>
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-6 py-2.5 rounded-lg bg-pink-500 text-white font-medium hover:bg-pink-600 transition-colors disabled:opacity-50"
+                    className="w-full sm:w-auto px-5 sm:px-6 py-2.5 rounded-lg bg-pink-500 text-white font-medium hover:bg-pink-600 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                     {saving ? 'Saving...' : 'Save Changes'}
                 </button>

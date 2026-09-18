@@ -72,27 +72,27 @@ const OrderRow = React.memo(({
 
     return (
         <tr className={`group transition-colors duration-200 ${isSelected
-                ? 'bg-slate-50'
-                : 'bg-white hover:bg-slate-50/50'
+                ? 'bg-slate-50 dark:bg-slate-900/60'
+                : 'bg-white dark:bg-slate-950 hover:bg-slate-50/50 dark:hover:bg-slate-900/30'
             }`}
         >
-            <td className="px-8 py-8">
-                <button onClick={() => toggleSelect(order.id)}>
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6">
+                <button onClick={() => toggleSelect(order.id)} className="min-w-[32px] min-h-[32px] flex items-center justify-center">
                     {isSelected
-                        ? <CheckSquare className="w-4 h-4 text-slate-950" />
-                        : <Square className="w-4 h-4 text-slate-200 group-hover:text-slate-400" />
+                        ? <CheckSquare className="w-4 h-4 text-slate-950 dark:text-white" />
+                        : <Square className="w-4 h-4 text-slate-200 dark:text-slate-700 group-hover:text-slate-400" />
                     }
                 </button>
             </td>
-            <td className="px-8 py-8">
-                <div className="flex items-center gap-4">
-                    <span className="font-mono text-[12px] font-black tracking-tighter text-slate-900">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6">
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <span className="font-mono text-[11px] sm:text-[12px] font-black tracking-tighter text-slate-900 dark:text-white">
                         #{order.order_number || order.id.slice(0, 8)}
                     </span>
                 </div>
             </td>
-            <td className="px-8 py-8">
-                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-lg overflow-hidden flex items-center justify-center relative group-hover:border-slate-900 transition-all">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6">
+                <div className="w-9 h-9 sm:w-12 sm:h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg overflow-hidden flex items-center justify-center relative group-hover:border-slate-900 dark:group-hover:border-slate-600 transition-all shrink-0">
                     {order.thumbnail ? (
                         <Image 
                             src={getImageUrl(order.thumbnail)} 
@@ -101,45 +101,45 @@ const OrderRow = React.memo(({
                             className="object-cover"
                         />
                     ) : (
-                        <Package size={16} className="text-slate-200" />
+                        <Package size={16} className="text-slate-200 dark:text-slate-700" />
                     )}
                 </div>
             </td>
-            <td className="px-8 py-8">
-                <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6">
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-slate-900 dark:group-hover:border-slate-600 group-hover:text-slate-900 dark:group-hover:text-white transition-all shrink-0">
                         {order.customer.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="min-w-0">
-                        <p className="text-[11px] font-black uppercase tracking-widest truncate text-slate-950">{order.customer.name}</p>
+                    <div className="min-w-0 max-w-[110px] sm:max-w-none">
+                        <p className="text-[11px] font-black uppercase tracking-widest truncate text-slate-950 dark:text-white">{order.customer.name}</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate hidden sm:block italic">{order.customer.email}</p>
                     </div>
                 </div>
             </td>
-            <td className="px-8 py-8 hidden lg:table-cell">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 hidden lg:table-cell">
                 <p className="text-[10px] font-black text-slate-400 uppercase tabular-nums">
                     {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase()}
                 </p>
             </td>
-            <td className="px-8 py-8 hidden lg:table-cell">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 hidden lg:table-cell">
                 <div className="flex items-center gap-3">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${getStatusColor(displayStatus)}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] ${getStatusColor(displayStatus)}`}>
                         {statusLabel(displayStatus)}
                     </span>
-                    <div className="w-1 h-1 rounded-full bg-slate-200" />
+                    <div className="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
                     <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(order.payment_status)}`}>
                         {order.payment_status}
                     </span>
                 </div>
             </td>
-            <td className="px-8 py-8 text-right">
-                <span className="text-[12px] font-black text-slate-950 tabular-nums">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-right">
+                <span className="text-[11px] sm:text-[12px] font-black text-slate-950 dark:text-white tabular-nums whitespace-nowrap">
                     ₵{(statusFilter === 'PENDING' ? Number(order.balance_due) : Number(order.total_amount)).toLocaleString()}
                 </span>
             </td>
-            <td className="px-8 py-8 text-right">
-                <div className="flex justify-end items-center gap-6">
-                    <div className="flex items-center gap-2 sm:gap-4 transition-all">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-right">
+                <div className="flex justify-end items-center gap-2 sm:gap-6">
+                    <div className="flex items-center gap-1.5 sm:gap-4 transition-all">
                         {(order.status === 'PROCESSING' || order.status === 'PAID' || order.status === 'OPEN_FOR_BATCH' || order.payment_status === 'PAID' || order.state === 'PAID' || order.state === 'OPEN_FOR_BATCH' || Number(order.amount_paid || 0) > 0) && (
                             <>
                                 <button 
@@ -147,7 +147,7 @@ const OrderRow = React.memo(({
                                         e.stopPropagation();
                                         handleQuickUpdate(order.id, 'IN_TRANSIT', 'Ship to Ghana');
                                     }}
-                                    className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all cursor-pointer"
+                                    className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-4 py-1.5 sm:py-2 border border-slate-900 dark:border-slate-400 text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all cursor-pointer shrink-0"
                                 >
                                     SHIP
                                 </button>
@@ -156,17 +156,17 @@ const OrderRow = React.memo(({
                                         e.stopPropagation();
                                         handleQuickUpdate(order.id, 'PENDING_PAYMENT', 'Mark as Unpaid');
                                     }}
-                                    className="text-[9px] font-black uppercase tracking-widest px-3 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-900/60 dark:text-rose-400 dark:hover:bg-rose-950/30 transition-all cursor-pointer whitespace-nowrap shadow-sm"
+                                    className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest px-2 sm:px-3 py-1.5 sm:py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-900/60 dark:text-rose-400 dark:hover:bg-rose-950/30 transition-all cursor-pointer whitespace-nowrap shadow-sm shrink-0"
                                     title="Undo payment: reset to Unpaid (Pending Payment)"
                                 >
-                                    MARK UNPAID
+                                    UNPAID
                                 </button>
                             </>
                         )}
                         {order.status === 'IN_TRANSIT' && (
                             <button 
                                 onClick={() => handleQuickUpdate(order.id, 'ARRIVED', 'Mark as Arrived in Ghana')}
-                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                                className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-4 py-1.5 sm:py-2 border border-slate-900 dark:border-slate-400 text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shrink-0"
                             >
                                 ARRIVE
                             </button>
@@ -174,7 +174,7 @@ const OrderRow = React.memo(({
                         {order.status === 'ARRIVED' && (
                             <button 
                                 onClick={() => handleQuickUpdate(order.id, 'OUT_FOR_DELIVERY', 'Ready for Delivery')}
-                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                                className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-4 py-1.5 sm:py-2 border border-slate-900 dark:border-slate-400 text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shrink-0"
                             >
                                 DISPATCH
                             </button>
@@ -182,22 +182,24 @@ const OrderRow = React.memo(({
                         {order.status === 'OUT_FOR_DELIVERY' && (
                             <button 
                                 onClick={() => handleQuickUpdate(order.id, 'DELIVERED', 'Deliver Order')}
-                                className="hidden sm:block text-[9px] font-black uppercase tracking-widest px-4 py-2 border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+                                className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-4 py-1.5 sm:py-2 border border-slate-900 dark:border-slate-400 text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shrink-0"
                             >
                                 DELIVER
                             </button>
                         )}
                         <Link
                             href={`/dashboard/admin/orders/${order.id}`}
-                            className="p-4 text-slate-400 hover:text-slate-900 transition-colors"
+                            className="p-1.5 sm:p-4 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                            aria-label="View order detail"
                         >
-                            <Eye className="w-5 h-5" />
+                            <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                         </Link>
                         <button
                             onClick={() => handleDelete(order.id)}
-                            className="p-4 text-slate-200 hover:text-red-600 transition-colors"
+                            className="p-1.5 sm:p-4 text-slate-300 hover:text-red-600 transition-colors"
+                            aria-label="Delete order"
                         >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>
                 </div>

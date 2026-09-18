@@ -28,9 +28,9 @@ const ProductRow = React.memo(({
     const statusStyle = getStatusStyle(product.status);
     return (
         <tr className="group hover:bg-slate-50/50 transition-all duration-500 cursor-pointer" onClick={() => onEdit(product)}>
-            <td className="px-8 py-8">
-                <div className="flex items-center gap-6">
-                    <div className="w-12 h-12 border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:border-slate-900 transition-all">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8">
+                <div className="flex items-center gap-3 sm:gap-6">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:border-slate-900 transition-all">
                         {product.image ? (
                             <Image
                                 src={getImageUrl(product.image)}
@@ -45,50 +45,51 @@ const ProductRow = React.memo(({
                         )}
                     </div>
                     <div className="min-w-0">
-                        <div className="flex items-center gap-3">
-                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-950 truncate">{product.name}</p>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-950 truncate max-w-[120px] sm:max-w-none">{product.name}</p>
                             {product.featured && (
-                                <Star className="w-3 h-3 text-slate-950 fill-slate-950" />
+                                <Star className="w-3 h-3 text-slate-950 fill-slate-950 shrink-0" />
                             )}
                             {product.preOrder && (
-                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 italic">PRE-ORDER</span>
+                                <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 italic shrink-0">PRE-ORDER</span>
                             )}
                         </div>
-                        <p className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter truncate mt-1">{product.category}</p>
+                        <p className="text-[8px] sm:text-[9px] font-bold text-slate-300 uppercase tracking-tighter truncate mt-0.5 sm:mt-1">{product.category}</p>
                     </div>
                 </div>
             </td>
-            <td className="px-8 py-8">
-                <span className="text-[10px] font-black text-slate-950 tabular-nums uppercase tracking-widest">GHS {product.price.toLocaleString()}</span>
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 whitespace-nowrap">
+                <span className="text-[9px] sm:text-[10px] font-black text-slate-950 tabular-nums uppercase tracking-widest">GHS {product.price.toLocaleString()}</span>
             </td>
-            <td className="px-8 py-8">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 whitespace-nowrap">
                 <div className="flex items-center gap-3">
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${product.stock === 0 ? 'text-red-600' : 'text-slate-400'}`}>
+                    <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${product.stock === 0 ? 'text-red-600' : 'text-slate-400'}`}>
                         {product.stock === 0 ? 'OUT OF STOCK' : `${product.stock} UNITS`}
                     </span>
                 </div>
             </td>
-            <td className="px-8 py-8">
-                <div className="flex items-center gap-3">
-                    <div className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
-                    <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${statusStyle.text === 'text-white' ? 'text-slate-950' : statusStyle.text}`}>
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 whitespace-nowrap">
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusStyle.dot}`} />
+                    <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] ${statusStyle.text === 'text-white' ? 'text-slate-950' : statusStyle.text}`}>
                         {product.status}
                     </span>
                 </div>
             </td>
-            <td className="px-8 py-8 text-right">
-                <div className="flex justify-end items-center gap-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+            <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-8 text-right whitespace-nowrap">
+                <div className="flex justify-end items-center gap-2 sm:gap-6 sm:opacity-0 sm:group-hover:opacity-100 transition-all sm:transform sm:translate-x-4 sm:group-hover:translate-x-0">
                     <button
                         onClick={(e) => { e.stopPropagation(); onToggleFeatured(product.id); }}
-                        className={`text-[9px] font-black uppercase tracking-widest transition-colors ${product.featured ? 'text-slate-950' : 'text-slate-300 hover:text-slate-950'}`}
+                        className={`text-[8px] sm:text-[9px] font-black uppercase tracking-widest transition-colors p-1 cursor-pointer ${product.featured ? 'text-slate-950' : 'text-slate-400 hover:text-slate-950'}`}
                     >
                         {product.featured ? 'UNFEATURE' : 'FEATURE'}
                     </button>
                     <button
                         onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
-                        className="p-2 text-slate-200 hover:text-red-600 transition-colors"
+                        className="p-1.5 sm:p-2 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                        title="Delete product"
                     >
-                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={1.5} />
                     </button>
                 </div>
             </td>
@@ -110,11 +111,11 @@ const ProductTable = ({
             <table className="w-full border-collapse">
                 <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Product</th>
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Price</th>
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Stock</th>
-                        <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Status</th>
-                        <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Actions</th>
+                        <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Product</th>
+                        <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Price</th>
+                        <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Stock</th>
+                        <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-left text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Status</th>
+                        <th className="px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-right text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-slate-400">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">

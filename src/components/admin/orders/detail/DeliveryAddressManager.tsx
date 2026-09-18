@@ -27,8 +27,8 @@ export function DeliveryAddressManager({
     handleSaveDelivery
 }: DeliveryAddressManagerProps) {
     return (
-        <section className={`p-6 sm:p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-0 mb-10">
+        <section className={`p-4 sm:p-6 md:p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-8 sm:mb-10">
                 <div className="flex items-center gap-4">
                     <MapPin className="w-5 h-5 opacity-20" />
                     <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Delivery Address</h2>
@@ -44,20 +44,20 @@ export function DeliveryAddressManager({
                         });
                         setIsEditingDelivery(true);
                     }}
-                    className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 opacity-40 hover:opacity-100 transition-opacity w-fit"
+                    className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 opacity-40 hover:opacity-100 transition-opacity w-fit py-1"
                 >
                     {isEditingDelivery ? 'Save Changes' : 'Edit Address'}
                 </button>
             </div>
 
             {!isEditingDelivery ? (
-                <div className="grid md:grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                     <div className="space-y-6">
                         <div>
                             <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-2">Street Address</span>
-                            <p className="text-2xl font-serif font-bold tracking-tight leading-tight">{order.delivery_address}</p>
+                            <p className="text-xl sm:text-2xl font-serif font-bold tracking-tight leading-tight">{order.delivery_address}</p>
                         </div>
-                        <div className="flex gap-12">
+                        <div className="flex flex-wrap gap-6 sm:gap-12">
                             <div>
                                 <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-1">City</span>
                                 <p className="text-sm font-bold uppercase tracking-widest">{order.delivery_city}</p>
@@ -68,37 +68,37 @@ export function DeliveryAddressManager({
                             </div>
                         </div>
                         {order.delivery_gps && (
-                            <div className="inline-flex items-center gap-3 px-4 py-2 bg-slate-500/5 border border-inherit font-mono text-[10px] tracking-widest">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-slate-500/5 border border-inherit font-mono text-[9px] sm:text-[10px] tracking-widest break-all">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                                 COORD: {order.delivery_gps}
                             </div>
                         )}
                     </div>
-                    <div className="bg-slate-500/5 p-8 border-l-2 border-pink-500">
-                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-4">Shipping Notes</span>
-                        <p className="text-sm font-medium italic opacity-60 leading-relaxed">
+                    <div className="bg-slate-500/5 p-4 sm:p-6 md:p-8 border-l-2 border-pink-500">
+                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 block mb-3 sm:mb-4">Shipping Notes</span>
+                        <p className="text-xs sm:text-sm font-medium italic opacity-60 leading-relaxed">
                             &quot;{order.customer_notes || 'No special delivery notes for this shipment.'}&quot;
                         </p>
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
                     <input
                         value={editForm.delivery_address}
                         onChange={(e) => setEditForm({ ...editForm, delivery_address: e.target.value })}
-                        className={`col-span-2 p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all`}
+                        className={`col-span-1 sm:col-span-2 p-3.5 sm:p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-xs sm:text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all`}
                         placeholder="STREET & LANDMARKS"
                     />
                     <input
                         value={editForm.delivery_city}
                         onChange={(e) => setEditForm({ ...editForm, delivery_city: e.target.value })}
-                        className="p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all"
+                        className="p-3.5 sm:p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-xs sm:text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all"
                         placeholder="CITY HUB"
                     />
                     <input
                         value={editForm.delivery_region}
                         onChange={(e) => setEditForm({ ...editForm, delivery_region: e.target.value })}
-                        className="p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all"
+                        className="p-3.5 sm:p-5 border-b bg-transparent outline-none font-bold uppercase tracking-widest text-xs sm:text-sm border-slate-200 dark:border-slate-800 focus:border-pink-500 transition-all"
                         placeholder="REGION"
                     />
                 </div>

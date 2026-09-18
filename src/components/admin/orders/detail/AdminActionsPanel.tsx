@@ -40,22 +40,22 @@ export function AdminActionsPanel({
 
     return (
         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-            <div className="p-5 sm:p-8 border-b border-inherit flex items-center gap-4">
+            <div className="p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center gap-4">
                 <Terminal className="w-5 h-5 opacity-20" />
                 <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Admin Actions</h2>
             </div>
             
-            <div className="p-5 sm:p-8 space-y-4">
+            <div className="p-4 sm:p-6 md:p-8 space-y-4">
                 <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
                     {(!isPaid || hasBalanceDue) && (
                         <button 
                             onClick={openRecordPaymentModal}
                             disabled={updating}
-                            className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-purple-950/20 flex flex-col gap-2.5 sm:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            className="p-3 sm:p-4 md:p-6 bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-purple-950/20 flex flex-col gap-2 sm:gap-2.5 md:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Record custom or partial payment amount"
                         >
-                            <Banknote className="w-5 h-5 text-purple-500 group-hover:scale-110 transition-transform" />
-                            <span className="text-[9px] font-black uppercase tracking-widest leading-tight text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform">
+                            <Banknote className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-tight text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform">
                                 Record <br /> Payment
                             </span>
                         </button>
@@ -64,22 +64,22 @@ export function AdminActionsPanel({
                         <button 
                             onClick={handleMarkAsPaid}
                             disabled={updating}
-                            className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex flex-col gap-2.5 sm:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            className="p-3 sm:p-4 md:p-6 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex flex-col gap-2 sm:gap-2.5 md:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Mark entire remaining balance as paid"
                         >
-                            <CreditCard className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
-                            <span className="text-[9px] font-black uppercase tracking-widest leading-tight text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform">
+                            <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-tight text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform">
                                 Mark Full <br /> Paid
                             </span>
                         </button>
                     )}
                     <button 
                         onClick={openTransferModal}
-                        className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-2.5 sm:gap-3 group transition-all text-left"
+                        className="p-3 sm:p-4 md:p-6 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 flex flex-col gap-2 sm:gap-2.5 md:gap-3 group transition-all text-left"
                         title="Transfer payment to another order"
                     >
-                        <ArrowRightLeft className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" />
-                        <span className="text-[9px] font-black uppercase tracking-widest leading-tight group-hover:translate-x-1 transition-transform">
+                        <ArrowRightLeft className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-tight group-hover:translate-x-1 transition-transform">
                             Transfer <br /> Payment
                         </span>
                     </button>
@@ -87,34 +87,34 @@ export function AdminActionsPanel({
                         <button 
                             onClick={handleMarkAsUnpaid}
                             disabled={updating}
-                            className="p-4 sm:p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-2.5 sm:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
+                            className="p-3 sm:p-4 md:p-6 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex flex-col gap-2 sm:gap-2.5 md:gap-3 group transition-all disabled:opacity-50 cursor-pointer text-left"
                             title="Undo payment and mark order as unpaid"
                         >
                             {updating ? (
-                                <Loader2 className="w-5 h-5 text-rose-500 animate-spin" />
+                                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 animate-spin" />
                             ) : (
-                                <RotateCcw className="w-5 h-5 text-rose-500 group-hover:-rotate-45 transition-transform" />
+                                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 group-hover:-rotate-45 transition-transform" />
                             )}
-                            <span className="text-[9px] font-black uppercase tracking-widest leading-tight text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
+                            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-tight text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
                                 Mark as <br /> Unpaid
                             </span>
                         </button>
                     )}
                 </div>
 
-                <div className="pt-4 space-y-4">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-2">Check & Credit Hubtel Payment</span>
-                    <div className="space-y-3">
+                <div className="pt-3 sm:pt-4 space-y-3 sm:space-y-4">
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-20 block ml-2 mb-1 sm:mb-2">Check & Credit Hubtel Payment</span>
+                    <div className="space-y-2.5 sm:space-y-3">
                         <input 
                             value={manualReference}
                             onChange={(e) => setManualReference(e.target.value)}
                             placeholder="PASTE HUBTEL PAYMENT ID OR REFERENCE"
-                            className="w-full p-4 bg-slate-500/5 border border-inherit text-[10px] font-mono tracking-widest outline-none focus:border-amber-500 transition-all uppercase"
+                            className="w-full p-3 sm:p-4 bg-slate-500/5 border border-inherit text-[9px] sm:text-[10px] font-mono tracking-widest outline-none focus:border-amber-500 transition-all uppercase"
                         />
                         <button 
                             onClick={handleManualSync}
                             disabled={updating || !manualReference}
-                            className="w-full p-4 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-amber-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
+                            className="w-full p-3 sm:p-4 bg-slate-900 text-white text-[8px] sm:text-[9px] font-black uppercase tracking-widest hover:bg-amber-600 disabled:opacity-30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {updating ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
                             Check & Mark as Paid with Hubtel
@@ -122,40 +122,40 @@ export function AdminActionsPanel({
                     </div>
                 </div>
 
-                <div className="pt-4 space-y-2">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-40 block ml-2 mb-2">Change Order Status</span>
-                    <div className="grid grid-cols-1 gap-2">
-                        <button onClick={() => handleUpdateStatus('IN_TRANSIT')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
+                <div className="pt-3 sm:pt-4 space-y-2">
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-40 block ml-2 mb-1 sm:mb-2">Change Order Status</span>
+                    <div className="grid grid-cols-1 gap-1.5 sm:gap-2">
+                        <button onClick={() => handleUpdateStatus('IN_TRANSIT')} className="w-full p-3 sm:p-4 border border-inherit text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group cursor-pointer">
                             Mark as Shipped
-                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
+                            <ArrowRight className="w-4 h-4 opacity-40 sm:opacity-0 sm:group-hover:opacity-100 transition-all" />
                         </button>
-                        <button onClick={() => handleUpdateStatus('ARRIVED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
+                        <button onClick={() => handleUpdateStatus('ARRIVED')} className="w-full p-4 border border-inherit text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group cursor-pointer">
                             Mark as Arrived
-                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
+                            <ArrowRight className="w-4 h-4 opacity-40 sm:opacity-0 sm:group-hover:opacity-100 transition-all" />
                         </button>
-                        <button onClick={() => handleUpdateStatus('OUT_FOR_DELIVERY')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
+                        <button onClick={() => handleUpdateStatus('OUT_FOR_DELIVERY')} className="w-full p-3 sm:p-4 border border-inherit text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group cursor-pointer">
                             Mark as Out for Delivery
-                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
+                            <ArrowRight className="w-4 h-4 opacity-40 sm:opacity-0 sm:group-hover:opacity-100 transition-all" />
                         </button>
-                        <button onClick={() => handleUpdateStatus('DELIVERED')} className="w-full p-4 border border-inherit text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group">
+                        <button onClick={() => handleUpdateStatus('DELIVERED')} className="w-full p-3 sm:p-4 border border-inherit text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all text-left flex justify-between items-center group cursor-pointer">
                             Mark as Delivered
-                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
+                            <ArrowRight className="w-4 h-4 opacity-40 sm:opacity-0 sm:group-hover:opacity-100 transition-all" />
                         </button>
                         <button 
                             onClick={() => handleUpdateStatus('PENDING_PAYMENT')} 
-                            className="w-full p-4 border border-amber-200 dark:border-amber-900/60 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all text-left flex justify-between items-center group"
+                            className="w-full p-3 sm:p-4 border border-amber-200 dark:border-amber-900/60 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all text-left flex justify-between items-center group cursor-pointer"
                         >
                             Reset to Unpaid (Pending Payment)
-                            <RotateCcw className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-amber-500" />
+                            <RotateCcw className="w-4 h-4 opacity-40 sm:opacity-0 sm:group-hover:opacity-100 transition-all text-amber-500" />
                         </button>
-                        <button onClick={() => handleUpdateStatus('CANCELLED')} className="w-full p-4 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-left">
+                        <button onClick={() => handleUpdateStatus('CANCELLED')} className="w-full p-3 sm:p-4 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-left cursor-pointer">
                             Cancel Order
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className="p-6 bg-slate-500/5 border-t border-inherit flex items-center gap-3">
+            <div className="p-4 sm:p-6 bg-slate-500/5 border-t border-inherit flex items-center gap-3">
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Safe & Confirmed</span>
             </div>
