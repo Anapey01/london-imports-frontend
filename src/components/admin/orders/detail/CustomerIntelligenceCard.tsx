@@ -1,7 +1,19 @@
-import { User, Crown, TrendingUp, ShoppingBag, Calendar } from 'lucide-react';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Crown, TrendingUp, ShoppingBag, Calendar, ChevronDown } from 'lucide-react';
 import { Customer } from '@/types/order';
 
 export function CustomerIntelligenceCard({ customer, isDark }: { customer: Customer; isDark: boolean }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsExpanded(true);
+        }
+    }, []);
+
     const joinDate = new Date(customer.stats.join_date).toLocaleDateString('en-GB', { 
         month: 'long', 
         year: 'numeric' 
@@ -11,11 +23,44 @@ export function CustomerIntelligenceCard({ customer, isDark }: { customer: Custo
         <div className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'} relative group`}>
             <div className="absolute top-0 left-0 w-1 h-full bg-slate-900 dark:bg-white/10" />
             
-            <div className="p-4 sm:p-6 md:p-10">
-                <div className="flex items-center gap-3 mb-6 sm:mb-10 opacity-40">
-                    <User className="w-4 h-4" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em]">Customer Details</h3>
+            {/* Clickable Header */}
+            <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-full p-4 sm:p-6 md:p-8 flex items-center justify-between text-left cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors"
+            >
+                <div className="flex items-center gap-3 min-w-0">
+                    <User className="w-4 h-4 opacity-40 shrink-0" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Customer Details</h3>
+                    {!isExpanded && (
+                        <span className="text-[11px] font-serif font-bold text-slate-700 dark:text-slate-300 ml-2 truncate max-w-[150px] sm:max-w-none">
+                            • {customer.name}
+                        </span>
+                    )}
                 </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                        {isExpanded ? 'Compress' : 'Expand'}
+                    </span>
+                    <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                    </motion.div>
+                </div>
+            </button>
+
+            <AnimatePresence initial={false}>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                    >
+                        <div className="px-4 pb-4 sm:px-6 sm:pb-6 md:px-10 md:pb-10 pt-0 sm:pt-2">
 
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 sm:mb-12 gap-6 sm:gap-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
@@ -82,6 +127,9 @@ export function CustomerIntelligenceCard({ customer, isDark }: { customer: Custo
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        </motion.div>
+    )}
+</AnimatePresence>
+</div>
+);
 }

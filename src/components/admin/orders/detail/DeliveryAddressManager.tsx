@@ -1,4 +1,8 @@
-import { MapPin } from 'lucide-react';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, ChevronDown } from 'lucide-react';
 import { OrderDetail } from '@/types/order';
 
 interface DeliveryAddressManagerProps {
@@ -26,29 +30,77 @@ export function DeliveryAddressManager({
     setIsEditingDelivery,
     handleSaveDelivery
 }: DeliveryAddressManagerProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsExpanded(true);
+        }
+    }, []);
+
     return (
-        <section className={`p-4 sm:p-6 md:p-10 border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-8 sm:mb-10">
-                <div className="flex items-center gap-4">
-                    <MapPin className="w-5 h-5 opacity-20" />
-                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Delivery Address</h2>
+        <section className={`border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
+            {/* Clickable Accordion Header */}
+            <div
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center justify-between text-left cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors"
+            >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <MapPin className="w-5 h-5 opacity-40 shrink-0" />
+                    <div>
+                        <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-60">Delivery Address</h2>
+                        {!isExpanded && !isEditingDelivery && (
+                            <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate max-w-[200px] sm:max-w-none">
+                                • {order.delivery_city || 'City'}, {order.delivery_region || 'Region'}
+                            </p>
+                        )}
+                    </div>
                 </div>
-                <button
-                    onClick={isEditingDelivery ? handleSaveDelivery : () => {
-                        setEditForm({
-                            delivery_address: order.delivery_address || '',
-                            delivery_city: order.delivery_city || '',
-                            delivery_region: order.delivery_region || '',
-                            delivery_gps: order.delivery_gps || '',
-                            customer_notes: order.customer_notes || ''
-                        });
-                        setIsEditingDelivery(true);
-                    }}
-                    className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 opacity-40 hover:opacity-100 transition-opacity w-fit py-1"
-                >
-                    {isEditingDelivery ? 'Save Changes' : 'Edit Address'}
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (isEditingDelivery) {
+                                handleSaveDelivery();
+                            } else {
+                                setEditForm({
+                                    delivery_address: order.delivery_address || '',
+                                    delivery_city: order.delivery_city || '',
+                                    delivery_region: order.delivery_region || '',
+                                    delivery_gps: order.delivery_gps || '',
+                                    customer_notes: order.customer_notes || ''
+                                });
+                                setIsEditingDelivery(true);
+                                setIsExpanded(true);
+                            }
+                        }}
+                        className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 opacity-60 hover:opacity-100 transition-opacity py-1 cursor-pointer"
+                    >
+                        {isEditingDelivery ? 'Save Changes' : 'Edit Address'}
+                    </button>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden ml-1">
+                        {isExpanded || isEditingDelivery ? 'Compress' : 'Expand'}
+                    </span>
+                    <motion.div
+                        animate={{ rotate: isExpanded || isEditingDelivery ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                    </motion.div>
+                </div>
             </div>
+
+            <AnimatePresence initial={false}>
+                {(isExpanded || isEditingDelivery) && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                    >
+                        <div className="p-4 sm:p-6 md:p-10">
 
             {!isEditingDelivery ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
@@ -103,6 +155,10 @@ export function DeliveryAddressManager({
                     />
                 </div>
             )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

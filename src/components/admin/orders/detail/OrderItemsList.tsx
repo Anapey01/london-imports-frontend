@@ -1,5 +1,9 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FileText, CreditCard } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FileText, CreditCard, ChevronDown } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
 import { OrderItem, OrderPayment } from '@/types/order';
 
@@ -24,6 +28,14 @@ export function OrderItemsList({
     payments,
     isDark
 }: OrderItemsListProps) {
+    const [isPaymentsExpanded, setIsPaymentsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsPaymentsExpanded(true);
+        }
+    }, []);
+
     return (
         <section className={`border ${isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
             <div className="p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center justify-between">
@@ -97,89 +109,119 @@ export function OrderItemsList({
             </div>
 
             {payments && payments.length > 0 && (
-                <div className="p-4 sm:p-6 md:p-8 border-t border-inherit bg-slate-500/[0.015]">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] opacity-40 flex items-center gap-2">
-                            <CreditCard className="w-3.5 h-3.5" />
+                <div className="border-t border-inherit bg-slate-500/[0.015]">
+                    <button
+                        type="button"
+                        onClick={() => setIsPaymentsExpanded(!isPaymentsExpanded)}
+                        className="w-full p-4 sm:p-6 md:p-8 flex items-center justify-between text-left cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors"
+                    >
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] opacity-60 flex items-center gap-2">
+                            <CreditCard className="w-3.5 h-3.5 opacity-60" />
                             Payment Records & Deposits ({payments.length})
                         </span>
-                    </div>
-                    <div className="divide-y divide-inherit border border-inherit rounded-lg overflow-hidden">
-                        {payments.map((p) => {
-                            const methodLabel = p.payment_method === 'CASH' ? 'Cash' 
-                                : p.payment_method === 'BANK_TRANSFER' ? 'Bank Transfer'
-                                : p.payment_method === 'CARD' ? 'Card'
-                                : 'Mobile Money';
-                            const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            }) : 'Recorded';
+                        <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                                {isPaymentsExpanded ? 'Compress' : 'Expand'}
+                            </span>
+                            <motion.div
+                                animate={{ rotate: isPaymentsExpanded ? 180 : 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                            </motion.div>
+                        </div>
+                    </button>
 
-                            const isSuccess = p.state === 'SUCCESS' || p.state === 'CAPTURED';
-                            const isFailed = p.state === 'FAILED' || p.state === 'CANCELLED';
+                    <AnimatePresence initial={false}>
+                        {isPaymentsExpanded && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                className="overflow-hidden"
+                            >
+                                <div className="px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8">
+                                    <div className="divide-y divide-inherit border border-inherit rounded-lg overflow-hidden">
+                                        {payments.map((p) => {
+                                            const methodLabel = p.payment_method === 'CASH' ? 'Cash' 
+                                                : p.payment_method === 'BANK_TRANSFER' ? 'Bank Transfer'
+                                                : p.payment_method === 'CARD' ? 'Card'
+                                                : 'Mobile Money';
+                                            const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            }) : 'Recorded';
 
-                            return (
-                                <div 
-                                    key={p.id}
-                                    className={`p-3.5 sm:p-4 flex items-start justify-between gap-4 text-xs transition-colors ${
-                                        isDark ? 'bg-slate-950/20 hover:bg-slate-900/40' : 'bg-white hover:bg-slate-50/60'
-                                    }`}
-                                >
-                                    <div className="flex items-start gap-3 min-w-0 flex-1">
-                                        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-                                            isSuccess ? 'bg-emerald-500' : isFailed ? 'bg-slate-400 dark:bg-slate-600' : 'bg-amber-500'
-                                        }`} />
-                                        <div className="space-y-1 min-w-0 flex-1">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <span className="font-semibold text-slate-900 dark:text-white">
-                                                    {methodLabel}
-                                                </span>
-                                                {p.payment_type && (
-                                                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium lowercase">
-                                                        ({p.payment_type.toLowerCase()})
-                                                    </span>
-                                                )}
-                                                <span className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded border font-semibold shrink-0 ${
-                                                    isSuccess 
-                                                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
-                                                        : isFailed 
-                                                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700' 
-                                                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                                                }`}>
-                                                    {p.state}
-                                                </span>
-                                            </div>
-                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400 font-mono">
-                                                <span>{dateStr}</span>
-                                                {p.reference && (
-                                                    <span className="text-slate-500 dark:text-slate-400 truncate max-w-full select-all">
-                                                        Ref: {p.reference}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {p.notes && (
-                                                <p className="text-[11px] text-slate-600 dark:text-slate-300 italic bg-slate-100/60 dark:bg-slate-800/40 border border-inherit rounded px-2 py-1 mt-1">
-                                                    "{p.notes}"
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className={`text-right shrink-0 whitespace-nowrap font-mono pt-0.5 ${
-                                        isSuccess 
-                                            ? 'font-bold text-sm sm:text-base text-emerald-600 dark:text-emerald-400' 
-                                            : isFailed 
-                                                ? 'font-medium text-xs sm:text-sm text-slate-400 dark:text-slate-500 line-through' 
-                                                : 'font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300'
-                                    }`}>
-                                        {isSuccess ? '+' : ''}₵{Number(p.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            const isSuccess = p.state === 'SUCCESS' || p.state === 'CAPTURED';
+                                            const isFailed = p.state === 'FAILED' || p.state === 'CANCELLED';
+
+                                            return (
+                                                <div 
+                                                    key={p.id}
+                                                    className={`p-3.5 sm:p-4 flex items-start justify-between gap-4 text-xs transition-colors ${
+                                                        isDark ? 'bg-slate-950/20 hover:bg-slate-900/40' : 'bg-white hover:bg-slate-50/60'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                                                        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                                                            isSuccess ? 'bg-emerald-500' : isFailed ? 'bg-slate-400 dark:bg-slate-600' : 'bg-amber-500'
+                                                        }`} />
+                                                        <div className="space-y-1 min-w-0 flex-1">
+                                                            <div className="flex flex-wrap items-center gap-2">
+                                                                <span className="font-semibold text-slate-900 dark:text-white">
+                                                                    {methodLabel}
+                                                                </span>
+                                                                {p.payment_type && (
+                                                                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium lowercase">
+                                                                        ({p.payment_type.toLowerCase()})
+                                                                    </span>
+                                                                )}
+                                                                <span className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded border font-semibold shrink-0 ${
+                                                                    isSuccess 
+                                                                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+                                                                        : isFailed 
+                                                                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700' 
+                                                                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                                                                }`}>
+                                                                    {p.state}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400 font-mono">
+                                                                <span>{dateStr}</span>
+                                                                {p.reference && (
+                                                                    <span className="text-slate-500 dark:text-slate-400 truncate max-w-full select-all">
+                                                                        Ref: {p.reference}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {p.notes && (
+                                                                <p className="text-[11px] text-slate-600 dark:text-slate-300 italic bg-slate-100/60 dark:bg-slate-800/40 border border-inherit rounded px-2 py-1 mt-1">
+                                                                    &quot;{p.notes}&quot;
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className={`text-right shrink-0 whitespace-nowrap font-mono pt-0.5 ${
+                                                        isSuccess 
+                                                            ? 'font-bold text-sm sm:text-base text-emerald-600 dark:text-emerald-400' 
+                                                            : isFailed 
+                                                                ? 'font-medium text-xs sm:text-sm text-slate-400 dark:text-slate-500 line-through' 
+                                                                : 'font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300'
+                                                    }`}>
+                                                        {isSuccess ? '+' : ''}₵{Number(p.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
         </section>

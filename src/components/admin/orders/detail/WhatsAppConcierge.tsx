@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, HelpCircle } from 'lucide-react';
 import { OrderDetail } from '@/types/order';
 
@@ -15,6 +16,14 @@ interface Template {
 }
 
 export function WhatsAppConcierge({ order, isDark }: WhatsAppConciergeProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsExpanded(true);
+        }
+    }, []);
+
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('restored_order');
     const [messageContent, setMessageContent] = useState<string>('');
 
@@ -140,12 +149,46 @@ London's Imports Team`
         <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'} relative group`}>
             <div className="absolute top-0 left-0 w-1 h-full bg-[#25D366]" />
             
-            <div className="p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center gap-4">
-                <MessageSquare className="w-5 h-5 opacity-20 text-[#25D366]" />
-                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">WhatsApp Concierge</h2>
-            </div>
+            {/* Clickable Accordion Header */}
+            <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-full p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center justify-between text-left cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors"
+            >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <MessageSquare className="w-5 h-5 opacity-40 text-[#25D366] shrink-0" />
+                    <div>
+                        <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-60">WhatsApp Concierge</h2>
+                        {!isExpanded && (
+                            <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate max-w-[180px] sm:max-w-none">
+                                {order.phone ? `To: ${order.phone}` : 'No phone number'}
+                            </p>
+                        )}
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                        {isExpanded ? 'Compress' : 'Expand'}
+                    </span>
+                    <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <ChevronDownIcon className="w-4 h-4 text-slate-400" />
+                    </motion.div>
+                </div>
+            </button>
             
-            <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5">
+            <AnimatePresence initial={false}>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                    >
+                        <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5">
                 {/* Template Selector */}
                 <div className="space-y-2">
                     <label className="text-[8px] font-black uppercase tracking-widest opacity-30 block ml-1">
@@ -215,8 +258,11 @@ London's Imports Team`
                     </div>
                 )}
             </div>
-        </section>
-    );
+        </motion.div>
+    )}
+</AnimatePresence>
+</section>
+);
 }
 
 // Simple internal icon component to avoid extra imports

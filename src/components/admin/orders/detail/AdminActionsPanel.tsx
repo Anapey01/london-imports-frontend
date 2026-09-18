@@ -1,4 +1,6 @@
-import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2, RotateCcw, Banknote } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Terminal, CreditCard, ArrowRightLeft, ShieldCheck, ArrowRight, Loader2, RotateCcw, Banknote, ChevronDown } from 'lucide-react';
 
 interface AdminActionsPanelProps {
     updating: boolean;
@@ -33,19 +35,48 @@ export function AdminActionsPanel({
     order,
     isDark
 }: AdminActionsPanelProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+            setIsExpanded(true);
+        }
+    }, []);
+
     const isPaid = order?.payment_status === 'PAID';
     const hasPaidAmount = Number(order?.amount_paid || 0) > 0;
     const hasBalanceDue = Number(order?.balance_due || 0) > 0;
     const canMarkUnpaid = isPaid || hasPaidAmount || order?.state === 'PAID' || order?.state === 'OPEN_FOR_BATCH' || order?.status === 'PAID' || order?.status === 'PROCESSING';
 
     return (
-        <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-            <div className="p-4 sm:p-6 md:p-8 border-b border-inherit flex items-center gap-4">
-                <Terminal className="w-5 h-5 opacity-20" />
-                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">Admin Actions</h2>
+        <section className={`border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'} overflow-hidden transition-all`}>
+            <div 
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="p-4 sm:p-6 md:p-8 flex items-center justify-between cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors border-b border-inherit"
+            >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <Terminal className="w-5 h-5 opacity-20 shrink-0" />
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40 truncate">Admin Actions</h2>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-pink-500 lg:hidden">
+                        {isExpanded ? 'Compress' : 'Expand'}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 opacity-40 group-hover/header:opacity-100 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                </div>
             </div>
             
-            <div className="p-4 sm:p-6 md:p-8 space-y-4">
+            <AnimatePresence initial={false}>
+                {isExpanded && (
+                    <motion.div
+                        key="admin-actions-content"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                    >
+                        <div className="p-4 sm:p-6 md:p-8 space-y-4">
                 <div className="grid grid-cols-2 gap-px bg-slate-800/10 dark:bg-white/10 border border-inherit">
                     {(!isPaid || hasBalanceDue) && (
                         <button 
@@ -159,6 +190,9 @@ export function AdminActionsPanel({
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Safe & Confirmed</span>
             </div>
-        </section>
+        </motion.div>
+    )}
+</AnimatePresence>
+</section>
     );
 }
