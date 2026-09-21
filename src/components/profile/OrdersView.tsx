@@ -105,6 +105,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                     </div>
                 ) : (
                     filteredOrders.map((order: Order) => {
+
                         const balanceDue = parseFloat(order.balance_due?.toString() || '0');
                         const totalAmount = parseFloat(order.total.toString());
                         const amountPaid = parseFloat(order.amount_paid?.toString() || '0');
