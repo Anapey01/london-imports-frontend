@@ -68,6 +68,7 @@ interface CartState {
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     clearCart: () => void;
+    clearLocalCart: () => void;
     setSelectedItems: (ids: string[]) => void;
 }
 
@@ -220,6 +221,10 @@ export const useCartStore = create<CartState>()(
                 if (isAuthenticated) {
                     ordersAPI.clearCart().catch(() => {});
                 }
+                set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: [], isFetching: false, isLoading: false });
+            },
+
+            clearLocalCart: () => {
                 set({ cart: null, guestItems: [], itemCount: 0, selectedItemIds: [], isFetching: false, isLoading: false });
             },
 

@@ -394,12 +394,12 @@ export default function AdminBroadcastPage() {
                             onClick={() => setIsAudienceExpanded(!isAudienceExpanded)}
                             className="w-full flex items-center justify-between text-left cursor-pointer select-none group/header"
                         >
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
                                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 shrink-0">
                                     Target Audience
                                 </h2>
                                 {!isAudienceExpanded && (
-                                    <span className="text-[10px] font-medium px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 truncate max-w-[140px] sm:max-w-none">
+                                    <span className="hidden sm:inline-flex text-[10px] font-medium px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 truncate max-w-[140px] sm:max-w-none">
                                         • {channel === 'email' 
                                             ? (JOURNEY_FILTERS.find(f => f.key === emailTarget)?.label || emailTarget)
                                             : (SMS_JOURNEY_FILTERS.find(f => f.key === smsTarget)?.label || smsTarget)
@@ -411,7 +411,7 @@ export default function AdminBroadcastPage() {
                                 <span className="font-mono text-[10px] text-slate-400">
                                     {(channel === 'email' ? JOURNEY_FILTERS : SMS_JOURNEY_FILTERS).length} cohorts
                                 </span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden ml-1">
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 hidden sm:inline ml-1">
                                     {isAudienceExpanded ? 'Compress' : 'Expand'}
                                 </span>
                                 <motion.div
@@ -483,7 +483,7 @@ export default function AdminBroadcastPage() {
                                 <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider">
                                     {channel}
                                 </span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden ml-1">
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 hidden sm:inline ml-1">
                                     {isTemplatesExpanded ? 'Compress' : 'Expand'}
                                 </span>
                                 <motion.div

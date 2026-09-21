@@ -58,6 +58,9 @@ export const useAuthStore = create<AuthState>()(
                             user: userObj,
                             isAuthenticated: true
                         });
+                        import('./cartStore').then(({ useCartStore }) => {
+                            useCartStore.getState().fetchCart();
+                        }).catch(() => {});
                     }
                 } finally {
                     set({ isLoading: false });
@@ -72,6 +75,9 @@ export const useAuthStore = create<AuthState>()(
 
                     if (user) {
                         set({ user, isAuthenticated: true });
+                        import('./cartStore').then(({ useCartStore }) => {
+                            useCartStore.getState().fetchCart();
+                        }).catch(() => {});
                     }
                 } finally {
                     set({ isLoading: false });
@@ -85,8 +91,14 @@ export const useAuthStore = create<AuthState>()(
                     const { user } = response.data;
                     if (user) {
                         set({ user, isAuthenticated: true });
+                        import('./cartStore').then(({ useCartStore }) => {
+                            useCartStore.getState().fetchCart();
+                        }).catch(() => {});
                     } else {
                         await get().fetchUser();
+                        import('./cartStore').then(({ useCartStore }) => {
+                            useCartStore.getState().fetchCart();
+                        }).catch(() => {});
                     }
                 } finally {
                     set({ isLoading: false });

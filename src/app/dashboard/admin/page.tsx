@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
     // Responsive Mobile Accordion States
     const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false);
     const [isFunnelExpanded, setIsFunnelExpanded] = useState(false);
-    const [isRecentOrdersExpanded, setIsRecentOrdersExpanded] = useState(true);
+    const [isRecentOrdersExpanded, setIsRecentOrdersExpanded] = useState(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
@@ -265,19 +265,19 @@ export default function AdminDashboardPage() {
                     onClick={() => setIsAnalyticsExpanded(!isAnalyticsExpanded)}
                     className="px-4 py-4 sm:px-8 sm:py-6 border-b border-inherit flex items-center justify-between cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors gap-3"
                 >
-                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                         <span className="h-px w-6 sm:w-8 bg-slate-900 dark:bg-slate-200 shrink-0" />
-                        <div>
-                            <h2 className="text-xs font-black tracking-[0.3em] sm:tracking-[0.4em] text-slate-900 dark:text-white uppercase truncate">
+                        <div className="min-w-0 pr-2">
+                            <h2 className="text-xs font-black tracking-[0.2em] sm:tracking-[0.4em] text-slate-900 dark:text-white uppercase truncate">
                                 SALES & BATCH STATUS
                             </h2>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider sm:tracking-widest mt-0.5">
                                 Performance graph and China batch cutoff
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 hidden sm:inline">
                             {isAnalyticsExpanded ? 'Compress' : 'Expand'}
                         </span>
                         <motion.div
@@ -352,19 +352,19 @@ export default function AdminDashboardPage() {
                     onClick={() => setIsFunnelExpanded(!isFunnelExpanded)}
                     className="px-4 py-4 sm:px-8 sm:py-6 border-b border-inherit flex items-center justify-between cursor-pointer select-none group/header hover:bg-slate-500/5 transition-colors gap-3"
                 >
-                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                         <span className="h-px w-6 sm:w-8 bg-slate-900 dark:bg-slate-200 shrink-0" />
-                        <div>
-                            <h2 className="text-xs font-black tracking-[0.3em] sm:tracking-[0.4em] text-slate-900 dark:text-white uppercase truncate">
+                        <div className="min-w-0 pr-2">
+                            <h2 className="text-xs font-black tracking-[0.2em] sm:tracking-[0.4em] text-slate-900 dark:text-white uppercase truncate">
                                 WHERE ORDERS ARE RIGHT NOW
                             </h2>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider sm:tracking-widest mt-0.5">
                                 Realtime pipeline and status breakdown
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 lg:hidden">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 hidden sm:inline">
                             {isFunnelExpanded ? 'Compress' : 'Expand'}
                         </span>
                         <motion.div
@@ -401,23 +401,23 @@ export default function AdminDashboardPage() {
                 <div className="p-4 sm:p-8 md:p-12 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div 
                         onClick={() => setIsRecentOrdersExpanded(!isRecentOrdersExpanded)}
-                        className="cursor-pointer select-none flex items-center justify-between md:block group/recent"
+                        className="cursor-pointer select-none flex items-center justify-between md:block group/recent min-w-0"
                     >
-                        <div>
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter">
+                        <div className="min-w-0 flex-1 pr-2">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-slate-900 dark:text-white tracking-tighter truncate">
                                     Recent Customer Orders
                                 </h2>
-                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-inherit opacity-60">
+                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-inherit opacity-60 shrink-0">
                                     {filteredOrders.length}
                                 </span>
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-400 mt-1 sm:mt-4">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-slate-400 mt-1 sm:mt-4">
                                 Latest purchases made by customers
                             </p>
                         </div>
                         <div className="flex items-center gap-2 md:hidden shrink-0">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 hidden sm:inline">
                                 {isRecentOrdersExpanded ? 'Compress' : 'Expand'}
                             </span>
                             <motion.div

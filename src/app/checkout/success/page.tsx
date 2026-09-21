@@ -13,7 +13,7 @@
         const method = searchParams.get('method');
         const clientReference = searchParams.get('client_reference');
         const { user } = useAuthStore();
-        const { clearCart } = useCartStore();
+        const { clearLocalCart } = useCartStore();
         const hasNotified = useRef(false);
         const hasVerified = useRef(false);
 
@@ -32,7 +32,7 @@
             // Trigger automatic backend confirmation/verification upon return
             if (orderNumber && !hasVerified.current) {
                 hasVerified.current = true;
-                clearCart();
+                clearLocalCart();
                 sessionStorage.removeItem('londons_checkout_delivery');
                 if (clientReference) {
                     paymentsAPI.hubtelVerify(clientReference).catch(() => {
