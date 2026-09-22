@@ -65,7 +65,7 @@ export interface Product {
     delivery_window_text?: string;
     video?: string;
     video_url?: string;
-    vendor?: { business_name: string };
+    vendor?: { id?: string; business_name: string; slug?: string; is_verified?: boolean };
     preorder_status?: string;
     variants?: DetailProductVariant[];
     stock_quantity: number;

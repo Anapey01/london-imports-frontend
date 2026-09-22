@@ -32,22 +32,22 @@ export function ProductVariantEditor({
 
     return (
         <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2.5 mb-4">
                 <input
                     type="checkbox"
                     id="hasVariants"
                     checked={hasVariants}
                     onChange={(e) => setHasVariants(e.target.checked)}
-                    className="w-4 h-4 text-pink-600 rounded border-gray-300 focus:ring-pink-500"
+                    className="w-4 h-4 text-slate-900 rounded border-slate-300 focus:ring-slate-900 dark:border-slate-700 dark:bg-slate-800"
                 />
-                <label htmlFor="hasVariants" className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                <label htmlFor="hasVariants" className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     Has Multiple Options? (Different sizes/prices)
                 </label>
             </div>
 
             {!hasVariants ? (
                 <div>
-                    <label htmlFor="price" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                    <label htmlFor="price" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                         Price (GH₵)
                     </label>
                     <input
@@ -63,9 +63,9 @@ export function ProductVariantEditor({
                 </div>
             ) : (
                 <div className="space-y-4">
-                    <div className={`p-4 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
-                        <h4 className={`text-sm font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>Product Variations</h4>
-                        <div className="space-y-3">
+                    <div className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                        <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Product Variations</h4>
+                        <div className="space-y-2.5">
                             {variants.map((variant, index) => (
                                 <div key={index} className="flex gap-2 items-start">
                                     <div className="flex-1">
@@ -78,21 +78,29 @@ export function ProductVariantEditor({
                                                 newVariants[index].name = e.target.value;
                                                 setVariants(newVariants);
                                             }}
-                                            className={`w-full px-3 py-2 text-sm rounded-lg border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border outline-none ${
+                                                isDark
+                                                    ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-400'
+                                                    : 'bg-white border-slate-200 text-slate-900 focus:border-slate-900'
+                                            }`}
                                             required
                                         />
                                     </div>
-                                    <div className="w-24">
+                                    <div className="w-28">
                                         <input
                                             type="number"
-                                            placeholder="Price"
+                                            placeholder="GH₵ Price"
                                             value={variant.price}
                                             onChange={(e) => {
                                                 const newVariants = [...variants];
                                                 newVariants[index].price = e.target.value;
                                                 setVariants(newVariants);
                                             }}
-                                            className={`w-full px-3 py-2 text-sm rounded-lg border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border outline-none ${
+                                                isDark
+                                                    ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-400'
+                                                    : 'bg-white border-slate-200 text-slate-900 focus:border-slate-900'
+                                            }`}
                                             required
                                         />
                                     </div>
@@ -105,7 +113,7 @@ export function ProductVariantEditor({
                                                 setVariants(newVariants);
                                             }
                                         }}
-                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                        className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
@@ -115,9 +123,9 @@ export function ProductVariantEditor({
                         <button
                             type="button"
                             onClick={() => setVariants([...variants, { name: '', price: '', stock_quantity: '0' }])}
-                            className="mt-3 text-sm text-pink-600 font-medium flex items-center gap-1 hover:text-pink-700"
+                            className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-colors"
                         >
-                            <Plus className="w-4 h-4" /> Add Another Option
+                            <Plus className="w-3.5 h-3.5" /> Add Another Option
                         </button>
                     </div>
                 </div>

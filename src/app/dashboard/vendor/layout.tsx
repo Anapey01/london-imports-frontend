@@ -54,8 +54,8 @@ export default function VendorDashboardLayout({
 
     if (isLoading) {
         return (
-            <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-50'}`}>
-                <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'}`}>
+                <div className="w-8 h-8 border-2 border-slate-900 dark:border-white border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -82,7 +82,7 @@ export default function VendorDashboardLayout({
                     <span className="font-semibold text-sm">Dashboard</span>
                 </div>
                 {/* User Avatar Mini */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-8 h-8 rounded-full bg-slate-900 dark:bg-slate-800 border border-slate-700/50 flex items-center justify-center text-white text-xs font-bold tracking-tight">
                     {user.first_name?.[0]}
                 </div>
             </div>

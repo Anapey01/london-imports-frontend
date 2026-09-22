@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { Store, CheckCircle2 } from 'lucide-react';
 import StarRating from '@/components/StarRating';
 import { formatPrice, cleanProductName } from '@/lib/format';
 import { Product } from '@/types/product';
@@ -12,7 +14,20 @@ export function ProductHeader({ product, currentPrice, effectiveRating }: Produc
     return (
         <div className="space-y-3">
             <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-60">Original Product / London&apos;s</span>
+                {product.vendor && product.vendor.slug ? (
+                    <Link
+                        href={`/store/${product.vendor.slug}`}
+                        className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition-colors group"
+                    >
+                        <Store className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white" />
+                        <span>Sold by {product.vendor.business_name}</span>
+                        {product.vendor.is_verified && (
+                            <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                        )}
+                    </Link>
+                ) : (
+                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-content-secondary opacity-60">Original Product / London&apos;s</span>
+                )}
                 {product.is_discreet && (
                     <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-2">
                         <div className="w-1 h-1 bg-emerald-500 rounded-full" />

@@ -5,10 +5,8 @@ import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useRouter, useParams } from 'next/navigation';
 import { productsAPI, vendorsAPI } from '@/lib/api';
-import { Upload, Loader2, Save, X, Plus, ArrowLeft } from 'lucide-react';
-import { Category, Product, ProductImage } from '../../../../../../types';
-import { getImageUrl } from '@/lib/image';
-import Image from 'next/image';
+import { Loader2, Save, ArrowLeft } from 'lucide-react';
+import { Category, Product } from '../../../../../../types';
 import { compressImage } from '@/lib/imageUtils';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
@@ -37,7 +35,6 @@ export default function EditProductPage() {
         setAlerts(prev => prev.filter(alert => alert.id !== id));
     };
 
-    // Existing data from backend
     const [product, setProduct] = useState<Product | null>(null);
 
     const [formData, setFormData] = useState({
@@ -49,11 +46,10 @@ export default function EditProductPage() {
         sizes: '',
         colors: '',
         shipping_origin: '',
-        image: null as File | null, // New main image
-        images: [] as File[], // New gallery images
+        image: null as File | null,
+        images: [] as File[],
     });
 
-    // Variants State
     const [hasVariants, setHasVariants] = useState(false);
     const [variants, setVariants] = useState<{ name: string; price: string; stock_quantity: string }[]>([
         { name: '', price: '', stock_quantity: '0' }
@@ -62,19 +58,10 @@ export default function EditProductPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch categories
                 const catRes = await productsAPI.categories();
                 setCategories(catRes.data.results || []);
 
-                // Fetch product details
                 if (productId) {
-                    // Ideally fetch single, but list works for now if detail endpoint protected/different
-                    // Wait, vendorsAPI.products() returns list. We need detail.
-                    // vendorsAPI.updateProduct(id, data) exists, but we need get.
-                    // Let's rely on public product detail or add vendor detail to API if needed.
-                    // Actually, vendorsAPI doesn't have a specific getDetail logic in frontend lib yet?
-                    // Let's try /products/vendor/products/${id}/ directly via a new method or fetch.
-                    // Optimized: Use specific Vendor Detail endpoint
                     const res = await vendorsAPI.getProduct(productId);
                     const found = res.data;
 
@@ -84,7 +71,7 @@ export default function EditProductPage() {
                             name: found.name,
                             description: found.description,
                             price: found.price,
-                            category_id: found.category?.id || found.category, // Handle populated vs ID
+                            category_id: found.category?.id || found.category,
                             preorder_status: found.preorder_status,
                             sizes: Array.isArray(found.available_sizes) ? found.available_sizes.join(', ') : '',
                             colors: Array.isArray(found.available_colors) ? found.available_colors.join(', ') : '',
@@ -93,7 +80,6 @@ export default function EditProductPage() {
                             images: []
                         });
 
-                        // Populate Variants
                         if (found.variants && found.variants.length > 0) {
                             setHasVariants(true);
                             const mapped = found.variants.map((v: { name: string, price: number, stock_quantity: number }) => ({
@@ -137,21 +123,17 @@ export default function EditProductPage() {
             const data = new FormData();
             data.append('name', formData.name);
             data.append('description', formData.description);
-            // Handle Price Logic
+
             if (hasVariants) {
-                // If has variants, validation check
                 const validVariants = variants.filter(v => v.name && v.price);
                 if (validVariants.length === 0) {
                     addAlert('Please add at least one valid option with Name and Price.', 'error');
                     setLoading(false);
                     return;
                 }
-                // Set main price to the lowest variant price for display sorting
                 const prices = validVariants.map(v => parseFloat(v.price));
                 const minPrice = Math.min(...prices);
                 data.append('price', minPrice.toString());
-
-                // Append variants JSON
                 data.append('variants_json', JSON.stringify(validVariants));
             } else {
                 if (!formData.price) {
@@ -166,7 +148,6 @@ export default function EditProductPage() {
             data.append('preorder_status', formData.preorder_status);
             data.append('shipping_origin', formData.shipping_origin);
 
-            // Variants parsing
             if (formData.sizes) {
                 const sizesArray = formData.sizes.split(',').map(s => s.trim()).filter(Boolean);
                 data.append('available_sizes', JSON.stringify(sizesArray));
@@ -176,19 +157,15 @@ export default function EditProductPage() {
                 data.append('available_colors', JSON.stringify(colorsArray));
             }
 
-            // Only append main image if changed
             if (formData.image) {
                 const compressedMain = await compressImage(formData.image);
                 data.append('image', compressedMain);
             }
 
-            // Compress Gallery Images
             if (formData.images.length > 0) {
-                // Process in parallel
                 const compressedGallery = await Promise.all(
                     formData.images.map(file => compressImage(file))
                 );
-
                 compressedGallery.forEach((file) => {
                     data.append('uploaded_images', file);
                 });
@@ -214,41 +191,51 @@ export default function EditProductPage() {
     };
 
     const isDark = theme === 'dark';
-    const inputClasses = `w-full px-4 py-3 rounded-xl border outline-none transition-all ${isDark
-        ? 'bg-slate-800 border-slate-700 text-white focus:border-pink-500'
-        : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
-        }`;
+    const inputClasses = `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all ${
+        isDark
+            ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-white/10'
+            : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10'
+    }`;
 
     if (fetching) {
-        return <div className="flex justify-center py-20"><Loader2 className="animate-spin w-8 h-8 text-pink-500" /></div>;
+        return (
+            <div className="flex justify-center items-center py-24">
+                <Loader2 className="animate-spin w-8 h-8 text-slate-900 dark:text-white" />
+            </div>
+        );
     }
 
     return (
         <div className="max-w-3xl mx-auto">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3 mb-8">
                 <Link
                     href="/dashboard/vendor/products"
-                    className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'
-                        }`}
+                    className={`p-2 rounded-xl border transition-colors ${
+                        isDark ? 'border-slate-800 hover:bg-slate-800 text-slate-400' : 'border-slate-200 hover:bg-slate-100 text-slate-600'
+                    }`}
                 >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft className="w-4 h-4" />
                 </Link>
                 <div>
-                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Edit Product</h1>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Update your product details</p>
+                    <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        Edit Product
+                    </h1>
+                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Update listing information and inventory specifications
+                    </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Basic Info */}
-                <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
-                    <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Basic Information</h3>
+                <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 shadow-sm'}`}>
+                    <h3 className={`text-base font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Basic Information</h3>
 
                     <div className="space-y-6">
                         <div>
-                            <label htmlFor="name" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Product Name
+                            <label htmlFor="name" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                Product Title
                             </label>
                             <input
                                 id="name"
@@ -262,8 +249,8 @@ export default function EditProductPage() {
                         </div>
 
                         <div>
-                            <label htmlFor="description" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                Description
+                            <label htmlFor="description" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                Detailed Description
                             </label>
                             <textarea
                                 id="description"
@@ -290,7 +277,7 @@ export default function EditProductPage() {
                             </div>
 
                             <div>
-                                <label htmlFor="category_id" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="category_id" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     Category
                                 </label>
                                 <select
@@ -309,8 +296,8 @@ export default function EditProductPage() {
                             </div>
 
                             <div>
-                                <label htmlFor="preorder_status" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                    Pre-order Status
+                                <label htmlFor="preorder_status" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                    Availability Mode
                                 </label>
                                 <select
                                     id="preorder_status"
@@ -320,8 +307,8 @@ export default function EditProductPage() {
                                     onChange={handleChange}
                                     className={inputClasses}
                                 >
-                                    <option value="PREORDER">Pre-order (Standard)</option>
-                                    <option value="READY_TO_SHIP">Available (Instant Purchase)</option>
+                                    <option value="PREORDER">Pre-order (Standard Batch)</option>
+                                    <option value="READY_TO_SHIP">Ready in Stock (Instant Purchase)</option>
                                     <option value="CLOSING_SOON">Closing Soon</option>
                                 </select>
                             </div>
@@ -329,7 +316,7 @@ export default function EditProductPage() {
 
                         <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="sizes" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="sizes" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     Available Sizes (comma-separated)
                                 </label>
                                 <input
@@ -342,7 +329,7 @@ export default function EditProductPage() {
                                 />
                             </div>
                             <div>
-                                <label htmlFor="colors" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="colors" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     Available Colors (comma-separated)
                                 </label>
                                 <input
@@ -355,7 +342,7 @@ export default function EditProductPage() {
                                 />
                             </div>
                             <div className="col-span-1 sm:col-span-2">
-                                <label htmlFor="shipping_origin" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                <label htmlFor="shipping_origin" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     Shipping Origin
                                 </label>
                                 <input
@@ -364,7 +351,7 @@ export default function EditProductPage() {
                                     name="shipping_origin"
                                     value={formData.shipping_origin}
                                     onChange={handleChange}
-                                    placeholder="e.g. China, Turkey, London"
+                                    placeholder="e.g. China, Turkey, London, Local"
                                     className={inputClasses}
                                 />
                             </div>
@@ -372,7 +359,7 @@ export default function EditProductPage() {
                     </div>
                 </div>
 
-                {/* Image Upload */}
+                {/* Imagery */}
                 <ProductImageUploader
                     productImage={product?.image || null}
                     productGallery={product?.images || []}
@@ -393,27 +380,36 @@ export default function EditProductPage() {
                     }))}
                 />
 
-                <div className="flex justify-end pt-4 gap-4">
+                {/* Form Action Controls */}
+                <div className="flex items-center justify-end gap-3 pt-2">
                     <Link
                         href="/dashboard/vendor/products"
-                        className="px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-xl transition-all"
+                        className={`px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
+                            isDark
+                                ? 'border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white'
+                                : 'border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        }`}
                     >
                         Cancel
                     </Link>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 px-8 py-4 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                            isDark
+                                ? 'bg-white text-slate-950 hover:bg-slate-100'
+                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                        }`}
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                {compressionStatus || 'Updating...'}
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span>{compressionStatus || 'Saving...'}</span>
                             </>
                         ) : (
                             <>
-                                <Save className="w-5 h-5" />
-                                Save Changes
+                                <Save className="w-4 h-4" />
+                                <span>Save Changes</span>
                             </>
                         )}
                     </button>

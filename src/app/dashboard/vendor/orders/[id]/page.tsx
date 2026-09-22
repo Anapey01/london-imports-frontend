@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { vendorsAPI } from '@/lib/api';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft, MapPin, Package, FileText, Calendar, Clock, Phone, MessageCircle, User } from 'lucide-react';
 
 interface OrderDetail {
     id: string;
@@ -12,6 +14,9 @@ interface OrderDetail {
     created_at: string;
     state: string;
     total: string;
+    customer_name?: string;
+    customer_phone?: string;
+    customer_whatsapp?: string;
     items: Array<{
         id: string;
         product_name: string;
@@ -38,7 +43,6 @@ export default function VendorOrderDetailPage() {
     useEffect(() => {
         const fetchOrder = async () => {
             try {
-                // Ensure order_number is a string
                 const orderId = Array.isArray(params.id) ? params.id[0] : params.id;
                 if (!orderId) {
                     throw new Error('Invalid order ID');
@@ -48,7 +52,6 @@ export default function VendorOrderDetailPage() {
                 setOrder(response.data);
             } catch (error) {
                 console.error('Failed to fetch order:', error);
-                // router.push('/dashboard/vendor/orders');
             } finally {
                 setLoading(false);
             }
@@ -63,11 +66,11 @@ export default function VendorOrderDetailPage() {
 
     if (loading) {
         return (
-            <div className="animate-pulse space-y-8">
-                <div className="h-10 w-64 bg-gray-200 dark:bg-gray-800 rounded" />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="md:col-span-2 h-96 bg-gray-200 dark:bg-gray-800 rounded-xl" />
-                    <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded-xl" />
+            <div className="animate-pulse space-y-6">
+                <div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 h-96 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+                    <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
                 </div>
             </div>
         );
@@ -76,62 +79,78 @@ export default function VendorOrderDetailPage() {
     if (!order) {
         return (
             <div className="text-center py-20">
-                <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
-                <p className="text-gray-500 mb-6">The requested order could not be found or you do not have permission to view it.</p>
-                <button
-                    onClick={() => router.push('/dashboard/vendor/orders')}
-                    className="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition"
+                <h2 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Order Not Found</h2>
+                <p className="text-sm text-slate-500 mb-6">The requested order could not be found or you do not have permission to inspect it.</p>
+                <Link
+                    href="/dashboard/vendor/orders"
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm ${
+                        isDark ? 'bg-white text-slate-950 hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800'
+                    }`}
                 >
-                    Back to Orders
-                </button>
+                    <ArrowLeft className="w-4 h-4" />
+                    Return to Orders
+                </Link>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <button
-                            onClick={() => router.back()}
-                            aria-label="Go back"
-                            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                        </button>
-                        <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            Order #{order.order_number}
-                        </h1>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${order.state === 'DELIVERED'
-                            ? 'bg-green-500/10 text-green-500 border-green-500/20'
-                            : order.state === 'CANCELLED'
-                                ? 'bg-red-500/10 text-red-500 border-red-500/20'
-                                : 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/dashboard/vendor/orders"
+                        className={`p-2 rounded-xl border transition-colors ${
+                            isDark ? 'border-slate-800 hover:bg-slate-800 text-slate-400' : 'border-slate-200 hover:bg-slate-100 text-slate-600'
+                        }`}
+                        aria-label="Back to Orders"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </Link>
+                    <div>
+                        <div className="flex items-center gap-2.5">
+                            <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                Order #{order.order_number}
+                            </h1>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${
+                                order.state === 'DELIVERED'
+                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                                    : order.state === 'CANCELLED'
+                                        ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                                        : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
                             }`}>
-                            {order.state.replace(/_/g, ' ')}
-                        </span>
+                                {order.state.replace(/_/g, ' ')}
+                            </span>
+                        </div>
+                        <p className={`text-xs flex items-center gap-1.5 mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            <Calendar className="w-3.5 h-3.5" />
+                            Placed on {new Date(order.created_at).toLocaleString()}
+                        </p>
                     </div>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Placed on {new Date(order.created_at).toLocaleString()}
-                    </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Order Items */}
                 <div className="md:col-span-2 space-y-6">
-                    <div className={`rounded-xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
-                        <div className={`p-6 border-b ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                            <h2 className="font-semibold text-lg">Order Items</h2>
+                    <div className={`rounded-2xl border shadow-sm overflow-hidden ${
+                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'
+                    }`}>
+                        <div className={`p-5 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                            <h2 className={`font-bold text-base ${isDark ? 'text-white' : 'text-slate-900'}`}>Purchased Items</h2>
+                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${
+                                isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600'
+                            }`}>
+                                {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
+                            </span>
                         </div>
-                        <div className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-gray-100'}`}>
+                        <div className={`divide-y ${isDark ? 'divide-slate-800/80' : 'divide-slate-100'}`}>
                             {order.items.map((item) => (
-                                <div key={item.id} className="p-6 flex gap-4 sm:gap-6">
-                                    <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-lg flex-shrink-0 relative overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
+                                <div key={item.id} className="p-5 flex gap-4 sm:gap-5 items-center">
+                                    <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl flex-shrink-0 relative overflow-hidden border ${
+                                        isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'
+                                    }`}>
                                         {item.image ? (
                                             <Image
                                                 src={item.image}
@@ -140,28 +159,26 @@ export default function VendorOrderDetailPage() {
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
+                                            <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                                <Package className="w-6 h-6 opacity-40" />
                                             </div>
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className={`font-medium mb-1 truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                        <h3 className={`font-semibold text-sm mb-1 truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                             {item.product_name}
                                         </h3>
-                                        <div className={`text-sm space-y-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                            {item.selected_size && <p>Size: {item.selected_size}</p>}
-                                            {item.selected_color && <p>Color: {item.selected_color}</p>}
-                                            <p>Qty: {item.quantity}</p>
+                                        <div className={`text-xs space-y-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                            {item.selected_size && <div>Size: <span className="font-medium">{item.selected_size}</span></div>}
+                                            {item.selected_color && <div>Color: <span className="font-medium">{item.selected_color}</span></div>}
+                                            <div>Quantity: <span className="font-medium">{item.quantity}</span></div>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <div className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                        <div className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                             GH₵ {parseFloat(item.items_total).toFixed(2)}
                                         </div>
-                                        <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                        <div className={`text-[11px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                                             GH₵ {parseFloat(item.unit_price).toFixed(2)} each
                                         </div>
                                     </div>
@@ -171,35 +188,85 @@ export default function VendorOrderDetailPage() {
                     </div>
                 </div>
 
-                {/* Side Panel: Customer & Delivery */}
+                {/* Side Panel: Delivery & Notes */}
                 <div className="space-y-6">
-                    <div className={`rounded-xl border shadow-sm p-6 space-y-6 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
+                    <div className={`rounded-2xl border shadow-sm p-6 space-y-6 ${
+                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'
+                    }`}>
+                        {/* Customer Contact */}
                         <div>
-                            <h3 className={`text-sm font-medium uppercase mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                Delivery Details
+                            <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 ${
+                                isDark ? 'text-slate-400' : 'text-slate-600'
+                            }`}>
+                                <User className="w-4 h-4 text-slate-400" />
+                                Customer Contact
                             </h3>
-                            <div className="space-y-3">
-                                <div className="flex gap-3">
-                                    <svg className="w-5 h-5 text-pink-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <div className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                                        <p className="font-medium">Delivery Address</p>
-                                        <p>{order.delivery_address}</p>
-                                        <p>{order.delivery_city}, {order.delivery_region}</p>
+                            <div className={`p-4 rounded-xl border text-sm space-y-2.5 ${
+                                isDark ? 'bg-slate-800/60 border-slate-700/60 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                            }`}>
+                                <p className="font-semibold">{order.customer_name || 'Customer'}</p>
+                                {(order.customer_phone || order.customer_whatsapp) ? (
+                                    <div className="flex flex-wrap gap-2 pt-1">
+                                        {order.customer_phone && (
+                                            <a
+                                                href={`tel:${order.customer_phone}`}
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                                                    isDark
+                                                        ? 'bg-slate-800 border-slate-700 hover:bg-slate-700 text-white'
+                                                        : 'bg-white border-slate-200 hover:bg-slate-100 text-slate-900 shadow-xs'
+                                                }`}
+                                            >
+                                                <Phone className="w-3.5 h-3.5 text-slate-500" />
+                                                Call {order.customer_phone}
+                                            </a>
+                                        )}
+                                        {(order.customer_whatsapp || order.customer_phone) && (
+                                            <a
+                                                href={`https://wa.me/${(order.customer_whatsapp || order.customer_phone || '').replace(/[^0-9]/g, '')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+                                            >
+                                                <MessageCircle className="w-3.5 h-3.5" />
+                                                WhatsApp
+                                            </a>
+                                        )}
                                     </div>
-                                </div>
+                                ) : (
+                                    <p className="text-xs text-slate-400">Phone not provided</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className={`text-xs font-bold uppercase tracking-wider mb-4 flex items-center gap-2 ${
+                                isDark ? 'text-slate-400' : 'text-slate-600'
+                            }`}>
+                                <MapPin className="w-4 h-4 text-emerald-500" />
+                                Delivery Destination
+                            </h3>
+                            <div className={`p-4 rounded-xl border text-sm space-y-1.5 ${
+                                isDark ? 'bg-slate-800/60 border-slate-700/60 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                            }`}>
+                                <p className="font-medium">{order.delivery_address || 'Standard Delivery'}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    {order.delivery_city}{order.delivery_city && order.delivery_region ? ', ' : ''}{order.delivery_region}
+                                </p>
                             </div>
                         </div>
 
                         {order.customer_notes && (
-                            <div className={`pt-6 border-t ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                                <h3 className={`text-sm font-medium uppercase mb-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                    Customer Notes
+                            <div className={`pt-6 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                                <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 ${
+                                    isDark ? 'text-slate-400' : 'text-slate-600'
+                                }`}>
+                                    <FileText className="w-4 h-4 text-slate-400" />
+                                    Customer Instructions
                                 </h3>
-                                <p className={`text-sm italic ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                                    &quot;{order.customer_notes}&quot;
+                                <p className={`text-xs italic p-3.5 rounded-xl border ${
+                                    isDark ? 'bg-slate-800/40 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200/80 text-slate-600'
+                                }`}>
+                                    &ldquo;{order.customer_notes}&rdquo;
                                 </p>
                             </div>
                         )}

@@ -15,12 +15,11 @@ import { ProductFormData, ProductVariant } from '@/types/product';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
 
-
 export default function AddProductPage() {
     const { theme } = useTheme();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [compressionStatus, setCompressionStatus] = useState<string>(''); // To show user what's happening
+    const [compressionStatus, setCompressionStatus] = useState<string>('');
     const [categories, setCategories] = useState<Category[]>([]);
 
     const [alerts, setAlerts] = useState<Array<{ id: string; message: string; type: AlertType }>>([]);
@@ -42,7 +41,7 @@ export default function AddProductPage() {
         preorder_status: 'PREORDER',
         sizes: '',
         colors: '',
-        shipping_origin: 'China', // Default to China
+        shipping_origin: 'China',
         image: null,
         images: [],
     });
@@ -54,7 +53,6 @@ export default function AddProductPage() {
     ]);
 
     useEffect(() => {
-        // Fetch categories for dropdown
         const fetchCategories = async () => {
             try {
                 const res = await productsAPI.categories();
@@ -86,21 +84,18 @@ export default function AddProductPage() {
             const data = new FormData();
             data.append('name', formData.name);
             data.append('description', formData.description);
-            // Handle Price Logic
+
+            // Price Logic
             if (hasVariants) {
-                // If has variants, validation check
                 const validVariants = variants.filter(v => v.name && v.price);
                 if (validVariants.length === 0) {
                     addAlert('Please add at least one valid option with Name and Price.', 'error');
                     setLoading(false);
                     return;
                 }
-                // Set main price to the lowest variant price for display sorting
                 const prices = validVariants.map(v => parseFloat(v.price));
                 const minPrice = Math.min(...prices);
                 data.append('price', minPrice.toString());
-
-                // Append variants JSON
                 data.append('variants_json', JSON.stringify(validVariants));
             } else {
                 if (!formData.price) {
@@ -111,11 +106,10 @@ export default function AddProductPage() {
                 data.append('price', formData.price);
             }
 
-            data.append('category', formData.category_id); // Backend expects ID or slug? Usually ID for Create
+            data.append('category', formData.category_id);
             data.append('preorder_status', formData.preorder_status);
             data.append('shipping_origin', formData.shipping_origin);
 
-            // Variants parsing
             if (formData.sizes) {
                 const sizesArray = formData.sizes.split(',').map(s => s.trim()).filter(Boolean);
                 data.append('available_sizes', JSON.stringify(sizesArray));
@@ -125,21 +119,17 @@ export default function AddProductPage() {
                 data.append('available_colors', JSON.stringify(colorsArray));
             }
 
-            data.append('is_active', 'true'); // Explicitly force Active status
+            data.append('is_active', 'true');
 
-            // Compress Main Image
             if (formData.image) {
                 const compressedMain = await compressImage(formData.image);
                 data.append('image', compressedMain);
             }
 
-            // Compress Gallery Images
             if (formData.images.length > 0) {
-                // Process in parallel
                 const compressedGallery = await Promise.all(
                     formData.images.map(file => compressImage(file))
                 );
-
                 compressedGallery.forEach((file) => {
                     data.append('uploaded_images', file);
                 });
@@ -156,7 +146,7 @@ export default function AddProductPage() {
                 message?: string;
             }
             const err = error as ApiError;
-                const errorMessage = err.response?.data?.detail ||
+            const errorMessage = err.response?.data?.detail ||
                 (err.response?.data ? JSON.stringify(err.response.data) : null) ||
                 err.message ||
                 'Failed to create product.';
@@ -167,29 +157,35 @@ export default function AddProductPage() {
     };
 
     const isDark = theme === 'dark';
-    const inputClasses = `w-full px-4 py-3 rounded-xl border outline-none transition-all ${isDark
-        ? 'bg-slate-800 border-slate-700 text-white focus:border-pink-500'
-        : 'bg-white border-gray-200 text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-100'
-        }`;
+    const inputClasses = `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all ${
+        isDark
+            ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-white/10'
+            : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10'
+    }`;
 
     return (
         <div className="max-w-3xl mx-auto">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3 mb-8">
                 <Link
                     href="/dashboard/vendor/products"
-                    className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-500'
-                        }`}
+                    className={`p-2 rounded-xl border transition-colors ${
+                        isDark ? 'border-slate-800 hover:bg-slate-800 text-slate-400' : 'border-slate-200 hover:bg-slate-100 text-slate-600'
+                    }`}
                 >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft className="w-4 h-4" />
                 </Link>
                 <div>
-                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Add New Product</h1>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Create a new product listing</p>
+                    <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        Add New Product
+                    </h1>
+                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Create and publish an item to your storefront catalog
+                    </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <ProductBasicInfo
                     formData={formData}
                     handleChange={handleChange}
@@ -216,22 +212,36 @@ export default function AddProductPage() {
                     isDark={isDark}
                 />
 
-                {/* Submit */}
-                <div className="flex justify-end pt-4">
+                {/* Form Action Controls */}
+                <div className="flex items-center justify-end gap-3 pt-2">
+                    <Link
+                        href="/dashboard/vendor/products"
+                        className={`px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
+                            isDark
+                                ? 'border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white'
+                                : 'border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        }`}
+                    >
+                        Cancel
+                    </Link>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 px-8 py-4 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                            isDark
+                                ? 'bg-white text-slate-950 hover:bg-slate-100'
+                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                        }`}
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                {compressionStatus || 'Creating...'}
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span>{compressionStatus || 'Publishing...'}</span>
                             </>
                         ) : (
                             <>
-                                <Save className="w-5 h-5" />
-                                Publish Product
+                                <Save className="w-4 h-4" />
+                                <span>Publish Listing</span>
                             </>
                         )}
                     </button>
