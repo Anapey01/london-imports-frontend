@@ -99,17 +99,17 @@ export default function SellPage() {
                             <Briefcase className="w-8 h-8" strokeWidth={1.5} />
                         </div>
 
-                        <h3 className="text-3xl font-medium mb-4">Strategic Partner</h3>
+                        <h3 className="text-3xl font-medium mb-4">Branded Partner</h3>
                         <p className={`text-lg mb-8 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            For established businesses. Get your own branded storefront, 100% payment control via Paystack, and &quot;Auto-Verified&quot; status.
+                            For established brands. Get your own dedicated branded storefront (/store/your-brand), verified badge, and guaranteed escrow payouts.
                         </p>
 
                         <ul className="space-y-4 mb-10">
                             {[
-                                'Dedicated Branded Storefront',
-                                'Direct Payments (Your Paystack)',
-                                'Verified Partner Badge',
-                                'Zero listing fees'
+                                'Dedicated Branded Storefront URL',
+                                'Custom brand colors & banner styling',
+                                'Verified Partner Trust Badge',
+                                'Automated Mobile Money & Bank Payouts'
                             ].map((item, i) => (
                                 <li key={i} className="flex items-start gap-3">
                                     <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? 'text-purple-500' : 'text-purple-600'}`} strokeWidth={2} />
@@ -120,14 +120,14 @@ export default function SellPage() {
 
                         <div className="space-y-4">
                             <Link
-                                href="/register/partner"
+                                href="/register/seller"
                                 className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-white font-medium bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transition-all shadow-lg shadow-purple-600/20 active:scale-[0.98]"
                             >
-                                Become a Partner
+                                Apply for Branded Store
                                 <ArrowRight className="w-5 h-5" />
                             </Link>
                             <Link
-                                href="/login?role=partner&redirect=/dashboard/vendor"
+                                href="/login?role=vendor&redirect=/dashboard/vendor"
                                 className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-medium border transition-all active:scale-[0.98] ${isDark
                                     ? 'border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
                                     : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900'

@@ -39,7 +39,6 @@ export default function AdminVendorsPage() {
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('ALL');
-    const [typeFilter, setTypeFilter] = useState('ALL');
     const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -149,10 +148,9 @@ export default function AdminVendorsPage() {
 
     const filteredVendors = vendors.filter(vendor => {
         const matchesStatus = statusFilter === 'ALL' || vendor.status === statusFilter;
-        const matchesType = typeFilter === 'ALL' || vendor.vendor_type === typeFilter;
         const matchesSearch = vendor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                              vendor.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesStatus && matchesType && matchesSearch;
+        return matchesStatus && matchesSearch;
     });
 
     const pendingCount = vendors.filter(v => v.status === 'PENDING').length;
@@ -222,25 +220,6 @@ export default function AdminVendorsPage() {
                         </button>
                     ))}
                 </div>
-
-                <div className="flex gap-4 border-l border-slate-100 pl-4">
-                    {[
-                        { key: 'ALL', label: 'ALL PARTNERS' },
-                        { key: 'MARKETPLACE', label: 'MARKETPLACE VENDORS' },
-                        { key: 'STANDALONE', label: 'OFFICIAL PARTNERS' },
-                    ].map((filter) => (
-                        <button
-                            key={filter.key}
-                            onClick={() => setTypeFilter(filter.key)}
-                            className={`text-[9px] font-black uppercase tracking-[0.3em] transition-all ${typeFilter === filter.key
-                                ? 'text-slate-950 underline underline-offset-8'
-                                : 'text-slate-300 hover:text-slate-900'
-                                }`}
-                        >
-                            {filter.label}
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* 3. MASTER REGISTRY TABLE */}
@@ -284,7 +263,7 @@ export default function AdminVendorsPage() {
                         <div className="flex justify-between items-start">
                             <div className="space-y-4">
                                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 bg-slate-50 px-3 py-1">
-                                    {selectedVendor.vendor_type === 'STANDALONE' ? 'OFFICIAL PARTNER PROFILE' : 'MARKETPLACE VENDOR PROFILE'}
+                                    MERCHANT PROFILE
                                 </span>
                                 <h3 className="text-3xl font-serif font-bold text-slate-950 tracking-tighter">{selectedVendor.business_name}</h3>
                             </div>
@@ -318,21 +297,20 @@ export default function AdminVendorsPage() {
                             </div>
                         </div>
 
-                        {selectedVendor.vendor_type === 'STANDALONE' && selectedVendor.documents && (
+                        {selectedVendor.documents && (
                             <div className="border-t border-slate-100 pt-12 space-y-6">
                                 <h4 className="text-[10px] font-black text-slate-950 uppercase tracking-[0.4em]">Document Verification</h4>
                                 <div className="grid grid-cols-1 gap-px bg-slate-100 border border-slate-100">
                                     {[
                                         { label: 'NATIONAL ID (GHANA CARD)', value: selectedVendor.documents.ghana_card },
-                                        { label: 'REGISTRATION CERTIFICATE', value: selectedVendor.documents.business_cert },
-                                        { label: 'PAYMENT SETUP (PAYSTACK)', value: selectedVendor.documents.has_paystack, isBool: true }
+                                        { label: 'REGISTRATION CERTIFICATE', value: selectedVendor.documents.business_cert }
                                     ].map((doc, idx) => (
                                         <div key={idx} className="flex items-center justify-between p-6 bg-white">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{doc.label}</span>
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-1.5 h-1.5 rounded-full ${(doc.isBool ? doc.value : !!doc.value) ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                                                <div className={`w-1.5 h-1.5 rounded-full ${doc.value ? 'bg-emerald-500' : 'bg-slate-200'}`} />
                                                 <span className="text-[10px] font-black uppercase tracking-widest">
-                                                    {(doc.isBool ? doc.value : !!doc.value) ? 'VERIFIED' : 'WAITING FOR DOCS'}
+                                                    {doc.value ? 'PROVIDED' : 'NOT PROVIDED'}
                                                 </span>
                                             </div>
                                         </div>
@@ -421,7 +399,7 @@ const VendorRow = React.memo(({
                     </div>
                     <div className="min-w-0">
                         <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">{vendor.business_name}</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic">TYPE: {vendor.vendor_type}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic">{vendor.city}, {vendor.region}</p>
                     </div>
                 </div>
             </td>
