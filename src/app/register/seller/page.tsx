@@ -1,6 +1,6 @@
 /**
- * London's Imports - Vendor Registration Page
- * Multi-step form for business owners to apply as vendors
+ * London's Imports - Merchant Registration
+ * Multi-step onboarding for merchants with unified escrow payouts
  */
 'use client';
 
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
 import { authAPI } from '@/lib/api';
+import { ArrowLeft, ArrowRight, Check, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 
 import { AccountStep } from '@/components/register/AccountStep';
 import { BusinessStep } from '@/components/register/BusinessStep';
@@ -15,42 +16,11 @@ import { LocationStep } from '@/components/register/LocationStep';
 import { BankStep } from '@/components/register/BankStep';
 import { VendorFormData } from '@/types/vendor';
 
-// SVG Icons for steps
-const StepIcons = {
-    // ... existing icons ...
-    account: (color: string) => (
-        <svg className="w-6 h-6" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-    ),
-    business: (color: string) => (
-        <svg className="w-6 h-6" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-    ),
-    location: (color: string) => (
-        <svg className="w-6 h-6" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-    ),
-    bank: (color: string) => (
-        <svg className="w-6 h-6" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-        </svg>
-    ),
-    check: (color: string) => (
-        <svg className="w-6 h-6" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-    ),
-};
-
-const steps = [
-    { id: 1, name: 'Account', iconKey: 'account' as const },
-    { id: 2, name: 'Business', iconKey: 'business' as const },
-    { id: 3, name: 'Location', iconKey: 'location' as const },
-    { id: 4, name: 'Bank', iconKey: 'bank' as const },
+const STEPS = [
+    { id: 1, name: 'Account' },
+    { id: 2, name: 'Business' },
+    { id: 3, name: 'Location' },
+    { id: 4, name: 'Payouts' },
 ];
 
 export default function VendorRegisterPage() {
@@ -72,6 +42,8 @@ export default function VendorRegisterPage() {
         business_name: '',
         description: '',
         whatsapp: '',
+        ghana_card_number: '',
+        business_certificate_number: '',
         // Location
         city: '',
         region: '',
@@ -87,11 +59,11 @@ export default function VendorRegisterPage() {
         setError('');
     };
 
-    const validateStep = () => {
+    const validateStep = (): boolean => {
         switch (currentStep) {
             case 1:
-                if (!formData.first_name || !formData.last_name || !formData.email || !formData.phone || !formData.password) {
-                    setError('Please fill in all required fields');
+                if (!formData.first_name.trim() || !formData.last_name.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.password) {
+                    setError('Please fill in all required personal details');
                     return false;
                 }
                 if (formData.password !== formData.password_confirm) {
@@ -104,20 +76,20 @@ export default function VendorRegisterPage() {
                 }
                 break;
             case 2:
-                if (!formData.business_name) {
-                    setError('Business name is required');
+                if (!formData.business_name.trim()) {
+                    setError('Store / Business name is required');
                     return false;
                 }
                 break;
             case 3:
-                if (!formData.city || !formData.region) {
-                    setError('City and region are required');
+                if (!formData.region || !formData.city.trim()) {
+                    setError('Region and City are required');
                     return false;
                 }
                 break;
             case 4:
-                if (!formData.bank_name || !formData.bank_account_number || !formData.bank_account_name) {
-                    setError('All bank details are required for payouts');
+                if (!formData.bank_name || !formData.bank_account_number.trim() || !formData.bank_account_name.trim()) {
+                    setError('All payout and banking details are required');
                     return false;
                 }
                 break;
@@ -127,13 +99,14 @@ export default function VendorRegisterPage() {
 
     const nextStep = () => {
         if (validateStep()) {
+            setError('');
             setCurrentStep(prev => Math.min(prev + 1, 4));
         }
     };
 
     const prevStep = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 1));
         setError('');
+        setCurrentStep(prev => Math.max(prev - 1, 1));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -144,184 +117,208 @@ export default function VendorRegisterPage() {
         setError('');
 
         try {
-            // Map frontend fields to backend API fields
+            const cleanEmail = formData.email.toLowerCase().trim();
             const payload = {
-                username: formData.email.split('@')[0] + Math.floor(Math.random() * 1000),
-                email: formData.email,
+                username: cleanEmail,
+                email: cleanEmail,
                 password: formData.password,
                 password_confirm: formData.password_confirm,
-                first_name: formData.first_name,
-                last_name: formData.last_name,
-                phone: formData.phone,
-                business_name: formData.business_name,
-                business_phone: formData.phone,
-                business_city: formData.city,
+                first_name: formData.first_name.trim(),
+                last_name: formData.last_name.trim(),
+                phone: formData.phone.trim(),
+                business_name: formData.business_name.trim(),
+                business_phone: formData.phone.trim(),
+                business_city: formData.city.trim(),
                 business_region: formData.region,
-                business_address: formData.address,
-                description: formData.description,
-                whatsapp: formData.whatsapp,
+                business_address: formData.address.trim(),
+                description: formData.description.trim(),
+                whatsapp: formData.whatsapp.trim(),
+                ghana_card_number: (formData.ghana_card_number || '').trim().toUpperCase(),
+                business_certificate_number: (formData.business_certificate_number || '').trim(),
                 bank_name: formData.bank_name,
-                bank_account_number: formData.bank_account_number,
-                bank_account_name: formData.bank_account_name,
+                bank_account_number: formData.bank_account_number.trim(),
+                bank_account_name: formData.bank_account_name.trim(),
             };
 
             await authAPI.registerVendor(payload);
             setSuccess(true);
         } catch (err: unknown) {
             console.error('Registration Error:', err);
-            const error = err as { response?: { data?: Record<string, string | string[]> }, message?: string };
-            const errors = error.response?.data;
-            if (errors) {
-                const firstError = Object.values(errors)[0];
+            const errorObj = err as { response?: { data?: Record<string, string | string[]> }, message?: string };
+            const errors = errorObj.response?.data;
+            if (errors && typeof errors === 'object') {
+                const firstKey = Object.keys(errors)[0];
+                const firstError = errors[firstKey];
                 const message = Array.isArray(firstError) ? firstError[0] : String(firstError);
                 setError(message);
-                console.error('Validation Errors:', errors);
-            } else if (error.message === 'Network Error') {
-                setError('Unable to connect to server. Ensure backend is running locally.');
+            } else if (errorObj.message === 'Network Error') {
+                setError('Unable to reach server. Please check your connection.');
             } else {
-                setError(error.message || 'Registration failed. Please try again.');
+                setError(errorObj.message || 'Registration failed. Please review your entries and try again.');
             }
         } finally {
             setIsSubmitting(false);
         }
     };
 
-
-
     if (success) {
         return (
-            <div className={`min-h-screen flex items-center justify-center py-12 px-4 ${theme === 'dark' ? 'bg-slate-950' : 'bg-gray-50'}`}>
-                <div className="max-w-md w-full text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center bg-green-100">
-                        <svg className="w-10 h-10" fill="none" stroke="#22c55e" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
+                <div className="max-w-md w-full text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 sm:p-10 shadow-sm">
+                    <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h1 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-slate-50' : 'text-gray-900'}`}>
-                        Application Submitted!
+                    <h1 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-2">
+                        Application Submitted
                     </h1>
-                    <p className={`mb-6 ${theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}`}>
-                        Thank you for applying to become a vendor. Our team will review your application and contact you within 2-3 business days.
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                        Thank you for applying to sell on London&apos;s Imports. Your merchant profile is in the verification queue. Our team reviews compliance documents within 1-2 business days.
                     </p>
-                    <Link
-                        href="/"
-                        className="inline-block px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500"
-                    >
-                        Return Home
-                    </Link>
+                    <div className="space-y-3">
+                        <Link
+                            href="/"
+                            className="block w-full py-3 px-4 rounded-xl text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition-all shadow-sm"
+                        >
+                            Return to Store
+                        </Link>
+                        <Link
+                            href="/login?role=vendor&redirect=/dashboard/vendor"
+                            className="block w-full py-3 px-4 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                        >
+                            Log in to Portal
+                        </Link>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className={`min-h-screen transition-colors ${theme === 'dark' ? 'bg-slate-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
-            {/* Ambient Background */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 ${theme === 'dark' ? 'bg-purple-900' : 'bg-pink-300'}`} />
-                <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 ${theme === 'dark' ? 'bg-pink-900' : 'bg-purple-300'}`} />
-            </div>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl mx-auto space-y-8">
+                {/* Header */}
+                <div>
+                    <Link
+                        href="/sell"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors mb-4"
+                    >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        Back to Overview
+                    </Link>
+                    <h1 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-white tracking-tight">
+                        Merchant Enrollment
+                    </h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                        Complete the 4 steps below to set up your store and start selling.
+                    </p>
+                </div>
 
-            <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-3xl mx-auto">
-                    {/* Header */}
-                    <div className="text-center mb-10">
-                        <Link href="/sell" className="inline-flex items-center text-sm text-gray-500 hover:text-pink-600 mb-6 transition-colors">
-                            ← Back to Options
-                        </Link>
-                        <h1 className="text-4xl sm:text-5xl font-light mb-4">
-                            Join Marketplace
-                        </h1>
-                        <p className={`text-lg ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'}`}>
-                            Start selling your products on our main marketplace feed.
-                        </p>
-                    </div>
-
-                    {/* Progress Steps */}
-                    <div className="flex justify-between mb-10 px-4 md:px-12">
-                        {steps.map((step) => {
+                {/* Progress Stepper */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+                    <div className="flex items-center justify-between relative">
+                        {/* Connecting Line */}
+                        <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-100 dark:bg-slate-800 -z-0" />
+                        
+                        {STEPS.map((step) => {
                             const isCompleted = currentStep > step.id;
-                            const isActive = currentStep >= step.id;
-                            const iconColor = isActive ? '#ffffff' : (theme === 'dark' ? '#94a3b8' : '#6b7280');
+                            const isActive = currentStep === step.id;
 
                             return (
-                                <div key={step.id} className="flex flex-col items-center">
+                                <div key={step.id} className="relative z-10 flex flex-col items-center">
                                     <div
-                                        className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 transition-all shadow-lg ${isActive ? 'bg-gradient-to-br from-pink-500 to-rose-600 scale-110' : (theme === 'dark' ? 'bg-slate-800' : 'bg-white')}`}
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                            isCompleted
+                                                ? 'bg-emerald-600 text-white'
+                                                : isActive
+                                                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 ring-4 ring-slate-100 dark:ring-slate-800'
+                                                : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
+                                        }`}
                                     >
-                                        {isCompleted ? StepIcons.check(iconColor) : StepIcons[step.iconKey](iconColor)}
+                                        {isCompleted ? <Check className="w-4 h-4 stroke-[3]" /> : step.id}
                                     </div>
-                                    <span className={`text-xs font-medium hidden sm:block ${isActive ? 'text-pink-600' : 'text-gray-500'}`}>
+                                    <span
+                                        className={`text-[11px] font-semibold tracking-wider uppercase mt-2 hidden sm:block ${
+                                            isActive
+                                                ? 'text-slate-900 dark:text-white'
+                                                : isCompleted
+                                                ? 'text-emerald-600 dark:text-emerald-400'
+                                                : 'text-slate-400 dark:text-slate-500'
+                                        }`}
+                                    >
                                         {step.name}
                                     </span>
                                 </div>
                             );
                         })}
                     </div>
+                </div>
 
-                    {/* Form Card */}
-                    <div className={`rounded-[2rem] p-8 sm:p-10 border transition-all ${theme === 'dark'
-                        ? 'bg-slate-900/50 border-slate-800 backdrop-blur-xl'
-                        : 'bg-white/80 border-gray-100 shadow-2xl shadow-gray-200/50 backdrop-blur-xl'
-                        }`}>
-                        <form onSubmit={handleSubmit}>
-                            {error && (
-                                <div className="mb-6 px-4 py-3 rounded-xl text-sm bg-red-50 text-red-600 border border-red-100 flex items-center gap-2">
-                                    <span className="font-bold">Error:</span> {error}
-                                </div>
-                            )}
+                {/* Main Form Container */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-sm">
+                    {/* Error Banner */}
+                    {error && (
+                        <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 flex items-start gap-3 text-sm text-red-700 dark:text-red-400">
+                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                            <span>{error}</span>
+                        </div>
+                    )}
 
-                            {/* Form Steps */}
-                            {currentStep === 1 && (
-                                <AccountStep formData={formData} handleChange={handleChange} theme={theme} />
-                            )}
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* Step Form Render */}
+                        {currentStep === 1 && (
+                            <AccountStep formData={formData} handleChange={handleChange} theme={theme} />
+                        )}
+                        {currentStep === 2 && (
+                            <BusinessStep formData={formData} handleChange={handleChange} theme={theme} />
+                        )}
+                        {currentStep === 3 && (
+                            <LocationStep formData={formData} handleChange={handleChange} theme={theme} />
+                        )}
+                        {currentStep === 4 && (
+                            <BankStep formData={formData} handleChange={handleChange} theme={theme} />
+                        )}
 
-                            {currentStep === 2 && (
-                                <BusinessStep formData={formData} handleChange={handleChange} theme={theme} />
-                            )}
-
-                            {currentStep === 3 && (
-                                <LocationStep formData={formData} handleChange={handleChange} theme={theme} />
-                            )}
-
-                            {currentStep === 4 && (
-                                <BankStep formData={formData} handleChange={handleChange} theme={theme} />
-                            )}
-
-                            {/* Buttons */}
-                            <div className={`flex justify-between mt-10 pt-6 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-slate-100'}`}>
-                                {currentStep > 1 ? (
-                                    <button
-                                        type="button"
-                                        onClick={prevStep}
-                                        className={`px-6 py-3 rounded-xl font-medium transition-all hover:bg-opacity-80 active:scale-95 ${theme === 'dark' ? 'bg-slate-800 text-white' : 'bg-gray-100 text-gray-700'}`}
-                                    >
-                                        ← Back
-                                    </button>
-                                ) : (
-                                    <Link
-                                        href="/sell"
-                                        className={`px-6 py-3 rounded-xl font-medium transition-all hover:bg-opacity-80 active:scale-95 ${theme === 'dark' ? 'bg-slate-800 text-white' : 'bg-gray-100 text-gray-700'}`}
-                                    >
-                                        Cancel
-                                    </Link>
-                                )}
-
+                        {/* Navigation Buttons */}
+                        <div className="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-800">
+                            {currentStep > 1 ? (
                                 <button
-                                    type={currentStep === 4 ? 'submit' : 'button'}
-                                    onClick={currentStep === 4 ? undefined : nextStep}
-                                    disabled={isSubmitting}
-                                    className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 shadow-lg shadow-pink-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                                    type="button"
+                                    onClick={prevStep}
+                                    className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
                                 >
-                                    {currentStep === 4 ? (isSubmitting ? 'Submitting...' : 'Submit Application') : 'Next Step →'}
+                                    Previous
                                 </button>
-                            </div>
-                        </form>
-                    </div>
+                            ) : (
+                                <div />
+                            )}
 
-                    <div className={`mt-8 text-center text-sm ${theme === 'dark' ? 'text-slate-500' : 'text-gray-400'}`}>
-                        Already have an account? <Link href="/login?role=vendor&redirect=/dashboard/vendor" className="text-pink-600 hover:underline">Log in</Link>
-                    </div>
+                            {currentStep < 4 ? (
+                                <button
+                                    type="button"
+                                    onClick={nextStep}
+                                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition-all shadow-sm active:scale-[0.99]"
+                                >
+                                    Next Step
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
+                            ) : (
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition-all shadow-sm active:scale-[0.99] disabled:opacity-50"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Submitting...
+                                        </>
+                                    ) : (
+                                        'Submit Application'
+                                    )}
+                                </button>
+                            )}
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

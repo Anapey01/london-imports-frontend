@@ -10,6 +10,8 @@ export interface VendorFormData {
     business_name: string;
     description: string;
     whatsapp: string;
+    ghana_card_number?: string;
+    business_certificate_number?: string;
     // Location
     city: string;
     region: string;
