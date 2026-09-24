@@ -11,13 +11,6 @@ import { useToast } from '@/components/Toast';
 import Image from 'next/image';
 import { Store, Upload, Save, User, Palette, Image as ImageIcon, CreditCard, Loader2, Check } from 'lucide-react';
 
-const COLOR_PRESETS = [
-    { label: 'Slate', value: '#0f172a' },
-    { label: 'Emerald', value: '#065f46' },
-    { label: 'Navy', value: '#1e293b' },
-    { label: 'Charcoal', value: '#27272a' }
-];
-
 const MOMO_PROVIDERS = [
     'MTN Mobile Money',
     'Telecel Cash',
@@ -460,57 +453,8 @@ export default function VendorSettingsPage() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                    Brand Theme Accent
-                                </label>
-                                <div className="flex flex-wrap items-center gap-2 mb-3">
-                                    {COLOR_PRESETS.map((preset) => (
-                                        <button
-                                            key={preset.value}
-                                            type="button"
-                                            onClick={() => setFormData({
-                                                ...formData,
-                                                store_config: { ...formData.store_config, primary_color: preset.value }
-                                            })}
-                                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
-                                                formData.store_config.primary_color === preset.value
-                                                    ? isDark
-                                                        ? 'bg-slate-800 border-white/40 text-white shadow-xs'
-                                                        : 'bg-slate-100 border-slate-900 text-slate-900 shadow-xs'
-                                                    : isDark
-                                                        ? 'border-slate-800 text-slate-400 hover:text-white'
-                                                        : 'border-slate-200 text-slate-600 hover:text-slate-900'
-                                            }`}
-                                        >
-                                            <span
-                                                className="w-3 h-3 rounded-full border border-black/10 shadow-xs"
-                                                style={{ backgroundColor: preset.value }}
-                                            />
-                                            {preset.label}
-                                        </button>
-                                    ))}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs">
-                                    <input
-                                        id="primary_color"
-                                        type="color"
-                                        value={formData.store_config.primary_color}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            store_config: { ...formData.store_config, primary_color: e.target.value }
-                                        })}
-                                        className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 overflow-hidden bg-transparent"
-                                        title="Custom Color"
-                                    />
-                                    <span className={`font-mono text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                                        Custom: {formData.store_config.primary_color}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div>
                                 <label htmlFor="banner_text" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                    Storefront Slogan
+                                    Storefront Slogan / Subtitle
                                 </label>
                                 <input
                                     id="banner_text"
@@ -523,6 +467,17 @@ export default function VendorSettingsPage() {
                                     placeholder="e.g. London-curated luxury accessories"
                                     className={inputClass}
                                 />
+                            </div>
+
+                            <div className={`p-4 rounded-xl border text-xs leading-relaxed ${
+                                isDark ? 'bg-slate-800/40 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200/80 text-slate-500'
+                            }`}>
+                                <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                                    Official Editorial Branding
+                                </p>
+                                <p>
+                                    Your public boutique automatically adopts London&apos;s Imports authentic editorial schema and verified trust badges for high-converting customer confidence.
+                                </p>
                             </div>
                         </div>
                     </div>
