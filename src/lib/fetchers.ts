@@ -71,21 +71,22 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
 
         const data = await res.json();
         
-        // Final Gatekeeper: Archive Exclusion Filter
-        if (process.env.NODE_ENV === 'production' && data.results) {
+        // Gatekeeper: Purge test artifacts & mock items from all feeds
+        if (data.results) {
             const originalCount = data.results.length;
-            data.results = data.results.filter((product: { name?: string; image?: string; is_discreet?: boolean }) => {
+            data.results = data.results.filter((product: { name?: string; slug?: string; image?: string; is_discreet?: boolean }) => {
                 const name = (product.name || '').toLowerCase();
-                const hasImage = !!product.image;
-                const isTestProduct = name === 'shoe' || name === 'test';
+                const slug = (product.slug || '').toLowerCase();
+                const isTestProduct = name.includes('test') || slug.includes('test') || name === 'shoe' || slug === 'shoe';
                 
-                // Exclude if it's a known placeholder name OR has no image in production
-                // OR if it's a discreet item (Privacy Gatekeeper)
-                return !isTestProduct && hasImage && !product.is_discreet;
+                // Exclude if it's a test placeholder OR if it's a discreet item
+                if (isTestProduct || product.is_discreet) return false;
+                if (process.env.NODE_ENV === 'production' && !product.image) return false;
+                return true;
             });
             
             if (data.results.length !== originalCount) {
-                console.log(`[SSR] Archive Filter: Purged ${originalCount - data.results.length} test artifacts from the production feed.`);
+                console.log(`[SSR] Archive Filter: Purged ${originalCount - data.results.length} test artifacts from the feed.`);
             }
         }
 
@@ -171,7 +172,10 @@ export async function getCategories(revalidate = 86400) {
             throw new Error(`Failed to fetch categories: ${res.status} ${res.statusText}`);
         }
         const data = await res.json();
-        return data.results || data;
+        const cats = data.results || data;
+        return Array.isArray(cats)
+            ? cats.filter((cat: any) => cat.is_active !== false && !cat.slug?.includes('test') && !cat.name?.toLowerCase().includes('test'))
+            : [];
     } catch (error) {
         console.error("Error fetching categories:", error);
         if (isBuilding()) {

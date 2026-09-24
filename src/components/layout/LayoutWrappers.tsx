@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import ConciergeDrawer from '@/components/assistant/ConciergeDrawer';
 
 export function NavbarWrapper() {
     const pathname = usePathname();
@@ -44,4 +45,11 @@ export function MobileBottomNavWrapper() {
             <MobileBottomNav />
         </div>
     );
+}
+
+export function ConciergeDrawerWrapper() {
+    const pathname = usePathname();
+    const isAdminPath = pathname?.startsWith('/dashboard/admin') || pathname?.startsWith('/admin');
+    if (isAdminPath) return null;
+    return <ConciergeDrawer />;
 }

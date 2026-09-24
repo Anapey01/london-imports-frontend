@@ -16,7 +16,7 @@ import {
   BreadcrumbSchema,
   AccessibilitySchema
 } from "@/components/seo/JsonLd";
-import { NavbarWrapper, FooterWrapper, MobileBottomNavWrapper } from "@/components/layout/LayoutWrappers";
+import { NavbarWrapper, FooterWrapper, MobileBottomNavWrapper, ConciergeDrawerWrapper } from "@/components/layout/LayoutWrappers";
 
 
 // Configuration constants for the Source Serif font family
@@ -249,6 +249,7 @@ export default async function RootLayout({
             <main id="main-content" className="flex-grow pb-20 md:pb-0 outline-none w-full overflow-x-hidden">{children}</main>
             <FooterWrapper />
             <MobileBottomNavWrapper />
+            <ConciergeDrawerWrapper />
           </div>
         </Providers>
       </body>

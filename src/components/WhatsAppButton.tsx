@@ -28,8 +28,9 @@ export default function WhatsAppButton() {
         <a
             href={`https://wa.me/${whatsappNumber}?text=${message}`} // Fallback
             onClick={handleClick}
-            className="fixed bottom-4 right-4 z-50 group cursor-pointer institutional-focus"
+            className="fixed bottom-32 md:bottom-20 right-4 sm:right-6 z-30 group cursor-pointer institutional-focus"
             aria-label="Chat on WhatsApp"
+            suppressHydrationWarning
         >
             {/* Small Compact Button - 'Perceivable' Hardened for icon contrast */}
             <div className="relative w-11 h-11 sm:w-12 sm:h-12 bg-brand-emerald rounded-full flex items-center justify-center shadow-md hover:bg-brand-emerald/90 transition-all hover:scale-105">

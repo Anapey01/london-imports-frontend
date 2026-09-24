@@ -34,7 +34,8 @@ const withPWA = withPWAInit({
         // 1. Admin & Dashboard - NetworkOnly (Never cache or intercept admin portal)
         urlPattern: ({ url }) => 
           url.pathname.startsWith('/admin/') || 
-          url.pathname.startsWith('/dashboard/admin/'),
+          url.pathname.startsWith('/dashboard/admin/') ||
+          url.pathname.startsWith('/api/assistant/'),
         handler: 'NetworkOnly',
       },
       {

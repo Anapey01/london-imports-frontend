@@ -38,8 +38,8 @@ import ProductCarouselShelf from '@/components/home/ProductCarouselShelf';
 import { HeroSkeleton } from '@/components/skeletons/HomeSkeletons';
 import { getProducts } from '@/lib/fetchers';
 
+
 // Lazy load below-the-fold components to reduce initial bundle
-const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'));
 const SEOAccordion = dynamic(() => import('@/components/home/SEOAccordion'));
 const TrustSection = dynamic(() => import('@/components/home/TrustSection'), {
   loading: () => <div className="h-[400px] bg-surface animate-pulse" />,
@@ -81,16 +81,16 @@ export default async function HomePage() {
         if (unique.length === limit) break;
       }
     }
-    // Fallback: If category returns 0 items, fill from general pool so cards never render empty or "Coming Soon"
-    if (unique.length === 0 && allowFallback) {
-      for (const item of fallbackPool) {
-        if (!seenIds.has(item.id)) {
-          seenIds.add(item.id);
-          unique.push(item);
-          if (unique.length === limit) break;
-        }
-      }
-    }
+    // Production Mode: Do not inject unrelated fallback items into empty categories
+    // if (unique.length === 0 && allowFallback) {
+    //   for (const item of fallbackPool) {
+    //     if (!seenIds.has(item.id)) {
+    //       seenIds.add(item.id);
+    //       unique.push(item);
+    //       if (unique.length === limit) break;
+    //     }
+    //   }
+    // }
     return unique;
   };
 
@@ -158,8 +158,6 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-950 pb-20 transition-colors">
-      {/* WhatsApp Floating Button - Homepage Only */}
-      <WhatsAppButton />
 
       {/* 1. Hero Carousel (Landing visuals) - Suspense for Immediate Shell Paint */}
       <Suspense fallback={<HeroSkeleton />}>

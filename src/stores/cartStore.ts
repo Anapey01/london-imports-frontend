@@ -118,8 +118,14 @@ export const useCartStore = create<CartState>()(
                             cart: response.data, 
                             itemCount: serverItems.reduce((s: number, i: CartItem) => s + i.quantity, 0),
                         });
-                    } catch (e) {
-                        console.error("[CartStore] Failed to fetch cart:", e);
+                    } catch (e: any) {
+                        // Silent resilience: log warn so development doesn't trigger the red Next.js console.error overlay on transient network blips
+                        console.warn("[CartStore] Could not fetch server cart:", e?.message || e);
+                        // Gracefully maintain guest items or fallback so the user experience is smooth
+                        const { guestItems } = get();
+                        if (guestItems && guestItems.length > 0) {
+                            set({ itemCount: guestItems.reduce((s, i) => s + i.quantity, 0) });
+                        }
                     } finally {
                         set({ isLoading: false, isFetching: false });
                     }

@@ -566,4 +566,18 @@ body {
     display: table-header-group;
   }
 }
+
+/* Concierge Drawer Mobile Viewport Hardening */
+body.concierge-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+body.concierge-open nav.fixed,
+body.concierge-open .fixed.safe-area-bottom,
+body.concierge-open a[aria-label="Chat on WhatsApp"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
 
