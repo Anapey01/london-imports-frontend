@@ -17,7 +17,7 @@ export default function SellPage() {
                     <div className="flex items-center gap-3 mb-6">
                         <div className="h-px w-10 bg-slate-900 dark:bg-white" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">
-                            Merchant Network · 01
+                            Sell With Us
                         </span>
                     </div>
 
@@ -27,7 +27,7 @@ export default function SellPage() {
                     </h1>
 
                     <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl font-normal leading-relaxed">
-                        Two distinct partnership models engineered for scale. Reach thousands of verified buyers across Ghana with consolidated escrow, international freight, and intelligent commerce tooling.
+                        Two simple ways to sell. Reach thousands of buyers across Ghana with safe payments, reliable doorstep delivery, and 24/7 customer support.
                     </p>
                 </div>
             </section>
@@ -45,21 +45,21 @@ export default function SellPage() {
                                 </div>
 
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block mb-2">
-                                    Tier 01 · Individual Sellers
+                                    Option 01 · Individual Sellers
                                 </span>
                                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white mb-4">
                                     Marketplace Seller
                                 </h2>
                                 <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
-                                    Ideal for independent vendors and emerging retailers. List your catalog directly onto our marketplace feed and sell to customers across Ghana without storefront overhead.
+                                    Great if you have products to sell. Put your items on our marketplace, start getting orders from customers across Ghana, and let us handle the delivery.
                                 </p>
 
                                 <ul className="space-y-3.5 mb-10 border-t border-slate-100 dark:border-slate-800/80 pt-6">
                                     {[
-                                        'Instant distribution to active web and mobile shoppers',
-                                        'Streamlined catalog and inventory management',
-                                        'Protected escrow payouts released upon verified delivery',
-                                        '24/7 buyer support powered by Miss London Concierge',
+                                        'Show your items to thousands of active shoppers on web & mobile',
+                                        'Simple and quick way to add products and manage your stock',
+                                        'Safe payments: money goes straight to your MoMo or bank after delivery',
+                                        'Miss London assists your customers 24/7 so you never miss an order',
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 text-slate-900 dark:text-white">
@@ -78,7 +78,7 @@ export default function SellPage() {
                                     href="/register/seller"
                                     className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-[0.99] shadow-sm"
                                 >
-                                    Join Marketplace
+                                    Start Selling
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link
@@ -86,7 +86,7 @@ export default function SellPage() {
                                     className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all active:scale-[0.99]"
                                 >
                                     <LogIn className="w-4 h-4" />
-                                    Seller Portal Login
+                                    Seller Login
                                 </Link>
                             </div>
                         </div>
@@ -99,27 +99,27 @@ export default function SellPage() {
                                         <Briefcase className="w-6 h-6" strokeWidth={1.5} />
                                     </div>
                                     <span className="text-[9px] font-black uppercase tracking-[0.25em] px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700">
-                                        Curated Storefront
+                                        Your Own Store
                                     </span>
                                 </div>
 
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block mb-2">
-                                    Tier 02 · Verified Brands
+                                    Option 02 · For Registered Brands
                                 </span>
                                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white mb-4">
                                     Branded Partner
                                 </h2>
                                 <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
-                                    For established labels, authorized distributors, and premium importers. Obtain a dedicated storefront URL, verified badge, and priority freight clearing channels.
+                                    For registered businesses and brands. Get your own custom store link, verified badge, and priority shipping from China to Ghana.
                                 </p>
 
                                 <ul className="space-y-3.5 mb-10 border-t border-slate-100 dark:border-slate-800/80 pt-6">
                                     {[
-                                        'Dedicated storefront URL (/store/your-brand)',
-                                        'Custom brand banners, color schemes & curated collections',
-                                        'Official Verified Partner trust badge on all listings',
-                                        'Direct automated Mobile Money & corporate bank settlements',
-                                        'Priority international air & sea freight from China',
+                                        'Your own custom store link to share (londonsimports.com/store/your-name)',
+                                        'Add your business logo, custom banners, and collections',
+                                        'Official Verified Badge on all items so buyers trust your store',
+                                        'Automatic payouts sent directly to your MoMo or bank account',
+                                        'Fast priority air and sea shipping directly from China',
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <div className="w-4 h-4 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center shrink-0 mt-0.5 text-white dark:text-slate-900">
@@ -138,7 +138,7 @@ export default function SellPage() {
                                     href="/register/seller"
                                     className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-[0.99] shadow-sm"
                                 >
-                                    Apply for Branded Store
+                                    Open a Branded Store
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link
@@ -146,7 +146,7 @@ export default function SellPage() {
                                     className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all active:scale-[0.99]"
                                 >
                                     <LogIn className="w-4 h-4" />
-                                    Partner Portal Login
+                                    Partner Login
                                 </Link>
                             </div>
                         </div>
@@ -160,10 +160,10 @@ export default function SellPage() {
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="mb-12">
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-3">
-                            Platform Infrastructure
+                            Why Sell With Us
                         </span>
                         <h3 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-white">
-                            Engineered for Ghanaian Commerce
+                            Built for everyday business in Ghana
                         </h3>
                     </div>
 
@@ -174,10 +174,10 @@ export default function SellPage() {
                                 <ShieldCheck className="w-5 h-5" strokeWidth={1.5} />
                             </div>
                             <h4 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
-                                Escrow Protection
+                                Safe &amp; Guaranteed Payouts
                             </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-                                Buyer payments are secured at checkout and released automatically upon delivery confirmation, eliminating fraudulent chargebacks.
+                                Buyers pay upfront. We hold the money safely and send it straight to you as soon as the item is delivered. No fake orders, no lost money.
                             </p>
                         </div>
 
@@ -187,10 +187,10 @@ export default function SellPage() {
                                 <Truck className="w-5 h-5" strokeWidth={1.5} />
                             </div>
                             <h4 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
-                                End-to-End Logistics
+                                We Handle Delivery
                             </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-                                Direct integration with China-to-Ghana freight consolidators and local dispatch riders ensures reliable last-mile delivery to buyers.
+                                From shipping items from China to sending delivery riders to your customer&apos;s doorstep in Accra, Kumasi, or anywhere in Ghana, we do the heavy lifting.
                             </p>
                         </div>
 
@@ -200,10 +200,10 @@ export default function SellPage() {
                                 <Sparkles className="w-5 h-5" strokeWidth={1.5} />
                             </div>
                             <h4 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
-                                24/7 AI Concierge
+                                Miss London Helps You Sell
                             </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-                                Miss London handles catalog inquiries, tracks parcels, and drives conversions for your store around the clock.
+                                Miss London answers customer questions, helps people find your products, and tracks their orders day and night so you can focus on your business.
                             </p>
                         </div>
                     </div>
@@ -211,9 +211,9 @@ export default function SellPage() {
                     {/* Support Contact */}
                     <div className="mt-16 text-center">
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Have specific partnership or enterprise supply requirements?{' '}
+                            Have questions or need help setting up your store?{' '}
                             <Link href="/contact" className="text-slate-900 dark:text-white font-medium underline underline-offset-4 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                                Speak with our Merchant Relations team
+                                Chat with our support team
                             </Link>
                             .
                         </p>

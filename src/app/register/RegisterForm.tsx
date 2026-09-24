@@ -4,8 +4,9 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { trackSignUp, trackEvent } from '@/lib/analytics';
@@ -17,6 +18,7 @@ export default function RegisterForm() {
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/';
     const { register, isLoading } = useAuthStore();
+    const [, startTransition] = useTransition();
 
     useEffect(() => {
         trackEvent('form_start', { form_id: 'register' });
@@ -44,7 +46,10 @@ export default function RegisterForm() {
     }, [error]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        startTransition(() => {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -56,6 +61,9 @@ export default function RegisterForm() {
             setError('Error: Passwords do not match');
             return;
         }
+
+        // Yield to browser to paint loading spinner and avoid INP blocking
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         try {
             const cleanEmail = formData.email.toLowerCase().trim();
@@ -87,28 +95,40 @@ export default function RegisterForm() {
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
-            {/* 1. EDITORIAL BRAND PANE (Signature Dark Anchor) */}
-            <div className="hidden lg:flex flex-col justify-between p-20 bg-[#0a0f1d] text-white relative overflow-hidden border-r border-white/5">
+            {/* 1. EDITORIAL BRAND PANE (Signature Visual Anchor with Signup Photo) */}
+            <div className="hidden lg:flex flex-col justify-between p-16 xl:p-20 text-white relative overflow-hidden border-r border-border-standard bg-slate-950">
+                {/* Visual Editorial Image */}
+                <Image
+                    src="/assets/auth/signup-hero.jpg"
+                    alt="Happy customer with London's Imports parcel delivery"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover object-center filter brightness-[0.82] contrast-[1.05]"
+                />
+
+                {/* Subtle Editorial Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/70" />
+                <div className="absolute inset-0 bg-slate-950/25" />
+
                 <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-16 opacity-30">
+                    <div className="flex items-center gap-4 mb-16 opacity-80">
                         <div className="h-px w-12 bg-white" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em]">London&apos;s Imports / 2026 Edition</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white">London&apos;s Imports / 2026 Edition</span>
                     </div>
-                    <h2 className="text-7xl lg:text-9xl font-serif font-bold leading-[0.8] tracking-tighter mb-20 italic opacity-20">
-                        Direct From <br /> Factory.
+                    <h2 className="text-5xl lg:text-7xl font-serif font-bold leading-[0.9] tracking-tighter mb-8 text-white">
+                        Direct From <br />
+                        <span className="italic font-light text-slate-300">Factory Floor.</span>
                     </h2>
-                    <p className="max-w-xs text-sm font-medium text-slate-400 leading-relaxed italic border-l border-slate-700 pl-8">
-                        From the factory in China to your home in Ghana, made simple for everyone. Reliable and simple.
+                    <p className="max-w-xs text-sm font-medium text-slate-200 leading-relaxed italic border-l-2 border-brand-emerald pl-6">
+                        From trusted China factory lines straight to your loved ones in Ghana. Simple, transparent, and reliable.
                     </p>
                 </div>
                 
-                <div className="relative z-10 pt-20 border-t border-white/10 opacity-40">
-                      <span className="text-[9px] font-black uppercase tracking-widest block mb-4 text-brand-emerald">Secure Membership</span>
-                      <p className="text-xs font-medium text-slate-300">We verify accounts to keep your orders safe and secure.</p>
+                <div className="relative z-10 pt-16 border-t border-white/20">
+                      <span className="text-[9px] font-black uppercase tracking-widest block mb-2 text-brand-emerald">Real Smiles · Guaranteed Escrow</span>
+                      <p className="text-xs font-medium text-slate-300">Every shipment is tracked and verified before payouts are released.</p>
                 </div>
-
-                {/* Subtle Radial Architecture */}
-                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
             </div>
 
             {/* 2. REGISTRATION FORM PANE */}

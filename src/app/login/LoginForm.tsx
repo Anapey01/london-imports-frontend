@@ -4,8 +4,9 @@
  */
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useTransition } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { setAnalyticsUser, trackLogin, trackEvent } from '@/lib/analytics';
@@ -26,6 +27,7 @@ function LoginFormContent() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(isRegistered ? "Account created! Please sign in to start." : "");
+    const [, startTransition] = useTransition();
 
     useEffect(() => {
         trackEvent('form_start', { form_id: 'login' });
@@ -56,6 +58,9 @@ function LoginFormContent() {
         trackEvent('form_submit', { form_id: 'login' });
         setError('');
         setSuccess('');
+
+        // Yield to browser to paint loading spinner and avoid INP blocking
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         try {
             await login(username, password);
@@ -102,28 +107,40 @@ function LoginFormContent() {
 
     return (
         <div className="min-h-screen bg-surface grid lg:grid-cols-2 selection:bg-emerald-100/30">
-            {/* 1. EDITORIAL BRAND PANE (Signature Dark Anchor) */}
-            <div className="hidden lg:flex flex-col justify-between p-20 bg-[#0a0f1d] text-white relative overflow-hidden border-r border-white/5">
+            {/* 1. EDITORIAL BRAND PANE (Signature Visual Anchor with Login Photo) */}
+            <div className="hidden lg:flex flex-col justify-between p-16 xl:p-20 text-white relative overflow-hidden border-r border-border-standard bg-slate-950">
+                {/* Visual Editorial Image */}
+                <Image
+                    src="/assets/auth/login-hero.png"
+                    alt="London's Imports Merchant Community"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover object-top filter brightness-[0.78] contrast-[1.05]"
+                />
+
+                {/* Subtle Editorial Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/70" />
+                <div className="absolute inset-0 bg-slate-950/25" />
+
                 <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-16 opacity-30">
+                    <div className="flex items-center gap-4 mb-16 opacity-80">
                         <div className="h-px w-12 bg-white" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em]">London&apos;s Imports / 2026 Edition</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white">London&apos;s Imports / 2026 Edition</span>
                     </div>
-                    <h2 className="text-7xl lg:text-9xl font-serif font-bold leading-[0.8] tracking-tighter mb-20 italic opacity-20">
-                        Direct to Your <br /> Door.
+                    <h2 className="text-5xl lg:text-7xl font-serif font-bold leading-[0.9] tracking-tighter mb-8 text-white">
+                        Direct to Your <br />
+                        <span className="italic font-light text-slate-300">Doorstep.</span>
                     </h2>
-                    <p className="max-w-xs text-sm font-medium text-slate-400 leading-relaxed italic border-l border-slate-700 pl-8">
-                        Secure, professional sourcing and logistics management for global trade.
+                    <p className="max-w-xs text-sm font-medium text-slate-200 leading-relaxed italic border-l-2 border-brand-emerald pl-6">
+                        Secure, professional sourcing and logistics management for global trade in Ghana.
                     </p>
                 </div>
                 
-                <div className="relative z-10 pt-20 border-t border-white/10 opacity-40">
-                      <span className="text-[9px] font-black uppercase tracking-widest block mb-4 text-brand-emerald">Secure Access</span>
-                      <p className="text-xs font-medium text-slate-300">Your connection is encrypted and monitored for maximum security.</p>
+                <div className="relative z-10 pt-16 border-t border-white/20">
+                      <span className="text-[9px] font-black uppercase tracking-widest block mb-2 text-brand-emerald">Secure Access</span>
+                      <p className="text-xs font-medium text-slate-300">Your connection is encrypted and monitored for maximum transaction security.</p>
                 </div>
-
-                {/* Subtle Radial Architecture */}
-                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
             </div>
 
             {/* 2. PROTOCOL FORM PANE */}
@@ -172,7 +189,12 @@ function LoginFormContent() {
                                     autoCorrect="off"
                                     spellCheck={false}
                                     value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        startTransition(() => {
+                                            setUsername(val);
+                                        });
+                                    }}
                                     required
                                     className={inputClass}
                                     placeholder="you@example.com"
@@ -199,7 +221,12 @@ function LoginFormContent() {
                                         autoComplete="current-password"
                                         autoCapitalize="none"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            startTransition(() => {
+                                                setPassword(val);
+                                            });
+                                        }}
                                         required
                                         className={`${inputClass} pr-12`}
                                         placeholder="••••••••"

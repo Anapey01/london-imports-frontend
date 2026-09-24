@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { Mail, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -15,12 +15,16 @@ export default function PasswordResetPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [, startTransition] = useTransition();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
         setMessage('');
+
+        // Yield to browser to paint loading spinner and avoid INP blocking
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         try {
             const response = await authAPI.requestPasswordReset({ email });
@@ -87,13 +91,21 @@ export default function PasswordResetPage() {
                                 <Mail className="h-5 w-5 text-content-secondary/70 dark:text-content-secondary/80 dark:text-content-secondary/70 group-focus-within:text-brand-emerald transition-colors" strokeWidth={1.5} />
                             </div>
                             <input
+                                id="email"
+                                name="email"
                                 type="email"
+                                autoComplete="email"
                                 inputMode="email"
                                 autoCapitalize="none"
                                 autoCorrect="off"
                                 spellCheck={false}
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    startTransition(() => {
+                                        setEmail(val);
+                                    });
+                                }}
                                 required
                                 className={inputClass}
                                 placeholder="you@example.com"
