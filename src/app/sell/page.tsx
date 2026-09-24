@@ -2,151 +2,225 @@
 
 import Link from 'next/link';
 import { useTheme } from '@/providers/ThemeProvider';
-import { ArrowRight, Store, Briefcase, LogIn, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Store, Briefcase, LogIn, Check, ShieldCheck, Truck, Sparkles } from 'lucide-react';
 
 export default function SellPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
     return (
-        <div className={`min-h-screen transition-colors ${isDark ? 'bg-slate-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
-
-            {/* Ambient Background */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 ${isDark ? 'bg-purple-900' : 'bg-pink-300'}`} />
-                <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 ${isDark ? 'bg-pink-900' : 'bg-purple-300'}`} />
-            </div>
+        <div className={`min-h-screen transition-colors ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'} selection:bg-slate-200 dark:selection:bg-slate-800 pb-32`}>
 
             {/* Hero Section */}
-            <div className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 text-center z-10">
-                <div className="max-w-4xl mx-auto space-y-6">
-                    <span className={`inline-block py-1 px-3 rounded-full text-xs font-semibold tracking-wider uppercase ${isDark ? 'bg-slate-800 text-slate-300 border border-slate-700' : 'bg-white text-gray-500 border border-gray-200'}`}>
-                        Partnership Programs
-                    </span>
-                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-light tracking-tight">
-                        Grow with <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">London&apos;s Imports</span>
+            <section className="pt-36 sm:pt-44 pb-20 border-b border-slate-100 dark:border-slate-900">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="h-px w-10 bg-slate-900 dark:bg-white" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">
+                            Merchant Network · 01
+                        </span>
+                    </div>
+
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white leading-[0.95] tracking-tight mb-6">
+                        Grow with <br />
+                        <span className="italic font-light text-slate-400 dark:text-slate-600">London&apos;s Imports.</span>
                     </h1>
-                    <p className={`text-xl sm:text-2xl font-light max-w-2xl mx-auto leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                        Two powerful ways to sell. One world-class platform.
-                        Choose the model that fits your business ambition.
+
+                    <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl font-normal leading-relaxed">
+                        Two distinct partnership models engineered for scale. Reach thousands of verified buyers across Ghana with consolidated escrow, international freight, and intelligent commerce tooling.
                     </p>
                 </div>
-            </div>
+            </section>
 
-            {/* Options Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 relative z-10">
-                <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+            {/* Partnership Options */}
+            <section className="py-20">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
 
-                    {/* Option 1: Marketplace Seller */}
-                    <div className={`group relative p-8 sm:p-10 rounded-[2.5rem] border transition-all duration-500 hover:scale-[1.01] ${isDark
-                        ? 'bg-slate-900/50 border-slate-800 hover:border-pink-500/30 backdrop-blur-xl'
-                        : 'bg-white/80 border-gray-100 hover:border-pink-200 shadow-xl shadow-gray-200/50 backdrop-blur-xl'
-                        }`}>
-                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg transition-transform group-hover:rotate-3 ${isDark ? 'bg-slate-800 text-pink-400' : 'bg-pink-50 text-pink-600'}`}>
-                            <Store className="w-8 h-8" strokeWidth={1.5} />
+                        {/* Option 1: Marketplace Seller */}
+                        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 rounded-2xl p-8 sm:p-10 flex flex-col justify-between hover:border-slate-400 dark:hover:border-slate-700 transition-all shadow-sm">
+                            <div>
+                                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white mb-6">
+                                    <Store className="w-6 h-6" strokeWidth={1.5} />
+                                </div>
+
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block mb-2">
+                                    Tier 01 · Individual Sellers
+                                </span>
+                                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white mb-4">
+                                    Marketplace Seller
+                                </h2>
+                                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                                    Ideal for independent vendors and emerging retailers. List your catalog directly onto our marketplace feed and sell to customers across Ghana without storefront overhead.
+                                </p>
+
+                                <ul className="space-y-3.5 mb-10 border-t border-slate-100 dark:border-slate-800/80 pt-6">
+                                    {[
+                                        'Instant distribution to active web and mobile shoppers',
+                                        'Streamlined catalog and inventory management',
+                                        'Protected escrow payouts released upon verified delivery',
+                                        '24/7 buyer support powered by Miss London Concierge',
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 text-slate-900 dark:text-white">
+                                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                            </div>
+                                            <span className="text-sm text-slate-600 dark:text-slate-300 font-normal">
+                                                {item}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                                <Link
+                                    href="/register/seller"
+                                    className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-[0.99] shadow-sm"
+                                >
+                                    Join Marketplace
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+                                <Link
+                                    href="/login?role=vendor&redirect=/dashboard/vendor"
+                                    className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all active:scale-[0.99]"
+                                >
+                                    <LogIn className="w-4 h-4" />
+                                    Seller Portal Login
+                                </Link>
+                            </div>
                         </div>
 
-                        <h3 className="text-3xl font-medium mb-4">Marketplace Seller</h3>
-                        <p className={`text-lg mb-8 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            Perfect for individual sellers. List your unique items on our high-traffic feed and reach thousands of customers instantly.
-                        </p>
+                        {/* Option 2: Branded Partner */}
+                        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 rounded-2xl p-8 sm:p-10 flex flex-col justify-between hover:border-slate-400 dark:hover:border-slate-700 transition-all shadow-sm relative">
+                            <div>
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="w-12 h-12 rounded-xl bg-slate-950 text-white dark:bg-white dark:text-slate-950 flex items-center justify-center">
+                                        <Briefcase className="w-6 h-6" strokeWidth={1.5} />
+                                    </div>
+                                    <span className="text-[9px] font-black uppercase tracking-[0.25em] px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700">
+                                        Curated Storefront
+                                    </span>
+                                </div>
 
-                        <ul className="space-y-4 mb-10">
-                            {[
-                                'Instant access to our customer base',
-                                'Simple product listing flow',
-                                'Secure payments & logistics handled'
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                    <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? 'text-pink-500' : 'text-pink-600'}`} strokeWidth={2} />
-                                    <span className={`text-base ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>{item}</span>
-                                </li>
-                            ))}
-                        </ul>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 block mb-2">
+                                    Tier 02 · Verified Brands
+                                </span>
+                                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white mb-4">
+                                    Branded Partner
+                                </h2>
+                                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                                    For established labels, authorized distributors, and premium importers. Obtain a dedicated storefront URL, verified badge, and priority freight clearing channels.
+                                </p>
 
-                        <div className="space-y-4">
-                            <Link
-                                href="/register/seller"
-                                className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-white font-medium bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 transition-all shadow-lg shadow-pink-600/20 active:scale-[0.98]"
-                            >
-                                Join Marketplace
-                                <ArrowRight className="w-5 h-5" />
-                            </Link>
-                            <Link
-                                href="/login?role=vendor&redirect=/dashboard/vendor"
-                                className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-medium border transition-all active:scale-[0.98] ${isDark
-                                    ? 'border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
-                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
-                            >
-                                <LogIn className="w-5 h-5" />
-                                Login as Seller
-                            </Link>
+                                <ul className="space-y-3.5 mb-10 border-t border-slate-100 dark:border-slate-800/80 pt-6">
+                                    {[
+                                        'Dedicated storefront URL (/store/your-brand)',
+                                        'Custom brand banners, color schemes & curated collections',
+                                        'Official Verified Partner trust badge on all listings',
+                                        'Direct automated Mobile Money & corporate bank settlements',
+                                        'Priority international air & sea freight from China',
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <div className="w-4 h-4 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center shrink-0 mt-0.5 text-white dark:text-slate-900">
+                                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                            </div>
+                                            <span className="text-sm text-slate-600 dark:text-slate-300 font-normal">
+                                                {item}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                                <Link
+                                    href="/register/seller"
+                                    className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest bg-slate-950 text-white dark:bg-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-[0.99] shadow-sm"
+                                >
+                                    Apply for Branded Store
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+                                <Link
+                                    href="/login?role=vendor&redirect=/dashboard/vendor"
+                                    className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl text-xs font-semibold uppercase tracking-widest border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all active:scale-[0.99]"
+                                >
+                                    <LogIn className="w-4 h-4" />
+                                    Partner Portal Login
+                                </Link>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            {/* Value Proposition Grid */}
+            <section className="py-20 border-t border-slate-100 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-900/20">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="mb-12">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 block mb-3">
+                            Platform Infrastructure
+                        </span>
+                        <h3 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-white">
+                            Engineered for Ghanaian Commerce
+                        </h3>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Feature 1 */}
+                        <div className="border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60 rounded-xl p-8 shadow-sm">
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white mb-6">
+                                <ShieldCheck className="w-5 h-5" strokeWidth={1.5} />
+                            </div>
+                            <h4 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
+                                Escrow Protection
+                            </h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
+                                Buyer payments are secured at checkout and released automatically upon delivery confirmation, eliminating fraudulent chargebacks.
+                            </p>
+                        </div>
+
+                        {/* Feature 2 */}
+                        <div className="border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60 rounded-xl p-8 shadow-sm">
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white mb-6">
+                                <Truck className="w-5 h-5" strokeWidth={1.5} />
+                            </div>
+                            <h4 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
+                                End-to-End Logistics
+                            </h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
+                                Direct integration with China-to-Ghana freight consolidators and local dispatch riders ensures reliable last-mile delivery to buyers.
+                            </p>
+                        </div>
+
+                        {/* Feature 3 */}
+                        <div className="border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60 rounded-xl p-8 shadow-sm">
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white mb-6">
+                                <Sparkles className="w-5 h-5" strokeWidth={1.5} />
+                            </div>
+                            <h4 className="text-lg font-serif font-bold text-slate-900 dark:text-white mb-2">
+                                24/7 AI Concierge
+                            </h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
+                                Miss London handles catalog inquiries, tracks parcels, and drives conversions for your store around the clock.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Option 2: Strategic Partner */}
-                    <div className={`group relative p-8 sm:p-10 rounded-[2.5rem] border transition-all duration-500 hover:scale-[1.01] overflow-hidden ${isDark
-                        ? 'bg-slate-900/50 border-slate-700 hover:border-purple-500/50 backdrop-blur-xl'
-                        : 'bg-white/80 border-gray-100 hover:border-purple-200 shadow-xl shadow-purple-500/5 backdrop-blur-xl'
-                        }`}>
-                        {/* Premium Badge */}
-                        <div className="absolute top-0 right-0 bg-gradient-to-bl from-purple-600 to-indigo-600 text-white text-xs font-bold px-6 py-3 rounded-bl-3xl shadow-lg">
-                            RECOMMENDED
-                        </div>
-
-                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg transition-transform group-hover:rotate-3 ${isDark ? 'bg-slate-800 text-purple-400' : 'bg-purple-50 text-purple-600'}`}>
-                            <Briefcase className="w-8 h-8" strokeWidth={1.5} />
-                        </div>
-
-                        <h3 className="text-3xl font-medium mb-4">Branded Partner</h3>
-                        <p className={`text-lg mb-8 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            For established brands. Get your own dedicated branded storefront (/store/your-brand), verified badge, and guaranteed escrow payouts.
+                    {/* Support Contact */}
+                    <div className="mt-16 text-center">
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                            Have specific partnership or enterprise supply requirements?{' '}
+                            <Link href="/contact" className="text-slate-900 dark:text-white font-medium underline underline-offset-4 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                                Speak with our Merchant Relations team
+                            </Link>
+                            .
                         </p>
-
-                        <ul className="space-y-4 mb-10">
-                            {[
-                                'Dedicated Branded Storefront URL',
-                                'Custom brand colors & banner styling',
-                                'Verified Partner Trust Badge',
-                                'Automated Mobile Money & Bank Payouts'
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                    <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? 'text-purple-500' : 'text-purple-600'}`} strokeWidth={2} />
-                                    <span className={`text-base ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-
-                        <div className="space-y-4">
-                            <Link
-                                href="/register/seller"
-                                className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-white font-medium bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transition-all shadow-lg shadow-purple-600/20 active:scale-[0.98]"
-                            >
-                                Apply for Branded Store
-                                <ArrowRight className="w-5 h-5" />
-                            </Link>
-                            <Link
-                                href="/login?role=vendor&redirect=/dashboard/vendor"
-                                className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-medium border transition-all active:scale-[0.98] ${isDark
-                                    ? 'border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
-                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
-                            >
-                                <LogIn className="w-5 h-5" />
-                                Login as Partner
-                            </Link>
-                        </div>
                     </div>
-
                 </div>
+            </section>
 
-                <div className={`mt-20 text-center ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                    <p className="text-sm font-light">
-                        Need help choosing? <Link href="/contact" className="underline hover:text-pink-500 transition-colors">Contact our support team</Link>.
-                    </p>
-                </div>
-            </div>
         </div>
     );
 }
