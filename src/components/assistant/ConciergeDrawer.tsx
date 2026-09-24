@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Sparkles, X, Send, MessageCircle, ArrowUpRight, ArrowRight } from 'lucide-react';
+import { X, Send, MessageCircle, ArrowRight } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
+import { ordersAPI } from '@/lib/api';
 import ConciergeProductRow, { AssistantProduct } from './ConciergeProductRow';
+import ConciergeOrderCard, { AssistantOrder } from './ConciergeOrderCard';
 
 export interface QuickReplyOption {
     label: string;
@@ -20,6 +21,7 @@ interface Message {
     role: 'user' | 'assistant';
     content: string;
     products?: AssistantProduct[];
+    orders?: AssistantOrder[];
     isSourcingPrompt?: boolean;
     actionLink?: {
         label: string;
@@ -31,13 +33,14 @@ interface Message {
 const QUICK_NAV = [
     { label: "Browse catalog", query: "Browse catalog" },
     { label: "Check my cart", query: "Check my cart" },
-    { label: "Order from China", query: "Order from China" },
     { label: "Track my order", query: "Track my order" },
+    { label: "Order from China", query: "Order from China" },
 ];
 
 export default function ConciergeDrawer() {
     const router = useRouter();
     const user = useAuthStore(state => state.user);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const rawName = user?.first_name?.trim() || (user?.username ? user.username.split('@')[0].trim() : '');
     const firstName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
 
@@ -46,7 +49,23 @@ export default function ConciergeDrawer() {
     const [isLoading, setIsLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [conciergePhase, setConciergePhase] = useState<'idle' | 'typing_1' | 'typing_2' | 'ready'>('idle');
+    const [userOrders, setUserOrders] = useState<any[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Fetch user orders in the background when concierge is open & authenticated
+    useEffect(() => {
+        if (isOpen && isAuthenticated) {
+            ordersAPI.list()
+                .then(res => {
+                    const results = res.data?.results || res.data || [];
+                    const validOrders = Array.isArray(results) ? results : [];
+                    setUserOrders(validOrders);
+                })
+                .catch(err => {
+                    console.warn('[Concierge] Error fetching user orders:', err);
+                });
+        }
+    }, [isOpen, isAuthenticated]);
 
     // Auto-scroll on new message or state change
     useEffect(() => {
@@ -92,8 +111,8 @@ export default function ConciergeDrawer() {
         if (conciergePhase === 'typing_1') {
             const timer = setTimeout(() => {
                 const greetingText = firstName
-                    ? `Hello ${firstName}! I am Miss London from London's Imports. How can I help you shop or order today?`
-                    : "Hello! I am Miss London from London's Imports. How can I help you shop or order today?";
+                    ? `Hello ${firstName}! I am Miss London from London's Imports. How can I help you shop, track an order, or check items today?`
+                    : "Hello! I am Miss London from London's Imports. How can I help you shop, track an order, or check items today?";
 
                 setMessages([
                     {
@@ -103,7 +122,7 @@ export default function ConciergeDrawer() {
                     }
                 ]);
                 setConciergePhase('typing_2');
-            }, 2500); // exactly 2.5s
+            }, 2500);
             return () => clearTimeout(timer);
         }
 
@@ -120,7 +139,7 @@ export default function ConciergeDrawer() {
                     }
                 ]);
                 setConciergePhase('ready');
-            }, 1500); // exactly 1.5s
+            }, 1500);
             return () => clearTimeout(timer);
         }
     }, [conciergePhase, firstName]);
@@ -160,6 +179,24 @@ export default function ConciergeDrawer() {
             }))
         };
 
+        // Format ordersContext
+        const ordersContext = userOrders.map(o => ({
+            id: o.id,
+            order_number: o.order_number,
+            state: o.state,
+            state_display: o.state_display,
+            total: typeof o.total === 'string' ? parseFloat(o.total) : (o.total || 0),
+            amount_paid: typeof o.amount_paid === 'string' ? parseFloat(o.amount_paid) : (o.amount_paid || 0),
+            balance_due: typeof o.balance_due === 'string' ? parseFloat(o.balance_due) : (o.balance_due || 0),
+            items_count: o.items_count || o.items?.length || 0,
+            delivery_window: o.delivery_window || '',
+            items: (o.items || []).map((it: any) => ({
+                name: it.product_name || it.product?.name || 'Item',
+                quantity: it.quantity || 1,
+                image: it.product?.image || null
+            }))
+        }));
+
         try {
             const history = messages.slice(-4).map(m => ({
                 role: m.role,
@@ -173,7 +210,9 @@ export default function ConciergeDrawer() {
                     message: trimmed,
                     conversationHistory: history,
                     cartContext,
-                    userName: firstName
+                    userName: firstName,
+                    isAuthenticated,
+                    ordersContext
                 })
             });
 
@@ -187,6 +226,7 @@ export default function ConciergeDrawer() {
                 role: 'assistant',
                 content: data.reply || "I checked our shop for your request.",
                 products: data.products || [],
+                orders: data.orders || [],
                 actionLink: data.actionLink,
                 quickReplies: data.quickReplies
             };
@@ -230,7 +270,7 @@ export default function ConciergeDrawer() {
 
     return (
         <>
-            {/* 1. Sleek Compact Trigger Pill - Expands Name on Hover */}
+            {/* 1. Sleek Compact Trigger Pill */}
             {!isOpen && (
                 <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40">
                     <button
@@ -336,27 +376,18 @@ export default function ConciergeDrawer() {
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
                                                 </button>
-                                            ) : /checkout/i.test(msg.actionLink.href) || /checkout/i.test(msg.actionLink.label) ? (
+                                            ) : (
                                                 <button
                                                     type="button"
                                                     onClick={() => {
                                                         setIsOpen(false);
-                                                        router.push('/checkout');
+                                                        router.push(msg.actionLink!.href);
                                                     }}
                                                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 active:scale-95 transition-all shadow-2xs cursor-pointer"
                                                 >
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
                                                 </button>
-                                            ) : (
-                                                <Link
-                                                    href={msg.actionLink.href}
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 transition-opacity shadow-2xs"
-                                                >
-                                                    <span>{msg.actionLink.label}</span>
-                                                    <ArrowUpRight className="w-3.5 h-3.5" />
-                                                </Link>
                                             )}
                                         </div>
                                     )}
@@ -373,7 +404,7 @@ export default function ConciergeDrawer() {
                                                     return true;
                                                 })
                                                 .map((replyOpt) => {
-                                                    const isCheckout = replyOpt.isCheckout || /checkout/i.test(replyOpt.query);
+                                                    const isCheckout = replyOpt.isCheckout || /proceed to checkout/i.test(replyOpt.query);
                                                     const isBrowse = /browse(\s+our|\s+the)?\s+catalog/i.test(replyOpt.label) || /browse(\s+our|\s+the)?\s+catalog/i.test(replyOpt.query);
                                                     return (
                                                         <button
@@ -403,6 +434,23 @@ export default function ConciergeDrawer() {
                                         </div>
                                     )}
 
+                                    {/* Orders Staging Cards */}
+                                    {msg.orders && msg.orders.length > 0 && (
+                                        <div className="w-full mt-3 space-y-2.5">
+                                            <div className="text-[9px] font-black tracking-widest uppercase text-slate-400 dark:text-slate-500 px-1">
+                                                ORDERS ({msg.orders.length})
+                                            </div>
+                                            {msg.orders.map(order => (
+                                                <ConciergeOrderCard
+                                                    key={order.order_number}
+                                                    order={order}
+                                                    onTrack={(orderNumber) => handleSend(`Track order ${orderNumber}`)}
+                                                    onCloseDrawer={() => setIsOpen(false)}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
                                     {/* Products Staging Cards */}
                                     {msg.products && msg.products.length > 0 && (
                                         <div className="w-full mt-3 space-y-2">
@@ -421,7 +469,7 @@ export default function ConciergeDrawer() {
                                 </div>
                             ))}
 
-                            {/* Greeting Typing Simulator (typing_1: 2.5s, typing_2: 1.5s) */}
+                            {/* Greeting Typing Simulator */}
                             {(conciergePhase === 'typing_1' || conciergePhase === 'typing_2') && (
                                 <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-xs text-slate-500 font-medium w-fit animate-in fade-in duration-300">
                                     <span className="font-semibold text-slate-700 dark:text-slate-300">London is typing</span>
@@ -445,7 +493,7 @@ export default function ConciergeDrawer() {
                                 </div>
                             )}
 
-                            {/* Quick Navigation - Single Option Per Line (Vertical Stack) */}
+                            {/* Quick Navigation - Options */}
                             {conciergePhase === 'ready' && messages.length <= 2 && !isLoading && (
                                 <div className="w-full pt-1 animate-in fade-in duration-300">
                                     <div className="flex flex-col gap-2 w-full">
@@ -478,7 +526,7 @@ export default function ConciergeDrawer() {
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder={firstName ? `Ask Miss London anything, ${firstName}...` : "Ask about bags, shoes, or how to order..."}
+                                    placeholder={firstName ? `Ask Miss London anything, ${firstName}...` : "Ask to track order, check catalog, or pay balance..."}
                                     className="w-full h-11 sm:h-10 pl-4 pr-12 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
                                 />
                                 <button

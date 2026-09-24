@@ -24,10 +24,34 @@ interface ProductSummary {
     }>;
 }
 
+export interface AssistantOrder {
+    id?: string;
+    order_number: string;
+    state: string;
+    state_display: string;
+    total: number;
+    amount_paid?: number;
+    balance_due: number;
+    items_count?: number;
+    delivery_window?: string;
+    items?: Array<{
+        name: string;
+        quantity: number;
+        image?: string | null;
+    }>;
+}
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { message, conversationHistory = [], cartContext, userName } = body;
+        const {
+            message,
+            conversationHistory = [],
+            cartContext,
+            userName,
+            isAuthenticated = false,
+            ordersContext = []
+        } = body;
 
         if (!message || typeof message !== 'string') {
             return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -51,21 +75,406 @@ export async function POST(req: NextRequest) {
         const isGreeting = /^(hi|hey|hello|good\s*(morning|afternoon|evening|day)|yo|sup|charley|how\s*are\s*you|how\s*far|xup|hey\s*there|hello\s*there|what'?s\s*up)$/i.test(trimmed);
         const isThanks = /^(thanks|thank\s*you|thank\s*u|medaase|cool|great|awesome|perfect|ok|okay|alright|nice|noted)$/i.test(trimmed);
         const isHelp = /^(help|who\s*are\s*you|what\s*can\s*you\s*do|how\s*does\s*this\s*work|what\s*is\s*this|about|commands)$/i.test(trimmed);
-        const isControlQuery = /^(done|i'?m\s*done|i\s*am\s*done|finished|that'?s\s*all|that\s*is\s*all|nothing\s*else|no\s*more|done\s*ordering|all\s*done|we\s*are\s*done|yes|yeah|yep|proceed|checkout|proceed\s*to\s*checkout|go\s*to\s*checkout|take\s*me\s*to\s*checkout|check\s*out|pay\s*now|buy\s*now|no|not\s*yet|keep\s*shopping|order\s*something\s*else|back|go\s*back|return|previous|menu|main\s*menu|start\s*over|check\s*my\s*cart|track\s*my\s*order|order\s*a\s*product|order\s*from\s*china|hi|hey|hello|good\s*(morning|afternoon|evening|day)|yo|sup|charley|thanks|thank\s*you|help)$/i.test(trimmed);
+        const isControlQuery = /^(done|i'?m\s*done|i\s*am\s*done|finished|that'?s\s*all|that\s*is\s*all|nothing\s*else|no\s*more|done\s*ordering|all\s*done|we\s*are\s*done|yes|yeah|yep|proceed|checkout|proceed\s*to\s*checkout|go\s*to\s*checkout|take\s*me\s*to\s*checkout|check\s*out|pay\s*now|buy\s*now|no|not\s*yet|keep\s*shopping|order\s*something\s*else|back|go\s*back|return|previous|menu|main\s*menu|start\s*over|check\s*my\s*cart|order\s*a\s*product|order\s*from\s*china|hi|hey|hello|good\s*(morning|afternoon|evening|day)|yo|sup|charley|thanks|thank\s*you|help)$/i.test(trimmed);
         const isBrowseCatalog = /^(browse(\s+our|\s+the)?\s+catalog|browse(\s+our|\s+the)?\s+store|browse(\s+our|\s+the)?\s+products?|show(\s+our|\s+the)?\s+catalog|show(\s+our|\s+the)?\s+store|show(\s+all)?\s+products?|view(\s+our|\s+the)?\s+catalog|catalog|all products|shop catalog|explore products|see catalog|browse)$/i.test(trimmed);
 
-        // 1. Search our verified backend catalog
+        // Order intent detection
+        const orderNumMatch = trimmed.match(/\b(LI-\d{8}-\d{5}|LI-[A-Za-z0-9-]+)\b/i) || trimmed.match(/\b(\d{8}-\d{5})\b/);
+        let extractedOrderNumber: string | null = null;
+        if (orderNumMatch) {
+            const raw = orderNumMatch[1];
+            extractedOrderNumber = raw.toUpperCase().startsWith('LI-') ? raw.toUpperCase() : `LI-${raw}`;
+        }
+
+        const isPayBalanceQuery = /\b(pay\s+(my\s+)?balance|continue\s+payment|complete\s+payment|pay\s+(my\s+)?order|finish\s+paying|unpaid\s+orders?|pending\s+payment|balance\s+due|how\s+much\s+do\s+i\s+owe|pay\s+for\s+order)\b/i.test(trimmed);
+        const isMyOrdersQuery = /\b(my\s+orders?|list\s+(my\s+)?orders?|show\s+(my\s+)?orders?|view\s+(my\s+)?orders?|what\s+did\s+i\s+order|orders?\s+placed|order\s+history|past\s+orders?)\b/i.test(trimmed);
+        const isTrackGeneralQuery = /^(track(\s*(my\s*)?orders?)?|where\s+is\s+my\s+order|where\s+is\s+my\s+package|order\s+status|package\s+status|shipment\s+status)$/i.test(trimmed);
+        const isOrderQuery = Boolean(extractedOrderNumber) || isPayBalanceQuery || isMyOrdersQuery || isTrackGeneralQuery;
+
+        // Initialize collections
         let products: ProductSummary[] = [];
+        let orders: AssistantOrder[] = [];
+        let reply = '';
+        let actionLink: { label: string; href: string } | undefined = undefined;
+        let quickReplies: Array<{ label: string; query: string; isCheckout?: boolean }> | undefined = undefined;
+
+        // Fetch live store categories from backend for AI context
+        let activeCategories: string[] = ['Bags', 'Accessories', 'Beauty & Personal Care', 'Electronics', 'Fashion & Apparel', 'Home & Lifestyle'];
         try {
-            // Strip common conversational filler words to extract search keywords
+            const catRes = await fetch(`${backendBase.replace(/\/$/, '')}/products/categories/`, {
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store'
+            });
+            if (catRes.ok) {
+                const catData = await catRes.json();
+                const cats = Array.isArray(catData.results) ? catData.results : (Array.isArray(catData) ? catData : []);
+                const valid = cats
+                    .filter((c: any) => c.is_active !== false && !c.slug?.includes('test') && !c.name?.toLowerCase().includes('test'))
+                    .map((c: any) => c.name);
+                if (valid.length > 0) activeCategories = valid;
+            }
+        } catch {
+            // Graceful fallback to default categories
+        }
+
+        // ========================================================
+        // Priority 1: Handle Order-Specific Tracking / Query
+        // ========================================================
+        if (extractedOrderNumber) {
+            let trackedOrder: AssistantOrder | null = null;
+            try {
+                const trackRes = await fetch(`${backendBase.replace(/\/$/, '')}/orders/track/public/${encodeURIComponent(extractedOrderNumber)}/`, {
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store'
+                });
+                if (trackRes.ok) {
+                    const data = await trackRes.json();
+                    trackedOrder = {
+                        id: data.id,
+                        order_number: data.order_number,
+                        state: data.state,
+                        state_display: data.state_display,
+                        total: typeof data.total === 'string' ? parseFloat(data.total) : (data.total || 0),
+                        amount_paid: typeof data.amount_paid === 'string' ? parseFloat(data.amount_paid) : (data.amount_paid || 0),
+                        balance_due: typeof data.balance_due === 'string' ? parseFloat(data.balance_due) : (data.balance_due || 0),
+                        delivery_window: data.delivery_window || '',
+                        items_count: data.items?.length || 1,
+                        items: (data.items || []).map((it: any) => ({
+                            name: it.product_name || it.product?.name || 'Item',
+                            quantity: it.quantity || 1,
+                            image: it.product?.image || null
+                        }))
+                    };
+                }
+            } catch (err) {
+                console.warn('[Assistant API] Error fetching tracked order:', err);
+            }
+
+            if (trackedOrder) {
+                orders = [trackedOrder];
+                const hasBalance = trackedOrder.balance_due > 0 || trackedOrder.state === 'PENDING_PAYMENT';
+                const isPayIntent = isPayBalanceQuery || /\b(pay|payment|settle|complete|checkout)\b/i.test(trimmed);
+
+                if (isPayIntent && hasBalance) {
+                    const payLabel = trackedOrder.balance_due > 0
+                        ? `Pay Balance (GH₵ ${trackedOrder.balance_due.toFixed(2)})`
+                        : 'Complete Payment';
+                    reply = customerName
+                        ? (trackedOrder.balance_due > 0
+                            ? `${customerName}, order #${trackedOrder.order_number} has an outstanding balance of GH₵ ${trackedOrder.balance_due.toFixed(2)}. Tap below to finish your payment right away!`
+                            : `${customerName}, order #${trackedOrder.order_number} is pending payment. Tap below to complete your checkout right away!`)
+                        : (trackedOrder.balance_due > 0
+                            ? `Order #${trackedOrder.order_number} has an outstanding balance of GH₵ ${trackedOrder.balance_due.toFixed(2)}. Tap below to finish your payment right away!`
+                            : `Order #${trackedOrder.order_number} is pending payment. Tap below to complete your checkout right away!`);
+                    actionLink = {
+                        label: payLabel,
+                        href: `/checkout?order=${trackedOrder.order_number}`
+                    };
+                    quickReplies = [
+                        { label: payLabel, query: `Pay balance for ${trackedOrder.order_number}`, isCheckout: true },
+                        { label: "Track Shipment", query: `Track ${trackedOrder.order_number}` },
+                        { label: "Browse Catalog", query: "Browse catalog" }
+                    ];
+                } else if (isPayIntent && !hasBalance) {
+                    reply = customerName
+                        ? `Order #${trackedOrder.order_number} is already fully paid, ${customerName}! You have zero outstanding balance on it.`
+                        : `Order #${trackedOrder.order_number} is already fully paid! You have zero outstanding balance on it.`;
+                    actionLink = { label: "Track Order Live", href: `/track?order=${trackedOrder.order_number}` };
+                    quickReplies = [
+                        { label: "Track Live", query: `Track ${trackedOrder.order_number}` },
+                        { label: "View All Orders", query: "My orders" }
+                    ];
+                } else {
+                    // Tracking details response
+                    const state = trackedOrder.state;
+                    if (state === 'PAID') {
+                        reply = customerName
+                            ? `Your order #${trackedOrder.order_number} is confirmed and paid, ${customerName}! Our sourcing team is preparing your package.`
+                            : `Your order #${trackedOrder.order_number} is confirmed and paid! Our sourcing team is preparing your package.`;
+                    } else if (state === 'IN_TRANSIT') {
+                        reply = customerName
+                            ? `Your order #${trackedOrder.order_number} is currently in transit to Accra, Ghana, ${customerName}. Delivery window: ${trackedOrder.delivery_window || '1-2 weeks'}.`
+                            : `Your order #${trackedOrder.order_number} is currently in transit to Accra, Ghana. Delivery window: ${trackedOrder.delivery_window || '1-2 weeks'}.`;
+                    } else if (state === 'ARRIVED') {
+                        reply = customerName
+                            ? `Great news, ${customerName}! Order #${trackedOrder.order_number} has arrived at our Accra Central sorting hub.`
+                            : `Great news! Order #${trackedOrder.order_number} has arrived at our Accra Central sorting hub.`;
+                    } else if (state === 'OUT_FOR_DELIVERY') {
+                        reply = customerName
+                            ? `Your order #${trackedOrder.order_number} is out for local delivery today, ${customerName}!`
+                            : `Your order #${trackedOrder.order_number} is out for local delivery today!`;
+                    } else if (state === 'DELIVERED') {
+                        reply = customerName
+                            ? `Your order #${trackedOrder.order_number} has been delivered safely, ${customerName}. Thank you for shopping with London's Imports!`
+                            : `Your order #${trackedOrder.order_number} has been delivered safely. Thank you for shopping with London's Imports!`;
+                    } else if (state === 'PENDING_PAYMENT') {
+                        reply = customerName
+                            ? `Your order #${trackedOrder.order_number} is awaiting payment, ${customerName}.${trackedOrder.balance_due > 0 ? ` Balance due: GH₵ ${trackedOrder.balance_due.toFixed(2)}.` : ''}`
+                            : `Your order #${trackedOrder.order_number} is awaiting payment.${trackedOrder.balance_due > 0 ? ` Balance due: GH₵ ${trackedOrder.balance_due.toFixed(2)}.` : ''}`;
+                    } else {
+                        reply = customerName
+                            ? `Your order #${trackedOrder.order_number} is currently "${trackedOrder.state_display}", ${customerName}. Delivery window: ${trackedOrder.delivery_window || 'To be confirmed'}.`
+                            : `Your order #${trackedOrder.order_number} is currently "${trackedOrder.state_display}". Delivery window: ${trackedOrder.delivery_window || 'To be confirmed'}.`;
+                    }
+
+                    if (hasBalance && state !== 'PENDING_PAYMENT' && trackedOrder.balance_due > 0) {
+                        reply += ` (Note: Remaining balance of GH₵ ${trackedOrder.balance_due.toFixed(2)}).`;
+                    }
+
+                    if (hasBalance) {
+                        const payLabel = trackedOrder.balance_due > 0
+                            ? `Pay Balance (GH₵ ${trackedOrder.balance_due.toFixed(2)})`
+                            : 'Complete Payment';
+                        actionLink = {
+                            label: payLabel,
+                            href: `/checkout?order=${trackedOrder.order_number}`
+                        };
+                        quickReplies = [
+                            { label: payLabel, query: `Pay balance for ${trackedOrder.order_number}`, isCheckout: true },
+                            { label: "Track Shipment", query: `Track ${trackedOrder.order_number}` },
+                            { label: "View All Orders", query: "My orders" }
+                        ];
+                    } else {
+                        actionLink = { label: "Track Shipment Live", href: `/track?order=${trackedOrder.order_number}` };
+                        quickReplies = [
+                            { label: "Track Live", query: `Track ${trackedOrder.order_number}` },
+                            { label: "View All Orders", query: "My orders" },
+                            { label: "Browse Catalog", query: "Browse catalog" }
+                        ];
+                    }
+                }
+
+
+                return NextResponse.json({
+                    reply,
+                    products: [],
+                    orders,
+                    actionLink,
+                    quickReplies
+                });
+            } else {
+                reply = customerName
+                    ? `I couldn't find an order with reference "${extractedOrderNumber}", ${customerName}. Please double-check your order number or visit your orders page below!`
+                    : `I couldn't find an order with reference "${extractedOrderNumber}". Please double-check your order number or visit your orders page below!`;
+                actionLink = { label: "View My Orders", href: "/orders" };
+                quickReplies = [
+                    { label: "View All Orders", query: "My orders" },
+                    { label: "Browse Catalog", query: "Browse catalog" }
+                ];
+
+                return NextResponse.json({
+                    reply,
+                    products: [],
+                    orders: [],
+                    actionLink,
+                    quickReplies
+                });
+            }
+        }
+
+        // ========================================================
+        // Priority 2: Handle General "Pay Balance" / "Continue Payment"
+        // ========================================================
+        if (isPayBalanceQuery) {
+            if (isAuthenticated) {
+                const unpaid = ordersContext.filter((o: any) => (o.balance_due > 0 || o.state === 'PENDING_PAYMENT' || o.state === 'DRAFT'));
+                if (unpaid.length > 0) {
+                    const target = unpaid[0];
+                    const dueAmount = parseFloat(target.balance_due || 0);
+                    const payLabel = dueAmount > 0
+                        ? `Pay Balance (GH₵ ${dueAmount.toFixed(2)})`
+                        : 'Complete Payment';
+                    reply = customerName
+                        ? (dueAmount > 0
+                            ? `${customerName}, you have an outstanding balance of GH₵ ${dueAmount.toFixed(2)} on order #${target.order_number}. Tap below to finish your payment right away!`
+                            : `${customerName}, order #${target.order_number} is pending payment. Tap below to complete your checkout right away!`)
+                        : (dueAmount > 0
+                            ? `You have an outstanding balance of GH₵ ${dueAmount.toFixed(2)} on order #${target.order_number}. Tap below to finish your payment right away!`
+                            : `Order #${target.order_number} is pending payment. Tap below to complete your checkout right away!`);
+                    actionLink = {
+                        label: payLabel,
+                        href: `/checkout?order=${target.order_number}`
+                    };
+                    orders = unpaid.slice(0, 3);
+                    quickReplies = [
+                        { label: payLabel, query: `Pay balance for ${target.order_number}`, isCheckout: true },
+                        { label: "View All Orders", query: "My orders" }
+                    ];
+                } else if (ordersContext.length > 0) {
+                    reply = customerName
+                        ? `Great news, ${customerName}! All your orders are fully paid up. You don't have any outstanding balance.`
+                        : `Great news! All your orders are fully paid up. You don't have any outstanding balance.`;
+                    actionLink = { label: "View All Orders", href: "/orders" };
+                    orders = ordersContext.slice(0, 2);
+                    quickReplies = [
+                        { label: "Track my order", query: "Track my order" },
+                        { label: "Browse Catalog", query: "Browse catalog" }
+                    ];
+                } else {
+                    reply = customerName
+                        ? `${customerName}, you don't have any pending orders with an unpaid balance right now.`
+                        : `You don't have any pending orders with an unpaid balance right now.`;
+                    actionLink = { label: "Browse Catalog", href: "/products" };
+                    quickReplies = [
+                        { label: "Browse Catalog", query: "Browse catalog" }
+                    ];
+                }
+            } else {
+                reply = "To pay an outstanding balance or continue an order payment, please sign in to your account, or provide your order reference number (e.g. LI-20260905-XXXXX)!";
+                actionLink = { label: "Sign In to Continue Payment", href: "/login?redirect=/orders" };
+                quickReplies = [
+                    { label: "Sign In", query: "Sign in" },
+                    { label: "Browse Catalog", query: "Browse catalog" }
+                ];
+            }
+
+            return NextResponse.json({
+                reply,
+                products: [],
+                orders,
+                actionLink,
+                quickReplies
+            });
+        }
+
+        // ========================================================
+        // Priority 3: Handle "My Orders" / "List Orders"
+        // ========================================================
+        if (isMyOrdersQuery) {
+            if (isAuthenticated) {
+                if (ordersContext.length > 0) {
+                    const unpaid = ordersContext.filter((o: any) => (o.balance_due > 0 || o.state === 'PENDING_PAYMENT'));
+                    orders = ordersContext.slice(0, 4);
+
+                    reply = customerName
+                        ? `${customerName}, you have ${ordersContext.length} order${ordersContext.length > 1 ? 's' : ''} on record with us.`
+                        : `You have ${ordersContext.length} order${ordersContext.length > 1 ? 's' : ''} on record with us.`;
+
+                    if (unpaid.length > 0) {
+                        reply += ` Order #${unpaid[0].order_number} has an outstanding balance of GH₵ ${parseFloat(unpaid[0].balance_due || 0).toFixed(2)}.`;
+                        actionLink = {
+                            label: `Pay Balance (GH₵ ${parseFloat(unpaid[0].balance_due || 0).toFixed(2)})`,
+                            href: `/checkout?order=${unpaid[0].order_number}`
+                        };
+                        quickReplies = [
+                            { label: "Pay Balance", query: `Pay balance for ${unpaid[0].order_number}`, isCheckout: true },
+                            { label: "Track my order", query: "Track my order" },
+                            { label: "Browse Catalog", query: "Browse catalog" }
+                        ];
+                    } else {
+                        reply += ` All your orders are confirmed and paid. You can track their status below!`;
+                        actionLink = { label: "View All Orders", href: "/orders" };
+                        quickReplies = [
+                            { label: "Track my order", query: "Track my order" },
+                            { label: "Browse Catalog", query: "Browse catalog" }
+                        ];
+                    }
+                } else {
+                    reply = customerName
+                        ? `${customerName}, you haven't placed any orders yet. Feel free to browse our catalog or tell me what item you're looking for!`
+                        : `You haven't placed any orders yet. Feel free to browse our catalog or tell me what item you're looking for!`;
+                    actionLink = { label: "Browse Catalog", href: "/products" };
+                    quickReplies = [
+                        { label: "Browse Catalog", query: "Browse catalog" },
+                        ...activeCategories.slice(0, 3).map(c => ({
+                            label: c,
+                            query: `Show me ${c.toLowerCase()}`
+                        }))
+                    ];
+                }
+            } else {
+                reply = "To see your placed orders and balances, please sign in to your account, or tell me your order reference number to look it up right away!";
+                actionLink = { label: "Sign In to View Orders", href: "/login?redirect=/orders" };
+                quickReplies = [
+                    { label: "Sign In", query: "Sign in" },
+                    { label: "Browse Catalog", query: "Browse catalog" }
+                ];
+            }
+
+            return NextResponse.json({
+                reply,
+                products: [],
+                orders,
+                actionLink,
+                quickReplies
+            });
+        }
+
+        // ========================================================
+        // Priority 4: Handle General "Track My Order" (No number provided)
+        // ========================================================
+        if (isTrackGeneralQuery) {
+            if (isAuthenticated) {
+                if (ordersContext.length > 0) {
+                    const latest = ordersContext[0];
+                    orders = ordersContext.slice(0, 3);
+                    const hasBalance = latest.balance_due > 0 || latest.state === 'PENDING_PAYMENT';
+
+                    reply = customerName
+                        ? `${customerName}, your latest order #${latest.order_number} is currently "${latest.state_display}". Delivery window: ${latest.delivery_window || 'To be confirmed'}.`
+                        : `Your latest order #${latest.order_number} is currently "${latest.state_display}". Delivery window: ${latest.delivery_window || 'To be confirmed'}.`;
+
+                    if (hasBalance) {
+                        reply += ` (Outstanding balance: GH₵ ${parseFloat(latest.balance_due || 0).toFixed(2)}).`;
+                        actionLink = {
+                            label: `Pay Balance (GH₵ ${parseFloat(latest.balance_due || 0).toFixed(2)})`,
+                            href: `/checkout?order=${latest.order_number}`
+                        };
+                        quickReplies = [
+                            { label: "Pay Balance", query: `Pay balance for ${latest.order_number}`, isCheckout: true },
+                            { label: "View All Orders", query: "My orders" },
+                            { label: "Browse Catalog", query: "Browse catalog" }
+                        ];
+                    } else {
+                        actionLink = { label: "View Live Tracking", href: `/track?order=${latest.order_number}` };
+                        quickReplies = [
+                            { label: "View Live Tracking", query: `Track ${latest.order_number}` },
+                            { label: "View All Orders", query: "My orders" },
+                            { label: "Browse Catalog", query: "Browse catalog" }
+                        ];
+                    }
+                } else {
+                    reply = customerName
+                        ? `${customerName}, you don't have any placed orders to track yet. Feel free to browse our catalog or tell me what item you're looking for!`
+                        : `You don't have any placed orders to track yet. Feel free to browse our catalog or tell me what item you're looking for!`;
+                    actionLink = { label: "Browse Catalog", href: "/products" };
+                    quickReplies = [
+                        { label: "Browse Catalog", query: "Browse catalog" },
+                        ...activeCategories.slice(0, 3).map(c => ({
+                            label: c,
+                            query: `Show me ${c.toLowerCase()}`
+                        }))
+                    ];
+                }
+            } else {
+                reply = "To track your package, please type your order reference number (for example, LI-20260905-XXXXX) or sign in to your account!";
+                actionLink = { label: "Track by Order Number", href: "/track" };
+                quickReplies = [
+                    { label: "Sign In", query: "Sign in" },
+                    { label: "Browse Catalog", query: "Browse catalog" }
+                ];
+            }
+
+            return NextResponse.json({
+                reply,
+                products: [],
+                orders,
+                actionLink,
+                quickReplies
+            });
+        }
+
+        // ========================================================
+        // Product Search (When not an order query)
+        // ========================================================
+        try {
             let cleanQuery = trimmed
-                .replace(/^(can you (find|show|get)|i need|i want to see|i want|looking for|show me all the|show all the|show me|show all|please find|do you have|what|search for|order a product|check my cart|track my order)\s+/i, '')
+                .replace(/^(can you (find|show|get)|i need|i want to see|i want|looking for|show me all the|show all the|show me|show all|please find|do you have|what|search for|order a product|check my cart)\s+/i, '')
                 .replace(/\s+(do you have|we have|available|in stock|you got)\??$/i, '')
                 .replace(/[?!.,]/g, '')
                 .trim();
 
             if (isBrowseCatalog) {
-                // Fetch our top active store items directly so they appear right inside the chatbox
                 const catalogUrl = `${backendBase.replace(/\/$/, '')}/products/?is_active=true&limit=6`;
                 const res = await fetch(catalogUrl, {
                     headers: { 'Accept': 'application/json' },
@@ -131,31 +540,13 @@ export async function POST(req: NextRequest) {
             console.warn('[Assistant API] Catalog search warning:', e);
         }
 
-        // 2. Fetch live store categories from backend for AI context
-        let activeCategories: string[] = ['Bags', 'Accessories', 'Beauty & Personal Care', 'Electronics', 'Fashion & Apparel', 'Home & Lifestyle'];
-        try {
-            const catRes = await fetch(`${backendBase.replace(/\/$/, '')}/products/categories/`, {
-                headers: { 'Accept': 'application/json' },
-                cache: 'no-store'
-            });
-            if (catRes.ok) {
-                const catData = await catRes.json();
-                const cats = Array.isArray(catData.results) ? catData.results : (Array.isArray(catData) ? catData : []);
-                const valid = cats
-                    .filter((c: any) => c.is_active !== false && !c.slug?.includes('test') && !c.name?.toLowerCase().includes('test'))
-                    .map((c: any) => c.name);
-                if (valid.length > 0) activeCategories = valid;
-            }
-        } catch {
-            // Graceful fallback to default categories
-        }
-
         const hasCartItems = Boolean(cartContext && typeof cartContext === 'object' && cartContext.count > 0);
 
-        // 3. Formulate Concierge response using Groq if key is present
+        // ========================================================
+        // Formulate Concierge response using Groq if key is present
+        // ========================================================
         const rawKey = process.env.GROQ_API_KEY || '';
         const groqApiKey = rawKey.replace(/["'\r\n]/g, '').trim();
-        let reply = '';
         let aiActionLink: { label: string; href: string } | undefined = undefined;
         let aiQuickReplies: Array<{ label: string; query: string; isCheckout?: boolean }> | undefined = undefined;
 
@@ -165,8 +556,14 @@ export async function POST(req: NextRequest) {
                     ? `Available matching items in shop:\n` + products.map((p, idx) => `${idx + 1}. ${p.name}`).join('\n')
                     : 'No matching products searched.';
 
-                const systemPrompt = `You are Miss London, a polite, helpful store attendant and receptionist at London's Imports in a shopping mall in Accra, Ghana.
-You assist customers in Accra, Kumasi, Tema, and across Ghana who visit your store or chat with you to buy items, order products from China, or ask questions.
+                const orderHistoryContext = ordersContext && ordersContext.length > 0
+                    ? `Customer Orders on Record:\n` + ordersContext.map((o: any, idx: number) =>
+                        `${idx + 1}. Order #${o.order_number} | Status: ${o.state_display} | Total: GH₵ ${o.total} | Balance Due: GH₵ ${o.balance_due}`
+                    ).join('\n')
+                    : (isAuthenticated ? 'Customer has 0 placed orders.' : 'Customer is a visiting guest.');
+
+                const systemPrompt = `You are Miss London, a polite, helpful store attendant and receptionist at London's Imports in Accra, Ghana.
+You assist customers in Accra, Kumasi, Tema, and across Ghana who visit your store or chat with you to buy items, order products from China, track orders, or pay balances.
 
 ${customerName ? `Customer:
 - You are attending to "${customerName}".
@@ -176,25 +573,26 @@ ${customerName ? `Customer:
 Real store categories available right now:
 ${activeCategories.map(c => `- ${c}`).join('\n')}
 
+${orderHistoryContext}
+
 HOW TO TALK AND ACT (BEHAVIOR RULES):
 1. Speak in plain, simple, everyday English that ANYONE can easily understand.
    - Do NOT use big English, complex vocabulary, or high-class boutique jargon!
    - Talk like a normal, respectful, caring person attending to customers in a shopping mall store in Ghana.
-2. If the customer greets you (e.g. "hey", "hello", "hi", "good day"), greet them back warmly and politely, call them by name, and ask how you can help them shop or order today! NEVER treat greetings as a search for an item.
+2. If the customer greets you ("hey", "hello", "hi"), greet them back warmly and politely, call them by name, and ask how you can help them shop, track an order, or check items today!
 3. If the customer thanks you ("thanks", "cool", "ok"), respond with genuine warmth and ask if they'd like to explore anything else.
 4. NEVER sound like a machine, AI, or robot.
-   - NEVER say "I am an AI", "large language model", or "virtual assistant". You are a real human store attendant helping them shop.
-   - NEVER recite database fields, batch numbers, or logistics codes (like "pre-order batch with a 3-4 week delivery time").
-   - NEVER give button instructions (DO NOT say "browse the cards below", "tap '+ Add'", or "click the button"). The customer already sees the pictures and buttons on their screen!
-   - NEVER add summary notes or brackets like "(Found 4 verified product cards)".
-5. In an ongoing conversation, do not repeat "Welcome to London's Imports" in every message; just answer directly, warmly, and naturally.
+   - NEVER say "I am an AI", "large language model", or "virtual assistant".
+   - NEVER recite database fields or batch numbers unless referring to real customer orders.
+   - NEVER give button instructions (DO NOT say "browse the cards below" or "click the button").
+5. In an ongoing conversation, do not repeat "Welcome to London's Imports" in every message; answer directly, warmly, and naturally.
 6. Keep answers brief and clear: 1 to 2 simple sentences so customers don't get tired reading.
 
 OUTPUT FORMAT:
 Always return a valid JSON object with this exact structure:
 {
   "reply": "Your warm, polite, 1-2 sentence spoken response to the customer in simple, everyday English.",
-  "actionLink": { "label": "Browse Catalog", "href": "/products" } OR { "label": "Proceed to Checkout", "href": "/checkout" } OR null,
+  "actionLink": { "label": "Browse Catalog", "href": "/products" } OR { "label": "Proceed to Checkout", "href": "/checkout" } OR { "label": "Track Order", "href": "/track" } OR null,
   "quickReplies": [
     { "label": "Short button label", "query": "Search query or request", "isCheckout": false }
   ]
@@ -203,19 +601,14 @@ Always return a valid JSON object with this exact structure:
 Context-driven intelligence for actionLink and quickReplies:
 - If customer greets you ("hey", "hello", "hi"):
   * actionLink should be {"label": "Browse Catalog", "href": "/products"}.
-  * quickReplies should suggest {"label": "Browse Catalog", "query": "Browse catalog"}, {"label": "Order from China", "query": "Order from China"}, and 2 store categories.
+  * quickReplies should suggest {"label": "Browse Catalog", "query": "Browse catalog"}, {"label": "Order from China", "query": "Order from China"}, and store categories.
 - If customer's cart is EMPTY (0 items):
   * actionLink MUST be {"label": "Browse Catalog", "href": "/products"}.
-  * quickReplies MUST start with {"label": "Browse Catalog", "query": "Browse catalog", "isCheckout": false} followed by 2 to 3 real store categories or "Order from China" (e.g. "Bags", "Accessories", "Order from China").
-  * NEVER suggest or provide checkout when cart is empty!
-- If customer asks to browse catalog or view products:
-  * actionLink should be {"label": "Browse Catalog", "href": "/products"} or null.
-  * quickReplies should suggest store categories (e.g. "Bags", "Accessories", "Shoes", "Order from China") so they can filter or explore.
+  * quickReplies MUST start with {"label": "Browse Catalog", "query": "Browse catalog", "isCheckout": false}.
+  * NEVER suggest checkout when cart is empty!
 - If customer's cart has items and they are done or ready to pay:
   * actionLink MUST be {"label": "Proceed to Checkout", "href": "/checkout"}.
   * quickReplies should offer {"label": "Proceed to Checkout", "query": "Proceed to checkout", "isCheckout": true} and {"label": "Order something else", "query": "Order something else", "isCheckout": false}.
-- If customer asks about or looks at products:
-  * quickReplies should suggest relevant next options (like other categories, checking cart, or custom China sourcing).
 
 Available shop catalog items:
 ${productContext}
@@ -237,7 +630,7 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                         'Authorization': `Bearer ${groqApiKey}`,
                         'Content-Type': 'application/json',
                     },
-                    signal: AbortSignal.timeout(6000), // 6 seconds timeout so assistant never lags
+                    signal: AbortSignal.timeout(6000),
                     body: JSON.stringify({
                         model: 'qwen/qwen3.8-27b',
                         response_format: { type: 'json_object' },
@@ -286,18 +679,17 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                         console.warn('[Assistant API] Groq JSON parse fallback:', err);
                         reply = rawContent.replace(/^["']|["']$/g, '');
                     }
-                } else {
-                    const errText = await groqRes.text().catch(() => '');
-                    console.error('[Assistant API] Groq HTTP Error:', groqRes.status, errText);
                 }
             } catch (err) {
                 console.error('[Assistant API] Groq invocation error:', err);
             }
         }
 
-        // 4. Dynamic fallback replies & quickReplies when AI did not supply them
-        let quickReplies: Array<{ label: string; query: string; isCheckout?: boolean }> | undefined = aiQuickReplies;
-        let actionLink: { label: string; href: string } | undefined = aiActionLink;
+        // ========================================================
+        // Fallback Replies & QuickReplies
+        // ========================================================
+        quickReplies = aiQuickReplies;
+        actionLink = aiActionLink;
 
         const isDone = /^(done|i'?m done|i am done|finished|that'?s all|that is all|nothing else|no more|done ordering|all done|we are done)$/i.test(trimmed);
         const isYesCheckout = /^(yes|yeah|yep|proceed|checkout|proceed to checkout|go to checkout|take me to checkout|yes,? proceed( to checkout)?|check out|pay now|buy now)$/i.test(trimmed);
@@ -308,28 +700,30 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
             if (isGreeting) {
                 quickReplies = [
                     { label: "Browse Catalog", query: "Browse catalog" },
-                    ...activeCategories.slice(0, 3).map(c => ({
+                    ...activeCategories.slice(0, 2).map(c => ({
                         label: c,
                         query: `Show me ${c.toLowerCase()}`
                     })),
+                    { label: "Track my order", query: "Track my order" },
                     { label: "Order from China", query: "Order from China" }
                 ];
             } else if (isThanks) {
                 quickReplies = hasCartItems ? [
                     { label: "Proceed to Checkout", query: "Proceed to checkout", isCheckout: true },
                     { label: "Browse Catalog", query: "Browse catalog" },
-                    { label: "Order from China", query: "Order from China" }
+                    { label: "Track my order", query: "Track my order" }
                 ] : [
                     { label: "Browse Catalog", query: "Browse catalog" },
-                    ...activeCategories.slice(0, 3).map(c => ({
+                    ...activeCategories.slice(0, 2).map(c => ({
                         label: c,
                         query: `Show me ${c.toLowerCase()}`
                     })),
-                    { label: "Order from China", query: "Order from China" }
+                    { label: "Track my order", query: "Track my order" }
                 ];
             } else if (isHelp) {
                 quickReplies = [
                     { label: "Browse Catalog", query: "Browse catalog" },
+                    { label: "Track my order", query: "Track my order" },
                     { label: "Check my cart", query: "Check my cart" },
                     { label: "Order from China", query: "Order from China" }
                 ];
@@ -382,8 +776,8 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                 quickReplies = [
                     { label: "Browse catalog", query: "Browse catalog" },
                     { label: "Check my cart", query: "Check my cart" },
-                    { label: "Order from China", query: "Order from China" },
-                    { label: "Track my order", query: "Track my order" }
+                    { label: "Track my order", query: "Track my order" },
+                    { label: "Order from China", query: "Order from China" }
                 ];
             }
         }
@@ -393,13 +787,13 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
 
             if (isGreeting) {
                 reply = customerName ? pick([
-                    `Hello ${customerName}! Welcome to London's Imports. How can I help you shop or order today?`,
-                    `Hi ${customerName}! So good to have you here at London's Imports. What can I find for you today?`,
-                    `Good day, ${customerName}! I'm Miss London. Feel free to browse our catalog or tell me what item you need.`
+                    `Hello ${customerName}! Welcome to London's Imports. How can I help you shop, track an order, or explore items today?`,
+                    `Hi ${customerName}! So good to have you here at London's Imports. What can I find or track for you today?`,
+                    `Good day, ${customerName}! I'm Miss London. Feel free to browse our catalog, check your orders, or tell me what item you need.`
                 ]) : pick([
-                    "Hello! Welcome to London's Imports. How can I help you shop or order today?",
-                    "Hi! Good to have you here at London's Imports. What can I find for you today?",
-                    "Good day! I'm Miss London. Feel free to browse our catalog or tell me what item you need."
+                    "Hello! Welcome to London's Imports. How can I help you shop, track an order, or explore items today?",
+                    "Hi! Good to have you here at London's Imports. What can I find or track for you today?",
+                    "Good day! I'm Miss London. Feel free to browse our catalog, check your orders, or tell me what item you need."
                 ]);
             } else if (isThanks) {
                 reply = customerName ? pick([
@@ -411,8 +805,8 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                 ]);
             } else if (isHelp) {
                 reply = customerName
-                    ? `I am Miss London, your shopping assistant, ${customerName}! I can show you items in our store, help you order items directly from China, check your cart, or assist you with checkout.`
-                    : "I am Miss London, your shopping assistant! I can show you items in our store, help you order items directly from China, check your cart, or assist you with checkout.";
+                    ? `I am Miss London, your shopping assistant, ${customerName}! I can show you items in our store, help you track your orders, complete balance payments, or assist you with ordering from China.`
+                    : "I am Miss London, your shopping assistant! I can show you items in our store, help you track your orders, complete balance payments, or assist you with ordering from China.";
             } else if (isDone) {
                 if (hasCartItems) {
                     reply = customerName ? pick([
@@ -447,111 +841,35 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                 }
             } else if (isNoKeepShopping) {
                 reply = customerName ? pick([
-                    `No problem at all, ${customerName}! What else would you love to shop for today? (For example: quality sneakers, designer bags, perfumes, or clothing)`,
+                    `No problem at all, ${customerName}! What else would you love to shop for today?`,
                     `Sure thing, ${customerName}! Tell me what item or style you'd like to check out next.`,
                     `Let's keep shopping, ${customerName}! Tell me what you have in mind and I'll show you our top picks right away.`
                 ]) : pick([
-                    "No problem at all! What else would you love to shop for today? (For example: quality sneakers, designer bags, perfumes, or clothing)",
+                    "No problem at all! What else would you love to shop for today?",
                     "Sure thing! Tell me what item or style you'd like to check out next.",
                     "Let's keep shopping! Tell me what you have in mind and I'll show you our top picks right away."
                 ]);
             } else if (isBack) {
-                const lastAssistantMsg = [...conversationHistory].reverse().find((m: any) => m.role === 'assistant')?.content || '';
-                const wasCartOrCheckout = /cart|checkout|added/i.test(lastAssistantMsg);
-                const wasProducts = /bag|shoe|item|product|catalog/i.test(lastAssistantMsg);
-
-                if (wasCartOrCheckout) {
-                    reply = customerName
-                        ? `No problem at all, ${customerName}! We're back to browsing our store. What else would you love to check out today?`
-                        : "No problem at all! We're back to browsing our store. What else would you love to check out today?";
-                } else if (wasProducts) {
-                    reply = customerName
-                        ? `Sure thing, ${customerName}! Stepping back to the main options. What category or style would you like to explore next?`
-                        : "Sure thing! Stepping back to the main options. What category or style would you like to explore next?";
-                } else {
-                    reply = customerName
-                        ? `No problem, ${customerName}! Here are the main options to help you shop today:`
-                        : "No problem! Here are the main options to help you shop today:";
-                }
+                reply = customerName
+                    ? `No problem at all, ${customerName}! We're back to the main options. What would you like to do?`
+                    : "No problem at all! We're back to the main options. What would you like to do?";
             } else if (products.length > 0) {
-                const isBrowse = /browse|catalog|all\s+products|popular/i.test(trimmed);
-                const isBags = /bag|abg|tote|clutch|duffel|purse/i.test(trimmed) || products.some(p => /bag/i.test(p.category || p.name));
-                const isShoes = /shoe|sneaker|heel|boot/i.test(trimmed) || products.some(p => /shoe/i.test(p.category || p.name));
-
-                if (isBrowse) {
-                    reply = customerName ? pick([
-                        `Here are our popular store items available right now, ${customerName}! Which one catches your eye?`,
-                        `I pulled up our top shop items for you, ${customerName}! Take a look below.`
-                    ]) : pick([
-                        "Here are our popular store items available right now! Which one catches your eye?",
-                        "I pulled up our top shop items! Take a look below."
-                    ]);
-                } else if (isBags) {
-                    reply = customerName ? pick([
-                        `Here are the stylish bags we have in stock right now, ${customerName}! Which style catches your eye?`,
-                        `I found some lovely bag options for you, ${customerName}! Let me know what you think.`,
-                        `${customerName}, take a look at our current handbag collection! Which one is your favorite?`
-                    ]) : pick([
-                        `Here are the stylish bags we have in stock right now! Which style catches your eye?`,
-                        `I found some lovely bag options for you! Let me know what you think.`,
-                        `Take a look at our current handbag collection! Which one is your favorite?`
-                    ]);
-                } else if (isShoes) {
-                    reply = customerName ? pick([
-                        `I've pulled up our footwear collection for you, ${customerName}! Which style catches your eye?`,
-                        `Here are the lovely shoes we currently have available, ${customerName}! See anything you love?`,
-                        `${customerName}, take a look at our current shoe collection! Let me know what you think.`
-                    ]) : pick([
-                        `I've pulled up our footwear collection for you! Which style catches your eye?`,
-                        `Here are the lovely shoes we currently have available! See anything you love?`,
-                        `Take a look at our current shoe collection! Let me know what you think.`
-                    ]);
-                } else {
-                    reply = customerName ? pick([
-                        `I pulled up our top options for you, ${customerName}! Which one catches your eye?`,
-                        `Here are the items we have available for you, ${customerName}! Let me know what you think.`
-                    ]) : pick([
-                        `I pulled up our top options for you! Which one catches your eye?`,
-                        `Here are the items we have available! Let me know what you think.`
-                    ]);
-                }
+                reply = customerName
+                    ? `Here are our matching store items available for you, ${customerName}! Which one catches your eye?`
+                    : "Here are our matching store items available for you! Which one catches your eye?";
             } else if (/order\s+a\s+product|i\s+want\s+to\s+order|buy\s+a\s+product|place\s+an\s+order/i.test(trimmed)) {
-                reply = customerName ? pick([
-                    `What would you love to shop for today, ${customerName}? (For example: quality sneakers, designer handbags, perfumes, or clothing)`,
-                    `I'm ready to find whatever you need, ${customerName}! Are you searching for footwear, fashion bags, electronics, or personal care today?`,
-                    `${customerName}, tell me what item you have in mind — whether it's sneakers, wristwatches, phone accessories, or bags, and I'll find our best options for you!`,
-                    `What item are you looking to buy today, ${customerName}? If you have a specific brand or style in mind, let me know and I'll check our stock!`,
-                    `Happy to help you shop, ${customerName}! Tell me the product name or category you're looking for, and I'll pull up the best options for you in Cedis.`,
-                    `What can I help you order today, ${customerName}? Let me know the item, color, or type you want and I'll show you what we have right away.`
-                ]) : pick([
-                    "What would you love to shop for today? (For example: quality sneakers, designer handbags, perfumes, or clothing)",
-                    "I'm ready to find whatever you need! Are you searching for footwear, fashion bags, electronics, or personal care today?",
-                    "Tell me what item you have in mind — whether it's sneakers, wristwatches, phone accessories, or bags, and I'll find our best options for you!",
-                    "What item are you looking to buy today? If you have a specific brand or style in mind, let me know and I'll check our stock!",
-                    "Happy to help you shop! Tell me the product name or category you're looking for, and I'll pull up the best options for you in Cedis.",
-                    "What can I help you order today? Let me know the item, color, or type you want and I'll show you what we have right away."
-                ]);
+                reply = customerName
+                    ? `What can I help you order today, ${customerName}? Let me know the item, color, or style you want and I'll show you what we have right away.`
+                    : "What can I help you order today? Let me know the item, color, or style you want and I'll show you what we have right away.";
             } else if (/cart|basket|chart/i.test(trimmed)) {
                 if (hasCartItems) {
-                    reply = customerName ? pick([
-                        `${customerName}, you have ${cartContext.count} item${cartContext.count > 1 ? 's' : ''} in your cart right now. Would you like to proceed straight to checkout or add anything else?`,
-                        `I checked your cart, ${customerName} — you currently have ${cartContext.count} item${cartContext.count > 1 ? 's' : ''} ready. Ready to proceed to checkout or still browsing?`,
-                        `Your cart has ${cartContext.count} product${cartContext.count > 1 ? 's' : ''} saved, ${customerName}. We can proceed to checkout whenever you're ready!`
-                    ]) : pick([
-                        `You have ${cartContext.count} item${cartContext.count > 1 ? 's' : ''} in your cart right now. Would you like to proceed straight to checkout or add anything else?`,
-                        `I checked your cart — you currently have ${cartContext.count} item${cartContext.count > 1 ? 's' : ''} ready. Ready to proceed to checkout or still browsing?`,
-                        `Your cart has ${cartContext.count} product${cartContext.count > 1 ? 's' : ''} saved. We can proceed to checkout whenever you're ready!`
-                    ]);
+                    reply = customerName
+                        ? `${customerName}, you have ${cartContext.count} item${cartContext.count > 1 ? 's' : ''} in your cart right now. Would you like to proceed straight to checkout or add anything else?`
+                        : `You have ${cartContext.count} item${cartContext.count > 1 ? 's' : ''} in your cart right now. Would you like to proceed straight to checkout or add anything else?`;
                 } else {
-                    reply = customerName ? pick([
-                        `Your cart is currently empty, ${customerName}! Choose a category below to browse our catalog, or tell me what you would like to find today.`,
-                        `${customerName}, you don't have any items in your cart yet. Take a look at our categories below to find something nice!`,
-                        `Your cart is empty right now, ${customerName}. You can browse our categories below, or tell me what you need.`
-                    ]) : pick([
-                        "Your cart is currently empty! Choose a category below to browse our catalog, or tell me what you would like to find today.",
-                        "You don't have any items in your cart yet. Take a look at our categories below to find something nice!",
-                        "Your cart is empty right now. You can browse our categories below, or tell me what you need."
-                    ]);
+                    reply = customerName
+                        ? `Your cart is currently empty, ${customerName}! Choose a category below to browse our catalog, or tell me what you would like to find today.`
+                        : "Your cart is currently empty! Choose a category below to browse our catalog, or tell me what you would like to find today.";
                     if (!quickReplies) {
                         quickReplies = [
                             { label: "Browse Catalog", query: "Browse catalog" },
@@ -564,27 +882,9 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                     }
                 }
             } else if (/source|find|import|china/i.test(trimmed)) {
-                reply = customerName ? pick([
-                    `Yes, ${customerName}! If you want an item from China that is not in our shop, we can buy and deliver it directly to you in Ghana. What product are you looking to import?`,
-                    `We can source and ship almost anything directly from verified suppliers in China to Ghana for you, ${customerName}. Tell me what item you'd like us to find!`,
-                    `Looking to order directly from China, ${customerName}? We handle the purchasing, inspection, and air/sea shipping straight to Ghana. What item do you need?`,
-                    `${customerName}, we import directly from factories in China to your doorstep in Ghana! What product or brand are you looking to source?`
-                ]) : pick([
-                    "Yes! If you want an item from China that is not in our shop, we can buy and deliver it directly to you in Ghana. What product are you looking to import?",
-                    "We can source and ship almost anything directly from verified suppliers in China to Ghana. Tell me what item you'd like us to find for you!",
-                    "Looking to order directly from China? We handle the purchasing, inspection, and air/sea shipping straight to Ghana. What item do you need?",
-                    "We import directly from factories in China to your doorstep in Ghana! What product or brand are you looking to source?"
-                ]);
-            } else if (/track/i.test(trimmed)) {
-                reply = customerName ? pick([
-                    `${customerName}, you can easily track your package and see delivery updates using your order reference number on our tracking page.`,
-                    `To track your shipment, ${customerName}, click the link below to view real-time updates and arrival timeline.`,
-                    `Want to know where your shipment is, ${customerName}? You can check the current status of all your orders directly on your orders page below!`
-                ]) : pick([
-                    "You can easily track your package and see delivery updates using your order reference number on our tracking page.",
-                    "To track your order, click the link below to view your real-time shipment updates and arrival timeline.",
-                    "Want to know where your shipment is? You can check the current status of all your orders directly on your orders page below!"
-                ]);
+                reply = customerName
+                    ? `We can source and ship almost anything directly from verified suppliers in China to Ghana for you, ${customerName}. Tell me what item you'd like us to find!`
+                    : "We can source and ship almost anything directly from verified suppliers in China to Ghana. Tell me what item you'd like us to find for you!";
             } else {
                 reply = customerName
                     ? `I couldn't find an exact match for "${trimmed}" in our immediate Accra stock, ${customerName}. We can import it directly from verified factories in China for you, or you can browse our catalog below!`
@@ -603,7 +903,7 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
             }
         }
 
-        // 5. Attach dynamic action links based on AI recommendation or intent fallback
+        // Attach dynamic action links based on AI recommendation or intent fallback
         if (!actionLink) {
             if (isGreeting) {
                 actionLink = { label: "Browse Catalog", href: "/products" };
@@ -621,19 +921,18 @@ ${cartInfo ? `\nCustomer Cart Status: ${cartInfo}` : ''}`;
                 }
             } else if (/source|import|china/i.test(trimmed)) {
                 actionLink = { label: "Open Sourcing Page", href: "/sourcing" };
-            } else if (/track/i.test(trimmed)) {
-                actionLink = { label: "View My Orders", href: "/orders" };
             }
         }
 
         // Safety Gatekeeper: An empty cart must NEVER link to checkout
-        if (!hasCartItems && actionLink && actionLink.href.includes('checkout')) {
+        if (!hasCartItems && actionLink && actionLink.href.includes('checkout') && !actionLink.href.includes('order=')) {
             actionLink = { label: "Browse Catalog", href: "/products" };
         }
 
         return NextResponse.json({
             reply,
             products,
+            orders,
             actionLink,
             quickReplies
         });
