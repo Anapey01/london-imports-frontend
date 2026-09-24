@@ -16,9 +16,9 @@ const ToggleSwitch = ({ enabled, onChange, label, description }: ToggleSwitchPro
         <button
             onClick={onChange}
             aria-label={label || 'Toggle'}
-            className={`relative w-12 h-6 rounded-full transition-all duration-300 ${enabled ? 'bg-brand-emerald shadow-lg shadow-brand-emerald/20' : 'bg-surface-card border border-border-standard'}`}
+            className={`relative w-11 h-6 rounded-full transition-all duration-300 ${enabled ? 'bg-slate-900 dark:bg-white' : 'bg-slate-200 dark:bg-slate-700'}`}
         >
-            <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 ${enabled ? 'translate-x-6' : 'bg-content-secondary/40'}`} />
+            <span className={`absolute top-1 left-1 w-4 h-4 rounded-full shadow-sm transition-transform duration-300 ${enabled ? 'translate-x-5 bg-white dark:bg-slate-900' : 'bg-white'}`} />
         </button>
     </div>
 );

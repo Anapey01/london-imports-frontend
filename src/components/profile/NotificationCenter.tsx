@@ -122,8 +122,8 @@ export default function NotificationCenter({
 
           <div>
             {isGranted && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[8px] font-mono uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white" />
                 Active
               </span>
             )}
@@ -131,7 +131,7 @@ export default function NotificationCenter({
               <button
                 onClick={handleEnablePush}
                 disabled={isRequesting || permission === 'unsupported'}
-                className="px-4 py-2 bg-slate-900 hover:bg-brand-emerald dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
+                className="px-4 py-2 bg-slate-950 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 text-white text-[10px] font-mono uppercase tracking-wider rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
               >
                 {isRequesting ? (
                   <>
@@ -199,7 +199,7 @@ export default function NotificationCenter({
       {/* Multi-Channel Preferences */}
       <div className="bg-surface dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 space-y-4 transition-colors">
         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white" />
           Other Notification Channels
         </h4>
         <div className="divide-y divide-slate-100 dark:divide-slate-800/60">

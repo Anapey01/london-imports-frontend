@@ -442,9 +442,6 @@ export default function AboutPageContent() {
                                     REG. NO: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">BN516170426</span>
                                 </p>
                                 <p className="text-xs font-black text-slate-900 dark:text-white tracking-widest uppercase">
-                                    TIN: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">P0067185401</span>
-                                </p>
-                                <p className="text-xs font-black text-slate-900 dark:text-white tracking-widest uppercase">
                                     ESTABLISHED: <span className="font-mono font-medium text-slate-600 dark:text-slate-400 ml-2">2024 (Registered 2026)</span>
                                 </p>
                             </div>

@@ -30,7 +30,7 @@ export default function SettingsView({ user }: { user: User }) {
         date_of_birth: user?.date_of_birth || '',
     });
 
-    const inputClass = "w-full px-4 py-2.5 rounded-xl border outline-none transition-all text-xs font-medium bg-surface dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-brand-emerald focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400 dark:placeholder:text-slate-600";
+    const inputClass = "w-full px-4 py-2.5 rounded-xl border outline-none transition-all text-xs font-medium bg-surface dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-white placeholder:text-slate-400 dark:placeholder:text-slate-600";
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -108,7 +108,7 @@ export default function SettingsView({ user }: { user: User }) {
 
                     <section>
                         <div className="flex items-center gap-2 mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white" />
                             <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Default Delivery Address</h3>
                         </div>
                         
@@ -144,7 +144,7 @@ export default function SettingsView({ user }: { user: User }) {
                         <button 
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full sm:w-auto px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-emerald dark:hover:bg-brand-emerald dark:hover:text-white transition-all active:scale-[0.99] disabled:opacity-50 shadow-sm"
+                            className="w-full sm:w-auto px-10 py-4 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 transition-all active:scale-[0.99] disabled:opacity-50 shadow-sm"
                         >
                             {isSaving ? 'Saving Changes...' : 'Save Changes'}
                         </button>

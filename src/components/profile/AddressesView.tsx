@@ -57,7 +57,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                 {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-950 text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-brand-emerald transition-all active:scale-95 shadow-xl"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-slate-950 text-white text-[10px] font-mono uppercase tracking-[0.3em] rounded-xl hover:bg-slate-800 transition-all active:scale-95 shadow-md"
                     >
                         <Plus className="w-4 h-4" />
                         Add New Address
@@ -86,7 +86,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                             <div className="flex-1 space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-emerald-100 animate-pulse">
+                                    <span className="text-[8px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1 rounded-full uppercase tracking-wider border border-slate-200 dark:border-slate-700">
                                         Default Address
                                     </span>
                                 </div>
@@ -153,17 +153,17 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                                     placeholder="+233..." 
                                     value={formData.phone} 
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })} 
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-normal text-white outline-none focus:border-brand-emerald focus:bg-white/10 transition-all placeholder:text-white/30" 
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-sm font-normal text-white outline-none focus:border-white focus:bg-white/10 transition-all placeholder:text-white/30" 
                                     required 
                                 />
                             </div>
                         </div>
                         
                         <div className="flex gap-4 mt-10">
-                            <button type="submit" className="flex-1 py-5 bg-brand-emerald text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-emerald-400 transition-all active:scale-[0.98]">
-                                {editingId ? 'Save' : 'Add Address'}
+                            <button type="submit" className="flex-1 py-4 bg-white text-slate-950 text-[10px] font-mono font-bold uppercase tracking-[0.3em] rounded-xl hover:bg-slate-100 transition-all active:scale-[0.98]">
+                                {editingId ? 'Save Address' : 'Add Address'}
                             </button>
-                            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-8 text-[11px] font-black uppercase tracking-[0.4em] rounded-xl transition-all text-white/40 hover:text-white">
+                            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData({ label: '', city: '', area: '', landmark: '', phone: '' }); }} className="px-8 text-[10px] font-mono uppercase tracking-[0.3em] rounded-xl transition-all text-white/50 hover:text-white">
                                 Cancel
                             </button>
                         </div>
@@ -192,7 +192,7 @@ const AddressesView = ({ user }: AddressesViewProps) => {
                             <div key={address.id} className="p-6 rounded-2xl border border-slate-100 bg-white group hover:border-slate-300 transition-all duration-500 shadow-sm">
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="flex items-center gap-4">
-                                        <div className="p-2 rounded-lg bg-slate-50 text-slate-400 group-hover:text-brand-emerald transition-colors">
+                                        <div className="p-2 rounded-lg bg-slate-50 text-slate-400 group-hover:text-slate-900 transition-colors">
                                             <MapPin size={14} />
                                         </div>
                                         <div>

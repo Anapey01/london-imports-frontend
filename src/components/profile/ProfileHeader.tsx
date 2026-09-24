@@ -60,9 +60,9 @@ const ProfileHeader = ({ user }: { user: User }) => {
                         <div className="flex items-center gap-2 px-4 py-1.5 border border-slate-100 rounded-full">
                             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{user.email}</span>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50/50 border border-emerald-100/50 rounded-full">
-                            <ShieldCheck size={12} className="text-emerald-500" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-500">Verified Member</span>
+                        <div className="flex items-center gap-2 px-3.5 py-1 border border-slate-200 dark:border-slate-800 rounded-full bg-slate-50/60 dark:bg-slate-900/40">
+                            <ShieldCheck size={12} className="text-slate-500 dark:text-slate-400" />
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-slate-600 dark:text-slate-300">Verified Member</span>
                         </div>
                     </div>
 

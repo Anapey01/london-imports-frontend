@@ -40,7 +40,7 @@ const SidebarNav = ({ handleLogout }: { handleLogout: () => void }) => {
                             </svg>
                             <span className="truncate">{item.label}</span>
                             {active && (
-                                <div className="absolute right-4 w-1 h-1 rounded-full bg-brand-emerald animate-pulse" />
+                                <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white" />
                             )}
                         </Link>
                     );
