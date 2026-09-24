@@ -171,8 +171,6 @@ export async function POST(req: NextRequest) {
                         href: `/checkout?order=${trackedOrder.order_number}`
                     };
                     quickReplies = [
-                        { label: payLabel, query: `Pay balance for ${trackedOrder.order_number}`, isCheckout: true },
-                        { label: "Track Shipment", query: `Track ${trackedOrder.order_number}` },
                         { label: "Browse Catalog", query: "Browse catalog" }
                     ];
                 } else if (isPayIntent && !hasBalance) {
@@ -181,8 +179,7 @@ export async function POST(req: NextRequest) {
                         : `Order #${trackedOrder.order_number} is already fully paid! You have zero outstanding balance on it.`;
                     actionLink = { label: "Track Order Live", href: `/track?order=${trackedOrder.order_number}` };
                     quickReplies = [
-                        { label: "Track Live", query: `Track ${trackedOrder.order_number}` },
-                        { label: "View All Orders", query: "My orders" }
+                        { label: "Browse Catalog", query: "Browse catalog" }
                     ];
                 } else {
                     // Tracking details response
@@ -230,19 +227,16 @@ export async function POST(req: NextRequest) {
                             href: `/checkout?order=${trackedOrder.order_number}`
                         };
                         quickReplies = [
-                            { label: payLabel, query: `Pay balance for ${trackedOrder.order_number}`, isCheckout: true },
-                            { label: "Track Shipment", query: `Track ${trackedOrder.order_number}` },
-                            { label: "View All Orders", query: "My orders" }
+                            { label: "Browse Catalog", query: "Browse catalog" }
                         ];
                     } else {
                         actionLink = { label: "Track Shipment Live", href: `/track?order=${trackedOrder.order_number}` };
                         quickReplies = [
-                            { label: "Track Live", query: `Track ${trackedOrder.order_number}` },
-                            { label: "View All Orders", query: "My orders" },
                             { label: "Browse Catalog", query: "Browse catalog" }
                         ];
                     }
                 }
+
 
 
                 return NextResponse.json({
@@ -297,8 +291,7 @@ export async function POST(req: NextRequest) {
                     };
                     orders = unpaid.slice(0, 3);
                     quickReplies = [
-                        { label: payLabel, query: `Pay balance for ${target.order_number}`, isCheckout: true },
-                        { label: "View All Orders", query: "My orders" }
+                        { label: "Browse Catalog", query: "Browse catalog" }
                     ];
                 } else if (ordersContext.length > 0) {
                     reply = customerName
@@ -307,7 +300,6 @@ export async function POST(req: NextRequest) {
                     actionLink = { label: "View All Orders", href: "/orders" };
                     orders = ordersContext.slice(0, 2);
                     quickReplies = [
-                        { label: "Track my order", query: "Track my order" },
                         { label: "Browse Catalog", query: "Browse catalog" }
                     ];
                 } else {
@@ -357,15 +349,12 @@ export async function POST(req: NextRequest) {
                             href: `/checkout?order=${unpaid[0].order_number}`
                         };
                         quickReplies = [
-                            { label: "Pay Balance", query: `Pay balance for ${unpaid[0].order_number}`, isCheckout: true },
-                            { label: "Track my order", query: "Track my order" },
                             { label: "Browse Catalog", query: "Browse catalog" }
                         ];
                     } else {
                         reply += ` All your orders are confirmed and paid. You can track their status below!`;
                         actionLink = { label: "View All Orders", href: "/orders" };
                         quickReplies = [
-                            { label: "Track my order", query: "Track my order" },
                             { label: "Browse Catalog", query: "Browse catalog" }
                         ];
                     }
@@ -421,15 +410,11 @@ export async function POST(req: NextRequest) {
                             href: `/checkout?order=${latest.order_number}`
                         };
                         quickReplies = [
-                            { label: "Pay Balance", query: `Pay balance for ${latest.order_number}`, isCheckout: true },
-                            { label: "View All Orders", query: "My orders" },
                             { label: "Browse Catalog", query: "Browse catalog" }
                         ];
                     } else {
                         actionLink = { label: "View Live Tracking", href: `/track?order=${latest.order_number}` };
                         quickReplies = [
-                            { label: "View Live Tracking", query: `Track ${latest.order_number}` },
-                            { label: "View All Orders", query: "My orders" },
                             { label: "Browse Catalog", query: "Browse catalog" }
                         ];
                     }

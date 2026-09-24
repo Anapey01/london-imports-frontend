@@ -102,11 +102,11 @@ export default function ConciergeProductRow({
                         {formatPrice(product.price)}
                     </span>
                     {product.is_preorder ? (
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        <span className="text-[9px] font-medium tracking-wide text-slate-400 dark:text-slate-500">
                             Pre-order
                         </span>
                     ) : (
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        <span className="text-[9px] font-medium tracking-wide text-slate-500 dark:text-slate-400">
                             In Stock
                         </span>
                     )}
@@ -118,10 +118,10 @@ export default function ConciergeProductRow({
                 type="button"
                 onClick={handleAdd}
                 disabled={status === 'adding'}
-                className={`shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                className={`shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wider transition-all ${
                     status === 'added'
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 active:scale-95'
+                        ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900'
+                        : 'bg-slate-950 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 active:scale-95'
                 }`}
             >
                 {status === 'added' ? (

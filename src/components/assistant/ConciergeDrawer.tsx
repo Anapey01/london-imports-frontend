@@ -364,14 +364,14 @@ export default function ConciergeDrawer() {
                                         {msg.content}
                                     </div>
 
-                                    {/* Action Link button (Primary Action) */}
-                                    {msg.actionLink && (
+                                    {/* Action Link button (Primary Action - only if no order cards) */}
+                                    {msg.actionLink && (!msg.orders || msg.orders.length === 0) && (
                                         <div className="mt-2">
                                             {/browse(\s+our|\s+the)?\s+catalog/i.test(msg.actionLink.label) || msg.actionLink.href === '/products' ? (
                                                 <button
                                                     type="button"
                                                     onClick={() => handleSend("Browse catalog")}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-medium hover:opacity-90 active:scale-95 transition-all cursor-pointer"
                                                 >
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
@@ -383,7 +383,7 @@ export default function ConciergeDrawer() {
                                                         setIsOpen(false);
                                                         router.push(msg.actionLink!.href);
                                                     }}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-medium hover:opacity-90 active:scale-95 transition-all cursor-pointer"
                                                 >
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
@@ -392,12 +392,18 @@ export default function ConciergeDrawer() {
                                         </div>
                                     )}
 
-                                    {/* Quick Reply / Action Buttons */}
+                                    {/* Quick Reply Pills (Quiet Minimalist Chips) */}
                                     {msg.quickReplies && msg.quickReplies.length > 0 && (
-                                        <div className="mt-2.5 flex flex-wrap gap-2">
+                                        <div className="mt-2 flex flex-wrap gap-1.5">
                                             {msg.quickReplies
                                                 .filter((replyOpt) => {
-                                                    // Deduplicate if actionLink already has the exact same action label
+                                                    // When orders are shown, suppress redundant order action pills
+                                                    if (msg.orders && msg.orders.length > 0) {
+                                                        const q = replyOpt.query.toLowerCase();
+                                                        if (q.includes('pay') || q.includes('track') || q.includes('order')) {
+                                                            return false;
+                                                        }
+                                                    }
                                                     if (msg.actionLink && replyOpt.label.toLowerCase() === msg.actionLink.label.toLowerCase()) {
                                                         return false;
                                                     }
@@ -420,25 +426,20 @@ export default function ConciergeDrawer() {
                                                                     handleSend(replyOpt.query);
                                                                 }
                                                             }}
-                                                            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95 shadow-2xs cursor-pointer ${
-                                                                isCheckout || isBrowse
-                                                                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 hover:opacity-90'
-                                                                    : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-                                                            }`}
+                                                            className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100/90 hover:bg-slate-200/90 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
                                                         >
                                                             <span>{replyOpt.label}</span>
-                                                            <ArrowRight className="w-3.5 h-3.5" />
                                                         </button>
                                                     );
                                                 })}
                                         </div>
                                     )}
 
-                                    {/* Orders Staging Cards */}
+                                    {/* Orders Cards */}
                                     {msg.orders && msg.orders.length > 0 && (
-                                        <div className="w-full mt-3 space-y-2.5">
-                                            <div className="text-[9px] font-black tracking-widest uppercase text-slate-400 dark:text-slate-500 px-1">
-                                                ORDERS ({msg.orders.length})
+                                        <div className="w-full mt-3 space-y-2">
+                                            <div className="text-[10px] font-medium tracking-wide uppercase text-slate-400 dark:text-slate-500 px-0.5">
+                                                Orders ({msg.orders.length})
                                             </div>
                                             {msg.orders.map(order => (
                                                 <ConciergeOrderCard
