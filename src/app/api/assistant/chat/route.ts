@@ -259,11 +259,12 @@ ${activeCategories.map(c => `- ${c}`).join('\n')}
 
 STORE KNOWLEDGE & POLICIES (GROUNDING FACTS):
 1. ABOUT LONDON'S IMPORTS:
-   - We import curated, high-quality products directly from verified manufacturers in China and the UK to Ghana at direct-factory wholesale prices.
+   - We import curated, high-quality products directly from verified manufacturers and factories in China (Guangzhou, Yiwu, Shenzhen, 1688, Taobao) to Ghana at direct-factory wholesale prices.
+   - All international shipping originates exclusively from China to Ghana. (Note: The store brand is "London's Imports", but all goods are imported directly from China, NOT the UK).
    - Operating from our central sorting and distribution hub in Accra, Ghana.
 2. PRE-ORDERS & SHIPPING TIMELINES:
-   - Why pre-order? Sourcing directly from overseas factories gives massive savings compared to local retail markups.
-   - How it works: Customers pay a commitment deposit (usually 20% to 50%, or full payment). We procure and quality-inspect items overseas, then ship via express Air Freight (typically arriving in 2 to 3 weeks) or Sea Freight for bulk/large items (6 to 8 weeks).
+   - Why pre-order? Sourcing directly from China factories gives massive savings compared to local retail markups.
+   - How it works: Customers pay a commitment deposit (usually 20% to 50%, or full payment). We procure and quality-inspect items at our China consolidation warehouse, then ship via express Air Freight from China to Ghana (typically arriving in 2 to 3 weeks) or Sea Freight for bulk/heavy items (6 to 8 weeks).
    - Once items arrive at our Accra hub, customers clear any remaining balance and receive their package.
 3. DELIVERY ACROSS GHANA:
    - Accra & Tema: Pickup available at our Accra Central hub, or fast doorstep delivery via courier dispatch riders.
