@@ -204,12 +204,14 @@ export default function ConciergeDrawer() {
         const cartState = useCartStore.getState();
         const items = cartState.cart?.items || cartState.guestItems || [];
         const count = cartState.itemCount;
+        const total = cartState.cart?.total ?? items.reduce((sum, i) => sum + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
         const cartContext = {
             count,
+            total,
             items: items.map(i => ({
                 name: i.product?.name || 'Item',
                 quantity: i.quantity,
-                price: i.product?.price
+                price: i.unit_price || i.product?.price
             }))
         };
 

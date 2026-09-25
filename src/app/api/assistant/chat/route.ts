@@ -133,6 +133,44 @@ const ASSISTANT_TOOLS = [
     }
 ];
 
+async function fetchGroqChat(
+    groqApiKey: string,
+    params: {
+        messages: any[];
+        tools?: any[];
+        tool_choice?: string;
+        temperature?: number;
+        max_tokens?: number;
+    },
+    timeoutMs = 8000
+) {
+    const candidateModels = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b'];
+    for (const model of candidateModels) {
+        try {
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${groqApiKey}`,
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Mozilla/5.0'
+                },
+                signal: AbortSignal.timeout(timeoutMs),
+                body: JSON.stringify({
+                    model,
+                    ...params
+                }),
+            });
+            if (res.ok) {
+                return await res.json();
+            }
+            console.warn(`[Groq] Model ${model} returned status ${res.status}`);
+        } catch (err) {
+            console.warn(`[Groq] Model ${model} failed:`, err);
+        }
+    }
+    return null;
+}
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
@@ -158,8 +196,9 @@ export async function POST(req: NextRequest) {
         const hasCartItems = Boolean(cartContext && typeof cartContext === 'object' && cartContext.count > 0);
         let cartInfo = 'Customer cart is currently empty.';
         if (hasCartItems) {
-            const itemNames = (cartContext.items || []).map((i: any) => `${i.name} (qty: ${i.quantity})`).join(', ');
-            cartInfo = `Customer cart currently has ${cartContext.count} item(s): ${itemNames}.`;
+            const itemNames = (cartContext.items || []).map((i: any) => `${i.name} (qty: ${i.quantity}, GH₵ ${i.price || '0'})`).join(', ');
+            const totalText = cartContext.total ? ` | Cart Subtotal: GH₵ ${cartContext.total}` : '';
+            cartInfo = `Customer cart currently has ${cartContext.count} item(s): ${itemNames}${totalText}. If they ask to checkout or pay, warmly confirm and offer the checkout link.`;
         }
 
         // Fetch live store categories for contextual awareness
@@ -235,6 +274,11 @@ STORE KNOWLEDGE & POLICIES (GROUNDING FACTS):
 5. CUSTOM CHINA SOURCING:
    - If a customer wants an item not on our website, or wants to import bulk factory batches from China (1688 / Taobao / Guangzhou factories), we can source and ship it for them directly.
 
+GHANAIAN COLLOQUIALISMS & HOSPITALITY:
+- Understand casual Ghanaian phrasing, pidgin, or street lingo ("chale", "abeg", "how much be last price?", "I fit pay with MoMo?", "where una office dey?"). Respond warmly with genuine Ghanaian respect and hospitality ("Yes please!", "Certainly!", "No problem at all!").
+- "Last price": Politely explain that London's Imports sources directly from overseas factory floors, so our prices are already transparent direct-wholesale with zero local markup.
+- "MoMo": Confirm we accept MTN Mobile Money, Telecel Cash, and AT Money directly through Paystack.
+
 YOUR BEHAVIOR RULES:
 - Speak in natural, warm, everyday English that anyone in Ghana easily understands.
 - When asked "What can you do?" or general inquiries: Explain your capabilities clearly and warmly (finding products, pre-orders, order tracking, balance payments, China imports). DO NOT call search_products for questions!
@@ -274,26 +318,16 @@ YOUR BEHAVIOR RULES:
                     { role: 'user', content: trimmed }
                 ];
 
-                // Turn 1: Groq tool decision
-                const groqRes1 = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${groqApiKey}`,
-                        'Content-Type': 'application/json',
-                    },
-                    signal: AbortSignal.timeout(7000),
-                    body: JSON.stringify({
-                        model: 'qwen/qwen3.8-27b',
-                        messages,
-                        tools: ASSISTANT_TOOLS,
-                        tool_choice: 'auto',
-                        temperature: 0.6,
-                        max_tokens: 300,
-                    }),
-                });
+                // Turn 1: Groq tool decision with fallback
+                const groqData1 = await fetchGroqChat(groqApiKey, {
+                    messages,
+                    tools: ASSISTANT_TOOLS,
+                    tool_choice: 'auto',
+                    temperature: 0.6,
+                    max_tokens: 300,
+                }, 7500);
 
-                if (groqRes1.ok) {
-                    const groqData1 = await groqRes1.json();
+                if (groqData1) {
                     const choice1 = groqData1.choices?.[0]?.message;
                     const toolCalls = choice1?.tool_calls;
 
@@ -502,27 +536,29 @@ YOUR BEHAVIOR RULES:
                             const rawTarget = (fnArgs.product_name || '').trim();
                             const qty = Math.max(1, parseInt(fnArgs.quantity || 1, 10));
 
-                            let searchUrl = `${backendBase.replace(/\/$/, '')}/products/assistant/search/?q=${encodeURIComponent(rawTarget)}`;
                             let matchedProduct: ProductSummary | null = null;
 
-                            try {
-                                const sRes = await fetch(searchUrl, {
-                                    headers: { 'Accept': 'application/json' },
-                                    cache: 'no-store'
-                                });
-                                if (sRes.ok) {
-                                    const sData = await sRes.json();
-                                    const rawProds = sData.results || [];
-                                    if (rawProds.length > 0) {
-                                        const p = rawProds[0];
+                            // 1. If currently viewing a product page, check if user is referring to the active product
+                            if (currentProductSlug && (
+                                !rawTarget || 
+                                /^(this|it|current|the\s+item|this\s+item|product)$/i.test(rawTarget) ||
+                                rawTarget.toLowerCase().includes(currentProductSlug.toLowerCase().replace(/-/g, ' '))
+                            )) {
+                                try {
+                                    const pRes = await fetch(`${backendBase.replace(/\/$/, '')}/products/${encodeURIComponent(currentProductSlug)}/`, {
+                                        headers: { 'Accept': 'application/json' },
+                                        cache: 'no-store'
+                                    });
+                                    if (pRes.ok) {
+                                        const p = await pRes.json();
                                         matchedProduct = {
                                             id: p.id,
-                                            name: p.name,
+                                            name: p.name || p.display_name,
                                             slug: p.slug,
                                             price: typeof p.price === 'string' ? parseFloat(p.price) : (p.price || 0),
                                             old_price: p.old_price ? (typeof p.old_price === 'string' ? parseFloat(p.old_price) : p.old_price) : null,
-                                            image: p.image || null,
-                                            category: p.category_name || p.category || '',
+                                            image: p.image || p.primary_image || null,
+                                            category: p.category_name || p.category?.name || '',
                                             vendor_name: p.vendor_name || null,
                                             is_preorder: Boolean(p.is_preorder),
                                             preorder_status: p.preorder_status || 'READY_TO_SHIP',
@@ -532,9 +568,45 @@ YOUR BEHAVIOR RULES:
                                             variants: p.variants || []
                                         };
                                     }
+                                } catch (err) {
+                                    console.warn('[Assistant API] Fetch active product by slug error:', err);
                                 }
-                            } catch (err) {
-                                console.warn('[Assistant API] Add to cart search error:', err);
+                            }
+
+                            // 2. If not matched yet, search catalog
+                            if (!matchedProduct && rawTarget) {
+                                let searchUrl = `${backendBase.replace(/\/$/, '')}/products/assistant/search/?q=${encodeURIComponent(rawTarget)}`;
+                                try {
+                                    const sRes = await fetch(searchUrl, {
+                                        headers: { 'Accept': 'application/json' },
+                                        cache: 'no-store'
+                                    });
+                                    if (sRes.ok) {
+                                        const sData = await sRes.json();
+                                        const rawProds = sData.results || [];
+                                        if (rawProds.length > 0) {
+                                            const p = rawProds[0];
+                                            matchedProduct = {
+                                                id: p.id,
+                                                name: p.name,
+                                                slug: p.slug,
+                                                price: typeof p.price === 'string' ? parseFloat(p.price) : (p.price || 0),
+                                                old_price: p.old_price ? (typeof p.old_price === 'string' ? parseFloat(p.old_price) : p.old_price) : null,
+                                                image: p.image || null,
+                                                category: p.category_name || p.category || '',
+                                                vendor_name: p.vendor_name || null,
+                                                is_preorder: Boolean(p.is_preorder),
+                                                preorder_status: p.preorder_status || 'READY_TO_SHIP',
+                                                delivery_window_text: p.delivery_window_text || '1-2 weeks',
+                                                stock_quantity: p.stock_quantity ?? 10,
+                                                deposit_amount: typeof p.deposit_amount === 'string' ? parseFloat(p.deposit_amount) : (p.deposit_amount || 0),
+                                                variants: p.variants || []
+                                            };
+                                        }
+                                    }
+                                } catch (err) {
+                                    console.warn('[Assistant API] Add to cart search error:', err);
+                                }
                             }
 
                             if (matchedProduct) {
@@ -601,23 +673,13 @@ YOUR BEHAVIOR RULES:
                             content: JSON.stringify(toolResultPayload)
                         });
 
-                        const groqRes2 = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${groqApiKey}`,
-                                'Content-Type': 'application/json',
-                            },
-                            signal: AbortSignal.timeout(6000),
-                            body: JSON.stringify({
-                                model: 'qwen/qwen3.8-27b',
-                                messages,
-                                temperature: 0.6,
-                                max_tokens: 220,
-                            }),
-                        });
+                        const groqData2 = await fetchGroqChat(groqApiKey, {
+                            messages,
+                            temperature: 0.6,
+                            max_tokens: 250,
+                        }, 7000);
 
-                        if (groqRes2.ok) {
-                            const groqData2 = await groqRes2.json();
+                        if (groqData2) {
                             reply = (groqData2.choices?.[0]?.message?.content || '').trim();
                         }
                     } else if (choice1?.content) {
