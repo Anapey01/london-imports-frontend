@@ -139,43 +139,17 @@ export default function ConciergeDrawer() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [conciergePhase, setConciergePhase] = useState<'idle' | 'typing_1' | 'typing_2' | 'ready'>('idle');
     const [userOrders, setUserOrders] = useState<any[]>([]);
-    const [showTeaser, setShowTeaser] = useState(false);
-    const [teaserDismissed, setTeaserDismissed] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const greetingTimerRef = useRef<NodeJS.Timeout | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Initialize mute preference and teaser dismissal state
+    // Initialize mute preference from localStorage
     useEffect(() => {
         try {
             const savedMute = localStorage.getItem('li_concierge_muted');
             if (savedMute === 'true') setIsMuted(true);
-            const savedTeaser = sessionStorage.getItem('li_concierge_teaser_dismissed');
-            if (savedTeaser === 'true') setTeaserDismissed(true);
         } catch {}
     }, []);
-
-    // Proactive context-aware teaser bubble timer (pops up after 4s unless dismissed)
-    useEffect(() => {
-        if (isOpen || teaserDismissed) {
-            setShowTeaser(false);
-            return;
-        }
-
-        const timer = setTimeout(() => {
-            setShowTeaser(true);
-        }, 4000);
-
-        return () => clearTimeout(timer);
-    }, [isOpen, teaserDismissed, pathname]);
-
-    const handleDismissTeaser = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setShowTeaser(false);
-        setTeaserDismissed(true);
-        try {
-            sessionStorage.setItem('li_concierge_teaser_dismissed', 'true');
-        } catch {}
-    };
 
     const toggleMute = () => {
         const next = !isMuted;
@@ -187,20 +161,6 @@ export default function ConciergeDrawer() {
         try {
             localStorage.setItem('li_concierge_muted', String(next));
         } catch {}
-    };
-
-    const getTeaserText = () => {
-        const cartState = useCartStore.getState();
-        if (cartState.itemCount > 0) {
-            return "Ready to complete your order or find matching pieces? Tap to ask me.";
-        }
-        if (isProductPage && currentProductSlug) {
-            return "Questions about sizing or China shipping timelines? Tap to ask me.";
-        }
-        if (pathname === '/track') {
-            return "Have an order number? Send it here for live shipping updates.";
-        }
-        return "Looking for a specific item from China factories? Tap to ask me.";
     };
 
     // Restore session conversation if available
@@ -244,6 +204,10 @@ export default function ConciergeDrawer() {
             window.speechSynthesis.cancel();
         }
         setIsSpeakingId(null);
+        if (greetingTimerRef.current) {
+            clearTimeout(greetingTimerRef.current);
+            greetingTimerRef.current = null;
+        }
         setMessages([]);
         setConciergePhase('idle');
     };
@@ -297,67 +261,92 @@ export default function ConciergeDrawer() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen]);
 
-    // Dynamic context-aware greeting when drawer opens with no existing messages (Instant & Reliable)
+    // Dynamic context-aware greeting with 1-second human typing delay when opening drawer
     useEffect(() => {
-        if (!isOpen || messages.length > 0) return;
-
-        const cartState = useCartStore.getState();
-        const cartCount = cartState.itemCount;
-        const cartTotal = cartState.cart?.total ?? (cartState.guestItems || []).reduce((s, i) => s + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
-
-        let greetingText = '';
-        let dynamicQuickReplies: QuickReplyOption[] = [];
-
-        if (isProductPage && currentProductSlug) {
-            greetingText = firstName
-                ? `Hello ${firstName}, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
-                : "Hello, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
-            dynamicQuickReplies = [
-                { label: "Add this to cart", query: "Add this to my cart please" },
-                { label: "China shipping times", query: "How long does shipping take for this item from China?" },
-                { label: "Browse catalog", query: "Browse catalog" },
-                { label: "Track my order", query: "Track my order" }
-            ];
-        } else if (cartCount > 0) {
-            greetingText = firstName
-                ? `Welcome back, ${firstName}. You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
-                : `Welcome back. You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
-            dynamicQuickReplies = [
-                { label: "Proceed to checkout", query: "Proceed to checkout", isCheckout: true },
-                { label: "What is in my cart?", query: "What is currently in my cart and my total?" },
-                { label: "Delivery fees across Ghana", query: "How much is delivery across Ghana?" },
-                { label: "Order from China", query: "Order from China" }
-            ];
-        } else if (pathname === '/track') {
-            greetingText = firstName
-                ? `Hello ${firstName}. Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
-                : "Hello. Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
-            dynamicQuickReplies = [
-                { label: "Track my order", query: "Track my order" },
-                { label: "Browse catalog", query: "Browse catalog" },
-                { label: "How do pre-orders work?", query: "How do pre-orders work?" }
-            ];
-        } else {
-            greetingText = firstName
-                ? `Hello ${firstName}. I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
-                : "Hello. I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
-            dynamicQuickReplies = [
-                { label: "Browse catalog", query: "Browse catalog" },
-                { label: "Check my cart", query: "Check my cart" },
-                { label: "Track my order", query: "Track my order" },
-                { label: "Order from China", query: "Order from China" }
-            ];
+        if (!isOpen) {
+            if (greetingTimerRef.current) {
+                clearTimeout(greetingTimerRef.current);
+                greetingTimerRef.current = null;
+            }
+            if (messages.length === 0) {
+                setConciergePhase('idle');
+            }
+            return;
         }
 
-        setMessages([
-            {
-                id: 'initial',
-                role: 'assistant',
-                content: greetingText,
-                quickReplies: dynamicQuickReplies
+        // If drawer is open and we already have messages in history, mark ready
+        if (messages.length > 0) {
+            setConciergePhase('ready');
+            return;
+        }
+
+        // Drawer is open and no messages: start 1-second human typing simulation
+        setConciergePhase('typing_1');
+
+        if (greetingTimerRef.current) {
+            clearTimeout(greetingTimerRef.current);
+        }
+
+        greetingTimerRef.current = setTimeout(() => {
+            const cartState = useCartStore.getState();
+            const cartCount = cartState.itemCount;
+            const cartTotal = cartState.cart?.total ?? (cartState.guestItems || []).reduce((s, i) => s + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
+
+            let greetingText = '';
+            let dynamicQuickReplies: QuickReplyOption[] = [];
+
+            if (isProductPage && currentProductSlug) {
+                greetingText = firstName
+                    ? `Hello ${firstName}, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
+                    : "Hello, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
+                dynamicQuickReplies = [
+                    { label: "Add this to cart", query: "Add this to my cart please" },
+                    { label: "China shipping times", query: "How long does shipping take for this item from China?" },
+                    { label: "Browse catalog", query: "Browse catalog" },
+                    { label: "Track my order", query: "Track my order" }
+                ];
+            } else if (cartCount > 0) {
+                greetingText = firstName
+                    ? `Welcome back, ${firstName}. You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
+                    : `Welcome back. You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
+                dynamicQuickReplies = [
+                    { label: "Proceed to checkout", query: "Proceed to checkout", isCheckout: true },
+                    { label: "What is in my cart?", query: "What is currently in my cart and my total?" },
+                    { label: "Delivery fees across Ghana", query: "How much is delivery across Ghana?" },
+                    { label: "Order from China", query: "Order from China" }
+                ];
+            } else if (pathname === '/track') {
+                greetingText = firstName
+                    ? `Hello ${firstName}. Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
+                    : "Hello. Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
+                dynamicQuickReplies = [
+                    { label: "Track my order", query: "Track my order" },
+                    { label: "Browse catalog", query: "Browse catalog" },
+                    { label: "How do pre-orders work?", query: "How do pre-orders work?" }
+                ];
+            } else {
+                greetingText = firstName
+                    ? `Hello ${firstName}. I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
+                    : "Hello. I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
+                dynamicQuickReplies = [
+                    { label: "Browse catalog", query: "Browse catalog" },
+                    { label: "Check my cart", query: "Check my cart" },
+                    { label: "Track my order", query: "Track my order" },
+                    { label: "Order from China", query: "Order from China" }
+                ];
             }
-        ]);
-        setConciergePhase('ready');
+
+            setMessages([
+                {
+                    id: 'initial',
+                    role: 'assistant',
+                    content: greetingText,
+                    quickReplies: dynamicQuickReplies
+                }
+            ]);
+            setConciergePhase('ready');
+            greetingTimerRef.current = null;
+        }, 1000);
     }, [isOpen, messages.length, isProductPage, currentProductSlug, pathname, firstName]);
 
     const speakMessage = (msgId: string, text: string) => {
@@ -658,61 +647,29 @@ export default function ConciergeDrawer() {
 
     return (
         <>
-            {/* 1. Mobile-First Smart Floating Launcher & Proactive Teaser */}
+            {/* 1. Sleek Compact Luxury Floating Trigger */}
             {!isOpen && (
-                <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
-                    {/* Context-Aware Teaser Callout (Strictly Zero Emojis) */}
-                    {showTeaser && !teaserDismissed && (
-                        <div 
-                            onClick={() => {
-                                setShowTeaser(false);
-                                setIsOpen(true);
-                            }}
-                            className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-[260px] sm:max-w-[290px] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-2xl p-3 shadow-xl border border-slate-200/90 dark:border-slate-800 text-xs leading-relaxed cursor-pointer relative group/teaser hover:border-slate-400 dark:hover:border-slate-600 transition-all select-none"
-                        >
-                            <button
-                                type="button"
-                                onClick={handleDismissTeaser}
-                                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-[10px] shadow-xs border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
-                                aria-label="Dismiss message"
-                            >
-                                <X className="w-3 h-3" />
-                            </button>
-                            <div className="flex items-center gap-1.5 mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                <span>Miss London</span>
-                            </div>
-                            <p className="text-[11px] sm:text-xs text-slate-700 dark:text-slate-300 font-sans pr-1">
-                                {getTeaserText()}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Always-Identified Launcher Pill */}
+                <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40">
                     <button
                         type="button"
-                        onClick={() => {
-                            setShowTeaser(false);
-                            setIsOpen(true);
-                        }}
-                        className="group inline-flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-slate-800/40 dark:border-slate-200/50 cursor-pointer"
+                        onClick={() => setIsOpen(true)}
+                        className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-slate-800/40 dark:border-slate-200/50 cursor-pointer"
                         aria-label="Chat with Miss London"
+                        title="Chat with Miss London"
                     >
-                        <div className="relative w-7 h-7 rounded-full overflow-hidden border border-slate-700/60 dark:border-slate-300 shrink-0 bg-white shadow-2xs">
+                        <div className="relative w-8 h-8 rounded-full overflow-hidden border border-slate-700/60 dark:border-slate-300 bg-white shadow-2xs">
                             <Image
                                 src="/logo.jpg"
-                                alt="London's Imports Logo"
+                                alt="Miss London"
                                 fill
-                                sizes="28px"
+                                sizes="32px"
                                 className="object-cover"
                             />
                         </div>
-                        <span className="relative flex h-2 w-2">
+                        {/* Subtle Active Online Indicator Dot */}
+                        <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                        </span>
-                        <span className="text-xs font-bold tracking-tight text-white dark:text-slate-950 whitespace-nowrap">
-                            Miss London
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-slate-950 dark:border-white" />
                         </span>
                     </button>
                 </div>
@@ -952,10 +909,19 @@ export default function ConciergeDrawer() {
                                 </div>
                             ))}
 
-                            {/* Greeting Typing Simulator */}
+                            {/* Greeting Typing Simulator (1s Human Delay) */}
                             {(conciergePhase === 'typing_1' || conciergePhase === 'typing_2') && (
                                 <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-xs text-slate-500 font-medium w-fit animate-in fade-in duration-300">
-                                    <span className="font-semibold text-slate-700 dark:text-slate-300">London is typing</span>
+                                    <div className="relative w-5 h-5 rounded-full overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 bg-white">
+                                        <Image
+                                            src="/logo.jpg"
+                                            alt="Miss London"
+                                            fill
+                                            sizes="20px"
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-300">Miss London is typing</span>
                                     <span className="flex items-center gap-1">
                                         <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse" />
                                         <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse [animation-delay:200ms]" />
@@ -966,8 +932,17 @@ export default function ConciergeDrawer() {
 
                             {/* In-Chat Response Typing Indicator */}
                             {isLoading && (
-                                <div className="flex items-center gap-2 p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 w-fit">
-                                    <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">London is typing</span>
+                                <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 w-fit animate-in fade-in duration-200">
+                                    <div className="relative w-5 h-5 rounded-full overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 bg-white">
+                                        <Image
+                                            src="/logo.jpg"
+                                            alt="Miss London"
+                                            fill
+                                            sizes="20px"
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Miss London is typing</span>
                                     <span className="flex items-center gap-1">
                                         <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse" />
                                         <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse [animation-delay:200ms]" />
