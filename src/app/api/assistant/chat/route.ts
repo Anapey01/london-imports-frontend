@@ -109,6 +109,27 @@ const ASSISTANT_TOOLS = [
                 required: ['reason']
             }
         }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'add_to_cart',
+            description: "Add a specific product directly to the customer's cart when they say 'add this to cart', 'add to cart', 'put in my cart', or 'buy this'.",
+            parameters: {
+                type: 'object',
+                properties: {
+                    product_name: {
+                        type: 'string',
+                        description: 'Name or keywords of the product to add'
+                    },
+                    quantity: {
+                        type: 'number',
+                        description: 'Quantity to add, default is 1'
+                    }
+                },
+                required: ['product_name']
+            }
+        }
     }
 ];
 
@@ -121,7 +142,8 @@ export async function POST(req: NextRequest) {
             cartContext,
             userName,
             isAuthenticated = false,
-            ordersContext = []
+            ordersContext = [],
+            currentProductSlug
         } = body;
 
         if (!message || typeof message !== 'string') {
@@ -159,6 +181,23 @@ export async function POST(req: NextRequest) {
             // Graceful fallback
         }
 
+        // Active Product Page Context
+        let currentProductContext = '';
+        if (currentProductSlug && typeof currentProductSlug === 'string') {
+            try {
+                const pRes = await fetch(`${backendBase.replace(/\/$/, '')}/products/${encodeURIComponent(currentProductSlug)}/`, {
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store'
+                });
+                if (pRes.ok) {
+                    const pData = await pRes.json();
+                    currentProductContext = `\nCURRENT PAGE CONTEXT:\nThe customer is currently viewing this specific product page:\n- Product Name: "${pData.name || pData.display_name}"\n- Price: GH₵ ${pData.price}\n- Status: ${pData.is_preorder ? 'Pre-order' : 'Ready to ship'}\n- Delivery Window: ${pData.delivery_window_text || '1-2 weeks'}\n- Description: ${(pData.description || pData.subtitle || '').slice(0, 160)}\nIf the customer asks "this", "it", or "add to cart", they are referring to "${pData.name || pData.display_name}".\n`;
+                }
+            } catch {
+                // Graceful fallback
+            }
+        }
+
         // Prepare System Prompt with deep domain knowledge
         const orderSummaryContext = ordersContext && ordersContext.length > 0
             ? `Customer Placed Orders on Record:\n` + ordersContext.map((o: any, idx: number) =>
@@ -174,6 +213,7 @@ ${customerName ? `- You are speaking with "${customerName}". Address them warmly
 - ${isAuthenticated ? 'Customer is signed in.' : 'Customer is not signed in.'}
 - ${cartInfo}
 ${orderSummaryContext}
+${currentProductContext}
 
 AVAILABLE STORE CATEGORIES:
 ${activeCategories.map(c => `- ${c}`).join('\n')}
@@ -213,6 +253,7 @@ YOUR BEHAVIOR RULES:
         let orders: AssistantOrder[] = [];
         let actionLink: { label: string; href: string } | undefined = undefined;
         let quickReplies: Array<{ label: string; query: string; isCheckout?: boolean }> | undefined = undefined;
+        let cartAction: { action: string; product: ProductSummary; quantity: number } | undefined = undefined;
 
         if (groqApiKey) {
             try {
@@ -455,6 +496,82 @@ YOUR BEHAVIOR RULES:
                         }
 
                         // ----------------------------------------------------
+                        // Execute Tool: add_to_cart
+                        // ----------------------------------------------------
+                        else if (fnName === 'add_to_cart') {
+                            const rawTarget = (fnArgs.product_name || '').trim();
+                            const qty = Math.max(1, parseInt(fnArgs.quantity || 1, 10));
+
+                            let searchUrl = `${backendBase.replace(/\/$/, '')}/products/assistant/search/?q=${encodeURIComponent(rawTarget)}`;
+                            let matchedProduct: ProductSummary | null = null;
+
+                            try {
+                                const sRes = await fetch(searchUrl, {
+                                    headers: { 'Accept': 'application/json' },
+                                    cache: 'no-store'
+                                });
+                                if (sRes.ok) {
+                                    const sData = await sRes.json();
+                                    const rawProds = sData.results || [];
+                                    if (rawProds.length > 0) {
+                                        const p = rawProds[0];
+                                        matchedProduct = {
+                                            id: p.id,
+                                            name: p.name,
+                                            slug: p.slug,
+                                            price: typeof p.price === 'string' ? parseFloat(p.price) : (p.price || 0),
+                                            old_price: p.old_price ? (typeof p.old_price === 'string' ? parseFloat(p.old_price) : p.old_price) : null,
+                                            image: p.image || null,
+                                            category: p.category_name || p.category || '',
+                                            vendor_name: p.vendor_name || null,
+                                            is_preorder: Boolean(p.is_preorder),
+                                            preorder_status: p.preorder_status || 'READY_TO_SHIP',
+                                            delivery_window_text: p.delivery_window_text || '1-2 weeks',
+                                            stock_quantity: p.stock_quantity ?? 10,
+                                            deposit_amount: typeof p.deposit_amount === 'string' ? parseFloat(p.deposit_amount) : (p.deposit_amount || 0),
+                                            variants: p.variants || []
+                                        };
+                                    }
+                                }
+                            } catch (err) {
+                                console.warn('[Assistant API] Add to cart search error:', err);
+                            }
+
+                            if (matchedProduct) {
+                                cartAction = {
+                                    action: 'add',
+                                    product: matchedProduct,
+                                    quantity: qty
+                                };
+                                products = [matchedProduct];
+                                toolResultPayload = {
+                                    success: true,
+                                    added: true,
+                                    product_name: matchedProduct.name,
+                                    price: `GH₵ ${matchedProduct.price}`,
+                                    quantity: qty
+                                };
+                                actionLink = { label: "Proceed to Checkout", href: "/checkout" };
+                                quickReplies = [
+                                    { label: "Proceed to Checkout", query: "Proceed to checkout", isCheckout: true },
+                                    { label: "Keep Shopping", query: "Browse catalog" },
+                                    { label: "Check my cart", query: "Check my cart" }
+                                ];
+                            } else {
+                                toolResultPayload = {
+                                    success: false,
+                                    added: false,
+                                    message: `Could not find product matching "${rawTarget}" in our catalog.`
+                                };
+                                actionLink = { label: "Browse Catalog", href: "/products" };
+                                quickReplies = [
+                                    { label: "Browse Catalog", query: "Browse catalog" },
+                                    { label: "Order from China", query: "Order from China" }
+                                ];
+                            }
+                        }
+
+                        // ----------------------------------------------------
                         // Execute Tool: escalate_to_whatsapp
                         // ----------------------------------------------------
                         else if (fnName === 'escalate_to_whatsapp') {
@@ -601,7 +718,8 @@ YOUR BEHAVIOR RULES:
             products,
             orders,
             actionLink,
-            quickReplies
+            quickReplies,
+            cartAction
         });
     } catch (e: any) {
         console.error('[Assistant API] Internal error:', e);
@@ -609,7 +727,8 @@ YOUR BEHAVIOR RULES:
             reply: "I am ready to assist you! Feel free to browse our catalog or track your orders.",
             products: [],
             orders: [],
-            actionLink: { label: "Browse Catalog", href: "/products" }
+            actionLink: { label: "Browse Catalog", href: "/products" },
+            cartAction: undefined
         });
     }
 }

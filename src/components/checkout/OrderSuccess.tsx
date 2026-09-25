@@ -29,6 +29,7 @@ interface OrderItem {
 }
 
 interface Order {
+    order_number?: string;
     items: OrderItem[];
     amount_paid: string | number;
     balance_due: string | number;
@@ -161,19 +162,27 @@ const OrderSuccess = ({ orderNumber, method }: OrderSuccessProps) => {
  
                             <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 pt-4">
                                 <Link 
-                                    href="/orders"
+                                    href={`/track?order=${orderNumber || orderData?.order_number || ''}`}
                                     className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2 whitespace-nowrap"
                                 >
-                                    View My Orders
+                                    Track Package Live
                                     <ArrowRight className="w-3 h-3" />
                                 </Link>
-                                <a 
-                                    href={`https://wa.me/${siteConfig.concierge}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-950 dark:text-white underline underline-offset-[6px] decoration-slate-300 hover:decoration-slate-900 dark:decoration-slate-600 dark:hover:decoration-white transition-all flex items-center gap-2 whitespace-nowrap"
+                                <Link 
+                                    href="/orders"
+                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2 whitespace-nowrap"
                                 >
-                                    Contact Support
+                                    My Orders
+                                </Link>
+                                <a 
+                                    href={`https://wa.me/${siteConfig.concierge}?text=${encodeURIComponent(
+                                        `Hello London's Imports, I just completed checkout for order #${orderNumber || orderData?.order_number || ''}. Could you please confirm?`
+                                    )}`}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap"
+                                >
+                                    <span>Contact Concierge</span>
                                     <MessageSquare className="w-3 h-3" />
                                 </a>
                             </div>

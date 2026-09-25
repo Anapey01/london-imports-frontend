@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { X, Send, MessageCircle, ArrowRight } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { X, Send, MessageCircle, ArrowRight, Mic, MicOff } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI } from '@/lib/api';
@@ -39,6 +39,10 @@ const QUICK_NAV = [
 
 export default function ConciergeDrawer() {
     const router = useRouter();
+    const pathname = usePathname();
+    const isProductPage = Boolean(pathname?.startsWith('/products/') && !pathname.includes('/category/'));
+    const currentProductSlug = isProductPage && pathname ? pathname.replace(/^\/products\//, '').split('/')[0] : undefined;
+    const [isListening, setIsListening] = useState(false);
     const user = useAuthStore(state => state.user);
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const rawName = user?.first_name?.trim() || (user?.username ? user.username.split('@')[0].trim() : '');
@@ -144,6 +148,36 @@ export default function ConciergeDrawer() {
         }
     }, [conciergePhase, firstName]);
 
+    const handleVoiceInput = () => {
+        if (typeof window === 'undefined') return;
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert('Voice input is not supported in this browser. Please use Chrome, Edge, or Safari.');
+            return;
+        }
+
+        try {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => setIsListening(true);
+            recognition.onend = () => setIsListening(false);
+            recognition.onerror = () => setIsListening(false);
+            recognition.onresult = (event: any) => {
+                const transcript = event.results?.[0]?.[0]?.transcript;
+                if (transcript) {
+                    setInput(transcript);
+                    handleSend(transcript);
+                }
+            };
+            recognition.start();
+        } catch {
+            setIsListening(false);
+        }
+    };
+
     const handleSend = async (userText: string) => {
         const trimmed = userText.trim();
         if (!trimmed || isLoading) return;
@@ -212,7 +246,8 @@ export default function ConciergeDrawer() {
                     cartContext,
                     userName: firstName,
                     isAuthenticated,
-                    ordersContext
+                    ordersContext,
+                    currentProductSlug
                 })
             });
 
@@ -221,6 +256,13 @@ export default function ConciergeDrawer() {
             }
 
             const data = await res.json();
+            if (data.cartAction && data.cartAction.action === 'add' && data.cartAction.product) {
+                try {
+                    await useCartStore.getState().addToCart(data.cartAction.product, data.cartAction.quantity || 1);
+                } catch (e) {
+                    console.warn('[Concierge] Error adding to cart:', e);
+                }
+            }
             const assistantMsg: Message = {
                 id: String(Date.now() + 1),
                 role: 'assistant',
@@ -528,16 +570,31 @@ export default function ConciergeDrawer() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder={firstName ? `Ask Miss London anything, ${firstName}...` : "Ask to track order, check catalog, or pay balance..."}
-                                    className="w-full h-11 sm:h-10 pl-4 pr-12 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
+                                    className="w-full h-11 sm:h-10 pl-4 pr-20 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
                                 />
-                                <button
-                                    type="submit"
-                                    disabled={!input.trim() || isLoading}
-                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl flex items-center justify-center bg-slate-900 text-white dark:bg-white dark:text-slate-950 disabled:opacity-25 disabled:pointer-events-none hover:opacity-90 active:scale-95 transition-all shadow-xs shrink-0"
-                                    aria-label="Send message"
-                                >
-                                    <Send className="w-3.5 h-3.5" />
-                                </button>
+                                <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={handleVoiceInput}
+                                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center transition-all ${
+                                            isListening
+                                                ? 'bg-rose-500 text-white animate-pulse'
+                                                : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                        }`}
+                                        aria-label="Voice input"
+                                        title="Speak to Miss London"
+                                    >
+                                        {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={!input.trim() || isLoading}
+                                        className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-900 text-white dark:bg-white dark:text-slate-950 disabled:opacity-25 disabled:pointer-events-none hover:opacity-90 active:scale-95 transition-all shadow-xs shrink-0"
+                                        aria-label="Send message"
+                                    >
+                                        <Send className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
                             </form>
                             <div className="flex items-center justify-between text-[10px] sm:text-[9px] text-slate-400 dark:text-slate-500 mt-2 px-1">
                                 <span>Prices in Ghana Cedis (GH₵)</span>
