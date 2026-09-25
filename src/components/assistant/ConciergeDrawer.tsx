@@ -148,9 +148,14 @@ export default function ConciergeDrawer() {
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    setMessages(parsed);
-                    setConciergePhase('ready');
-                    return;
+                    // Discard stale error sessions
+                    const hasOnlyError = parsed.length === 1 && (parsed[0].content?.includes('network issue') || parsed[0].content?.includes('connection pause'));
+                    if (!hasOnlyError) {
+                        setMessages(parsed);
+                        setConciergePhase('ready');
+                        return;
+                    }
+                    sessionStorage.removeItem(STORAGE_KEY);
                 }
             }
         } catch {
@@ -230,73 +235,68 @@ export default function ConciergeDrawer() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen]);
 
-    // Dynamic context-aware greeting when drawer opens with no existing messages
+    // Dynamic context-aware greeting when drawer opens with no existing messages (Instant & Reliable)
     useEffect(() => {
-        if (!isOpen || conciergePhase !== 'idle' || messages.length > 0) return;
+        if (!isOpen || messages.length > 0) return;
 
-        setConciergePhase('typing_1');
-        const timer = setTimeout(() => {
-            const cartState = useCartStore.getState();
-            const cartCount = cartState.itemCount;
-            const cartTotal = cartState.cart?.total ?? (cartState.guestItems || []).reduce((s, i) => s + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
+        const cartState = useCartStore.getState();
+        const cartCount = cartState.itemCount;
+        const cartTotal = cartState.cart?.total ?? (cartState.guestItems || []).reduce((s, i) => s + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
 
-            let greetingText = '';
-            let dynamicQuickReplies: QuickReplyOption[] = [];
+        let greetingText = '';
+        let dynamicQuickReplies: QuickReplyOption[] = [];
 
-            if (isProductPage && currentProductSlug) {
-                greetingText = firstName
-                    ? `Hello ${firstName}! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
-                    : "Hello! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
-                dynamicQuickReplies = [
-                    { label: "Add this to cart 🛍️", query: "Add this to my cart please" },
-                    { label: "When will this arrive from China? ✈️", query: "How long does shipping take for this item from China?" },
-                    { label: "Browse catalog", query: "Browse catalog" },
-                    { label: "Track my order", query: "Track my order" }
-                ];
-            } else if (cartCount > 0) {
-                greetingText = firstName
-                    ? `Welcome back, ${firstName}! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
-                    : `Welcome back! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
-                dynamicQuickReplies = [
-                    { label: "Proceed to Checkout 💳", query: "Proceed to checkout", isCheckout: true },
-                    { label: "What is in my cart? 🛒", query: "What is currently in my cart and my total?" },
-                    { label: "How much is delivery to Kumasi? 🚚", query: "How much is delivery across Ghana?" },
-                    { label: "Order from China 📦", query: "Order from China" }
-                ];
-            } else if (pathname === '/track') {
-                greetingText = firstName
-                    ? `Hello ${firstName}! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
-                    : "Hello! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
-                dynamicQuickReplies = [
-                    { label: "Track my order 📦", query: "Track my order" },
-                    { label: "Browse catalog", query: "Browse catalog" },
-                    { label: "How do pre-orders work? ✈️", query: "How do pre-orders work?" }
-                ];
-            } else {
-                greetingText = firstName
-                    ? `Hello ${firstName}! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
-                    : "Hello! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
-                dynamicQuickReplies = [
-                    { label: "Browse catalog ✨", query: "Browse catalog" },
-                    { label: "Check my cart 🛒", query: "Check my cart" },
-                    { label: "Track my order 📦", query: "Track my order" },
-                    { label: "Order from China 🇨🇳", query: "Order from China" }
-                ];
+        if (isProductPage && currentProductSlug) {
+            greetingText = firstName
+                ? `Hello ${firstName}! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
+                : "Hello! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
+            dynamicQuickReplies = [
+                { label: "Add this to cart 🛍️", query: "Add this to my cart please" },
+                { label: "When will this arrive from China? ✈️", query: "How long does shipping take for this item from China?" },
+                { label: "Browse catalog", query: "Browse catalog" },
+                { label: "Track my order", query: "Track my order" }
+            ];
+        } else if (cartCount > 0) {
+            greetingText = firstName
+                ? `Welcome back, ${firstName}! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
+                : `Welcome back! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
+            dynamicQuickReplies = [
+                { label: "Proceed to Checkout 💳", query: "Proceed to checkout", isCheckout: true },
+                { label: "What is in my cart? 🛒", query: "What is currently in my cart and my total?" },
+                { label: "How much is delivery to Kumasi? 🚚", query: "How much is delivery across Ghana?" },
+                { label: "Order from China 📦", query: "Order from China" }
+            ];
+        } else if (pathname === '/track') {
+            greetingText = firstName
+                ? `Hello ${firstName}! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
+                : "Hello! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
+            dynamicQuickReplies = [
+                { label: "Track my order 📦", query: "Track my order" },
+                { label: "Browse catalog", query: "Browse catalog" },
+                { label: "How do pre-orders work? ✈️", query: "How do pre-orders work?" }
+            ];
+        } else {
+            greetingText = firstName
+                ? `Hello ${firstName}! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
+                : "Hello! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
+            dynamicQuickReplies = [
+                { label: "Browse catalog ✨", query: "Browse catalog" },
+                { label: "Check my cart 🛒", query: "Check my cart" },
+                { label: "Track my order 📦", query: "Track my order" },
+                { label: "Order from China 🇨🇳", query: "Order from China" }
+            ];
+        }
+
+        setMessages([
+            {
+                id: 'initial',
+                role: 'assistant',
+                content: greetingText,
+                quickReplies: dynamicQuickReplies
             }
-
-            setMessages([
-                {
-                    id: 'initial',
-                    role: 'assistant',
-                    content: greetingText,
-                    quickReplies: dynamicQuickReplies
-                }
-            ]);
-            setConciergePhase('ready');
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [isOpen, conciergePhase, messages.length, isProductPage, currentProductSlug, pathname, firstName]);
+        ]);
+        setConciergePhase('ready');
+    }, [isOpen, messages.length, isProductPage, currentProductSlug, pathname, firstName]);
 
     const speakMessage = (msgId: string, text: string) => {
         if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -421,66 +421,98 @@ export default function ConciergeDrawer() {
         setInput('');
         setIsLoading(true);
 
-        // Gather real-time cart context from Zustand store
-        const cartState = useCartStore.getState();
-        const items = cartState.cart?.items || cartState.guestItems || [];
-        const count = cartState.itemCount;
-        const total = cartState.cart?.total ?? items.reduce((sum, i) => sum + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
-        const cartContext = {
-            count,
-            total,
-            items: items.map(i => ({
-                id: i.id,
-                name: i.product?.name || 'Item',
-                quantity: i.quantity,
-                price: i.unit_price || i.product?.price
-            }))
-        };
-
-        // Format ordersContext
-        const ordersContext = userOrders.map(o => ({
-            id: o.id,
-            order_number: o.order_number,
-            state: o.state,
-            state_display: o.state_display,
-            total: typeof o.total === 'string' ? parseFloat(o.total) : (o.total || 0),
-            amount_paid: typeof o.amount_paid === 'string' ? parseFloat(o.amount_paid) : (o.amount_paid || 0),
-            balance_due: typeof o.balance_due === 'string' ? parseFloat(o.balance_due) : (o.balance_due || 0),
-            items_count: o.items_count || o.items?.length || 0,
-            delivery_window: o.delivery_window || '',
-            items: (o.items || []).map((it: any) => ({
-                name: it.product_name || it.product?.name || 'Item',
-                quantity: it.quantity || 1,
-                image: it.product?.image || null
-            }))
-        }));
-
         try {
+            // Gather real-time cart context from Zustand store
+            const cartState = useCartStore.getState();
+            const items = cartState.cart?.items || cartState.guestItems || [];
+            const count = cartState.itemCount;
+            const total = cartState.cart?.total ?? items.reduce((sum, i) => sum + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
+            const cartContext = {
+                count,
+                total,
+                items: items.map(i => ({
+                    id: i.id,
+                    name: i.product?.name || 'Item',
+                    quantity: i.quantity,
+                    price: i.unit_price || i.product?.price
+                }))
+            };
+
+            // Format ordersContext
+            const ordersContext = (userOrders || []).map(o => ({
+                id: o.id,
+                order_number: o.order_number,
+                state: o.state,
+                state_display: o.state_display,
+                total: typeof o.total === 'string' ? parseFloat(o.total) : (o.total || 0),
+                amount_paid: typeof o.amount_paid === 'string' ? parseFloat(o.amount_paid) : (o.amount_paid || 0),
+                balance_due: typeof o.balance_due === 'string' ? parseFloat(o.balance_due) : (o.balance_due || 0),
+                items_count: o.items_count || o.items?.length || 0,
+                delivery_window: o.delivery_window || '',
+                items: (o.items || []).map((it: any) => ({
+                    name: it.product_name || it.product?.name || 'Item',
+                    quantity: it.quantity || 1,
+                    image: it.product?.image || null
+                }))
+            }));
+
             const history = messages.slice(-6).map(m => ({
                 role: m.role,
                 content: m.content
             }));
 
-            const res = await fetch('/api/assistant/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: trimmed,
-                    conversationHistory: history,
-                    cartContext,
-                    userName: firstName,
-                    isAuthenticated,
-                    ordersContext,
-                    currentProductSlug
-                })
-            });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-            if (!res.ok) {
-                throw new Error('Response error');
+            let res: Response;
+            try {
+                res = await fetch('/api/assistant/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        message: trimmed,
+                        conversationHistory: history,
+                        cartContext,
+                        userName: firstName,
+                        isAuthenticated,
+                        ordersContext,
+                        currentProductSlug
+                    })
+                });
+            } finally {
+                clearTimeout(timeoutId);
             }
 
-            const data = await res.json();
-            if (data.cartAction) {
+            let data: any = null;
+            try {
+                data = await res.json();
+            } catch {
+                data = null;
+            }
+
+            if (!res.ok) {
+                // If the server provided a custom reply (e.g. rate limit notice or length warning), display it!
+                if (data && (data.reply || data.error)) {
+                    const fallbackMsg = data.reply || data.error;
+                    setMessages(prev => [
+                        ...prev,
+                        {
+                            id: String(Date.now() + 1),
+                            role: 'assistant',
+                            content: fallbackMsg,
+                            quickReplies: data.quickReplies || [
+                                { label: "Browse Catalog", query: "Browse catalog" },
+                                { label: "Chat on WhatsApp", query: "Can I chat with your team on WhatsApp?" }
+                            ]
+                        }
+                    ]);
+                    return;
+                }
+                throw new Error(data?.error || `Server responded with ${res.status}`);
+            }
+
+            if (data?.cartAction) {
                 if (data.cartAction.action === 'add' && data.cartAction.product) {
                     try {
                         await useCartStore.getState().addToCart(data.cartAction.product, data.cartAction.quantity || 1);
@@ -501,24 +533,38 @@ export default function ConciergeDrawer() {
                     }
                 }
             }
+
             const assistantMsg: Message = {
                 id: String(Date.now() + 1),
                 role: 'assistant',
-                content: data.reply || "I checked our shop for your request.",
-                products: data.products || [],
-                orders: data.orders || [],
-                actionLink: data.actionLink,
-                quickReplies: data.quickReplies
+                content: data?.reply || "I'm right here! Feel free to ask about any product, order, or shipping from China to Ghana.",
+                products: data?.products || [],
+                orders: data?.orders || [],
+                actionLink: data?.actionLink,
+                quickReplies: data?.quickReplies
             };
 
             setMessages(prev => [...prev, assistantMsg]);
-        } catch {
+        } catch (err: any) {
+            console.warn('[Concierge] Error communicating with assistant:', err);
+            const isTimeout = err?.name === 'AbortError';
             setMessages(prev => [
                 ...prev,
                 {
                     id: String(Date.now() + 1),
                     role: 'assistant',
-                    content: "Sorry, I had a small network issue. Please browse our shop directly or chat with us on WhatsApp."
+                    content: isTimeout 
+                        ? "I took a bit too long to connect to our catalog. Please ask me again or chat directly with our team on WhatsApp!"
+                        : "Sorry, I had a brief connection pause. Please tap below to retry, browse our shop, or message us on WhatsApp.",
+                    actionLink: {
+                        label: "Chat on WhatsApp",
+                        href: "https://wa.me/233545247009?text=Hello%20London%27s%20Imports%2C%20I%20need%20assistance%20with%20an%20order"
+                    },
+                    quickReplies: [
+                        { label: "Retry last question", query: trimmed },
+                        { label: "Browse catalog", query: "Browse catalog" },
+                        { label: "Track my order", query: "Track my order" }
+                    ]
                 }
             ]);
         } finally {

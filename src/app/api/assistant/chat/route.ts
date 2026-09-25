@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export interface ProductSummary {
     id: string;
     name: string;
@@ -216,7 +219,7 @@ function getClientIp(req: NextRequest): string {
     return '127.0.0.1';
 }
 
-function checkRateLimit(ip: string, maxRequests = 30, windowMs = 60000): { allowed: boolean; retryAfter?: number } {
+function checkRateLimit(ip: string, maxRequests = 60, windowMs = 60000): { allowed: boolean; retryAfter?: number } {
     const now = Date.now();
     const entry = ipRateLimits.get(ip);
 
