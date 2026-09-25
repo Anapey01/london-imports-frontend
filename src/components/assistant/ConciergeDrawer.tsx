@@ -139,7 +139,69 @@ export default function ConciergeDrawer() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [conciergePhase, setConciergePhase] = useState<'idle' | 'typing_1' | 'typing_2' | 'ready'>('idle');
     const [userOrders, setUserOrders] = useState<any[]>([]);
+    const [showTeaser, setShowTeaser] = useState(false);
+    const [teaserDismissed, setTeaserDismissed] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Initialize mute preference and teaser dismissal state
+    useEffect(() => {
+        try {
+            const savedMute = localStorage.getItem('li_concierge_muted');
+            if (savedMute === 'true') setIsMuted(true);
+            const savedTeaser = sessionStorage.getItem('li_concierge_teaser_dismissed');
+            if (savedTeaser === 'true') setTeaserDismissed(true);
+        } catch {}
+    }, []);
+
+    // Proactive context-aware teaser bubble timer (pops up after 4s unless dismissed)
+    useEffect(() => {
+        if (isOpen || teaserDismissed) {
+            setShowTeaser(false);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setShowTeaser(true);
+        }, 4000);
+
+        return () => clearTimeout(timer);
+    }, [isOpen, teaserDismissed, pathname]);
+
+    const handleDismissTeaser = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowTeaser(false);
+        setTeaserDismissed(true);
+        try {
+            sessionStorage.setItem('li_concierge_teaser_dismissed', 'true');
+        } catch {}
+    };
+
+    const toggleMute = () => {
+        const next = !isMuted;
+        setIsMuted(next);
+        if (next && typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+            setIsSpeakingId(null);
+        }
+        try {
+            localStorage.setItem('li_concierge_muted', String(next));
+        } catch {}
+    };
+
+    const getTeaserText = () => {
+        const cartState = useCartStore.getState();
+        if (cartState.itemCount > 0) {
+            return "Ready to complete your order or find matching pieces? Tap to ask me.";
+        }
+        if (isProductPage && currentProductSlug) {
+            return "Questions about sizing or China shipping timelines? Tap to ask me.";
+        }
+        if (pathname === '/track') {
+            return "Have an order number? Send it here for live shipping updates.";
+        }
+        return "Looking for a specific item from China factories? Tap to ask me.";
+    };
 
     // Restore session conversation if available
     useEffect(() => {
@@ -248,42 +310,42 @@ export default function ConciergeDrawer() {
 
         if (isProductPage && currentProductSlug) {
             greetingText = firstName
-                ? `Hello ${firstName}! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
-                : "Hello! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
+                ? `Hello ${firstName}, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
+                : "Hello, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
             dynamicQuickReplies = [
-                { label: "Add this to cart 🛍️", query: "Add this to my cart please" },
-                { label: "When will this arrive from China? ✈️", query: "How long does shipping take for this item from China?" },
+                { label: "Add this to cart", query: "Add this to my cart please" },
+                { label: "China shipping times", query: "How long does shipping take for this item from China?" },
                 { label: "Browse catalog", query: "Browse catalog" },
                 { label: "Track my order", query: "Track my order" }
             ];
         } else if (cartCount > 0) {
             greetingText = firstName
-                ? `Welcome back, ${firstName}! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
-                : `Welcome back! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
+                ? `Welcome back, ${firstName}. You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
+                : `Welcome back. You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
             dynamicQuickReplies = [
-                { label: "Proceed to Checkout 💳", query: "Proceed to checkout", isCheckout: true },
-                { label: "What is in my cart? 🛒", query: "What is currently in my cart and my total?" },
-                { label: "How much is delivery to Kumasi? 🚚", query: "How much is delivery across Ghana?" },
-                { label: "Order from China 📦", query: "Order from China" }
+                { label: "Proceed to checkout", query: "Proceed to checkout", isCheckout: true },
+                { label: "What is in my cart?", query: "What is currently in my cart and my total?" },
+                { label: "Delivery fees across Ghana", query: "How much is delivery across Ghana?" },
+                { label: "Order from China", query: "Order from China" }
             ];
         } else if (pathname === '/track') {
             greetingText = firstName
-                ? `Hello ${firstName}! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
-                : "Hello! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
+                ? `Hello ${firstName}. Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
+                : "Hello. Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
             dynamicQuickReplies = [
-                { label: "Track my order 📦", query: "Track my order" },
+                { label: "Track my order", query: "Track my order" },
                 { label: "Browse catalog", query: "Browse catalog" },
-                { label: "How do pre-orders work? ✈️", query: "How do pre-orders work?" }
+                { label: "How do pre-orders work?", query: "How do pre-orders work?" }
             ];
         } else {
             greetingText = firstName
-                ? `Hello ${firstName}! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
-                : "Hello! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
+                ? `Hello ${firstName}. I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
+                : "Hello. I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
             dynamicQuickReplies = [
-                { label: "Browse catalog ✨", query: "Browse catalog" },
-                { label: "Check my cart 🛒", query: "Check my cart" },
-                { label: "Track my order 📦", query: "Track my order" },
-                { label: "Order from China 🇨🇳", query: "Order from China" }
+                { label: "Browse catalog", query: "Browse catalog" },
+                { label: "Check my cart", query: "Check my cart" },
+                { label: "Track my order", query: "Track my order" },
+                { label: "Order from China", query: "Order from China" }
             ];
         }
 
@@ -299,7 +361,7 @@ export default function ConciergeDrawer() {
     }, [isOpen, messages.length, isProductPage, currentProductSlug, pathname, firstName]);
 
     const speakMessage = (msgId: string, text: string) => {
-        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+        if (isMuted || typeof window === 'undefined' || !window.speechSynthesis) return;
 
         if (isSpeakingId === msgId) {
             window.speechSynthesis.cancel();
@@ -596,14 +658,45 @@ export default function ConciergeDrawer() {
 
     return (
         <>
-            {/* 1. Sleek Compact Trigger Pill */}
+            {/* 1. Mobile-First Smart Floating Launcher & Proactive Teaser */}
             {!isOpen && (
-                <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40">
+                <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
+                    {/* Context-Aware Teaser Callout (Strictly Zero Emojis) */}
+                    {showTeaser && !teaserDismissed && (
+                        <div 
+                            onClick={() => {
+                                setShowTeaser(false);
+                                setIsOpen(true);
+                            }}
+                            className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-[260px] sm:max-w-[290px] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-2xl p-3 shadow-xl border border-slate-200/90 dark:border-slate-800 text-xs leading-relaxed cursor-pointer relative group/teaser hover:border-slate-400 dark:hover:border-slate-600 transition-all select-none"
+                        >
+                            <button
+                                type="button"
+                                onClick={handleDismissTeaser}
+                                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-[10px] shadow-xs border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                                aria-label="Dismiss message"
+                            >
+                                <X className="w-3 h-3" />
+                            </button>
+                            <div className="flex items-center gap-1.5 mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                <span>Miss London</span>
+                            </div>
+                            <p className="text-[11px] sm:text-xs text-slate-700 dark:text-slate-300 font-sans pr-1">
+                                {getTeaserText()}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Always-Identified Launcher Pill */}
                     <button
                         type="button"
-                        onClick={() => setIsOpen(true)}
-                        className="group inline-flex items-center p-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 border border-slate-800/40 dark:border-slate-200/50 cursor-pointer"
-                        aria-label="Chat with London"
+                        onClick={() => {
+                            setShowTeaser(false);
+                            setIsOpen(true);
+                        }}
+                        className="group inline-flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-slate-800/40 dark:border-slate-200/50 cursor-pointer"
+                        aria-label="Chat with Miss London"
                     >
                         <div className="relative w-7 h-7 rounded-full overflow-hidden border border-slate-700/60 dark:border-slate-300 shrink-0 bg-white shadow-2xs">
                             <Image
@@ -614,8 +707,12 @@ export default function ConciergeDrawer() {
                                 className="object-cover"
                             />
                         </div>
-                        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 group-hover:max-w-[100px] group-hover:opacity-100 group-hover:pl-2 group-hover:pr-2.5 transition-all duration-300 ease-out text-[10px] font-bold uppercase tracking-[0.16em]">
-                            London
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                        </span>
+                        <span className="text-xs font-bold tracking-tight text-white dark:text-slate-950 whitespace-nowrap">
+                            Miss London
                         </span>
                     </button>
                 </div>
@@ -648,18 +745,27 @@ export default function ConciergeDrawer() {
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <h2 className="text-base font-serif font-black tracking-tight text-slate-950 dark:text-white leading-tight">
-                                             London
+                                            Miss London
                                         </h2>
                                         <span className="inline-block px-1.5 py-0.5 text-[8px] font-black tracking-widest uppercase rounded-sm bg-slate-100 dark:bg-slate-800 text-slate-500">
                                             CONCIERGE
                                         </span>
                                     </div>
                                     <span className="text-[10px] text-slate-500 dark:text-slate-400 font-sans block mt-0.5">
-                                        London&apos;s Imports Personal Shopper
+                                        Personal Shopping Assistant
                                     </span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={toggleMute}
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors cursor-pointer"
+                                    aria-label={isMuted ? "Unmute voice responses" : "Mute voice responses"}
+                                    title={isMuted ? "Unmute voice responses" : "Mute voice responses"}
+                                >
+                                    {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />}
+                                </button>
                                 <button
                                     type="button"
                                     onClick={handleResetChat}
