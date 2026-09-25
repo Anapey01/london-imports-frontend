@@ -130,6 +130,34 @@ const ASSISTANT_TOOLS = [
                 required: ['product_name']
             }
         }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'remove_from_cart',
+            description: "Remove a specific item from the customer's cart when they ask to remove, delete, take out, or drop an item (e.g. 'remove the candle', 'take out the tote bag').",
+            parameters: {
+                type: 'object',
+                properties: {
+                    product_name: {
+                        type: 'string',
+                        description: 'Name or keywords of the product to remove from cart'
+                    }
+                },
+                required: ['product_name']
+            }
+        }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'clear_cart',
+            description: "Empty or clear all items from the customer's cart when they say 'clear my cart', 'empty my cart', or 'remove everything'.",
+            parameters: {
+                type: 'object',
+                properties: {}
+            }
+        }
     }
 ];
 
@@ -280,14 +308,19 @@ GHANAIAN COLLOQUIALISMS & HOSPITALITY:
 - "Last price": Politely explain that London's Imports sources directly from overseas factory floors, so our prices are already transparent direct-wholesale with zero local markup.
 - "MoMo": Confirm we accept MTN Mobile Money, Telecel Cash, and AT Money directly through Paystack.
 
-YOUR BEHAVIOR RULES:
-- Speak in natural, warm, everyday English that anyone in Ghana easily understands.
-- When asked "What can you do?" or general inquiries: Explain your capabilities clearly and warmly (finding products, pre-orders, order tracking, balance payments, China imports). DO NOT call search_products for questions!
-- ONLY call search_products when the customer explicitly wants to see, find, or buy specific products (e.g. "Do you have scented candles?", "Show me tote bags", "Looking for sneakers").
-- When customer provides an order number (e.g. LI-20260905-26446), call track_order.
+YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
+- Sound like a real, warm, stylish personal shopping assistant in Accra, NOT a robotic AI language model.
+- NEVER use robotic AI clichés like "Certainly!", "As an AI...", "How may I assist you today?", "I hope this finds you well", or rigid lists.
+- Speak with natural Ghanaian warmth, friendliness, and hospitality ("Hello please!", "I've got you covered!", "No problem at all!").
+- Keep replies conversational, concise, and focused (usually 1 to 3 friendly sentences).
+- When a customer wants to browse or find products, call search_products.
+- When a customer wants to add an item to their cart, call add_to_cart.
+- When a customer wants to remove an item or empty their cart, call remove_from_cart or clear_cart.
+- When a customer provides an order number (e.g. LI-20260905-26446), call track_order.
 - When customer asks about past orders or unpaid balances, call get_customer_orders.
 - If customer wants bulk container imports or human manager assistance, call escalate_to_whatsapp.
-- Keep responses brief and polite (1 to 2 clear sentences, or a clean bullet list for capabilities). Never sound robotic.`;
+- Pre-orders: Reassure the customer that items ship express Air Freight directly from factories in China (2-3 weeks to Accra) or Sea Freight (6-8 weeks for heavy items), fully inspected at our Accra hub.
+- Complementary recommendations: If relevant, warmly mention a matching item from our China catalogue that pairs well with their purchase.`;
 
         // Check for Groq API Key
         const rawKey = process.env.GROQ_API_KEY || '';
@@ -298,7 +331,7 @@ YOUR BEHAVIOR RULES:
         let orders: AssistantOrder[] = [];
         let actionLink: { label: string; href: string } | undefined = undefined;
         let quickReplies: Array<{ label: string; query: string; isCheckout?: boolean }> | undefined = undefined;
-        let cartAction: { action: string; product: ProductSummary; quantity: number } | undefined = undefined;
+        let cartAction: { action: string; product?: ProductSummary; itemId?: string; productName?: string; quantity?: number } | undefined = undefined;
 
         if (groqApiKey) {
             try {
@@ -662,6 +695,73 @@ YOUR BEHAVIOR RULES:
                             quickReplies = [
                                 { label: "Browse Catalog", query: "Browse catalog" },
                                 { label: "Track My Order", query: "Track my order" }
+                            ];
+                        }
+
+                        // ----------------------------------------------------
+                        // Execute Tool: remove_from_cart
+                        // ----------------------------------------------------
+                        else if (fnName === 'remove_from_cart') {
+                            const rawTarget = (fnArgs.product_name || '').trim().toLowerCase();
+                            const cartItems = (cartContext && Array.isArray(cartContext.items)) ? cartContext.items : [];
+
+                            let matchedItem: any = null;
+                            if (rawTarget) {
+                                matchedItem = cartItems.find((i: any) => 
+                                    (i.name || '').toLowerCase().includes(rawTarget) ||
+                                    rawTarget.includes((i.name || '').toLowerCase())
+                                );
+                            }
+                            if (!matchedItem && cartItems.length === 1) {
+                                matchedItem = cartItems[0];
+                            }
+
+                            if (matchedItem) {
+                                cartAction = {
+                                    action: 'remove',
+                                    itemId: matchedItem.id,
+                                    productName: matchedItem.name
+                                };
+                                toolResultPayload = {
+                                    success: true,
+                                    removed: true,
+                                    product_name: matchedItem.name,
+                                    remaining_items: Math.max(0, cartItems.length - 1)
+                                };
+                                actionLink = { label: "View Cart", href: "/cart" };
+                                quickReplies = [
+                                    { label: "Proceed to Checkout", query: "Proceed to checkout", isCheckout: true },
+                                    { label: "Browse Catalog", query: "Browse catalog" }
+                                ];
+                            } else {
+                                toolResultPayload = {
+                                    success: false,
+                                    removed: false,
+                                    message: `Could not find "${fnArgs.product_name}" in your cart.`
+                                };
+                                quickReplies = [
+                                    { label: "What is in my cart?", query: "What is in my cart?" },
+                                    { label: "Browse Catalog", query: "Browse catalog" }
+                                ];
+                            }
+                        }
+
+                        // ----------------------------------------------------
+                        // Execute Tool: clear_cart
+                        // ----------------------------------------------------
+                        else if (fnName === 'clear_cart') {
+                            cartAction = {
+                                action: 'clear'
+                            };
+                            toolResultPayload = {
+                                success: true,
+                                cleared: true,
+                                message: "All items have been removed from your cart."
+                            };
+                            actionLink = { label: "Browse Catalog", href: "/products" };
+                            quickReplies = [
+                                { label: "Browse Catalog", query: "Browse catalog" },
+                                { label: "Order from China", query: "Order from China" }
                             ];
                         }
 

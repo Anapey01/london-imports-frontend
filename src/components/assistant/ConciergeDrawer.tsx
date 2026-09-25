@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { X, Send, MessageCircle, ArrowRight, Mic, MicOff } from 'lucide-react';
+import { X, Send, MessageCircle, ArrowRight, Mic, MicOff, Volume2, VolumeX, RotateCcw, Camera } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI } from '@/lib/api';
@@ -20,6 +20,7 @@ interface Message {
     id: string;
     role: 'user' | 'assistant';
     content: string;
+    imageUrl?: string;
     products?: AssistantProduct[];
     orders?: AssistantOrder[];
     isSourcingPrompt?: boolean;
@@ -43,11 +44,14 @@ export default function ConciergeDrawer() {
     const isProductPage = Boolean(pathname?.startsWith('/products/') && !pathname.includes('/category/'));
     const currentProductSlug = isProductPage && pathname ? pathname.replace(/^\/products\//, '').split('/')[0] : undefined;
     const [isListening, setIsListening] = useState(false);
+    const [isSpeakingId, setIsSpeakingId] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const user = useAuthStore(state => state.user);
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const rawName = user?.first_name?.trim() || (user?.username ? user.username.split('@')[0].trim() : '');
     const firstName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
 
+    const STORAGE_KEY = 'li_concierge_messages_v2';
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +59,46 @@ export default function ConciergeDrawer() {
     const [conciergePhase, setConciergePhase] = useState<'idle' | 'typing_1' | 'typing_2' | 'ready'>('idle');
     const [userOrders, setUserOrders] = useState<any[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Restore session conversation if available
+    useEffect(() => {
+        try {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setMessages(parsed);
+                    setConciergePhase('ready');
+                    return;
+                }
+            }
+        } catch {
+            // Ignore
+        }
+    }, []);
+
+    // Persist messages to sessionStorage
+    useEffect(() => {
+        if (messages.length > 0) {
+            try {
+                sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-20)));
+            } catch {
+                // Ignore quota
+            }
+        }
+    }, [messages]);
+
+    const handleResetChat = () => {
+        try {
+            sessionStorage.removeItem(STORAGE_KEY);
+        } catch {}
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        setIsSpeakingId(null);
+        setMessages([]);
+        setConciergePhase('idle');
+    };
 
     // Fetch user orders in the background when concierge is open & authenticated
     useEffect(() => {
@@ -94,6 +138,10 @@ export default function ConciergeDrawer() {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isOpen) {
+                if (typeof window !== 'undefined' && window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                setIsSpeakingId(null);
                 setIsOpen(false);
             }
         };
@@ -101,52 +149,144 @@ export default function ConciergeDrawer() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen]);
 
-    // Trigger typing_1 when drawer opens
+    // Dynamic context-aware greeting when drawer opens with no existing messages
     useEffect(() => {
-        if (isOpen && conciergePhase === 'idle' && messages.length === 0) {
-            setConciergePhase('typing_1');
-        }
-    }, [isOpen, conciergePhase, messages.length]);
+        if (!isOpen || conciergePhase !== 'idle' || messages.length > 0) return;
 
-    // Choreographed sequence:
-    // 1. typing_1 (2.5s) -> Greeting 1 appears -> typing_2
-    // 2. typing_2 (1.5s) -> Greeting 2 appears -> ready (Quick Nav appears)
-    useEffect(() => {
-        if (conciergePhase === 'typing_1') {
-            const timer = setTimeout(() => {
-                const greetingText = firstName
-                    ? `Hello ${firstName}! I am Miss London from London's Imports. How can I help you shop, track an order, or check items today?`
-                    : "Hello! I am Miss London from London's Imports. How can I help you shop, track an order, or check items today?";
+        setConciergePhase('typing_1');
+        const timer = setTimeout(() => {
+            const cartState = useCartStore.getState();
+            const cartCount = cartState.itemCount;
+            const cartTotal = cartState.cart?.total ?? (cartState.guestItems || []).reduce((s, i) => s + (Number(i.unit_price || i.product?.price || 0) * i.quantity), 0);
 
-                setMessages([
-                    {
-                        id: 'initial',
-                        role: 'assistant',
-                        content: greetingText
-                    }
-                ]);
-                setConciergePhase('typing_2');
-            }, 2500);
-            return () => clearTimeout(timer);
+            let greetingText = '';
+            let dynamicQuickReplies: QuickReplyOption[] = [];
+
+            if (isProductPage && currentProductSlug) {
+                greetingText = firstName
+                    ? `Hello ${firstName}! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
+                    : "Hello! 👋 I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
+                dynamicQuickReplies = [
+                    { label: "Add this to cart 🛍️", query: "Add this to my cart please" },
+                    { label: "When will this arrive from China? ✈️", query: "How long does shipping take for this item from China?" },
+                    { label: "Browse catalog", query: "Browse catalog" },
+                    { label: "Track my order", query: "Track my order" }
+                ];
+            } else if (cartCount > 0) {
+                greetingText = firstName
+                    ? `Welcome back, ${firstName}! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`
+                    : `Welcome back! You have ${cartCount} item${cartCount > 1 ? 's' : ''} in your cart (GH₵ ${cartTotal}). Would you like to proceed to checkout or look for matching accessories?`;
+                dynamicQuickReplies = [
+                    { label: "Proceed to Checkout 💳", query: "Proceed to checkout", isCheckout: true },
+                    { label: "What is in my cart? 🛒", query: "What is currently in my cart and my total?" },
+                    { label: "How much is delivery to Kumasi? 🚚", query: "How much is delivery across Ghana?" },
+                    { label: "Order from China 📦", query: "Order from China" }
+                ];
+            } else if (pathname === '/track') {
+                greetingText = firstName
+                    ? `Hello ${firstName}! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.`
+                    : "Hello! Tracking a package from China? Send me your order number (e.g. LI-2026...) and I'll pull up live status for you right away.";
+                dynamicQuickReplies = [
+                    { label: "Track my order 📦", query: "Track my order" },
+                    { label: "Browse catalog", query: "Browse catalog" },
+                    { label: "How do pre-orders work? ✈️", query: "How do pre-orders work?" }
+                ];
+            } else {
+                greetingText = firstName
+                    ? `Hello ${firstName}! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?`
+                    : "Hello! I am Miss London, your personal shopping assistant at London's Imports. We source directly from China factories to Ghana at direct wholesale prices. How can I help you today?";
+                dynamicQuickReplies = [
+                    { label: "Browse catalog ✨", query: "Browse catalog" },
+                    { label: "Check my cart 🛒", query: "Check my cart" },
+                    { label: "Track my order 📦", query: "Track my order" },
+                    { label: "Order from China 🇨🇳", query: "Order from China" }
+                ];
+            }
+
+            setMessages([
+                {
+                    id: 'initial',
+                    role: 'assistant',
+                    content: greetingText,
+                    quickReplies: dynamicQuickReplies
+                }
+            ]);
+            setConciergePhase('ready');
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [isOpen, conciergePhase, messages.length, isProductPage, currentProductSlug, pathname, firstName]);
+
+    const speakMessage = (msgId: string, text: string) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        if (isSpeakingId === msgId) {
+            window.speechSynthesis.cancel();
+            setIsSpeakingId(null);
+            return;
         }
 
-        if (conciergePhase === 'typing_2') {
-            const timer = setTimeout(() => {
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: 'quick-nav-intro',
-                        role: 'assistant',
-                        content: firstName
-                            ? `${firstName}, here are a few quick ways I can help you right now:`
-                            : 'Here are some quick options to help you:'
-                    }
-                ]);
-                setConciergePhase('ready');
-            }, 1500);
-            return () => clearTimeout(timer);
-        }
-    }, [conciergePhase, firstName]);
+        window.speechSynthesis.cancel();
+
+        const cleanText = text
+            .replace(/[*#_~`\[\]()|]/g, ' ')
+            .replace(/GH₵|GHS/gi, 'Ghana Cedis')
+            .replace(/https?:\/\/\S+/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Natural') || v.name.includes('Google UK English Female')));
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        utterance.onstart = () => setIsSpeakingId(msgId);
+        utterance.onend = () => setIsSpeakingId(null);
+        utterance.onerror = () => setIsSpeakingId(null);
+
+        window.speechSynthesis.speak(utterance);
+    };
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (uploadEvent) => {
+            const dataUrl = uploadEvent.target?.result as string;
+            if (!dataUrl) return;
+
+            const userMsg: Message = {
+                id: String(Date.now()),
+                role: 'user',
+                content: "I have a photo of an item I want to source directly from factories in China. Can you help me find this?",
+                imageUrl: dataUrl
+            };
+
+            const assistantMsg: Message = {
+                id: String(Date.now() + 1),
+                role: 'assistant',
+                content: "I would love to help you source this! Our procurement team in Guangzhou and Yiwu can match this exact factory product for you at direct wholesale prices.",
+                actionLink: {
+                    label: "Forward Photo to China Sourcing Team (WhatsApp)",
+                    href: `https://wa.me/233545247009?text=${encodeURIComponent(
+                        "Hello London's Imports, I want to source a product from China factories. I have attached the reference photo for you."
+                    )}`
+                },
+                quickReplies: [
+                    { label: "Browse Catalog", query: "Browse catalog" },
+                    { label: "How do China Pre-orders work?", query: "How do pre-orders work?" }
+                ]
+            };
+
+            setMessages(prev => [...prev, userMsg, assistantMsg]);
+        };
+        reader.readAsDataURL(file);
+        if (e.target) e.target.value = '';
+    };
 
     const handleVoiceInput = () => {
         if (typeof window === 'undefined') return;
@@ -209,6 +349,7 @@ export default function ConciergeDrawer() {
             count,
             total,
             items: items.map(i => ({
+                id: i.id,
                 name: i.product?.name || 'Item',
                 quantity: i.quantity,
                 price: i.unit_price || i.product?.price
@@ -258,11 +399,25 @@ export default function ConciergeDrawer() {
             }
 
             const data = await res.json();
-            if (data.cartAction && data.cartAction.action === 'add' && data.cartAction.product) {
-                try {
-                    await useCartStore.getState().addToCart(data.cartAction.product, data.cartAction.quantity || 1);
-                } catch (e) {
-                    console.warn('[Concierge] Error adding to cart:', e);
+            if (data.cartAction) {
+                if (data.cartAction.action === 'add' && data.cartAction.product) {
+                    try {
+                        await useCartStore.getState().addToCart(data.cartAction.product, data.cartAction.quantity || 1);
+                    } catch (e) {
+                        console.warn('[Concierge] Error adding to cart:', e);
+                    }
+                } else if (data.cartAction.action === 'remove' && data.cartAction.itemId) {
+                    try {
+                        await useCartStore.getState().removeFromCart(data.cartAction.itemId);
+                    } catch (e) {
+                        console.warn('[Concierge] Error removing from cart:', e);
+                    }
+                } else if (data.cartAction.action === 'clear') {
+                    try {
+                        useCartStore.getState().clearCart();
+                    } catch (e) {
+                        console.warn('[Concierge] Error clearing cart:', e);
+                    }
                 }
             }
             const assistantMsg: Message = {
@@ -377,14 +532,31 @@ export default function ConciergeDrawer() {
                                     </span>
                                 </div>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => setIsOpen(false)}
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
-                                aria-label="Close Concierge"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={handleResetChat}
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors cursor-pointer"
+                                    aria-label="New conversation"
+                                    title="Start new conversation"
+                                >
+                                    <RotateCcw className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (typeof window !== 'undefined' && window.speechSynthesis) {
+                                            window.speechSynthesis.cancel();
+                                        }
+                                        setIsSpeakingId(null);
+                                        setIsOpen(false);
+                                    }}
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                                    aria-label="Close Concierge"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Messages Area */}
@@ -405,7 +577,40 @@ export default function ConciergeDrawer() {
                                                 : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-tl-xs border border-slate-200/60 dark:border-slate-800 font-sans'
                                         }`}
                                     >
-                                        {msg.content}
+                                        {msg.imageUrl && (
+                                            <div className="relative w-36 h-36 rounded-lg overflow-hidden mb-2 border border-slate-200 dark:border-slate-700">
+                                                <Image 
+                                                    src={msg.imageUrl} 
+                                                    alt="Sourcing reference" 
+                                                    fill 
+                                                    className="object-cover" 
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="whitespace-pre-wrap">{msg.content}</div>
+                                        {msg.role === 'assistant' && (
+                                            <div className="flex items-center justify-end mt-1.5 pt-1.5 border-t border-slate-200/50 dark:border-slate-800/50">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => speakMessage(msg.id, msg.content)}
+                                                    className="inline-flex items-center gap-1 text-[10px] text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer py-0.5 px-1 rounded-sm hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
+                                                    aria-label="Listen to response"
+                                                    title={isSpeakingId === msg.id ? "Stop voice" : "Listen aloud"}
+                                                >
+                                                    {isSpeakingId === msg.id ? (
+                                                        <>
+                                                            <VolumeX className="w-3 h-3 text-rose-500 animate-pulse" />
+                                                            <span className="text-[9px] text-rose-500 font-medium">Stop</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Volume2 className="w-3 h-3" />
+                                                            <span className="text-[9px]">Listen</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Action Link button (Primary Action - only if no order cards) */}
@@ -572,9 +777,25 @@ export default function ConciergeDrawer() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder={firstName ? `Ask Miss London anything, ${firstName}...` : "Ask to track order, check catalog, or pay balance..."}
-                                    className="w-full h-11 sm:h-10 pl-4 pr-20 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
+                                    className="w-full h-11 sm:h-10 pl-4 pr-28 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
                                 />
                                 <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
+                                        aria-label="Upload photo to source from China"
+                                        title="Upload photo to source from China"
+                                    >
+                                        <Camera className="w-3.5 h-3.5" />
+                                    </button>
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleImageSelect} 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                    />
                                     <button
                                         type="button"
                                         onClick={handleVoiceInput}
