@@ -324,7 +324,7 @@ YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
 
         // Check for Groq API Key
         const rawKey = process.env.GROQ_API_KEY || '';
-        const groqApiKey = rawKey.replace(/["'\r\n]/g, '').trim();
+        const groqApiKey = rawKey.replace(/["'\r\n]|\\r|\\n/g, '').trim();
 
         let reply = '';
         let products: ProductSummary[] = [];
@@ -358,8 +358,8 @@ YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
                     tools: ASSISTANT_TOOLS,
                     tool_choice: 'auto',
                     temperature: 0.6,
-                    max_tokens: 300,
-                }, 7500);
+                    max_tokens: 500,
+                }, 9000);
 
                 if (groqData1) {
                     const choice1 = groqData1.choices?.[0]?.message;
@@ -777,8 +777,8 @@ YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
                         const groqData2 = await fetchGroqChat(groqApiKey, {
                             messages,
                             temperature: 0.6,
-                            max_tokens: 250,
-                        }, 7000);
+                            max_tokens: 450,
+                        }, 9000);
 
                         if (groqData2) {
                             reply = (groqData2.choices?.[0]?.message?.content || '').trim();
