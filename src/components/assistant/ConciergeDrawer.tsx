@@ -198,7 +198,7 @@ export default function ConciergeDrawer() {
         }));
 
         try {
-            const history = messages.slice(-4).map(m => ({
+            const history = messages.slice(-6).map(m => ({
                 role: m.role,
                 content: m.content
             }));
@@ -542,7 +542,9 @@ export default function ConciergeDrawer() {
                             <div className="flex items-center justify-between text-[10px] sm:text-[9px] text-slate-400 dark:text-slate-500 mt-2 px-1">
                                 <span>Prices in Ghana Cedis (GH₵)</span>
                                 <a 
-                                    href="https://wa.me/233545247009" 
+                                    href={`https://wa.me/233545247009?text=${encodeURIComponent(
+                                        `Hello London's Imports, I am inquiring with Miss London${firstName ? ` (${firstName})` : ''} regarding an order or product sourcing.`
+                                    )}`}
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="hover:underline flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-400"
