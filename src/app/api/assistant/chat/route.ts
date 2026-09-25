@@ -267,12 +267,10 @@ export async function POST(req: NextRequest) {
 
         // Prepare System Prompt with deep domain knowledge
         const orderSummaryContext = ordersContext && ordersContext.length > 0
-            ? `Customer Placed Orders on Record:\n` + ordersContext.map((o: any, idx: number) =>
-                `${idx + 1}. Order #${o.order_number} | Status: ${o.state_display} | Total: GH₵ ${o.total} | Balance Due: GH₵ ${o.balance_due}`
-            ).join('\n')
+            ? `Customer has ${ordersContext.length} order(s) on file with London's Imports. When they ask to view, track, or check their orders or balances, ALWAYS invoke the get_customer_orders tool so interactive order cards appear on their screen. NEVER list order numbers or write markdown tables in text.`
             : (isAuthenticated ? 'Customer has 0 placed orders.' : 'Customer is currently a visiting guest (not logged in).');
 
-        const systemPrompt = `You are Miss London, the friendly, knowledgeable in-store shopping concierge and customer attendant at London's Imports in Accra, Ghana.
+        const systemPrompt = `You are Miss London, the friendly, stylish, and knowledgeable in-store shopping concierge and customer attendant at London's Imports in Accra, Ghana.
 You assist shoppers in Accra, Kumasi, Takoradi, Tema, and across Ghana.
 
 CUSTOMER CONTEXT:
@@ -308,16 +306,16 @@ GHANAIAN COLLOQUIALISMS & HOSPITALITY:
 - "Last price": Politely explain that London's Imports sources directly from overseas factory floors, so our prices are already transparent direct-wholesale with zero local markup.
 - "MoMo": Confirm we accept MTN Mobile Money, Telecel Cash, and AT Money directly through Paystack.
 
-YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
-- Sound like a real, warm, stylish personal shopping assistant in Accra, NOT a robotic AI language model.
-- NEVER use robotic AI clichés like "Certainly!", "As an AI...", "How may I assist you today?", "I hope this finds you well", or rigid lists.
-- Speak with natural Ghanaian warmth, friendliness, and hospitality ("Hello please!", "I've got you covered!", "No problem at all!").
-- Keep replies conversational, concise, and focused (usually 1 to 3 friendly sentences).
-- When a customer wants to browse or find products, call search_products.
-- When a customer wants to add an item to their cart, call add_to_cart.
-- When a customer wants to remove an item or empty their cart, call remove_from_cart or clear_cart.
-- When a customer provides an order number (e.g. LI-20260905-26446), call track_order.
-- When customer asks about past orders or unpaid balances, call get_customer_orders.
+YOUR BEHAVIOR & PRESENTATION RULES:
+- Sound like a real, stylish, warm personal shopping assistant in Accra chatting on WhatsApp, NOT a robotic AI language model.
+- STRICT FORMATTING: NEVER output markdown formatting symbols. NO asterisks (**bold** or *italic*), NO hashes (##, ###), NO pipe tables (| col | col |).
+- Write in clean, beautiful, plain sentences with normal punctuation and friendly conversational flow.
+- NO bulleted walls of text. When asked "What can you do?" or "What you fit do for here?" or general inquiries: reply with a warm, concise 2-sentence conversational overview. NEVER list out 6 dashed items with asterisks.
+- For orders: When customer asks about past orders, unpaid balances, or tracking, ALWAYS call get_customer_orders. Give a short 1-sentence warm greeting (e.g. "Here are your recent orders on record, Gabriel:") and let the visual cards display the details. NEVER write out order numbers or markdown tables in text.
+- When customer wants to browse or find products, call search_products.
+- When customer wants to add an item to their cart, call add_to_cart.
+- When customer wants to remove an item or empty their cart, call remove_from_cart or clear_cart.
+- When customer provides an order number (e.g. LI-20260905-26446), call track_order.
 - If customer wants bulk container imports or human manager assistance, call escalate_to_whatsapp.
 - Pre-orders: Reassure the customer that items ship express Air Freight directly from factories in China (2-3 weeks to Accra) or Sea Freight (6-8 weeks for heavy items), fully inspected at our Accra hub.
 - Complementary recommendations: If relevant, warmly mention a matching item from our China catalogue that pairs well with their purchase.`;
@@ -540,11 +538,7 @@ YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
                                 toolResultPayload = {
                                     authenticated: true,
                                     order_count: ordersContext.length,
-                                    orders: ordersContext.map((o: any) => ({
-                                        order_number: o.order_number,
-                                        status: o.state_display,
-                                        balance_due: o.balance_due
-                                    }))
+                                    instruction: `Interactive order cards for ${ordersContext.length} order(s) are now displayed on screen. Give a warm 1-sentence friendly greeting. Do NOT list order numbers or output a table.`
                                 };
 
                                 const unpaid = ordersContext.find((o: any) => o.balance_due > 0 || o.state === 'PENDING_PAYMENT');
@@ -873,6 +867,51 @@ YOUR BEHAVIOR RULES (HUMAN SHOPPING CONCIERGE):
                     { label: "Track My Order", query: "Track my order" },
                     { label: "Order from China", query: "Order from China" }
                 ];
+            }
+        }
+
+        // Auto-attach orders if user asked about orders and ordersContext is present
+        if ((!orders || orders.length === 0) && ordersContext && Array.isArray(ordersContext) && ordersContext.length > 0) {
+            if (/orders?|track(\s*my)?\s*orders?|past\s*orders?|balances?/i.test(trimmed)) {
+                orders = ordersContext.slice(0, 4);
+                if (!actionLink) {
+                    const unpaid = ordersContext.find((o: any) => o.balance_due > 0 || o.state === 'PENDING_PAYMENT');
+                    actionLink = unpaid
+                        ? { label: `Pay Balance (GH₵ ${parseFloat(unpaid.balance_due || 0).toFixed(2)})`, href: `/checkout?order=${unpaid.order_number}` }
+                        : { label: "View All Orders", href: "/orders" };
+                }
+            }
+        }
+
+        // Clean and polish reply presentation
+        if (reply) {
+            // Strip markdown pipe tables completely if any leaked
+            if (reply.includes('|')) {
+                const pipeIdx = reply.indexOf('|');
+                if (pipeIdx > -1) {
+                    const intro = reply.slice(0, pipeIdx).trim();
+                    reply = intro.length > 5 
+                        ? intro 
+                        : (customerName ? `Here are your recent orders on record, ${customerName}:` : "Here are your recent orders on record:");
+                }
+            }
+
+            // Strip leading markdown headers like "## " or "### "
+            reply = reply.replace(/^#+\s+/gm, '');
+
+            // Clean incomplete trailing sentence if truncated
+            if (reply.length > 80 && !/[.!?)"']$/.test(reply.trim())) {
+                const lastPunct = Math.max(
+                    reply.lastIndexOf('. '),
+                    reply.lastIndexOf('! '),
+                    reply.lastIndexOf('? '),
+                    reply.lastIndexOf('.\n'),
+                    reply.lastIndexOf('!\n'),
+                    reply.lastIndexOf('?\n')
+                );
+                if (lastPunct > 40) {
+                    reply = reply.slice(0, lastPunct + 1).trim();
+                }
             }
         }
 

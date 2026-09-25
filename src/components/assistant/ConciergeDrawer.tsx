@@ -38,6 +38,87 @@ const QUICK_NAV = [
     { label: "Order from China", query: "Order from China" },
 ];
 
+function renderStyledTokens(str: string) {
+    const parts = str.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+                <strong key={i} className="font-semibold text-slate-900 dark:text-white">
+                    {part.slice(2, -2)}
+                </strong>
+            );
+        }
+        if (part.startsWith('*') && part.endsWith('*')) {
+            return (
+                <em key={i} className="italic text-slate-700 dark:text-slate-300">
+                    {part.slice(1, -1)}
+                </em>
+            );
+        }
+        return part;
+    });
+}
+
+function FormattedConciergeMessage({ content, isUser }: { content: string; isUser: boolean }) {
+    if (isUser) {
+        return <div className="whitespace-pre-wrap">{content}</div>;
+    }
+
+    // 1. Clean markdown pipe tables if any leaked
+    let text = content;
+    if (text.includes('|') && /\|[\s-:]+\|/.test(text)) {
+        const pipeIdx = text.indexOf('|');
+        if (pipeIdx > -1) {
+            const intro = text.slice(0, pipeIdx).trim();
+            text = intro.length > 5 ? intro : "Here are your recent orders on record:";
+        }
+    }
+
+    // 2. Normalize inline bullet patterns: " - **" -> "\n• **", " - " -> "\n• "
+    text = text.replace(/\s+-\s+\*\*/g, '\n• **');
+    text = text.replace(/\s+-\s+/g, '\n• ');
+    text = text.replace(/([.!?])\s+•\s+/g, '$1\n• ');
+
+    // 3. Split into lines
+    const rawLines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+    return (
+        <div className="space-y-1.5 font-sans leading-relaxed text-xs sm:text-[13px]">
+            {rawLines.map((line, idx) => {
+                // Header line: "## Heading" or "### Heading"
+                if (/^#+\s+/.test(line)) {
+                    const headerText = line.replace(/^#+\s+/, '');
+                    return (
+                        <div key={idx} className="font-semibold text-slate-900 dark:text-white pt-1">
+                            {renderStyledTokens(headerText)}
+                        </div>
+                    );
+                }
+
+                // Bullet point line
+                if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+                    const cleanItem = line.replace(/^[•\-\*]\s*/, '');
+                    return (
+                        <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-700 dark:text-slate-300">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 mt-1.5 shrink-0" />
+                            <div className="flex-1">
+                                {renderStyledTokens(cleanItem)}
+                            </div>
+                        </div>
+                    );
+                }
+
+                // Regular text line
+                return (
+                    <div key={idx} className="whitespace-pre-wrap text-slate-800 dark:text-slate-200">
+                        {renderStyledTokens(line)}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function ConciergeDrawer() {
     const router = useRouter();
     const pathname = usePathname();
@@ -587,7 +668,7 @@ export default function ConciergeDrawer() {
                                                 />
                                             </div>
                                         )}
-                                        <div className="whitespace-pre-wrap">{msg.content}</div>
+                                        <FormattedConciergeMessage content={msg.content} isUser={msg.role === 'user'} />
                                         {msg.role === 'assistant' && (
                                             <div className="flex items-center justify-end mt-1.5 pt-1.5 border-t border-slate-200/50 dark:border-slate-800/50">
                                                 <button
