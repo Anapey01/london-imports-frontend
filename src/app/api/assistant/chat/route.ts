@@ -40,7 +40,11 @@ export async function POST(req: NextRequest) {
             userName,
             isAuthenticated = false,
             ordersContext = [],
-            currentProductSlug
+            currentProductSlug,
+            isAdmin = false,
+            debtorMetrics,
+            sourcingMetrics,
+            pendingClaimsCount
         } = body;
 
         if (!message || typeof message !== 'string') {
@@ -121,17 +125,40 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        const isStoreAdmin = Boolean(isAdmin || userName === 'Administrator');
+        let debtorSummary = '';
+        let sourcingSummary = '';
+        let claimsSummary = '';
+
+        if (isStoreAdmin) {
+            if (debtorMetrics) {
+                debtorSummary = `${debtorMetrics.allDebtorsCount || 0} debtors with total outstanding balance of GH₵ ${(debtorMetrics.totalOutstanding || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} (${debtorMetrics.partiallyPaidCount || 0} partially paid).`;
+            }
+            if (sourcingMetrics) {
+                sourcingSummary = `${sourcingMetrics.totalUnits || 0} total units across ${sourcingMetrics.distinctProductsCount || 0} distinct products to procure from China suppliers.`;
+            }
+            if (typeof pendingClaimsCount === 'number') {
+                claimsSummary = `${pendingClaimsCount} pending Hubtel USSD payment claim(s) awaiting verification.`;
+            }
+        }
+
         const orderSummaryContext = ordersContext && ordersContext.length > 0
-            ? `Customer has ${ordersContext.length} order(s) on file with London's Imports. When they ask to view, track, or check their orders or balances, ALWAYS invoke the get_customer_orders tool so interactive order cards appear on their screen. NEVER list order numbers or write markdown tables in text.`
+            ? (isStoreAdmin
+                ? `Active store orders on record: ${ordersContext.length} order(s). Summary data includes customer names, payment states, and item breakdowns.`
+                : `Customer has ${ordersContext.length} order(s) on file with London's Imports. When they ask to view, track, or check their orders or balances, ALWAYS invoke the get_customer_orders tool so interactive order cards appear on their screen. NEVER list order numbers or write markdown tables in text.`)
             : (isAuthenticated ? 'Customer has 0 placed orders.' : 'Customer is currently a visiting guest (not logged in).');
 
         const systemPrompt = buildSystemPrompt({
             customerName,
             isAuthenticated,
+            isAdmin: isStoreAdmin,
             cartInfo,
             orderSummaryContext,
             currentProductContext,
             activeCategories,
+            debtorSummary,
+            sourcingSummary,
+            claimsSummary
         });
 
         const toolCtx: ToolExecutionContext = {
@@ -221,7 +248,14 @@ export async function POST(req: NextRequest) {
                     } else if (choice1?.content) {
                         reply = choice1.content.trim();
 
-                        if (/what\s*can\s*you\s*do|help|services|about/i.test(trimmed)) {
+                        if (isStoreAdmin) {
+                            quickReplies = [
+                                { label: "Summarize Debts", query: "Summarize outstanding debts" },
+                                { label: "China Sourcing", query: "Consolidate China sourcing" },
+                                { label: "Pending Claims", query: "Show pending Hubtel claims" },
+                                { label: "Order Health", query: "Audit recent order statuses" }
+                            ];
+                        } else if (/what\s*can\s*you\s*do|help|services|about/i.test(trimmed)) {
                             actionLink = { label: "Browse Catalog", href: "/products" };
                             quickReplies = [
                                 { label: "Browse Catalog", query: "Browse catalog" },
@@ -266,20 +300,47 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        const adminQuickReplies = [
+            { label: "Summarize Debts", query: "Summarize outstanding debts" },
+            { label: "China Sourcing", query: "Consolidate China sourcing" },
+            { label: "Pending Claims", query: "Show pending Hubtel claims" },
+            { label: "Order Health", query: "Audit recent order statuses" }
+        ];
+
         // 4. Fallback if Groq did not answer
         if (!reply) {
-            const fallbackRes = await generateAssistantFallback(trimmed, toolCtx, products);
-            reply = fallbackRes.reply;
-            if (fallbackRes.orders) orders = fallbackRes.orders;
-            if (fallbackRes.actionLink) actionLink = fallbackRes.actionLink;
-            if (fallbackRes.quickReplies) quickReplies = fallbackRes.quickReplies;
+            if (isStoreAdmin) {
+                const lower = trimmed.toLowerCase();
+                if (lower.includes('debt') || lower.includes('balance') || lower.includes('owing') || lower.includes('unpaid')) {
+                    reply = debtorSummary
+                        ? `Operational Debtor Review: There are ${debtorSummary} You can review individual debtor profiles and dispatch WhatsApp balance notices directly from the Debtors tab.`
+                        : "All customer accounts are currently fully settled. Zero outstanding debtor balances on record.";
+                } else if (lower.includes('sourcing') || lower.includes('china') || lower.includes('procure') || lower.includes('items') || lower.includes('manifest')) {
+                    reply = sourcingSummary
+                        ? `China Sourcing Manifest: There are ${sourcingSummary} Consolidated supplier search (1688 / Taobao) and order export can be conducted in the Sourcing tab.`
+                        : "All customer pre-orders have been consolidated and routed for procurement.";
+                } else if (lower.includes('claim') || lower.includes('ussd') || lower.includes('momo') || lower.includes('audit')) {
+                    reply = claimsSummary
+                        ? `Hubtel Payment Audit: There are ${claimsSummary} You can verify or reject transaction reference notes directly in the Claims Audit tab.`
+                        : "Zero pending Hubtel USSD claims requiring manual reconciliation.";
+                } else {
+                    reply = `Miss London Executive Co-Pilot operational.\n\n• Debtor Receivables: ${debtorSummary || 'Fully settled.'}\n• China Procurement: ${sourcingSummary || 'Up to date.'}\n• Claims Audit: ${claimsSummary || 'All verified.'}\n\nHow may I assist with operations management today?`;
+                }
+                quickReplies = adminQuickReplies;
+            } else {
+                const fallbackRes = await generateAssistantFallback(trimmed, toolCtx, products);
+                reply = fallbackRes.reply;
+                if (fallbackRes.orders) orders = fallbackRes.orders;
+                if (fallbackRes.actionLink) actionLink = fallbackRes.actionLink;
+                if (fallbackRes.quickReplies) quickReplies = fallbackRes.quickReplies;
+            }
         }
 
         // Auto-attach orders if user asked about orders and ordersContext is present
         if ((!orders || orders.length === 0) && ordersContext && Array.isArray(ordersContext) && ordersContext.length > 0) {
             if (/orders?|track(\s*my)?\s*orders?|past\s*orders?|balances?/i.test(trimmed)) {
                 orders = ordersContext.slice(0, 4);
-                if (!actionLink) {
+                if (!actionLink && !isStoreAdmin) {
                     const unpaid = ordersContext.find((o: any) => o.balance_due > 0 || o.state === 'PENDING_PAYMENT');
                     actionLink = unpaid
                         ? { label: `Pay Balance (GH₵ ${parseFloat(unpaid.balance_due || 0).toFixed(2)})`, href: `/checkout?order=${unpaid.order_number}` }
@@ -293,13 +354,27 @@ export async function POST(req: NextRequest) {
             reply = cleanAssistantReply(reply, customerName);
         }
 
+        let actionRedirectTab: 'debtors' | 'sourcing' | 'claims' | undefined;
+        if (isStoreAdmin) {
+            const lowerQ = trimmed.toLowerCase();
+            const lowerR = (reply || '').toLowerCase();
+            if (lowerQ.includes('debt') || lowerQ.includes('balance') || lowerQ.includes('unpaid') || lowerQ.includes('owing') || lowerR.includes('outstanding balance') || lowerR.includes('debtor review')) {
+                actionRedirectTab = 'debtors';
+            } else if (lowerQ.includes('sourcing') || lowerQ.includes('china') || lowerQ.includes('procure') || lowerR.includes('procurement') || lowerR.includes('sourcing manifest')) {
+                actionRedirectTab = 'sourcing';
+            } else if (lowerQ.includes('claim') || lowerQ.includes('audit') || lowerQ.includes('ussd') || lowerR.includes('payment audit') || lowerR.includes('claims audit')) {
+                actionRedirectTab = 'claims';
+            }
+        }
+
         return NextResponse.json({
             reply,
             products,
             orders,
             actionLink,
-            quickReplies,
-            cartAction
+            quickReplies: isStoreAdmin ? (quickReplies || adminQuickReplies) : quickReplies,
+            cartAction,
+            actionRedirectTab
         });
     } catch (e: any) {
         console.error('[Assistant API] Internal error:', e);

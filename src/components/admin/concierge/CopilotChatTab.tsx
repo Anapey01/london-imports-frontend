@@ -1,8 +1,30 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, ArrowRight, ExternalLink } from 'lucide-react';
-import { AdminOrderData, computeDebtorMetrics, consolidateSourcingList } from '@/lib/concierge-utils';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { 
+    Send, 
+    Bot, 
+    ArrowRight, 
+    ExternalLink, 
+    Mic, 
+    MicOff, 
+    Volume2, 
+    VolumeX, 
+    RotateCcw, 
+    MessageSquare, 
+    CreditCard, 
+    Package, 
+    ShieldCheck 
+} from 'lucide-react';
+import { 
+    AdminOrderData, 
+    computeDebtorMetrics, 
+    consolidateSourcingList, 
+    generateWhatsAppMessage, 
+    formatWhatsAppUrl,
+    DebtorCustomer,
+    SourcingItem 
+} from '@/lib/concierge-utils';
 
 export interface CopilotMessage {
     id: string;
@@ -12,7 +34,9 @@ export interface CopilotMessage {
     quickReplies?: Array<{ label: string; query: string }>;
     actionLink?: { label: string; href: string };
     products?: Array<{ id: string; name: string; price: number; slug: string }>;
-    orders?: Array<{ order_number: string; state_display: string; total: number; balance_due: number }>;
+    orders?: Array<{ order_number: string; state_display: string; total: number; balance_due: number; customer_name?: string }>;
+    debtors?: DebtorCustomer[];
+    sourcingItems?: SourcingItem[];
 }
 
 interface CopilotChatTabProps {
@@ -21,22 +45,96 @@ interface CopilotChatTabProps {
     onSwitchTab: (tab: 'debtors' | 'sourcing' | 'claims') => void;
 }
 
+const STORAGE_KEY = 'li_admin_copilot_session_v1';
+
+function selectBestConciergeVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
+    if (!voices || voices.length === 0) return undefined;
+    const preferredNames = [
+        'en-GB', 'en_GB', 'British', 'Stephanie', 'Samantha', 'Karen', 'Victoria', 'Moira', 'Google UK English Female'
+    ];
+    for (const name of preferredNames) {
+        const found = voices.find(v => v.name.includes(name) || v.lang.includes(name));
+        if (found) return found;
+    }
+    return voices.find(v => v.lang.startsWith('en')) || voices[0];
+}
+
 export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab }: CopilotChatTabProps) {
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const [messages, setMessages] = useState<CopilotMessage[]>([
-        {
-            id: 'welcome',
+    const [isListening, setIsListening] = useState(false);
+    const [isSpeakingId, setIsSpeakingId] = useState<string | null>(null);
+    const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+    const chatScrollRef = useRef<HTMLDivElement>(null);
+
+    // Compute live operational metrics
+    const debtorData = useMemo(() => computeDebtorMetrics(orders), [orders]);
+    const sourcingData = useMemo(() => consolidateSourcingList(orders), [orders]);
+
+    const { allDebtors, partiallyPaid, totalOutstanding } = debtorData;
+    const { items: sourcingItems, totalUnits } = sourcingData;
+
+    // Build initial dynamic briefing
+    const buildInitialBriefing = useCallback((): CopilotMessage => {
+        return {
+            id: 'initial-briefing',
             role: 'assistant',
-            content: "Hello Administrator. I am Miss London, your store operations concierge. How may I assist you with order audits, customer debt recovery, China sourcing consolidation, or Hubtel payment verification today?",
+            content: `Hello Administrator. Store operations summary: GH₵ ${totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2 })} in outstanding customer receivables across ${allDebtors.length} orders, ${totalUnits} units across ${sourcingItems.length} products to procure from China suppliers, and ${pendingClaimsCount} USSD claims awaiting audit.\n\nHow may I assist with your store operations today?`,
             quickReplies: [
                 { label: "Summarize Debts", query: "Summarize outstanding debts" },
                 { label: "China Sourcing", query: "Consolidate China sourcing" },
-                { label: "Pending Claims", query: "Show pending Hubtel claims" }
+                { label: "Pending Claims", query: "Show pending Hubtel claims" },
+                { label: "Order Health", query: "Audit recent order statuses" }
             ]
+        };
+    }, [allDebtors.length, totalOutstanding, totalUnits, sourcingItems.length, pendingClaimsCount]);
+
+    const [messages, setMessages] = useState<CopilotMessage[]>([buildInitialBriefing()]);
+
+    // Pre-cache speech synthesis voices
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        const syncVoices = () => {
+            const v = window.speechSynthesis.getVoices();
+            if (v && v.length > 0) setAvailableVoices(v);
+        };
+
+        syncVoices();
+        window.speechSynthesis.onvoiceschanged = syncVoices;
+
+        return () => {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.onvoiceschanged = null;
+            }
+        };
+    }, []);
+
+    // Restore session from sessionStorage if available
+    useEffect(() => {
+        try {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setMessages(parsed);
+                }
+            }
+        } catch {
+            // Ignore storage parse errors
         }
-    ]);
-    const chatScrollRef = useRef<HTMLDivElement>(null);
+    }, []);
+
+    // Persist messages to sessionStorage
+    useEffect(() => {
+        if (messages.length > 0) {
+            try {
+                sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-25)));
+            } catch {
+                // Ignore quota
+            }
+        }
+    }, [messages]);
 
     const scrollToBottom = () => {
         if (chatScrollRef.current) {
@@ -47,6 +145,76 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
     useEffect(() => {
         scrollToBottom();
     }, [messages, isTyping]);
+
+    // Reset chat session
+    const handleResetSession = () => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        setIsSpeakingId(null);
+        try {
+            sessionStorage.removeItem(STORAGE_KEY);
+        } catch {}
+        setMessages([buildInitialBriefing()]);
+    };
+
+    // Speech-to-Text handler
+    const handleVoiceInput = () => {
+        if (typeof window === 'undefined') return;
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert('Voice input is not supported in this browser. Please use Chrome, Edge, or Safari.');
+            return;
+        }
+
+        try {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => setIsListening(true);
+            recognition.onend = () => setIsListening(false);
+            recognition.onerror = () => setIsListening(false);
+            recognition.onresult = (event: any) => {
+                const transcript = event.results?.[0]?.[0]?.transcript;
+                if (transcript) {
+                    setInput(transcript);
+                    handleSendMessage(transcript);
+                }
+            };
+            recognition.start();
+        } catch {
+            setIsListening(false);
+        }
+    };
+
+    // Text-to-Speech handler
+    const handleToggleSpeech = (msgId: string, text: string) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        if (isSpeakingId === msgId) {
+            window.speechSynthesis.cancel();
+            setIsSpeakingId(null);
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        const cleanText = text.replace(/[*_#`]/g, '').trim();
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 0.93;
+        utterance.pitch = 1.02;
+
+        const currentVoices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
+        const voice = selectBestConciergeVoice(currentVoices);
+        if (voice) utterance.voice = voice;
+
+        utterance.onstart = () => setIsSpeakingId(msgId);
+        utterance.onend = () => setIsSpeakingId(null);
+        utterance.onerror = () => setIsSpeakingId(null);
+
+        window.speechSynthesis.speak(utterance);
+    };
 
     const handleSendMessage = async (textToSend?: string) => {
         const query = (textToSend || input).trim();
@@ -61,10 +229,6 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsTyping(true);
-
-        // Pre-compute real-time operational metrics for prompt & fallback
-        const { allDebtors, partiallyPaid, totalOutstanding } = computeDebtorMetrics(orders);
-        const { totalUnits, items: sourcingItems } = consolidateSourcingList(orders);
 
         // Format orders for assistant context
         const formattedOrders = orders.slice(0, 15).map(o => {
@@ -107,7 +271,18 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                         conversationHistory: history,
                         userName: 'Administrator',
                         isAuthenticated: true,
-                        ordersContext: formattedOrders
+                        isAdmin: true,
+                        ordersContext: formattedOrders,
+                        debtorMetrics: {
+                            allDebtorsCount: allDebtors.length,
+                            totalOutstanding,
+                            partiallyPaidCount: partiallyPaid.length
+                        },
+                        sourcingMetrics: {
+                            totalUnits,
+                            distinctProductsCount: sourcingItems.length
+                        },
+                        pendingClaimsCount
                     })
                 });
             } finally {
@@ -117,17 +292,30 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
             if (res.ok) {
                 const data = await res.json();
 
-                // Determine contextual tab redirect if relevant
-                let actionRedirectTab: 'debtors' | 'sourcing' | 'claims' | undefined;
+                let actionRedirectTab: 'debtors' | 'sourcing' | 'claims' | undefined = data.actionRedirectTab;
                 const lowerQ = query.toLowerCase();
                 const lowerR = (data.reply || '').toLowerCase();
 
-                if (lowerQ.includes('debt') || lowerQ.includes('balance') || lowerQ.includes('unpaid') || lowerQ.includes('owing') || lowerR.includes('outstanding balance')) {
-                    actionRedirectTab = 'debtors';
-                } else if (lowerQ.includes('sourcing') || lowerQ.includes('china') || lowerQ.includes('procure') || lowerR.includes('procurement') || lowerR.includes('sourcing')) {
-                    actionRedirectTab = 'sourcing';
-                } else if (lowerQ.includes('claim') || lowerQ.includes('audit') || lowerQ.includes('ussd') || lowerR.includes('claims audit')) {
-                    actionRedirectTab = 'claims';
+                if (!actionRedirectTab) {
+                    if (lowerQ.includes('debt') || lowerQ.includes('balance') || lowerQ.includes('unpaid') || lowerQ.includes('owing') || lowerR.includes('outstanding balance')) {
+                        actionRedirectTab = 'debtors';
+                    } else if (lowerQ.includes('sourcing') || lowerQ.includes('china') || lowerQ.includes('procure') || lowerR.includes('procurement') || lowerR.includes('sourcing')) {
+                        actionRedirectTab = 'sourcing';
+                    } else if (lowerQ.includes('claim') || lowerQ.includes('audit') || lowerQ.includes('ussd') || lowerR.includes('claims audit')) {
+                        actionRedirectTab = 'claims';
+                    }
+                }
+
+                // Attach matching debtor cards if query is about debts
+                let matchedDebtors: DebtorCustomer[] | undefined;
+                if (lowerQ.includes('debt') || lowerQ.includes('balance') || lowerQ.includes('owing') || lowerQ.includes('unpaid')) {
+                    matchedDebtors = allDebtors.slice(0, 3);
+                }
+
+                // Attach matching sourcing items if query is about sourcing
+                let matchedSourcing: SourcingItem[] | undefined;
+                if (lowerQ.includes('sourcing') || lowerQ.includes('china') || lowerQ.includes('procure') || lowerQ.includes('manifest')) {
+                    matchedSourcing = sourcingItems.slice(0, 3);
                 }
 
                 setMessages(prev => [
@@ -140,7 +328,9 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                         quickReplies: data.quickReplies,
                         actionLink: data.actionLink,
                         products: data.products,
-                        orders: data.orders
+                        orders: data.orders,
+                        debtors: matchedDebtors,
+                        sourcingItems: matchedSourcing
                     }
                 ]);
             } else {
@@ -150,14 +340,18 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
             // Intelligent operational fallback using real computed data
             let fallbackContent = "I am Miss London, your store operations concierge. All systems are operational. You can ask me to inspect debtor balances, calculate China sourcing items, or audit pending payment claims.";
             let fallbackTab: 'debtors' | 'sourcing' | 'claims' | undefined;
+            let matchedDebtors: DebtorCustomer[] | undefined;
+            let matchedSourcing: SourcingItem[] | undefined;
 
             const lower = query.toLowerCase();
             if (lower.includes('debt') || lower.includes('balance') || lower.includes('unpaid') || lower.includes('owing')) {
-                fallbackContent = `There are currently ${allDebtors.length} orders with outstanding balances totaling GH₵ ${totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2 })}.\n\n• ${partiallyPaid.length} orders are partially paid.\n• ${allDebtors.length - partiallyPaid.length} orders are completely unpaid.\n\nYou can review each customer and send one-click WhatsApp payment reminders directly in the Debtors tab.`;
+                fallbackContent = `There are currently ${allDebtors.length} orders with outstanding balances totaling GH₵ ${totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2 })}.\n\n• ${partiallyPaid.length} orders are partially paid.\n• ${allDebtors.length - partiallyPaid.length} orders are completely unpaid.\n\nYou can review individual customer accounts and dispatch WhatsApp payment reminders directly below.`;
                 fallbackTab = 'debtors';
-            } else if (lower.includes('sourcing') || lower.includes('china') || lower.includes('procure') || lower.includes('items')) {
-                fallbackContent = `Currently, there are ${totalUnits} total units across ${sourcingItems.length} distinct products to procure from China suppliers.\n\nYou can view the full consolidated breakdown and search 1688 / Taobao directly in the Sourcing tab.`;
+                matchedDebtors = allDebtors.slice(0, 3);
+            } else if (lower.includes('sourcing') || lower.includes('china') || lower.includes('procure') || lower.includes('items') || lower.includes('manifest')) {
+                fallbackContent = `Currently, there are ${totalUnits} total units across ${sourcingItems.length} distinct products to procure from China suppliers.\n\nYou can view the consolidated items below or search directly on 1688 and Taobao in the Sourcing tab.`;
                 fallbackTab = 'sourcing';
+                matchedSourcing = sourcingItems.slice(0, 3);
             } else if (lower.includes('claim') || lower.includes('ussd') || lower.includes('momo') || lower.includes('audit')) {
                 fallbackContent = `There are currently ${pendingClaimsCount} pending USSD / Mobile Money claims requiring administrative audit.\n\nYou can review, approve, or reject transactions in the Claims Audit tab.`;
                 fallbackTab = 'claims';
@@ -170,10 +364,13 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                     role: 'assistant',
                     content: fallbackContent,
                     actionRedirectTab: fallbackTab,
+                    debtors: matchedDebtors,
+                    sourcingItems: matchedSourcing,
                     quickReplies: [
                         { label: "Summarize Debts", query: "Summarize outstanding debts" },
                         { label: "China Sourcing", query: "Consolidate China sourcing" },
-                        { label: "Pending Claims", query: "Show pending Hubtel claims" }
+                        { label: "Pending Claims", query: "Show pending Hubtel claims" },
+                        { label: "Order Health", query: "Audit recent order statuses" }
                     ]
                 }
             ]);
@@ -183,26 +380,102 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
     };
 
     return (
-        <div className="flex flex-col h-full min-h-0">
-            {/* Quick Suggestions */}
-            <div className="flex flex-wrap gap-1.5 pb-2">
+        <div className="flex flex-col h-full min-h-0 text-slate-100">
+            {/* Live Operational KPI Ticker & Reset Header */}
+            <div className="pb-2.5 space-y-2 border-b border-slate-800">
+                <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
+                        Live Operations Snapshot
+                    </span>
+                    <button
+                        onClick={handleResetSession}
+                        className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-white transition-colors"
+                        title="Reset conversation session"
+                    >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reset</span>
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-3 gap-1.5">
+                    {/* Outstanding Receivables Metric */}
+                    <button
+                        onClick={() => handleSendMessage("Summarize outstanding debts")}
+                        className="text-left p-2 rounded bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 transition-colors"
+                    >
+                        <div className="flex items-center gap-1 text-slate-400 mb-0.5">
+                            <CreditCard className="w-3 h-3" />
+                            <span className="text-[10px] uppercase tracking-wide">Receivables</span>
+                        </div>
+                        <div className="text-xs font-semibold text-white truncate">
+                            GH₵ {totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                            {allDebtors.length} debtor{allDebtors.length === 1 ? '' : 's'}
+                        </div>
+                    </button>
+
+                    {/* China Sourcing Queue Metric */}
+                    <button
+                        onClick={() => handleSendMessage("Consolidate China sourcing")}
+                        className="text-left p-2 rounded bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 transition-colors"
+                    >
+                        <div className="flex items-center gap-1 text-slate-400 mb-0.5">
+                            <Package className="w-3 h-3" />
+                            <span className="text-[10px] uppercase tracking-wide">Sourcing</span>
+                        </div>
+                        <div className="text-xs font-semibold text-white truncate">
+                            {totalUnits} units
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                            {sourcingItems.length} product{sourcingItems.length === 1 ? '' : 's'}
+                        </div>
+                    </button>
+
+                    {/* Pending Claims Audit Metric */}
+                    <button
+                        onClick={() => handleSendMessage("Show pending Hubtel claims")}
+                        className="text-left p-2 rounded bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 transition-colors"
+                    >
+                        <div className="flex items-center gap-1 text-slate-400 mb-0.5">
+                            <ShieldCheck className="w-3 h-3" />
+                            <span className="text-[10px] uppercase tracking-wide">Claims</span>
+                        </div>
+                        <div className="text-xs font-semibold text-white truncate">
+                            {pendingClaimsCount} pending
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                            USSD audit
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {/* Quick Operations Prompts */}
+            <div className="flex flex-wrap gap-1.5 py-2">
                 <button
                     onClick={() => handleSendMessage("Summarize outstanding debts")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
                 >
-                    Outstanding Debts
+                    Top Debtors
                 </button>
                 <button
                     onClick={() => handleSendMessage("Consolidate China sourcing")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
                 >
-                    China Sourcing
+                    China Manifest
                 </button>
                 <button
                     onClick={() => handleSendMessage("Show pending Hubtel claims")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
                 >
-                    Pending Claims ({pendingClaimsCount})
+                    Audit Claims ({pendingClaimsCount})
+                </button>
+                <button
+                    onClick={() => handleSendMessage("Audit recent order statuses")}
+                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
+                >
+                    Order Health
                 </button>
             </div>
 
@@ -219,20 +492,126 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                             </div>
                         )}
                         <div
-                            className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed space-y-2 ${
+                            className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed space-y-2.5 ${
                                 msg.role === 'user'
                                     ? 'bg-white text-slate-950 font-medium'
                                     : 'bg-slate-900 text-slate-100 border border-slate-800'
                             }`}
                         >
-                            <p className="whitespace-pre-wrap">{msg.content}</p>
+                            <div className="flex items-start justify-between gap-2">
+                                <p className="whitespace-pre-wrap flex-1">{msg.content}</p>
+                                {msg.role === 'assistant' && (
+                                    <button
+                                        onClick={() => handleToggleSpeech(msg.id, msg.content)}
+                                        className="text-slate-400 hover:text-white p-0.5 rounded transition-colors shrink-0"
+                                        title={isSpeakingId === msg.id ? "Stop reading" : "Read aloud"}
+                                    >
+                                        {isSpeakingId === msg.id ? (
+                                            <VolumeX className="w-3.5 h-3.5 text-white animate-pulse" />
+                                        ) : (
+                                            <Volume2 className="w-3.5 h-3.5" />
+                                        )}
+                                    </button>
+                                )}
+                            </div>
 
-                            {/* Optional Matched Orders */}
+                            {/* Interactive Debtor Action Cards */}
+                            {msg.debtors && msg.debtors.length > 0 && (
+                                <div className="pt-1 space-y-1.5 border-t border-slate-800">
+                                    <div className="text-[10px] uppercase font-semibold text-slate-400">
+                                        Actionable Debtor Records
+                                    </div>
+                                    {msg.debtors.map((d, idx) => {
+                                        const reminderText = generateWhatsAppMessage('balance_reminder', {
+                                            customerName: d.customerName,
+                                            orderNumber: d.orderNumber,
+                                            balanceDue: d.balanceDue,
+                                            amountPaid: d.amountPaid,
+                                            total: d.total
+                                        });
+                                        const waUrl = formatWhatsAppUrl(d.customerPhone, reminderText);
+
+                                        return (
+                                            <div 
+                                                key={idx} 
+                                                className="p-2.5 rounded bg-slate-950 border border-slate-800 space-y-1.5 text-[11px]"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-semibold text-white">{d.customerName}</span>
+                                                    <span className="font-mono text-slate-400 text-[10px]">#{d.orderNumber}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between text-slate-300">
+                                                    <span>Balance Due: <strong className="text-white">GH₵ {d.balanceDue.toFixed(2)}</strong></span>
+                                                    <span className="text-slate-400">Paid: GH₵ {d.amountPaid.toFixed(2)}</span>
+                                                </div>
+                                                <div className="pt-1 flex items-center justify-between">
+                                                    <span className="text-[10px] text-slate-400">{d.customerPhone || 'No phone on file'}</span>
+                                                    {d.customerPhone ? (
+                                                        <a
+                                                            href={waUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-medium border border-slate-700 transition-colors"
+                                                        >
+                                                            <MessageSquare className="w-2.5 h-2.5" />
+                                                            <span>WhatsApp Reminder</span>
+                                                        </a>
+                                                    ) : null}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Interactive Sourcing Action Cards */}
+                            {msg.sourcingItems && msg.sourcingItems.length > 0 && (
+                                <div className="pt-1 space-y-1.5 border-t border-slate-800">
+                                    <div className="text-[10px] uppercase font-semibold text-slate-400">
+                                        Consolidated Procurement Items
+                                    </div>
+                                    {msg.sourcingItems.map((item, idx) => {
+                                        const s1688Url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(item.name)}`;
+
+                                        return (
+                                            <div 
+                                                key={idx} 
+                                                className="p-2.5 rounded bg-slate-950 border border-slate-800 space-y-1 text-[11px]"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-semibold text-white truncate max-w-[160px]">{item.name}</span>
+                                                    <span className="font-semibold text-white">{item.totalQuantity} units</span>
+                                                </div>
+                                                <div className="flex items-center justify-between text-slate-400 text-[10px]">
+                                                    <span>Variant: {item.variant}</span>
+                                                    <span>{item.ordersCount} customer order{item.ordersCount === 1 ? '' : 's'}</span>
+                                                </div>
+                                                <div className="pt-1 flex items-center justify-end">
+                                                    <a
+                                                        href={item.supplierUrl || s1688Url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-medium border border-slate-700 transition-colors"
+                                                    >
+                                                        <span>Search 1688 / Supplier</span>
+                                                        <ExternalLink className="w-2.5 h-2.5" />
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Matched Orders */}
                             {msg.orders && msg.orders.length > 0 && (
-                                <div className="pt-1 space-y-1">
+                                <div className="pt-1 space-y-1 border-t border-slate-800">
+                                    <div className="text-[10px] uppercase font-semibold text-slate-400">
+                                        Matched Orders
+                                    </div>
                                     {msg.orders.map((ord, idx) => (
-                                        <div key={idx} className="p-2 rounded bg-slate-950/60 border border-slate-800 flex items-center justify-between text-[11px]">
-                                            <span className="font-mono text-slate-300">{ord.order_number}</span>
+                                        <div key={idx} className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center justify-between text-[11px]">
+                                            <span className="font-mono text-slate-300">#{ord.order_number}</span>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-slate-400">GH₵ {ord.total.toFixed(2)}</span>
                                                 <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-semibold bg-slate-800 text-slate-300">
@@ -244,7 +623,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                 </div>
                             )}
 
-                            {/* Optional Matched Products */}
+                            {/* Matched Products */}
                             {msg.products && msg.products.length > 0 && (
                                 <div className="pt-1 flex flex-wrap gap-1.5">
                                     {msg.products.map((prod) => (
@@ -253,7 +632,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                             href={`/products/${prod.slug}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-950/60 border border-slate-800 text-[11px] text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+                                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
                                         >
                                             <span className="truncate max-w-[140px]">{prod.name}</span>
                                             <ExternalLink className="w-2.5 h-2.5 shrink-0" />
@@ -269,7 +648,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                         href={msg.actionLink.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors"
+                                        className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-700 transition-colors"
                                     >
                                         {msg.actionLink.label}
                                         <ArrowRight className="w-3 h-3" />
@@ -281,7 +660,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                             {msg.actionRedirectTab && (
                                 <button
                                     onClick={() => onSwitchTab(msg.actionRedirectTab!)}
-                                    className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors"
+                                    className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-700 transition-colors"
                                 >
                                     Open {msg.actionRedirectTab.toUpperCase()} Tab
                                     <ArrowRight className="w-3 h-3" />
@@ -295,7 +674,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                         <button
                                             key={idx}
                                             onClick={() => handleSendMessage(qr.query)}
-                                            className="text-[10px] font-medium bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-0.5 rounded border border-slate-800 transition-colors"
+                                            className="text-[10px] font-medium bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-0.5 rounded border border-slate-800 transition-colors"
                                         >
                                             {qr.label}
                                         </button>
@@ -318,26 +697,42 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                 )}
             </div>
 
-            {/* Prompt Input */}
+            {/* Prompt Input Form */}
             <div className="pt-2">
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         handleSendMessage();
                     }}
-                    className="relative flex items-center"
+                    className="relative flex items-center gap-1.5"
                 >
-                    <input
-                        type="text"
-                        placeholder="Ask Miss London about orders, debts, or shipments..."
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="w-full pl-3 pr-10 py-2.5 text-xs bg-slate-900 text-white placeholder-slate-400 border border-slate-800 rounded-lg focus:outline-none focus:border-white"
-                    />
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            placeholder={isListening ? "Listening to your operational query..." : "Ask Miss London about orders, debts, or shipments..."}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            className="w-full pl-3 pr-9 py-2.5 text-xs bg-slate-900 text-white placeholder-slate-400 border border-slate-800 rounded-lg focus:outline-none focus:border-white transition-colors"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleVoiceInput}
+                            className={`absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded transition-colors ${
+                                isListening 
+                                    ? 'bg-slate-700 text-white animate-pulse' 
+                                    : 'text-slate-400 hover:text-white'
+                            }`}
+                            title={isListening ? "Listening..." : "Click to speak"}
+                        >
+                            {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                        </button>
+                    </div>
+
                     <button
                         type="submit"
                         disabled={!input.trim() || isTyping}
-                        className="absolute right-1.5 p-1.5 bg-white text-slate-950 hover:bg-slate-200 rounded-md transition-colors disabled:opacity-40"
+                        className="p-2.5 bg-white text-slate-950 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-40 shrink-0"
+                        title="Send message"
                     >
                         <Send className="w-3.5 h-3.5" />
                     </button>
