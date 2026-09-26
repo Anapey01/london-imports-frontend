@@ -35,6 +35,8 @@ export interface AssistantOrder {
     balance_due: number;
     items_count?: number;
     delivery_window?: string;
+    is_verifying?: boolean;
+    claimed_amount?: number;
     items?: Array<{
         name: string;
         quantity: number;
@@ -441,7 +443,7 @@ YOUR BEHAVIOR & PRESENTATION RULES:
 - Write in clean, beautiful, plain sentences with normal punctuation and friendly conversational flow.
 - NO bulleted walls of text. When asked "What can you do?" or "What you fit do for here?" or general inquiries: reply with a warm, concise 2-sentence conversational overview. NEVER list out 6 dashed items with asterisks.
 - For orders: When customer asks about past orders, unpaid balances, or tracking, ALWAYS call get_customer_orders. Give a short 1-sentence warm greeting (e.g. "Here are your recent orders on record, Gabriel:") and let the visual cards display the details. NEVER write out order numbers or markdown tables in text.
-- When a customer mentions they made a payment, paid a deposit, or shares a transaction ID (e.g. "I just made payment for order LI-20260921-87841, 1gh. Transaction id - 90263045181"): ALWAYS call the submit_payment_verification tool with their order_number, transaction_id, and amount. NEVER say "I'll keep an eye on it" or give vague promises without calling this tool. Factual status must be reported strictly based on the tool's result.
+- When a customer mentions they made a payment, paid a deposit, or shares a transaction ID (e.g. "I just made payment for order LI-20260921-87841, 1gh. Transaction id - 90263045181"): ALWAYS call the submit_payment_verification tool with their order_number, transaction_id, and amount. NEVER say "I'll keep an eye on it" or give vague promises without calling this tool. When the tool indicates pending audit (awaiting bank settlement), warmly acknowledge the exact amount they claimed (e.g. GH₵ 1.00), explain that once Hubtel confirms the settlement, their balance will automatically adjust from the current balance to the expected balance, and reassure them that our dispatch team will proceed once confirmed. Do NOT demand they pay again or tell them their balance is still the full amount without explaining that the claim is pending confirmation.
 - When customer wants to browse or find products, call search_products.
 - When customer wants to add an item to their cart, call add_to_cart.
 - When customer wants to remove an item or empty their cart, call remove_from_cart or clear_cart.
@@ -924,16 +926,26 @@ SECURITY & ADVERSARIAL DEFENSE:
 
                                 const claimData = await claimRes.json();
                                 if (claimRes.ok) {
+                                    const isAudit = Boolean(claimData.pending_audit);
+                                    const claimedAmt = claimData.claimed_amount || rawAmount || 0;
+                                    const currentBal = claimData.balance_due !== undefined ? claimData.balance_due : 0;
+                                    const expectedBal = Math.max(0, currentBal - claimedAmt);
+
                                     toolResultPayload = {
                                         success: true,
                                         verified: Boolean(claimData.verified),
-                                        pending_audit: Boolean(claimData.pending_audit),
+                                        pending_audit: isAudit,
                                         already_credited: Boolean(claimData.already_credited),
                                         order_number: claimData.order_number || rawOrderNum,
                                         order_state: claimData.state,
-                                        amount_credited: claimData.amount_credited,
-                                        balance_due: claimData.balance_due,
-                                        message: claimData.message
+                                        amount_claimed: claimedAmt,
+                                        amount_credited: claimData.amount_credited || 0,
+                                        current_balance_due: currentBal,
+                                        expected_balance_after_settlement: isAudit ? expectedBal : currentBal,
+                                        message: claimData.message,
+                                        guidance: isAudit
+                                            ? `Customer claimed payment of GH₵ ${claimedAmt} for order ${rawOrderNum} (Txn: ${rawTxnId}). Our system has registered the claim and is awaiting bank settlement confirmation from Hubtel. Politely reassure the customer that their claim is securely recorded. Explain that once Hubtel confirms the settlement, their balance will automatically adjust from GH₵ ${currentBal.toFixed(2)} to GH₵ ${expectedBal.toFixed(2)}, and dispatch will proceed.`
+                                            : `Payment of GH₵ ${claimData.amount_credited} is confirmed and credited! Remaining balance is GH₵ ${claimData.balance_due}.`
                                     };
 
                                     const updatedOrderObj: AssistantOrder = {
@@ -943,6 +955,8 @@ SECURITY & ADVERSARIAL DEFENSE:
                                         total: (claimData.balance_due || 0) + (claimData.amount_credited || 0),
                                         balance_due: claimData.balance_due !== undefined ? claimData.balance_due : 0,
                                         amount_paid: claimData.amount_credited !== undefined ? claimData.amount_credited : 0,
+                                        is_verifying: isAudit,
+                                        claimed_amount: claimedAmt > 0 ? claimedAmt : undefined,
                                     };
 
                                     const matchIdx = orders.findIndex(o => o.order_number.toUpperCase() === rawOrderNum.toUpperCase());
@@ -952,7 +966,9 @@ SECURITY & ADVERSARIAL DEFENSE:
                                         orders = [updatedOrderObj];
                                     }
 
-                                    if (claimData.balance_due && claimData.balance_due > 0) {
+                                    if (isAudit) {
+                                        actionLink = { label: "Track Order Status", href: `/track?order=${rawOrderNum}` };
+                                    } else if (claimData.balance_due && claimData.balance_due > 0) {
                                         actionLink = { label: `Pay Remaining (GH₵ ${parseFloat(claimData.balance_due).toFixed(2)})`, href: `/checkout?order=${rawOrderNum}` };
                                     } else {
                                         actionLink = { label: "Track Shipment", href: `/track?order=${rawOrderNum}` };
@@ -1076,9 +1092,12 @@ SECURITY & ADVERSARIAL DEFENSE:
                                 ? `Thank you ${customerName}! I have verified your payment of GH₵ ${cData.amount_credited} (Transaction ID: ${targetTxn}) for Order #${targetOrder}. Your remaining balance is GH₵ ${parseFloat(cData.balance_due).toFixed(2)}.`
                                 : `Thank you! I have verified your payment of GH₵ ${cData.amount_credited} (Transaction ID: ${targetTxn}) for Order #${targetOrder}. Your remaining balance is GH₵ ${parseFloat(cData.balance_due).toFixed(2)}.`;
                         } else {
+                            const curBal = parseFloat(cData.balance_due || 0);
+                            const claimAmt = parseFloat(cData.claimed_amount || targetAmount || 0);
+                            const expBal = Math.max(0, curBal - claimAmt);
                             reply = customerName
-                                ? `Thank you ${customerName}! I have recorded your transaction ID ${targetTxn} for Order #${targetOrder}. Our system is confirming the settlement with Hubtel. Your balance will update automatically once confirmed.`
-                                : `Thank you! I have recorded your transaction ID ${targetTxn} for Order #${targetOrder}. Our system is confirming the settlement with Hubtel. Your balance will update automatically once confirmed.`;
+                                ? `Thank you ${customerName}! I have recorded your payment claim of GH₵ ${claimAmt > 0 ? claimAmt.toFixed(2) : '1.00'} (Transaction ID: ${targetTxn}) for Order #${targetOrder}. Our system is currently awaiting settlement confirmation from Hubtel. Once confirmed, your balance will automatically adjust${claimAmt > 0 ? ` from GH₵ ${curBal.toFixed(2)} to GH₵ ${expBal.toFixed(2)}` : ''}, and we will proceed with your dispatch.`
+                                : `Thank you! I have recorded your payment claim of GH₵ ${claimAmt > 0 ? claimAmt.toFixed(2) : '1.00'} (Transaction ID: ${targetTxn}) for Order #${targetOrder}. Our system is currently awaiting settlement confirmation from Hubtel. Once confirmed, your balance will automatically adjust${claimAmt > 0 ? ` from GH₵ ${curBal.toFixed(2)} to GH₵ ${expBal.toFixed(2)}` : ''}, and we will proceed with your dispatch.`;
                         }
 
                         orders = [{
@@ -1088,10 +1107,14 @@ SECURITY & ADVERSARIAL DEFENSE:
                             total: (cData.balance_due || 0) + (cData.amount_credited || 0),
                             balance_due: cData.balance_due !== undefined ? cData.balance_due : 0,
                             amount_paid: cData.amount_credited !== undefined ? cData.amount_credited : 0,
+                            is_verifying: Boolean(cData.pending_audit),
+                            claimed_amount: targetAmount || cData.claimed_amount
                         }];
-                        actionLink = cData.balance_due && cData.balance_due > 0 
-                            ? { label: `Pay Remaining (GH₵ ${parseFloat(cData.balance_due).toFixed(2)})`, href: `/checkout?order=${targetOrder}` }
-                            : { label: "Track Shipment", href: `/track?order=${targetOrder}` };
+                        actionLink = cData.pending_audit
+                            ? { label: "Track Order Status", href: `/track?order=${targetOrder}` }
+                            : (cData.balance_due && cData.balance_due > 0 
+                                ? { label: `Pay Remaining (GH₵ ${parseFloat(cData.balance_due).toFixed(2)})`, href: `/checkout?order=${targetOrder}` }
+                                : { label: "Track Shipment", href: `/track?order=${targetOrder}` });
                         quickReplies = [
                             { label: "Track My Order", query: `Track order ${targetOrder}` },
                             { label: "Browse Catalog", query: "Browse catalog" }

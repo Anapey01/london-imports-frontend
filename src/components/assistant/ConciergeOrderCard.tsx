@@ -14,6 +14,8 @@ export interface AssistantOrder {
     balance_due: number;
     items_count?: number;
     delivery_window?: string;
+    is_verifying?: boolean;
+    claimed_amount?: number;
     items?: Array<{
         name: string;
         quantity: number;
@@ -32,7 +34,12 @@ export default function ConciergeOrderCard({
 }) {
     const router = useRouter();
 
-    const hasBalanceDue = order.balance_due > 0 || order.state === 'PENDING_PAYMENT';
+    const isVerifying = Boolean(
+        order.is_verifying ||
+        order.state_display?.toLowerCase().includes('verif') ||
+        order.state === 'VERIFYING'
+    );
+    const hasBalanceDue = (order.balance_due > 0 || order.state === 'PENDING_PAYMENT') && !isVerifying;
 
     const handlePayBalance = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -60,9 +67,16 @@ export default function ConciergeOrderCard({
                         #{order.order_number}
                     </span>
                 </div>
-                <span className="text-[10px] font-medium tracking-wide text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-full shrink-0">
-                    {hasBalanceDue ? (order.balance_due > 0 ? `GH₵ ${order.balance_due.toFixed(2)} due` : 'Pending') : order.state_display}
-                </span>
+                {isVerifying ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/60 px-2 py-0.5 rounded-full shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        Payment Verifying
+                    </span>
+                ) : (
+                    <span className="text-[10px] font-medium tracking-wide text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-full shrink-0">
+                        {hasBalanceDue ? (order.balance_due > 0 ? `GH₵ ${order.balance_due.toFixed(2)} due` : 'Pending') : order.state_display}
+                    </span>
+                )}
             </div>
 
             {/* Content: Item names & Meta */}
@@ -86,7 +100,23 @@ export default function ConciergeOrderCard({
 
             {/* Actions: Monochromatic, quiet buttons */}
             <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center gap-2">
-                {hasBalanceDue ? (
+                {isVerifying ? (
+                    <div className="w-full space-y-1.5">
+                        <button
+                            type="button"
+                            onClick={handleTrack}
+                            className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium transition-all cursor-pointer"
+                        >
+                            <span>Track Order Status</span>
+                            <ArrowRight className="w-3 h-3" />
+                        </button>
+                        <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">
+                            {order.claimed_amount
+                                ? `GH₵ ${order.claimed_amount.toFixed(2)} claim logged • Awaiting Hubtel settlement`
+                                : 'Payment claim logged • Awaiting Hubtel settlement'}
+                        </p>
+                    </div>
+                ) : hasBalanceDue ? (
                     <>
                         <button
                             type="button"
@@ -116,7 +146,7 @@ export default function ConciergeOrderCard({
                 )}
             </div>
 
-            {hasBalanceDue && (
+            {hasBalanceDue && !isVerifying && (
                 <div className="mt-2 pt-2 border-t border-dashed border-slate-100 dark:border-slate-800/40 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                     <span className="font-mono text-[10px]">USSD: *713*7453#</span>
                     <a
