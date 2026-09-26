@@ -15,6 +15,8 @@ interface ProductVariantEditorProps {
     setVariants: (variants: Variant[]) => void;
     price: string;
     onPriceChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    stockQuantity?: string;
+    onStockChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     inputClasses: string;
 }
 
@@ -25,6 +27,8 @@ export function ProductVariantEditor({
     setVariants,
     price,
     onPriceChange,
+    stockQuantity,
+    onStockChange,
     inputClasses
 }: ProductVariantEditorProps) {
     const { theme } = useTheme();
@@ -46,20 +50,37 @@ export function ProductVariantEditor({
             </div>
 
             {!hasVariants ? (
-                <div>
-                    <label htmlFor="price" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                        Price (GH₵)
-                    </label>
-                    <input
-                        id="price"
-                        type="number"
-                        name="price"
-                        required={!hasVariants}
-                        step="0.01"
-                        value={price}
-                        onChange={onPriceChange}
-                        className={inputClasses}
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="price" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                            Price (GH₵)
+                        </label>
+                        <input
+                            id="price"
+                            type="number"
+                            name="price"
+                            required={!hasVariants}
+                            step="0.01"
+                            value={price}
+                            onChange={onPriceChange}
+                            className={inputClasses}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="stock_quantity" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                            In-Stock Units
+                        </label>
+                        <input
+                            id="stock_quantity"
+                            type="number"
+                            name="stock_quantity"
+                            min="1"
+                            value={stockQuantity ?? '10'}
+                            onChange={onStockChange}
+                            placeholder="10"
+                            className={inputClasses}
+                        />
+                    </div>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -104,6 +125,24 @@ export function ProductVariantEditor({
                                             required
                                         />
                                     </div>
+                                    <div className="w-24">
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            placeholder="Stock"
+                                            value={variant.stock_quantity ?? '10'}
+                                            onChange={(e) => {
+                                                const newVariants = [...variants];
+                                                newVariants[index].stock_quantity = e.target.value;
+                                                setVariants(newVariants);
+                                            }}
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border outline-none ${
+                                                isDark
+                                                    ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-400'
+                                                    : 'bg-white border-slate-200 text-slate-900 focus:border-slate-900'
+                                            }`}
+                                        />
+                                    </div>
                                     <button
                                         type="button"
                                         aria-label="Remove variant"
@@ -122,7 +161,7 @@ export function ProductVariantEditor({
                         </div>
                         <button
                             type="button"
-                            onClick={() => setVariants([...variants, { name: '', price: '', stock_quantity: '0' }])}
+                            onClick={() => setVariants([...variants, { name: '', price: '', stock_quantity: '10' }])}
                             className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-colors"
                         >
                             <Plus className="w-3.5 h-3.5" /> Add Another Option

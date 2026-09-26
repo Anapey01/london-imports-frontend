@@ -5,8 +5,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Package } from 'lucide-react';
 
-// ISR: Revalidate category pages every 24 hours
-export const revalidate = 604800; // 7 days
+// Dynamic: Always fetch fresh categories & products
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateStaticParams() {
     try {

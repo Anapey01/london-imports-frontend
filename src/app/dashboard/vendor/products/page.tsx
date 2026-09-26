@@ -73,6 +73,50 @@ export default function VendorProductsPage() {
         p.name.toLowerCase().includes(search.toLowerCase())
     );
 
+    const handleDeleteClick = (productId: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Product',
+            message: 'Permanently remove this product from your inventory? This cannot be undone.',
+            variant: 'danger',
+            onConfirm: async () => {
+                try {
+                    await vendorsAPI.deleteProduct(productId);
+                    setProducts(prev => prev.filter(p => p.id !== productId));
+                    addAlert('Product deleted successfully');
+                } catch (err) {
+                    console.error('Failed to delete', err);
+                    addAlert('Failed to delete product', 'error');
+                }
+            }
+        });
+    };
+
+    const getStatusBadge = (status?: string, isActive?: boolean) => {
+        const isOutOfStock = status === 'OUT_OF_STOCK';
+        const isLive = status === 'ACTIVE' || isActive;
+
+        if (isOutOfStock) {
+            return (
+                <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-md uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                    Out of Stock
+                </span>
+            );
+        }
+        if (isLive) {
+            return (
+                <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-md uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    In Stock
+                </span>
+            );
+        }
+        return (
+            <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-md uppercase tracking-wider bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20">
+                Draft
+            </span>
+        );
+    };
+
     return (
         <div className="space-y-6">
             {/* Header Controls */}
@@ -107,9 +151,9 @@ export default function VendorProductsPage() {
 
             {/* Loading State */}
             {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className={`h-80 rounded-2xl animate-pulse ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-slate-100'}`} />
+                        <div key={i} className={`h-28 sm:h-80 rounded-2xl animate-pulse ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-slate-100'}`} />
                     ))}
                 </div>
             ) : filteredProducts.length === 0 ? (
@@ -142,106 +186,173 @@ export default function VendorProductsPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredProducts.map((product) => (
-                        <div
-                            key={product.id}
-                            className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 hover:shadow-md ${
-                                isDark
-                                    ? 'bg-slate-900 border-slate-800 hover:border-slate-700'
-                                    : 'bg-white border-slate-200/80 hover:border-slate-300'
-                            }`}
-                        >
-                            {/* Product Image */}
-                            <div className={`aspect-[4/5] relative ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                                {product.image ? (
-                                    <Image
-                                        src={getImageUrl(product.image)}
-                                        alt={product.name}
-                                        fill
-                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 gap-1">
-                                        <Package className="w-8 h-8 opacity-40" />
-                                        <span className="text-xs">No Image</span>
+                <>
+                    {/* Mobile Inventory View: Sleek horizontal row layout */}
+                    <div className="space-y-3 sm:hidden">
+                        {filteredProducts.map((product) => (
+                            <div
+                                key={product.id}
+                                className={`p-3.5 rounded-2xl border transition-all ${
+                                    isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 shadow-xs'
+                                }`}
+                            >
+                                <div className="flex gap-3.5 items-start">
+                                    {/* Compact square thumbnail */}
+                                    <div className={`w-20 h-20 relative rounded-xl overflow-hidden shrink-0 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                                        {product.image ? (
+                                            <Image
+                                                src={getImageUrl(product.image)}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                                                <Package className="w-6 h-6 opacity-40" />
+                                            </div>
+                                        )}
                                     </div>
-                                )}
 
-                                {/* Status Badge */}
-                                <div className="absolute top-3 left-3">
-                                    <span className={`inline-flex items-center px-2.5 py-1 text-[11px] font-semibold rounded-lg border backdrop-blur-md ${
-                                        product.is_active
-                                            ? 'bg-emerald-500/90 text-white border-emerald-400/30'
-                                            : 'bg-slate-900/80 text-slate-300 border-slate-700/50'
-                                    }`}>
-                                        {product.is_active ? 'Active' : 'Draft'}
-                                    </span>
-                                </div>
+                                    {/* Product summary info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-2 mb-1">
+                                            {getStatusBadge(product.status, product.is_active)}
+                                            <span className={`font-black text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                                GH₵ {parseFloat(product.price).toFixed(2)}
+                                            </span>
+                                        </div>
 
-                                {/* Hover Overlay Actions */}
-                                <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5 backdrop-blur-xs">
-                                    <Link
-                                        href={`/products/${product.slug}`}
-                                        target="_blank"
-                                        className="p-2.5 bg-white rounded-xl text-slate-900 hover:bg-slate-100 transition-colors shadow-sm"
-                                        title="View Live Listing"
-                                    >
-                                        <Eye className="w-4 h-4" />
-                                    </Link>
-                                    <Link
-                                        href={`/dashboard/vendor/products/${product.id}/edit`}
-                                        className="p-2.5 bg-slate-900 rounded-xl text-white hover:bg-slate-800 transition-colors shadow-sm"
-                                        title="Edit Listing"
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                    </Link>
-                                    <button
-                                        onClick={() => {
-                                            setConfirmModal({
-                                                isOpen: true,
-                                                title: 'Delete Product',
-                                                message: 'Permanently remove this product from your inventory? This cannot be undone.',
-                                                variant: 'danger',
-                                                onConfirm: async () => {
-                                                    try {
-                                                        await vendorsAPI.deleteProduct(product.id);
-                                                        setProducts(prev => prev.filter(p => p.id !== product.id));
-                                                        addAlert('Product deleted successfully');
-                                                    } catch (err) {
-                                                        console.error('Failed to delete', err);
-                                                        addAlert('Failed to delete product', 'error');
-                                                    }
-                                                }
-                                            });
-                                        }}
-                                        className="p-2.5 bg-rose-600 rounded-xl text-white hover:bg-rose-700 transition-colors shadow-sm"
-                                        title="Delete Listing"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
+                                        <h3 className={`font-semibold text-xs leading-snug line-clamp-2 mb-2 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                                            {product.name}
+                                        </h3>
+
+                                        {/* Persistent Mobile Action Bar */}
+                                        <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                                            <Link
+                                                href={`/dashboard/vendor/products/${product.id}/edit`}
+                                                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                                    isDark 
+                                                        ? 'bg-slate-800 hover:bg-slate-700 text-white' 
+                                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                                                }`}
+                                            >
+                                                <Edit className="w-3.5 h-3.5" />
+                                                Edit
+                                            </Link>
+                                            <Link
+                                                href={`/products/${product.slug}`}
+                                                target="_blank"
+                                                className={`p-1.5 rounded-lg border transition-all ${
+                                                    isDark 
+                                                        ? 'border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white' 
+                                                        : 'border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900'
+                                                }`}
+                                                title="View Listing"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" />
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDeleteClick(product.id)}
+                                                className="p-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
+                                                title="Delete Product"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        ))}
+                    </div>
 
-                            {/* Details */}
-                            <div className="p-4">
-                                <h3 className={`font-bold text-sm mb-1.5 truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                    {product.name}
-                                </h3>
-                                <div className="flex items-center justify-between">
-                                    <span className={`font-bold text-base tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                        GH₵ {parseFloat(product.price).toFixed(2)}
-                                    </span>
-                                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${
-                                        isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'
-                                    }`}>
-                                        {product.status || 'In Stock'}
-                                    </span>
+                    {/* Tablet & Desktop Inventory Grid: Modern square cards */}
+                    <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        {filteredProducts.map((product) => (
+                            <div
+                                key={product.id}
+                                className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 hover:shadow-md flex flex-col ${
+                                    isDark
+                                        ? 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                                        : 'bg-white border-slate-200/80 hover:border-slate-300'
+                                }`}
+                            >
+                                {/* Square Product Thumbnail */}
+                                <div className={`aspect-square relative ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                                    {product.image ? (
+                                        <Image
+                                            src={getImageUrl(product.image)}
+                                            alt={product.name}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 gap-1">
+                                            <Package className="w-8 h-8 opacity-40" />
+                                            <span className="text-xs">No Image</span>
+                                        </div>
+                                    )}
+
+                                    {/* Status Badge */}
+                                    <div className="absolute top-3 left-3">
+                                        {getStatusBadge(product.status, product.is_active)}
+                                    </div>
+                                </div>
+
+                                {/* Details & Persistent Actions */}
+                                <div className="p-4 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <h3 className={`font-semibold text-sm mb-1.5 line-clamp-1 ${isDark ? 'text-white' : 'text-slate-900'}`} title={product.name}>
+                                            {product.name}
+                                        </h3>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className={`font-bold text-base tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                                GH₵ {parseFloat(product.price).toFixed(2)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Persistent Action Buttons */}
+                                    <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                        <Link
+                                            href={`/dashboard/vendor/products/${product.id}/edit`}
+                                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold transition-all ${
+                                                isDark
+                                                    ? 'bg-white text-slate-950 hover:bg-slate-100'
+                                                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                                            }`}
+                                        >
+                                            <Edit className="w-3.5 h-3.5" />
+                                            Edit
+                                        </Link>
+                                        <Link
+                                            href={`/products/${product.slug}`}
+                                            target="_blank"
+                                            className={`p-2 rounded-xl border transition-all ${
+                                                isDark
+                                                    ? 'border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white'
+                                                    : 'border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900'
+                                            }`}
+                                            title="View Live Listing"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDeleteClick(product.id)}
+                                            className={`p-2 rounded-xl border transition-all ${
+                                                isDark
+                                                    ? 'border-slate-800 text-rose-400 hover:bg-rose-950/40'
+                                                    : 'border-slate-200 text-rose-600 hover:bg-rose-50'
+                                            }`}
+                                            title="Delete Listing"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                </>
             )}
 
             {/* Confirmation Modal */}

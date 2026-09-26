@@ -52,14 +52,15 @@ export default function AddProductPage() {
     // Variants State
     const [hasVariants, setHasVariants] = useState(false);
     const [variants, setVariants] = useState<ProductVariant[]>([
-        { name: '', price: '', stock_quantity: '0' }
+        { name: '', price: '', stock_quantity: '10' }
     ]);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const res = await productsAPI.categories();
-                setCategories(res.data.results || []);
+                const raw = res.data;
+                setCategories(Array.isArray(raw) ? raw : (raw?.results || []));
             } catch (err) {
                 console.error("Error fetching categories", err);
             }

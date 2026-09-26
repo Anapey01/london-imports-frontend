@@ -5,7 +5,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
 import ProductCard from '@/components/ProductCard';
@@ -73,25 +73,40 @@ export default function ProductGrid({
     const minPrice = searchParams.get('min_price') ?? '';
     const maxPrice = searchParams.get('max_price') ?? '';
     const ordering = searchParams.get('ordering') || initialOrdering;
+ 
+    // Client-side category synchronization to ensure latest taxonomy is always rendered
+    const { data: dynamicCategories } = useQuery<Category[]>({
+        queryKey: ['categories'],
+        queryFn: async () => {
+            const res = await productsAPI.categories();
+            const raw = res.data;
+            const list = Array.isArray(raw) ? raw : (raw?.results || []);
+            return list.filter((c: Category & { is_active?: boolean }) => c.is_active !== false && !c.slug?.includes('test'));
+        },
+        initialData: categories,
+        staleTime: 60 * 1000,
+    });
+
+    const effectiveCategories = (dynamicCategories && dynamicCategories.length > 0) ? dynamicCategories : categories;
 
     // Amazon-Standard Department & Subcategory Hierarchy
     const parentCategories = useMemo(() => {
-        const parents = categories.filter(c => !c.parent && !c.parent_slug);
-        return parents.length > 0 ? parents : categories;
-    }, [categories]);
+        const parents = effectiveCategories.filter(c => !c.parent && !c.parent_slug);
+        return parents.length > 0 ? parents : effectiveCategories;
+    }, [effectiveCategories]);
 
     const activeParent = useMemo(() => {
         if (!category) return null;
-        const current = categories.find(c => c.slug === category);
+        const current = effectiveCategories.find(c => c.slug === category);
         if (!current) return null;
         if (!current.parent && !current.parent_slug) return current;
-        return categories.find(c => c.slug === current.parent_slug || (c.id && c.id === current.parent)) || null;
-    }, [category, categories]);
+        return effectiveCategories.find(c => c.slug === current.parent_slug || (c.id && c.id === current.parent)) || null;
+    }, [category, effectiveCategories]);
 
     const activeSubcategories = useMemo(() => {
         if (!activeParent) return [];
-        return categories.filter(c => c.parent_slug === activeParent.slug || (c.parent && c.parent === activeParent.id));
-    }, [activeParent, categories]);
+        return effectiveCategories.filter(c => c.parent_slug === activeParent.slug || (c.parent && c.parent === activeParent.id));
+    }, [activeParent, effectiveCategories]);
 
     // Advanced Pagination Logic: Infinite Batching
     const PAGE_SIZE = 50;
@@ -232,7 +247,7 @@ export default function ProductGrid({
                             {parentCategories.map((cat: Category) => {
                                 const isSelected = category === cat.slug;
                                 const isParentActive = activeParent?.slug === cat.slug;
-                                const children = categories.filter(c => c.parent_slug === cat.slug || (c.parent && c.parent === cat.id));
+                                const children = effectiveCategories.filter(c => c.parent_slug === cat.slug || (c.parent && c.parent === cat.id));
 
                                 return (
                                     <div key={cat.id} className="space-y-1">

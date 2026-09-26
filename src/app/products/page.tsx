@@ -4,8 +4,9 @@ import ProductGrid from '@/components/ProductGrid';
 import ShopHeader from '@/components/ShopHeader';
 import { Metadata } from 'next';
 
-// ISR: Revalidate every 10 seconds during restructuring
-export const revalidate = 604800; // 7 days
+// Dynamic: Always fetch fresh categories & products
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>

@@ -180,7 +180,7 @@ export async function getAvailableProducts(limit = 10) {
     });
 }
 
-export async function getCategories(revalidate = 86400) {
+export async function getCategories(revalidate = 60) {
     try {
         const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
             next: { revalidate }
@@ -205,7 +205,7 @@ export async function getCategories(revalidate = 86400) {
 export async function getCategory(slug: string) {
     try {
         const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
-            next: { revalidate: 86400 }
+            next: { revalidate: 60 }
         });
         if (!res.ok) {
             throw new Error(`Failed to fetch categories for category lookup: ${res.status} ${res.statusText}`);

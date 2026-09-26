@@ -62,7 +62,8 @@ export default function EditProductPage() {
         const fetchData = async () => {
             try {
                 const catRes = await productsAPI.categories();
-                setCategories(catRes.data.results || []);
+                const rawCats = catRes.data;
+                setCategories(Array.isArray(rawCats) ? rawCats : (rawCats?.results || []));
 
                 if (productId) {
                     const res = await vendorsAPI.getProduct(productId);
@@ -91,7 +92,7 @@ export default function EditProductPage() {
                             const mapped = found.variants.map((v: { name: string, price: number, stock_quantity: number }) => ({
                                 name: v.name,
                                 price: v.price.toString(),
-                                stock_quantity: v.stock_quantity?.toString() || '0'
+                                stock_quantity: (v.stock_quantity ?? 10).toString()
                             }));
                             setVariants(mapped);
                         }
@@ -286,6 +287,8 @@ export default function EditProductPage() {
                                     setVariants={setVariants}
                                     price={formData.price}
                                     onPriceChange={handleChange}
+                                    stockQuantity={formData.stock_quantity}
+                                    onStockChange={handleChange}
                                     inputClasses={inputClasses}
                                 />
                             </div>

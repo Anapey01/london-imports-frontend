@@ -158,7 +158,7 @@ export default function ProductImageGallery({
                                 </svg>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">{stockQuantity !== undefined ? `${stockQuantity} Units` : 'In Stock'}</p>
+                                <p className="text-xs sm:text-sm font-black nuclear-text tracking-tight">In Stock</p>
                                 <p className="text-[10px] nuclear-text opacity-40 uppercase tracking-[0.2em] font-bold text-center">Available</p>
                             </div>
                         </>

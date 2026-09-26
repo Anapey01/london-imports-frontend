@@ -17,6 +17,7 @@ import {
     Briefcase,
     ShieldCheck,
 } from 'lucide-react';
+import { compressImage } from '@/lib/imageUtils';
 
 const API_BASE = siteConfig.apiUrl.replace(/\/api\/v1$/, '');
 
@@ -92,8 +93,9 @@ export default function ProductFinderPage() {
             }
             const fetchUrl = `${baseUrl}/api/v1/sourcing/requests/`;
 
+            const compressed = await compressImage(selectedFile);
             const formData = new FormData();
-            formData.append('image', selectedFile);
+            formData.append('image', compressed);
             if (description) {
                 formData.append('description', description);
             }
@@ -125,7 +127,12 @@ export default function ProductFinderPage() {
             }
         } catch (err: unknown) {
             const error = err as Error;
-            setError(error.message || 'Something went wrong. Please try again.');
+            const msg = error.message || '';
+            if (msg.includes('Load failed') || msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+                setError('Unable to reach the sourcing service. Please check your network connection and try again.');
+            } else {
+                setError(msg || 'Something went wrong. Please try again.');
+            }
         } finally {
             setIsUploading(false);
         }
