@@ -72,6 +72,12 @@ export default function AdminConciergeDrawer() {
         return () => clearInterval(interval);
     }, [fetchClaims]);
 
+    useEffect(() => {
+        const handleOpen = () => setIsOpen(true);
+        window.addEventListener('open-admin-concierge', handleOpen);
+        return () => window.removeEventListener('open-admin-concierge', handleOpen);
+    }, []);
+
     const pendingClaims = claims.filter(c => c.status === 'PENDING_AUDIT');
 
     const handleApproveClaim = async (claim: USSDClaim) => {

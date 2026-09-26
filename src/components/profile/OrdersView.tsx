@@ -43,29 +43,43 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
         }
     };
 
-    const renderStatusBadge = (state: string, display: string) => {
+    const renderStatusBadge = (state: string, display: string, balanceDue: number = 0, amountPaid: number = 0) => {
         let dotColor = 'bg-slate-700 dark:bg-slate-300';
         let badgeClasses = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300';
+        let label = display || state;
 
-        if (['PAID', 'DELIVERED', 'COMPLETED'].includes(state)) {
-            dotColor = 'bg-slate-900 dark:bg-white';
-            badgeClasses = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300';
-        } else if (['PENDING_PAYMENT', 'DRAFT', 'OPEN_FOR_BATCH'].includes(state)) {
-            dotColor = 'bg-amber-500';
-            badgeClasses = 'border-amber-200/80 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300';
-        } else if (['CANCELLED', 'FAILED'].includes(state)) {
+        if (['CANCELLED', 'FAILED', 'REFUNDED', 'ABANDONED'].includes(state)) {
             dotColor = 'bg-slate-400';
             badgeClasses = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500';
+            label = display || 'Cancelled';
+        } else if (['DELIVERED', 'COMPLETED'].includes(state)) {
+            dotColor = 'bg-slate-900 dark:bg-white';
+            badgeClasses = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300';
+            label = display || 'Delivered';
         } else if (['SHIPPED', 'ARRIVED_IN_GHANA', 'IN_TRANSIT'].includes(state)) {
             dotColor = 'bg-slate-600 dark:bg-slate-400';
             badgeClasses = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300';
+            label = display || 'In Transit';
+        } else if (balanceDue > 0) {
+            // Unpaid balance guard: NEVER display "PAID" if balance_due > 0
+            dotColor = 'bg-amber-500';
+            badgeClasses = 'border-amber-200/80 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300';
+            label = amountPaid > 0 ? 'Partially Paid' : 'Pending Payment';
+        } else if (['PAID'].includes(state) || balanceDue <= 0) {
+            dotColor = 'bg-slate-900 dark:bg-white';
+            badgeClasses = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300';
+            label = 'Paid';
+        } else if (['PENDING_PAYMENT', 'DRAFT', 'OPEN_FOR_BATCH'].includes(state)) {
+            dotColor = 'bg-amber-500';
+            badgeClasses = 'border-amber-200/80 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300';
+            label = display || 'Pending Payment';
         }
 
         return (
             <div className={`px-2.5 py-1 rounded-full border ${badgeClasses} inline-flex items-center gap-1.5`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
                 <span className="text-[8px] font-mono uppercase tracking-wider">
-                    {display}
+                    {label}
                 </span>
             </div>
         );
@@ -133,7 +147,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                             </p>
                                         </div>
                                         <div className="hidden lg:block lg:mt-8">
-                                            {renderStatusBadge(order.state, order.state_display)}
+                                            {renderStatusBadge(order.state, order.state_display, balanceDue, amountPaid)}
                                         </div>
                                     </div>
 
@@ -156,7 +170,7 @@ const OrdersView = ({ orders }: { orders: Order[] }) => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1 lg:hidden">
-                                                    {renderStatusBadge(order.state, order.state_display)}
+                                                    {renderStatusBadge(order.state, order.state_display, balanceDue, amountPaid)}
                                                 </div>
                                                 <p className="text-[8px] font-mono uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-1">Items in Package</p>
                                                 <div className="space-y-1">

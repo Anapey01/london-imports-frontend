@@ -232,6 +232,14 @@ function TrackOrderContent() {
 
     const renderStatusBadge = (state: string, display: string) => {
         const s = (state || '').toUpperCase();
+        if (['CANCELLED', 'REFUNDED', 'FAILED', 'ABANDONED'].includes(s)) {
+            return (
+                <div className="px-3 py-1 rounded-full border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 inline-flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    {display || 'Cancelled'}
+                </div>
+            );
+        }
         if (['DELIVERED', 'COMPLETED'].includes(s)) {
             return (
                 <div className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 inline-flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider">
@@ -248,11 +256,11 @@ function TrackOrderContent() {
                 </div>
             );
         }
-        if (['CANCELLED', 'REFUNDED', 'FAILED', 'ABANDONED'].includes(s)) {
+        if (balanceDue > 0) {
             return (
-                <div className="px-3 py-1 rounded-full border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 inline-flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                    {display || 'Cancelled'}
+                <div className="px-3 py-1 rounded-full border border-amber-200/80 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 inline-flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    {amountPaid > 0 ? 'Partially Paid' : (display || 'Pending Payment')}
                 </div>
             );
         }

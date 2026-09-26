@@ -4,11 +4,13 @@
  */
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useAuthStore } from '@/stores/authStore';
-import { authAPI } from '@/lib/api';
+import { authAPI, adminAPI } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
@@ -43,11 +45,41 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
     const router = useRouter();
     const isDark = theme === 'dark';
 
+    const [pendingClaimsCount, setPendingClaimsCount] = useState<number>(0);
+
+    useEffect(() => {
+        let isMounted = true;
+        const checkClaims = async () => {
+            try {
+                const res = await adminAPI.getUSSDClaims();
+                if (isMounted && res.data?.claims) {
+                    const pending = res.data.claims.filter((c: any) => c.status === 'PENDING_AUDIT');
+                    setPendingClaimsCount(pending.length);
+                }
+            } catch {
+                // Silently fallback
+            }
+        };
+        checkClaims();
+        const interval = setInterval(checkClaims, 25000);
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
+    }, []);
+
     const links = [
         { name: 'DASHBOARD', href: '/dashboard/admin', icon: LayoutDashboard },
         { name: 'CUSTOMERS', href: '/dashboard/admin/users', icon: Users },
         { name: 'SELLERS', href: '/dashboard/admin/vendors', icon: Store },
         { name: 'ORDERS', href: '/dashboard/admin/orders', icon: ShoppingBag },
+        { 
+            name: 'MISS LONDON (CLAIMS)', 
+            href: '/dashboard/admin/claims', 
+            icon: ShieldCheck,
+            isMissLondon: true,
+            badge: pendingClaimsCount > 0 ? pendingClaimsCount : undefined
+        },
         { name: 'CHECKERS & AGENTS', href: '/dashboard/admin/checkers', icon: Ticket },
         { name: 'MONEY TRANSFERS', href: '/dashboard/admin/payments/transfer', icon: ArrowRightLeft },
         { name: 'DELIVERIES', href: '/dashboard/admin/logistics', icon: Truck },
@@ -126,25 +158,49 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                onClick={() => onClose && onClose()}
+                                onClick={() => {
+                                    if (onClose) onClose();
+                                    if (link.isMissLondon) {
+                                        window.dispatchEvent(new CustomEvent('open-admin-concierge'));
+                                    }
+                                }}
                                 className={`flex items-center justify-between px-4 py-3 group transition-all duration-300 ${
                                     isActive
                                         ? 'bg-slate-900 text-white'
                                         : 'text-slate-400 hover:text-slate-900 hover:translate-x-1'
                                 }`}
                             >
-                                <div className="flex items-center gap-4">
-                                    <link.icon className={`w-4 h-4 transition-colors ${
-                                        isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-900'
-                                    }`} strokeWidth={isActive ? 2 : 1.5} />
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">{link.name}</span>
+                                <div className="flex items-center gap-4 min-w-0">
+                                    {link.isMissLondon ? (
+                                        <div className="relative w-4 h-4 rounded-full overflow-hidden shrink-0 border border-slate-700">
+                                            <NextImage
+                                                src="/images/miss-london.png"
+                                                alt="Miss London"
+                                                fill
+                                                sizes="16px"
+                                                className="object-cover object-top"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <link.icon className={`w-4 h-4 transition-colors ${
+                                            isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-900'
+                                        }`} strokeWidth={isActive ? 2 : 1.5} />
+                                    )}
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] truncate">{link.name}</span>
                                 </div>
-                                {isActive && (
-                                    <motion.div 
-                                        layoutId="active-indicator"
-                                        className="w-1 h-1 bg-emerald-400"
-                                    />
-                                )}
+                                <div className="flex items-center gap-2 shrink-0">
+                                    {link.badge !== undefined && link.badge > 0 && (
+                                        <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-xs animate-pulse">
+                                            {link.badge}
+                                        </span>
+                                    )}
+                                    {isActive && (
+                                        <motion.div 
+                                            layoutId="active-indicator"
+                                            className="w-1 h-1 bg-emerald-400"
+                                        />
+                                    )}
+                                </div>
                             </Link>
                         );
                     })}
