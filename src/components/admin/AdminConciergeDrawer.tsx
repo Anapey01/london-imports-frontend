@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -10,19 +10,14 @@ import {
     Check, 
     AlertCircle, 
     MessageCircle, 
-    ArrowRight, 
+    Phone, 
+    ExternalLink, 
+    Copy, 
+    Search, 
     Send,
-    Phone,
-    CreditCard,
-    Sparkles,
-    Copy,
-    ExternalLink,
-    Search,
-    Package,
-    TrendingUp,
     Truck,
-    Clock,
-    DollarSign
+    Package,
+    CreditCard
 } from 'lucide-react';
 import { adminAPI } from '@/lib/api';
 
@@ -69,15 +64,13 @@ interface CopilotMessage {
     id: string;
     role: 'user' | 'assistant';
     content: string;
-    actionType?: 'debtors' | 'sourcing' | 'stats' | 'order';
-    payload?: any;
+    actionRedirectTab?: 'debtors' | 'sourcing';
 }
 
 export default function AdminConciergeDrawer() {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'copilot' | 'debtors' | 'sourcing' | 'claims' | 'sync' | 'whatsapp'>('copilot');
 
-    // Avatar error state for bulletproof fallback
     const [avatarError, setAvatarError] = useState(false);
 
     // USSD Claims State
@@ -100,7 +93,7 @@ export default function AdminConciergeDrawer() {
         {
             id: 'welcome',
             role: 'assistant',
-            content: "Hello Administrator, I am Miss London, your store operations concierge. How may I assist you with orders, outstanding customer balances, China sourcing batches, or offline Hubtel claims today?"
+            content: "Hello Administrator. I am Miss London, your store operations concierge. How may I assist you with order audits, customer debt recovery, China sourcing consolidation, or Hubtel payment verification today?"
         }
     ]);
     const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -116,12 +109,12 @@ export default function AdminConciergeDrawer() {
     const [waCustomerPhone, setWaCustomerPhone] = useState('');
     const [waOrderNumber, setWaOrderNumber] = useState('');
     const [waBalanceDue, setWaBalanceDue] = useState('');
-    const [waTemplate, setWaTemplate] = useState<'payment_received' | 'china_shipped' | 'accra_arrived' | 'balance_reminder'>('balance_reminder');
+    const [waTemplate, setWaTemplate] = useState<'balance_reminder' | 'payment_received' | 'china_shipped' | 'accra_arrived'>('balance_reminder');
 
     // Clipboard Feedback
-    const [copiedText, setCopiedText] = useState<string | null>(null);
+    const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
 
-    // Fetch pending claims
+    // Data fetching (only triggered on open or explicit refresh to prevent background INP lag)
     const fetchClaims = useCallback(async () => {
         setIsLoadingClaims(true);
         try {
@@ -130,13 +123,12 @@ export default function AdminConciergeDrawer() {
                 setClaims(res.data.claims);
             }
         } catch {
-            // Graceful fallback
+            // Silently fallback
         } finally {
             setIsLoadingClaims(false);
         }
     }, []);
 
-    // Fetch orders for debtors and sourcing
     const fetchOrders = useCallback(async () => {
         setIsLoadingOrders(true);
         try {
@@ -144,13 +136,12 @@ export default function AdminConciergeDrawer() {
             const orderList = Array.isArray(res.data?.results) ? res.data.results : (Array.isArray(res.data) ? res.data : []);
             setOrders(orderList);
         } catch {
-            // Graceful fallback
+            // Silently fallback
         } finally {
             setIsLoadingOrders(false);
         }
     }, []);
 
-    // Fetch stats
     const fetchStats = useCallback(async () => {
         try {
             const res = await adminAPI.stats();
@@ -162,16 +153,20 @@ export default function AdminConciergeDrawer() {
         }
     }, []);
 
+    // Initial load when drawer opens
     useEffect(() => {
-        fetchClaims();
-        fetchOrders();
-        fetchStats();
-        const interval = setInterval(() => {
+        if (isOpen) {
             fetchClaims();
             fetchOrders();
-        }, 30000);
+            fetchStats();
+        }
+    }, [isOpen, fetchClaims, fetchOrders, fetchStats]);
+
+    // Background claims badge polling ONLY (lightweight)
+    useEffect(() => {
+        const interval = setInterval(fetchClaims, 45000);
         return () => clearInterval(interval);
-    }, [fetchClaims, fetchOrders, fetchStats]);
+    }, [fetchClaims]);
 
     useEffect(() => {
         const handleOpen = () => setIsOpen(true);
@@ -185,66 +180,92 @@ export default function AdminConciergeDrawer() {
         }
     }, [copilotMessages, isCopilotTyping]);
 
-    const pendingClaims = claims.filter(c => c.status === 'PENDING_AUDIT');
-
-    // Debtors calculation
-    const allDebtors = orders.filter(o => Number(o.balance_due) > 0);
-    const partiallyPaidDebtors = allDebtors.filter(o => Number(o.amount_paid) > 0);
-    const completelyUnpaidDebtors = allDebtors.filter(o => Number(o.amount_paid) <= 0);
-
-    const filteredDebtors = allDebtors.filter(o => {
-        if (debtorFilter === 'partial' && Number(o.amount_paid) <= 0) return false;
-        if (debtorFilter === 'pending' && Number(o.amount_paid) > 0) return false;
-        if (debtorSearch.trim()) {
-            const q = debtorSearch.toLowerCase();
-            const matchesOrder = o.order_number.toLowerCase().includes(q);
-            const matchesName = o.customer?.name?.toLowerCase().includes(q);
-            const matchesPhone = o.phone?.toLowerCase().includes(q);
-            return matchesOrder || matchesName || matchesPhone;
-        }
-        return true;
-    });
-
-    const totalOutstandingDebt = allDebtors.reduce((acc, curr) => acc + (Number(curr.balance_due) || 0), 0);
-
-    // China Sourcing Consolidation calculation
-    const sourcingOrders = orders.filter(o => 
-        ['PAID', 'PROCESSING', 'OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state) ||
-        (Number(o.amount_paid) > 0 && !['CANCELLED', 'REFUNDED', 'DELIVERED'].includes(o.state))
+    // Memoized computations to prevent frame blocking and INP spikes
+    const pendingClaims = useMemo(() => 
+        claims.filter(c => c.status === 'PENDING_AUDIT'),
+        [claims]
     );
 
-    const consolidatedItemsMap = new Map<string, { name: string; quantity: number; orders: string[]; estimatedCost: number }>();
-    sourcingOrders.forEach(o => {
-        if (Array.isArray(o.items_summary)) {
-            o.items_summary.forEach(item => {
-                const key = item.name.trim();
-                const existing = consolidatedItemsMap.get(key);
-                if (existing) {
-                    existing.quantity += item.quantity || 1;
-                    if (!existing.orders.includes(o.order_number)) existing.orders.push(o.order_number);
-                    existing.estimatedCost += (item.price || 0) * (item.quantity || 1);
-                } else {
-                    consolidatedItemsMap.set(key, {
-                        name: item.name,
-                        quantity: item.quantity || 1,
-                        orders: [o.order_number],
-                        estimatedCost: (item.price || 0) * (item.quantity || 1)
-                    });
-                }
-            });
-        }
-    });
-    const consolidatedSourcingItems = Array.from(consolidatedItemsMap.values());
-    const totalUnitsToProcure = consolidatedSourcingItems.reduce((acc, curr) => acc + curr.quantity, 0);
+    const allDebtors = useMemo(() => 
+        orders.filter(o => Number(o.balance_due) > 0),
+        [orders]
+    );
 
-    const handleCopy = (text: string, label: string) => {
+    const partiallyPaidDebtors = useMemo(() => 
+        allDebtors.filter(o => Number(o.amount_paid) > 0),
+        [allDebtors]
+    );
+
+    const completelyUnpaidDebtors = useMemo(() => 
+        allDebtors.filter(o => Number(o.amount_paid) <= 0),
+        [allDebtors]
+    );
+
+    const filteredDebtors = useMemo(() => {
+        return allDebtors.filter(o => {
+            if (debtorFilter === 'partial' && Number(o.amount_paid) <= 0) return false;
+            if (debtorFilter === 'pending' && Number(o.amount_paid) > 0) return false;
+            if (debtorSearch.trim()) {
+                const q = debtorSearch.toLowerCase();
+                return (
+                    o.order_number.toLowerCase().includes(q) ||
+                    (o.customer?.name && o.customer.name.toLowerCase().includes(q)) ||
+                    (o.phone && o.phone.toLowerCase().includes(q))
+                );
+            }
+            return true;
+        });
+    }, [allDebtors, debtorFilter, debtorSearch]);
+
+    const totalOutstandingDebt = useMemo(() => 
+        allDebtors.reduce((acc, curr) => acc + (Number(curr.balance_due) || 0), 0),
+        [allDebtors]
+    );
+
+    // China Sourcing Consolidation calculation (memoized)
+    const consolidatedSourcingItems = useMemo(() => {
+        const sourcingOrders = orders.filter(o => 
+            ['PAID', 'PROCESSING', 'OPEN_FOR_BATCH', 'CUTOFF_REACHED', 'IN_FULFILLMENT'].includes(o.state) ||
+            (Number(o.amount_paid) > 0 && !['CANCELLED', 'REFUNDED', 'DELIVERED'].includes(o.state))
+        );
+
+        const itemsMap = new Map<string, { name: string; quantity: number; orders: string[]; estimatedCost: number }>();
+        sourcingOrders.forEach(o => {
+            if (Array.isArray(o.items_summary)) {
+                o.items_summary.forEach(item => {
+                    const key = item.name.trim();
+                    const existing = itemsMap.get(key);
+                    if (existing) {
+                        existing.quantity += item.quantity || 1;
+                        if (!existing.orders.includes(o.order_number)) existing.orders.push(o.order_number);
+                        existing.estimatedCost += (item.price || 0) * (item.quantity || 1);
+                    } else {
+                        itemsMap.set(key, {
+                            name: item.name,
+                            quantity: item.quantity || 1,
+                            orders: [o.order_number],
+                            estimatedCost: (item.price || 0) * (item.quantity || 1)
+                        });
+                    }
+                });
+            }
+        });
+        return Array.from(itemsMap.values());
+    }, [orders]);
+
+    const totalUnitsToProcure = useMemo(() => 
+        consolidatedSourcingItems.reduce((acc, curr) => acc + curr.quantity, 0),
+        [consolidatedSourcingItems]
+    );
+
+    const handleCopy = useCallback((text: string, label: string) => {
         navigator.clipboard.writeText(text);
-        setCopiedText(label);
-        setTimeout(() => setCopiedText(null), 2500);
-    };
+        setCopiedLabel(label);
+        setTimeout(() => setCopiedLabel(null), 2000);
+    }, []);
 
-    // Copilot Query Handler
-    const handleCopilotSubmit = async (queryText?: string) => {
+    // Copilot Query Processor
+    const handleCopilotSubmit = useCallback((queryText?: string) => {
         const query = (queryText || copilotInput).trim();
         if (!query) return;
 
@@ -262,76 +283,85 @@ export default function AdminConciergeDrawer() {
         setTimeout(() => {
             setIsCopilotTyping(false);
 
-            // 1. Audit Unpaid Balances
             if (lower.includes('unpaid') || lower.includes('debt') || lower.includes('balance') || lower.includes('owe') || lower.includes('partially paid')) {
-                const assistantMsg: CopilotMessage = {
-                    id: String(Date.now() + 1),
-                    role: 'assistant',
-                    content: `I have audited our order books. There are currently ${allDebtors.length} orders with an outstanding balance, totaling GH₵ ${totalOutstandingDebt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Of these, ${partiallyPaidDebtors.length} have paid partial deposits. Below are the priority accounts requiring follow-up:`,
-                    actionType: 'debtors',
-                    payload: allDebtors.slice(0, 5)
-                };
-                setCopilotMessages(prev => [...prev, assistantMsg]);
+                const topAccounts = allDebtors.slice(0, 4).map(d => 
+                    `• #${d.order_number}: ${d.customer?.name || 'Customer'} — GH₵ ${Number(d.balance_due).toFixed(2)} due (Paid: GH₵ ${Number(d.amount_paid).toFixed(2)})`
+                ).join('\n');
+
+                setCopilotMessages(prev => [
+                    ...prev,
+                    {
+                        id: String(Date.now() + 1),
+                        role: 'assistant',
+                        content: `Outstanding Debt Audit:\nFound ${allDebtors.length} accounts with pending balance, totaling GH₵ ${totalOutstandingDebt.toLocaleString('en-US', { minimumFractionDigits: 2 })}.\n\n${topAccounts}\n\nSwitch to the Debtors tab to send instant WhatsApp reminders.`,
+                        actionRedirectTab: 'debtors'
+                    }
+                ]);
                 return;
             }
 
-            // 2. China Sourcing Consolidation
-            if (lower.includes('china') || lower.includes('sourcing') || lower.includes('manifest') || lower.includes('factory') || lower.includes('procure') || lower.includes('1688') || lower.includes('guangzhou')) {
-                const assistantMsg: CopilotMessage = {
-                    id: String(Date.now() + 1),
-                    role: 'assistant',
-                    content: `Here is the current China procurement summary. We have ${totalUnitsToProcure} total units across ${consolidatedSourcingItems.length} unique products ready for factory procurement and consolidation in Guangzhou:`,
-                    actionType: 'sourcing',
-                    payload: consolidatedSourcingItems.slice(0, 6)
-                };
-                setCopilotMessages(prev => [...prev, assistantMsg]);
+            if (lower.includes('china') || lower.includes('sourcing') || lower.includes('manifest') || lower.includes('factory') || lower.includes('procure')) {
+                const topItems = consolidatedSourcingItems.slice(0, 4).map(item => 
+                    `• ${item.name}: ${item.quantity} units (Orders: ${item.orders.slice(0, 2).map(o => '#' + o).join(', ')})`
+                ).join('\n');
+
+                setCopilotMessages(prev => [
+                    ...prev,
+                    {
+                        id: String(Date.now() + 1),
+                        role: 'assistant',
+                        content: `China Procurement Summary:\nTotal: ${totalUnitsToProcure} units across ${consolidatedSourcingItems.length} products ready for consolidation in Guangzhou.\n\n${topItems}\n\nSwitch to the China Sourcing tab to copy the full manifest.`,
+                        actionRedirectTab: 'sourcing'
+                    }
+                ]);
                 return;
             }
 
-            // 3. Today's Revenue & Stats
-            if (lower.includes('revenue') || lower.includes('stat') || lower.includes('today') || lower.includes('sales') || lower.includes('batch')) {
+            if (lower.includes('revenue') || lower.includes('stat') || lower.includes('today') || lower.includes('batch')) {
                 const totalRev = adminStats?.stats?.total_revenue || 0;
                 const batchInfo = adminStats?.stats?.active_batch;
-                const assistantMsg: CopilotMessage = {
-                    id: String(Date.now() + 1),
-                    role: 'assistant',
-                    content: `Platform Overview:\n• Verified Revenue: GH₵ ${Number(totalRev).toLocaleString('en-US', { minimumFractionDigits: 2 })}\n• Active Batch: ${batchInfo ? `${batchInfo.name} (${batchInfo.days_left} days remaining)` : 'Standard sea freight batch open'}\n• Pending USSD Claims: ${pendingClaims.length}\n• Total Debtors: ${allDebtors.length} accounts (GH₵ ${totalOutstandingDebt.toFixed(2)})`,
-                    actionType: 'stats'
-                };
-                setCopilotMessages(prev => [...prev, assistantMsg]);
+                setCopilotMessages(prev => [
+                    ...prev,
+                    {
+                        id: String(Date.now() + 1),
+                        role: 'assistant',
+                        content: `Store Telemetry:\n• Total Verified Revenue: GH₵ ${Number(totalRev).toLocaleString('en-US', { minimumFractionDigits: 2 })}\n• Active Batch: ${batchInfo ? `${batchInfo.name} (${batchInfo.days_left} days left)` : 'Standard open'}\n• Unresolved USSD Claims: ${pendingClaims.length}\n• Total Outstanding Debt: GH₵ ${totalOutstandingDebt.toFixed(2)} across ${allDebtors.length} orders.`
+                    }
+                ]);
                 return;
             }
 
-            // 4. Order or Customer Lookup
-            const foundOrder = orders.find(o => 
+            // Customer or order number lookup
+            const match = orders.find(o => 
                 o.order_number.toLowerCase().includes(lower) || 
                 (o.phone && o.phone.includes(query)) ||
                 (o.customer?.name && o.customer.name.toLowerCase().includes(lower))
             );
 
-            if (foundOrder) {
-                const assistantMsg: CopilotMessage = {
-                    id: String(Date.now() + 1),
-                    role: 'assistant',
-                    content: `Found matching order #${foundOrder.order_number} for customer ${foundOrder.customer?.name || 'Guest'}. Status: ${foundOrder.status}. Amount Paid: GH₵ ${Number(foundOrder.amount_paid).toFixed(2)}, Balance Due: GH₵ ${Number(foundOrder.balance_due).toFixed(2)}.`,
-                    actionType: 'order',
-                    payload: foundOrder
-                };
-                setCopilotMessages(prev => [...prev, assistantMsg]);
+            if (match) {
+                setCopilotMessages(prev => [
+                    ...prev,
+                    {
+                        id: String(Date.now() + 1),
+                        role: 'assistant',
+                        content: `Order Lookup Found:\n• Order #${match.order_number}\n• Customer: ${match.customer?.name || 'Customer'} (${match.phone || 'No phone'})\n• Status: ${match.status}\n• Total: GH₵ ${Number(match.total).toFixed(2)}\n• Amount Paid: GH₵ ${Number(match.amount_paid).toFixed(2)}\n• Balance Due: GH₵ ${Number(match.balance_due).toFixed(2)}`
+                    }
+                ]);
                 return;
             }
 
-            // 5. Default General Response
-            const assistantMsg: CopilotMessage = {
-                id: String(Date.now() + 1),
-                role: 'assistant',
-                content: `Understood. I am monitoring all incoming customer payments, USSD claims from *713*7453#, outstanding balances, and China factory batch consolidation. You can ask me to "Audit unpaid balances", "Check China sourcing queue", "Review today's revenue", or look up any customer by phone number.`
-            };
-            setCopilotMessages(prev => [...prev, assistantMsg]);
-        }, 500);
-    };
+            setCopilotMessages(prev => [
+                ...prev,
+                {
+                    id: String(Date.now() + 1),
+                    role: 'assistant',
+                    content: "Operations assistant ready. Ask to audit unpaid balances, summarize the China sourcing queue, review verified revenue, or enter any customer phone number or order number for instant verification."
+                }
+            ]);
+        }, 300);
+    }, [copilotInput, allDebtors, totalOutstandingDebt, consolidatedSourcingItems, totalUnitsToProcure, adminStats, pendingClaims.length, orders]);
 
-    const handleApproveClaim = async (claim: USSDClaim) => {
+    const handleApproveClaim = useCallback(async (claim: USSDClaim) => {
         const customAmount = prompt(
             `Confirm payment credit for Order #${claim.order_number}:\nEnter amount in GH₵ (claimed: GH₵ ${claim.claimed_amount || claim.order_balance || 1}):`,
             String(claim.claimed_amount || claim.order_balance || 1)
@@ -354,9 +384,9 @@ export default function AdminConciergeDrawer() {
         } catch (e: any) {
             alert(e.response?.data?.error || 'Failed to approve claim');
         }
-    };
+    }, [fetchClaims, fetchOrders]);
 
-    const handleRejectClaim = async (claim: USSDClaim) => {
+    const handleRejectClaim = useCallback(async (claim: USSDClaim) => {
         const reason = prompt('Enter rejection reason (optional):');
         if (reason === null) return;
         try {
@@ -369,9 +399,9 @@ export default function AdminConciergeDrawer() {
         } catch (e: any) {
             alert(e.response?.data?.error || 'Failed to reject claim');
         }
-    };
+    }, [fetchClaims]);
 
-    const handleForceSync = async (e: React.FormEvent) => {
+    const handleForceSync = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         if (!syncOrderNumber.trim() || !syncTxnId.trim()) return;
 
@@ -407,21 +437,21 @@ export default function AdminConciergeDrawer() {
         } finally {
             setIsSyncing(false);
         }
-    };
+    }, [syncOrderNumber, syncTxnId, fetchClaims, fetchOrders]);
 
-    const generateDebtorWhatsAppLink = (debtor: AdminOrder) => {
+    const getDebtorWhatsAppUrl = useCallback((debtor: AdminOrder) => {
         const cleanPhone = (debtor.phone || '').replace(/\D/g, '');
         let targetPhone = cleanPhone;
         if (targetPhone.startsWith('0')) targetPhone = '233' + targetPhone.slice(1);
         if (!targetPhone.startsWith('233') && targetPhone.length === 9) targetPhone = '233' + targetPhone;
 
         const customerName = debtor.customer?.name || 'Customer';
-        const text = `Hello ${customerName}, this is London's Imports customer concierge regarding Order #${debtor.order_number}. Our records indicate an outstanding balance of GH₵ ${Number(debtor.balance_due).toFixed(2)} (Total: GH₵ ${Number(debtor.total).toFixed(2)}, Amount Paid: GH₵ ${Number(debtor.amount_paid).toFixed(2)}). You can view your order tracking and clear your balance online or via USSD (*713*7453#) here: https://londonsimports.com/track?order=${debtor.order_number}. Thank you!`;
+        const text = `Hello ${customerName}, this is London's Imports customer concierge regarding Order #${debtor.order_number}. Our records indicate an outstanding balance of GH₵ ${Number(debtor.balance_due).toFixed(2)} (Total: GH₵ ${Number(debtor.total).toFixed(2)}, Paid: GH₵ ${Number(debtor.amount_paid).toFixed(2)}). You can view your order tracking and clear your balance online or via USSD (*713*7453#) here: https://londonsimports.com/track?order=${debtor.order_number}. Thank you.`;
 
         return `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`;
-    };
+    }, []);
 
-    const generateWhatsAppLink = () => {
+    const getCustomWhatsAppUrl = useCallback(() => {
         let cleanPhone = waCustomerPhone.replace(/\D/g, '');
         if (cleanPhone.startsWith('0')) cleanPhone = '233' + cleanPhone.slice(1);
         if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) cleanPhone = '233' + cleanPhone;
@@ -432,66 +462,65 @@ export default function AdminConciergeDrawer() {
 
         let text = '';
         if (waTemplate === 'payment_received') {
-            text = `Hello ${name}, your payment for Order #${order} has been verified and credited. ${balance ? `Your remaining balance is ${balance}.` : 'Your order is fully cleared for processing.'} Thank you for choosing London's Imports!`;
+            text = `Hello ${name}, your payment for Order #${order} has been verified and credited. ${balance ? `Your remaining balance is ${balance}.` : 'Your order is cleared for processing.'} Thank you for choosing London's Imports.`;
         } else if (waTemplate === 'china_shipped') {
-            text = `Hello ${name}, great news! Your Order #${order} has been dispatched from our partner factory consolidation warehouse in China and is en route to our central distribution hub in Accra (estimated around 6 weeks for standard sea freight, or 2-3 weeks for express air). We will notify you the moment it lands!`;
+            text = `Hello ${name}, your Order #${order} has been dispatched from our consolidation warehouse in China and is en route to Accra (standard sea freight approx 6 weeks, or express air 2-3 weeks). We will notify you when it lands.`;
         } else if (waTemplate === 'balance_reminder') {
-            text = `Hello ${name}, this is London's Imports regarding Order #${order}. Please note your current outstanding balance is ${balance || 'pending'}. You may settle this via MoMo or dialing *713*7453# to avoid delivery delays. View tracking: https://londonsimports.com/track?order=${order}`;
+            text = `Hello ${name}, this is London's Imports regarding Order #${order}. Your current outstanding balance is ${balance || 'pending'}. You may settle this via MoMo or dialing *713*7453# to avoid delivery delays. View tracking: https://londonsimports.com/track?order=${order}`;
         } else {
-            text = `Hello ${name}, your package for Order #${order} has safely landed at our Accra Central sorting hub! ${balance ? `Please clear the remaining balance of ${balance} so our dispatch rider can release your package for doorstep delivery.` : 'Your package is ready for delivery!'}`;
+            text = `Hello ${name}, your package for Order #${order} has safely landed at our Accra Central sorting hub. ${balance ? `Please clear the remaining balance of ${balance} so our dispatch rider can release your package for delivery.` : 'Your package is ready for delivery.'}`;
         }
 
         return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
-    };
+    }, [waCustomerPhone, waCustomerName, waOrderNumber, waBalanceDue, waTemplate]);
 
-    const generateSourcingManifestText = () => {
+    const sourcingManifestString = useMemo(() => {
         const lines = [
             `LONDON'S IMPORTS - CHINA SOURCING MANIFEST`,
             `Generated: ${new Date().toLocaleDateString('en-GB')}`,
-            `Total Units to Procure: ${totalUnitsToProcure}`,
-            `Unique Products: ${consolidatedSourcingItems.length}`,
+            `Total Units: ${totalUnitsToProcure}`,
+            `Products: ${consolidatedSourcingItems.length}`,
             `===========================================`
         ];
         consolidatedSourcingItems.forEach((item, index) => {
             lines.push(`${index + 1}. ${item.name} - Qty: ${item.quantity} units (Orders: ${item.orders.slice(0, 3).map(o => '#' + o).join(', ')}${item.orders.length > 3 ? ` +${item.orders.length - 3} more` : ''})`);
         });
         return lines.join('\n');
-    };
+    }, [totalUnitsToProcure, consolidatedSourcingItems]);
 
     return (
         <>
-            {/* Floating Admin Miss London Button */}
+            {/* Floating Admin Pill Button */}
             <div className="fixed bottom-6 right-6 z-[60] print:hidden">
                 <button
+                    type="button"
                     onClick={() => setIsOpen(true)}
-                    className="relative group flex items-center gap-2.5 px-3.5 py-2.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 border border-slate-800 dark:border-slate-200 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 border border-slate-800 dark:border-slate-200 shadow-xl hover:bg-slate-900 dark:hover:bg-slate-100 transition-colors cursor-pointer"
                     aria-label="Open Miss London Admin Concierge"
-                    title="Miss London Admin Concierge"
                 >
-                    <div className="relative w-7 h-7 rounded-full overflow-hidden bg-slate-900 border border-slate-700/60 shrink-0 flex items-center justify-center">
+                    <div className="relative w-6 h-6 rounded-full overflow-hidden bg-slate-900 border border-slate-700/60 shrink-0 flex items-center justify-center">
                         {!avatarError ? (
                             <Image
                                 src="/logo.jpg"
                                 alt="Miss London"
                                 fill
-                                sizes="28px"
+                                sizes="24px"
                                 className="object-cover object-top"
                                 onError={() => setAvatarError(true)}
                             />
                         ) : (
-                            <span className="text-[10px] font-black text-white">ML</span>
+                            <span className="text-[9px] font-mono font-bold text-white">ML</span>
                         )}
                     </div>
-                    <span className="text-xs font-semibold tracking-wide hidden sm:inline">
+                    <span className="text-xs font-semibold tracking-wide">
                         Miss London
                     </span>
-                    <span className="text-[10px] font-mono uppercase bg-slate-800 dark:bg-slate-200 px-1.5 py-0.5 rounded text-slate-300 dark:text-slate-700 font-bold">
-                        AI Ops
+                    <span className="text-[9px] font-mono uppercase bg-slate-800 dark:bg-slate-200 px-1.5 py-0.5 rounded text-slate-300 dark:text-slate-700 font-bold">
+                        OPS
                     </span>
 
-                    {/* Pending Claims Notification Badge */}
                     {pendingClaims.length > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-md animate-pulse">
+                        <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-950 text-[10px] font-bold font-mono">
                             {pendingClaims.length}
                         </span>
                     )}
@@ -500,166 +529,171 @@ export default function AdminConciergeDrawer() {
 
             {/* Slide-over Drawer Backdrop */}
             {isOpen && (
-                <div className="fixed inset-0 z-[70] flex justify-end bg-black/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[70] flex justify-end bg-black/50 backdrop-blur-xs transition-opacity">
                     <div 
                         className="fixed inset-0" 
                         onClick={() => setIsOpen(false)} 
                     />
 
-                    {/* Drawer Content */}
-                    <div className="relative w-full max-w-lg bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col h-full z-10 animate-in slide-in-from-right duration-300">
+                    {/* Drawer Content Window */}
+                    <div className="relative w-full sm:w-[480px] h-[100dvh] max-h-[100dvh] bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col z-10 overflow-hidden">
+                        
                         {/* Header */}
-                        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+                        <div className="px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-slate-950">
                             <div className="flex items-center gap-3">
-                                <div className="relative w-9 h-9 rounded-full overflow-hidden bg-slate-900 shrink-0 border border-slate-700/60 shadow-xs flex items-center justify-center">
+                                <div className="relative w-8 h-8 rounded-full overflow-hidden bg-slate-900 shrink-0 border border-slate-700/60 flex items-center justify-center">
                                     {!avatarError ? (
                                         <Image
                                             src="/logo.jpg"
                                             alt="Miss London"
                                             fill
-                                            sizes="36px"
+                                            sizes="32px"
                                             className="object-cover object-top"
                                             onError={() => setAvatarError(true)}
                                         />
                                     ) : (
-                                        <span className="text-xs font-black text-white">ML</span>
+                                        <span className="text-xs font-mono font-bold text-white">ML</span>
                                     )}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Miss London</h3>
-                                        <span className="text-[9px] font-bold tracking-widest uppercase bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-1.5 py-0.5 rounded font-mono">
-                                            AI Operations Copilot
+                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-none">
+                                            Miss London
+                                        </h3>
+                                        <span className="text-[9px] font-mono uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                                            OPERATIONS
                                         </span>
                                     </div>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                                        Debt Recovery • Sourcing Consolidator • USSD Claims
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                                        Debt Recovery • Sourcing • USSD Claims
                                     </p>
                                 </div>
                             </div>
                             <button
+                                type="button"
                                 onClick={() => setIsOpen(false)}
-                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                                aria-label="Close Miss London"
                             >
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
 
                         {/* Navigation Tabs */}
-                        <div className="flex items-center border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-[11px] font-medium overflow-x-auto no-scrollbar">
+                        <div className="px-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-xs font-medium overflow-x-auto no-scrollbar flex items-center gap-1 shrink-0">
                             <button
+                                type="button"
                                 onClick={() => setActiveTab('copilot')}
-                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
+                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
                                     activeTab === 'copilot'
-                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-semibold'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-bold'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
                                 }`}
                             >
-                                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                                <span>Copilot</span>
+                                Copilot
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setActiveTab('debtors')}
-                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
+                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                                     activeTab === 'debtors'
-                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-semibold'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-bold'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
                                 }`}
                             >
                                 <span>Debtors</span>
                                 {allDebtors.length > 0 && (
-                                    <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
-                                        {allDebtors.length}
+                                    <span className="font-mono text-[10px] text-slate-500">
+                                        ({allDebtors.length})
                                     </span>
                                 )}
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setActiveTab('sourcing')}
-                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
+                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
                                     activeTab === 'sourcing'
-                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-semibold'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-bold'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
                                 }`}
                             >
-                                <Truck className="w-3.5 h-3.5" />
-                                <span>China Sourcing</span>
+                                China Sourcing
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setActiveTab('claims')}
-                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
+                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                                     activeTab === 'claims'
-                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-semibold'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-bold'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
                                 }`}
                             >
                                 <span>USSD Claims</span>
                                 {pendingClaims.length > 0 && (
-                                    <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] flex items-center justify-center font-bold">
+                                    <span className="px-1.5 py-0.2 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[9px] font-bold font-mono">
                                         {pendingClaims.length}
                                     </span>
                                 )}
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setActiveTab('sync')}
-                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
+                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
                                     activeTab === 'sync'
-                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-semibold'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-bold'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
                                 }`}
                             >
-                                <span>Reconcile</span>
+                                Reconcile
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setActiveTab('whatsapp')}
-                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
+                                className={`py-2.5 px-3 whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
                                     activeTab === 'whatsapp'
-                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-semibold'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white font-bold'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
                                 }`}
                             >
-                                <span>WhatsApp</span>
+                                WhatsApp
                             </button>
                         </div>
 
                         {/* Body Area */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {/* TAB 1: COPILOT AI OPERATIONS */}
+                        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
+                            
+                            {/* TAB 1: COPILOT CONVERSATION */}
                             {activeTab === 'copilot' && (
                                 <div className="flex flex-col h-full space-y-3">
-                                    {/* Quick Operational Action Chips */}
-                                    <div className="space-y-1.5">
-                                        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                                            Quick Operational Queries
-                                        </span>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCopilotSubmit("Audit unpaid balances and debtors")}
-                                                className="px-2.5 py-1 rounded-full text-[11px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-800"
-                                            >
-                                                Audit Unpaid Balances
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCopilotSubmit("Consolidate China sourcing queue")}
-                                                className="px-2.5 py-1 rounded-full text-[11px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-800"
-                                            >
-                                                China Sourcing Queue
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCopilotSubmit("Show revenue and active batch stats")}
-                                                className="px-2.5 py-1 rounded-full text-[11px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-800"
-                                            >
-                                                Today&apos;s Revenue & Batch
-                                            </button>
-                                        </div>
+                                    {/* Action Chips */}
+                                    <div className="flex flex-wrap gap-1.5 shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleCopilotSubmit("Audit unpaid balances and debtors")}
+                                            className="px-2.5 py-1 rounded-md text-[11px] bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-colors"
+                                        >
+                                            Audit Debtors
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleCopilotSubmit("Consolidate China sourcing queue")}
+                                            className="px-2.5 py-1 rounded-md text-[11px] bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-colors"
+                                        >
+                                            China Sourcing Queue
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleCopilotSubmit("Show revenue and active batch stats")}
+                                            className="px-2.5 py-1 rounded-md text-[11px] bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-colors"
+                                        >
+                                            Today&apos;s Revenue & Batch
+                                        </button>
                                     </div>
 
-                                    {/* Chat Messages Log */}
+                                    {/* Messages Window */}
                                     <div 
                                         ref={chatScrollRef}
-                                        className="flex-1 min-h-[300px] max-h-[460px] overflow-y-auto space-y-3 p-3 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800/80"
+                                        className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1"
                                     >
                                         {copilotMessages.map(msg => (
                                             <div 
@@ -667,115 +701,53 @@ export default function AdminConciergeDrawer() {
                                                 className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                                             >
                                                 <div 
-                                                    className={`max-w-[90%] text-xs leading-relaxed p-3 rounded-xl whitespace-pre-line ${
+                                                    className={`max-w-[92%] text-xs leading-relaxed p-3.5 rounded-lg whitespace-pre-line ${
                                                         msg.role === 'user'
-                                                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 rounded-tr-xs shadow-xs'
-                                                            : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-tl-xs border border-slate-200/80 dark:border-slate-800 shadow-2xs'
+                                                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-medium'
+                                                            : 'bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800'
                                                     }`}
                                                 >
                                                     {msg.content}
 
-                                                    {/* Debtor Action Cards inside Copilot */}
-                                                    {msg.actionType === 'debtors' && Array.isArray(msg.payload) && (
-                                                        <div className="mt-3 space-y-2 border-t border-slate-100 dark:border-slate-800 pt-2">
-                                                            {msg.payload.map((d: AdminOrder) => (
-                                                                <div key={d.id} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-[11px] space-y-1">
-                                                                    <div className="flex items-center justify-between font-bold">
-                                                                        <span className="font-mono">#{d.order_number}</span>
-                                                                        <span className="text-amber-600 dark:text-amber-400">
-                                                                            Balance: GH₵ {Number(d.balance_due).toFixed(2)}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="text-slate-500 flex items-center justify-between text-[10px]">
-                                                                        <span>{d.customer?.name || 'Customer'}</span>
-                                                                        <span>Paid: GH₵ {Number(d.amount_paid).toFixed(2)}</span>
-                                                                    </div>
-                                                                    {d.phone && (
-                                                                        <div className="pt-1 flex items-center gap-2">
-                                                                            <a
-                                                                                href={generateDebtorWhatsAppLink(d)}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-medium"
-                                                                            >
-                                                                                <MessageCircle className="w-2.5 h-2.5" />
-                                                                                <span>WhatsApp Reminder</span>
-                                                                            </a>
-                                                                            <Link
-                                                                                href={`/dashboard/admin/orders/${d.id}`}
-                                                                                className="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-slate-900 dark:hover:text-white"
-                                                                            >
-                                                                                <span>View Order</span>
-                                                                                <ArrowRight className="w-2.5 h-2.5" />
-                                                                            </Link>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            ))}
+                                                    {msg.actionRedirectTab && (
+                                                        <div className="mt-3 pt-2 border-t border-slate-200 dark:border-slate-800">
                                                             <button
-                                                                onClick={() => setActiveTab('debtors')}
-                                                                className="w-full py-1 text-center text-[10px] text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium hover:underline cursor-pointer"
+                                                                type="button"
+                                                                onClick={() => setActiveTab(msg.actionRedirectTab!)}
+                                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 text-[11px] font-semibold transition-colors cursor-pointer"
                                                             >
-                                                                View all {allDebtors.length} debtors in Debtors Hub →
+                                                                <span>Open {msg.actionRedirectTab === 'debtors' ? 'Debtors Hub' : 'China Sourcing'}</span>
+                                                                <span className="font-mono">→</span>
                                                             </button>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Sourcing Action Cards inside Copilot */}
-                                                    {msg.actionType === 'sourcing' && Array.isArray(msg.payload) && (
-                                                        <div className="mt-3 space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-2">
-                                                            {msg.payload.map((item, idx) => (
-                                                                <div key={idx} className="flex items-center justify-between text-[11px] py-1 border-b border-slate-100 dark:border-slate-800/60 last:border-0">
-                                                                    <span className="truncate pr-2 font-medium">{item.name}</span>
-                                                                    <span className="font-mono font-bold shrink-0">{item.quantity} units</span>
-                                                                </div>
-                                                            ))}
-                                                            <div className="pt-2 flex items-center gap-2">
-                                                                <button
-                                                                    onClick={() => handleCopy(generateSourcingManifestText(), 'Copilot Manifest')}
-                                                                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[10px] font-bold cursor-pointer"
-                                                                >
-                                                                    <Copy className="w-3 h-3" />
-                                                                    <span>{copiedText === 'Copilot Manifest' ? 'Copied to Clipboard' : 'Copy Full Manifest'}</span>
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => setActiveTab('sourcing')}
-                                                                    className="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-800 text-[10px] font-medium"
-                                                                >
-                                                                    Open Sourcing Tab
-                                                                </button>
-                                                            </div>
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
                                         ))}
+
                                         {isCopilotTyping && (
-                                            <div className="flex items-center gap-1.5 text-xs text-slate-400 p-2">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse" />
-                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse delay-100" />
-                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse delay-200" />
-                                                <span className="text-[11px]">Miss London is querying store records...</span>
+                                            <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-400">
+                                                Querying store data...
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Input Form */}
+                                    {/* Pinned Input Bar */}
                                     <form 
                                         onSubmit={(e) => { e.preventDefault(); handleCopilotSubmit(); }}
-                                        className="flex items-center gap-2 pt-1"
+                                        className="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-800 shrink-0"
                                     >
                                         <input
                                             type="text"
                                             value={copilotInput}
                                             onChange={(e) => setCopilotInput(e.target.value)}
-                                            placeholder="Ask Miss London or enter customer phone / order #..."
-                                            className="flex-1 text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-200"
+                                            placeholder="Ask Miss London or enter phone / order #..."
+                                            className="flex-1 text-xs px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-100"
                                         />
                                         <button
                                             type="submit"
                                             disabled={!copilotInput.trim()}
-                                            className="px-3 py-2 rounded-lg bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
+                                            className="px-3.5 py-2.5 rounded-lg bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:bg-slate-800 disabled:opacity-30 transition-colors cursor-pointer shrink-0"
                                         >
                                             <Send className="w-3.5 h-3.5" />
                                         </button>
@@ -783,61 +755,63 @@ export default function AdminConciergeDrawer() {
                                 </div>
                             )}
 
-                            {/* TAB 2: DEBTORS & BALANCE RECOVERY */}
+                            {/* TAB 2: DEBTORS HUB */}
                             {activeTab === 'debtors' && (
-                                <div className="space-y-3.5">
-                                    {/* Debt KPI Bar */}
+                                <div className="space-y-4">
+                                    {/* Monochrome KPI summary */}
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 block">
-                                                Total Outstanding Debt
+                                        <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                                            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                                                Outstanding Debt
                                             </span>
-                                            <span className="text-base font-bold font-mono text-amber-800 dark:text-amber-300 mt-0.5 block">
+                                            <span className="text-lg font-bold font-mono text-slate-900 dark:text-white mt-1 block">
                                                 GH₵ {totalOutstandingDebt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </span>
                                         </div>
-                                        <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                                                Accounts with Balance
+                                        <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                                            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                                                Debtor Accounts
                                             </span>
-                                            <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="text-base font-bold font-mono text-slate-900 dark:text-white">
+                                            <div className="flex items-baseline gap-1 mt-1">
+                                                <span className="text-lg font-bold font-mono text-slate-900 dark:text-white">
                                                     {allDebtors.length}
                                                 </span>
-                                                <span className="text-[10px] text-slate-400">
+                                                <span className="text-xs text-slate-500">
                                                     ({partiallyPaidDebtors.length} partial)
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Filters & Search */}
+                                    {/* Search & Filter Controls */}
                                     <div className="space-y-2">
                                         <div className="relative">
-                                            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+                                            <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
                                             <input
                                                 type="text"
                                                 value={debtorSearch}
                                                 onChange={(e) => setDebtorSearch(e.target.value)}
-                                                placeholder="Filter by order #, phone, or name..."
-                                                className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none"
+                                                placeholder="Search by order #, phone, or name..."
+                                                className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-100"
                                             />
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 text-[10px]">
+                                        <div className="flex items-center gap-1.5 text-[11px]">
                                             <button
+                                                type="button"
                                                 onClick={() => setDebtorFilter('all')}
-                                                className={`px-2.5 py-1 rounded-md transition-colors ${
+                                                className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
                                                     debtorFilter === 'all'
                                                         ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-semibold'
                                                         : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
                                                 }`}
                                             >
-                                                All Debtors ({allDebtors.length})
+                                                All ({allDebtors.length})
                                             </button>
                                             <button
+                                                type="button"
                                                 onClick={() => setDebtorFilter('partial')}
-                                                className={`px-2.5 py-1 rounded-md transition-colors ${
+                                                className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
                                                     debtorFilter === 'partial'
                                                         ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-semibold'
                                                         : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
@@ -846,19 +820,20 @@ export default function AdminConciergeDrawer() {
                                                 Partially Paid ({partiallyPaidDebtors.length})
                                             </button>
                                             <button
+                                                type="button"
                                                 onClick={() => setDebtorFilter('pending')}
-                                                className={`px-2.5 py-1 rounded-md transition-colors ${
+                                                className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
                                                     debtorFilter === 'pending'
                                                         ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-semibold'
                                                         : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
                                                 }`}
                                             >
-                                                0 Paid ({completelyUnpaidDebtors.length})
+                                                Unpaid ({completelyUnpaidDebtors.length})
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* Debtors List */}
+                                    {/* Un-fragmented Clean Debtor Cards */}
                                     <div className="space-y-2.5">
                                         {isLoadingOrders ? (
                                             <div className="p-8 text-center text-xs text-slate-400">
@@ -866,67 +841,58 @@ export default function AdminConciergeDrawer() {
                                                 <span>Loading debtor accounts...</span>
                                             </div>
                                         ) : filteredDebtors.length === 0 ? (
-                                            <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                                                <ShieldCheck className="w-8 h-8 text-emerald-500 mx-auto mb-2 opacity-80" />
-                                                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No matching balances</p>
+                                            <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+                                                <ShieldCheck className="w-7 h-7 text-slate-400 mx-auto mb-2" />
+                                                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">No matching balances</p>
                                                 <p className="text-[11px] text-slate-400 mt-0.5">All customer balances cleared for this criteria.</p>
                                             </div>
                                         ) : (
                                             filteredDebtors.map(debtor => (
                                                 <div
                                                     key={debtor.id}
-                                                    className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 shadow-2xs"
+                                                    className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-2.5 shadow-2xs"
                                                 >
+                                                    {/* Row 1: Order # & Balance Due */}
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                                 #{debtor.order_number}
                                                             </span>
-                                                            {Number(debtor.amount_paid) > 0 ? (
-                                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                                                    Partially Paid
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                                                                    Unpaid
-                                                                </span>
-                                                            )}
+                                                            <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                                {Number(debtor.amount_paid) > 0 ? 'Partially Paid' : 'Unpaid'}
+                                                            </span>
                                                         </div>
-                                                        <span className="text-xs font-bold font-mono text-rose-600 dark:text-rose-400">
+                                                        <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                             Due: GH₵ {Number(debtor.balance_due).toFixed(2)}
                                                         </span>
                                                     </div>
 
-                                                    <div className="text-[11px] grid grid-cols-2 gap-1 text-slate-600 dark:text-slate-400">
-                                                        <div>
-                                                            <span className="text-slate-400 block text-[10px]">Customer:</span>
-                                                            <span className="font-medium text-slate-800 dark:text-slate-200 truncate block">
-                                                                {debtor.customer?.name || 'Guest'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <span className="text-slate-400 block text-[10px]">Paid / Total:</span>
-                                                            <span className="font-mono">
-                                                                GH₵ {Number(debtor.amount_paid).toFixed(2)} / GH₵ {Number(debtor.total).toFixed(2)}
-                                                            </span>
-                                                        </div>
+                                                    {/* Row 2: Customer & Financials (Single Clean Line) */}
+                                                    <div className="text-[11px] flex items-center justify-between text-slate-500">
+                                                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate pr-2">
+                                                            {debtor.customer?.name || 'Customer'}
+                                                            {debtor.phone ? ` • ${debtor.phone}` : ''}
+                                                        </span>
+                                                        <span className="font-mono shrink-0">
+                                                            Paid: GH₵ {Number(debtor.amount_paid).toFixed(2)} / GH₵ {Number(debtor.total).toFixed(2)}
+                                                        </span>
                                                     </div>
 
-                                                    {/* Actions */}
-                                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
+                                                    {/* Row 3: Actions */}
+                                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                                                         <a
-                                                            href={generateDebtorWhatsAppLink(debtor)}
+                                                            href={getDebtorWhatsAppUrl(debtor)}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium active:scale-95 transition-all shadow-2xs"
+                                                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-xs font-medium transition-colors"
                                                         >
                                                             <MessageCircle className="w-3.5 h-3.5" />
-                                                            <span>WhatsApp Reminder</span>
+                                                            <span>Send WhatsApp Reminder</span>
                                                         </a>
                                                         {debtor.phone && (
                                                             <a
                                                                 href={`tel:${debtor.phone}`}
-                                                                className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs transition-colors"
+                                                                className="px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                                                 title="Call Customer"
                                                             >
                                                                 <Phone className="w-3.5 h-3.5" />
@@ -934,8 +900,8 @@ export default function AdminConciergeDrawer() {
                                                         )}
                                                         <Link
                                                             href={`/dashboard/admin/orders/${debtor.id}`}
-                                                            className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs transition-colors"
-                                                            title="View Order in Admin"
+                                                            className="px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                                            title="View Order Details"
                                                         >
                                                             <ExternalLink className="w-3.5 h-3.5" />
                                                         </Link>
@@ -949,52 +915,53 @@ export default function AdminConciergeDrawer() {
 
                             {/* TAB 3: CHINA SOURCING CONSOLIDATOR */}
                             {activeTab === 'sourcing' && (
-                                <div className="space-y-3.5">
-                                    <div className="p-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 flex items-center justify-between">
+                                <div className="space-y-4">
+                                    <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-between">
                                         <div>
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-600 block">
-                                                Guangzhou Factory Consolidation
+                                            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                                                Factory Consolidation
                                             </span>
-                                            <span className="text-base font-bold font-mono mt-0.5 block">
+                                            <span className="text-base font-bold font-mono text-slate-900 dark:text-white mt-0.5 block">
                                                 {totalUnitsToProcure} Total Units Required
                                             </span>
                                         </div>
                                         <button
-                                            onClick={() => handleCopy(generateSourcingManifestText(), 'Sourcing Tab Manifest')}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 dark:bg-slate-900/10 dark:hover:bg-slate-900/20 text-xs font-semibold cursor-pointer transition-colors"
+                                            type="button"
+                                            onClick={() => handleCopy(sourcingManifestString, 'Sourcing Manifest')}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
                                         >
                                             <Copy className="w-3.5 h-3.5" />
-                                            <span>{copiedText === 'Sourcing Tab Manifest' ? 'Copied' : 'Copy Manifest'}</span>
+                                            <span>{copiedLabel === 'Sourcing Manifest' ? 'Copied' : 'Copy Manifest'}</span>
                                         </button>
                                     </div>
 
                                     <div className="space-y-2">
                                         <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                                            Consolidated Items by Product ({consolidatedSourcingItems.length})
+                                            Consolidated Items ({consolidatedSourcingItems.length})
                                         </span>
 
                                         {consolidatedSourcingItems.length === 0 ? (
-                                            <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                                                <Package className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-80" />
-                                                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No active items</p>
-                                                <p className="text-[11px] text-slate-400 mt-0.5">All pre-orders have been consolidated or completed.</p>
+                                            <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+                                                <Package className="w-7 h-7 text-slate-400 mx-auto mb-2" />
+                                                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">No active items</p>
+                                                <p className="text-[11px] text-slate-400 mt-0.5">All pre-orders consolidated or processed.</p>
                                             </div>
                                         ) : (
                                             consolidatedSourcingItems.map((item, idx) => (
                                                 <div
                                                     key={idx}
-                                                    className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
+                                                    className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between text-xs"
                                                 >
                                                     <div className="min-w-0 pr-3">
                                                         <h4 className="font-semibold text-slate-900 dark:text-white truncate">
                                                             {item.name}
                                                         </h4>
-                                                        <div className="text-[10px] text-slate-500 mt-0.5">
+                                                        <div className="text-[10px] text-slate-500 font-mono mt-0.5">
                                                             Orders: {item.orders.map(o => '#' + o).join(', ')}
                                                         </div>
                                                     </div>
                                                     <div className="text-right shrink-0">
-                                                        <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white block">
+                                                        <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white text-xs border border-slate-200 dark:border-slate-700">
                                                             {item.quantity} pcs
                                                         </span>
                                                     </div>
@@ -1005,12 +972,13 @@ export default function AdminConciergeDrawer() {
                                 </div>
                             )}
 
-                            {/* TAB 4: PENDING USSD CLAIMS */}
+                            {/* TAB 4: USSD CLAIMS */}
                             {activeTab === 'claims' && (
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between text-xs text-slate-500">
-                                        <span>Customer claims from USSD *713*7453#</span>
+                                        <span>Customer claims from *713*7453#</span>
                                         <button 
+                                            type="button"
                                             onClick={fetchClaims} 
                                             disabled={isLoadingClaims}
                                             className="hover:underline flex items-center gap-1 text-[11px] cursor-pointer"
@@ -1021,38 +989,38 @@ export default function AdminConciergeDrawer() {
                                     </div>
 
                                     {pendingClaims.length === 0 ? (
-                                        <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                                            <ShieldCheck className="w-8 h-8 text-emerald-500 mx-auto mb-2 opacity-80" />
-                                            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">All clear</p>
-                                            <p className="text-[11px] text-slate-400 mt-0.5">No pending customer claims requiring review.</p>
+                                        <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+                                            <ShieldCheck className="w-7 h-7 text-slate-400 mx-auto mb-2" />
+                                            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">All claims reconciled</p>
+                                            <p className="text-[11px] text-slate-400 mt-0.5">No offline claims requiring review.</p>
                                         </div>
                                     ) : (
                                         pendingClaims.map(claim => (
                                             <div 
                                                 key={claim.id} 
-                                                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 space-y-2.5 shadow-2xs"
+                                                className="border border-slate-200 dark:border-slate-800 rounded-lg p-3.5 bg-white dark:bg-slate-900 space-y-2.5"
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                         #{claim.order_number}
                                                     </span>
-                                                    <span className="text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full font-mono">
+                                                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
                                                         Claim: GH₵ {claim.claimed_amount ? Number(claim.claimed_amount).toFixed(2) : '1.00'}
                                                     </span>
                                                 </div>
 
-                                                <div className="text-[11px] space-y-1 text-slate-600 dark:text-slate-300">
+                                                <div className="text-[11px] space-y-1 text-slate-600 dark:text-slate-400">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-slate-400">Hubtel Txn ID:</span>
-                                                        <span className="font-mono font-semibold">{claim.transaction_id}</span>
+                                                        <span>Hubtel Txn ID:</span>
+                                                        <span className="font-mono font-semibold text-slate-900 dark:text-white">{claim.transaction_id}</span>
                                                     </div>
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-slate-400">Order Balance:</span>
+                                                        <span>Order Balance:</span>
                                                         <span className="font-mono">GH₵ {Number(claim.order_balance).toFixed(2)}</span>
                                                     </div>
                                                     {claim.customer_phone && (
                                                         <div className="flex items-center justify-between">
-                                                            <span className="text-slate-400">Customer Phone:</span>
+                                                            <span>Phone:</span>
                                                             <a href={`tel:${claim.customer_phone}`} className="hover:underline font-mono">
                                                                 {claim.customer_phone}
                                                             </a>
@@ -1060,18 +1028,19 @@ export default function AdminConciergeDrawer() {
                                                     )}
                                                 </div>
 
-                                                {/* Action Buttons */}
-                                                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
+                                                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                                                     <button
+                                                        type="button"
                                                         onClick={() => handleApproveClaim(claim)}
-                                                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-medium hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 text-xs font-medium transition-colors cursor-pointer"
                                                     >
                                                         <Check className="w-3.5 h-3.5" />
                                                         <span>Approve & Credit</span>
                                                     </button>
                                                     <button
+                                                        type="button"
                                                         onClick={() => handleRejectClaim(claim)}
-                                                        className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-medium transition-all cursor-pointer"
+                                                        className="inline-flex items-center justify-center px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition-colors cursor-pointer"
                                                     >
                                                         <span>Reject</span>
                                                     </button>
@@ -1082,11 +1051,11 @@ export default function AdminConciergeDrawer() {
                                 </div>
                             )}
 
-                            {/* TAB 5: MANUAL FORCE SYNC */}
+                            {/* TAB 5: MANUAL RECONCILE */}
                             {activeTab === 'sync' && (
                                 <form onSubmit={handleForceSync} className="space-y-3.5">
                                     <div className="text-xs text-slate-500">
-                                        Paste any Hubtel transaction ID or client reference to live-verify and credit to an order.
+                                        Query Hubtel directly by Transaction ID or Client Reference to credit an order.
                                     </div>
 
                                     <div>
@@ -1098,7 +1067,7 @@ export default function AdminConciergeDrawer() {
                                             value={syncOrderNumber}
                                             onChange={(e) => setSyncOrderNumber(e.target.value)}
                                             placeholder="e.g. LI-20260921-87841"
-                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 font-mono"
+                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-100 font-mono"
                                             required
                                         />
                                     </div>
@@ -1112,62 +1081,48 @@ export default function AdminConciergeDrawer() {
                                             value={syncTxnId}
                                             onChange={(e) => setSyncTxnId(e.target.value)}
                                             placeholder="e.g. 90263045181"
-                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 font-mono"
+                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-slate-100 font-mono"
                                             required
                                         />
                                     </div>
 
                                     {syncResult && (
-                                        <div className={`p-3 rounded-lg text-xs flex items-start gap-2 ${
-                                            syncResult.success 
-                                                ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20' 
-                                                : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20'
-                                        }`}>
-                                            {syncResult.success ? <Check className="w-4 h-4 shrink-0 mt-0.5" /> : <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />}
-                                            <span>{syncResult.message}</span>
+                                        <div className="p-3 rounded-md text-xs border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                                            {syncResult.message}
                                         </div>
                                     )}
 
                                     <button
                                         type="submit"
                                         disabled={isSyncing}
-                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 active:scale-95 disabled:opacity-50 transition-all cursor-pointer"
+                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
                                     >
-                                        {isSyncing ? (
-                                            <>
-                                                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                                                <span>Verifying with Hubtel...</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <CreditCard className="w-3.5 h-3.5" />
-                                                <span>Verify & Reconcile Payment</span>
-                                            </>
-                                        )}
+                                        <CreditCard className="w-3.5 h-3.5" />
+                                        <span>{isSyncing ? 'Verifying...' : 'Verify & Credit Payment'}</span>
                                     </button>
                                 </form>
                             )}
 
-                            {/* TAB 6: WHATSAPP CUSTOMER COMMUNICATOR */}
+                            {/* TAB 6: WHATSAPP GENERATOR */}
                             {activeTab === 'whatsapp' && (
                                 <div className="space-y-3.5">
                                     <div className="text-xs text-slate-500">
-                                        Generate pre-formatted professional customer WhatsApp notifications.
+                                        Generate standardized customer notification messages.
                                     </div>
 
                                     <div>
                                         <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                                            Notification Type
+                                            Template
                                         </label>
                                         <select
                                             value={waTemplate}
                                             onChange={(e) => setWaTemplate(e.target.value as any)}
-                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none"
+                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none"
                                         >
                                             <option value="balance_reminder">Outstanding Balance Reminder</option>
                                             <option value="payment_received">Payment Received Confirmation</option>
                                             <option value="china_shipped">Dispatched from China Factory</option>
-                                            <option value="accra_arrived">Arrived at Accra Hub & Balance Due</option>
+                                            <option value="accra_arrived">Arrived at Accra Hub</option>
                                         </select>
                                     </div>
 
@@ -1181,7 +1136,7 @@ export default function AdminConciergeDrawer() {
                                                 value={waCustomerName}
                                                 onChange={(e) => setWaCustomerName(e.target.value)}
                                                 placeholder="e.g. Gabriel"
-                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none"
+                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none"
                                             />
                                         </div>
                                         <div>
@@ -1193,7 +1148,7 @@ export default function AdminConciergeDrawer() {
                                                 value={waCustomerPhone}
                                                 onChange={(e) => setWaCustomerPhone(e.target.value)}
                                                 placeholder="024XXXXXXX"
-                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none font-mono"
+                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none font-mono"
                                             />
                                         </div>
                                     </div>
@@ -1208,7 +1163,7 @@ export default function AdminConciergeDrawer() {
                                                 value={waOrderNumber}
                                                 onChange={(e) => setWaOrderNumber(e.target.value)}
                                                 placeholder="LI-2026..."
-                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none font-mono"
+                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none font-mono"
                                             />
                                         </div>
                                         <div>
@@ -1220,28 +1175,28 @@ export default function AdminConciergeDrawer() {
                                                 value={waBalanceDue}
                                                 onChange={(e) => setWaBalanceDue(e.target.value)}
                                                 placeholder="e.g. 7.00"
-                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:outline-none font-mono"
+                                                className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-900 dark:text-white focus:outline-none font-mono"
                                             />
                                         </div>
                                     </div>
 
                                     <a
-                                        href={generateWhatsAppLink()}
+                                        href={getCustomWhatsAppUrl()}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold active:scale-95 transition-all shadow-xs"
+                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold transition-colors"
                                     >
                                         <MessageCircle className="w-3.5 h-3.5" />
-                                        <span>Open WhatsApp Chat with Message</span>
+                                        <span>Launch WhatsApp Chat</span>
                                     </a>
                                 </div>
                             )}
                         </div>
 
                         {/* Footer */}
-                        <div className="p-3 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-400 text-center flex items-center justify-between">
-                            <span>Miss London AI Operations Copilot</span>
-                            <span className="font-mono">London&apos;s Imports Ghana</span>
+                        <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 flex items-center justify-between shrink-0 bg-white dark:bg-slate-950">
+                            <span>Miss London Operations</span>
+                            <span className="font-mono">London&apos;s Imports</span>
                         </div>
                     </div>
                 </div>

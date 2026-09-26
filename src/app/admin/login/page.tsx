@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useAuthStore } from '@/stores/authStore';
@@ -35,10 +35,12 @@ export default function AdminLoginPage() {
             return;
         }
 
-        setLoading(true);
+        // Use React transition to keep input responsive and eliminate INP delays
+        React.startTransition(() => {
+            setLoading(true);
+        });
 
-        // Yield to browser immediately via rAF & macro-task so the loading spinner paints without delay
-        // This keeps INP well under 50ms during form submission
+        // Yield to browser immediately so paint occurs in next micro-task
         await new Promise<void>((resolve) => {
             requestAnimationFrame(() => {
                 setTimeout(resolve, 0);
