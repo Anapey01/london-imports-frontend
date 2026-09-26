@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, Plus, X } from 'lucide-react';
+import { Upload, Plus, X, Video, Film } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from '@/providers/ThemeProvider';
 import { ProductImage } from '../../../../../../types';
@@ -8,31 +8,43 @@ import { getImageUrl } from '@/lib/image';
 interface ProductImageUploaderProps {
     productImage: string | null;
     productGallery: ProductImage[];
+    productVideo?: string | null;
     formDataImage: File | null;
     formDataGallery: File[];
+    formDataVideo: File | null;
+    formDataVideoUrl: string;
     onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onGalleryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onRemoveGalleryImage: (index: number) => void;
+    onVideoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onRemoveVideo: () => void;
+    onVideoUrlChange: (url: string) => void;
 }
 
 export function ProductImageUploader({
     productImage,
     productGallery,
+    productVideo,
     formDataImage,
     formDataGallery,
+    formDataVideo,
+    formDataVideoUrl,
     onImageChange,
     onGalleryChange,
-    onRemoveGalleryImage
+    onRemoveGalleryImage,
+    onVideoChange,
+    onRemoveVideo,
+    onVideoUrlChange
 }: ProductImageUploaderProps) {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
     return (
-        <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 shadow-sm'}`}>
-            <h3 className={`text-base font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Product Imagery</h3>
+        <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 shadow-sm'} space-y-6`}>
+            <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Product Media</h3>
 
             {/* Main Image */}
-            <div className="mb-6">
+            <div>
                 <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     Primary Cover Photo
                 </label>
@@ -149,6 +161,86 @@ export function ProductImageUploader({
                         ))}
                     </div>
                 )}
+            </div>
+
+            {/* Product Video Section */}
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+                <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    Product Video (Optional)
+                </label>
+                <div className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center transition-colors mb-3 ${
+                    isDark
+                        ? 'border-slate-700 hover:border-slate-500 hover:bg-slate-800/40'
+                        : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50/70'
+                }`}>
+                    <input
+                        type="file"
+                        accept="video/mp4,video/webm,video/quicktime,video/x-msvideo"
+                        onChange={onVideoChange}
+                        className="hidden"
+                        id="edit-video-upload"
+                    />
+                    {formDataVideo ? (
+                        <div className="flex items-center justify-between w-full max-w-sm px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                            <div className="flex items-center gap-2 truncate">
+                                <Film className="w-4 h-4 text-emerald-500 shrink-0" />
+                                <span className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate">
+                                    {formDataVideo.name}
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={onRemoveVideo}
+                                className="text-rose-500 hover:text-rose-700 p-1"
+                                title="Remove video"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    ) : productVideo ? (
+                        <div className="flex items-center justify-between w-full max-w-sm px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                            <div className="flex items-center gap-2 truncate">
+                                <Video className="w-4 h-4 text-emerald-500 shrink-0" />
+                                <span className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate">
+                                    Current Video Uploaded
+                                </span>
+                            </div>
+                            <label htmlFor="edit-video-upload" className="cursor-pointer text-xs font-semibold text-slate-900 dark:text-white underline">
+                                Replace
+                            </label>
+                        </div>
+                    ) : (
+                        <label htmlFor="edit-video-upload" className="cursor-pointer text-center w-full">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2 ${
+                                isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-700'
+                            }`}>
+                                <Video className="w-5 h-5" />
+                            </div>
+                            <p className={`font-semibold text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                Upload product demo or showcase video
+                            </p>
+                            <p className="text-xs text-slate-400">MP4, WebM, MOV (max. 50MB)</p>
+                        </label>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="edit_video_url" className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                        Or Video Link (YouTube / Vimeo)
+                    </label>
+                    <input
+                        id="edit_video_url"
+                        type="url"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        value={formDataVideoUrl}
+                        onChange={(e) => onVideoUrlChange(e.target.value)}
+                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-transparent outline-none transition-all ${
+                            isDark
+                                ? 'border-slate-700 text-white placeholder:text-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-white/10'
+                                : 'border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10'
+                        }`}
+                    />
+                </div>
             </div>
         </div>
     );

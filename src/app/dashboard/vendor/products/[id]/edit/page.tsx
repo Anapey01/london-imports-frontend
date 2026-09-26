@@ -48,6 +48,8 @@ export default function EditProductPage() {
         shipping_origin: '',
         image: null as File | null,
         images: [] as File[],
+        video: null as File | null,
+        video_url: '',
     });
 
     const [hasVariants, setHasVariants] = useState(false);
@@ -77,7 +79,9 @@ export default function EditProductPage() {
                             colors: Array.isArray(found.available_colors) ? found.available_colors.join(', ') : '',
                             shipping_origin: found.shipping_origin || 'China',
                             image: null,
-                            images: []
+                            images: [],
+                            video: null,
+                            video_url: found.video_url || '',
                         });
 
                         if (found.variants && found.variants.length > 0) {
@@ -169,6 +173,13 @@ export default function EditProductPage() {
                 compressedGallery.forEach((file) => {
                     data.append('uploaded_images', file);
                 });
+            }
+
+            if (formData.video) {
+                data.append('video', formData.video);
+            }
+            if (formData.video_url) {
+                data.append('video_url', formData.video_url);
             }
 
             setCompressionStatus('Updating...');
@@ -363,8 +374,11 @@ export default function EditProductPage() {
                 <ProductImageUploader
                     productImage={product?.image || null}
                     productGallery={product?.images || []}
+                    productVideo={product?.video || null}
                     formDataImage={formData.image}
                     formDataGallery={formData.images}
+                    formDataVideo={formData.video}
+                    formDataVideoUrl={formData.video_url}
                     onImageChange={handleImageChange}
                     onGalleryChange={(e) => {
                         if (e.target.files) {
@@ -378,6 +392,18 @@ export default function EditProductPage() {
                         ...prev,
                         images: prev.images.filter((_, i) => i !== index)
                     }))}
+                    onVideoChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                            const file = e.target.files[0];
+                            if (file.size > 50 * 1024 * 1024) {
+                                addAlert('Video must be less than 50MB', 'error');
+                                return;
+                            }
+                            setFormData(prev => ({ ...prev, video: file }));
+                        }
+                    }}
+                    onRemoveVideo={() => setFormData(prev => ({ ...prev, video: null }))}
+                    onVideoUrlChange={(url) => setFormData(prev => ({ ...prev, video_url: url }))}
                 />
 
                 {/* Form Action Controls */}

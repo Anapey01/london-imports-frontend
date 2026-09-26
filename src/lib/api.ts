@@ -214,10 +214,20 @@ export const paymentsAPI = {
 export const vendorsAPI = {
   dashboard: () => api.get('/vendors/dashboard/'),
   getProfile: () => api.get('/vendors/profile/'),
-  updateProfile: (data: unknown) => api.patch('/vendors/profile/', data),
+  updateProfile: (data: unknown) => {
+    const isFormData = data instanceof FormData;
+    return api.patch('/vendors/profile/', data, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+    });
+  },
   payouts: () => api.get('/vendors/payouts/'),
   products: () => api.get('/products/vendor/products/'),
-  createProduct: (data: unknown) => api.post('/products/vendor/products/', data),
+  createProduct: (data: unknown) => {
+    const isFormData = data instanceof FormData;
+    return api.post('/products/vendor/products/', data, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+    });
+  },
   getProduct: (id: string) => api.get(`/products/vendor/products/${id}/`),
   updateProduct: (id: string, data: unknown) => {
     const isFormData = data instanceof FormData;

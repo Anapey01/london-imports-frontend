@@ -15,6 +15,8 @@ export interface ProductFormData {
     shipping_origin: string;
     image: File | null;
     images: File[];
+    video?: File | null;
+    video_url?: string;
 }
 
 export interface Review {

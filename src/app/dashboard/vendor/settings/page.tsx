@@ -28,6 +28,7 @@ export default function VendorSettingsPage() {
     // Form State
     const [formData, setFormData] = useState({
         business_name: '',
+        business_email: '',
         description: '',
         whatsapp: '',
         business_phone: '',
@@ -58,6 +59,7 @@ export default function VendorSettingsPage() {
 
             setFormData({
                 business_name: vendor.business_name || '',
+                business_email: vendor.business_email || '',
                 description: vendor.description || '',
                 whatsapp: vendor.whatsapp || '',
                 business_phone: vendor.business_phone || '',
@@ -104,6 +106,9 @@ export default function VendorSettingsPage() {
         try {
             const data = new FormData();
             data.append('business_name', formData.business_name);
+            if (formData.business_email) {
+                data.append('business_email', formData.business_email);
+            }
             data.append('description', formData.description);
             data.append('whatsapp', formData.whatsapp);
             data.append('business_phone', formData.business_phone);
@@ -233,7 +238,20 @@ export default function VendorSettingsPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label htmlFor="business_email" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                    Business Email
+                                </label>
+                                <input
+                                    id="business_email"
+                                    type="email"
+                                    value={formData.business_email}
+                                    onChange={(e) => setFormData({ ...formData, business_email: e.target.value })}
+                                    className={inputClass}
+                                    placeholder="vendor@example.com"
+                                />
+                            </div>
                             <div>
                                 <label htmlFor="whatsapp" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     WhatsApp Line

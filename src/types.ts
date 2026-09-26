@@ -55,6 +55,8 @@ export interface Product {
     short_name?: string;
     sku?: string;
     is_discreet?: boolean;
+    video?: string;
+    video_url?: string;
 }
 export interface OrderItem {
     id: string;

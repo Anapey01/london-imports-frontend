@@ -44,6 +44,8 @@ export default function AddProductPage() {
         shipping_origin: 'China',
         image: null,
         images: [],
+        video: null,
+        video_url: '',
     });
 
     // Variants State
@@ -133,6 +135,13 @@ export default function AddProductPage() {
                 compressedGallery.forEach((file) => {
                     data.append('uploaded_images', file);
                 });
+            }
+
+            if (formData.video) {
+                data.append('video', formData.video);
+            }
+            if (formData.video_url) {
+                data.append('video_url', formData.video_url);
             }
 
             setCompressionStatus('Uploading...');

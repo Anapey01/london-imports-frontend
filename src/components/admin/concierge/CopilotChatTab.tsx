@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, ArrowRight } from 'lucide-react';
+import { Send, Bot, ArrowRight, ExternalLink } from 'lucide-react';
 import { AdminOrderData, computeDebtorMetrics, consolidateSourcingList } from '@/lib/concierge-utils';
 
 export interface CopilotMessage {
@@ -9,6 +9,10 @@ export interface CopilotMessage {
     role: 'user' | 'assistant';
     content: string;
     actionRedirectTab?: 'debtors' | 'sourcing' | 'claims';
+    quickReplies?: Array<{ label: string; query: string }>;
+    actionLink?: { label: string; href: string };
+    products?: Array<{ id: string; name: string; price: number; slug: string }>;
+    orders?: Array<{ order_number: string; state_display: string; total: number; balance_due: number }>;
 }
 
 interface CopilotChatTabProps {
@@ -24,7 +28,12 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
         {
             id: 'welcome',
             role: 'assistant',
-            content: "Hello Administrator. I am Miss London, your store operations concierge. How may I assist you with order audits, customer debt recovery, China sourcing consolidation, or Hubtel payment verification today?"
+            content: "Hello Administrator. I am Miss London, your store operations concierge. How may I assist you with order audits, customer debt recovery, China sourcing consolidation, or Hubtel payment verification today?",
+            quickReplies: [
+                { label: "Summarize Debts", query: "Summarize outstanding debts" },
+                { label: "China Sourcing", query: "Consolidate China sourcing" },
+                { label: "Pending Claims", query: "Show pending Hubtel claims" }
+            ]
         }
     ]);
     const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -53,94 +62,119 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
         setInput('');
         setIsTyping(true);
 
-        // Compute local context to respond accurately
+        // Pre-compute real-time operational metrics for prompt & fallback
         const { allDebtors, partiallyPaid, totalOutstanding } = computeDebtorMetrics(orders);
         const { totalUnits, items: sourcingItems } = consolidateSourcingList(orders);
 
-        const lower = query.toLowerCase();
+        // Format orders for assistant context
+        const formattedOrders = orders.slice(0, 15).map(o => {
+            const custName = typeof o.customer === 'string' ? o.customer : o.customer?.name || '';
+            const orderItems = o.items || o.items_summary || [];
+            return {
+                id: o.id,
+                order_number: o.order_number,
+                state: o.state || o.status || 'PROCESSING',
+                state_display: o.status || o.state || 'Processing',
+                total: Number(o.total || 0),
+                amount_paid: Number(o.amount_paid || 0),
+                balance_due: Number(o.balance_due || 0),
+                items_count: orderItems.reduce((acc, it) => acc + (it.quantity || 1), 0),
+                items: orderItems.map(it => ({
+                    name: (it.name || it.product_name || 'Product') + (custName ? ` (${custName})` : ''),
+                    quantity: it.quantity || 1,
+                    image: null
+                }))
+            };
+        });
 
-        // High-speed local operational responses
-        if (lower.includes('debt') || lower.includes('balance') || lower.includes('unpaid') || lower.includes('owing')) {
-            setTimeout(() => {
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: `asst-${Date.now()}`,
-                        role: 'assistant',
-                        content: `There are currently ${allDebtors.length} orders with outstanding balances totaling GH₵ ${totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2 })}.\n\n• ${partiallyPaid.length} orders are partially paid.\n• ${allDebtors.length - partiallyPaid.length} orders are completely unpaid.\n\nYou can review each customer and send one-click WhatsApp payment reminders directly in the Debtors tab.`,
-                        actionRedirectTab: 'debtors'
-                    }
-                ]);
-                setIsTyping(false);
-            }, 400);
-            return;
-        }
+        const history = messages.slice(-6).map(m => ({
+            role: m.role,
+            content: m.content
+        }));
 
-        if (lower.includes('sourcing') || lower.includes('china') || lower.includes('procure') || lower.includes('items')) {
-            setTimeout(() => {
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: `asst-${Date.now()}`,
-                        role: 'assistant',
-                        content: `Currently, there are ${totalUnits} total units across ${sourcingItems.length} distinct products to procure from China suppliers.\n\nYou can view the full consolidated breakdown and search 1688 / Taobao directly in the Sourcing tab.`,
-                        actionRedirectTab: 'sourcing'
-                    }
-                ]);
-                setIsTyping(false);
-            }, 400);
-            return;
-        }
-
-        if (lower.includes('claim') || lower.includes('ussd') || lower.includes('momo') || lower.includes('audit')) {
-            setTimeout(() => {
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: `asst-${Date.now()}`,
-                        role: 'assistant',
-                        content: `There are currently ${pendingClaimsCount} pending USSD / Mobile Money claims requiring administrative audit.\n\nYou can review, approve, or reject transactions in the Claims Audit tab.`,
-                        actionRedirectTab: 'claims'
-                    }
-                ]);
-                setIsTyping(false);
-            }, 400);
-            return;
-        }
-
-        // Network fallback to AI chat endpoint
         try {
-            const res = await fetch('/api/assistant/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    messages: [
-                        ...messages.map(m => ({ role: m.role, content: m.content })),
-                        { role: 'user', content: query }
-                    ]
-                })
-            });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+            let res: Response;
+            try {
+                res = await fetch('/api/assistant/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        message: query,
+                        conversationHistory: history,
+                        userName: 'Administrator',
+                        isAuthenticated: true,
+                        ordersContext: formattedOrders
+                    })
+                });
+            } finally {
+                clearTimeout(timeoutId);
+            }
 
             if (res.ok) {
                 const data = await res.json();
+
+                // Determine contextual tab redirect if relevant
+                let actionRedirectTab: 'debtors' | 'sourcing' | 'claims' | undefined;
+                const lowerQ = query.toLowerCase();
+                const lowerR = (data.reply || '').toLowerCase();
+
+                if (lowerQ.includes('debt') || lowerQ.includes('balance') || lowerQ.includes('unpaid') || lowerQ.includes('owing') || lowerR.includes('outstanding balance')) {
+                    actionRedirectTab = 'debtors';
+                } else if (lowerQ.includes('sourcing') || lowerQ.includes('china') || lowerQ.includes('procure') || lowerR.includes('procurement') || lowerR.includes('sourcing')) {
+                    actionRedirectTab = 'sourcing';
+                } else if (lowerQ.includes('claim') || lowerQ.includes('audit') || lowerQ.includes('ussd') || lowerR.includes('claims audit')) {
+                    actionRedirectTab = 'claims';
+                }
+
                 setMessages(prev => [
                     ...prev,
                     {
                         id: `asst-${Date.now()}`,
                         role: 'assistant',
-                        content: data.reply || "Operations audit completed."
+                        content: data.reply || "Operations review complete.",
+                        actionRedirectTab,
+                        quickReplies: data.quickReplies,
+                        actionLink: data.actionLink,
+                        products: data.products,
+                        orders: data.orders
                     }
                 ]);
             } else {
-                throw new Error('API error');
+                throw new Error('API returned non-200 status');
             }
         } catch {
+            // Intelligent operational fallback using real computed data
+            let fallbackContent = "I am Miss London, your store operations concierge. All systems are operational. You can ask me to inspect debtor balances, calculate China sourcing items, or audit pending payment claims.";
+            let fallbackTab: 'debtors' | 'sourcing' | 'claims' | undefined;
+
+            const lower = query.toLowerCase();
+            if (lower.includes('debt') || lower.includes('balance') || lower.includes('unpaid') || lower.includes('owing')) {
+                fallbackContent = `There are currently ${allDebtors.length} orders with outstanding balances totaling GH₵ ${totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2 })}.\n\n• ${partiallyPaid.length} orders are partially paid.\n• ${allDebtors.length - partiallyPaid.length} orders are completely unpaid.\n\nYou can review each customer and send one-click WhatsApp payment reminders directly in the Debtors tab.`;
+                fallbackTab = 'debtors';
+            } else if (lower.includes('sourcing') || lower.includes('china') || lower.includes('procure') || lower.includes('items')) {
+                fallbackContent = `Currently, there are ${totalUnits} total units across ${sourcingItems.length} distinct products to procure from China suppliers.\n\nYou can view the full consolidated breakdown and search 1688 / Taobao directly in the Sourcing tab.`;
+                fallbackTab = 'sourcing';
+            } else if (lower.includes('claim') || lower.includes('ussd') || lower.includes('momo') || lower.includes('audit')) {
+                fallbackContent = `There are currently ${pendingClaimsCount} pending USSD / Mobile Money claims requiring administrative audit.\n\nYou can review, approve, or reject transactions in the Claims Audit tab.`;
+                fallbackTab = 'claims';
+            }
+
             setMessages(prev => [
                 ...prev,
                 {
                     id: `asst-${Date.now()}`,
                     role: 'assistant',
-                    content: "I am ready to assist. You can ask for debtor statistics, China procurement numbers, or check pending claims audit records."
+                    content: fallbackContent,
+                    actionRedirectTab: fallbackTab,
+                    quickReplies: [
+                        { label: "Summarize Debts", query: "Summarize outstanding debts" },
+                        { label: "China Sourcing", query: "Consolidate China sourcing" },
+                        { label: "Pending Claims", query: "Show pending Hubtel claims" }
+                    ]
                 }
             ]);
         } finally {
@@ -185,7 +219,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                             </div>
                         )}
                         <div
-                            className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed ${
+                            className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed space-y-2 ${
                                 msg.role === 'user'
                                     ? 'bg-white text-slate-950 font-medium'
                                     : 'bg-slate-900 text-slate-100 border border-slate-800'
@@ -193,14 +227,80 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                         >
                             <p className="whitespace-pre-wrap">{msg.content}</p>
 
+                            {/* Optional Matched Orders */}
+                            {msg.orders && msg.orders.length > 0 && (
+                                <div className="pt-1 space-y-1">
+                                    {msg.orders.map((ord, idx) => (
+                                        <div key={idx} className="p-2 rounded bg-slate-950/60 border border-slate-800 flex items-center justify-between text-[11px]">
+                                            <span className="font-mono text-slate-300">{ord.order_number}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-slate-400">GH₵ {ord.total.toFixed(2)}</span>
+                                                <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-semibold bg-slate-800 text-slate-300">
+                                                    {ord.state_display}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Optional Matched Products */}
+                            {msg.products && msg.products.length > 0 && (
+                                <div className="pt-1 flex flex-wrap gap-1.5">
+                                    {msg.products.map((prod) => (
+                                        <a
+                                            key={prod.id}
+                                            href={`/products/${prod.slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-950/60 border border-slate-800 text-[11px] text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+                                        >
+                                            <span className="truncate max-w-[140px]">{prod.name}</span>
+                                            <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Action Link if provided */}
+                            {msg.actionLink && (
+                                <div className="pt-1">
+                                    <a
+                                        href={msg.actionLink.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors"
+                                    >
+                                        {msg.actionLink.label}
+                                        <ArrowRight className="w-3 h-3" />
+                                    </a>
+                                </div>
+                            )}
+
+                            {/* Tab Switcher Button */}
                             {msg.actionRedirectTab && (
                                 <button
                                     onClick={() => onSwitchTab(msg.actionRedirectTab!)}
-                                    className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors"
+                                    className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors"
                                 >
                                     Open {msg.actionRedirectTab.toUpperCase()} Tab
                                     <ArrowRight className="w-3 h-3" />
                                 </button>
+                            )}
+
+                            {/* Quick Reply Pills */}
+                            {msg.quickReplies && msg.quickReplies.length > 0 && (
+                                <div className="pt-2 flex flex-wrap gap-1.5">
+                                    {msg.quickReplies.map((qr, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => handleSendMessage(qr.query)}
+                                            className="text-[10px] font-medium bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-0.5 rounded border border-slate-800 transition-colors"
+                                        >
+                                            {qr.label}
+                                        </button>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
