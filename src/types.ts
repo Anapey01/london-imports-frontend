@@ -24,8 +24,13 @@ export interface Category {
     id: string;
     name: string;
     slug: string;
+    parent?: string | null;
+    parent_slug?: string | null;
+    parent_name?: string | null;
     image?: string;
     icon?: string;
+    order?: number;
+    product_count?: number;
 }
 
 export interface ProductImage {

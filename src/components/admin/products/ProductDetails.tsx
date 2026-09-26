@@ -164,9 +164,30 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
                         className={inputClasses}
                     >
                         <option value="">Select a Category</option>
-                        {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                        ))}
+                        {(() => {
+                            const parents = categories.filter(c => !c.parent && !c.parent_slug);
+                            if (parents.length === 0) {
+                                return categories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                ));
+                            }
+                            return parents.map(parent => {
+                                const children = categories.filter(c => c.parent === parent.id || c.parent_slug === parent.slug);
+                                if (children.length === 0) {
+                                    return <option key={parent.id} value={parent.id}>{parent.name}</option>;
+                                }
+                                return (
+                                    <optgroup key={parent.id} label={parent.name}>
+                                        <option value={parent.id}>{parent.name} (All / General)</option>
+                                        {children.map(child => (
+                                            <option key={child.id} value={child.id}>
+                                                &nbsp;&nbsp;{child.name}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                );
+                            });
+                        })()}
                     </select>
                 </div>
 

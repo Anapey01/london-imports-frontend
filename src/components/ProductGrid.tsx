@@ -11,13 +11,16 @@ import { siteConfig } from '@/config/site';
 import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
 import { trackViewItemList, trackViewSearchResults } from '@/lib/analytics';
-import { useEffect, useRef, useTransition } from 'react';
+import { useEffect, useRef, useTransition, useMemo } from 'react';
 import { Zap, ArrowRight, Search, ListFilter, Loader2 } from 'lucide-react';
 
 interface Category {
-    id: number;
+    id: number | string;
     name: string;
     slug: string;
+    parent?: string | number | null;
+    parent_slug?: string | null;
+    parent_name?: string | null;
 }
 
 interface Product {
@@ -70,6 +73,25 @@ export default function ProductGrid({
     const minPrice = searchParams.get('min_price') ?? '';
     const maxPrice = searchParams.get('max_price') ?? '';
     const ordering = searchParams.get('ordering') || initialOrdering;
+
+    // Amazon-Standard Department & Subcategory Hierarchy
+    const parentCategories = useMemo(() => {
+        const parents = categories.filter(c => !c.parent && !c.parent_slug);
+        return parents.length > 0 ? parents : categories;
+    }, [categories]);
+
+    const activeParent = useMemo(() => {
+        if (!category) return null;
+        const current = categories.find(c => c.slug === category);
+        if (!current) return null;
+        if (!current.parent && !current.parent_slug) return current;
+        return categories.find(c => c.slug === current.parent_slug || (c.id && c.id === current.parent)) || null;
+    }, [category, categories]);
+
+    const activeSubcategories = useMemo(() => {
+        if (!activeParent) return [];
+        return categories.filter(c => c.parent_slug === activeParent.slug || (c.parent && c.parent === activeParent.id));
+    }, [activeParent, categories]);
 
     // Advanced Pagination Logic: Infinite Batching
     const PAGE_SIZE = 50;
@@ -194,28 +216,50 @@ export default function ProductGrid({
                         </div>
                     </div>
 
-                    {/* Collections - Hardened Labels */}
+                    {/* Collections / Departments */}
                     <div className="pb-10 border-b border-border-standard">
-                        <h3 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 mb-8">
+                        <h3 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 mb-6">
                             <ListFilter className="w-3 h-3" />
-                            Product Categories
+                            Departments
                         </h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 no-scrollbar">
                             <button
                                 onClick={() => updateSearch({ category: '' })}
                                 className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${!category ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:pl-2 pl-0'}`}
                             >
-                                All Arrivals
+                                All Departments
                             </button>
-                            {categories.map((cat: { id: string | number; name: string; slug: string }) => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => updateSearch({ category: cat.slug })}
-                                    className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${category === cat.slug ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:pl-2 pl-0'}`}
-                                >
-                                    {cat.name}
-                                </button>
-                            ))}
+                            {parentCategories.map((cat: Category) => {
+                                const isSelected = category === cat.slug;
+                                const isParentActive = activeParent?.slug === cat.slug;
+                                const children = categories.filter(c => c.parent_slug === cat.slug || (c.parent && c.parent === cat.id));
+
+                                return (
+                                    <div key={cat.id} className="space-y-1">
+                                        <button
+                                            onClick={() => updateSearch({ category: cat.slug })}
+                                            className={`block w-full text-left text-[11px] font-bold uppercase tracking-widest transition-all institutional-focus rounded-sm py-1.5 ${isSelected || isParentActive ? 'text-brand-emerald border-l-2 border-brand-emerald pl-4 font-black' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:pl-2 pl-0'}`}
+                                        >
+                                            {cat.name}
+                                        </button>
+
+                                        {/* Subcategories (Indented drilldown if this parent or its child is active) */}
+                                        {isParentActive && children.length > 0 && (
+                                            <div className="pl-3 ml-2 border-l border-border-standard space-y-1 py-1">
+                                                {children.map(subCat => (
+                                                    <button
+                                                        key={subCat.id}
+                                                        onClick={() => updateSearch({ category: subCat.slug })}
+                                                        className={`block w-full text-left text-[10px] tracking-wider transition-all institutional-focus py-1 ${category === subCat.slug ? 'text-brand-emerald font-bold pl-2 border-l-2 border-brand-emerald' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 pl-1'}`}
+                                                    >
+                                                        {subCat.name}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -284,22 +328,48 @@ export default function ProductGrid({
             <main className="flex-1" id="main-content">
                 {/* Mobile Collections Bar */}
                 {!hideFilters && (
-                    <div className="lg:hidden mb-12 flex items-center gap-6 overflow-x-auto pb-4 no-scrollbar border-b border-border-standard">
-                        <button
-                            onClick={clearFilters}
-                            className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all institutional-focus px-2 py-1 rounded ${!category ? 'text-brand-emerald' : 'text-content-secondary opacity-40'}`}
-                        >
-                            All
-                        </button>
-                        {categories.map((cat: Category) => (
+                    <div className="lg:hidden mb-10 space-y-2.5">
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar border-b border-border-standard">
                             <button
-                                key={cat.id}
-                                onClick={() => updateSearch({ category: cat.slug })}
-                                className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all institutional-focus px-2 py-1 rounded ${category === cat.slug ? 'text-brand-emerald' : 'text-content-secondary opacity-40'}`}
+                                onClick={clearFilters}
+                                className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all institutional-focus px-3 py-1.5 rounded-full ${!category ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 text-content-secondary dark:bg-slate-800'}`}
                             >
-                                {cat.name}
+                                All
                             </button>
-                        ))}
+                            {parentCategories.map((cat: Category) => {
+                                const isParentActive = activeParent?.slug === cat.slug;
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => updateSearch({ category: cat.slug })}
+                                        className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all institutional-focus px-3 py-1.5 rounded-full ${isParentActive ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 text-content-secondary dark:bg-slate-800'}`}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Secondary Subcategories Row for Active Department */}
+                        {activeSubcategories.length > 0 && (
+                            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                                <button
+                                    onClick={() => activeParent && updateSearch({ category: activeParent.slug })}
+                                    className={`text-[9px] font-bold uppercase tracking-wider whitespace-nowrap px-2.5 py-1 rounded-md border transition-colors ${category === activeParent?.slug ? 'border-brand-emerald text-brand-emerald bg-brand-emerald/10' : 'border-border-standard text-content-secondary'}`}
+                                >
+                                    All {activeParent?.name}
+                                </button>
+                                {activeSubcategories.map(subCat => (
+                                    <button
+                                        key={subCat.id}
+                                        onClick={() => updateSearch({ category: subCat.slug })}
+                                        className={`text-[9px] font-bold uppercase tracking-wider whitespace-nowrap px-2.5 py-1 rounded-md border transition-colors ${category === subCat.slug ? 'border-brand-emerald text-brand-emerald bg-brand-emerald/10' : 'border-border-standard text-content-secondary'}`}
+                                    >
+                                        {subCat.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 

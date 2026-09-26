@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -34,6 +34,7 @@ import {
     Plus,
     Minus,
     LayoutGrid,
+    ChevronDown,
     MessageCircle,
     LogOut,
     Footprints,
@@ -146,6 +147,12 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
     });
 
     const categories = Array.isArray(categoriesData) ? categoriesData : [];
+    const [expandedCatSlug, setExpandedCatSlug] = useState<string | null>(null);
+
+    const parentCategories = useMemo(() => {
+        const parents = categories.filter((c: any) => !c.parent && !c.parent_slug);
+        return parents.length > 0 ? parents : categories;
+    }, [categories]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -337,20 +344,57 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             {productsOpen ? <Minus className="w-3 h-3 text-content-primary" /> : <Plus className="w-3 h-3 text-content-secondary group-hover:text-content-primary" />}
                         </button>
                         {productsOpen && (
-                            <div id="products-accordion" className="bg-surface-card py-4 transition-all">
-                                {categories.map((cat: { id: string; name: string; slug: string }) => {
+                            <div id="products-accordion" className="bg-surface-card py-2 transition-all">
+                                {parentCategories.map((cat: any) => {
                                     const Icon = getCategoryIcon(cat.name);
                                     const categoryUrl = `/products?category=${cat.slug}`;
+                                    const children = categories.filter((c: any) => c.parent_slug === cat.slug || (c.parent && c.parent === cat.id));
+                                    const isExpanded = expandedCatSlug === cat.slug;
+
                                     return (
-                                        <Link 
-                                            key={cat.id}
-                                            href={categoryUrl}
-                                            onClick={(e) => handleLinkClick(categoryUrl, e)}
-                                            className="flex items-center gap-6 px-12 py-3.5 hover:italic transition-all institutional-focus"
-                                        >
-                                            <Icon className="w-3.5 h-3.5 text-content-secondary" strokeWidth={1.5} />
-                                            <span className="text-[11px] font-black uppercase tracking-widest text-content-secondary hover:text-content-primary">{cat.name}</span>
-                                        </Link>
+                                        <div key={cat.id || cat.slug} className="border-b border-border-standard/30 last:border-b-0">
+                                            <div className="flex items-center justify-between px-8 py-3 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+                                                <Link 
+                                                    href={categoryUrl}
+                                                    onClick={(e) => handleLinkClick(categoryUrl, e)}
+                                                    className="flex items-center gap-4 flex-grow institutional-focus"
+                                                >
+                                                    <Icon className="w-3.5 h-3.5 text-content-secondary shrink-0" strokeWidth={1.5} />
+                                                    <span className="text-[11px] font-black uppercase tracking-widest text-content-secondary hover:text-content-primary">
+                                                        {cat.name}
+                                                    </span>
+                                                </Link>
+                                                {children.length > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setExpandedCatSlug(isExpanded ? null : cat.slug)}
+                                                        className="p-1 text-content-secondary hover:text-content-primary transition-colors"
+                                                        aria-label={`Toggle ${cat.name} subcategories`}
+                                                    >
+                                                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-brand-emerald' : ''}`} />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {/* Subcategories */}
+                                            {isExpanded && children.length > 0 && (
+                                                <div className="bg-slate-50/50 dark:bg-slate-900/30 py-1.5 pl-14 pr-6 space-y-1">
+                                                    {children.map((child: any) => {
+                                                        const childUrl = `/products?category=${child.slug}`;
+                                                        return (
+                                                            <Link
+                                                                key={child.id || child.slug}
+                                                                href={childUrl}
+                                                                onClick={(e) => handleLinkClick(childUrl, e)}
+                                                                className="block py-1.5 text-[10px] font-semibold uppercase tracking-wider text-content-secondary hover:text-brand-emerald transition-colors"
+                                                            >
+                                                                {child.name}
+                                                            </Link>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </div>

@@ -242,28 +242,87 @@ export default function Navbar() {
                                                         <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
                                                     )}
                                                 </button>
-                                                {categories.map((cat: any) => (
-                                                    <button
-                                                        key={cat.id || cat.slug}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            handleCategoryChange(cat.slug);
-                                                            setIsDropdownOpen(false);
-                                                        }}
-                                                        className={`w-full text-left px-5 py-2.5 text-xs font-semibold tracking-wide transition-all duration-150 flex items-center justify-between ${
-                                                            selectedCategory === cat.slug
-                                                                ? 'bg-brand-emerald/10 text-brand-emerald dark:bg-brand-emerald/20 dark:text-emerald-400 font-bold'
-                                                                : 'text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-900/40 hover:text-content-primary'
-                                                        }`}
-                                                        role="option"
-                                                        aria-selected={selectedCategory === cat.slug}
-                                                    >
-                                                        <span>{cat.name}</span>
-                                                        {selectedCategory === cat.slug && (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
-                                                        )}
-                                                    </button>
-                                                ))}
+                                                {(() => {
+                                                    const parents = categories.filter((c: any) => !c.parent && !c.parent_slug);
+                                                    if (parents.length === 0) {
+                                                        return categories.map((cat: any) => (
+                                                            <button
+                                                                key={cat.id || cat.slug}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    handleCategoryChange(cat.slug);
+                                                                    setIsDropdownOpen(false);
+                                                                }}
+                                                                className={`w-full text-left px-5 py-2.5 text-xs font-semibold tracking-wide transition-all duration-150 flex items-center justify-between ${
+                                                                    selectedCategory === cat.slug
+                                                                        ? 'bg-brand-emerald/10 text-brand-emerald dark:bg-brand-emerald/20 dark:text-emerald-400 font-bold'
+                                                                        : 'text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-900/40 hover:text-content-primary'
+                                                                }`}
+                                                                role="option"
+                                                                aria-selected={selectedCategory === cat.slug}
+                                                            >
+                                                                <span>{cat.name}</span>
+                                                                {selectedCategory === cat.slug && (
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
+                                                                )}
+                                                            </button>
+                                                        ));
+                                                    }
+
+                                                    return parents.map((parent: any) => {
+                                                        const children = categories.filter((c: any) => c.parent_slug === parent.slug || (c.parent && c.parent === parent.id));
+                                                        const isParentSelected = selectedCategory === parent.slug;
+
+                                                        return (
+                                                            <div key={parent.id || parent.slug} className="border-b border-border-standard/30 last:border-b-0">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        handleCategoryChange(parent.slug);
+                                                                        setIsDropdownOpen(false);
+                                                                    }}
+                                                                    className={`w-full text-left px-5 py-2 text-xs font-bold tracking-wide transition-all duration-150 flex items-center justify-between ${
+                                                                        isParentSelected
+                                                                            ? 'bg-brand-emerald/10 text-brand-emerald dark:bg-brand-emerald/20 dark:text-emerald-400'
+                                                                            : 'text-content-primary hover:bg-slate-50 dark:hover:bg-slate-900/40'
+                                                                    }`}
+                                                                    role="option"
+                                                                    aria-selected={isParentSelected}
+                                                                >
+                                                                    <span>{parent.name}</span>
+                                                                    {isParentSelected && (
+                                                                        <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
+                                                                    )}
+                                                                </button>
+                                                                {children.map((child: any) => {
+                                                                    const isChildSelected = selectedCategory === child.slug;
+                                                                    return (
+                                                                        <button
+                                                                            key={child.id || child.slug}
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                handleCategoryChange(child.slug);
+                                                                                setIsDropdownOpen(false);
+                                                                            }}
+                                                                            className={`w-full text-left pl-8 pr-5 py-1.5 text-[11px] transition-all duration-150 flex items-center justify-between ${
+                                                                                isChildSelected
+                                                                                    ? 'text-brand-emerald font-bold'
+                                                                                    : 'text-content-secondary hover:text-content-primary hover:bg-slate-50 dark:hover:bg-slate-900/40'
+                                                                            }`}
+                                                                            role="option"
+                                                                            aria-selected={isChildSelected}
+                                                                        >
+                                                                            <span>{child.name}</span>
+                                                                            {isChildSelected && (
+                                                                                <span className="w-1 h-1 rounded-full bg-brand-emerald dark:bg-emerald-400" />
+                                                                            )}
+                                                                        </button>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        );
+                                                    });
+                                                })()}
                                             </div>
                                         </>
                                     )}
@@ -354,11 +413,36 @@ export default function Navbar() {
                                     aria-label="Filter by category"
                                 >
                                     <option value="">All</option>
-                                    {categories.map((cat: any) => (
-                                        <option key={cat.id || cat.slug} value={cat.slug} className="dark:bg-slate-900 dark:text-white">
-                                            {cat.name}
-                                        </option>
-                                    ))}
+                                    {(() => {
+                                        const parents = categories.filter((c: any) => !c.parent && !c.parent_slug);
+                                        if (parents.length === 0) {
+                                            return categories.map((cat: any) => (
+                                                <option key={cat.id || cat.slug} value={cat.slug} className="dark:bg-slate-900 dark:text-white">
+                                                    {cat.name}
+                                                </option>
+                                            ));
+                                        }
+                                        return parents.map((parent: any) => {
+                                            const children = categories.filter((c: any) => c.parent_slug === parent.slug || (c.parent && c.parent === parent.id));
+                                            if (children.length === 0) {
+                                                return (
+                                                    <option key={parent.id || parent.slug} value={parent.slug} className="dark:bg-slate-900 dark:text-white">
+                                                        {parent.name}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <optgroup key={parent.id || parent.slug} label={parent.name} className="dark:bg-slate-900 dark:text-white font-bold">
+                                                    <option value={parent.slug} className="font-semibold">{parent.name} (All)</option>
+                                                    {children.map((child: any) => (
+                                                        <option key={child.id || child.slug} value={child.slug} className="font-normal">
+                                                            &nbsp;&nbsp;{child.name}
+                                                        </option>
+                                                    ))}
+                                                </optgroup>
+                                            );
+                                        });
+                                    })()}
                                 </select>
                                 <div className="absolute right-2 pointer-events-none text-content-secondary opacity-60">
                                     <ChevronDown className="w-3 h-3" />
