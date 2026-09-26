@@ -59,6 +59,90 @@ function selectBestConciergeVoice(voices: SpeechSynthesisVoice[]): SpeechSynthes
     return voices.find(v => v.lang.startsWith('en')) || voices[0];
 }
 
+function renderStyledTokens(str: string) {
+    const parts = str.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+                <strong key={i} className="font-semibold text-white">
+                    {part.slice(2, -2)}
+                </strong>
+            );
+        }
+        if (part.startsWith('*') && part.endsWith('*')) {
+            return (
+                <em key={i} className="italic text-slate-300">
+                    {part.slice(1, -1)}
+                </em>
+            );
+        }
+        return part;
+    });
+}
+
+function FormattedCopilotMessage({ content, isUser }: { content: string; isUser: boolean }) {
+    if (isUser) {
+        return <div className="whitespace-pre-wrap">{content}</div>;
+    }
+
+    // 1. Clean markdown pipe tables if any leaked
+    let text = content;
+    if (text.includes('|') && /\|[\s-:]+\|/.test(text)) {
+        const pipeIdx = text.indexOf('|');
+        if (pipeIdx > -1) {
+            const intro = text.slice(0, pipeIdx).trim();
+            text = intro.length > 5 ? intro : "Operations review complete:";
+        }
+    }
+
+    // 2. Clean robotic header prefixes like "**London's Imports - Operations Support Overview**"
+    text = text.replace(/^\s*\*\*.*?(?:overview|support|concierge|assistant).*?\*\*\s*/i, '');
+
+    // 3. Normalize inline bullet patterns: " - **" -> "\n• **", " - " -> "\n• "
+    text = text.replace(/\s+-\s+\*\*/g, '\n• **');
+    text = text.replace(/\s+-\s+/g, '\n• ');
+    text = text.replace(/([.!?])\s+•\s+/g, '$1\n• ');
+
+    // 4. Split into lines
+    const rawLines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+    return (
+        <div className="space-y-1.5 font-sans leading-relaxed text-xs">
+            {rawLines.map((line, idx) => {
+                // Header line: "## Heading" or "### Heading"
+                if (/^#+\s+/.test(line)) {
+                    const headerText = line.replace(/^#+\s+/, '');
+                    return (
+                        <div key={idx} className="font-semibold text-white pt-1">
+                            {renderStyledTokens(headerText)}
+                        </div>
+                    );
+                }
+
+                // Bullet point line
+                if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+                    const cleanItem = line.replace(/^[•\-\*]\s*/, '');
+                    return (
+                        <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-300">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-1.5 shrink-0" />
+                            <div className="flex-1">
+                                {renderStyledTokens(cleanItem)}
+                            </div>
+                        </div>
+                    );
+                }
+
+                // Regular text line
+                return (
+                    <div key={idx} className="whitespace-pre-wrap text-slate-200">
+                        {renderStyledTokens(line)}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab }: CopilotChatTabProps) {
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -499,7 +583,9 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                             }`}
                         >
                             <div className="flex items-start justify-between gap-2">
-                                <p className="whitespace-pre-wrap flex-1">{msg.content}</p>
+                                <div className="flex-1 min-w-0">
+                                    <FormattedCopilotMessage content={msg.content} isUser={msg.role === 'user'} />
+                                </div>
                                 {msg.role === 'assistant' && (
                                     <button
                                         onClick={() => handleToggleSpeech(msg.id, msg.content)}

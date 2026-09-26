@@ -15,6 +15,9 @@ export function cleanAssistantReply(rawReply: string, customerName?: string): st
         }
     }
 
+    // Strip robotic title headers like "**London's Imports - Operations Support Overview**"
+    reply = reply.replace(/^\s*\*\*.*?(?:overview|support|concierge|assistant).*?\*\*\s*/i, '');
+
     // Strip leading markdown headers like "## " or "### "
     reply = reply.replace(/^#+\s+/gm, '');
 

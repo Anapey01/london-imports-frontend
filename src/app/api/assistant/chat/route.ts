@@ -255,6 +255,9 @@ export async function POST(req: NextRequest) {
                                 { label: "Pending Claims", query: "Show pending Hubtel claims" },
                                 { label: "Order Health", query: "Audit recent order statuses" }
                             ];
+                            if (/what\s*can\s*you\s*do|help|services|about|overview|capabilities/i.test(trimmed)) {
+                                reply = "I assist you with end-to-end store operations: tracking orders, recovering customer debtor balances via WhatsApp reminders, consolidating batch procurement for China factories, and auditing Hubtel USSD payments. How can I help you today?";
+                            }
                         } else if (/what\s*can\s*you\s*do|help|services|about/i.test(trimmed)) {
                             actionLink = { label: "Browse Catalog", href: "/products" };
                             quickReplies = [
