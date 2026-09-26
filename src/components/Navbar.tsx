@@ -14,6 +14,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { Search, Menu, User, ShoppingBag, ChevronDown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
+import { siteConfig } from '@/config/site';
 import MobileMenuDrawer from './MobileMenuDrawer';
 
 export default function Navbar() {
@@ -106,6 +107,7 @@ export default function Navbar() {
     const isHomePage = pathname === '/';
     const isShopPage = pathname?.startsWith('/products');
     const showMobileSearch = isHomePage || isShopPage;
+    const isMarket = pathname === '/market' || (mounted && typeof window !== 'undefined' && window.location.hostname.startsWith('market.'));
 
     return (
         <>
@@ -148,6 +150,30 @@ export default function Navbar() {
                                 <Menu className="w-4 h-4" strokeWidth={1} />
                                 <span>Index</span>
                             </button>
+
+                            {/* Catalog Switcher: Preorder Store vs Local Market */}
+                            <div className="hidden xl:flex items-center p-0.5 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 text-[10px] font-bold uppercase tracking-wider">
+                                <Link
+                                    href={process.env.NODE_ENV === 'production' ? siteConfig.baseUrl : '/'}
+                                    className={`px-3 py-1 rounded-full transition-all ${
+                                        !isMarket
+                                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xs'
+                                            : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    Preorder Store
+                                </Link>
+                                <Link
+                                    href={process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market'}
+                                    className={`px-3 py-1 rounded-full transition-all ${
+                                        isMarket
+                                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xs'
+                                            : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    Local Market
+                                </Link>
+                            </div>
                         </div>
 
                         {/* Center Group: Search (Dominant) */}

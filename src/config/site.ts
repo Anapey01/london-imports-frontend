@@ -7,6 +7,7 @@ const PROD_API_URL = 'https://api.londonsimports.com/api/v1';
 export const siteConfig = {
     name: "London's Imports | Global Sourcing & Logistics",
     baseUrl: 'https://londonsimports.com',
+    marketUrl: 'https://market.londonsimports.com',
     apiUrl: process.env.NODE_ENV === 'development'
         ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1')
         : PROD_API_URL,

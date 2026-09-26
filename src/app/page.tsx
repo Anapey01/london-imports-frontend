@@ -31,6 +31,8 @@ export const metadata: Metadata = {
   },
 };
 
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import HeroSection from '@/components/home/HeroSection';
 import TrustStrip from '@/components/home/TrustStrip';
 import CategoryFeatureCards from '@/components/home/CategoryFeatureCards';
@@ -170,6 +172,31 @@ export default async function HomePage() {
       {/* 3. Category Feature Cards (Group 1 - Overlaps Hero Carousel on Desktop) */}
       <CategoryFeatureCards cards={group1Cards} overlap={true} />
 
+      {/* Cross-Promotion: Local Market Banner */}
+      <div className="max-w-[1800px] mx-auto px-4 md:px-12 my-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 transition-colors">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-xs shrink-0 tracking-wider">
+              GH
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                Looking for something available in Ghana now?
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Explore verified local sellers with instant dispatch and no international shipping wait.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={process.env.NODE_ENV === 'production' ? 'https://market.londonsimports.com' : '/market'}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shrink-0"
+          >
+            <span>Explore Local Market</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
 
       {/* 4. Curated Picks Horizontal Carousel */}
       <ProductCarouselShelf title="Curated Picks" products={featured} />

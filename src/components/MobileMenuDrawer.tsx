@@ -8,7 +8,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '@/lib/api';
 import { siteConfig } from '@/config/site';
@@ -110,6 +110,8 @@ const SUPPORT_ITEMS = [
 
 export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerProps) {
     const router = useRouter();
+    const pathname = usePathname();
+    const isMarket = pathname === '/market' || (typeof window !== 'undefined' && window.location.hostname.startsWith('market.'));
     const { isAuthenticated, logout } = useAuthStore();
     const [productsOpen, setProductsOpen] = useState(false);
     const [supportOpen, setSupportOpen] = useState(false);
@@ -119,6 +121,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
 
     const handleLinkClick = (href: string, e: React.MouseEvent<HTMLAnchorElement>) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || (e.button && e.button === 1)) {
+            return;
+        }
+        if (href.startsWith('http')) {
+            onClose();
             return;
         }
         e.preventDefault();
@@ -208,6 +214,35 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 {/* 2. DIRECTORY CONTENT (Vertical Ledger) */}
                 <div className="flex-1 overflow-y-auto px-4 py-8 space-y-2">
                     
+                    {/* CATALOG SELECTOR */}
+                    <div className="mb-8 px-2">
+                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-3 block">Catalog</span>
+                        <div className="grid grid-cols-2 p-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-center">
+                            <Link
+                                href={process.env.NODE_ENV === 'production' ? siteConfig.baseUrl : '/'}
+                                onClick={(e) => handleLinkClick(process.env.NODE_ENV === 'production' ? siteConfig.baseUrl : '/', e)}
+                                className={`py-2 px-2 rounded-lg transition-all ${
+                                    !isMarket
+                                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xs'
+                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                }`}
+                            >
+                                Preorder Store
+                            </Link>
+                            <Link
+                                href={process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market'}
+                                onClick={(e) => handleLinkClick(process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market', e)}
+                                className={`py-2 px-2 rounded-lg transition-all ${
+                                    isMarket
+                                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xs'
+                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                }`}
+                            >
+                                Local Market
+                            </Link>
+                        </div>
+                    </div>
+
                     {/* YOUR ACCOUNT */}
                     <div className="mb-10">
                         <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-6 block px-4">Your Account</span>

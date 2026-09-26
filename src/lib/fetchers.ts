@@ -58,7 +58,8 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
 
 export async function getProducts(params: Record<string, string> = {}, revalidate = 86400) {
     try {
-        const queryString = new URLSearchParams(params).toString();
+        const queryParams = { is_vendor: 'false', ...params };
+        const queryString = new URLSearchParams(queryParams).toString();
         const url = `${API_BASE_URL}/products/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
@@ -99,7 +100,8 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
 
 export async function getProductPreviews(params: Record<string, string> = {}, revalidate = 86400) {
     try {
-        const queryString = new URLSearchParams(params).toString();
+        const queryParams = { is_vendor: 'false', ...params };
+        const queryString = new URLSearchParams(queryParams).toString();
         const url = `${API_BASE_URL}/products/preview/?${queryString}`;
 
         const res = await fetchWithRetry(url, {
