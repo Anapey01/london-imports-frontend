@@ -316,6 +316,13 @@ export const adminAPI = {
   checkerAgentsList: () => api.get('/checkers/admin/agents/'),
   checkerDirectPayout: (data: { agent_id: string; amount: number; notes?: string }) =>
     api.post('/checkers/admin/direct-payout/', data),
+
+  // USSD & Payment Reconcile
+  getUSSDClaims: () => api.get('/payments/admin/ussd-claims/'),
+  resolveUSSDClaim: (data: { claim_id: string; action: 'approve' | 'reject'; amount?: number; notes?: string }) =>
+    api.post('/payments/admin/ussd-claims/', data),
+  forceSyncPayment: (data: { order_number: string; reference: string }) =>
+    api.post('/payments/sync-manual/', data),
 };
 
 // Public Blog API

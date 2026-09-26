@@ -161,6 +161,31 @@ const ASSISTANT_TOOLS = [
                 properties: {}
             }
         }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'submit_payment_verification',
+            description: "Submit and verify customer's payment reference, Hubtel USSD transaction ID, or Mobile Money transaction ID for an order (e.g. LI-20260921-87841, Txn: 90263045181, 1 GHS). Call this whenever a customer claims they paid, provides a transaction ID, or shares payment details.",
+            parameters: {
+                type: 'object',
+                properties: {
+                    order_number: {
+                        type: 'string',
+                        description: 'The order number, usually starting with LI-'
+                    },
+                    transaction_id: {
+                        type: 'string',
+                        description: 'The Hubtel or Mobile Money transaction ID (e.g. 90263045181)'
+                    },
+                    amount: {
+                        type: 'number',
+                        description: 'Optional amount in Ghana Cedis paid by the customer'
+                    }
+                },
+                required: ['order_number', 'transaction_id']
+            }
+        }
     }
 ];
 
@@ -414,6 +439,7 @@ YOUR BEHAVIOR & PRESENTATION RULES:
 - Write in clean, beautiful, plain sentences with normal punctuation and friendly conversational flow.
 - NO bulleted walls of text. When asked "What can you do?" or "What you fit do for here?" or general inquiries: reply with a warm, concise 2-sentence conversational overview. NEVER list out 6 dashed items with asterisks.
 - For orders: When customer asks about past orders, unpaid balances, or tracking, ALWAYS call get_customer_orders. Give a short 1-sentence warm greeting (e.g. "Here are your recent orders on record, Gabriel:") and let the visual cards display the details. NEVER write out order numbers or markdown tables in text.
+- When a customer mentions they made a payment, paid a deposit, or shares a transaction ID (e.g. "I just made payment for order LI-20260921-87841, 1gh. Transaction id - 90263045181"): ALWAYS call the submit_payment_verification tool with their order_number, transaction_id, and amount. NEVER say "I'll keep an eye on it" or give vague promises without calling this tool. Factual status must be reported strictly based on the tool's result.
 - When customer wants to browse or find products, call search_products.
 - When customer wants to add an item to their cart, call add_to_cart.
 - When customer wants to remove an item or empty their cart, call remove_from_cart or clear_cart.
@@ -868,6 +894,83 @@ SECURITY & ADVERSARIAL DEFENSE:
                             ];
                         }
 
+                        // ----------------------------------------------------
+                        // Execute Tool: submit_payment_verification
+                        // ----------------------------------------------------
+                        else if (fnName === 'submit_payment_verification') {
+                            const rawOrderNum = fnArgs.order_number || (ordersContext?.[0]?.order_number) || '';
+                            const rawTxnId = fnArgs.transaction_id || '';
+                            const rawAmount = fnArgs.amount ? parseFloat(fnArgs.amount) : undefined;
+
+                            try {
+                                const claimRes = await fetch(`${backendBase.replace(/\/$/, '')}/payments/ussd/claim/`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        order_number: rawOrderNum,
+                                        transaction_id: rawTxnId,
+                                        amount: rawAmount,
+                                        customer_phone: customerName
+                                    })
+                                });
+
+                                const claimData = await claimRes.json();
+                                if (claimRes.ok) {
+                                    toolResultPayload = {
+                                        success: true,
+                                        verified: Boolean(claimData.verified),
+                                        pending_audit: Boolean(claimData.pending_audit),
+                                        already_credited: Boolean(claimData.already_credited),
+                                        order_number: claimData.order_number || rawOrderNum,
+                                        order_state: claimData.state,
+                                        amount_credited: claimData.amount_credited,
+                                        balance_due: claimData.balance_due,
+                                        message: claimData.message
+                                    };
+
+                                    const updatedOrderObj: AssistantOrder = {
+                                        order_number: claimData.order_number || rawOrderNum,
+                                        state: claimData.state || 'PROCESSING',
+                                        state_display: claimData.state === 'PAID' ? 'Fully Paid' : (claimData.verified ? 'Deposit Received' : 'Payment Verifying'),
+                                        total: (claimData.balance_due || 0) + (claimData.amount_credited || 0),
+                                        balance_due: claimData.balance_due !== undefined ? claimData.balance_due : 0,
+                                        amount_paid: claimData.amount_credited !== undefined ? claimData.amount_credited : 0,
+                                    };
+
+                                    const matchIdx = orders.findIndex(o => o.order_number.toUpperCase() === rawOrderNum.toUpperCase());
+                                    if (matchIdx >= 0) {
+                                        orders[matchIdx] = { ...orders[matchIdx], ...updatedOrderObj };
+                                    } else {
+                                        orders = [updatedOrderObj];
+                                    }
+
+                                    if (claimData.balance_due && claimData.balance_due > 0) {
+                                        actionLink = { label: `Pay Remaining (GH₵ ${parseFloat(claimData.balance_due).toFixed(2)})`, href: `/checkout?order=${rawOrderNum}` };
+                                    } else {
+                                        actionLink = { label: "Track Shipment", href: `/track?order=${rawOrderNum}` };
+                                    }
+
+                                    quickReplies = [
+                                        { label: "Track My Order", query: `Track order ${rawOrderNum}` },
+                                        { label: "Browse Catalog", query: "Browse catalog" }
+                                    ];
+                                } else {
+                                    toolResultPayload = {
+                                        success: false,
+                                        message: claimData.error || "Could not verify transaction at this time."
+                                    };
+                                }
+                            } catch (e: any) {
+                                toolResultPayload = {
+                                    success: false,
+                                    message: `Error connecting to verification service: ${e.message}`
+                                };
+                            }
+                        }
+
                         // Turn 2: Send tool output back to Groq for final human response
                         choice1.tool_calls = [call];
                         messages.push(choice1);
@@ -940,9 +1043,63 @@ SECURITY & ADVERSARIAL DEFENSE:
         // Fallback: If Groq did not answer
         // ========================================================
         if (!reply) {
+            // Check for payment claim submission in fallback
+            const claimTxnMatch = trimmed.match(/(?:transaction\s*(?:id)?|txn(?:\s*id)?|ref(?:erence)?)\s*[:#-]?\s*([A-Za-z0-9_-]{5,30})/i) || trimmed.match(/\b(\d{9,16})\b/);
+            const claimOrderMatch = trimmed.match(/\b(LI-\d{8}-\d{5}|LI-[A-Za-z0-9-]+)\b/i) || (ordersContext?.[0]?.order_number ? [ordersContext[0].order_number, ordersContext[0].order_number] : null);
+
+            if (claimTxnMatch && (claimOrderMatch || /paid|payment/i.test(trimmed))) {
+                const targetOrder = claimOrderMatch ? claimOrderMatch[1].toUpperCase() : (ordersContext?.[0]?.order_number || '');
+                const targetTxn = claimTxnMatch[1];
+                const amountMatch = trimmed.match(/(?:gh[c₵]?\s*|\b)(\d+(?:\.\d{1,2})?)\s*(?:gh[c₵]?|\b)/i);
+                const targetAmount = amountMatch ? parseFloat(amountMatch[1]) : undefined;
+
+                if (targetOrder && targetTxn) {
+                    try {
+                        const claimRes = await fetch(`${backendBase.replace(/\/$/, '')}/payments/ussd/claim/`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: JSON.stringify({
+                                order_number: targetOrder,
+                                transaction_id: targetTxn,
+                                amount: targetAmount,
+                                customer_phone: customerName
+                            })
+                        });
+                        const cData = await claimRes.json();
+                        if (cData.verified) {
+                            reply = customerName
+                                ? `Thank you ${customerName}! I have verified your payment of GH₵ ${cData.amount_credited} (Transaction ID: ${targetTxn}) for Order #${targetOrder}. Your remaining balance is GH₵ ${parseFloat(cData.balance_due).toFixed(2)}.`
+                                : `Thank you! I have verified your payment of GH₵ ${cData.amount_credited} (Transaction ID: ${targetTxn}) for Order #${targetOrder}. Your remaining balance is GH₵ ${parseFloat(cData.balance_due).toFixed(2)}.`;
+                        } else {
+                            reply = customerName
+                                ? `Thank you ${customerName}! I have recorded your transaction ID ${targetTxn} for Order #${targetOrder}. Our system is confirming the settlement with Hubtel. Your balance will update automatically once confirmed.`
+                                : `Thank you! I have recorded your transaction ID ${targetTxn} for Order #${targetOrder}. Our system is confirming the settlement with Hubtel. Your balance will update automatically once confirmed.`;
+                        }
+
+                        orders = [{
+                            order_number: targetOrder,
+                            state: cData.state || 'PROCESSING',
+                            state_display: cData.state === 'PAID' ? 'Fully Paid' : (cData.verified ? 'Deposit Received' : 'Payment Verifying'),
+                            total: (cData.balance_due || 0) + (cData.amount_credited || 0),
+                            balance_due: cData.balance_due !== undefined ? cData.balance_due : 0,
+                            amount_paid: cData.amount_credited !== undefined ? cData.amount_credited : 0,
+                        }];
+                        actionLink = cData.balance_due && cData.balance_due > 0 
+                            ? { label: `Pay Remaining (GH₵ ${parseFloat(cData.balance_due).toFixed(2)})`, href: `/checkout?order=${targetOrder}` }
+                            : { label: "Track Shipment", href: `/track?order=${targetOrder}` };
+                        quickReplies = [
+                            { label: "Track My Order", query: `Track order ${targetOrder}` },
+                            { label: "Browse Catalog", query: "Browse catalog" }
+                        ];
+                    } catch {
+                        // Fallback gracefully
+                    }
+                }
+            }
+
             // Check for direct order query
             const orderMatch = trimmed.match(/\b(LI-\d{8}-\d{5}|LI-[A-Za-z0-9-]+)\b/i);
-            if (orderMatch) {
+            if (!reply && orderMatch) {
                 const targetNum = orderMatch[1].toUpperCase();
                 reply = customerName
                     ? `I'm checking order #${targetNum} for you, ${customerName}. You can see real-time updates and balance status below!`

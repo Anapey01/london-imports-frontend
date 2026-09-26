@@ -9,6 +9,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useAuthStore } from '@/stores/authStore';
 import AdminSidebar from '@/components/dashboard/AdminSidebar';
+import AdminConciergeDrawer from '@/components/admin/AdminConciergeDrawer';
 
 interface User {
     first_name: string;
@@ -138,6 +139,9 @@ export default function AdminDashboardLayout({
                 <div className="max-w-[1600px] mx-auto p-4 sm:p-6 md:p-8 lg:p-12 print:p-0 print:max-w-none print:m-0">
                     {children}
                 </div>
+
+                {/* Miss London Admin Concierge */}
+                <AdminConciergeDrawer />
             </main>
         </div>
     );
