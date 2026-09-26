@@ -136,7 +136,7 @@ export default function AdminDashboardLayout({
                 </div>
 
                 {/* 2. DASHBOARD CONTENT */}
-                <div className="max-w-[1600px] mx-auto p-4 sm:p-6 md:p-8 lg:p-12 print:p-0 print:max-w-none print:m-0">
+                <div className="w-full p-4 sm:p-6 md:p-8 print:p-0 print:m-0">
                     {children}
                 </div>
 

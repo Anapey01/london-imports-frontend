@@ -64,14 +64,14 @@ function renderStyledTokens(str: string) {
     return parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
             return (
-                <strong key={i} className="font-semibold text-white">
+                <strong key={i} className="font-semibold text-slate-900 dark:text-white">
                     {part.slice(2, -2)}
                 </strong>
             );
         }
         if (part.startsWith('*') && part.endsWith('*')) {
             return (
-                <em key={i} className="italic text-slate-300">
+                <em key={i} className="italic text-slate-600 dark:text-slate-300">
                     {part.slice(1, -1)}
                 </em>
             );
@@ -464,16 +464,16 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
     };
 
     return (
-        <div className="flex flex-col h-full min-h-0 text-slate-100">
+        <div className="flex flex-col h-full min-h-0 text-slate-900 dark:text-slate-100">
             {/* Live Operational KPI Ticker & Reset Header */}
-            <div className="pb-2.5 space-y-2 border-b border-slate-800">
+            <div className="pb-2.5 space-y-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400">
                         Live Operations Snapshot
                     </span>
                     <button
                         onClick={handleResetSession}
-                        className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                         title="Reset conversation session"
                     >
                         <RotateCcw className="w-3 h-3" />
@@ -485,16 +485,16 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                     {/* Outstanding Receivables Metric */}
                     <button
                         onClick={() => handleSendMessage("Summarize outstanding debts")}
-                        className="text-left p-2 rounded bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 transition-colors"
+                        className="text-left p-2 rounded-lg bg-slate-50 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800/90 border border-slate-200 dark:border-slate-800 transition-colors"
                     >
-                        <div className="flex items-center gap-1 text-slate-400 mb-0.5">
+                        <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 mb-0.5">
                             <CreditCard className="w-3 h-3" />
                             <span className="text-[10px] uppercase tracking-wide">Receivables</span>
                         </div>
-                        <div className="text-xs font-semibold text-white truncate">
+                        <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                             GH₵ {totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400">
                             {allDebtors.length} debtor{allDebtors.length === 1 ? '' : 's'}
                         </div>
                     </button>
@@ -502,16 +502,16 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                     {/* China Sourcing Queue Metric */}
                     <button
                         onClick={() => handleSendMessage("Consolidate China sourcing")}
-                        className="text-left p-2 rounded bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 transition-colors"
+                        className="text-left p-2 rounded-lg bg-slate-50 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800/90 border border-slate-200 dark:border-slate-800 transition-colors"
                     >
-                        <div className="flex items-center gap-1 text-slate-400 mb-0.5">
+                        <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 mb-0.5">
                             <Package className="w-3 h-3" />
                             <span className="text-[10px] uppercase tracking-wide">Sourcing</span>
                         </div>
-                        <div className="text-xs font-semibold text-white truncate">
+                        <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                             {totalUnits} units
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400">
                             {sourcingItems.length} product{sourcingItems.length === 1 ? '' : 's'}
                         </div>
                     </button>
@@ -519,16 +519,16 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                     {/* Pending Claims Audit Metric */}
                     <button
                         onClick={() => handleSendMessage("Show pending Hubtel claims")}
-                        className="text-left p-2 rounded bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 transition-colors"
+                        className="text-left p-2 rounded-lg bg-slate-50 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800/90 border border-slate-200 dark:border-slate-800 transition-colors"
                     >
-                        <div className="flex items-center gap-1 text-slate-400 mb-0.5">
+                        <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 mb-0.5">
                             <ShieldCheck className="w-3 h-3" />
                             <span className="text-[10px] uppercase tracking-wide">Claims</span>
                         </div>
-                        <div className="text-xs font-semibold text-white truncate">
+                        <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                             {pendingClaimsCount} pending
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400">
                             USSD audit
                         </div>
                     </button>
@@ -539,25 +539,25 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
             <div className="flex flex-wrap gap-1.5 py-2">
                 <button
                     onClick={() => handleSendMessage("Summarize outstanding debts")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded border border-slate-200 dark:border-slate-800 transition-colors"
                 >
                     Top Debtors
                 </button>
                 <button
                     onClick={() => handleSendMessage("Consolidate China sourcing")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded border border-slate-200 dark:border-slate-800 transition-colors"
                 >
                     China Manifest
                 </button>
                 <button
                     onClick={() => handleSendMessage("Show pending Hubtel claims")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded border border-slate-200 dark:border-slate-800 transition-colors"
                 >
                     Audit Claims ({pendingClaimsCount})
                 </button>
                 <button
                     onClick={() => handleSendMessage("Audit recent order statuses")}
-                    className="text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-800 transition-colors"
+                    className="text-[11px] font-medium bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded border border-slate-200 dark:border-slate-800 transition-colors"
                 >
                     Order Health
                 </button>
@@ -571,15 +571,15 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                         className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         {msg.role === 'assistant' && (
-                            <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 border border-slate-700">
-                                <Bot className="w-3.5 h-3.5 text-white" />
+                            <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 border border-slate-200 dark:border-slate-700">
+                                <Bot className="w-3.5 h-3.5 text-slate-600 dark:text-white" />
                             </div>
                         )}
                         <div
                             className={`max-w-[85%] rounded-lg p-3 text-xs leading-relaxed space-y-2.5 ${
                                 msg.role === 'user'
-                                    ? 'bg-white text-slate-950 font-medium'
-                                    : 'bg-slate-900 text-slate-100 border border-slate-800'
+                                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-medium'
+                                    : 'bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-800'
                             }`}
                         >
                             <div className="flex items-start justify-between gap-2">
@@ -589,7 +589,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                 {msg.role === 'assistant' && (
                                     <button
                                         onClick={() => handleToggleSpeech(msg.id, msg.content)}
-                                        className="text-slate-400 hover:text-white p-0.5 rounded transition-colors shrink-0"
+                                        className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5 rounded transition-colors shrink-0"
                                         title={isSpeakingId === msg.id ? "Stop reading" : "Read aloud"}
                                     >
                                         {isSpeakingId === msg.id ? (
@@ -603,8 +603,8 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
 
                             {/* Interactive Debtor Action Cards */}
                             {msg.debtors && msg.debtors.length > 0 && (
-                                <div className="pt-1 space-y-1.5 border-t border-slate-800">
-                                    <div className="text-[10px] uppercase font-semibold text-slate-400">
+                                <div className="pt-1 space-y-1.5 border-t border-slate-200 dark:border-slate-800">
+                                    <div className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400">
                                         Actionable Debtor Records
                                     </div>
                                     {msg.debtors.map((d, idx) => {
@@ -620,24 +620,24 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                         return (
                                             <div 
                                                 key={idx} 
-                                                className="p-2.5 rounded bg-slate-950 border border-slate-800 space-y-1.5 text-[11px]"
+                                                className="p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5 text-[11px]"
                                             >
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-semibold text-white">{d.customerName}</span>
-                                                    <span className="font-mono text-slate-400 text-[10px]">#{d.orderNumber}</span>
+                                                    <span className="font-semibold text-slate-900 dark:text-white">{d.customerName}</span>
+                                                    <span className="font-mono text-slate-500 dark:text-slate-400 text-[10px]">#{d.orderNumber}</span>
                                                 </div>
-                                                <div className="flex items-center justify-between text-slate-300">
-                                                    <span>Balance Due: <strong className="text-white">GH₵ {d.balanceDue.toFixed(2)}</strong></span>
-                                                    <span className="text-slate-400">Paid: GH₵ {d.amountPaid.toFixed(2)}</span>
+                                                <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
+                                                    <span>Balance Due: <strong className="text-slate-900 dark:text-white">GH₵ {d.balanceDue.toFixed(2)}</strong></span>
+                                                    <span className="text-slate-500 dark:text-slate-400">Paid: GH₵ {d.amountPaid.toFixed(2)}</span>
                                                 </div>
                                                 <div className="pt-1 flex items-center justify-between">
-                                                    <span className="text-[10px] text-slate-400">{d.customerPhone || 'No phone on file'}</span>
+                                                    <span className="text-[10px] text-slate-500 dark:text-slate-400">{d.customerPhone || 'No phone on file'}</span>
                                                     {d.customerPhone ? (
                                                         <a
                                                             href={waUrl}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-medium border border-slate-700 transition-colors"
+                                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-[10px] font-medium border border-slate-200 dark:border-slate-700 transition-colors"
                                                         >
                                                             <MessageSquare className="w-2.5 h-2.5" />
                                                             <span>WhatsApp Reminder</span>
@@ -652,8 +652,8 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
 
                             {/* Interactive Sourcing Action Cards */}
                             {msg.sourcingItems && msg.sourcingItems.length > 0 && (
-                                <div className="pt-1 space-y-1.5 border-t border-slate-800">
-                                    <div className="text-[10px] uppercase font-semibold text-slate-400">
+                                <div className="pt-1 space-y-1.5 border-t border-slate-200 dark:border-slate-800">
+                                    <div className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400">
                                         Consolidated Procurement Items
                                     </div>
                                     {msg.sourcingItems.map((item, idx) => {
@@ -662,13 +662,13 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                         return (
                                             <div 
                                                 key={idx} 
-                                                className="p-2.5 rounded bg-slate-950 border border-slate-800 space-y-1 text-[11px]"
+                                                className="p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1 text-[11px]"
                                             >
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-semibold text-white truncate max-w-[160px]">{item.name}</span>
-                                                    <span className="font-semibold text-white">{item.totalQuantity} units</span>
+                                                    <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[160px]">{item.name}</span>
+                                                    <span className="font-semibold text-slate-900 dark:text-white">{item.totalQuantity} units</span>
                                                 </div>
-                                                <div className="flex items-center justify-between text-slate-400 text-[10px]">
+                                                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px]">
                                                     <span>Variant: {item.variant}</span>
                                                     <span>{item.ordersCount} customer order{item.ordersCount === 1 ? '' : 's'}</span>
                                                 </div>
@@ -677,7 +677,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                                         href={item.supplierUrl || s1688Url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-medium border border-slate-700 transition-colors"
+                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-[10px] font-medium border border-slate-200 dark:border-slate-700 transition-colors"
                                                     >
                                                         <span>Search 1688 / Supplier</span>
                                                         <ExternalLink className="w-2.5 h-2.5" />
@@ -691,16 +691,16 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
 
                             {/* Matched Orders */}
                             {msg.orders && msg.orders.length > 0 && (
-                                <div className="pt-1 space-y-1 border-t border-slate-800">
-                                    <div className="text-[10px] uppercase font-semibold text-slate-400">
+                                <div className="pt-1 space-y-1 border-t border-slate-200 dark:border-slate-800">
+                                    <div className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400">
                                         Matched Orders
                                     </div>
                                     {msg.orders.map((ord, idx) => (
-                                        <div key={idx} className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center justify-between text-[11px]">
-                                            <span className="font-mono text-slate-300">#{ord.order_number}</span>
+                                        <div key={idx} className="p-2 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px]">
+                                            <span className="font-mono text-slate-700 dark:text-slate-300">#{ord.order_number}</span>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-slate-400">GH₵ {ord.total.toFixed(2)}</span>
-                                                <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-semibold bg-slate-800 text-slate-300">
+                                                <span className="text-slate-500 dark:text-slate-400">GH₵ {ord.total.toFixed(2)}</span>
+                                                <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                                     {ord.state_display}
                                                 </span>
                                             </div>
@@ -718,7 +718,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                             href={`/products/${prod.slug}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+                                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-700 transition-colors"
                                         >
                                             <span className="truncate max-w-[140px]">{prod.name}</span>
                                             <ExternalLink className="w-2.5 h-2.5 shrink-0" />
@@ -734,7 +734,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                         href={msg.actionLink.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-700 transition-colors"
+                                        className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-900 dark:border-slate-700 transition-colors"
                                     >
                                         {msg.actionLink.label}
                                         <ArrowRight className="w-3 h-3" />
@@ -746,7 +746,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                             {msg.actionRedirectTab && (
                                 <button
                                     onClick={() => onSwitchTab(msg.actionRedirectTab!)}
-                                    className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-700 transition-colors"
+                                    className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-white bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-900 dark:border-slate-700 transition-colors"
                                 >
                                     Open {msg.actionRedirectTab.toUpperCase()} Tab
                                     <ArrowRight className="w-3 h-3" />
@@ -760,7 +760,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                                         <button
                                             key={idx}
                                             onClick={() => handleSendMessage(qr.query)}
-                                            className="text-[10px] font-medium bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-0.5 rounded border border-slate-800 transition-colors"
+                                            className="text-[10px] font-medium bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 transition-colors"
                                         >
                                             {qr.label}
                                         </button>
@@ -773,10 +773,10 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
 
                 {isTyping && (
                     <div className="flex gap-2.5 items-center">
-                        <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700">
-                            <Bot className="w-3.5 h-3.5 text-white" />
+                        <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700">
+                            <Bot className="w-3.5 h-3.5 text-slate-600 dark:text-white" />
                         </div>
-                        <div className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400">
+                        <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
                             Analyzing operational data...
                         </div>
                     </div>
@@ -798,15 +798,15 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                             placeholder={isListening ? "Listening to your operational query..." : "Ask Miss London about orders, debts, or shipments..."}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            className="w-full pl-3 pr-9 py-2.5 text-xs bg-slate-900 text-white placeholder-slate-400 border border-slate-800 rounded-lg focus:outline-none focus:border-white transition-colors"
+                            className="w-full pl-3 pr-9 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:border-slate-900 dark:focus:border-white transition-colors"
                         />
                         <button
                             type="button"
                             onClick={handleVoiceInput}
                             className={`absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded transition-colors ${
                                 isListening 
-                                    ? 'bg-slate-700 text-white animate-pulse' 
-                                    : 'text-slate-400 hover:text-white'
+                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white animate-pulse' 
+                                    : 'text-slate-400 hover:text-slate-900 dark:hover:text-white'
                             }`}
                             title={isListening ? "Listening..." : "Click to speak"}
                         >
@@ -817,7 +817,7 @@ export default function CopilotChatTab({ orders, pendingClaimsCount, onSwitchTab
                     <button
                         type="submit"
                         disabled={!input.trim() || isTyping}
-                        className="p-2.5 bg-white text-slate-950 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-40 shrink-0"
+                        className="p-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-700 dark:hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-40 shrink-0"
                         title="Send message"
                     >
                         <Send className="w-3.5 h-3.5" />

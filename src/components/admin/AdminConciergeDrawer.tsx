@@ -116,21 +116,21 @@ export default function AdminConciergeDrawer() {
             {/* Backdrop */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 transition-opacity"
+                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 transition-opacity"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
             {/* Slide-out Drawer */}
             <div
-                className={`fixed top-0 right-0 h-[100dvh] w-full max-w-lg bg-slate-950 text-white z-50 shadow-2xl border-l border-slate-800 flex flex-col transform transition-transform duration-300 ease-in-out ${
+                className={`fixed top-0 right-0 h-[100dvh] w-full max-w-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white z-[60] shadow-2xl border-l border-slate-200 dark:border-slate-800 flex flex-col transform transition-transform duration-300 ease-in-out ${
                     isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+                <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-slate-700 bg-slate-800 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                             {!avatarError ? (
                                 <Image
                                     src="/miss-london-avatar.png"
@@ -141,26 +141,26 @@ export default function AdminConciergeDrawer() {
                                     onError={() => setAvatarError(true)}
                                 />
                             ) : (
-                                <Bot className="w-4 h-4 text-white" />
+                                <Bot className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                             )}
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold tracking-tight text-white uppercase">Miss London</h2>
-                            <p className="text-[11px] text-slate-400">Store Operations Concierge</p>
+                            <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase">Miss London</h2>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">Store Operations Concierge</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <button
                             onClick={handleRefreshAll}
                             disabled={isLoadingOrders || isLoadingClaims}
-                            className="p-1.5 text-slate-400 hover:text-white rounded-md transition-colors disabled:opacity-50"
+                            className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md transition-colors disabled:opacity-50"
                             title="Refresh Data"
                         >
                             <RefreshCw className={`w-4 h-4 ${(isLoadingOrders || isLoadingClaims) ? 'animate-spin' : ''}`} />
                         </button>
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="p-1.5 text-slate-400 hover:text-white rounded-md transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md transition-colors"
                             title="Close Concierge"
                         >
                             <X className="w-4 h-4" />
@@ -169,13 +169,13 @@ export default function AdminConciergeDrawer() {
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="flex border-b border-slate-800 px-4 shrink-0 bg-slate-900/60 overflow-x-auto no-scrollbar">
+                <div className="flex border-b border-slate-200 dark:border-slate-800 px-4 shrink-0 bg-slate-50 dark:bg-slate-900/60 overflow-x-auto no-scrollbar">
                     <button
                         onClick={() => setActiveTab('copilot')}
                         className={`flex items-center gap-2 py-3 px-3 border-b-2 text-xs font-semibold whitespace-nowrap transition-colors ${
                             activeTab === 'copilot'
-                                ? 'border-white text-white'
-                                : 'border-transparent text-slate-400 hover:text-white'
+                                ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
+                                : 'border-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white'
                         }`}
                     >
                         <Bot className="w-3.5 h-3.5" />
@@ -185,8 +185,8 @@ export default function AdminConciergeDrawer() {
                         onClick={() => setActiveTab('debtors')}
                         className={`flex items-center gap-2 py-3 px-3 border-b-2 text-xs font-semibold whitespace-nowrap transition-colors ${
                             activeTab === 'debtors'
-                                ? 'border-white text-white'
-                                : 'border-transparent text-slate-400 hover:text-white'
+                                ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
+                                : 'border-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white'
                         }`}
                     >
                         <CreditCard className="w-3.5 h-3.5" />
@@ -196,8 +196,8 @@ export default function AdminConciergeDrawer() {
                         onClick={() => setActiveTab('sourcing')}
                         className={`flex items-center gap-2 py-3 px-3 border-b-2 text-xs font-semibold whitespace-nowrap transition-colors ${
                             activeTab === 'sourcing'
-                                ? 'border-white text-white'
-                                : 'border-transparent text-slate-400 hover:text-white'
+                                ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
+                                : 'border-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white'
                         }`}
                     >
                         <Package className="w-3.5 h-3.5" />
@@ -207,14 +207,14 @@ export default function AdminConciergeDrawer() {
                         onClick={() => setActiveTab('claims')}
                         className={`flex items-center gap-2 py-3 px-3 border-b-2 text-xs font-semibold whitespace-nowrap transition-colors relative ${
                             activeTab === 'claims'
-                                ? 'border-white text-white'
-                                : 'border-transparent text-slate-400 hover:text-white'
+                                ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
+                                : 'border-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white'
                         }`}
                     >
                         <ShieldCheck className="w-3.5 h-3.5" />
                         Claims
                         {pendingClaimsCount > 0 && (
-                            <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-white text-slate-950">
+                            <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-950">
                                 {pendingClaimsCount}
                             </span>
                         )}
