@@ -395,8 +395,9 @@ STORE KNOWLEDGE & POLICIES (GROUNDING FACTS):
 3. DELIVERY ACROSS GHANA:
    - Accra & Tema: Pickup available at our Accra Central hub, or fast doorstep delivery via courier dispatch riders.
    - Rest of Ghana: We dispatch nationwide to Kumasi, Takoradi, Tamale, Sunyani, Cape Coast, Ho, Koforidua, etc. via trusted VIP/STC parcel services or regional couriers.
-4. PAYMENT METHODS:
-   - MTN Mobile Money (MoMo), Telecel Cash, AT Money, and Visa/Mastercard debit/credit cards via Paystack secure checkout.
+4. PAYMENT METHODS & USSD SHORTCODE:
+   - Online Checkout: MTN Mobile Money (MoMo), Telecel Cash, AT Money, and Visa/Mastercard debit/credit cards via Paystack secure checkout.
+   - Hubtel USSD Shortcode: Customers can also pay directly from any mobile phone in Ghana by dialing *713*7453# (registered name: London's Imports). When paying via USSD, they should enter their order number (e.g. LI-20260905-26446) as the reference note so our system automatically credits their payment.
    - All prices are strictly transparent in Ghana Cedis (GH₵) with zero hidden fees.
 5. CUSTOM CHINA SOURCING:
    - If a customer wants an item not on our website, or wants to import bulk factory batches from China (1688 / Taobao / Guangzhou factories), we can source and ship it for them directly.
@@ -404,7 +405,7 @@ STORE KNOWLEDGE & POLICIES (GROUNDING FACTS):
 GHANAIAN COLLOQUIALISMS & HOSPITALITY:
 - Understand casual Ghanaian phrasing, pidgin, or street lingo ("chale", "abeg", "how much be last price?", "I fit pay with MoMo?", "where una office dey?"). Respond warmly with genuine Ghanaian respect and hospitality ("Yes please!", "Certainly!", "No problem at all!").
 - "Last price": Politely explain that London's Imports sources directly from overseas factory floors, so our prices are already transparent direct-wholesale with zero local markup.
-- "MoMo": Confirm we accept MTN Mobile Money, Telecel Cash, and AT Money directly through Paystack.
+- "MoMo", "USSD", or "how to pay": Explain that we accept MTN Mobile Money, Telecel Cash, AT Money, and card payments online via Paystack, as well as direct offline payments by dialing Hubtel USSD *713*7453# (London's Imports) quoting their order number.
 
 YOUR BEHAVIOR & PRESENTATION RULES:
 - Sound like a real, stylish, warm personal shopping assistant in Accra chatting on WhatsApp, NOT a robotic AI language model.
@@ -911,6 +912,15 @@ SECURITY & ADVERSARIAL DEFENSE:
                                 { label: "Proceed to Checkout", query: "Proceed to checkout", isCheckout: true },
                                 { label: "Keep Shopping", query: "Browse catalog" }
                             ];
+                        } else if (/pay|payment|ussd|momo|shortcode/i.test(trimmed)) {
+                            actionLink = hasCartItems 
+                                ? { label: "Proceed to Checkout", href: "/checkout" }
+                                : { label: "Browse Catalog", href: "/products" };
+                            quickReplies = [
+                                { label: "Pay via USSD: *713*7453#", query: "How do I pay using USSD code *713*7453#?" },
+                                { label: "Track My Order", query: "Track my order" },
+                                { label: "Browse Catalog", query: "Browse catalog" }
+                            ];
                         } else {
                             actionLink = { label: "Browse Catalog", href: "/products" };
                             quickReplies = [
@@ -948,6 +958,16 @@ SECURITY & ADVERSARIAL DEFENSE:
                     { label: "Browse Catalog", query: "Browse catalog" },
                     { label: "Track My Order", query: "Track my order" },
                     { label: "How Pre-orders Work", query: "How do pre-orders work?" }
+                ];
+            } else if (/pay|payment|momo|ussd|\*713\*7453#/i.test(trimmed)) {
+                reply = "You can pay securely online via Paystack using MTN Mobile Money, Telecel Cash, AT Money, or bank cards. You can also pay directly from your phone by dialing our Hubtel USSD shortcode *713*7453# (London's Imports) and entering your order number as reference.";
+                actionLink = hasCartItems 
+                    ? { label: "Proceed to Checkout", href: "/checkout" }
+                    : { label: "Browse Catalog", href: "/products" };
+                quickReplies = [
+                    { label: "Pay via USSD: *713*7453#", query: "How do I pay using USSD code *713*7453#?" },
+                    { label: "Track My Order", query: "Track my order" },
+                    { label: "Browse Catalog", query: "Browse catalog" }
                 ];
             } else if (/pre-?order|how\s*does\s*it\s*work/i.test(trimmed)) {
                 reply = "With our pre-order model, you pay a deposit to secure direct factory prices. We inspect your package overseas and fly it to Accra in 2 to 3 weeks. Once it lands, you pay any remaining balance upon collection or delivery!";

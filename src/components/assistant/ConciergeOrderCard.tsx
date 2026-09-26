@@ -115,6 +115,19 @@ export default function ConciergeOrderCard({
                     </button>
                 )}
             </div>
+
+            {hasBalanceDue && (
+                <div className="mt-2 pt-2 border-t border-dashed border-slate-100 dark:border-slate-800/40 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                    <span className="font-mono text-[10px]">USSD: *713*7453#</span>
+                    <a
+                        href="tel:*713*7453%23"
+                        className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 hover:underline"
+                        title="Dial USSD on your phone"
+                    >
+                        Dial to pay
+                    </a>
+                </div>
+            )}
         </div>
     );
 }
