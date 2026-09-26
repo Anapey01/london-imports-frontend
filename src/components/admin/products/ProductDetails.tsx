@@ -46,21 +46,38 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
                     </div>
 
                     {!hasVariants ? (
-                        <div>
-                            <label htmlFor="price" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                Price (GH₵)
-                            </label>
-                            <input
-                                id="price"
-                                type="number"
-                                name="price"
-                                required={!hasVariants}
-                                step="0.01"
-                                value={formData.price}
-                                onChange={handleChange}
-                                placeholder="0.00"
-                                className={inputClasses}
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="price" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                    Price (GH₵)
+                                </label>
+                                <input
+                                    id="price"
+                                    type="number"
+                                    name="price"
+                                    required={!hasVariants}
+                                    step="0.01"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    placeholder="0.00"
+                                    className={inputClasses}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="stock_quantity" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                    In-Stock Units
+                                </label>
+                                <input
+                                    id="stock_quantity"
+                                    type="number"
+                                    name="stock_quantity"
+                                    min="1"
+                                    value={formData.stock_quantity ?? '10'}
+                                    onChange={handleChange}
+                                    placeholder="10"
+                                    className={inputClasses}
+                                />
+                            </div>
                         </div>
                     ) : (
                         <div className="space-y-4">

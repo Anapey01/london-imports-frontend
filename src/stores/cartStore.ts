@@ -21,6 +21,7 @@ export interface Product {
     estimated_shipping_fee?: number;
     is_discreet?: boolean;
     is_preorder?: boolean;
+    vendor_name?: string;
     stock_quantity?: number;
     preorder_status?: string;
     delivery_window_text?: string;

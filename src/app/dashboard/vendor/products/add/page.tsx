@@ -38,10 +38,11 @@ export default function AddProductPage() {
         description: '',
         price: '',
         category_id: '',
-        preorder_status: 'PREORDER',
+        preorder_status: 'READY_TO_SHIP',
         sizes: '',
         colors: '',
-        shipping_origin: 'China',
+        shipping_origin: 'Ghana',
+        stock_quantity: '10',
         image: null,
         images: [],
         video: null,
@@ -109,8 +110,9 @@ export default function AddProductPage() {
             }
 
             data.append('category', formData.category_id);
-            data.append('preorder_status', formData.preorder_status);
-            data.append('shipping_origin', formData.shipping_origin);
+            data.append('preorder_status', 'READY_TO_SHIP');
+            data.append('shipping_origin', formData.shipping_origin || 'Ghana');
+            data.append('stock_quantity', formData.stock_quantity ? formData.stock_quantity.toString() : '10');
 
             if (formData.sizes) {
                 const sizesArray = formData.sizes.split(',').map(s => s.trim()).filter(Boolean);

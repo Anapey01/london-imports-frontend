@@ -13,6 +13,7 @@ export interface ProductFormData {
     sizes: string;
     colors: string;
     shipping_origin: string;
+    stock_quantity?: string;
     image: File | null;
     images: File[];
     video?: File | null;

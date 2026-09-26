@@ -171,7 +171,9 @@ export default function ProductCard({
                 <div>
                      {!hideProgress && (
                          <div className="flex items-start justify-between gap-4 mb-2">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-800 dark:text-emerald-400">Premium Import</span>
+                            <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-content-secondary line-clamp-1 max-w-[200px]">
+                                {product.vendor_name || (product.preorder_status === 'READY_TO_SHIP' ? 'In Stock' : 'China Preorder')}
+                            </span>
                             <ArrowUpRight className="w-3 h-3 text-content-secondary group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
                          </div>
                      )}
@@ -190,8 +192,8 @@ export default function ProductCard({
                         {formatPrice(product.price)}
                     </div>
                     {!hideRating && product.preorder_status === 'READY_TO_SHIP' && (
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] transition-colors whitespace-nowrap text-emerald-500">
-                            INSTANT
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] transition-colors whitespace-nowrap text-emerald-600 dark:text-emerald-400">
+                            In Stock
                         </span>
                     )}
                 </div>

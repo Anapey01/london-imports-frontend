@@ -54,6 +54,8 @@ export interface Product {
     display_name?: string;
     short_name?: string;
     sku?: string;
+    vendor_name?: string;
+    is_preorder?: boolean;
     is_discreet?: boolean;
     video?: string;
     video_url?: string;

@@ -42,10 +42,11 @@ export default function EditProductPage() {
         description: '',
         price: '',
         category_id: '',
-        preorder_status: 'PREORDER',
+        preorder_status: 'READY_TO_SHIP',
         sizes: '',
         colors: '',
-        shipping_origin: '',
+        shipping_origin: 'Ghana',
+        stock_quantity: '10',
         image: null as File | null,
         images: [] as File[],
         video: null as File | null,
@@ -74,10 +75,11 @@ export default function EditProductPage() {
                             description: found.description,
                             price: found.price,
                             category_id: found.category?.id || found.category,
-                            preorder_status: found.preorder_status,
+                            preorder_status: found.preorder_status || 'READY_TO_SHIP',
                             sizes: Array.isArray(found.available_sizes) ? found.available_sizes.join(', ') : '',
                             colors: Array.isArray(found.available_colors) ? found.available_colors.join(', ') : '',
-                            shipping_origin: found.shipping_origin || 'China',
+                            shipping_origin: found.shipping_origin || 'Ghana',
+                            stock_quantity: (found.stock_quantity ?? 10).toString(),
                             image: null,
                             images: [],
                             video: null,
@@ -149,8 +151,9 @@ export default function EditProductPage() {
             }
 
             data.append('category', formData.category_id);
-            data.append('preorder_status', formData.preorder_status);
-            data.append('shipping_origin', formData.shipping_origin);
+            data.append('preorder_status', 'READY_TO_SHIP');
+            data.append('shipping_origin', formData.shipping_origin || 'Ghana');
+            data.append('stock_quantity', formData.stock_quantity ? formData.stock_quantity.toString() : '10');
 
             if (formData.sizes) {
                 const sizesArray = formData.sizes.split(',').map(s => s.trim()).filter(Boolean);

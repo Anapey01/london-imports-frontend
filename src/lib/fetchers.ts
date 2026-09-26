@@ -83,6 +83,20 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
                 // Exclude if it's a test placeholder OR if it's a discreet item
                 if (isTestProduct || product.is_discreet) return false;
                 if (process.env.NODE_ENV === 'production' && !product.image) return false;
+
+                // Catalog Isolation Guardrails:
+                if (queryParams.is_vendor === 'true') {
+                    // Local Market: In-stock only, zero pre-orders, zero out-of-stock
+                    const p = product as any;
+                    const isPreorder = p.is_preorder || p.preorder_status === 'PREORDER';
+                    const isOutOfStock = p.status === 'OUT_OF_STOCK' || p.stock_quantity === 0;
+                    if (isPreorder || isOutOfStock || p.preorder_status !== 'READY_TO_SHIP') return false;
+                } else if (queryParams.is_vendor === 'false') {
+                    // Preorder Store: China factory / Admin pre-orders only, zero third-party vendor stock
+                    const p = product as any;
+                    if (p.vendor && !p.is_staff && !p.vendor_is_staff) return false;
+                }
+
                 return true;
             });
             
@@ -149,12 +163,13 @@ export async function getRecentProducts(limit = 20) {
     });
 }
 
-export async function getVendorMarketplaceProducts(limit = 20) {
+export async function getVendorMarketplaceProducts(limit = 50) {
     return getProducts({
         limit: limit.toString(),
         ordering: '-created_at',
-        is_vendor: 'true'
-    });
+        is_vendor: 'true',
+        status: 'READY_TO_SHIP'
+    }, 60);
 }
 
 export async function getAvailableProducts(limit = 10) {
