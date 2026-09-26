@@ -263,33 +263,27 @@ export default function AdminClaimsPage() {
 
             {/* Tab 1: Pending Claims */}
             {activeTab === 'pending' && (
-                <div className="bg-slate-950 text-white rounded-xl p-4 border border-slate-800">
-                    <ClaimsAuditTab
-                        claims={claims}
-                        isLoading={isLoading}
-                        onRefresh={fetchClaims}
-                    />
-                </div>
+                <ClaimsAuditTab
+                    claims={claims}
+                    isLoading={isLoading}
+                    onRefresh={fetchClaims}
+                />
             )}
 
             {/* Tab 2: Debtors */}
             {activeTab === 'debtors' && (
-                <div className="bg-slate-950 text-white rounded-xl p-4 border border-slate-800">
-                    <DebtorsTab
-                        orders={orders}
-                        isLoading={isLoadingOrders}
-                    />
-                </div>
+                <DebtorsTab
+                    orders={orders}
+                    isLoading={isLoadingOrders}
+                />
             )}
 
             {/* Tab 3: Sourcing */}
             {activeTab === 'sourcing' && (
-                <div className="bg-slate-950 text-white rounded-xl p-4 border border-slate-800">
-                    <SourcingTab
-                        orders={orders}
-                        isLoading={isLoadingOrders}
-                    />
-                </div>
+                <SourcingTab
+                    orders={orders}
+                    isLoading={isLoadingOrders}
+                />
             )}
 
             {/* Tab 4: Force Sync Hubtel */}

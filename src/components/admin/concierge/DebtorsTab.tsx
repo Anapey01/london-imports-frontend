@@ -4,12 +4,11 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { 
     Search, 
-    MessageCircle, 
-    Phone, 
+    MessageSquare, 
     ExternalLink, 
     Copy, 
     Check, 
-    AlertCircle 
+    CreditCard 
 } from 'lucide-react';
 import { 
     AdminOrderData, 
@@ -57,66 +56,95 @@ export default function DebtorsTab({ orders, isLoading, onSelectForWhatsApp }: D
     return (
         <div className="space-y-4">
             {/* Header KPIs */}
-            <div className="grid grid-cols-2 gap-2">
-                <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg text-white">
-                    <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Total Outstanding Debt</p>
-                    <p className="text-xl font-bold tracking-tight text-white mt-1">
-                        GH₵ {totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{allDebtors.length} orders pending balance</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                        Total Outstanding Debt
+                    </span>
+                    <div className="mt-1 flex items-baseline gap-2">
+                        <span className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
+                            GH₵ {totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                            ({allDebtors.length} orders pending)
+                        </span>
+                    </div>
                 </div>
-                <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg text-white">
-                    <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Partially Paid</p>
-                    <p className="text-xl font-bold tracking-tight text-white mt-1">
-                        {partiallyPaid.length} Clients
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{completelyUnpaid.length} totally unpaid</p>
+
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                        Partially Paid Accounts
+                    </span>
+                    <div className="mt-1 flex items-baseline gap-2">
+                        <span className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
+                            {partiallyPaid.length}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                            clients ({completelyUnpaid.length} totally unpaid)
+                        </span>
+                    </div>
                 </div>
             </div>
 
             {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
                 <div className="relative flex-1">
-                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                         type="text"
-                        placeholder="Search name, phone, or order #..."
+                        placeholder="Search debtor name, phone, or order number..."
                         value={debtorSearch}
                         onChange={(e) => setDebtorSearch(e.target.value)}
-                        className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-900 text-white placeholder-slate-400 border border-slate-800 rounded-md focus:outline-none focus:border-white"
+                        className="w-full text-xs pl-8 pr-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-100 font-mono shadow-2xs"
                     />
                 </div>
-                <div className="flex gap-1 bg-slate-900 border border-slate-800 p-0.5 rounded-md self-start">
+
+                <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg shrink-0">
                     <button
+                        type="button"
                         onClick={() => setDebtorFilter('all')}
-                        className={`px-2.5 py-1 text-[11px] font-semibold rounded ${debtorFilter === 'all' ? 'bg-white text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                        className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                            debtorFilter === 'all' 
+                                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold' 
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                        }`}
                     >
                         All ({allDebtors.length})
                     </button>
                     <button
+                        type="button"
                         onClick={() => setDebtorFilter('partial')}
-                        className={`px-2.5 py-1 text-[11px] font-semibold rounded ${debtorFilter === 'partial' ? 'bg-white text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                        className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                            debtorFilter === 'partial' 
+                                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold' 
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                        }`}
                     >
                         Partials ({partiallyPaid.length})
                     </button>
                     <button
+                        type="button"
                         onClick={() => setDebtorFilter('pending')}
-                        className={`px-2.5 py-1 text-[11px] font-semibold rounded ${debtorFilter === 'pending' ? 'bg-white text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                        className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                            debtorFilter === 'pending' 
+                                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold' 
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                        }`}
                     >
                         Unpaid ({completelyUnpaid.length})
                     </button>
                 </div>
             </div>
 
-            {/* Debtor List */}
+            {/* Debtor Records List */}
             {isLoading ? (
-                <div className="py-12 text-center text-xs text-slate-400">Loading debtors list...</div>
+                <div className="py-16 text-center text-xs text-slate-400">Loading debtors list...</div>
             ) : filteredDebtors.length === 0 ? (
-                <div className="py-12 text-center text-xs text-slate-400 border border-slate-800 rounded-lg p-6 bg-slate-900/50">
+                <div className="py-16 text-center text-xs text-slate-400 border border-slate-200 dark:border-slate-800 rounded-xl p-8 bg-white dark:bg-slate-900 shadow-2xs">
                     No debtors found matching your criteria.
                 </div>
             ) : (
-                <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+                <div className="space-y-3">
                     {filteredDebtors.map((debtor) => {
                         const waMsg = generateWhatsAppMessage('balance_reminder', {
                             customerName: debtor.customerName,
@@ -128,50 +156,73 @@ export default function DebtorsTab({ orders, isLoading, onSelectForWhatsApp }: D
                         const waUrl = formatWhatsAppUrl(debtor.customerPhone, waMsg);
 
                         return (
-                            <div key={debtor.orderNumber} className="bg-slate-900 border border-slate-800 rounded-lg p-3 text-white space-y-2">
-                                <div className="flex items-start justify-between">
+                            <div 
+                                key={debtor.orderNumber} 
+                                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors space-y-3"
+                            >
+                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <span className="font-semibold text-xs text-white">{debtor.customerName}</span>
-                                            <span className="text-[10px] text-slate-400">#{debtor.orderNumber}</span>
+                                            <span className="font-semibold text-sm text-slate-900 dark:text-white">
+                                                {debtor.customerName}
+                                            </span>
+                                            <span className="font-mono text-xs text-slate-500 dark:text-slate-400">
+                                                #{debtor.orderNumber}
+                                            </span>
                                         </div>
-                                        <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
-                                            <span>{debtor.customerPhone || 'No phone'}</span>
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
+                                            <span className="font-mono">{debtor.customerPhone || 'No phone on file'}</span>
                                             <span>•</span>
-                                            <span className="uppercase text-[9px] tracking-wider text-slate-300 font-semibold">{debtor.state}</span>
+                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                {debtor.state}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-[10px] tracking-wider uppercase text-slate-400 block font-semibold">Remaining</span>
-                                        <span className="text-sm font-bold text-white">GH₵ {debtor.balanceDue.toFixed(2)}</span>
+
+                                    <div className="text-left sm:text-right">
+                                        <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                                            Remaining Balance
+                                        </span>
+                                        <span className="text-base font-bold font-mono text-slate-900 dark:text-white">
+                                            GH₵ {debtor.balanceDue.toFixed(2)}
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between text-[11px] bg-slate-950/60 px-2.5 py-1.5 rounded border border-slate-800/80">
-                                    <span className="text-slate-400">Total: GH₵ {debtor.total.toFixed(2)}</span>
-                                    <span className="text-slate-400">Paid: GH₵ {debtor.amountPaid.toFixed(2)}</span>
+                                <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800/80">
+                                    <span className="text-slate-600 dark:text-slate-400">
+                                        Total: <strong className="font-mono text-slate-900 dark:text-white">GH₵ {debtor.total.toFixed(2)}</strong>
+                                    </span>
+                                    <span className="text-slate-600 dark:text-slate-400">
+                                        Paid: <strong className="font-mono text-slate-900 dark:text-white">GH₵ {debtor.amountPaid.toFixed(2)}</strong>
+                                    </span>
                                 </div>
 
-                                <div className="flex items-center gap-1.5 pt-1">
-                                    <a
-                                        href={waUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex-1 bg-white text-slate-950 hover:bg-slate-200 py-1.5 px-2 rounded text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors"
-                                    >
-                                        <MessageCircle className="w-3.5 h-3.5" />
-                                        WhatsApp Reminder
-                                    </a>
+                                <div className="flex items-center justify-end gap-2 pt-1">
+                                    {debtor.customerPhone ? (
+                                        <a
+                                            href={waUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium transition-colors shadow-2xs"
+                                        >
+                                            <MessageSquare className="w-3.5 h-3.5" />
+                                            <span>WhatsApp Reminder</span>
+                                        </a>
+                                    ) : null}
+
                                     <button
+                                        type="button"
                                         onClick={() => handleCopy(waMsg, debtor.orderNumber)}
-                                        className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors"
-                                        title="Copy Reminder Template"
+                                        className="inline-flex items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs transition-colors shadow-2xs"
+                                        title="Copy Reminder Notice"
                                     >
-                                        {copiedLabel === debtor.orderNumber ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                        {copiedLabel === debtor.orderNumber ? <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                                     </button>
+
                                     <Link
                                         href={`/dashboard/admin/orders?search=${debtor.orderNumber}`}
-                                        className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                                        className="inline-flex items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs transition-colors shadow-2xs"
                                         title="View in Admin Orders"
                                     >
                                         <ExternalLink className="w-3.5 h-3.5" />
