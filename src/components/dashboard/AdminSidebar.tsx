@@ -74,7 +74,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         { name: 'SELLERS', href: '/dashboard/admin/vendors', icon: Store },
         { name: 'ORDERS', href: '/dashboard/admin/orders', icon: ShoppingBag },
         { 
-            name: 'MISS LONDON (CLAIMS)', 
+            name: 'MISS LONDON (AI OPS)', 
             href: '/dashboard/admin/claims', 
             icon: ShieldCheck,
             isMissLondon: true,
@@ -172,9 +172,9 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                             >
                                 <div className="flex items-center gap-4 min-w-0">
                                     {link.isMissLondon ? (
-                                        <div className="relative w-4 h-4 rounded-full overflow-hidden shrink-0 border border-slate-700">
+                                        <div className="relative w-4 h-4 rounded-full overflow-hidden shrink-0 border border-slate-700 bg-slate-900">
                                             <NextImage
-                                                src="/images/miss-london.png"
+                                                src="/logo.jpg"
                                                 alt="Miss London"
                                                 fill
                                                 sizes="16px"
