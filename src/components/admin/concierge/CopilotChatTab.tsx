@@ -113,7 +113,7 @@ function FormattedCopilotMessage({ content, isUser }: { content: string; isUser:
                 if (/^#+\s+/.test(line)) {
                     const headerText = line.replace(/^#+\s+/, '');
                     return (
-                        <div key={idx} className="font-semibold text-white pt-1">
+                        <div key={idx} className="font-semibold text-slate-900 dark:text-white pt-1">
                             {renderStyledTokens(headerText)}
                         </div>
                     );
@@ -123,8 +123,8 @@ function FormattedCopilotMessage({ content, isUser }: { content: string; isUser:
                 if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
                     const cleanItem = line.replace(/^[•\-\*]\s*/, '');
                     return (
-                        <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-300">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-1.5 shrink-0" />
+                        <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-700 dark:text-slate-300">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 mt-1.5 shrink-0" />
                             <div className="flex-1">
                                 {renderStyledTokens(cleanItem)}
                             </div>
@@ -134,7 +134,7 @@ function FormattedCopilotMessage({ content, isUser }: { content: string; isUser:
 
                 // Regular text line
                 return (
-                    <div key={idx} className="whitespace-pre-wrap text-slate-200">
+                    <div key={idx} className="whitespace-pre-wrap text-slate-800 dark:text-slate-200">
                         {renderStyledTokens(line)}
                     </div>
                 );

@@ -167,7 +167,7 @@ export default function AdminClaimsPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <button
                         type="button"
                         onClick={() => { fetchClaims(); fetchOrders(); }}
@@ -189,7 +189,7 @@ export default function AdminClaimsPage() {
             </div>
 
             {/* Metric Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">Pending USSD Audits</span>
                     <div className="mt-1 flex items-baseline gap-2">
@@ -232,7 +232,7 @@ export default function AdminClaimsPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                 {[
                     { id: 'pending', label: 'Pending Audits', count: pendingClaims.length },
                     { id: 'debtors', label: 'Debtors & Balances', count: allDebtors.length },
@@ -361,7 +361,7 @@ export default function AdminClaimsPage() {
 
                     <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 overflow-hidden shadow-2xs">
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-xs">
+                            <table className="w-full text-left text-xs min-w-[640px]">
                                 <thead className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                                     <tr>
                                         <th className="py-3 px-4">Order #</th>

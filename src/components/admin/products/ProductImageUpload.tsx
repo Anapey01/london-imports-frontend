@@ -35,7 +35,7 @@ export const ProductImageUpload: React.FC<ProductImageUploadProps> = ({
                 <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     Primary Cover Photo
                 </label>
-                <div className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+                <div className={`relative border-2 border-dashed rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer transition-colors ${
                     isDark
                         ? 'border-slate-700 hover:border-slate-500 hover:bg-slate-800/40'
                         : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50/70'
@@ -49,8 +49,32 @@ export const ProductImageUpload: React.FC<ProductImageUploadProps> = ({
                     />
                     <label htmlFor="image-upload" className="cursor-pointer text-center w-full">
                         {formData.image ? (
-                            <div className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm">
-                                Selected: {formData.image.name}
+                            <div className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden group">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={URL.createObjectURL(formData.image)}
+                                    alt="Cover preview"
+                                    className="w-full h-full object-contain bg-slate-50 dark:bg-slate-950 rounded-xl"
+                                />
+                                <div className="absolute inset-0 bg-slate-950/50 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                                    <span className="text-white text-xs font-semibold px-3 py-1.5 rounded-lg bg-black/60">
+                                        Click to replace cover photo
+                                    </span>
+                                    <span className="text-white/80 text-[11px] truncate max-w-[80%]">{formData.image.name}</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setFormData(prev => ({ ...prev, image: null }));
+                                    }}
+                                    className="absolute top-2 right-2 p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-md cursor-pointer transition-colors"
+                                    title="Remove cover photo"
+                                    aria-label="Remove cover photo"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
                         ) : (
                             <>
@@ -107,7 +131,13 @@ export const ProductImageUpload: React.FC<ProductImageUploadProps> = ({
                             <div key={index} className={`relative group aspect-square rounded-xl overflow-hidden border ${
                                 isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'
                             }`}>
-                                <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 p-2 text-center truncate">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={file.name}
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-1.5 text-[10px] text-white truncate">
                                     {file.name}
                                 </div>
                                 <button
@@ -118,7 +148,7 @@ export const ProductImageUpload: React.FC<ProductImageUploadProps> = ({
                                         ...prev,
                                         images: prev.images.filter((_, i) => i !== index)
                                     }))}
-                                    className="absolute top-1.5 right-1.5 p-1 bg-rose-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-1.5 right-1.5 p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-sm transition-colors cursor-pointer"
                                 >
                                     <X className="w-3.5 h-3.5" />
                                 </button>

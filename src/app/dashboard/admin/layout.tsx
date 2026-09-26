@@ -80,7 +80,7 @@ export default function AdminDashboardLayout({
             </div>
 
             {/* Main Content Area */}
-            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 dark:border-slate-800 w-full max-w-full min-w-0 overflow-x-hidden print:!ml-0 print:border-none print:min-h-0 print:p-0">
+            <main className="ml-0 md:ml-64 transition-all duration-700 min-h-screen border-l border-slate-50 dark:border-slate-800 min-w-0 overflow-x-hidden print:!ml-0 print:border-none print:min-h-0 print:p-0">
                 {/* 1. Header */}
                 <div className={`sticky top-0 z-[30] backdrop-blur-md border-b ${isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-50'} print:hidden`}>
                     <div className="max-w-[1600px] mx-auto px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6 flex items-center justify-between gap-4">
@@ -136,7 +136,7 @@ export default function AdminDashboardLayout({
                 </div>
 
                 {/* 2. DASHBOARD CONTENT */}
-                <div className="w-full p-4 sm:p-6 md:p-8 print:p-0 print:m-0">
+                <div className="w-full max-w-[1400px] mx-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 print:p-0 print:m-0">
                     {children}
                 </div>
 

@@ -126,6 +126,10 @@ export default function AddProductPage() {
             if (formData.image) {
                 const compressedMain = await compressImage(formData.image);
                 data.append('image', compressedMain);
+            } else if (formData.images.length > 0) {
+                // Smart fallback: If vendor uploaded gallery photos but no primary cover photo, promote first gallery photo
+                const compressedMain = await compressImage(formData.images[0]);
+                data.append('image', compressedMain);
             }
 
             if (formData.images.length > 0) {
@@ -151,15 +155,36 @@ export default function AddProductPage() {
             setCompressionStatus('');
             console.error('Failed to create product:', error);
             interface ApiError {
-                response?: { data?: { detail?: string } };
+                response?: { status?: number; data?: unknown };
                 message?: string;
             }
             const err = error as ApiError;
-            const errorMessage = err.response?.data?.detail ||
-                (err.response?.data ? JSON.stringify(err.response.data) : null) ||
-                err.message ||
-                'Failed to create product.';
-            addAlert(`Error: ${errorMessage}`, 'error');
+            const status = err.response?.status;
+            const rawData = err.response?.data;
+
+            let errorMessage = 'Failed to create product. Please try again.';
+
+            if (status === 500) {
+                // Server crash — likely Cloudinary misconfiguration or Django error
+                errorMessage = 'Server error (500): Image upload failed. The store image service may be temporarily unavailable. Please contact support if this persists.';
+            } else if (status === 413) {
+                errorMessage = 'File too large. Please reduce image size and try again.';
+            } else if (status === 400) {
+                // Try to extract validation errors
+                if (typeof rawData === 'object' && rawData !== null) {
+                    const firstError = Object.values(rawData as Record<string, unknown>)[0];
+                    errorMessage = Array.isArray(firstError) ? String(firstError[0]) : String(firstError);
+                }
+            } else if (typeof rawData === 'string' && rawData.includes('<!doctype')) {
+                // Raw HTML response — strip tags
+                errorMessage = 'Server error: Upload failed. Please try again or contact support.';
+            } else if (typeof rawData === 'object' && rawData !== null && 'detail' in rawData) {
+                errorMessage = String((rawData as Record<string, unknown>).detail);
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+
+            addAlert(errorMessage, 'error');
         } finally {
             setLoading(false);
         }
