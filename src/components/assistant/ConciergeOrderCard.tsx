@@ -56,7 +56,7 @@ export default function ConciergeOrderCard({
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 min-w-0">
                     <Package className="w-3.5 h-3.5 text-slate-400 shrink-0" strokeWidth={1.5} />
-                    <span className="font-mono font-semibold text-xs text-slate-900 dark:text-white truncate">
+                    <span className="font-mono font-medium text-xs text-slate-800 dark:text-slate-200 truncate">
                         #{order.order_number}
                     </span>
                 </div>
@@ -68,11 +68,11 @@ export default function ConciergeOrderCard({
             {/* Content: Item names & Meta */}
             <div className="mt-2 space-y-1">
                 {order.items && order.items.length > 0 ? (
-                    <div className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate">
+                    <div className="text-xs font-normal text-slate-700 dark:text-slate-300 truncate">
                         {order.items.map(it => `${it.name}${it.quantity > 1 ? ` (x${it.quantity})` : ''}`).join(', ')}
                     </div>
                 ) : (
-                    <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    <div className="text-xs font-normal text-slate-600 dark:text-slate-400">
                         {order.items_count || 1} item{((order.items_count || 1) > 1) ? 's' : ''}
                     </div>
                 )}
@@ -91,7 +91,7 @@ export default function ConciergeOrderCard({
                         <button
                             type="button"
                             onClick={handlePayBalance}
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 active:scale-[0.98] text-white text-xs font-medium transition-all cursor-pointer"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white active:scale-[0.98] text-white text-xs font-medium transition-all cursor-pointer"
                         >
                             <span>Pay {order.balance_due > 0 ? formatPrice(order.balance_due) : 'Balance'}</span>
                             <ArrowRight className="w-3 h-3" />

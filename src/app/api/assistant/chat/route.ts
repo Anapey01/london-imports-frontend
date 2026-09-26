@@ -415,13 +415,15 @@ STORE KNOWLEDGE & POLICIES (GROUNDING FACTS):
    - Operating from our central sorting and distribution hub in Accra, Ghana.
 2. PRE-ORDERS & SHIPPING TIMELINES:
    - Why pre-order? Sourcing directly from China factories gives massive savings compared to local retail markups.
-   - How it works: Customers pay a commitment deposit (usually 20% to 50%, or full payment). We procure and quality-inspect items at our China consolidation warehouse, then ship via express Air Freight from China to Ghana (typically arriving in 2 to 3 weeks) or Sea Freight for bulk/heavy items (6 to 8 weeks).
+   - Standard & Basic Shipping: Our standard, economical shipping method from China to Ghana is Sea Freight, which takes around 6 weeks.
+   - Express Air Freight: Reserved for urgent or lightweight items, taking approximately 2 to 3 weeks.
+   - How it works: Customers pay a commitment deposit (usually 20% to 50%, or full payment). We procure and quality-inspect items at our China consolidation warehouse, then ship to our Accra hub.
    - Once items arrive at our Accra hub, customers clear any remaining balance and receive their package.
 3. DELIVERY ACROSS GHANA:
    - Accra & Tema: Pickup available at our Accra Central hub, or fast doorstep delivery via courier dispatch riders.
    - Rest of Ghana: We dispatch nationwide to Kumasi, Takoradi, Tamale, Sunyani, Cape Coast, Ho, Koforidua, etc. via trusted VIP/STC parcel services or regional couriers.
 4. PAYMENT METHODS & USSD SHORTCODE:
-   - Online Checkout: MTN Mobile Money (MoMo), Telecel Cash, AT Money, and Visa/Mastercard debit/credit cards via Paystack secure checkout.
+   - Online Checkout: MTN Mobile Money (MoMo), Telecel Cash, AT Money, and Visa/Mastercard debit/credit cards via Hubtel secure checkout.
    - Hubtel USSD Shortcode: Customers can also pay directly from any mobile phone in Ghana by dialing *713*7453# (registered name: London's Imports). When paying via USSD, they should enter their order number (e.g. LI-20260905-26446) as the reference note so our system automatically credits their payment.
    - All prices are strictly transparent in Ghana Cedis (GH₵) with zero hidden fees.
 5. CUSTOM CHINA SOURCING:
@@ -430,7 +432,7 @@ STORE KNOWLEDGE & POLICIES (GROUNDING FACTS):
 GHANAIAN COLLOQUIALISMS & HOSPITALITY:
 - Understand casual Ghanaian phrasing, pidgin, or street lingo ("chale", "abeg", "how much be last price?", "I fit pay with MoMo?", "where una office dey?"). Respond warmly with genuine Ghanaian respect and hospitality ("Yes please!", "Certainly!", "No problem at all!").
 - "Last price": Politely explain that London's Imports sources directly from overseas factory floors, so our prices are already transparent direct-wholesale with zero local markup.
-- "MoMo", "USSD", or "how to pay": Explain that we accept MTN Mobile Money, Telecel Cash, AT Money, and card payments online via Paystack, as well as direct offline payments by dialing Hubtel USSD *713*7453# (London's Imports) quoting their order number.
+- "MoMo", "USSD", or "how to pay": Explain that we accept MTN Mobile Money, Telecel Cash, AT Money, and card payments online via Hubtel checkout, as well as direct offline payments by dialing Hubtel USSD *713*7453# (London's Imports) quoting their order number.
 
 YOUR BEHAVIOR & PRESENTATION RULES:
 - Sound like a real, stylish, warm personal shopping assistant in Accra chatting on WhatsApp, NOT a robotic AI language model.
@@ -444,8 +446,8 @@ YOUR BEHAVIOR & PRESENTATION RULES:
 - When customer wants to add an item to their cart, call add_to_cart.
 - When customer wants to remove an item or empty their cart, call remove_from_cart or clear_cart.
 - When customer provides an order number (e.g. LI-20260905-26446), call track_order.
-- If customer wants bulk container imports or human manager assistance, call escalate_to_whatsapp.
-- Pre-orders: Reassure the customer that items ship express Air Freight directly from factories in China (2-3 weeks to Accra) or Sea Freight (6-8 weeks for heavy items), fully inspected at our Accra hub.
+- If customer wants bulk container imports or human manager assistance, call escalate_to_whatsapp. Mention both our primary concierge line (+233 54 524 7009) and our backup support line (+233 54 514 2658) so they receive instant help without waiting.
+- Pre-orders: Reassure the customer that items ship directly from factories in China via our standard Sea Freight (around 6 weeks to Accra) or express Air Freight (2 to 3 weeks for urgent or lightweight goods), fully inspected at our Accra hub.
 - Complementary recommendations: If relevant, warmly mention a matching item from our China catalogue that pairs well with their purchase.
 
 SECURITY & ADVERSARIAL DEFENSE:
@@ -817,13 +819,16 @@ SECURITY & ADVERSARIAL DEFENSE:
                             toolResultPayload = {
                                 success: true,
                                 channel: "WhatsApp Concierge",
+                                primary_line: "+233 54 524 7009",
+                                backup_line: "+233 54 514 2658",
                                 reason
                             };
 
-                            actionLink = { label: "Open WhatsApp Chat", href: waUrl };
+                            actionLink = { label: "Chat on WhatsApp (+233 54 524 7009)", href: waUrl };
                             quickReplies = [
                                 { label: "Browse Catalog", query: "Browse catalog" },
-                                { label: "Track My Order", query: "Track my order" }
+                                { label: "Track My Order", query: "Track my order" },
+                                { label: "Backup WhatsApp Line", query: "Can I reach your secondary WhatsApp line at +233 54 514 2658?" }
                             ];
                         }
 
@@ -1117,7 +1122,7 @@ SECURITY & ADVERSARIAL DEFENSE:
                     { label: "How Pre-orders Work", query: "How do pre-orders work?" }
                 ];
             } else if (/pay|payment|momo|ussd|\*713\*7453#/i.test(trimmed)) {
-                reply = "You can pay securely online via Paystack using MTN Mobile Money, Telecel Cash, AT Money, or bank cards. You can also pay directly from your phone by dialing our Hubtel USSD shortcode *713*7453# (London's Imports) and entering your order number as reference.";
+                reply = "You can pay securely online via Hubtel using MTN Mobile Money, Telecel Cash, AT Money, or bank cards. You can also pay directly from your phone by dialing our Hubtel USSD shortcode *713*7453# (London's Imports) and entering your order number as reference.";
                 actionLink = hasCartItems 
                     ? { label: "Proceed to Checkout", href: "/checkout" }
                     : { label: "Browse Catalog", href: "/products" };
@@ -1127,7 +1132,7 @@ SECURITY & ADVERSARIAL DEFENSE:
                     { label: "Browse Catalog", query: "Browse catalog" }
                 ];
             } else if (/pre-?order|how\s*does\s*it\s*work/i.test(trimmed)) {
-                reply = "With our pre-order model, you pay a deposit to secure direct factory prices. We inspect your package overseas and fly it to Accra in 2 to 3 weeks. Once it lands, you pay any remaining balance upon collection or delivery!";
+                reply = "With our pre-order model, you pay a deposit to secure direct factory prices. We inspect your package overseas and ship it to Accra via our standard Sea Freight (around 6 weeks) or express Air Freight for lightweight items (2 to 3 weeks). Once it lands, you clear any remaining balance upon collection or delivery!";
                 actionLink = { label: "Browse Catalog", href: "/products" };
                 quickReplies = [
                     { label: "Browse Catalog", query: "Browse catalog" },

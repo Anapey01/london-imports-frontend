@@ -92,13 +92,13 @@ export default function ConciergeProductRow({
                     href={`/products/${product.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block font-serif font-bold text-xs sm:text-sm text-slate-950 dark:text-white truncate hover:underline"
+                    className="block font-serif font-medium text-xs sm:text-sm text-slate-800 dark:text-slate-200 truncate hover:underline"
                 >
                     {product.name}
                 </Link>
                 
                 <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-bold text-xs text-slate-900 dark:text-slate-100">
+                    <span className="font-semibold text-xs text-slate-800 dark:text-slate-200">
                         {formatPrice(product.price)}
                     </span>
                     {product.is_preorder ? (
@@ -118,10 +118,10 @@ export default function ConciergeProductRow({
                 type="button"
                 onClick={handleAdd}
                 disabled={status === 'adding'}
-                className={`shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wider transition-all ${
+                className={`shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium tracking-wider transition-all ${
                     status === 'added'
-                        ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900'
-                        : 'bg-slate-950 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 active:scale-95'
+                        ? 'bg-slate-700 text-white dark:bg-slate-200 dark:text-slate-900'
+                        : 'bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white active:scale-95'
                 }`}
             >
                 {status === 'added' ? (

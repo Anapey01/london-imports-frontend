@@ -43,14 +43,14 @@ function renderStyledTokens(str: string) {
     return parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
             return (
-                <strong key={i} className="font-semibold text-slate-900 dark:text-white">
+                <strong key={i} className="font-semibold text-slate-800 dark:text-slate-100">
                     {part.slice(2, -2)}
                 </strong>
             );
         }
         if (part.startsWith('*') && part.endsWith('*')) {
             return (
-                <em key={i} className="italic text-slate-700 dark:text-slate-300">
+                <em key={i} className="italic text-slate-600 dark:text-slate-400">
                     {part.slice(1, -1)}
                 </em>
             );
@@ -89,7 +89,7 @@ function FormattedConciergeMessage({ content, isUser }: { content: string; isUse
                 if (/^#+\s+/.test(line)) {
                     const headerText = line.replace(/^#+\s+/, '');
                     return (
-                        <div key={idx} className="font-semibold text-slate-900 dark:text-white pt-1">
+                        <div key={idx} className="font-semibold text-slate-800 dark:text-slate-100 pt-1">
                             {renderStyledTokens(headerText)}
                         </div>
                     );
@@ -99,7 +99,7 @@ function FormattedConciergeMessage({ content, isUser }: { content: string; isUse
                 if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
                     const cleanItem = line.replace(/^[•\-\*]\s*/, '');
                     return (
-                        <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-700 dark:text-slate-300">
+                        <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-600 dark:text-slate-400">
                             <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 mt-1.5 shrink-0" />
                             <div className="flex-1">
                                 {renderStyledTokens(cleanItem)}
@@ -110,7 +110,7 @@ function FormattedConciergeMessage({ content, isUser }: { content: string; isUse
 
                 // Regular text line
                 return (
-                    <div key={idx} className="whitespace-pre-wrap text-slate-800 dark:text-slate-200">
+                    <div key={idx} className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">
                         {renderStyledTokens(line)}
                     </div>
                 );
@@ -162,6 +162,29 @@ export default function ConciergeDrawer() {
             localStorage.setItem('li_concierge_muted', String(next));
         } catch {}
     };
+
+    // Pre-cache high-fidelity speech synthesis voices
+    const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        const syncVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices && voices.length > 0) {
+                setAvailableVoices(voices);
+            }
+        };
+
+        syncVoices();
+        window.speechSynthesis.onvoiceschanged = syncVoices;
+
+        return () => {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.onvoiceschanged = null;
+            }
+        };
+    }, []);
 
     // Restore session conversation if available
     useEffect(() => {
@@ -297,8 +320,8 @@ export default function ConciergeDrawer() {
 
             if (isProductPage && currentProductSlug) {
                 greetingText = firstName
-                    ? `Hello ${firstName}, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.`
-                    : "Hello, I see you're looking at this item. I can help you check color options, verify China air-freight delivery times to Accra, or add it to your cart for you.";
+                    ? `Hello ${firstName}, I see you're looking at this item. I can help you check color options, verify China shipping and delivery times to Accra, or add it to your cart for you.`
+                    : "Hello, I see you're looking at this item. I can help you check color options, verify China shipping and delivery times to Accra, or add it to your cart for you.";
                 dynamicQuickReplies = [
                     { label: "Add this to cart", query: "Add this to my cart please" },
                     { label: "China shipping times", query: "How long does shipping take for this item from China?" },
@@ -349,6 +372,50 @@ export default function ConciergeDrawer() {
         }, 1000);
     }, [isOpen, messages.length, isProductPage, currentProductSlug, pathname, firstName]);
 
+    const selectBestConciergeVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+        if (!voices || voices.length === 0) return null;
+
+        const enVoices = voices.filter(v => v.lang.toLowerCase().startsWith('en'));
+        const candidates = enVoices.length > 0 ? enVoices : voices;
+
+        const scoreVoice = (v: SpeechSynthesisVoice): number => {
+            const name = v.name.toLowerCase();
+            const lang = v.lang.toLowerCase();
+            let score = 0;
+
+            const isNatural = name.includes('natural') || name.includes('online') || name.includes('neural') || name.includes('enhanced');
+            const isGB = lang.includes('en-gb') || name.includes('uk') || name.includes('british') || name.includes('united kingdom');
+            const isFemale = name.includes('female') || name.includes('sonia') || name.includes('maisie') || 
+                             name.includes('libby') || name.includes('jenny') || name.includes('aria') || 
+                             name.includes('ava') || name.includes('emma') || name.includes('samantha') || 
+                             name.includes('victoria') || name.includes('karen') || name.includes('serena') ||
+                             name.includes('moira') || name.includes('ana');
+
+            // Strong penalty for harsh robotic desktop voices
+            if (name.includes('desktop') || name.includes('david') || name.includes('mark') || name.includes('george') || name.includes('hazel') || name.includes('zira')) {
+                score -= 80;
+            }
+
+            // Priority: British Natural / Online female voices match "Miss London" persona best
+            if (isNatural && isGB && isFemale) score += 120;
+            else if (isNatural && isGB) score += 95;
+            else if (isNatural && isFemale) score += 90;
+            else if (name.includes('google uk english female')) score += 85;
+            else if (name.includes('samantha') || name.includes('victoria') || name.includes('serena') || name.includes('karen')) score += 80;
+            else if (isNatural) score += 75;
+            else if (isGB && isFemale) score += 70;
+            else if (name.includes('google')) score += 65;
+            else if (isFemale) score += 55;
+            else if (isGB) score += 45;
+            else score += 10;
+
+            return score;
+        };
+
+        const sorted = [...candidates].sort((a, b) => scoreVoice(b) - scoreVoice(a));
+        return sorted[0] || null;
+    };
+
     const speakMessage = (msgId: string, text: string) => {
         if (isMuted || typeof window === 'undefined' || !window.speechSynthesis) return;
 
@@ -360,20 +427,38 @@ export default function ConciergeDrawer() {
 
         window.speechSynthesis.cancel();
 
+        // High-fidelity phonetic normalization for natural listening
         const cleanText = text
+            // Strip markdown formatting symbols
             .replace(/[*#_~`\[\]()|]/g, ' ')
-            .replace(/GH₵|GHS/gi, 'Ghana Cedis')
+            // Speak USSD shortcode fluently
+            .replace(/\*713\*7453#/g, 'star 7 1 3, star 7 4 5 3, hash')
+            // Speak order numbers cleanly (e.g. Order ending in 26446)
+            .replace(/\bLI-(\d{8})-(\d{5})\b/gi, 'Order ending in $2')
+            .replace(/\bLI-([A-Za-z0-9-]+)\b/gi, 'Order $1')
+            // Currency
+            .replace(/GH₵\s*([0-9,.]+)/gi, '$1 Ghana Cedis')
+            .replace(/GHS\s*([0-9,.]+)/gi, '$1 Ghana Cedis')
+            // Common abbreviations
+            .replace(/\bMoMo\b/gi, 'Mobile Money')
+            .replace(/\bUSSD\b/gi, 'U S S D')
+            // Strip web links
             .replace(/https?:\/\/\S+/g, '')
+            // Normalize punctuation pauses for calm natural cadence
+            .replace(/[:;]/g, ',')
             .replace(/\s+/g, ' ')
             .trim();
 
         const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
+        // Pacing: 0.93 rate sounds relaxed, clear, polished, and human
+        utterance.rate = 0.93;
+        utterance.pitch = 1.02;
 
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Natural') || v.name.includes('Google UK English Female')));
-        if (preferredVoice) utterance.voice = preferredVoice;
+        const currentVoices = availableVoices.length > 0 ? availableVoices : (typeof window !== 'undefined' ? window.speechSynthesis.getVoices() : []);
+        const chosenVoice = selectBestConciergeVoice(currentVoices);
+        if (chosenVoice) {
+            utterance.voice = chosenVoice;
+        }
 
         utterance.onstart = () => setIsSpeakingId(msgId);
         utterance.onend = () => setIsSpeakingId(null);
@@ -653,7 +738,7 @@ export default function ConciergeDrawer() {
                     <button
                         type="button"
                         onClick={() => setIsOpen(true)}
-                        className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-slate-800/40 dark:border-slate-200/50 cursor-pointer"
+                        className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-slate-700/60 dark:border-slate-200/50 cursor-pointer"
                         aria-label="Chat with Miss London"
                         title="Chat with Miss London"
                     >
@@ -669,7 +754,7 @@ export default function ConciergeDrawer() {
                         {/* Subtle Active Online Indicator Dot */}
                         <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-slate-950 dark:border-white" />
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-slate-900 dark:border-white" />
                         </span>
                     </button>
                 </div>
@@ -701,10 +786,10 @@ export default function ConciergeDrawer() {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h2 className="text-base font-serif font-black tracking-tight text-slate-950 dark:text-white leading-tight">
+                                        <h2 className="text-base font-serif font-semibold tracking-normal text-slate-800 dark:text-slate-100 leading-tight">
                                             Miss London
                                         </h2>
-                                        <span className="inline-block px-1.5 py-0.5 text-[8px] font-black tracking-widest uppercase rounded-sm bg-slate-100 dark:bg-slate-800 text-slate-500">
+                                        <span className="inline-block px-1.5 py-0.5 text-[8px] font-medium tracking-wider uppercase rounded-sm bg-slate-100 dark:bg-slate-800 text-slate-500">
                                             CONCIERGE
                                         </span>
                                     </div>
@@ -741,7 +826,7 @@ export default function ConciergeDrawer() {
                                         setIsSpeakingId(null);
                                         setIsOpen(false);
                                     }}
-                                    className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
                                     aria-label="Close Concierge"
                                 >
                                     <X className="w-4 h-4" />
@@ -763,8 +848,8 @@ export default function ConciergeDrawer() {
                                     <div
                                         className={`max-w-[85%] text-xs sm:text-[13px] leading-relaxed p-3.5 rounded-2xl ${
                                             msg.role === 'user'
-                                                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 rounded-tr-xs font-sans shadow-xs'
-                                                : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-tl-xs border border-slate-200/60 dark:border-slate-800 font-sans'
+                                                ? 'bg-slate-800 text-slate-50 dark:bg-slate-100 dark:text-slate-900 rounded-tr-xs font-sans shadow-xs'
+                                                : 'bg-slate-100/90 dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-tl-xs border border-slate-200/60 dark:border-slate-800 font-sans'
                                         }`}
                                     >
                                         {msg.imageUrl && (
@@ -810,7 +895,7 @@ export default function ConciergeDrawer() {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleSend("Browse catalog")}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-medium hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white text-xs font-medium hover:opacity-95 active:scale-95 transition-all cursor-pointer"
                                                 >
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
@@ -822,7 +907,7 @@ export default function ConciergeDrawer() {
                                                         setIsOpen(false);
                                                         router.push(msg.actionLink!.href);
                                                     }}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-medium hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white text-xs font-medium hover:opacity-95 active:scale-95 transition-all cursor-pointer"
                                                 >
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
@@ -894,7 +979,7 @@ export default function ConciergeDrawer() {
                                     {/* Products Staging Cards */}
                                     {msg.products && msg.products.length > 0 && (
                                         <div className="w-full mt-3 space-y-2">
-                                            <div className="text-[9px] font-black tracking-widest uppercase text-slate-400 dark:text-slate-500 px-1">
+                                            <div className="text-[9px] font-semibold tracking-widest uppercase text-slate-400 dark:text-slate-500 px-1">
                                                 VERIFIED MATCHES ({msg.products.length})
                                             </div>
                                             {msg.products.map(product => (
@@ -960,9 +1045,9 @@ export default function ConciergeDrawer() {
                                                 key={nav.label}
                                                 type="button"
                                                 onClick={() => handleSend(nav.label)}
-                                                className="w-full flex items-center justify-between text-left px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 transition-all group active:scale-[0.99] shadow-2xs"
+                                                className="w-full flex items-center justify-between text-left px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 transition-all group active:scale-[0.99] shadow-2xs"
                                             >
-                                                <span className="font-medium text-slate-800 dark:text-slate-200">{nav.label}</span>
+                                                <span className="font-medium text-slate-700 dark:text-slate-300">{nav.label}</span>
                                                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 group-hover:translate-x-0.5 transition-all shrink-0" />
                                             </button>
                                         ))}
@@ -985,7 +1070,7 @@ export default function ConciergeDrawer() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder={firstName ? `Ask Miss London anything, ${firstName}...` : "Ask to track order, check catalog, or pay balance..."}
-                                    className="w-full h-11 sm:h-10 pl-4 pr-28 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 dark:focus:border-slate-200 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
+                                    className="w-full h-11 sm:h-10 pl-4 pr-28 text-sm sm:text-xs bg-slate-100/90 dark:bg-slate-900 border border-slate-300/80 dark:border-slate-700/80 rounded-2xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-slate-600 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-2xs"
                                 />
                                 <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                     <button
@@ -1020,7 +1105,7 @@ export default function ConciergeDrawer() {
                                     <button
                                         type="submit"
                                         disabled={!input.trim() || isLoading}
-                                        className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-900 text-white dark:bg-white dark:text-slate-950 disabled:opacity-25 disabled:pointer-events-none hover:opacity-90 active:scale-95 transition-all shadow-xs shrink-0"
+                                        className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-xs shrink-0"
                                         aria-label="Send message"
                                     >
                                         <Send className="w-3.5 h-3.5" />
@@ -1029,17 +1114,33 @@ export default function ConciergeDrawer() {
                             </form>
                             <div className="flex items-center justify-between text-[10px] sm:text-[9px] text-slate-400 dark:text-slate-500 mt-2 px-1">
                                 <span>Prices in Ghana Cedis (GH₵)</span>
-                                <a 
-                                    href={`https://wa.me/233545247009?text=${encodeURIComponent(
-                                        `Hello London's Imports, I am inquiring with Miss London${firstName ? ` (${firstName})` : ''} regarding an order or product sourcing.`
-                                    )}`}
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="hover:underline flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-400"
-                                >
-                                    <MessageCircle className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
-                                    <span>Chat on WhatsApp</span>
-                                </a>
+                                <div className="flex items-center gap-1.5 font-medium text-slate-500 dark:text-slate-400">
+                                    <MessageCircle className="w-3 h-3 text-emerald-600 dark:text-emerald-500 shrink-0" />
+                                    <span>WhatsApp:</span>
+                                    <a 
+                                        href={`https://wa.me/233545247009?text=${encodeURIComponent(
+                                            `Hello London's Imports, I am inquiring with Miss London${firstName ? ` (${firstName})` : ''} regarding an order or product sourcing.`
+                                        )}`}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="hover:underline text-slate-700 dark:text-slate-300 font-medium"
+                                        title="Primary WhatsApp: +233 54 524 7009"
+                                    >
+                                        054 524 7009
+                                    </a>
+                                    <span>•</span>
+                                    <a 
+                                        href={`https://wa.me/233545142658?text=${encodeURIComponent(
+                                            `Hello London's Imports, I am reaching out on your backup line regarding an order or product sourcing.`
+                                        )}`}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="hover:underline text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                                        title="Secondary/Backup Line: +233 54 514 2658"
+                                    >
+                                        Line 2
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -151,7 +151,7 @@ export default function AdminConciergeDrawer() {
         if (waTemplate === 'payment_received') {
             text = `Hello ${name}, your payment for Order #${order} has been verified and credited. ${balance ? `Your remaining balance is ${balance}.` : 'Your order is fully cleared for processing.'} Thank you for choosing London's Imports!`;
         } else if (waTemplate === 'china_shipped') {
-            text = `Hello ${name}, great news! Your Order #${order} has been dispatched express from our partner factory consolidation warehouse in China and is en route to our central distribution hub in Accra (estimated 2-3 weeks). We will notify you the moment it lands!`;
+            text = `Hello ${name}, great news! Your Order #${order} has been dispatched from our partner factory consolidation warehouse in China and is en route to our central distribution hub in Accra (estimated around 6 weeks for standard sea freight, or 2-3 weeks for express air). We will notify you the moment it lands!`;
         } else {
             text = `Hello ${name}, your package for Order #${order} has safely landed at our Accra Central sorting hub! ${balance ? `Please clear the remaining balance of ${balance} so our dispatch rider can release your package for doorstep delivery.` : 'Your package is ready for delivery!'}`;
         }
