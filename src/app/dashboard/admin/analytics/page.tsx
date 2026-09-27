@@ -7,7 +7,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Sparkles, ArrowUpRight } from 'lucide-react';
 
 interface CategoryMetric {
     name: string;
@@ -23,6 +23,16 @@ interface RegionalMetric {
     percentage?: number;
 }
 
+interface AssistantStats {
+    total_engaged: number;
+    converted_orders: number;
+    conversion_rate: number;
+    revenue_influenced: number;
+    baseline_conversion_rate: number;
+    uplift_percentage: number;
+    avg_order_value: number;
+}
+
 interface AnalyticsData {
     revenue: { total: number; change: number; yoy_change: number }; // Added YoY
     orders: { total: number; change: number };
@@ -35,6 +45,7 @@ interface AnalyticsData {
     categoryBreakdownIsAllTime?: boolean;
     geographicBreakdown: Array<RegionalMetric>;
     geographicBreakdownIsAllTime?: boolean;
+    assistantStats?: AssistantStats;
     quickStats: {
         conversionRate: number;
         yoyGrowth: number;
@@ -293,6 +304,102 @@ export default function AdminAnalyticsPage() {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Miss London AI Concierge Conversion & ROI */}
+            <div className={`p-4 sm:p-6 rounded-xl border transition-all ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100 dark:border-slate-800">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500/20 to-purple-500/20 border border-amber-500/30 flex items-center justify-center text-amber-500 dark:text-amber-400 shrink-0">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className={`text-sm sm:text-base font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                    Miss London AI Concierge Conversion
+                                </h3>
+                                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                    ROI Intelligence
+                                </span>
+                            </div>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                Subtle telemetry measuring shoppers assisted by Miss London and orders converted
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <div className={`text-xs px-3 py-1.5 rounded-lg border font-medium ${
+                            isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                        }`}>
+                            Store Baseline: <span className="font-bold">{data?.assistantStats?.baseline_conversion_rate ?? 0}%</span>
+                        </div>
+                        {(data?.assistantStats?.uplift_percentage ?? 0) > 0 && (
+                            <div className="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                                <ArrowUpRight className="w-3.5 h-3.5" />
+                                +{data?.assistantStats?.uplift_percentage}% Uplift
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-5">
+                    {/* Metric 1: Shoppers Engaged */}
+                    <div className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider block mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            Shoppers Engaged
+                        </span>
+                        <div className={`text-xl sm:text-2xl font-bold font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {(data?.assistantStats?.total_engaged || 0).toLocaleString()}
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">Unique shoppers assisted by AI</p>
+                    </div>
+
+                    {/* Metric 2: Converted Orders */}
+                    <div className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider block mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            Assisted Orders
+                        </span>
+                        <div className="text-xl sm:text-2xl font-bold font-mono text-indigo-500 dark:text-indigo-400">
+                            {(data?.assistantStats?.converted_orders || 0).toLocaleString()}
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">Completed purchases from chat</p>
+                    </div>
+
+                    {/* Metric 3: AI Conversion Rate */}
+                    <div className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                        <div className="flex items-center justify-between mb-1">
+                            <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                AI Conversion Rate
+                            </span>
+                            <span className="text-[10px] font-bold text-emerald-500 font-mono">
+                                {data?.assistantStats?.conversion_rate ?? 0}%
+                            </span>
+                        </div>
+                        <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-500">
+                            {data?.assistantStats?.conversion_rate ?? 0}%
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mt-2">
+                            <div 
+                                className="bg-emerald-500 h-full rounded-full transition-all duration-700" 
+                                style={{ width: `${Math.min(100, Math.max(data?.assistantStats?.conversion_rate || 0, 2))}%` }} 
+                            />
+                        </div>
+                    </div>
+
+                    {/* Metric 4: Revenue Influenced */}
+                    <div className={`p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider block mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            Revenue Influenced
+                        </span>
+                        <div className={`text-xl sm:text-2xl font-bold font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            ₵{(data?.assistantStats?.revenue_influenced || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">
+                            Avg Value: ₵{(data?.assistantStats?.avg_order_value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Main Charts & Funnel */}

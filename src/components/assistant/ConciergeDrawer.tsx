@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { ordersAPI } from '@/lib/api';
 import ConciergeProductRow, { AssistantProduct } from './ConciergeProductRow';
 import ConciergeOrderCard, { AssistantOrder } from './ConciergeOrderCard';
+import { recordAssistantInteraction, getOrCreateAssistantSessionId } from '@/lib/assistant/assistant-analytics';
 
 export interface QuickReplyOption {
     label: string;
@@ -261,6 +262,7 @@ export default function ConciergeDrawer() {
     useEffect(() => {
         if (isOpen) {
             document.body.classList.add('concierge-open');
+            recordAssistantInteraction('opened');
         } else {
             document.body.classList.remove('concierge-open');
         }
@@ -556,6 +558,7 @@ export default function ConciergeDrawer() {
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsLoading(true);
+        recordAssistantInteraction('message_sent');
 
         try {
             // Gather real-time cart context from Zustand store

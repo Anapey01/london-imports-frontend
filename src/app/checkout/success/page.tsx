@@ -6,6 +6,7 @@
     import { useAuthStore } from '@/stores/authStore';
     import { useCartStore } from '@/stores/cartStore';
     import { ordersAPI, paymentsAPI } from '@/lib/api';
+    import { markAssistantSessionConverted } from '@/lib/assistant/assistant-analytics';
 
     function SuccessPageContent() {
         const searchParams = useSearchParams();
@@ -32,6 +33,7 @@
             // Trigger automatic backend confirmation/verification upon return
             if (orderNumber && !hasVerified.current) {
                 hasVerified.current = true;
+                markAssistantSessionConverted();
                 clearLocalCart();
                 sessionStorage.removeItem('londons_checkout_delivery');
                 if (clientReference) {

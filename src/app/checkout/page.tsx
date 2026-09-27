@@ -11,6 +11,7 @@ import { trackBeginCheckout, trackPurchase, trackAddShippingInfo, trackAddPaymen
 import { ExtendedCart, BackendError, type OrderItem } from '@/types';
 import { AlertCircle, ShoppingBag } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { getAssistantAttribution, markAssistantSessionConverted } from '@/lib/assistant/assistant-analytics';
 
 import CheckoutSkeleton from '@/components/checkout/CheckoutSkeleton';
 
@@ -401,6 +402,7 @@ function CheckoutPage() {
                 return;
             }
 
+            const assistantAttribution = getAssistantAttribution();
             const orderPayload = {
                 item_ids: targetItemIds,
                 order_number: checkoutOrder?.order_number || orderNumberParam || undefined,
@@ -412,6 +414,7 @@ function CheckoutPage() {
                 customer_notes: delivery.notes,
                 payment_type: paymentType === 'BALANCE' ? 'FULL' : paymentType,
                 custom_amount: paymentType === 'CUSTOM' ? parseFloat(customAmount) : undefined,
+                assistant_metadata: assistantAttribution.engaged ? assistantAttribution : undefined,
             };
 
             const res = await ordersAPI.checkout(orderPayload);
@@ -430,6 +433,7 @@ function CheckoutPage() {
             }
 
             if (paymentType === 'WHATSAPP') {
+                markAssistantSessionConverted();
                 trackWhatsAppContact(orderToPay?.items?.[0]?.product?.name || 'Order', 'purchase');
                 const message = encodeURIComponent(`Hi, I'd like to pay for my order #${orderToPay?.order_number}. Total: ${formatPrice(orderToPay?.total || 0)}.`);
                 window.open(`https://wa.me/${siteConfig.concierge}?text=${message}`, '_blank');
@@ -530,6 +534,7 @@ function CheckoutPage() {
                         if (orderToPay) trackPurchase(orderToPay, response.reference);
                         trackPaymentLifecycle('success', { order_number: orderToPay?.order_number, provider: 'paystack' });
                         
+                        markAssistantSessionConverted();
                         clearCart();
                         sessionStorage.removeItem('londons_checkout_delivery');
                         router.push(`/checkout/success?order_number=${orderToPay?.order_number}&method=paystack`);
