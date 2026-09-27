@@ -64,7 +64,7 @@ export default async function HomePage() {
     getProducts({ category: 'kitchen', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ category: 'beauty-personal-care', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ category: 'womens-heels', limit: '15' }).catch(() => ({ results: [] })),
-    getProducts({ is_vendor: 'true', status: 'READY_TO_SHIP', limit: '10' }).catch(() => ({ results: [] })),
+    getProducts({ is_vendor: 'false', status: 'READY_TO_SHIP', limit: '10' }).catch(() => ({ results: [] })),
     getProducts({ featured: 'true', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-reservations_count', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-created_at', limit: '24' }).catch(() => ({ results: [] })),
@@ -151,6 +151,8 @@ export default async function HomePage() {
       title: "Instant Availability",
       products: dedupeAndLimit(
         (readyRes?.results || []).filter((p: any) => {
+          // Strictly admin items set via api.londonsimports.com (no vendor products)
+          if (p.vendor && !p.is_staff && !p.vendor_is_staff) return false;
           const isPreorder = p.is_preorder || p.preorder_status === 'PREORDER';
           const isOutOfStock = p.status === 'OUT_OF_STOCK' || p.stock_quantity === 0;
           return !isPreorder && !isOutOfStock && p.preorder_status === 'READY_TO_SHIP';
@@ -159,7 +161,7 @@ export default async function HomePage() {
         false
       ),
       linkText: "Shop ready stock",
-      linkHref: process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market'
+      linkHref: "/products?status=READY_TO_SHIP"
     }
   ];
 
