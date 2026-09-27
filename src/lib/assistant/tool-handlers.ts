@@ -1,4 +1,5 @@
 import { AssistantOrder, ProductSummary } from './tools';
+import { searchStoreKnowledge } from './knowledge-base';
 
 export interface ToolExecutionContext {
     backendBase: string;
@@ -83,15 +84,40 @@ export async function executeAssistantTool(
                 }))
             },
             products,
-            actionLink: { label: "Browse Full Catalog", href: "/products" },
-            quickReplies: [
-                { label: "Order from China", query: "Order from China" },
-                ...activeCategories.slice(0, 2).map(c => ({
-                    label: c,
-                    query: `Show me ${c.toLowerCase()}`
-                })),
-                { label: "Check my cart", query: "Check my cart" }
-            ]
+            actionLink: (/local\s*market|in\s*ghana|ready\s*to\s*ship|same\s*day/i.test(searchQuery) || categorySlug === 'market')
+                ? { label: "Shop Local Market", href: "/market" }
+                : { label: "Browse Full Catalog", href: "/products" },
+            quickReplies: (/local\s*market|in\s*ghana|ready\s*to\s*ship|same\s*day/i.test(searchQuery) || categorySlug === 'market')
+                ? [
+                    { label: "Shop Local Market", query: "Show me items in Local Market" },
+                    { label: "Pre-Orders from China", query: "How do pre-orders from China work?" }
+                ]
+                : [
+                    { label: "Order from China", query: "Order from China" },
+                    ...activeCategories.slice(0, 2).map(c => ({
+                        label: c,
+                        query: `Show me ${c.toLowerCase()}`
+                    })),
+                    { label: "Check my cart", query: "Check my cart" }
+                ]
+        };
+    }
+
+    // get_store_policy_or_faq
+    if (fnName === 'get_store_policy_or_faq') {
+        const topic = (fnArgs.topic || '').trim();
+        const knowledgeRes = searchStoreKnowledge(topic);
+
+        return {
+            toolResultPayload: {
+                found: knowledgeRes.found,
+                topic,
+                verified_policy: knowledgeRes.content,
+                action_link: knowledgeRes.actionLink,
+                needs_human_escalation: knowledgeRes.needsHumanEscalation
+            },
+            actionLink: knowledgeRes.actionLink,
+            quickReplies: knowledgeRes.quickReplies
         };
     }
 

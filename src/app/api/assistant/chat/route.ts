@@ -258,12 +258,50 @@ export async function POST(req: NextRequest) {
                             if (/what\s*can\s*you\s*do|help|services|about|overview|capabilities/i.test(trimmed)) {
                                 reply = "I assist you with end-to-end store operations: tracking orders, recovering customer debtor balances via WhatsApp reminders, consolidating batch procurement for China factories, and auditing Hubtel USSD payments. How can I help you today?";
                             }
+                        } else if (/human|agent|person|representative|manager|talk\s*to\s*(us|someone)|speak\s*to|call|support\s*team|whatsapp/i.test(trimmed) || (reply && /whatsapp|\+233\s*54/i.test(reply))) {
+                            const waUrl = `https://wa.me/233545247009?text=${encodeURIComponent(`Hello London's Imports, I have an inquiry regarding: ${trimmed.slice(0, 60)}`)}`;
+                            actionLink = { label: "Chat on WhatsApp (+233 54 524 7009)", href: waUrl };
+                            quickReplies = [
+                                { label: "Chat on WhatsApp", query: "Connect me to WhatsApp concierge" },
+                                { label: "Browse Catalog", query: "Browse catalog" },
+                                { label: "Secondary Line (+233 54 514 2658)", query: "Can I reach your secondary WhatsApp line at +233 54 514 2658?" }
+                            ];
+                        } else if (/local\s*market|in\s*ghana\s*(now|today)|ready\s*to\s*ship/i.test(trimmed)) {
+                            actionLink = { label: "Shop Local Market", href: "/market" };
+                            quickReplies = [
+                                { label: "Shop Local Market", query: "Show me products in the Local Market" },
+                                { label: "Pre-Orders from China", query: "How do pre-orders from China work?" }
+                            ];
+                        } else if (/waec|wassce|bece|results?\s*checker/i.test(trimmed)) {
+                            actionLink = { label: "Buy Results Checker", href: "/checker" };
+                            quickReplies = [
+                                { label: "Buy WAEC Checker", query: "How do I buy a WAEC Results Checker?" },
+                                { label: "Browse Store", query: "Browse catalog" }
+                            ];
+                        } else if (/customs|duties|duty|taxes|tema\s*port/i.test(trimmed)) {
+                            actionLink = { label: "Customs Duty Estimator", href: "/customs-estimator" };
+                            quickReplies = [
+                                { label: "Calculate Customs", query: "How do customs duties work?" },
+                                { label: "Shipping Policy", query: "What is your shipping policy?" }
+                            ];
+                        } else if (/refund|cancel|money\s*back|damaged|defect/i.test(trimmed)) {
+                            actionLink = { label: "Read Refund Policy", href: "/refunds" };
+                            quickReplies = [
+                                { label: "Refund Policy", query: "What is your refund policy?" },
+                                { label: "Talk to Human Support", query: "Connect me to human support on WhatsApp" }
+                            ];
+                        } else if (/shipping|delivery\s*(time|fee|window)|how\s*long|air\s*cargo|sea\s*cargo/i.test(trimmed)) {
+                            actionLink = { label: "View Shipping Policy", href: "/shipping-policy" };
+                            quickReplies = [
+                                { label: "Shipping Timelines", query: "How long does shipping take?" },
+                                { label: "Track My Order", query: "Track my order" }
+                            ];
                         } else if (/what\s*can\s*you\s*do|help|services|about/i.test(trimmed)) {
                             actionLink = { label: "Browse Catalog", href: "/products" };
                             quickReplies = [
                                 { label: "Browse Catalog", query: "Browse catalog" },
+                                { label: "Local Market (In Ghana)", query: "Tell me about the Local Market" },
                                 { label: "Track My Order", query: "Track my order" },
-                                { label: "How Pre-orders Work", query: "How do pre-orders work?" },
                                 { label: "Order from China", query: "Order from China" }
                             ];
                         } else if (/pre-?orders?|how\s*it\s*works/i.test(trimmed)) {

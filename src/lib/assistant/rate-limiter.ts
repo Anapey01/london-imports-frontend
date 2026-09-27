@@ -40,15 +40,22 @@ export function checkRateLimit(ip: string, maxRequests = 60, windowMs = 60000): 
 // Adversarial prompt injection & jailbreak detection patterns
 export const ADVERSARIAL_PATTERNS = [
     /ignore\s+(all\s+)?(previous|prior|above)\s+instructions/i,
+    /disregard\s+(all\s+)?(previous|prior|above)\s+instructions/i,
+    /forget\s+(all\s+)?(previous|prior|above)\s+instructions/i,
     /repeat\s+(everything|the\s+text)\s+above/i,
-    /reveal\s+(your\s+)?(system\s+prompt|instructions|developer\s+mode|secret)/i,
-    /you\s+are\s+now\s+(in\s+)?(dan|developer|chaos|unrestricted)\s+mode/i,
+    /reveal\s+(your\s+)?(system\s+prompt|instructions|developer\s+mode|secret|guidelines)/i,
+    /show\s+me\s+(your\s+)?(system\s+prompt|instructions|rules|secret)/i,
+    /output\s+(your\s+)?(system\s+prompt|initial\s+prompt)/i,
+    /you\s+are\s+now\s+(in\s+)?(dan|developer|chaos|unrestricted|god)\s+mode/i,
     /jailbreak/i,
+    /bypass\s+(safety|filter|restrictions|policy)/i,
     /what\s+is\s+your\s+system\s*prompt/i,
     /print\s+(your\s+)?system\s*prompt/i,
-    /give\s+me\s+all\s+(api\s*keys|credentials|secret\s*keys)/i,
+    /give\s+me\s+all\s+(api\s*keys|credentials|secret\s*keys|environment\s*variables)/i,
     /admin\s*override/i,
-    /eval\s*\(|exec\s*\(|<script\b/i
+    /act\s+as\s+(an?\s+)?(unrestricted|evil|hacked|jailbroken|unfiltered)/i,
+    /eval\s*\(|exec\s*\(|<script\b|javascript:/i,
+    /union\s+select\b|drop\s+table\b|insert\s+into\b/i
 ];
 
 export function isAdversarialInput(text: string): boolean {

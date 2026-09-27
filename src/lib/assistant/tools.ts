@@ -101,6 +101,23 @@ export const ASSISTANT_TOOLS = [
     {
         type: 'function',
         function: {
+            name: 'get_store_policy_or_faq',
+            description: "Retrieve official store policy, FAQ, shipping times, refund rules, payment instructions, customs guidelines, or website feature information (e.g. Local Market, WAEC Results Checker, Pre-Order Store, Tracking, Prohibited Items). Call this whenever a customer asks about how things work, shipping duration, returns, payment options, customs, or store guidelines.",
+            parameters: {
+                type: 'object',
+                properties: {
+                    topic: {
+                        type: 'string',
+                        description: 'The policy, feature, or question topic (e.g. "refunds", "shipping duration", "local market", "waec checker", "payment options", "customs", "prohibited items")'
+                    }
+                },
+                required: ['topic']
+            }
+        }
+    },
+    {
+        type: 'function',
+        function: {
             name: 'escalate_to_whatsapp',
             description: "Connect customer to human manager on WhatsApp for custom bulk imports directly from China, container shipments, or complex support.",
             parameters: {

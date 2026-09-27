@@ -1,5 +1,6 @@
 import { AssistantOrder, ProductSummary } from './tools';
 import { ToolExecutionContext } from './tool-handlers';
+import { searchStoreKnowledge } from './knowledge-base';
 
 export function cleanAssistantReply(rawReply: string, customerName?: string): string {
     let reply = rawReply;
@@ -167,15 +168,28 @@ export async function generateAssistantFallback(
             ? `Here are your order details on record, ${customerName}:`
             : "Here are your order details on record:";
     } else if (!reply) {
-        reply = customerName
-            ? `Hello ${customerName}! How can I help you shop, track an order, or check our catalog today?`
-            : "Hello! How can I help you shop, track an order, or check our catalog today?";
-        actionLink = { label: "Browse Catalog", href: "/products" };
-        quickReplies = [
-            { label: "Browse Catalog", query: "Browse catalog" },
-            { label: "Track My Order", query: "Track my order" },
-            { label: "Order from China", query: "Order from China" }
-        ];
+        // Query official store knowledge base (FAQs, policies, features)
+        const knowledgeRes = searchStoreKnowledge(trimmed);
+        if (knowledgeRes.found) {
+            reply = knowledgeRes.content;
+            if (knowledgeRes.actionLink) actionLink = knowledgeRes.actionLink;
+            if (knowledgeRes.quickReplies) quickReplies = knowledgeRes.quickReplies;
+        } else if (/^(hi|hello|hey|good\s*(morning|afternoon|evening)|howdy)\b/i.test(trimmed)) {
+            reply = customerName
+                ? `Hello ${customerName}! How can I help you shop, track an order, or check our catalog today?`
+                : "Hello! How can I help you shop, track an order, or check our catalog today?";
+            actionLink = { label: "Browse Catalog", href: "/products" };
+            quickReplies = [
+                { label: "Browse Catalog", query: "Browse catalog" },
+                { label: "Track My Order", query: "Track my order" },
+                { label: "Order from China", query: "Order from China" }
+            ];
+        } else {
+            // When she doesn't know, provide graceful human escalation
+            reply = knowledgeRes.content;
+            actionLink = knowledgeRes.actionLink;
+            quickReplies = knowledgeRes.quickReplies;
+        }
     }
 
     return { reply, orders, actionLink, quickReplies };
