@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 
-// ISR: Revalidate homepage every 24 hours to preserve Vercel Free Tier Data Cache limits
-export const revalidate = 86400;
+// ISR: Revalidate homepage every 60 seconds for fresh stock and pricing updates
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "London's Imports | Global Sourcing & Shipping Center",
@@ -173,7 +173,12 @@ export default async function HomePage() {
     {
       title: "Instant Availability",
       products: getUniqueProducts(
-        (readyRes?.results || []).filter((p: any) => {
+        (readyRes?.results?.length ? readyRes.results : [
+          ...(beautyRes?.results || []),
+          ...(featuredRes?.results || []),
+          ...(trendingRes?.results || []),
+          ...(newArrivalsRes?.results || [])
+        ]).filter((p: any) => {
           // Strictly admin items set via api.londonsimports.com (no vendor products)
           if (p.vendor && !p.is_staff && !p.vendor_is_staff) return false;
           const isPreorder = p.is_preorder || p.preorder_status === 'PREORDER';
