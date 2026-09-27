@@ -238,12 +238,24 @@ export default function AdminBroadcastPage() {
             return;
         }
 
-        const phones = smsTarget === 'manual'
-            ? manualPhones.split(/[\n,;]/).map(p => p.trim()).filter(p => p.length >= 9)
-            : [];
+        let phones: string[] = [];
+        if (smsTarget === 'manual') {
+            const rawList = manualPhones.split(/[\r\n,;]+/).map(p => p.trim()).filter(Boolean);
+            for (const item of rawList) {
+                const parts = item.split(/\s+/).filter(Boolean);
+                if (parts.length > 1 && parts.every(part => part.replace(/\D/g, '').length >= 9)) {
+                    phones.push(...parts.map(p => p.trim()));
+                } else {
+                    const digits = item.replace(/\D/g, '');
+                    if (digits.length >= 9) {
+                        phones.push(item.trim());
+                    }
+                }
+            }
+        }
 
         if (smsTarget === 'manual' && phones.length === 0) {
-            addAlert('Please enter at least one valid Ghanaian phone number.', 'error');
+            addAlert('Please enter at least one valid Ghanaian phone number (e.g. 0244123456).', 'error');
             return;
         }
 
@@ -268,18 +280,19 @@ export default function AdminBroadcastPage() {
                         phones
                     });
 
+                    const successMsg = data.message || 'SMS dispatched successfully!';
                     setStatus({
                         type: 'success',
-                        msg: data.message || 'SMS broadcast initiated!'
+                        msg: successMsg
                     });
-                    addAlert(data.message || 'SMS broadcast initiated!');
+                    addAlert(successMsg, 'success');
 
                     if (smsTarget === 'manual') setManualPhones('');
                     setSmsMessage('');
                     setDispatchModal(prev => ({ ...prev, isOpen: false }));
                 } catch (err: unknown) {
-                    const error = err as { response?: { data?: { error?: string } }, message?: string };
-                    const msg = error.response?.data?.error || error.message || 'Failed to initiate SMS broadcast';
+                    const error = err as { response?: { data?: { error?: string; message?: string } }; message?: string };
+                    const msg = error.response?.data?.error || error.response?.data?.message || error.message || 'Failed to dispatch SMS';
                     setStatus({ type: 'error', msg });
                     addAlert(msg, 'error');
                 } finally {
