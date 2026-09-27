@@ -25,6 +25,12 @@ export function cleanAssistantReply(rawReply: string, customerName?: string): st
     // Strip any emojis from response for clean editorial typography
     reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]/gu, '').replace(/\s{2,}/g, ' ').trim();
 
+    // Replace hallucinated policy/website deflection with grounded policy knowledge
+    if (/not\s*able\s*to\s*pull\s*(the\s*)?(full\s*)?policy|cannot\s*pull\s*(the\s*)?(full\s*)?policy|unable\s*to\s*pull\s*(the\s*)?policy|cannot\s*(find|access)\s*(the\s*)?website\s*information/i.test(reply)) {
+        const polRes = searchStoreKnowledge("policies");
+        reply = polRes.content;
+    }
+
     // Clean incomplete trailing sentence if truncated
     if (reply.length > 80 && !/[.!?)"']$/.test(reply.trim())) {
         const lastPunct = Math.max(

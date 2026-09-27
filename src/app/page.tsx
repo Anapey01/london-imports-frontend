@@ -72,84 +72,106 @@ export default async function HomePage() {
     getActiveCollections().catch(() => [])
   ]);
 
-  const fallbackPool = (trendingRes?.results?.length ? trendingRes.results : (newArrivalsRes?.results || [])).filter(
-    (p: any) => p.slug !== 'sesa-oil' && !p.name?.toLowerCase().includes('sesa')
-  );
+  // Strict Global Deduplication Registry across the entire homepage
+  const seenProductIds = new Set<string>();
 
-  const seenIds = new Set<string>();
-  // Helper to deduplicate items globally and limit the final array
+  const isSeen = (item: any) => {
+    if (!item) return true;
+    if (item.id && seenProductIds.has(String(item.id))) return true;
+    if (item.slug && seenProductIds.has(String(item.slug))) return true;
+    return false;
+  };
+
+  const markSeen = (item: any) => {
+    if (!item) return;
+    if (item.id) seenProductIds.add(String(item.id));
+    if (item.slug) seenProductIds.add(String(item.slug));
+  };
+
+  // Helper to extract strictly unique items for a section without fallback contamination
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dedupeAndLimit = (items: any[], limit: number, allowFallback = true) => {
+  const getUniqueProducts = (items: any[], limit: number) => {
     const unique = [];
     for (const item of items || []) {
-      if (!seenIds.has(item.id)) {
-        seenIds.add(item.id);
+      if (item.slug === 'sesa-oil' || item.name?.toLowerCase().includes('sesa')) {
+        continue;
+      }
+      if (!isSeen(item)) {
+        markSeen(item);
         unique.push(item);
         if (unique.length === limit) break;
-      }
-    }
-    // Graceful fallback: populate from general pool if category has fewer than needed
-    if (unique.length < limit && allowFallback) {
-      for (const item of fallbackPool) {
-        if (!seenIds.has(item.id)) {
-          seenIds.add(item.id);
-          unique.push(item);
-          if (unique.length === limit) break;
-        }
       }
     }
     return unique;
   };
 
+  // 1. Process Seasonal / Curated Collections (Christmas Gift Sets, Holiday Footwear & Bags, etc.)
+  // We register seasonal products first so these hand-picked collections show their curated items
+  const seasonalCollections = (activeCollections || []).map((collection: any) => {
+    const uniqueItems: any[] = [];
+    for (const p of collection.products || []) {
+      if (!isSeen(p) && p.slug !== 'sesa-oil' && !p.name?.toLowerCase().includes('sesa')) {
+        markSeen(p);
+        uniqueItems.push(p);
+      }
+    }
+    return {
+      ...collection,
+      products: uniqueItems
+    };
+  }).filter((c: any) => c.products.length > 0);
+
+  // 2. Category Feature Cards (Group 1: Fashion, Bags, Home, Kitchen)
   const group1Cards = [
     {
       title: "Shop Fashion for less",
-      products: dedupeAndLimit(fashionRes?.results, 4),
+      products: getUniqueProducts(fashionRes?.results, 4),
       linkText: "See all fashion",
       linkHref: "/products?category=womens-fashion"
     },
     {
       title: "Explore Bags collection",
-      products: dedupeAndLimit(bagsRes?.results, 4),
+      products: getUniqueProducts(bagsRes?.results, 4),
       linkText: "See all bags",
       linkHref: "/products?category=womens-bags-handbags"
     },
     {
       title: "Home & Lifestyle",
-      products: dedupeAndLimit(lifestyleRes?.results, 4),
+      products: getUniqueProducts(lifestyleRes?.results, 4),
       linkText: "See all home & lifestyle",
       linkHref: "/products?category=home-living"
     },
     {
       title: "Kitchen & Dining",
-      products: dedupeAndLimit(kitchenRes?.results, 4),
+      products: getUniqueProducts(kitchenRes?.results, 4),
       linkText: "See all kitchen",
       linkHref: "/products?category=kitchen"
     }
   ];
 
+  // 3. Category Feature Cards (Group 2: Beauty, Shoes, Perfumes, Instant Availability)
   const group2Cards = [
     {
       title: "Level up your beauty",
-      products: dedupeAndLimit(beautyRes?.results, 4),
+      products: getUniqueProducts(beautyRes?.results, 4),
       linkText: "See all beauty",
       linkHref: "/products?category=beauty-personal-care"
     },
     {
       title: "Heels & Shoes",
-      products: dedupeAndLimit(shoesRes?.results, 4),
+      products: getUniqueProducts(shoesRes?.results, 4),
       linkText: "See all heels & shoes",
       linkHref: "/products?category=womens-heels"
     },
     {
       title: "Arabian Perfumes",
-      products: dedupeAndLimit(perfumesRes?.results, 4),
+      products: getUniqueProducts(perfumesRes?.results, 4),
       linkText: "See all perfumes",
       linkHref: "/products?category=fragrances"
     },
     {
       title: "Instant Availability",
-      products: dedupeAndLimit(
+      products: getUniqueProducts(
         (readyRes?.results || []).filter((p: any) => {
           // Strictly admin items set via api.londonsimports.com (no vendor products)
           if (p.vendor && !p.is_staff && !p.vendor_is_staff) return false;
@@ -157,21 +179,17 @@ export default async function HomePage() {
           const isOutOfStock = p.status === 'OUT_OF_STOCK' || p.stock_quantity === 0;
           return !isPreorder && !isOutOfStock && p.preorder_status === 'READY_TO_SHIP';
         }),
-        4,
-        false
+        4
       ),
       linkText: "Shop ready stock",
       linkHref: "/products?status=READY_TO_SHIP"
     }
   ];
 
-  // Curated Picks: Only genuine featured products, excluding Sesa oil
-   
-  const featured = dedupeAndLimit(featuredRes?.results, 12).filter(
-    (p: any) => p.slug !== 'sesa-oil' && !p.name?.toLowerCase().includes('sesa')
-  );
-  const trending = dedupeAndLimit(trendingRes?.results, 12);
-  const newArrivals = dedupeAndLimit(newArrivalsRes?.results, 12);
+  // 4. Horizontal Carousels: Curated Picks, Trending Now, New Arrivals
+  const featured = getUniqueProducts(featuredRes?.results, 12);
+  const trending = getUniqueProducts(trendingRes?.results, 12);
+  const newArrivals = getUniqueProducts(newArrivalsRes?.results, 12);
 
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-950 pb-20 transition-colors">
@@ -207,11 +225,11 @@ export default async function HomePage() {
       </div>
 
       {/* Active Seasonal / Curated Collections (Rendered only when active collections exist) */}
-      {activeCollections && activeCollections.length > 0 && activeCollections.map((collection: any) => (
+      {seasonalCollections && seasonalCollections.length > 0 && seasonalCollections.map((collection: any) => (
         <ProductCarouselShelf
           key={collection.id}
           title={collection.name}
-          products={collection.products || []}
+          products={collection.products}
         />
       ))}
 

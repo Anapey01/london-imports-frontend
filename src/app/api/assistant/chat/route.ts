@@ -5,6 +5,7 @@ import { getClientIp, checkRateLimit, isAdversarialInput } from '@/lib/assistant
 import { buildSystemPrompt } from '@/lib/assistant/system-prompt';
 import { executeAssistantTool, ToolExecutionContext } from '@/lib/assistant/tool-handlers';
 import { cleanAssistantReply, generateAssistantFallback } from '@/lib/assistant/fallback';
+import { searchStoreKnowledge } from '@/lib/assistant/knowledge-base';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
@@ -248,7 +249,25 @@ export async function POST(req: NextRequest) {
                     } else if (choice1?.content) {
                         reply = choice1.content.trim();
 
-                        if (isStoreAdmin) {
+                        const isDeflection = /not\s*able\s*to\s*pull|cannot\s*pull|unable\s*to\s*pull|don'?t\s*have\s*(the\s*)?(access|information|policy\s*text)|cannot\s*(find|access)\s*(the\s*)?website/i.test(reply);
+                        const isExplicitHumanRequest = /human|agent|person|representative|manager|talk\s*to\s*(us|someone)|speak\s*to|call|support\s*team|whatsapp/i.test(trimmed);
+                        const isPolicyQuery = /\b(polic(y|ies)|rules|terms|store\s*guidelines|pull\s*them\s*(out)?|what\s*are\s*(the\s*)?policies)\b/i.test(trimmed);
+                        const isWebsiteQuery = /\b(website|find\s*information|about\s*(the\s*)?website|what\s*about\s*the\s*website)\b/i.test(trimmed);
+
+                        // If the model deflected or the user asked directly about policies or website overview, provide grounded knowledge
+                        if (isDeflection || isPolicyQuery || isWebsiteQuery) {
+                            if (isPolicyQuery) {
+                                const polRes = searchStoreKnowledge("policies");
+                                reply = polRes.content;
+                                actionLink = polRes.actionLink;
+                                quickReplies = polRes.quickReplies;
+                            } else if (isWebsiteQuery) {
+                                const webRes = searchStoreKnowledge("website");
+                                reply = webRes.content;
+                                actionLink = webRes.actionLink;
+                                quickReplies = webRes.quickReplies;
+                            }
+                        } else if (isStoreAdmin) {
                             quickReplies = [
                                 { label: "Summarize Debts", query: "Summarize outstanding debts" },
                                 { label: "China Sourcing", query: "Consolidate China sourcing" },
@@ -258,7 +277,7 @@ export async function POST(req: NextRequest) {
                             if (/what\s*can\s*you\s*do|help|services|about|overview|capabilities/i.test(trimmed)) {
                                 reply = "I assist you with end-to-end store operations: tracking orders, recovering customer debtor balances via WhatsApp reminders, consolidating batch procurement for China factories, and auditing Hubtel USSD payments. How can I help you today?";
                             }
-                        } else if (/human|agent|person|representative|manager|talk\s*to\s*(us|someone)|speak\s*to|call|support\s*team|whatsapp/i.test(trimmed) || (reply && /whatsapp|\+233\s*54/i.test(reply))) {
+                        } else if (isExplicitHumanRequest || (!isPolicyQuery && !isWebsiteQuery && reply && /whatsapp|\+233\s*54/i.test(reply))) {
                             const waUrl = `https://wa.me/233545247009?text=${encodeURIComponent(`Hello London's Imports, I have an inquiry regarding: ${trimmed.slice(0, 60)}`)}`;
                             actionLink = { label: "Chat on WhatsApp (+233 54 524 7009)", href: waUrl };
                             quickReplies = [

@@ -65,8 +65,8 @@ export default function ProductCarouselShelf({ title, products = [] }: ProductCa
         <section className="w-full bg-white dark:bg-slate-900 border-y border-slate-100/60 dark:border-slate-800/50 py-8 my-4 relative overflow-hidden group/shelf">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className={`flex items-center ${isFew ? 'justify-between sm:justify-center' : 'justify-between'} mb-6 px-2`}>
-                    <h2 className={`text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-none ${isFew ? 'sm:text-center' : ''}`}>
+                <div className={`flex items-center ${isFew ? 'justify-between sm:justify-center' : 'justify-between'} mb-6 px-2 gap-3 sm:gap-4`}>
+                    <h2 className={`text-base sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight shrink-0 ${isFew ? 'sm:text-center' : ''}`}>
                         {title}
                     </h2>
 

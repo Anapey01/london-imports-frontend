@@ -20,6 +20,35 @@ export interface KnowledgeItem {
 }
 
 export const STORE_KNOWLEDGE: KnowledgeItem[] = [
+    // --- WEBSITE OVERVIEW & FEATURES ---
+    {
+        id: 'FEAT-WEBSITE-OVERVIEW',
+        category: 'feature',
+        title: "London's Imports Website & Features Overview",
+        keywords: ['website', 'site', 'information', 'about website', 'features', 'find information', 'can you find information', 'what about the website', 'how does the website work', 'tell me about the website', 'services'],
+        content: "Yes, absolutely! I have full information about our website and features right here. London's Imports connects Ghanaian shoppers directly to global manufacturing hubs and verified local merchants:\n\n1. China Pre-Order Store (/products): Buy directly from China factories in Guangzhou and Yiwu at wholesale prices (20% to 40% below Ghanaian retail markups).\n2. Local Market (/market): Shop physical, in-stock products in Ghana with same-day dispatch in Accra or 24–48h delivery nationwide.\n3. WAEC Results Checker (/checker): Buy official WASSCE and BECE results checkers instantly online using MTN MoMo, Telecel Cash, or bank cards.\n4. Real-time Order Tracking (/track): Track overseas batches and shipments live by order number from China to Accra.\n5. Customs Duty Estimator (/customs-estimator): Calculate expected GRA customs duties and port clearance fees transparently.\n6. Hubtel USSD (*713*7453#): Pay offline quickly from any phone in Ghana by quoting your order number.\n\nWhat would you like to explore?",
+        actionLink: { label: "Explore Store Catalog", href: "/products" },
+        quickReplies: [
+            { label: "Browse Catalog", query: "Browse catalog" },
+            { label: "Local Market (In Ghana)", query: "Tell me about the Local Market" },
+            { label: "Track My Order", query: "Track my order" },
+            { label: "Store Policies", query: "What are the policies" }
+        ]
+    },
+    {
+        id: 'POL-ALL-POLICIES',
+        category: 'policy',
+        title: "London's Imports Store Policies Overview",
+        keywords: ['policy', 'policies', 'all policies', 'what are the policies', 'pull them out', 'pull them out for me', 'show me policies', 'rules', 'terms', 'store rules', 'store policies', 'shipping and return policy', 'what are policies'],
+        content: "Here are our key store policies at London's Imports:\n\n1. Shipping & Timelines: Express Air Cargo delivers in 7–14 business days (approx. 2–3 weeks total cycle) for urgent or lightweight items. Standard Sea Freight delivers in 30–60 business days (approx. 6–8 weeks) for bulk or heavy items. Once in Accra, we deliver nationwide via couriers or offer pickup at our Danfa Central distribution hub.\n2. Payment & Security: Payments are processed securely via Hubtel in Ghana Cedis (GH₵). We accept MTN MoMo, Telecel Cash, AT Money, and Visa/Mastercard, or offline USSD *713*7453#. For pre-orders, you can pay a commitment deposit upfront and settle the balance upon arrival.\n3. 100% Refunds & Cancellations: Full refund if a China supplier cannot fulfill your order, if duplicate payment occurs, or if canceled before the batch cutoff date. Defective or damaged items reported within 48 hours receive immediate replacement or full refund.\n4. Prohibited Items: Strictly no weapons, firearms, ammunition, fireworks, combustible chemicals, narcotics, or illegal goods.\n\nWould you like more details on shipping, refunds, or payment?",
+        actionLink: { label: "View Refund & Shipping Policy", href: "/refunds" },
+        quickReplies: [
+            { label: "Shipping Policy", query: "What is your shipping policy?" },
+            { label: "Refund Policy", query: "What is your refund policy?" },
+            { label: "Payment Methods", query: "What payment methods do you accept?" },
+            { label: "Browse Catalog", query: "Browse catalog" }
+        ]
+    },
     // --- WEBSITE FEATURES & USE CASES ---
     {
         id: 'FEAT-PREORDER',
@@ -217,7 +246,37 @@ export function searchStoreKnowledge(query: string): SearchKnowledgeResult {
         };
     }
 
-    // 2. Score knowledge items based on title, keywords, and text
+    // 2. High-priority policy queries ("what are the policies", "pull them out", "store policies")
+    if (/\b(polic(y|ies)|rules|terms|store\s*guidelines|pull\s*them\s*(out)?|bring\s*them\s*(out)?|show\s*them|tell\s*me\s*the\s*policies)\b/i.test(cleanQuery)) {
+        const polItem = STORE_KNOWLEDGE.find(k => k.id === 'POL-ALL-POLICIES');
+        if (polItem) {
+            return {
+                found: true,
+                item: polItem,
+                content: polItem.content,
+                actionLink: polItem.actionLink,
+                quickReplies: polItem.quickReplies,
+                needsHumanEscalation: false
+            };
+        }
+    }
+
+    // 3. High-priority website information queries ("what about the website", "can you find information", "about website")
+    if (/\b(website|find\s*information|about\s*(the\s*)?website|what\s*about\s*the\s*website|features\s*of\s*the\s*website)\b/i.test(cleanQuery)) {
+        const featItem = STORE_KNOWLEDGE.find(k => k.id === 'FEAT-WEBSITE-OVERVIEW');
+        if (featItem) {
+            return {
+                found: true,
+                item: featItem,
+                content: featItem.content,
+                actionLink: featItem.actionLink,
+                quickReplies: featItem.quickReplies,
+                needsHumanEscalation: false
+            };
+        }
+    }
+
+    // 4. Score knowledge items based on title, keywords, and text
     let bestScore = 0;
     let bestItem: KnowledgeItem | null = null;
 
