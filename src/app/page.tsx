@@ -90,10 +90,11 @@ export default async function HomePage() {
 
   // Helper to extract strictly unique items for a section without fallback contamination
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getUniqueProducts = (items: any[], limit: number) => {
+  const getUniqueProducts = (items: any[], limit: number, allowSesa = false) => {
     const unique = [];
     for (const item of items || []) {
-      if (item.slug === 'sesa-oil' || item.name?.toLowerCase().includes('sesa')) {
+      const isSesa = item.slug === 'sesa-oil' || item.name?.toLowerCase().includes('sesa');
+      if (!allowSesa && isSesa) {
         continue;
       }
       if (!isSeen(item)) {
@@ -179,7 +180,8 @@ export default async function HomePage() {
           const isOutOfStock = p.status === 'OUT_OF_STOCK' || p.stock_quantity === 0;
           return !isPreorder && !isOutOfStock && p.preorder_status === 'READY_TO_SHIP';
         }),
-        4
+        4,
+        true // allowSesa: Sesa oil is an admin in-stock item for Instant Availability
       ),
       linkText: "Shop ready stock",
       linkHref: "/products?status=READY_TO_SHIP"
