@@ -206,7 +206,7 @@ export default function EditProductPage() {
     };
 
     const isDark = theme === 'dark';
-    const inputClasses = `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all ${
+    const inputClasses = `w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all ${
         isDark
             ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-white/10'
             : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10'
@@ -221,19 +221,19 @@ export default function EditProductPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto px-0 sm:px-0">
             {/* Header */}
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
                 <Link
                     href="/dashboard/vendor/products"
-                    className={`p-2 rounded-xl border transition-colors ${
+                    className={`p-2.5 rounded-xl border transition-colors shrink-0 ${
                         isDark ? 'border-slate-800 hover:bg-slate-800 text-slate-400' : 'border-slate-200 hover:bg-slate-100 text-slate-600'
                     }`}
                 >
                     <ArrowLeft className="w-4 h-4" />
                 </Link>
                 <div>
-                    <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <h1 className={`text-lg sm:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         Edit Product
                     </h1>
                     <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -242,12 +242,13 @@ export default function EditProductPage() {
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Basic Info */}
-                <div className={`p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 shadow-sm'}`}>
-                    <h3 className={`text-base font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Basic Information</h3>
+                <div className={`p-4 sm:p-6 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 shadow-sm'}`}>
+                    <h3 className={`text-sm sm:text-base font-bold mb-4 sm:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Basic Information</h3>
 
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-5">
+                        {/* Name */}
                         <div>
                             <label htmlFor="name" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                 Product Title
@@ -263,6 +264,7 @@ export default function EditProductPage() {
                             />
                         </div>
 
+                        {/* Description */}
                         <div>
                             <label htmlFor="description" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                 Detailed Description
@@ -278,21 +280,21 @@ export default function EditProductPage() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
-                                <ProductVariantEditor
-                                    hasVariants={hasVariants}
-                                    setHasVariants={setHasVariants}
-                                    variants={variants}
-                                    setVariants={setVariants}
-                                    price={formData.price}
-                                    onPriceChange={handleChange}
-                                    stockQuantity={formData.stock_quantity}
-                                    onStockChange={handleChange}
-                                    inputClasses={inputClasses}
-                                />
-                            </div>
+                        {/* Price / Variants — full width */}
+                        <ProductVariantEditor
+                            hasVariants={hasVariants}
+                            setHasVariants={setHasVariants}
+                            variants={variants}
+                            setVariants={setVariants}
+                            price={formData.price}
+                            onPriceChange={handleChange}
+                            stockQuantity={formData.stock_quantity}
+                            onStockChange={handleChange}
+                            inputClasses={inputClasses}
+                        />
 
+                        {/* Category + Availability — 2-col on sm+ */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="category_id" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     Category
@@ -331,7 +333,8 @@ export default function EditProductPage() {
                             </div>
                         </div>
 
-                        <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {/* Sizes + Colors — 2-col on sm+ */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="sizes" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                     Available Sizes (comma-separated)
@@ -342,6 +345,7 @@ export default function EditProductPage() {
                                     name="sizes"
                                     value={formData.sizes}
                                     onChange={handleChange}
+                                    placeholder="e.g. S, M, L, XL"
                                     className={inputClasses}
                                 />
                             </div>
@@ -355,23 +359,26 @@ export default function EditProductPage() {
                                     name="colors"
                                     value={formData.colors}
                                     onChange={handleChange}
+                                    placeholder="e.g. Red, Blue, Black"
                                     className={inputClasses}
                                 />
                             </div>
-                            <div className="col-span-1 sm:col-span-2">
-                                <label htmlFor="shipping_origin" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                    Shipping Origin
-                                </label>
-                                <input
-                                    id="shipping_origin"
-                                    type="text"
-                                    name="shipping_origin"
-                                    value={formData.shipping_origin}
-                                    onChange={handleChange}
-                                    placeholder="e.g. China, Turkey, London, Local"
-                                    className={inputClasses}
-                                />
-                            </div>
+                        </div>
+
+                        {/* Shipping Origin — full width */}
+                        <div>
+                            <label htmlFor="shipping_origin" className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                Shipping Origin
+                            </label>
+                            <input
+                                id="shipping_origin"
+                                type="text"
+                                name="shipping_origin"
+                                value={formData.shipping_origin}
+                                onChange={handleChange}
+                                placeholder="e.g. China, Turkey, London, Local"
+                                className={inputClasses}
+                            />
                         </div>
                     </div>
                 </div>
@@ -413,10 +420,10 @@ export default function EditProductPage() {
                 />
 
                 {/* Form Action Controls */}
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-2 pb-6">
                     <Link
                         href="/dashboard/vendor/products"
-                        className={`px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
+                        className={`w-full sm:w-auto text-center px-5 py-3 sm:py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
                             isDark
                                 ? 'border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white'
                                 : 'border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
@@ -427,7 +434,7 @@ export default function EditProductPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                        className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
                             isDark
                                 ? 'bg-white text-slate-950 hover:bg-slate-100'
                                 : 'bg-slate-900 text-white hover:bg-slate-800'

@@ -88,8 +88,8 @@ export function ProductVariantEditor({
                         <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Product Variations</h4>
                         <div className="space-y-2.5">
                             {variants.map((variant, index) => (
-                                <div key={index} className="flex gap-2 items-start">
-                                    <div className="flex-1">
+                                <div key={index} className="grid grid-cols-2 sm:flex sm:flex-row gap-2 items-start">
+                                    <div className="col-span-2 sm:flex-1">
                                         <input
                                             type="text"
                                             placeholder="Size/Option (e.g. Small)"
@@ -99,7 +99,7 @@ export function ProductVariantEditor({
                                                 newVariants[index].name = e.target.value;
                                                 setVariants(newVariants);
                                             }}
-                                            className={`w-full px-3 py-2 text-sm rounded-lg border outline-none ${
+                                            className={`w-full px-3 py-2.5 text-sm rounded-lg border outline-none ${
                                                 isDark
                                                     ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-400'
                                                     : 'bg-white border-slate-200 text-slate-900 focus:border-slate-900'
@@ -107,7 +107,7 @@ export function ProductVariantEditor({
                                             required
                                         />
                                     </div>
-                                    <div className="w-28">
+                                    <div className="sm:w-28">
                                         <input
                                             type="number"
                                             placeholder="GH₵ Price"
@@ -117,7 +117,7 @@ export function ProductVariantEditor({
                                                 newVariants[index].price = e.target.value;
                                                 setVariants(newVariants);
                                             }}
-                                            className={`w-full px-3 py-2 text-sm rounded-lg border outline-none ${
+                                            className={`w-full px-3 py-2.5 text-sm rounded-lg border outline-none ${
                                                 isDark
                                                     ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-400'
                                                     : 'bg-white border-slate-200 text-slate-900 focus:border-slate-900'
@@ -125,7 +125,7 @@ export function ProductVariantEditor({
                                             required
                                         />
                                     </div>
-                                    <div className="w-24">
+                                    <div className="flex gap-2 sm:contents"><div className="flex-1 sm:w-24">
                                         <input
                                             type="number"
                                             min="1"
@@ -136,7 +136,7 @@ export function ProductVariantEditor({
                                                 newVariants[index].stock_quantity = e.target.value;
                                                 setVariants(newVariants);
                                             }}
-                                            className={`w-full px-3 py-2 text-sm rounded-lg border outline-none ${
+                                            className={`w-full px-3 py-2.5 text-sm rounded-lg border outline-none ${
                                                 isDark
                                                     ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-400'
                                                     : 'bg-white border-slate-200 text-slate-900 focus:border-slate-900'
@@ -152,12 +152,12 @@ export function ProductVariantEditor({
                                                 setVariants(newVariants);
                                             }
                                         }}
-                                        className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors"
+                                        className="p-2.5 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
-                                </div>
-                            ))}
+                                    </div>
+                                ))}
                         </div>
                         <button
                             type="button"
