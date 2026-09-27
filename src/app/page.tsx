@@ -64,7 +64,7 @@ export default async function HomePage() {
     getProducts({ category: 'kitchen', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ category: 'beauty-personal-care', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ category: 'womens-heels', limit: '15' }).catch(() => ({ results: [] })),
-    getProducts({ status: 'READY_TO_SHIP', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ is_vendor: 'true', status: 'READY_TO_SHIP', limit: '10' }).catch(() => ({ results: [] })),
     getProducts({ featured: 'true', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-reservations_count', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-created_at', limit: '24' }).catch(() => ({ results: [] })),
@@ -72,7 +72,9 @@ export default async function HomePage() {
     getActiveCollections().catch(() => [])
   ]);
 
-  const fallbackPool = trendingRes?.results?.length ? trendingRes.results : (newArrivalsRes?.results || []);
+  const fallbackPool = (trendingRes?.results?.length ? trendingRes.results : (newArrivalsRes?.results || [])).filter(
+    (p: any) => p.slug !== 'sesa-oil' && !p.name?.toLowerCase().includes('sesa')
+  );
 
   const seenIds = new Set<string>();
   // Helper to deduplicate items globally and limit the final array
@@ -147,9 +149,17 @@ export default async function HomePage() {
     },
     {
       title: "Instant Availability",
-      products: dedupeAndLimit(readyRes?.results, 4),
+      products: dedupeAndLimit(
+        (readyRes?.results || []).filter((p: any) => {
+          const isPreorder = p.is_preorder || p.preorder_status === 'PREORDER';
+          const isOutOfStock = p.status === 'OUT_OF_STOCK' || p.stock_quantity === 0;
+          return !isPreorder && !isOutOfStock && p.preorder_status === 'READY_TO_SHIP';
+        }),
+        4,
+        false
+      ),
       linkText: "Shop ready stock",
-      linkHref: "/products?status=READY_TO_SHIP"
+      linkHref: process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market'
     }
   ];
 
