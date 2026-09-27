@@ -430,3 +430,20 @@ export const getAgentPricing = cache(async (agentSlug?: string) => {
         return null;
     }
 });
+
+export async function getActiveCollections(revalidate = 86400) {
+    const url = `${API_BASE_URL}/products/collections/`;
+    try {
+        const res = await fetchWithRetry(url, {
+            next: { revalidate }
+        });
+        if (!res.ok) {
+            return [];
+        }
+        const data = await res.json();
+        return Array.isArray(data) ? data : data.results || [];
+    } catch (e) {
+        console.error("[SSR] Exception fetching active collections:", e);
+        return [];
+    }
+}

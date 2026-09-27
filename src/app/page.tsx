@@ -39,7 +39,7 @@ import TrustStrip from '@/components/home/TrustStrip';
 import CategoryFeatureCards from '@/components/home/CategoryFeatureCards';
 import ProductCarouselShelf from '@/components/home/ProductCarouselShelf';
 import { HeroSkeleton } from '@/components/skeletons/HomeSkeletons';
-import { getProducts } from '@/lib/fetchers';
+import { getProducts, getActiveCollections } from '@/lib/fetchers';
 
 
 // Lazy load below-the-fold components to reduce initial bundle
@@ -55,7 +55,8 @@ export default async function HomePage() {
   const [
     fashionRes, bagsRes, lifestyleRes, kitchenRes,
     beautyRes, shoesRes, readyRes, featuredRes,
-    trendingRes, newArrivalsRes, perfumesRes
+    trendingRes, newArrivalsRes, perfumesRes,
+    activeCollections
   ] = await Promise.all([
     getProducts({ category: 'womens-fashion', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ category: 'womens-bags-handbags', limit: '15' }).catch(() => ({ results: [] })),
@@ -67,7 +68,8 @@ export default async function HomePage() {
     getProducts({ featured: 'true', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-reservations_count', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-created_at', limit: '24' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'fragrances', limit: '15' }).catch(() => ({ results: [] }))
+    getProducts({ category: 'fragrances', limit: '15' }).catch(() => ({ results: [] })),
+    getActiveCollections().catch(() => [])
   ]);
 
   const fallbackPool = trendingRes?.results?.length ? trendingRes.results : (newArrivalsRes?.results || []);
@@ -191,6 +193,15 @@ export default async function HomePage() {
           </Link>
         </div>
       </div>
+
+      {/* Active Seasonal / Curated Collections (Rendered only when active collections exist) */}
+      {activeCollections && activeCollections.length > 0 && activeCollections.map((collection: any) => (
+        <ProductCarouselShelf
+          key={collection.id}
+          title={collection.name}
+          products={collection.products || []}
+        />
+      ))}
 
       {/* 4. Curated Picks Horizontal Carousel */}
       <ProductCarouselShelf title="Curated Picks" products={featured} />
