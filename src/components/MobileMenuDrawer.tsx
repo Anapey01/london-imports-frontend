@@ -221,17 +221,25 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 {/* 2. DIRECTORY CONTENT (Vertical Ledger) */}
                 <div className="flex-1 overflow-y-auto px-4 py-8 space-y-2">
                     
-                    {/* CATALOG SELECTOR */}
-                    <div className="mb-8 px-2">
-                        <span className="text-[9px] font-black uppercase tracking-[0.5em] text-content-secondary mb-3 block">Catalog</span>
-                        <div className="grid grid-cols-2 p-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-center">
+                    {/* STOREFRONT SELECTOR */}
+                    <div className="mb-6 px-1">
+                        <div className="flex items-center justify-between mb-2 px-1">
+                            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                                Storefront
+                            </span>
+                            <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                {!isMarket ? 'China Preorders' : 'Ghana In-Stock'}
+                            </span>
+                        </div>
+                        <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80">
                             <Link
                                 href={process.env.NODE_ENV === 'production' ? siteConfig.baseUrl : '/'}
                                 onClick={(e) => handleLinkClick(process.env.NODE_ENV === 'production' ? siteConfig.baseUrl : '/', e)}
-                                className={`py-2 px-2 rounded-lg transition-all ${
+                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all ${
                                     !isMarket
-                                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xs'
-                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                        ? 'bg-white text-slate-900 dark:bg-slate-800 dark:text-white shadow-xs'
+                                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                                 }`}
                             >
                                 Preorder Store
@@ -239,10 +247,10 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                             <Link
                                 href={process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market'}
                                 onClick={(e) => handleLinkClick(process.env.NODE_ENV === 'production' ? siteConfig.marketUrl : '/market', e)}
-                                className={`py-2 px-2 rounded-lg transition-all ${
+                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all ${
                                     isMarket
-                                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950 shadow-xs'
-                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                        ? 'bg-white text-slate-900 dark:bg-slate-800 dark:text-white shadow-xs'
+                                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                                 }`}
                             >
                                 Local Market

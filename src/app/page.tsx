@@ -53,21 +53,21 @@ import { FaqSchema } from '@/components/seo/JsonLd';
 export default async function HomePage() {
   // Fetch data for grids and carousels from local database categories
   const [
-    fashionRes, bagsRes, lifestyleRes, accessoriesRes,
+    fashionRes, bagsRes, lifestyleRes, kitchenRes,
     beautyRes, shoesRes, readyRes, featuredRes,
     trendingRes, newArrivalsRes, perfumesRes
   ] = await Promise.all([
-    getProducts({ category: 'fashion', limit: '15' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'bags', limit: '15' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'home-lifestyle', limit: '15' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'accessories', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'womens-fashion', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'womens-bags-handbags', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'home-living', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'kitchen', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ category: 'beauty-personal-care', limit: '15' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'heels-and-shoes', limit: '15' }).catch(() => ({ results: [] })),
+    getProducts({ category: 'womens-heels', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ status: 'READY_TO_SHIP', limit: '15' }).catch(() => ({ results: [] })),
     getProducts({ featured: 'true', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-reservations_count', limit: '24' }).catch(() => ({ results: [] })),
     getProducts({ ordering: '-created_at', limit: '24' }).catch(() => ({ results: [] })),
-    getProducts({ category: 'perfumes', limit: '15' }).catch(() => ({ results: [] }))
+    getProducts({ category: 'fragrances', limit: '15' }).catch(() => ({ results: [] }))
   ]);
 
   const fallbackPool = trendingRes?.results?.length ? trendingRes.results : (newArrivalsRes?.results || []);
@@ -84,16 +84,16 @@ export default async function HomePage() {
         if (unique.length === limit) break;
       }
     }
-    // Production Mode: Do not inject unrelated fallback items into empty categories
-    // if (unique.length === 0 && allowFallback) {
-    //   for (const item of fallbackPool) {
-    //     if (!seenIds.has(item.id)) {
-    //       seenIds.add(item.id);
-    //       unique.push(item);
-    //       if (unique.length === limit) break;
-    //     }
-    //   }
-    // }
+    // Graceful fallback: populate from general pool if category has fewer than needed
+    if (unique.length < limit && allowFallback) {
+      for (const item of fallbackPool) {
+        if (!seenIds.has(item.id)) {
+          seenIds.add(item.id);
+          unique.push(item);
+          if (unique.length === limit) break;
+        }
+      }
+    }
     return unique;
   };
 
@@ -102,25 +102,25 @@ export default async function HomePage() {
       title: "Shop Fashion for less",
       products: dedupeAndLimit(fashionRes?.results, 4),
       linkText: "See all fashion",
-      linkHref: "/products?category=fashion"
+      linkHref: "/products?category=womens-fashion"
     },
     {
       title: "Explore Bags collection",
       products: dedupeAndLimit(bagsRes?.results, 4),
       linkText: "See all bags",
-      linkHref: "/products?category=bags"
+      linkHref: "/products?category=womens-bags-handbags"
     },
     {
       title: "Home & Lifestyle",
       products: dedupeAndLimit(lifestyleRes?.results, 4),
       linkText: "See all home & lifestyle",
-      linkHref: "/products?category=home-lifestyle"
+      linkHref: "/products?category=home-living"
     },
     {
-      title: "Accessories & Trends",
-      products: dedupeAndLimit(accessoriesRes?.results, 4),
-      linkText: "See all accessories",
-      linkHref: "/products?category=accessories"
+      title: "Kitchen & Dining",
+      products: dedupeAndLimit(kitchenRes?.results, 4),
+      linkText: "See all kitchen",
+      linkHref: "/products?category=kitchen"
     }
   ];
 
@@ -135,13 +135,13 @@ export default async function HomePage() {
       title: "Heels & Shoes",
       products: dedupeAndLimit(shoesRes?.results, 4),
       linkText: "See all heels & shoes",
-      linkHref: "/products?category=heels-and-shoes"
+      linkHref: "/products?category=womens-heels"
     },
     {
       title: "Arabian Perfumes",
       products: dedupeAndLimit(perfumesRes?.results, 4),
       linkText: "See all perfumes",
-      linkHref: "/products?category=perfumes"
+      linkHref: "/products?category=fragrances"
     },
     {
       title: "Instant Availability",
