@@ -143,21 +143,22 @@ export function ProductVariantEditor({
                                             }`}
                                         />
                                     </div>
-                                    <button
-                                        type="button"
-                                        aria-label="Remove variant"
-                                        onClick={() => {
-                                            if (variants.length > 1) {
-                                                const newVariants = variants.filter((_, i) => i !== index);
-                                                setVariants(newVariants);
-                                            }
-                                        }}
-                                        className="p-2.5 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
+                                        <button
+                                            type="button"
+                                            aria-label="Remove variant"
+                                            onClick={() => {
+                                                if (variants.length > 1) {
+                                                    const newVariants = variants.filter((_, i) => i !== index);
+                                                    setVariants(newVariants);
+                                                }
+                                            }}
+                                            className="p-2.5 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
                                     </div>
-                                ))}
+                                </div>
+                            ))}
                         </div>
                         <button
                             type="button"
