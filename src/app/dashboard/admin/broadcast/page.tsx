@@ -242,13 +242,18 @@ export default function AdminBroadcastPage() {
         if (smsTarget === 'manual') {
             const rawList = manualPhones.split(/[\r\n,;]+/).map(p => p.trim()).filter(Boolean);
             for (const item of rawList) {
-                const parts = item.split(/\s+/).filter(Boolean);
-                if (parts.length > 1 && parts.every(part => part.replace(/\D/g, '').length >= 9)) {
-                    phones.push(...parts.map(p => p.trim()));
+                const spaceSeparated = item.split(/\s+/).filter(Boolean);
+                if (spaceSeparated.length > 1 && spaceSeparated.every(part => part.replace(/\D/g, '').length >= 9)) {
+                    for (const part of spaceSeparated) {
+                        const cleanDigits = part.replace(/\D/g, '');
+                        if (cleanDigits.length >= 9) {
+                            phones.push(part.startsWith('+') ? `+${cleanDigits}` : cleanDigits);
+                        }
+                    }
                 } else {
-                    const digits = item.replace(/\D/g, '');
-                    if (digits.length >= 9) {
-                        phones.push(item.trim());
+                    const cleanDigits = item.replace(/\D/g, '');
+                    if (cleanDigits.length >= 9) {
+                        phones.push(item.startsWith('+') ? `+${cleanDigits}` : cleanDigits);
                     }
                 }
             }
@@ -295,6 +300,7 @@ export default function AdminBroadcastPage() {
                     const msg = error.response?.data?.error || error.response?.data?.message || error.message || 'Failed to dispatch SMS';
                     setStatus({ type: 'error', msg });
                     addAlert(msg, 'error');
+                    setDispatchModal(prev => ({ ...prev, isOpen: false }));
                 } finally {
                     setSending(false);
                 }
