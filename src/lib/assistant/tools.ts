@@ -55,7 +55,7 @@ export const ASSISTANT_TOOLS = [
                 properties: {
                     query: {
                         type: 'string',
-                        description: 'The product keyword(s) to search (e.g. "bag", "scented candles", "shoes")'
+                        description: 'Optional keyword search (e.g. "bag", "scented candles"). Leave empty to browse the general catalog.'
                     },
                     category: {
                         type: 'string',
@@ -65,8 +65,7 @@ export const ASSISTANT_TOOLS = [
                         type: 'number',
                         description: 'Optional maximum price in Ghana Cedis (GH₵)'
                     }
-                },
-                required: ['query']
+                }
             }
         }
     },
