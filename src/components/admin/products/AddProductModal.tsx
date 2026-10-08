@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface NewProduct {
     name: string;
@@ -34,10 +35,16 @@ const AddProductModal = ({
     categories,
     isDark
 }: AddProductModalProps) => {
-    if (!show) return null;
+    const [mounted, setMounted] = useState(false);
 
-    return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!show || !mounted) return null;
+
+    return createPortal(
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4" onClick={onClose}>
             <div className={`w-full max-w-xl rounded-2xl p-6 max-h-[85vh] overflow-y-auto ${isDark ? 'bg-slate-900' : 'bg-white'}`} onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-6">
                     <div>
@@ -113,7 +120,8 @@ const AddProductModal = ({
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -280,6 +280,10 @@ export const adminAPI = {
   getProduct: (id: string) => api.get(`/admin/products/${id}/`),
   deleteProduct: (id: string) => api.delete(`/admin/products/${id}/`),
   bulkActivateProducts: (weeks: number = 3) => api.post('/admin/products/bulk-activate/', { weeks }),
+  exportProductsExcel: () => api.get('/products/admin/bulk-update/export/', { responseType: 'blob' }),
+  importProductsExcel: (data: FormData) => api.post('/products/admin/bulk-update/import/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 
   // Analytics
   analytics: (params?: unknown) => api.get('/admin/analytics/', { params }),

@@ -11,7 +11,7 @@ import { AdminProduct } from '@/types';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
 import { AnimatePresence } from 'framer-motion';
-import { Search, Plus, Trash2, ShieldCheck, Activity, Package, Grid, List, Zap, Filter, MoreHorizontal } from 'lucide-react';
+import { Search, Plus, Trash2, ShieldCheck, Activity, Package, Grid, List, Zap, Filter, MoreHorizontal, Download, Upload } from 'lucide-react';
 
 // Component Imports
 import ProductStats from '@/components/admin/products/ProductStats';
@@ -83,6 +83,63 @@ export default function AdminProductsPage() {
 
     const removeAlert = (id: string) => {
         setAlerts(prev => prev.filter(alert => alert.id !== id));
+    };
+
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleExportExcel = async () => {
+        try {
+            addAlert('Generating Excel file...', 'info');
+            const response = await adminAPI.exportProductsExcel();
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `products_bulk_update_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            addAlert('Excel exported successfully');
+        } catch (error) {
+            console.error('Export failed:', error);
+            addAlert('Failed to export Excel file', 'error');
+        }
+    };
+
+    const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            addAlert('Importing Excel file...', 'info');
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await adminAPI.importProductsExcel(formData);
+            
+            if (response.data.errors && response.data.errors.length > 0) {
+                console.warn('Import warnings:', response.data.errors);
+                addAlert(`${response.data.message} (${response.data.errors.length} rows had issues)`, 'warning');
+            } else {
+                addAlert(response.data.message || 'Excel imported successfully');
+            }
+            
+            // Reload products
+            setLoading(true);
+            const productsRes = await adminAPI.products();
+            const pData = productsRes.data;
+            setProducts(Array.isArray(pData.results) ? pData.results : (Array.isArray(pData) ? pData : []));
+        } catch (error: any) {
+            console.error('Import failed:', error);
+            const msg = error.response?.data?.error || 'Failed to import Excel file';
+            addAlert(msg, 'error');
+        } finally {
+            setLoading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
     };
 
     useEffect(() => {
@@ -255,6 +312,29 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-4 w-full sm:w-auto">
+                    <input 
+                        type="file" 
+                        accept=".xlsx, .xls" 
+                        className="hidden" 
+                        ref={fileInputRef} 
+                        onChange={handleImportExcel} 
+                    />
+                    <button
+                        onClick={handleExportExcel}
+                        className="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 sm:py-4 bg-white border border-slate-950 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer"
+                        title="Download catalog to Excel"
+                    >
+                        <Download className="w-3.5 h-3.5" />
+                        EXPORT
+                    </button>
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 sm:py-4 bg-white border border-slate-950 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer"
+                        title="Upload updated Excel catalog"
+                    >
+                        <Upload className="w-3.5 h-3.5" />
+                        IMPORT
+                    </button>
                     <button
                         onClick={handleBulkActivate}
                         className="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 sm:py-4 bg-white border border-slate-950 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] hover:bg-slate-950 hover:text-white transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer"
