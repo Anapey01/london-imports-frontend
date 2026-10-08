@@ -894,16 +894,6 @@ export default function ConciergeDrawer() {
                                     {/* Action Link button (Primary Action - only if no order cards) */}
                                     {msg.actionLink && (!msg.orders || msg.orders.length === 0) && (
                                         <div className="mt-2">
-                                            {/browse(\s+our|\s+the)?\s+catalog/i.test(msg.actionLink.label) || msg.actionLink.href === '/products' ? (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSend("Browse catalog")}
-                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white text-xs font-medium hover:opacity-95 active:scale-95 transition-all cursor-pointer"
-                                                >
-                                                    <span>{msg.actionLink.label}</span>
-                                                    <ArrowRight className="w-3.5 h-3.5" />
-                                                </button>
-                                            ) : (
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -915,7 +905,6 @@ export default function ConciergeDrawer() {
                                                     <span>{msg.actionLink.label}</span>
                                                     <ArrowRight className="w-3.5 h-3.5" />
                                                 </button>
-                                            )}
                                         </div>
                                     )}
 
