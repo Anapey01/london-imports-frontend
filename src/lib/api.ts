@@ -271,7 +271,7 @@ export const adminAPI = {
   sendInvoice: (id: string) => 
     api.post(`/admin/orders/${id}/send-invoice/`),
   revalidateOrdersPricing: (data: { apply?: boolean; from_date?: string; to_date?: string }) =>
-    api.post('/admin/orders/revalidate-pricing/', data),
+    api.post('/admin/orders/revalidate-pricing/', data, { timeout: 120000 }),
 
   // Products management
   products: (params?: unknown) => api.get('/admin/products/', { params }),
