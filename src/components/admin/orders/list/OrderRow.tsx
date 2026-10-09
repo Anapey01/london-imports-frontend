@@ -72,7 +72,7 @@ const OrderRow = React.memo(({
         ? (amountPaid > 0 ? 'PARTIAL' : 'PENDING') 
         : (order.payment_status || (amountPaid >= totalAmount && totalAmount > 0 ? 'PAID' : 'PENDING'));
     const isPaid = effectivePaymentStatus === 'PAID';
-    const displayStatus = (isPaid && (order.status === 'PENDING_PAYMENT' || order.status === 'PENDING' || order.status === 'DRAFT'))
+    const displayStatus = ((isPaid || effectivePaymentStatus === 'PARTIAL') && (order.status === 'PENDING_PAYMENT' || order.status === 'PENDING' || order.status === 'DRAFT'))
         ? 'PROCESSING'
         : order.status;
 
