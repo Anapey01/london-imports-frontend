@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { adminAPI } from '@/lib/api';
 import { RefreshCw, AlertTriangle, CheckCircle2, X } from 'lucide-react';
 
@@ -38,13 +39,28 @@ interface RevalidationResult {
 }
 
 export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: RevalidatePricingModalProps) {
+    const [mounted, setMounted] = useState(false);
     const [fromDate, setFromDate] = useState('2026-08-01');
     const [toDate, setToDate] = useState('2026-10-31');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<RevalidationResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Prevent background scrolling while modal is open
+    useEffect(() => {
+        if (!isOpen) return;
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, [isOpen]);
+
+    if (!isOpen || !mounted) return null;
 
     const handleRun = async (apply: boolean) => {
         setLoading(true);
@@ -60,19 +76,21 @@ export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: R
                 onSuccess();
             }
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to revalidate order prices.');
+            console.error('Revalidation error:', err);
+            const msg = err.response?.data?.error || err.response?.data?.detail || err.message || 'Failed to revalidate order prices.';
+            setError(msg);
         } finally {
             setLoading(false);
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl">
+    const modalContent = (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl rounded-none my-auto">
                 {/* Header */}
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shrink-0">
                             <RefreshCw className="w-4 h-4" />
                         </div>
                         <div>
@@ -84,13 +102,17 @@ export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: R
                             </p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                    <button 
+                        onClick={onClose} 
+                        className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1"
+                        aria-label="Close modal"
+                    >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Form Controls */}
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-4 bg-slate-50/50 dark:bg-slate-800/20">
+                <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-4 bg-slate-50/50 dark:bg-slate-800/20 shrink-0">
                     <div>
                         <label className="block text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">
                             From Date
@@ -116,7 +138,7 @@ export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: R
                 </div>
 
                 {/* Body Content */}
-                <div className="p-6 overflow-y-auto flex-1 space-y-4">
+                <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
                     {error && (
                         <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-red-600 text-xs font-mono">
                             {error}
@@ -126,7 +148,7 @@ export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: R
                     {!result && (
                         <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-amber-800 dark:text-amber-300 text-xs space-y-2">
                             <div className="flex items-center gap-2 font-bold uppercase text-[10px] tracking-wider">
-                                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                                 <span>Zero-Loss Historical Audit Trail</span>
                             </div>
                             <p className="text-[11px] leading-relaxed">
@@ -185,7 +207,7 @@ export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: R
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 bg-slate-50/50 dark:bg-slate-800/20">
+                <div className="p-5 sm:p-6 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 bg-slate-50/50 dark:bg-slate-800/20 shrink-0">
                     <button
                         onClick={onClose}
                         className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
@@ -210,4 +232,6 @@ export default function RevalidatePricingModal({ isOpen, onClose, onSuccess }: R
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 }
