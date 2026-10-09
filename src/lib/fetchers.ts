@@ -56,7 +56,7 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
     throw new Error(`Failed to fetch ${url} after ${retries} retries`);
 }
 
-export async function getProducts(params: Record<string, string> = {}, revalidate = 0) {
+export async function getProducts(params: Record<string, string> = {}, revalidate = 86400) {
     try {
         const queryParams = { is_vendor: 'false', ...params };
         const queryString = new URLSearchParams(queryParams).toString();
@@ -112,7 +112,7 @@ export async function getProducts(params: Record<string, string> = {}, revalidat
     }
 }
 
-export async function getProductPreviews(params: Record<string, string> = {}, revalidate = 0) {
+export async function getProductPreviews(params: Record<string, string> = {}, revalidate = 86400) {
     try {
         const queryParams = { is_vendor: 'false', ...params };
         const queryString = new URLSearchParams(queryParams).toString();
@@ -231,7 +231,7 @@ export const getProductWithStatus = cache(async (slug: string): Promise<ProductF
     const url = `${API_BASE_URL}/products/${slug}/`;
     try {
         const res = await fetchWithRetry(url, {
-            next: { revalidate: 0 }
+            next: { revalidate: 86400 }
         });
 
         if (res.status === 404) {
@@ -431,7 +431,7 @@ export const getAgentPricing = cache(async (agentSlug?: string) => {
     }
 });
 
-export async function getActiveCollections(revalidate = 0) {
+export async function getActiveCollections(revalidate = 86400) {
     const url = `${API_BASE_URL}/products/collections/`;
     try {
         const res = await fetchWithRetry(url, {
