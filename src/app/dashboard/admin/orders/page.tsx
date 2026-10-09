@@ -77,9 +77,12 @@ function mapAPIOrder(order: Record<string, unknown>): Order {
 
     const totalAmount = Number(order.total || 0);
     const amountPaid = Number(order.amount_paid || 0);
-    const isFullyPaid = (order.payment_status === 'PAID') || (amountPaid >= totalAmount && totalAmount > 0);
+    const balanceDue = Number(order.balance_due !== undefined && order.balance_due !== null ? order.balance_due : Math.max(0, totalAmount - amountPaid));
+    const isFullyPaid = balanceDue <= 0.001 && ((order.payment_status === 'PAID') || (amountPaid >= totalAmount && totalAmount > 0));
 
-    const paymentStatus = (order.payment_status as string) || (isFullyPaid ? 'PAID' : (amountPaid > 0 ? 'PARTIAL' : 'PENDING'));
+    const paymentStatus = balanceDue > 0.001 && amountPaid > 0 
+        ? 'PARTIAL' 
+        : ((order.payment_status as string) || (isFullyPaid ? 'PAID' : (amountPaid > 0 ? 'PARTIAL' : 'PENDING')));
     
     let rawStatus = (order.status as string) || (order.state as string) || 'PENDING';
     let rawState = (order.state as string) || (order.status as string) || 'PENDING';

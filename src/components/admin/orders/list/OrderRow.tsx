@@ -65,7 +65,13 @@ const OrderRow = React.memo(({
     handleDelete,
     getStatusColor
 }: OrderRowProps) => {
-    const isPaid = order.payment_status === 'PAID' || (Number(order.amount_paid || 0) >= Number(order.total_amount || 0) && Number(order.total_amount || 0) > 0);
+    const balanceDue = Number(order.balance_due || 0);
+    const amountPaid = Number(order.amount_paid || 0);
+    const totalAmount = Number(order.total_amount || 0);
+    const effectivePaymentStatus = balanceDue > 0.001 
+        ? (amountPaid > 0 ? 'PARTIAL' : 'PENDING') 
+        : (order.payment_status || (amountPaid >= totalAmount && totalAmount > 0 ? 'PAID' : 'PENDING'));
+    const isPaid = effectivePaymentStatus === 'PAID';
     const displayStatus = (isPaid && (order.status === 'PENDING_PAYMENT' || order.status === 'PENDING' || order.status === 'DRAFT'))
         ? 'PROCESSING'
         : order.status;
@@ -127,15 +133,22 @@ const OrderRow = React.memo(({
                         {statusLabel(displayStatus)}
                     </span>
                     <div className="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
-                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(order.payment_status)}`}>
-                        {order.payment_status}
+                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${getPaymentColor(effectivePaymentStatus)}`}>
+                        {effectivePaymentStatus}
                     </span>
                 </div>
             </td>
             <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-right">
-                <span className="text-[11px] sm:text-[12px] font-black text-slate-950 dark:text-white tabular-nums whitespace-nowrap">
-                    ₵{(statusFilter === 'PENDING' ? Number(order.balance_due) : Number(order.total_amount)).toLocaleString()}
-                </span>
+                <div className="flex flex-col items-end">
+                    <span className="text-[11px] sm:text-[12px] font-black text-slate-950 dark:text-white tabular-nums whitespace-nowrap">
+                        ₵{Number(order.total_amount).toLocaleString()}
+                    </span>
+                    {Number(order.balance_due) > 0 && (
+                        <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 tabular-nums whitespace-nowrap">
+                            Left: ₵{Number(order.balance_due).toLocaleString()}
+                        </span>
+                    )}
+                </div>
             </td>
             <td className="px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 md:py-6 text-right">
                 <div className="flex justify-end items-center gap-2 sm:gap-6">

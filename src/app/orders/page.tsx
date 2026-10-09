@@ -66,8 +66,8 @@ export default function OrdersPage() {
                     <div className="space-y-3">
                         {orders.map((order: Order) => {
                             const balanceDue = parseFloat(order.balance_due?.toString() || '0');
-                            const isPaid = order.state === 'PAID' || order.state === 'DELIVERED' || order.state === 'COMPLETED';
-                            const isPendingPayment = (order.state === 'PENDING_PAYMENT' || balanceDue > 0) && !isPaid && order.state !== 'CANCELLED';
+                            const isPaid = balanceDue <= 0.001 && (order.state === 'PAID' || order.state === 'DELIVERED' || order.state === 'COMPLETED');
+                            const isPendingPayment = (order.state === 'PENDING_PAYMENT' || balanceDue > 0) && order.state !== 'CANCELLED';
 
                             return (
                                 <div key={order.order_number} className="group relative bg-white border border-border-standard rounded-xl hover:border-brand-emerald/40 transition-all duration-300 shadow-sm overflow-hidden">
@@ -122,9 +122,9 @@ export default function OrdersPage() {
                                             <p className="text-sm sm:text-base font-semibold text-slate-900 tabular-nums tracking-tighter">
                                                 GHS {parseFloat(order.total.toString()).toLocaleString()}
                                             </p>
-                                            {balanceDue > 0 && !isPaid && (
+                                            {balanceDue > 0 && (
                                                 <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest">
-                                                    DUE: {balanceDue.toLocaleString()}
+                                                    LEFT TO PAY: GHS {balanceDue.toLocaleString()}
                                                 </p>
                                             )}
                                         </div>

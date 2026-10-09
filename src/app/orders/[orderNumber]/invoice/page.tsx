@@ -70,7 +70,7 @@ export default function CustomerOrderInvoicePage() {
     const totalNum = parseFloat(rawOrder.total?.toString() || '0');
     const amountPaidNum = parseFloat(rawOrder.amount_paid?.toString() || '0');
     const balanceDueNum = parseFloat(rawOrder.balance_due?.toString() || '0');
-    const isFullyPaid = (rawOrder.state === 'PAID') || (amountPaidNum >= totalNum && totalNum > 0) || balanceDueNum <= 0;
+    const isFullyPaid = balanceDueNum <= 0.001 && ((rawOrder.state === 'PAID') || (amountPaidNum >= totalNum && totalNum > 0));
 
     // Transform raw order into InvoiceData structure
     const invoiceOrder: InvoiceData = {

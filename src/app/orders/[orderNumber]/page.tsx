@@ -95,7 +95,10 @@ export default function OrderDetailPage() {
 
     const balanceDue = parseFloat(order.balance_due?.toString() || '0');
     const isPendingPayment = order.state === 'PENDING_PAYMENT' || balanceDue > 0;
-    const statusStyles = { bg: 'bg-emerald-50', text: 'text-emerald-700' };
+    const isFullyPaid = balanceDue <= 0.001 && order.state !== 'PENDING_PAYMENT';
+    const statusStyles = isFullyPaid 
+        ? { bg: 'bg-emerald-50 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-400' }
+        : { bg: 'bg-amber-50 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-400' };
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-20 pb-32">
@@ -118,7 +121,7 @@ export default function OrderDetailPage() {
                                 Order Details
                             </h1>
                             <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] ${statusStyles.bg} ${statusStyles.text} shadow-sm`}>
-                                {order.state}
+                                {order.state_display || (balanceDue > 0 ? (Number(order.amount_paid || 0) > 0 ? 'Partially Paid' : 'Pending Payment') : order.state)}
                             </span>
                         </div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest opacity-60">
