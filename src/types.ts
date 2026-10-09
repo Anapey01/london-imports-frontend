@@ -81,6 +81,7 @@ export interface OrderItem {
     quantity: number;
     total_price: number;
     unit_price?: number;
+    original_unit_price?: number;
     selected_size?: string;
     selected_color?: string;
 }
@@ -92,6 +93,7 @@ export interface Order {
     status?: string;
     state_display: string;
     total: number;
+    original_total?: number;
     subtotal: number;
     delivery_fee: number;
     items?: OrderItem[];

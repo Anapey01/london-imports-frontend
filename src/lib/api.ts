@@ -270,6 +270,8 @@ export const adminAPI = {
     api.post(`/admin/orders/${id}/revert-payment/`, data || {}),
   sendInvoice: (id: string) => 
     api.post(`/admin/orders/${id}/send-invoice/`),
+  revalidateOrdersPricing: (data: { apply?: boolean; from_date?: string; to_date?: string }) =>
+    api.post('/admin/orders/revalidate-pricing/', data),
 
   // Products management
   products: (params?: unknown) => api.get('/admin/products/', { params }),

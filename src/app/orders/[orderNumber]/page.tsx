@@ -264,7 +264,14 @@ export default function OrderDetailPage() {
                                 
                                 <div className="pt-6 border-t border-border-standard">
                                     <div className="flex justify-between items-end mb-6">
-                                        <span className="text-[9px] font-semibold uppercase text-content-secondary tracking-widest">Total Order Amount</span>
+                                        <div>
+                                            <span className="text-[9px] font-semibold uppercase text-content-secondary tracking-widest block">Total Order Amount</span>
+                                            {order.original_total && Number(order.original_total) !== Number(order.total) && (
+                                                <span className="text-[9px] text-slate-400 line-through">
+                                                    Orig: GHS {Number(order.original_total).toLocaleString()}
+                                                </span>
+                                            )}
+                                        </div>
                                         <span className="text-2xl font-semibold text-content-primary tracking-tight tabular-nums leading-none">
                                             GHS {Number(order.total).toLocaleString()}
                                         </span>

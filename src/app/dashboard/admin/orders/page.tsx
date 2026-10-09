@@ -8,7 +8,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { adminAPI } from '@/lib/api';
 import {
-    ChevronRight, ChevronLeft, Package, X, CheckSquare, Square, ShieldCheck
+    ChevronRight, ChevronLeft, Package, X, CheckSquare, Square, ShieldCheck, RefreshCw
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/dashboard/ConfirmModal';
 import { AuraAlert, AlertType } from '@/components/AuraAlert';
@@ -21,6 +21,7 @@ import FilterTabs from '@/components/admin/orders/list/FilterTabs';
 import SearchField from '@/components/admin/orders/list/SearchField';
 import BulkActionBar from '@/components/admin/orders/list/BulkActionBar';
 import ReconcileHubtelModal from '@/components/admin/orders/list/ReconcileHubtelModal';
+import RevalidatePricingModal from '@/components/admin/orders/list/RevalidatePricingModal';
 
 const statusLabel = (s: string) => {
     switch (s) {
@@ -132,6 +133,7 @@ export default function AdminOrdersPage() {
     const [apiCounts, setApiCounts] = useState<Record<string, number> | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [showReconcileModal, setShowReconcileModal] = useState(false);
+    const [showRevalidateModal, setShowRevalidateModal] = useState(false);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -503,6 +505,14 @@ export default function AdminOrdersPage() {
                         }} 
                     />
                     <button
+                        onClick={() => setShowRevalidateModal(true)}
+                        className="flex items-center justify-center gap-2 px-5 py-3.5 sm:px-6 sm:py-4 bg-white dark:bg-slate-900 border border-slate-900 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-950 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest w-full sm:w-auto shadow-sm shrink-0"
+                        title="Revalidate August - October orders against new catalog prices"
+                    >
+                        <RefreshCw className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>REVALIDATE PRICES</span>
+                    </button>
+                    <button
                         onClick={() => setShowReconcileModal(true)}
                         className="flex items-center justify-center gap-2 px-5 py-3.5 sm:px-6 sm:py-4 bg-slate-950 text-white hover:bg-emerald-600 transition-all text-[10px] font-black uppercase tracking-widest w-full sm:w-auto shadow-sm shrink-0"
                         title="Scan orders to credit missing payments"
@@ -734,6 +744,15 @@ export default function AdminOrdersPage() {
                 onSuccess={() => {
                     loadOrders();
                     addAlert('Hubtel payments reconciled and credited successfully!');
+                }}
+            />
+
+            <RevalidatePricingModal
+                isOpen={showRevalidateModal}
+                onClose={() => setShowRevalidateModal(false)}
+                onSuccess={() => {
+                    loadOrders();
+                    addAlert('Order prices revalidated successfully against new catalog prices!');
                 }}
             />
 
