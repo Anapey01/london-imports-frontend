@@ -9,7 +9,7 @@ import { Product as CartProduct } from '@/stores/cartStore';
 import { siteConfig } from '@/config/site';
 
 // Short ISR revalidation for active vendor stock
-export const revalidate = 60;
+export const revalidate = 36000; // 10 hours edge cache
 
 export const metadata = {
     title: 'Local Market | London\'s Imports',

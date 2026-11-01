@@ -5,8 +5,8 @@ import ShopHeader from '@/components/ShopHeader';
 import { Metadata } from 'next';
 
 // Dynamic: Always fetch fresh categories & products
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// export const dynamic = 'force-dynamic';
+export const revalidate = 36000; // 10 hours edge cache
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>

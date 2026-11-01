@@ -50,6 +50,9 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
     useEffect(() => {
         let isMounted = true;
         const checkClaims = async () => {
+            if (typeof document !== 'undefined' && document.hidden) {
+                return;
+            }
             try {
                 const res = await adminAPI.getUSSDClaims();
                 if (isMounted && res.data?.claims) {
@@ -61,10 +64,20 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
             }
         };
         checkClaims();
-        const interval = setInterval(checkClaims, 25000);
+        // Relax interval from 25s to 3 minutes (180s) to prevent exhausting server & database compute limits
+        const interval = setInterval(checkClaims, 180000);
+
+        const onVisibilityChange = () => {
+            if (!document.hidden) {
+                checkClaims();
+            }
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
         return () => {
             isMounted = false;
             clearInterval(interval);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
         };
     }, []);
 

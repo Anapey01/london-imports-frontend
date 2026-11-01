@@ -11,7 +11,7 @@ import {
     Package
 } from 'lucide-react';
 
-export const revalidate = 60; // Keep cache fresh during review
+export const revalidate = 36000; // 10 hours edge cache
 
 interface Props {
     params: Promise<{

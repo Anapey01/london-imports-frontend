@@ -1,11 +1,5 @@
 {
   "buildCommand": "npm run build && node scripts/postbuild-css.js",
-  "crons": [
-    {
-      "path": "/api/cron/daily-tasks",
-      "schedule": "0 6 * * *"
-    }
-  ],
   "rewrites": [
     {
       "source": "/_next/static/css/22d843d29efef3ed.css",

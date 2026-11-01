@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { Package } from 'lucide-react';
 
 // Dynamic: Always fetch fresh categories & products
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// export const dynamic = 'force-dynamic';
+export const revalidate = 36000; // 10 hours edge cache
 
 export async function generateStaticParams() {
     try {

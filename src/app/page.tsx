@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 
 // ISR: Revalidate homepage every 60 seconds for fresh stock and pricing updates
-export const revalidate = 60;
+export const revalidate = 36000; // 10 hours edge cache
 
 export const metadata: Metadata = {
   title: "London's Imports | Global Sourcing & Shipping Center",

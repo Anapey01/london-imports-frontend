@@ -162,12 +162,25 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         loadData();
         
-        // Operational Heartbeat: Auto-refresh every 60 seconds
+        // Operational Heartbeat: Refresh every 5 minutes when tab is visible
         const heartbeat = setInterval(() => {
+            if (typeof document !== 'undefined' && document.hidden) {
+                return;
+            }
             loadData();
-        }, 60000);
+        }, 300000);
 
-        return () => clearInterval(heartbeat);
+        const onVisibilityChange = () => {
+            if (!document.hidden) {
+                loadData();
+            }
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearInterval(heartbeat);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
     }, [loadData]);
 
     const handleRangeChange = async (newRange: string) => {

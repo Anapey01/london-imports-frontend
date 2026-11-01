@@ -180,7 +180,7 @@ export async function getAvailableProducts(limit = 10) {
     });
 }
 
-export async function getCategories(revalidate = 60) {
+export async function getCategories(revalidate = 36000) {
     try {
         const res = await fetchWithRetry(`${API_BASE_URL}/products/categories/`, {
             next: { revalidate }
